@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 7 Project — Survey, Graph, &amp; Analyze</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@page {
+  size: letter;
+  margin: 0.5in 0.5in 0.55in 0.5in;
+  @bottom-center {
+    content: "Unit 7 Project · Page " counter(page) " of " counter(pages);
+    font-family: 'Public Sans', sans-serif;
+    font-size: 9px;
+    color: #888;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Public Sans', -apple-system, sans-serif;
+  font-size: 11pt;
+  line-height: 1.45;
+  color: #1f2730;
+  background: white;
+}
+
+/* ========== COVER ========== */
+.cover {
+  background: linear-gradient(135deg, #1c3a52 0%, #2a4f6e 100%);
+  color: white;
+  padding: 28px 32px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: "📊";
+  position: absolute;
+  font-size: 130px;
+  right: -10px;
+  top: -20px;
+  opacity: 0.15;
+  transform: rotate(-8deg);
+}
+.cover-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #d4a64a;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.cover h1 {
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 32pt;
+  margin: 0 0 6px;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.cover h1 em {
+  font-style: italic;
+  color: #f4a261;
+}
+.cover .tagline {
+  font-size: 12pt;
+  color: rgba(255,255,255,0.85);
+  margin: 4px 0 16px;
+  font-style: italic;
+}
+.cover .meta {
+  display: flex;
+  gap: 24px;
+  font-size: 10pt;
+  font-family: 'JetBrains Mono', monospace;
+  color: rgba(255,255,255,0.85);
+  flex-wrap: wrap;
+}
+.cover .meta span { display: inline-flex; align-items: baseline; gap: 6px; }
+.cover .meta strong { color: #d4a64a; }
+.cover .meta .blank {
+  display: inline-block;
+  border-bottom: 2px solid rgba(212, 166, 74, 0.6);
+  min-width: 130px;
+  height: 16px;
+  margin-left: 4px;
+}
+.cover .meta .blank.short { min-width: 70px; }
+
+.goal-box {
+  background: #fff7e6;
+  border: 1.5px solid #d4a64a;
+  border-left: 5px solid #d4a64a;
+  border-radius: 10px;
+  padding: 12px 18px;
+  margin-bottom: 22px;
+  font-size: 10.5pt;
+}
+.goal-box strong {
+  color: #b8862e;
+  font-family: 'Fraunces', serif;
+  font-size: 11pt;
+}
+
+/* ========== PART HEADER ========== */
+.part {
+  margin-bottom: 26px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.part-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  color: white;
+  margin-bottom: 14px;
+  page-break-after: avoid;
+  break-after: avoid;
+}
+.part-banner .num-circle {
+  background: rgba(255,255,255,0.22);
+  border: 2px solid rgba(255,255,255,0.45);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  font-size: 14pt;
+  flex-shrink: 0;
+}
+.part-banner .part-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.82;
+  display: block;
+  margin-bottom: 2px;
+}
+.part-banner h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 16pt;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Color-coded part banners */
+.part-1 .part-banner { background: linear-gradient(135deg, #c25a3f 0%, #d97757 100%); }
+.part-2 .part-banner { background: linear-gradient(135deg, #2d7a8a 0%, #4ba3b4 100%); }
+.part-3 .part-banner { background: linear-gradient(135deg, #6b4d8a 0%, #8a6cb0 100%); }
+.part-4 .part-banner { background: linear-gradient(135deg, #4a8a6b 0%, #6cab8b 100%); }
+.part-5 .part-banner { background: linear-gradient(135deg, #c08a2a 0%, #d4a64a 100%); }
+.part-6 .part-banner { background: linear-gradient(135deg, #1c3a52 0%, #2d5b7e 100%); }
+
+/* ========== INSTRUCTION TEXT ========== */
+.part-intro {
+  margin: 0 0 12px;
+  font-size: 10.5pt;
+  color: #1f2730;
+  line-height: 1.5;
+}
+.requirements {
+  background: #f4ecdb;
+  border-left: 3px solid #c25a3f;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 8px 0 12px;
+  font-size: 10pt;
+}
+.requirements strong { color: #c25a3f; font-family: 'Fraunces', serif; }
+.requirements ul {
+  margin: 4px 0;
+  padding-left: 18px;
+  list-style-type: '✓ ';
+}
+.requirements ul li {
+  margin-bottom: 2px;
+  padding-left: 4px;
+}
+
+.examples {
+  background: #f0f7f3;
+  border-left: 3px solid #4a8a6b;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 8px 0 12px;
+  font-size: 10pt;
+}
+.examples strong { color: #4a8a6b; font-family: 'Fraunces', serif; }
+.examples ul { margin: 4px 0; padding-left: 22px; }
+.examples ul li { margin-bottom: 2px; }
+
+/* ========== STUDENT WRITING AREAS ========== */
+.write-line {
+  border-bottom: 1.5px solid #b8a878;
+  height: 22px;
+  margin: 6px 0;
+}
+.write-block {
+  border: 1.5px solid #b8a878;
+  border-radius: 6px;
+  background: #fefcf6;
+  padding: 6px 10px;
+  margin: 6px 0;
+  min-height: 32px;
+}
+.write-block.tall { min-height: 60px; }
+.write-block.taller { min-height: 90px; }
+.write-block.tallest { min-height: 130px; }
+.write-block.with-rule {
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 22px,
+    #e8dcb8 22px,
+    #e8dcb8 23px
+  );
+  background-position: 0 6px;
+}
+
+.field-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 6px 0;
+}
+.field-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  color: #1c3a52;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.field-blank {
+  flex: 1;
+  border-bottom: 1.5px solid #b8a878;
+  height: 22px;
+  background: #fefcf6;
+}
+.field-blank.short { max-width: 200px; }
+
+/* ========== TABLES (frequency tables) ========== */
+.freq-table {
+  border-collapse: collapse;
+  margin: 8px 0 14px;
+  width: 100%;
+  font-family: 'Public Sans', sans-serif;
+  font-size: 10.5pt;
+}
+.freq-table th {
+  background: #2d7a8a;
+  color: white;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  padding: 8px 12px;
+  text-align: left;
+  font-style: italic;
+  border: 1.5px solid #2d7a8a;
+}
+.freq-table th:first-child { border-top-left-radius: 6px; }
+.freq-table th:last-child { border-top-right-radius: 6px; }
+.freq-table td {
+  border: 1px solid #b8a878;
+  padding: 10px 12px;
+  background: #fefcf6;
+  height: 28px;
+  vertical-align: top;
+}
+.freq-table td.numeric { text-align: center; font-family: 'JetBrains Mono', monospace; }
+
+.formula-box {
+  background: #fff7e6;
+  border: 1px dashed #d4a64a;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 8px 0 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11pt;
+  text-align: center;
+  color: #1c3a52;
+}
+.formula-box .frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  font-size: 0.85em;
+  line-height: 1.05;
+}
+.formula-box .frac .num {
+  border-bottom: 1.5px solid currentColor;
+  padding: 0 6px 1px;
+  text-align: center;
+}
+.formula-box .frac .den {
+  padding: 1px 6px 0;
+  text-align: center;
+}
+
+/* ========== GRAPH AREAS ========== */
+.graph-choice {
+  display: flex;
+  gap: 16px;
+  margin: 8px 0 12px;
+  font-size: 10.5pt;
+}
+.graph-choice .choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.graph-choice .checkbox {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #1c3a52;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+.graph-must-include {
+  background: #f0f7f3;
+  border-left: 3px solid #4a8a6b;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 6px 0 10px;
+  font-size: 10pt;
+}
+.graph-must-include strong { color: #4a8a6b; font-family: 'Fraunces', serif; }
+.graph-must-include ul { margin: 3px 0; padding-left: 22px; }
+
+.graph-area {
+  border: 2px solid #b8a878;
+  border-radius: 8px;
+  background: #fefcf6;
+  width: 100%;
+  height: 320px;
+  position: relative;
+  margin: 8px 0;
+  background-image:
+    linear-gradient(to right, #ede1c3 1px, transparent 1px),
+    linear-gradient(to bottom, #ede1c3 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0;
+}
+.graph-area.tall { height: 360px; }
+.graph-area .corner-tag {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  color: #b8a878;
+  font-style: italic;
+}
+
+.circle-area {
+  border: 2px solid #b8a878;
+  border-radius: 8px;
+  background: #fefcf6;
+  height: 280px;
+  margin: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.circle-area svg { display: block; }
+.circle-area .corner-tag {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8.5pt;
+  color: #b8a878;
+  font-style: italic;
+}
+
+/* ========== QUESTION BLOCKS (analyze section) ========== */
+.q-block {
+  margin: 10px 0;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.q-block-prompt {
+  font-size: 10.5pt;
+  margin-bottom: 4px;
+}
+.q-block-prompt .q-num {
+  font-family: 'Fraunces', serif;
+  font-weight: 700;
+  color: #c25a3f;
+  margin-right: 6px;
+}
+
+/* ========== EXTENSION BOX ========== */
+.extension {
+  background: linear-gradient(135deg, #fff7e6 0%, #fff0d0 100%);
+  border: 2px dashed #d4a64a;
+  border-radius: 12px;
+  padding: 16px 22px;
+  margin: 24px 0 18px;
+}
+.extension-header {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 14pt;
+  color: #b8862e;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.extension-tag {
+  display: inline-block;
+  background: #d4a64a;
+  color: #1c3a52;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+}
+.extension p { font-size: 10.5pt; margin: 6px 0; }
+
+/* ========== RUBRIC ========== */
+.rubric {
+  margin: 24px 0 8px;
+  page-break-before: always;
+  break-before: page;
+}
+.rubric-header {
+  background: linear-gradient(135deg, #1c3a52 0%, #2d5b7e 100%);
+  color: white;
+  padding: 14px 22px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+.rubric-header h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 18pt;
+  margin: 0;
+  font-weight: 500;
+}
+.rubric-header .sub {
+  font-size: 10pt;
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.rubric-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 9.5pt;
+  margin-bottom: 10px;
+}
+.rubric-table th {
+  background: #1c3a52;
+  color: white;
+  padding: 8px 10px;
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-style: italic;
+  text-align: center;
+  border: 1px solid #1c3a52;
+  font-size: 10pt;
+}
+.rubric-table th.criterion {
+  background: #2d5b7e;
+  text-align: left;
+  width: 22%;
+}
+.rubric-table td {
+  border: 1px solid #b8a878;
+  padding: 7px 10px;
+  background: white;
+  vertical-align: top;
+  line-height: 1.35;
+}
+.rubric-table td.criterion {
+  background: #f4ecdb;
+  font-weight: 600;
+  color: #1c3a52;
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 10.5pt;
+  width: 22%;
+}
+.rubric-table td.criterion .standard {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 8pt;
+  font-style: normal;
+  color: #4b5662;
+  font-weight: 500;
+  margin-top: 3px;
+  letter-spacing: 0.04em;
+}
+.rubric-table td.score-cell {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9pt;
+}
+.rubric-points-row td {
+  background: #2d5b7e;
+  color: white;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  font-size: 9pt;
+  padding: 4px 8px;
+}
+
+.rubric-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff7e6;
+  border: 1.5px solid #d4a64a;
+  border-radius: 8px;
+  padding: 10px 18px;
+  margin-top: 12px;
+  font-size: 11pt;
+}
+.rubric-summary .total-label {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  color: #1c3a52;
+}
+.rubric-summary .blank {
+  display: inline-block;
+  border-bottom: 2px solid #1c3a52;
+  min-width: 60px;
+  height: 18px;
+  margin-left: 8px;
+}
+.rubric-summary .max {
+  font-family: 'JetBrains Mono', monospace;
+  color: #4b5662;
+  margin-left: 4px;
+}
+
+/* Override print padding for screen */
+@page { size: auto; margin: 0; }
+body {
+  background: #fbf7ee;
+  padding: 32px 0;
+}
+.wrap {
+  max-width: 920px;
+  margin: 0 auto;
+  background: white;
+  padding: 36px 40px 60px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(31, 39, 48, 0.08);
+}
+
+/* Make text inputs replace the static blanks */
+input.live-input, textarea.live-input {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10pt;
+  padding: 8px 12px;
+  border: 1.5px solid #b8a878;
+  border-radius: 6px;
+  background: #fefcf6;
+  color: #1f2730;
+  width: 100%;
+  font-family: 'Public Sans', sans-serif;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  box-sizing: border-box;
+}
+input.live-input:focus, textarea.live-input:focus {
+  outline: none;
+  border-color: #c25a3f;
+  background: white;
+}
+textarea.live-input {
+  min-height: 60px;
+  resize: vertical;
+  font-family: 'Public Sans', sans-serif;
+  line-height: 1.5;
+}
+textarea.live-input.tall { min-height: 90px; }
+
+input.live-input.short {
+  width: 200px;
+}
+input.live-input.numeric {
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center;
+}
+
+/* Live freq table */
+.freq-table input.live-input {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 6px 8px;
+  width: 100%;
+  font-size: 10pt;
+}
+.freq-table input.live-input:focus {
+  background: #fff7e6;
+  outline: 2px solid #d4a64a;
+  outline-offset: -2px;
+}
+.freq-table td {
+  padding: 0;
+}
+.freq-table td.numeric input.live-input {
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+}
+.freq-table td.computed {
+  background: #f0f7f3;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 600;
+  color: #4a8a6b;
+  font-size: 10pt;
+  padding: 8px 12px;
+}
+
+/* Live bar graph */
+.bar-graph-svg {
+  background: #fefcf6;
+  border: 2px solid #b8a878;
+  border-radius: 8px;
+  width: 100%;
+  height: 360px;
+  display: block;
+  margin: 8px 0;
+}
+.bar-graph-svg .bar { transition: height 0.4s ease, y 0.4s ease, fill 0.3s ease; }
+.bar-graph-svg .bar-label { font-family: 'Public Sans', sans-serif; font-size: 11px; font-weight: 600; fill: #1f2730; }
+.bar-graph-svg .bar-value { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; fill: #1c3a52; }
+.bar-graph-svg .axis-line { stroke: #1c3a52; stroke-width: 2; }
+.bar-graph-svg .y-tick { font-family: 'JetBrains Mono', monospace; font-size: 10px; fill: #4b5662; }
+.bar-graph-svg .y-grid { stroke: #ede1c3; stroke-width: 1; }
+.bar-graph-svg .graph-title-text { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; font-size: 14px; fill: #1c3a52; }
+.bar-graph-svg .empty-message { font-family: 'Public Sans', sans-serif; font-size: 12px; fill: #b8a878; font-style: italic; }
+
+/* Color bars based on category index */
+.bar-c0 { fill: #c25a3f; }
+.bar-c1 { fill: #2d7a8a; }
+.bar-c2 { fill: #d4a64a; }
+.bar-c3 { fill: #4a8a6b; }
+.bar-c4 { fill: #6b4d8a; }
+.bar-c5 { fill: #d97757; }
+
+/* Pie chart container */
+.pie-svg {
+  display: block;
+  margin: 0 auto;
+}
+
+/* Toolbar at the top of the interactive doc */
+.toolbar {
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  background: rgba(251, 247, 238, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid #d9cfb8;
+  border-radius: 999px;
+  padding: 10px 22px;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgba(31, 39, 48, 0.04), 0 4px 12px rgba(31, 39, 48, 0.06);
+}
+.toolbar .progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  color: #4b5662;
+  font-weight: 500;
+}
+.toolbar .progress-text strong { color: #1c3a52; font-weight: 600; }
+.toolbar .actions { display: flex; gap: 8px; }
+.toolbar button {
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 7px 14px;
+  border: 1px solid #d9cfb8;
+  border-radius: 6px;
+  background: white;
+  color: #1c3a52;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.toolbar button:hover { background: #f4ecdb; border-color: #c25a3f; }
+.toolbar button.primary { background: #1c3a52; color: white; border-color: #1c3a52; }
+.toolbar button.primary:hover { background: #c25a3f; border-color: #c25a3f; }
+
+/* Print button styles */
+@media print {
+  .toolbar, .interactive-only { display: none !important; }
+}
+
+.interactive-note {
+  background: #f0f7f3;
+  border-left: 3px solid #4a8a6b;
+  border-radius: 6px;
+  padding: 8px 14px;
+  margin: 8px 0 12px;
+  font-size: 10pt;
+  color: #2e5a44;
+}
+.interactive-note strong { font-family: 'Fraunces', serif; }
+
+/* Overall help text under inputs */
+.helper-text {
+  font-size: 9.5pt;
+  color: #7d8893;
+  font-style: italic;
+  margin-top: 3px;
+}
+
+/* Remove the static write-block / write-line in interactive */
+.interactive-mode .write-block,
+.interactive-mode .write-line,
+.interactive-mode .field-blank {
+  display: none;
+}
+
+/* Toast for save confirmation */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1c3a52;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-family: 'Public Sans', sans-serif;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  z-index: 100;
+}
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+</style>
+</head>
+<body class="interactive-mode">
+<div class="wrap">
+
+<div class="toolbar">
+  <span class="progress-text"><strong id="answered-count">0</strong> of <strong>10</strong> sections complete</span>
+  <div class="actions">
+    <button onclick="saveData()">💾 Save Progress</button>
+    <button onclick="window.print()" class="primary">🖨️ Print</button>
+    <button onclick="confirmReset()" style="color: #b83a3a; border-color: #f5dada;">↻ Reset</button>
+  </div>
+</div>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="cover-eyebrow">Unit 7 Project</div>
+  <h1>Survey, Graph, &amp; <em>Analyze</em></h1>
+  <p class="tagline">Collect real data. Make a graph. Find the story.</p>
+  <div class="meta">
+    <span><strong>Name:</strong>&nbsp;<input type="text" class="live-input short" data-field="name" placeholder="Your name" style="background: rgba(255,255,255,0.95);"></span>
+    <span><strong>Date:</strong>&nbsp;<input type="text" class="live-input short" data-field="date" placeholder="Today" style="background: rgba(255,255,255,0.95); width: 120px;"></span>
+    <span><strong>Period:</strong>&nbsp;<input type="text" class="live-input short" data-field="period" placeholder="Period" style="background: rgba(255,255,255,0.95); width: 80px;"></span>
+  </div>
+</div>
+
+<div class="goal-box">
+  <strong>🎯 Goal:</strong> Collect real data, represent it with a graph, and analyze patterns using Unit 7 concepts. You'll design a survey, ask at least 10 people, organize your results, and find what your data is telling you.
+</div>
+
+<div class="interactive-note">
+  <strong>📱 Interactive mode:</strong> Type your responses below, and the frequency counts and bar graph will update automatically. Click "💾 Save Progress" anytime — your work is saved in your browser.
+</div>
+
+<!-- PART 1 -->
+<div class="part part-1">
+  <div class="part-banner">
+    <span class="num-circle">1</span>
+    <div>
+      <span class="part-label">Part 1</span>
+      <h2>Create Your Survey</h2>
+    </div>
+  </div>
+  <p class="part-intro">Design a survey question and collect responses from <strong>at least 10 people</strong>.</p>
+
+  <div class="requirements">
+    <strong>Requirements:</strong>
+    <ul>
+      <li>Your question must be clear</li>
+      <li>Your responses must be <em>categories</em> (not open-ended)</li>
+    </ul>
+  </div>
+
+  <div class="examples">
+    <strong>💡 Good examples:</strong>
+    <ul>
+      <li>Favorite music genre? (Pop, Rap, Country, Other)</li>
+      <li>After-school activity? (Sports, Job, Homework, Relaxing)</li>
+      <li>How do you get to school? (Bus, Car, Walk, Other)</li>
+    </ul>
+  </div>
+
+  <p style="margin: 12px 0 4px; font-weight: 600; color: #1c3a52;">Your survey question:</p>
+  <textarea class="live-input" data-field="survey_question" placeholder="e.g., What's your favorite school lunch?"></textarea>
+
+  <p style="margin: 12px 0 4px; font-weight: 600; color: #1c3a52;">Your answer choices:</p>
+  <input type="text" class="live-input" data-field="survey_choices" placeholder="e.g., Pizza, Sandwich, Salad, Other (separated by commas)">
+  <p class="helper-text">💡 Tip: separate categories with commas — they'll auto-fill the table below.</p>
+</div>
+
+<!-- PART 2 -->
+<div class="part part-2">
+  <div class="part-banner">
+    <span class="num-circle">2</span>
+    <div>
+      <span class="part-label">Part 2</span>
+      <h2>Collect &amp; Organize Data</h2>
+    </div>
+  </div>
+  <p class="part-intro">Type your category names and frequencies. Total and relative frequencies update automatically.</p>
+
+  <table class="freq-table">
+    <thead>
+      <tr><th style="width: 38%;">Category</th><th style="width: 28%;">Tally</th><th style="width: 18%;">Frequency</th><th style="width: 16%;">Rel. Freq.</th></tr>
+    </thead>
+    <tbody id="freq-tbody">
+      <!-- 5 rows generated by JS -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <td style="text-align: right; font-weight: 600; color: #1c3a52; padding: 10px 14px;"><em>Total</em></td>
+        <td></td>
+        <td class="computed" id="total-frequency">0</td>
+        <td class="computed" id="total-relfreq">1.00</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<!-- PART 3 -->
+<div class="part part-3">
+  <div class="part-banner">
+    <span class="num-circle">3</span>
+    <div>
+      <span class="part-label">Part 3</span>
+      <h2>Create a Graph</h2>
+    </div>
+  </div>
+  <p class="part-intro">Your bar graph and pie chart update <strong>live</strong> as you fill in the table above.</p>
+
+  <p style="margin: 12px 0 4px; font-weight: 600; color: #1c3a52;">Title:</p>
+  <input type="text" class="live-input" data-field="graph_title" placeholder="e.g., Favorite School Lunch (n = 25)">
+
+  <p style="margin: 16px 0 4px; font-weight: 600; color: #1c3a52;">📊 Bar Graph:</p>
+  <svg class="bar-graph-svg" id="bar-graph" viewBox="0 0 760 360" preserveAspectRatio="xMidYMid meet"></svg>
+
+  <p style="margin: 18px 0 4px; font-weight: 600; color: #1c3a52;">🥧 Circle Graph (Pie Chart):</p>
+  <div style="text-align: center; margin: 12px 0; padding: 16px; background: #fefcf6; border: 2px solid #b8a878; border-radius: 8px;">
+    <svg class="pie-svg" id="pie-graph" viewBox="0 0 360 280" width="360" height="280" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+</div>
+
+<!-- PART 4 -->
+<div class="part part-4">
+  <div class="part-banner">
+    <span class="num-circle">4</span>
+    <div>
+      <span class="part-label">Part 4</span>
+      <h2>Analyze Your Data</h2>
+    </div>
+  </div>
+  <p class="part-intro">Answer in <strong>complete sentences</strong>.</p>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">1.</span> Which category had the <strong>highest</strong> frequency?</p>
+    <textarea class="live-input" data-field="q1"></textarea>
+    <p class="helper-text" id="hint-highest">💡 Live hint: <span id="auto-highest">—</span></p>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">2.</span> Which category had the <strong>lowest</strong> frequency?</p>
+    <textarea class="live-input" data-field="q2"></textarea>
+    <p class="helper-text" id="hint-lowest">💡 Live hint: <span id="auto-lowest">—</span></p>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">3.</span> Describe the overall pattern or trend in your data.</p>
+    <textarea class="live-input tall" data-field="q3"></textarea>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">4.</span> Is your data <strong>categorical</strong> or <strong>numerical</strong>? Explain how you know.</p>
+    <textarea class="live-input tall" data-field="q4"></textarea>
+  </div>
+</div>
+
+<!-- PART 5 -->
+<div class="part part-5">
+  <div class="part-banner">
+    <span class="num-circle">5</span>
+    <div>
+      <span class="part-label">Part 5</span>
+      <h2>Make a Comparison</h2>
+    </div>
+  </div>
+  <p class="part-intro">Ask a <strong>second question</strong> OR compare your results with a classmate.</p>
+
+  <p style="margin: 8px 0 4px; font-weight: 600; color: #1c3a52;">Comparison question:</p>
+  <textarea class="live-input" data-field="comp_question"></textarea>
+
+  <p style="margin: 10px 0 4px; font-weight: 600; color: #1c3a52;">Answer:</p>
+  <textarea class="live-input" data-field="comp_answer"></textarea>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">5.</span> Which dataset had a higher top category?</p>
+    <input type="text" class="live-input" data-field="q5">
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">6.</span> One <strong>similarity</strong> between the datasets:</p>
+    <textarea class="live-input" data-field="q6"></textarea>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">7.</span> One <strong>difference</strong>:</p>
+    <textarea class="live-input" data-field="q7"></textarea>
+  </div>
+</div>
+
+<!-- PART 6 -->
+<div class="part part-6">
+  <div class="part-banner">
+    <span class="num-circle">6</span>
+    <div>
+      <span class="part-label">Part 6</span>
+      <h2>Connect to Unit 7 Concepts</h2>
+    </div>
+  </div>
+  <p class="part-intro">Answer briefly in your own words.</p>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">8.</span> Does your data show <strong>correlation</strong>? Why or why not?</p>
+    <textarea class="live-input tall" data-field="q8"></textarea>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">9.</span> Would a <strong>scatterplot</strong> be appropriate for your data? Explain.</p>
+    <textarea class="live-input tall" data-field="q9"></textarea>
+  </div>
+
+  <div class="q-block">
+    <p class="q-block-prompt"><span class="q-num">10.</span> Could you draw a <strong>line of best fit</strong>? Why or why not?</p>
+    <textarea class="live-input tall" data-field="q10"></textarea>
+  </div>
+</div>
+
+<!-- EXTENSION -->
+<div class="extension">
+  <div class="extension-header">
+    <span class="extension-tag">Optional</span>
+    <span>⭐ Stretch Challenge: Bivariate Data</span>
+  </div>
+  <p>Turn your project into <strong>bivariate data</strong> by collecting two pieces of information per person.</p>
+  <p><strong>Examples:</strong> hours of sleep vs. test score · minutes of homework vs. screen time · height vs. shoe size.</p>
+  <p style="margin-top: 10px; font-weight: 600;">Your bivariate question:</p>
+  <textarea class="live-input" data-field="bivariate_question" style="background: white;"></textarea>
+
+  <p style="margin: 12px 0 4px; font-weight: 600;">📈 Direction:</p>
+  <input type="text" class="live-input short" data-field="direction" placeholder="positive / negative / no correlation" style="background: white;">
+
+  <p style="margin: 10px 0 4px; font-weight: 600;">💪 Strength:</p>
+  <input type="text" class="live-input short" data-field="strength" placeholder="strong / weak / none" style="background: white;">
+</div>
+
+<div id="toast" class="toast">Saved!</div>
+
+
+<div class="rubric">
+  <div class="rubric-header">
+    <h2>📋 Project Rubric</h2>
+    <div class="sub">Standards-based scoring · Unit 7: Statistics &amp; Probability</div>
+  </div>
+
+  <table class="rubric-table">
+    <thead>
+      <tr>
+        <th class="criterion">Criterion</th>
+        <th>4 — Mastery</th>
+        <th>3 — Proficient</th>
+        <th>2 — Developing</th>
+        <th>1 — Beginning</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="criterion">Survey Design
+          <span class="standard">NC.8.SP — Categorical data</span>
+        </td>
+        <td>Question is clear, age-appropriate, with 4+ well-defined non-overlapping categories. 10+ responses.</td>
+        <td>Question is clear with 3–4 categories. 10 responses collected.</td>
+        <td>Question is somewhat unclear OR categories overlap. 7–9 responses.</td>
+        <td>Question is unclear or open-ended. Fewer than 7 responses.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Data Organization
+          <span class="standard">NC.8.SP.4</span>
+        </td>
+        <td>Frequency table is complete, accurate, and includes correct relative frequencies (decimals or percents).</td>
+        <td>Frequency table is complete and accurate; relative frequencies attempted with minor errors.</td>
+        <td>Frequency table is mostly complete with some counting errors.</td>
+        <td>Table is incomplete or has major counting errors.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Graphical Display
+          <span class="standard">NC.8.SP.1</span>
+        </td>
+        <td>Bar graph or pie chart is precise with title, labels, accurate scale, and proportional values. Visually polished.</td>
+        <td>Graph includes title, labels, and accurate values. Minor scaling issues.</td>
+        <td>Graph is present but missing a title, labels, or has visible inaccuracies.</td>
+        <td>Graph is missing or unreadable.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Data Analysis
+          <span class="standard">NC.8.SP.2 / .4</span>
+        </td>
+        <td>All four analysis questions answered in complete sentences with strong, evidence-based reasoning.</td>
+        <td>All four answered in complete sentences with reasonable reasoning.</td>
+        <td>Some answers incomplete or written as fragments.</td>
+        <td>Most answers missing or written without reasoning.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Comparison
+          <span class="standard">NC.8.SP.4</span>
+        </td>
+        <td>Identifies clear similarities AND differences between datasets with specific evidence.</td>
+        <td>Identifies one similarity and one difference with adequate explanation.</td>
+        <td>Identifies similarity OR difference but not both, OR explanation is vague.</td>
+        <td>Comparison is missing or off-topic.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Connect to Unit 7
+          <span class="standard">NC.8.SP.1 / .2 / .3</span>
+        </td>
+        <td>Correctly identifies whether data shows correlation, scatterplot appropriateness, and line-of-best-fit suitability with justification.</td>
+        <td>Correctly answers all three questions with brief justification.</td>
+        <td>Answers 2 of 3 questions correctly OR justifications are weak.</td>
+        <td>Answers 0–1 questions correctly or skips this section.</td>
+      </tr>
+      <tr>
+        <td class="criterion">Communication &amp; Presentation
+          <span class="standard">Mathematical Practice 6</span>
+        </td>
+        <td>Work is neat, organized, and uses precise math vocabulary throughout.</td>
+        <td>Work is mostly neat with some math vocabulary used.</td>
+        <td>Work is readable but disorganized or lacks math vocabulary.</td>
+        <td>Work is messy, hard to follow, or lacks vocabulary.</td>
+      </tr>
+      <tr class="rubric-points-row">
+        <td>Points Possible</td>
+        <td>4</td>
+        <td>3</td>
+        <td>2</td>
+        <td>1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="rubric-summary">
+    <div>
+      <span class="total-label">Total Score:</span>
+      <span class="blank"></span>
+      <span class="max">/ 28</span>
+    </div>
+    <div style="font-family: 'JetBrains Mono', monospace; font-size: 8.5pt; color: #4b5662; text-align: right;">
+      Mastery: 25–28<br>Proficient: 19–24<br>Developing: 12–18 &nbsp;·&nbsp; Beginning: &lt; 12
+    </div>
+  </div>
+
+  <!-- Bonus: Extension -->
+  <div style="margin-top: 16px; padding: 12px 18px; background: #fff7e6; border: 1.5px dashed #d4a64a; border-radius: 8px; font-size: 10pt;">
+    <strong style="font-family: 'Fraunces', serif; color: #b8862e;">⭐ Optional Extension Bonus (up to +4 points)</strong>
+    <table class="rubric-table" style="margin-top: 6px; font-size: 9pt;">
+      <thead><tr><th class="criterion" style="width: 30%;">Extension Element</th><th>+1 each</th></tr></thead>
+      <tbody>
+        <tr><td class="criterion" style="font-size: 9.5pt;">Bivariate question</td><td>Collected 2 pieces of data per response with a clear research question.</td></tr>
+        <tr><td class="criterion" style="font-size: 9.5pt;">Scatterplot</td><td>Plotted points correctly on properly labeled axes.</td></tr>
+        <tr><td class="criterion" style="font-size: 9.5pt;">Direction described</td><td>Identified positive, negative, or no correlation correctly.</td></tr>
+        <tr><td class="criterion" style="font-size: 9.5pt;">Strength described</td><td>Identified strong, weak, or none with justification.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+<script>
+const STORAGE_KEY = 'unit7_project_data';
+const NUM_ROWS = 5;
+
+// =============================================================================
+// DATA STATE
+// =============================================================================
+let state = {
+  fields: {},      // text input fields
+  categories: [],  // category names
+  frequencies: [], // frequencies (numbers)
+  tallies: [],     // tally strings
+};
+
+// Initialize
+function init() {
+  // Build the 5-row freq table
+  const tbody = document.getElementById('freq-tbody');
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" class="live-input cat-input" data-row="${i}" placeholder="Category ${i + 1}"></td>
+      <td><input type="text" class="live-input tally-input" data-row="${i}" placeholder="||||"></td>
+      <td class="numeric"><input type="text" class="live-input freq-input" data-row="${i}" inputmode="numeric" placeholder="0"></td>
+      <td class="computed rel-freq" data-row="${i}">—</td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  // Load saved data if any
+  loadData();
+
+  // Wire up all live-input listeners
+  document.querySelectorAll('input.live-input, textarea.live-input').forEach(el => {
+    el.addEventListener('input', onFieldChange);
+  });
+
+  // Initial render
+  updateGraphs();
+  updateAutoHints();
+  updateAnsweredCount();
+
+  // Auto-save every 5 seconds (debounced via change events too)
+  setInterval(saveData, 5000);
+}
+
+function onFieldChange(e) {
+  const el = e.target;
+  // Update state from form
+  if (el.classList.contains('cat-input')) {
+    state.categories[parseInt(el.dataset.row)] = el.value.trim();
+  } else if (el.classList.contains('tally-input')) {
+    state.tallies[parseInt(el.dataset.row)] = el.value.trim();
+  } else if (el.classList.contains('freq-input')) {
+    const val = el.value.trim();
+    const n = parseFloat(val);
+    state.frequencies[parseInt(el.dataset.row)] = isNaN(n) ? 0 : n;
+  } else if (el.dataset.field) {
+    state.fields[el.dataset.field] = el.value;
+    // Auto-fill the freq table from comma-separated choices
+    if (el.dataset.field === 'survey_choices') {
+      autofillCategories(el.value);
+    }
+  }
+  // Live updates
+  updateRelFreqs();
+  updateGraphs();
+  updateAutoHints();
+  updateAnsweredCount();
+}
+
+// If the student types comma-separated choices in part 1, auto-fill the table category column
+function autofillCategories(text) {
+  if (!text) return;
+  const choices = text.split(',').map(s => s.trim()).filter(s => s.length > 0);
+  for (let i = 0; i < Math.min(choices.length, NUM_ROWS); i++) {
+    const catInput = document.querySelector(`.cat-input[data-row="${i}"]`);
+    // Only auto-fill if the cell is empty (don't overwrite user edits)
+    if (catInput && (catInput.value.trim() === '' || (state.categories[i] === undefined))) {
+      catInput.value = choices[i];
+      state.categories[i] = choices[i];
+    }
+  }
+}
+
+// =============================================================================
+// LIVE COMPUTATIONS
+// =============================================================================
+function getTotalFreq() {
+  let total = 0;
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const f = parseFloat(state.frequencies[i]);
+    if (!isNaN(f)) total += f;
+  }
+  return total;
+}
+
+function updateRelFreqs() {
+  const total = getTotalFreq();
+  document.getElementById('total-frequency').textContent = total;
+  let totalRelFreq = 0;
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const cell = document.querySelector(`.rel-freq[data-row="${i}"]`);
+    const freq = parseFloat(state.frequencies[i]);
+    if (!isNaN(freq) && total > 0) {
+      const rf = freq / total;
+      cell.textContent = rf.toFixed(2);
+      totalRelFreq += rf;
+    } else {
+      cell.textContent = '—';
+    }
+  }
+  document.getElementById('total-relfreq').textContent = total > 0 ? totalRelFreq.toFixed(2) : '—';
+}
+
+function updateAutoHints() {
+  // Find the category with highest and lowest frequency
+  let maxFreq = -Infinity, maxIdx = -1;
+  let minFreq = Infinity, minIdx = -1;
+  let foundAny = false;
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const cat = state.categories[i];
+    const f = parseFloat(state.frequencies[i]);
+    if (cat && !isNaN(f) && f > 0) {
+      foundAny = true;
+      if (f > maxFreq) { maxFreq = f; maxIdx = i; }
+      if (f < minFreq) { minFreq = f; minIdx = i; }
+    }
+  }
+  const hh = document.getElementById('auto-highest');
+  const lh = document.getElementById('auto-lowest');
+  if (!foundAny) {
+    hh.textContent = '— (fill in your frequency table to see)';
+    lh.textContent = '— (fill in your frequency table to see)';
+  } else {
+    hh.textContent = `${state.categories[maxIdx]} (${maxFreq})`;
+    if (maxIdx === minIdx) {
+      lh.textContent = `${state.categories[minIdx]} (${minFreq}) — same as highest`;
+    } else {
+      lh.textContent = `${state.categories[minIdx]} (${minFreq})`;
+    }
+  }
+}
+
+// =============================================================================
+// BAR GRAPH RENDERING
+// =============================================================================
+function updateGraphs() {
+  drawBarGraph();
+  drawPieChart();
+}
+
+function drawBarGraph() {
+  const svg = document.getElementById('bar-graph');
+  const W = 760, H = 360;
+  const margin = { top: 50, right: 30, bottom: 70, left: 60 };
+  const innerW = W - margin.left - margin.right;
+  const innerH = H - margin.top - margin.bottom;
+
+  // Get categories with positive frequencies
+  const data = [];
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const cat = state.categories[i];
+    const f = parseFloat(state.frequencies[i]);
+    if (cat && !isNaN(f) && f > 0) {
+      data.push({ name: cat, freq: f, idx: i });
+    }
+  }
+
+  if (data.length === 0) {
+    svg.innerHTML = `<text x="${W/2}" y="${H/2}" text-anchor="middle" class="empty-message">Fill in your frequency table above to see your bar graph here.</text>`;
+    return;
+  }
+
+  // Determine y-scale
+  const maxFreq = Math.max(...data.map(d => d.freq));
+  // round up to nice tick value (next multiple of 5 if maxFreq >= 5, else maxFreq itself)
+  let yMax;
+  if (maxFreq <= 5) yMax = 5;
+  else if (maxFreq <= 10) yMax = 10;
+  else if (maxFreq <= 20) yMax = Math.ceil(maxFreq / 5) * 5;
+  else yMax = Math.ceil(maxFreq / 10) * 10;
+  const yStep = yMax <= 5 ? 1 : (yMax <= 10 ? 2 : 5);
+  const ticks = [];
+  for (let v = 0; v <= yMax; v += yStep) ticks.push(v);
+
+  // Bar geometry
+  const barCount = data.length;
+  const gap = 12;
+  const barW = (innerW - gap * (barCount + 1)) / barCount;
+
+  const yScale = (v) => margin.top + innerH - (v / yMax) * innerH;
+
+  let svgContent = '';
+  // Title
+  const title = state.fields.graph_title || 'Your Bar Graph';
+  svgContent += `<text x="${W/2}" y="22" text-anchor="middle" class="graph-title-text">${escapeHtml(title)}</text>`;
+
+  // Y-axis tick lines + labels
+  ticks.forEach(t => {
+    const y = yScale(t);
+    svgContent += `<line class="y-grid" x1="${margin.left}" y1="${y}" x2="${W - margin.right}" y2="${y}"/>`;
+    svgContent += `<text class="y-tick" x="${margin.left - 8}" y="${y + 4}" text-anchor="end">${t}</text>`;
+  });
+
+  // Y axis line
+  svgContent += `<line class="axis-line" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${margin.top + innerH}"/>`;
+  // X axis line
+  svgContent += `<line class="axis-line" x1="${margin.left}" y1="${margin.top + innerH}" x2="${W - margin.right}" y2="${margin.top + innerH}"/>`;
+
+  // Y axis title
+  svgContent += `<text x="${margin.left - 36}" y="${margin.top + innerH/2}" transform="rotate(-90 ${margin.left - 36} ${margin.top + innerH/2})" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-size="12" fill="#1c3a52" font-weight="600">Frequency</text>`;
+
+  // Bars
+  data.forEach((d, i) => {
+    const x = margin.left + gap + i * (barW + gap);
+    const barHeight = (d.freq / yMax) * innerH;
+    const y = margin.top + innerH - barHeight;
+    const colorClass = `bar-c${d.idx % 6}`;
+    svgContent += `<rect class="bar ${colorClass}" x="${x}" y="${y}" width="${barW}" height="${barHeight}" rx="3"/>`;
+    // Value above bar
+    svgContent += `<text class="bar-value" x="${x + barW/2}" y="${y - 6}" text-anchor="middle">${d.freq}</text>`;
+    // Label below bar (truncate if too long)
+    const label = d.name.length > 14 ? d.name.slice(0, 12) + '…' : d.name;
+    svgContent += `<text class="bar-label" x="${x + barW/2}" y="${margin.top + innerH + 18}" text-anchor="middle">${escapeHtml(label)}</text>`;
+  });
+
+  svg.innerHTML = svgContent;
+}
+
+// =============================================================================
+// PIE CHART RENDERING
+// =============================================================================
+function drawPieChart() {
+  const svg = document.getElementById('pie-graph');
+  const W = 360, H = 280;
+  const cx = W / 2;
+  const cy = H / 2 - 10;  // shift up a bit for legend
+  const r = 100;
+
+  const data = [];
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const cat = state.categories[i];
+    const f = parseFloat(state.frequencies[i]);
+    if (cat && !isNaN(f) && f > 0) {
+      data.push({ name: cat, freq: f, idx: i });
+    }
+  }
+
+  if (data.length === 0) {
+    // Show empty pie placeholder
+    svg.innerHTML = `
+      <circle cx="${cx}" cy="${cy}" r="${r}" fill="white" stroke="#1c3a52" stroke-width="2"/>
+      <line x1="${cx}" y1="${cy - r}" x2="${cx}" y2="${cy + r}" stroke="#d9cfb8" stroke-width="0.8" stroke-dasharray="2 4"/>
+      <line x1="${cx - r}" y1="${cy}" x2="${cx + r}" y2="${cy}" stroke="#d9cfb8" stroke-width="0.8" stroke-dasharray="2 4"/>
+      <text x="${cx}" y="${cy + r + 28}" text-anchor="middle" class="empty-message">Add data above to see your pie chart.</text>
+    `;
+    return;
+  }
+
+  const total = data.reduce((s, d) => s + d.freq, 0);
+  const colors = ['#c25a3f', '#2d7a8a', '#d4a64a', '#4a8a6b', '#6b4d8a', '#d97757'];
+
+  let startAngle = -Math.PI / 2;  // start at top
+  let svgContent = '';
+
+  // Special case: only one category — full circle
+  if (data.length === 1) {
+    const d = data[0];
+    svgContent += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${colors[d.idx % 6]}" stroke="white" stroke-width="2"/>`;
+    svgContent += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="600" fill="white">100%</text>`;
+  } else {
+    data.forEach((d, i) => {
+      const sliceAngle = (d.freq / total) * 2 * Math.PI;
+      const endAngle = startAngle + sliceAngle;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const largeArc = sliceAngle > Math.PI ? 1 : 0;
+      const path = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${r} ${r} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+      svgContent += `<path d="${path}" fill="${colors[d.idx % 6]}" stroke="white" stroke-width="2"/>`;
+      // Percentage label
+      const midAngle = startAngle + sliceAngle / 2;
+      const labelR = r * 0.65;
+      const lx = cx + labelR * Math.cos(midAngle);
+      const ly = cy + labelR * Math.sin(midAngle);
+      const pct = Math.round((d.freq / total) * 100);
+      if (pct >= 6) {
+        svgContent += `<text x="${lx.toFixed(2)}" y="${ly.toFixed(2) + 4}" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="12" font-weight="600" fill="white">${pct}%</text>`;
+      }
+      startAngle = endAngle;
+    });
+  }
+
+  // Legend at bottom
+  const legendY = cy + r + 30;
+  const legendX = 20;
+  const legendItemWidth = (W - 40) / Math.min(data.length, 3);
+  data.forEach((d, i) => {
+    const col = i % 3;
+    const row = Math.floor(i / 3);
+    const x = legendX + col * legendItemWidth;
+    const y = legendY + row * 20;
+    svgContent += `<rect x="${x}" y="${y - 9}" width="11" height="11" fill="${colors[d.idx % 6]}" rx="2"/>`;
+    const labelText = d.name.length > 12 ? d.name.slice(0, 10) + '…' : d.name;
+    svgContent += `<text x="${x + 16}" y="${y}" font-family="Public Sans, sans-serif" font-size="11" fill="#1f2730">${escapeHtml(labelText)}</text>`;
+  });
+
+  svg.innerHTML = svgContent;
+}
+
+// =============================================================================
+// PROGRESS / SAVE / LOAD
+// =============================================================================
+function updateAnsweredCount() {
+  const sections = [
+    !!state.fields.survey_question && !!state.fields.survey_choices,
+    getTotalFreq() >= 10,
+    !!state.fields.graph_title,
+    !!state.fields.q1 && !!state.fields.q2 && !!state.fields.q3 && !!state.fields.q4,
+    !!state.fields.q5 && !!state.fields.q6 && !!state.fields.q7,
+    !!state.fields.q8 && !!state.fields.q9 && !!state.fields.q10,
+    // bonus sections
+    !!state.fields.bivariate_question,
+    !!state.fields.direction,
+    !!state.fields.strength,
+    !!state.fields.name,
+  ];
+  const completed = sections.filter(Boolean).length;
+  document.getElementById('answered-count').textContent = completed;
+}
+
+function saveData() {
+  try {
+    if (window.storage && window.storage.set) {
+      window.storage.set(STORAGE_KEY, JSON.stringify(state));
+    } else {
+      // Fallback to localStorage if available
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
+    }
+    showToast('💾 Saved!');
+  } catch (e) {
+    console.warn('Save failed:', e);
+  }
+}
+
+async function loadData() {
+  try {
+    let saved = null;
+    if (window.storage && window.storage.get) {
+      const result = await window.storage.get(STORAGE_KEY);
+      if (result && result.value) saved = result.value;
+    } else {
+      try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    }
+    if (saved) {
+      const data = JSON.parse(saved);
+      state = Object.assign({ fields: {}, categories: [], frequencies: [], tallies: [] }, data);
+      // populate inputs
+      Object.keys(state.fields).forEach(field => {
+        const el = document.querySelector(`[data-field="${field}"]`);
+        if (el) el.value = state.fields[field] || '';
+      });
+      for (let i = 0; i < NUM_ROWS; i++) {
+        const ci = document.querySelector(`.cat-input[data-row="${i}"]`);
+        if (ci) ci.value = state.categories[i] || '';
+        const ti = document.querySelector(`.tally-input[data-row="${i}"]`);
+        if (ti) ti.value = state.tallies[i] || '';
+        const fi = document.querySelector(`.freq-input[data-row="${i}"]`);
+        if (fi) fi.value = (state.frequencies[i] != null ? state.frequencies[i] : '');
+      }
+      updateRelFreqs();
+      updateGraphs();
+      updateAutoHints();
+      updateAnsweredCount();
+    }
+  } catch (e) {
+    console.warn('Load failed:', e);
+  }
+}
+
+function confirmReset() {
+  if (confirm('Reset everything and start over? This cannot be undone.')) {
+    state = { fields: {}, categories: [], frequencies: [], tallies: [] };
+    document.querySelectorAll('input.live-input, textarea.live-input').forEach(el => {
+      el.value = '';
+    });
+    saveData();
+    updateRelFreqs();
+    updateGraphs();
+    updateAutoHints();
+    updateAnsweredCount();
+    showToast('Reset complete.');
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 1800);
+}
+
+// Helper
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[c]);
+}
+
+// Init on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>
