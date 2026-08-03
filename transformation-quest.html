@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transformation Quest · 8th Grade Math · Unit 8</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --space:       #0a1628;
+    --space-deep:  #040910;
+    --space-light: #1a2f4c;
+    --cream:       #f7f0e3;
+    --cream-dim:   rgba(247,240,227,.75);
+    --ink:         #14181c;
+    --gold:        #d4a437;
+    --gold-soft:   #b88a2a;
+    --navy:        #1e3a5f;
+    --teal:        #14b8a6;
+    --grid-line:   rgba(212,164,55,.12);
+    --grid-major:  rgba(212,164,55,.45);
+    --shape-cur:   #14b8a6;
+    --shape-cur-fill: rgba(20,184,166,.18);
+    --shape-tgt:   #d4a437;
+    --shape-tgt-fill: rgba(212,164,55,.08);
+    --err:         #e85d35;
+    --ok:          #4ade80;
+    --shadow-md:   0 6px 20px rgba(0,0,0,.4);
+    --shadow-glow: 0 0 24px rgba(20,184,166,.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--cream);
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 70% 50% at 20% 10%, rgba(20,184,166,.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 90%, rgba(212,164,55,.08) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 100% at 50% 50%, var(--space-light) 0%, var(--space) 50%, var(--space-deep) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+
+  /* Starfield */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 22% 15%, rgba(255,255,255,.7), transparent),
+      radial-gradient(1px 1px at 67% 33%, rgba(255,255,255,.4), transparent),
+      radial-gradient(1px 1px at 88% 12%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 15% 72%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1.2px 1.2px at 42% 88%, rgba(255,255,255,.5), transparent),
+      radial-gradient(1px 1px at 75% 61%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 8% 44%, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.5px 1.5px at 55% 22%, rgba(212,164,55,.4), transparent),
+      radial-gradient(1px 1px at 35% 5%, rgba(255,255,255,.3), transparent);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 22px 40px;
+  }
+
+  /* ============ Back link ============ */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px 7px 11px;
+    background: rgba(0,0,0,.35);
+    color: var(--gold);
+    border: 1px solid rgba(212,164,55,.3);
+    border-radius: 8px;
+    font: 600 .85rem 'DM Sans', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 12px;
+  }
+  .back-link:hover {
+    background: rgba(212,164,55,.12);
+    border-color: var(--gold);
+    transform: translateX(-2px);
+  }
+
+  /* ============ Header ============ */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    letter-spacing: -.02em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h1 .accent {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .level-group {
+    display: inline-flex;
+    background: rgba(0,0,0,.35);
+    border-radius: 10px;
+    padding: 4px;
+    border: 1px solid rgba(247,240,227,.1);
+  }
+  .level-btn {
+    padding: 7px 16px;
+    border: 0;
+    background: transparent;
+    color: var(--cream);
+    font: 500 .88rem 'DM Sans', sans-serif;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .level-btn:hover { background: rgba(247,240,227,.08); }
+  .level-btn.active {
+    background: var(--gold);
+    color: var(--space-deep);
+    font-weight: 700;
+  }
+
+  .action-btn {
+    padding: 8px 14px;
+    border: 1px solid rgba(247,240,227,.2);
+    background: rgba(0,0,0,.35);
+    color: var(--cream);
+    font: 500 .86rem 'DM Sans', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .action-btn:hover {
+    background: rgba(247,240,227,.08);
+    border-color: var(--gold);
+  }
+
+  /* ============ Puzzle bar ============ */
+  .puzzle-bar {
+    background: rgba(0,0,0,.3);
+    border: 1px solid rgba(212,164,55,.2);
+    border-radius: 10px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .puzzle-name {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--gold);
+  }
+  .puzzle-progress {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .8rem;
+    color: var(--cream-dim);
+    letter-spacing: .05em;
+  }
+  .puzzle-prompt {
+    font-size: .95rem;
+    flex: 1;
+    min-width: 200px;
+    color: var(--cream);
+  }
+
+  /* ============ Game area ============ */
+  .game-area {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 18px;
+    align-items: stretch;
+  }
+  @media (max-width: 900px) {
+    .game-area { grid-template-columns: 1fr; }
+  }
+
+  .grid-panel {
+    background: rgba(0,0,0,.4);
+    border: 1px solid rgba(212,164,55,.2);
+    border-radius: 14px;
+    padding: 12px;
+    position: relative;
+  }
+  .coord-grid {
+    width: 100%;
+    aspect-ratio: 1/1;
+    display: block;
+    cursor: default;
+  }
+  .coord-grid.tool-translate .current-shape { cursor: grab; }
+  .coord-grid.tool-translate .current-shape:active { cursor: grabbing; }
+
+  /* Grid/shape styling */
+  .grid-bg { fill: rgba(10, 22, 40, .4); }
+  .grid-minor {
+    stroke: var(--grid-line);
+    stroke-width: .02;
+    fill: none;
+  }
+  .grid-major {
+    stroke: var(--grid-major);
+    stroke-width: .05;
+    fill: none;
+  }
+  .tick-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .55px;
+    fill: rgba(212,164,55,.6);
+    font-weight: 600;
+  }
+  .axis-label {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: .8px;
+    fill: var(--gold);
+    font-weight: 700;
+  }
+  .reflect-line {
+    stroke: rgba(232,93,53,.55);
+    stroke-width: .08;
+    stroke-dasharray: .3 .2;
+    fill: none;
+    pointer-events: none;
+  }
+  .reflect-line-choice {
+    stroke: var(--gold);
+    stroke-width: .18;
+    fill: none;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  .reflect-line-choice.active { opacity: 1; }
+  .reflect-line-choice:hover { opacity: 1; stroke-width: .25; }
+  .reflect-hit {
+    stroke: transparent;
+    stroke-width: .6;
+    fill: none;
+    cursor: pointer;
+  }
+
+  .target-shape {
+    fill: var(--shape-tgt-fill);
+    stroke: var(--shape-tgt);
+    stroke-width: .12;
+    stroke-dasharray: .35 .25;
+    opacity: .7;
+  }
+  .current-shape {
+    fill: var(--shape-cur-fill);
+    stroke: var(--shape-cur);
+    stroke-width: .16;
+    filter: drop-shadow(0 0 3px rgba(20,184,166,.5));
+    transition: filter .25s;
+  }
+  .current-shape.pulse {
+    animation: pulse .45s ease-out;
+  }
+  .current-shape.solved {
+    fill: rgba(74,222,128,.3);
+    stroke: var(--ok);
+    filter: drop-shadow(0 0 6px rgba(74,222,128,.7));
+  }
+  @keyframes pulse {
+    0% { filter: drop-shadow(0 0 14px rgba(212,164,55,.9)) brightness(1.3); }
+    100% { filter: drop-shadow(0 0 3px rgba(20,184,166,.5)); }
+  }
+
+  .shape-vertex {
+    fill: var(--shape-cur);
+    r: .12;
+  }
+
+  /* ============ Tool panel ============ */
+  .tool-panel {
+    background: rgba(0,0,0,.4);
+    border: 1px solid rgba(212,164,55,.2);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .tool-title {
+    font: 700 .62rem 'DM Sans', sans-serif;
+    letter-spacing: .2em;
+    color: rgba(247,240,227,.45);
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .tool-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .tool-btn {
+    padding: 10px 12px;
+    border: 1px solid rgba(212,164,55,.25);
+    background: rgba(0,0,0,.3);
+    color: var(--cream);
+    font: 600 .85rem 'DM Sans', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .tool-btn:hover {
+    border-color: var(--gold);
+    background: rgba(212,164,55,.1);
+  }
+  .tool-btn.active {
+    background: var(--gold);
+    color: var(--space-deep);
+    border-color: var(--gold);
+  }
+  .tool-btn .icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .tool-btn .label {
+    font-size: .75rem;
+    font-weight: 600;
+  }
+
+  .tool-options {
+    min-height: 80px;
+    padding: 10px;
+    background: rgba(0,0,0,.25);
+    border-radius: 8px;
+    border: 1px dashed rgba(212,164,55,.15);
+  }
+  .tool-options-title {
+    font: 700 .7rem 'DM Sans', sans-serif;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 6px;
+  }
+  .tool-options-hint {
+    font-size: .82rem;
+    color: var(--cream-dim);
+    line-height: 1.4;
+  }
+  .option-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .option-btn {
+    padding: 8px 6px;
+    border: 1px solid rgba(212,164,55,.3);
+    background: transparent;
+    color: var(--cream);
+    font: 600 .8rem 'JetBrains Mono', monospace;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .option-btn:hover {
+    background: rgba(212,164,55,.15);
+    border-color: var(--gold);
+  }
+  .option-btn:active { transform: scale(.97); }
+
+  .stats-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    padding: 8px 10px;
+    background: rgba(0,0,0,.3);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .78rem;
+  }
+  .stats-panel div { color: var(--cream-dim); }
+  .stats-panel strong { color: var(--gold); font-weight: 700; }
+
+  .panel-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* ============ Move history ============ */
+  .move-history {
+    max-height: 120px;
+    overflow-y: auto;
+    padding: 8px 10px;
+    background: rgba(0,0,0,.25);
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem;
+    color: var(--cream-dim);
+    line-height: 1.6;
+  }
+  .move-history::-webkit-scrollbar { width: 6px; }
+  .move-history::-webkit-scrollbar-thumb { background: var(--gold-soft); border-radius: 3px; }
+  .move-entry { opacity: .8; }
+  .move-entry .num {
+    color: var(--gold);
+    font-weight: 700;
+    margin-right: 4px;
+  }
+  .move-history-empty { color: rgba(247,240,227,.35); font-style: italic; }
+
+  /* ============ Messages & Modals ============ */
+  .message-bar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(140%);
+    background: var(--cream);
+    color: var(--ink);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font: 500 .92rem 'DM Sans', sans-serif;
+    box-shadow: 0 14px 36px rgba(0,0,0,.4);
+    z-index: 120;
+    max-width: 90vw;
+    text-align: center;
+    transition: transform .36s cubic-bezier(.16,1,.3,1);
+    pointer-events: none;
+    border-left: 5px solid var(--navy);
+  }
+  .message-bar.show { transform: translateX(-50%) translateY(0); }
+  .message-bar.error   { border-left-color: var(--err); background: #fef6f0; }
+  .message-bar.success { border-left-color: var(--ok);  background: #f0fdf4; }
+  .message-bar.hint    { border-left-color: var(--gold); background: #fef7e0; }
+
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(4,9,16,.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal.show { display: flex; }
+  .modal-content {
+    background: var(--cream);
+    color: var(--ink);
+    padding: 30px 34px;
+    border-radius: 14px;
+    max-width: 620px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    border: 1px solid rgba(212,164,55,.3);
+  }
+  .modal h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.9rem;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.08rem;
+    color: var(--navy);
+    margin: 16px 0 6px;
+  }
+  .modal p, .modal li {
+    font-size: .94rem;
+    line-height: 1.55;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+  .modal ul { padding-left: 22px; margin-bottom: 10px; }
+  .close-btn {
+    margin-top: 18px;
+    padding: 10px 26px;
+    background: var(--navy);
+    color: var(--cream);
+    border: 0;
+    border-radius: 8px;
+    font: 600 .94rem 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+  .close-btn:hover { background: #0f2442; }
+
+  .win-modal .modal-content { text-align: center; border: 3px solid var(--gold); }
+  .win-modal h2 { color: var(--gold); font-size: 2.4rem; }
+  .win-stats {
+    display: flex; justify-content: center; gap: 26px;
+    margin: 18px 0; flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .win-stats strong { color: var(--navy); }
+
+  .level-complete-modal .modal-content { text-align: center; border: 3px solid var(--gold); }
+  .level-complete-modal h2 { color: var(--gold); font-size: 2rem; }
+
+  /* ============ Legend ============ */
+  .legend {
+    display: flex;
+    gap: 18px;
+    font-size: .8rem;
+    color: var(--cream-dim);
+    margin-top: 8px;
+    padding: 6px 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-swatch {
+    width: 24px; height: 12px; border-radius: 2px;
+  }
+  .legend-swatch.current { background: var(--shape-cur-fill); border: 2px solid var(--shape-cur); }
+  .legend-swatch.target { background: var(--shape-tgt-fill); border: 2px dashed var(--shape-tgt); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <a class="back-link" id="back-link" href="#">
+    <span>←</span> <span>Back to Unit 8</span>
+  </a>
+
+  <header>
+    <h1>Transformation <span class="accent">Quest</span></h1>
+    <div class="toolbar">
+      <div class="level-group" id="level-group">
+        <button class="level-btn active" data-level="1">Level 1</button>
+        <button class="level-btn" data-level="2">Level 2</button>
+        <button class="level-btn" data-level="3">Level 3</button>
+      </div>
+      <button class="action-btn" id="help-btn">Rules</button>
+    </div>
+  </header>
+
+  <div class="puzzle-bar">
+    <div>
+      <div class="puzzle-name" id="puzzle-name">Slide to Match</div>
+      <div class="puzzle-progress" id="puzzle-progress">Level 1 · Puzzle 1 of 5</div>
+    </div>
+    <div class="puzzle-prompt" id="puzzle-prompt">Move the shape to match the target outline.</div>
+  </div>
+
+  <div class="game-area">
+    <div class="grid-panel">
+      <svg class="coord-grid" id="grid" viewBox="-11 -11 22 22" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-swatch current"></div>
+          <span>Your shape</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-swatch target"></div>
+          <span>Target</span>
+        </div>
+      </div>
+    </div>
+
+    <aside class="tool-panel">
+      <div>
+        <div class="tool-title">Transformation Tools</div>
+        <div class="tool-buttons" id="tool-buttons">
+          <button class="tool-btn" data-tool="translate">
+            <span class="icon">→</span><span class="label">Translate</span>
+          </button>
+          <button class="tool-btn" data-tool="reflect">
+            <span class="icon">⇋</span><span class="label">Reflect</span>
+          </button>
+          <button class="tool-btn" data-tool="rotate">
+            <span class="icon">↻</span><span class="label">Rotate</span>
+          </button>
+          <button class="tool-btn" data-tool="dilate">
+            <span class="icon">⤢</span><span class="label">Dilate</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="tool-options" id="tool-options">
+        <div class="tool-options-hint">Select a tool to begin.</div>
+      </div>
+
+      <div>
+        <div class="tool-title">Moves Made</div>
+        <div class="move-history" id="move-history">
+          <div class="move-history-empty">No moves yet.</div>
+        </div>
+      </div>
+
+      <div class="stats-panel">
+        <div>Moves: <strong id="moves-stat">0</strong></div>
+        <div>Hints: <strong id="hints-stat">0</strong></div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="action-btn" id="hint-btn">💡 Hint</button>
+        <button class="action-btn" id="reset-btn">↻ Reset</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="message-bar" id="message"></div>
+
+<!-- Help modal -->
+<div class="modal" id="help-modal">
+  <div class="modal-content">
+    <h2>How to Play</h2>
+    <p>Move your shape (teal) onto the target outline (gold dashed) using the four transformation tools.</p>
+
+    <h3>The Tools</h3>
+    <ul>
+      <li><strong>Translate →</strong> Drag your shape to a new spot. It snaps to whole-number coordinates when you let go.</li>
+      <li><strong>Reflect ⇋</strong> Pick which line to reflect over: the x-axis, the y-axis, y = x, or y = −x.</li>
+      <li><strong>Rotate ↻</strong> Rotate around the origin by 90° counterclockwise, 90° clockwise, or 180°.</li>
+      <li><strong>Dilate ⤢</strong> Scale from the origin by ½, ⅓, 2, or 3.</li>
+    </ul>
+
+    <h3>Winning a Puzzle</h3>
+    <p>As soon as your shape's vertices match the target's, the shape turns green and you advance to the next puzzle.</p>
+
+    <h3>Stuck?</h3>
+    <p>Click <strong>Hint</strong> to reveal the next step in one valid solution. You can also click <strong>Reset</strong> to return to the starting position. Hints and resets don't hurt you — they're for learning.</p>
+
+    <h3>Difficulty Levels</h3>
+    <ul>
+      <li><strong>Level 1:</strong> One transformation per puzzle.</li>
+      <li><strong>Level 2:</strong> Two transformations in sequence.</li>
+      <li><strong>Level 3:</strong> Three transformations — composition practice.</li>
+    </ul>
+
+    <button class="close-btn" data-close="help-modal">Got it</button>
+  </div>
+</div>
+
+<!-- Puzzle complete modal -->
+<div class="modal win-modal" id="puzzle-complete">
+  <div class="modal-content">
+    <h2>✓ Nice Work!</h2>
+    <p id="puzzle-complete-msg">You matched the target.</p>
+    <div class="win-stats" id="puzzle-complete-stats"></div>
+    <button class="close-btn" id="next-puzzle-btn">Next Puzzle</button>
+  </div>
+</div>
+
+<!-- Level complete modal -->
+<div class="modal level-complete-modal" id="level-complete">
+  <div class="modal-content">
+    <h2>🏆 Level Complete!</h2>
+    <p id="level-complete-msg">You finished all the puzzles.</p>
+    <div class="win-stats" id="level-complete-stats"></div>
+    <button class="close-btn" id="level-next-btn">Next Level</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   TRANSFORMATION QUEST  ·  IC Imagine 8th Grade Math, Unit 8
+   ============================================================================ */
+
+/* ---------- CONFIG ----------
+   Change to hard-code a back URL (e.g., 'unit8.html'). If null, uses history.
+*/
+const RETURN_URL = 'unit8.html';
+
+/* ---------- BASE SHAPES ----------
+   All shapes are asymmetric with visible orientation so rotations and
+   reflections produce visibly different images. No circles, no regular
+   polygons — every shape has clear "which way is up."
+*/
+const SHAPES = {
+  triangle: {
+    // Right triangle: legs 3 and 2, clearly asymmetric
+    verts: [{x:1,y:1},{x:4,y:1},{x:1,y:3}],
+    name: 'triangle'
+  },
+  L: {
+    // Classic L-shape
+    verts: [{x:1,y:1},{x:3,y:1},{x:3,y:2},{x:2,y:2},{x:2,y:4},{x:1,y:4}],
+    name: 'L-shape'
+  },
+  arrow: {
+    // Arrow pointing right (+x direction)
+    verts: [{x:1,y:2},{x:3,y:2},{x:3,y:1},{x:5,y:3},{x:3,y:5},{x:3,y:4},{x:1,y:4}],
+    name: 'arrow'
+  },
+  quad: {
+    // Irregular asymmetric quadrilateral
+    verts: [{x:1,y:1},{x:4,y:2},{x:3,y:4},{x:1,y:3}],
+    name: 'quadrilateral'
+  }
+};
+
+/* ---------- TRANSFORMATION MATH ---------- */
+function translate(shape, dx, dy) {
+  return shape.map(p => ({x: p.x + dx, y: p.y + dy}));
+}
+function reflect(shape, axis) {
+  return shape.map(p => {
+    switch(axis) {
+      case 'x':    return {x: p.x, y: -p.y};
+      case 'y':    return {x: -p.x, y: p.y};
+      case 'y=x':  return {x: p.y, y: p.x};
+      case 'y=-x': return {x: -p.y, y: -p.x};
+    }
+  });
+}
+function rotate(shape, angle) {
+  // CCW positive; around origin
+  return shape.map(p => {
+    switch(angle) {
+      case 90:  return {x: -p.y, y: p.x};
+      case -90: return {x: p.y, y: -p.x};
+      case 180: return {x: -p.x, y: -p.y};
+    }
+  });
+}
+function dilate(shape, k) {
+  return shape.map(p => ({x: p.x * k, y: p.y * k}));
+}
+
+function applyTransform(shape, t) {
+  switch(t.type) {
+    case 'translate': return translate(shape, t.args.dx, t.args.dy);
+    case 'reflect':   return reflect(shape, t.args.axis);
+    case 'rotate':    return rotate(shape, t.args.angle);
+    case 'dilate':    return dilate(shape, t.args.factor);
+  }
+  return shape;
+}
+
+function applySequence(startShape, sequence) {
+  let s = startShape;
+  for (const t of sequence) s = applyTransform(s, t);
+  return s;
+}
+
+/* ---------- SHAPE MATCHING ---------- */
+function shapesMatch(s1, s2, tol = 0.05) {
+  if (s1.length !== s2.length) return false;
+  // Compare as sets (sort by x then y)
+  const sort = arr => arr.slice().sort((a, b) => a.x - b.x || a.y - b.y);
+  const a = sort(s1), b = sort(s2);
+  for (let i = 0; i < a.length; i++) {
+    if (Math.abs(a[i].x - b[i].x) > tol) return false;
+    if (Math.abs(a[i].y - b[i].y) > tol) return false;
+  }
+  return true;
+}
+
+/* ---------- TRANSFORMATION DESCRIPTIONS ---------- */
+function describeTransform(t) {
+  switch(t.type) {
+    case 'translate': {
+      const {dx, dy} = t.args;
+      return `Translation (${dx}, ${dy})`;
+    }
+    case 'reflect': {
+      const labels = {'x': 'x-axis', 'y': 'y-axis', 'y=x': 'line y = x', 'y=-x': 'line y = −x'};
+      return `Reflection over ${labels[t.args.axis]}`;
+    }
+    case 'rotate': {
+      const a = t.args.angle;
+      if (a === 90)  return `Rotation 90° CCW`;
+      if (a === -90) return `Rotation 90° CW`;
+      if (a === 180) return `Rotation 180°`;
+      return `Rotation ${a}°`;
+    }
+    case 'dilate': {
+      const k = t.args.factor;
+      let label;
+      if (k === 0.5) label = '½';
+      else if (k === 1/3) label = '⅓';
+      else label = String(k);
+      return `Dilation by ${label}`;
+    }
+  }
+  return '';
+}
+
+/* ---------- PUZZLES ---------- */
+// Each puzzle: shape name + solution sequence (target is computed from these)
+// + optional offset (applied to base shape to position it before transformations)
+const PUZZLES = {
+  1: [
+    {
+      name: 'Slide to Match',
+      shape: 'triangle',
+      offset: {dx: -6, dy: 0},
+      solution: [{type:'translate', args:{dx:8, dy:0}}],
+      prompt: 'One translation will do it.'
+    },
+    {
+      name: 'Mirror Image',
+      shape: 'L',
+      offset: {dx: 2, dy: 2},
+      solution: [{type:'reflect', args:{axis:'y'}}],
+      prompt: 'Reflect the L to match the target.'
+    },
+    {
+      name: 'Quarter Turn',
+      shape: 'arrow',
+      offset: {dx: -3, dy: -3},
+      solution: [{type:'rotate', args:{angle:90}}],
+      prompt: 'A single rotation around the origin will match the target.'
+    },
+    {
+      name: 'Scale Up',
+      shape: 'triangle',
+      offset: {dx: -4, dy: -4},
+      solution: [{type:'dilate', args:{factor:2}}],
+      prompt: 'The target is a dilation of your triangle.'
+    },
+    {
+      name: 'Half-Turn',
+      shape: 'quad',
+      offset: {dx: 1, dy: 1},
+      solution: [{type:'rotate', args:{angle:180}}],
+      prompt: 'Spin the quadrilateral halfway around the origin.'
+    },
+    {
+      name: 'Slide Down',
+      shape: 'L',
+      offset: {dx: 2, dy: 4},
+      solution: [{type:'translate', args:{dx:0, dy:-7}}],
+      prompt: 'Translate the L to match.'
+    }
+  ],
+  2: [
+    {
+      name: 'Flip and Slide',
+      shape: 'triangle',
+      offset: {dx: -4, dy: 1},
+      solution: [
+        {type:'reflect', args:{axis:'x'}},
+        {type:'translate', args:{dx:2, dy:0}}
+      ],
+      prompt: 'Two transformations: a reflection and a translation.'
+    },
+    {
+      name: 'Spin and Shift',
+      shape: 'L',
+      offset: {dx: -5, dy: -5},
+      solution: [
+        {type:'rotate', args:{angle:90}},
+        {type:'translate', args:{dx:3, dy:2}}
+      ],
+      prompt: 'Combine a rotation with a translation.'
+    },
+    {
+      name: 'Grow and Go',
+      shape: 'quad',
+      offset: {dx: -3, dy: -2},
+      solution: [
+        {type:'dilate', args:{factor:2}},
+        {type:'translate', args:{dx:-2, dy:3}}
+      ],
+      prompt: 'Scale it up, then move it.'
+    },
+    {
+      name: 'Mirror and Turn',
+      shape: 'arrow',
+      offset: {dx: -5, dy: 1},
+      solution: [
+        {type:'reflect', args:{axis:'y'}},
+        {type:'rotate', args:{angle:180}}
+      ],
+      prompt: 'A reflection and a rotation, in some order.'
+    },
+    {
+      name: 'Shrink and Slide',
+      shape: 'L',
+      offset: {dx: -6, dy: -6},
+      solution: [
+        {type:'dilate', args:{factor:0.5}},
+        {type:'translate', args:{dx:4, dy:5}}
+      ],
+      prompt: 'This target is smaller than your shape. Shrink and move.'
+    },
+    {
+      name: 'Diagonal Flip',
+      shape: 'triangle',
+      offset: {dx: 2, dy: -3},
+      solution: [
+        {type:'reflect', args:{axis:'y=x'}},
+        {type:'translate', args:{dx:0, dy:3}}
+      ],
+      prompt: 'Try a diagonal reflection.'
+    }
+  ],
+  3: [
+    {
+      name: 'Triple Move',
+      shape: 'triangle',
+      offset: {dx: -3, dy: -2},
+      solution: [
+        {type:'rotate', args:{angle:90}},
+        {type:'reflect', args:{axis:'x'}},
+        {type:'translate', args:{dx:3, dy:1}}
+      ],
+      prompt: 'Three transformations. Plan your sequence.'
+    },
+    {
+      name: 'Scale, Flip, Slide',
+      shape: 'L',
+      offset: {dx: -5, dy: -5},
+      solution: [
+        {type:'dilate', args:{factor:2}},
+        {type:'reflect', args:{axis:'y'}},
+        {type:'translate', args:{dx:1, dy:2}}
+      ],
+      prompt: 'Dilation + reflection + translation.'
+    },
+    {
+      name: 'Compose with Care',
+      shape: 'arrow',
+      offset: {dx: 0, dy: -4},
+      solution: [
+        {type:'reflect', args:{axis:'x'}},
+        {type:'rotate', args:{angle:-90}},
+        {type:'translate', args:{dx:-2, dy:3}}
+      ],
+      prompt: 'Order matters when you compose transformations.'
+    },
+    {
+      name: 'Full Combo',
+      shape: 'quad',
+      offset: {dx: -4, dy: -3},
+      solution: [
+        {type:'rotate', args:{angle:180}},
+        {type:'dilate', args:{factor:0.5}},
+        {type:'translate', args:{dx:2, dy:-1}}
+      ],
+      prompt: 'Rotate, shrink, translate — in the right order.'
+    },
+    {
+      name: 'Four Stars',
+      shape: 'L',
+      offset: {dx: 1, dy: -4},
+      solution: [
+        {type:'reflect', args:{axis:'y=x'}},
+        {type:'rotate', args:{angle:90}},
+        {type:'translate', args:{dx:-3, dy:0}}
+      ],
+      prompt: 'A tricky one. Remember: reflection over y = x swaps x and y.'
+    }
+  ]
+};
+
+function buildPuzzle(p) {
+  const base = SHAPES[p.shape].verts;
+  const start = p.offset ? translate(base, p.offset.dx, p.offset.dy) : base;
+  const target = applySequence(start, p.solution);
+  return { ...p, start, target, shapeName: SHAPES[p.shape].name };
+}
+
+/* ---------- STATE ---------- */
+let state = null;
+
+function initLevel(level, puzzleIdx = 0) {
+  const puzzle = buildPuzzle(PUZZLES[level][puzzleIdx]);
+  state = {
+    level,
+    puzzleIdx,
+    puzzle,
+    currentShape: puzzle.start.map(p => ({...p})),
+    currentTool: null,
+    moves: [],
+    hintsUsed: 0,
+    solved: false
+  };
+  document.querySelectorAll('.level-btn').forEach(b => {
+    b.classList.toggle('active', +b.dataset.level === level);
+  });
+  render();
+  setToolOptions();
+}
+
+function loadPuzzle(idx) {
+  initLevel(state.level, idx);
+}
+
+function resetPuzzle() {
+  state.currentShape = state.puzzle.start.map(p => ({...p}));
+  state.moves = [];
+  state.solved = false;
+  render();
+}
+
+/* ---------- GRID / SVG RENDERING ---------- */
+const GRID_RANGE = 10;
+
+function renderGrid() {
+  const svg = document.getElementById('grid');
+  const parts = [];
+  // Background
+  parts.push(`<rect class="grid-bg" x="-11" y="-11" width="22" height="22"/>`);
+  // Minor grid lines
+  for (let i = -GRID_RANGE; i <= GRID_RANGE; i++) {
+    if (i === 0) continue;
+    parts.push(`<line class="grid-minor" x1="${i}" y1="${-GRID_RANGE}" x2="${i}" y2="${GRID_RANGE}"/>`);
+    parts.push(`<line class="grid-minor" x1="${-GRID_RANGE}" y1="${i}" x2="${GRID_RANGE}" y2="${i}"/>`);
+  }
+  // Axes
+  parts.push(`<line class="grid-major" x1="${-GRID_RANGE}" y1="0" x2="${GRID_RANGE}" y2="0"/>`);
+  parts.push(`<line class="grid-major" x1="0" y1="${-GRID_RANGE}" x2="0" y2="${GRID_RANGE}"/>`);
+
+  // Axis arrowheads (subtle)
+  parts.push(`<polygon class="grid-major" points="${GRID_RANGE + .3},0 ${GRID_RANGE},-.15 ${GRID_RANGE},.15" fill="rgba(212,164,55,.45)"/>`);
+  parts.push(`<polygon class="grid-major" points="0,${-GRID_RANGE - .3} -.15,${-GRID_RANGE} .15,${-GRID_RANGE}" fill="rgba(212,164,55,.45)"/>`);
+
+  // Tick labels every 2 units (SVG y = -math y)
+  for (let i = -GRID_RANGE; i <= GRID_RANGE; i += 2) {
+    if (i === 0) continue;
+    parts.push(`<text class="tick-label" x="${i}" y=".85" text-anchor="middle">${i}</text>`);
+    parts.push(`<text class="tick-label" x="-.25" y="${-i + .2}" text-anchor="end">${i}</text>`);
+  }
+  // Axis letters
+  parts.push(`<text class="axis-label" x="${GRID_RANGE + .9}" y=".3" text-anchor="middle">x</text>`);
+  parts.push(`<text class="axis-label" x=".4" y="${-GRID_RANGE - .6}" text-anchor="start">y</text>`);
+
+  // Reflection line previews (shown when reflect tool active)
+  parts.push(`<g id="reflect-lines"></g>`);
+
+  // Target shape
+  parts.push(`<polygon class="target-shape" points="${shapeToSvgPoints(state.puzzle.target)}"/>`);
+
+  // Current shape
+  parts.push(`<polygon class="current-shape" id="cur-shape" points="${shapeToSvgPoints(state.currentShape)}"/>`);
+
+  svg.innerHTML = parts.join('\n');
+
+  // Attach drag handlers
+  const cur = document.getElementById('cur-shape');
+  cur.addEventListener('mousedown', onDragStart);
+  cur.addEventListener('touchstart', onDragStart, {passive: false});
+
+  // Tool class
+  svg.className.baseVal = 'coord-grid' + (state.currentTool ? ' tool-' + state.currentTool : '');
+}
+
+function shapeToSvgPoints(shape) {
+  // math (x, y) -> svg (x, -y)
+  return shape.map(p => `${p.x},${-p.y}`).join(' ');
+}
+
+/* ---------- REFLECTION LINE CHOICES ---------- */
+function showReflectionLines() {
+  const g = document.getElementById('reflect-lines');
+  if (!g) return;
+  const R = GRID_RANGE + .5;
+  // 4 lines to choose from: x-axis (y=0), y-axis (x=0), y=x, y=-x
+  const lines = [
+    {id:'x',    x1:-R, y1:0,   x2:R, y2:0,   label:'x-axis'},
+    {id:'y',    x1:0,  y1:-R,  x2:0, y2:R,   label:'y-axis'},
+    {id:'y=x',  x1:-R, y1:R,   x2:R, y2:-R,  label:'y = x'},   // math y=x => svg y=-x
+    {id:'y=-x', x1:-R, y1:-R,  x2:R, y2:R,   label:'y = −x'}   // math y=-x => svg y=x
+  ];
+  g.innerHTML = lines.map(l => `
+    <line class="reflect-line-choice active" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}"/>
+    <line class="reflect-hit" x1="${l.x1}" y1="${l.y1}" x2="${l.x2}" y2="${l.y2}" data-axis="${l.id}"/>
+  `).join('\n');
+  g.querySelectorAll('.reflect-hit').forEach(hit => {
+    hit.addEventListener('click', (e) => {
+      const axis = e.target.dataset.axis;
+      applyAndRecord({type:'reflect', args:{axis}});
+    });
+  });
+}
+
+function hideReflectionLines() {
+  const g = document.getElementById('reflect-lines');
+  if (g) g.innerHTML = '';
+}
+
+/* ---------- TOOL OPTIONS PANEL ---------- */
+function setToolOptions() {
+  const panel = document.getElementById('tool-options');
+  const t = state.currentTool;
+  hideReflectionLines();
+  if (!t) {
+    panel.innerHTML = `<div class="tool-options-hint">Select a tool above to begin transforming.</div>`;
+    return;
+  }
+  if (t === 'translate') {
+    panel.innerHTML = `
+      <div class="tool-options-title">Translate</div>
+      <div class="tool-options-hint">Click and drag your shape to a new position. It will snap to whole-number grid points.</div>
+    `;
+  } else if (t === 'reflect') {
+    panel.innerHTML = `
+      <div class="tool-options-title">Reflect over…</div>
+      <div class="tool-options-hint">Click a dashed line on the grid, or choose below.</div>
+      <div class="option-buttons">
+        <button class="option-btn" data-axis="x">x-axis</button>
+        <button class="option-btn" data-axis="y">y-axis</button>
+        <button class="option-btn" data-axis="y=x">y = x</button>
+        <button class="option-btn" data-axis="y=-x">y = −x</button>
+      </div>
+    `;
+    panel.querySelectorAll('[data-axis]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyAndRecord({type:'reflect', args:{axis: btn.dataset.axis}});
+      });
+    });
+    showReflectionLines();
+  } else if (t === 'rotate') {
+    panel.innerHTML = `
+      <div class="tool-options-title">Rotate around origin</div>
+      <div class="tool-options-hint">Choose an angle:</div>
+      <div class="option-buttons">
+        <button class="option-btn" data-angle="90">90° CCW</button>
+        <button class="option-btn" data-angle="-90">90° CW</button>
+        <button class="option-btn" data-angle="180" style="grid-column: 1 / -1;">180°</button>
+      </div>
+    `;
+    panel.querySelectorAll('[data-angle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        applyAndRecord({type:'rotate', args:{angle: +btn.dataset.angle}});
+      });
+    });
+  } else if (t === 'dilate') {
+    panel.innerHTML = `
+      <div class="tool-options-title">Dilate from origin</div>
+      <div class="tool-options-hint">Choose a scale factor:</div>
+      <div class="option-buttons">
+        <button class="option-btn" data-factor="0.5">× ½</button>
+        <button class="option-btn" data-factor="0.3333333">× ⅓</button>
+        <button class="option-btn" data-factor="2">× 2</button>
+        <button class="option-btn" data-factor="3">× 3</button>
+      </div>
+    `;
+    panel.querySelectorAll('[data-factor]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const f = +btn.dataset.factor;
+        // Snap 0.333 -> 1/3 exact
+        const factor = (Math.abs(f - 1/3) < .01) ? 1/3 : f;
+        applyAndRecord({type:'dilate', args:{factor}});
+      });
+    });
+  }
+}
+
+/* ---------- APPLY & RECORD ---------- */
+function applyAndRecord(t) {
+  if (state.solved) return;
+  state.currentShape = applyTransform(state.currentShape, t);
+  state.moves.push(t);
+  render();
+  pulseShape();
+  checkWin();
+}
+
+function pulseShape() {
+  const el = document.getElementById('cur-shape');
+  if (!el) return;
+  el.classList.remove('pulse');
+  void el.offsetWidth;
+  el.classList.add('pulse');
+}
+
+/* ---------- DRAG (for translate) ---------- */
+let drag = null;
+
+function getPointerClient(e) {
+  if (e.touches && e.touches.length) return {x: e.touches[0].clientX, y: e.touches[0].clientY};
+  return {x: e.clientX, y: e.clientY};
+}
+
+function clientToMath(svg, cx, cy) {
+  const pt = svg.createSVGPoint();
+  pt.x = cx; pt.y = cy;
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return {x: 0, y: 0};
+  const t = pt.matrixTransform(ctm.inverse());
+  return {x: t.x, y: -t.y};
+}
+
+function onDragStart(e) {
+  if (state.currentTool !== 'translate' || state.solved) return;
+  e.preventDefault();
+  const svg = document.getElementById('grid');
+  const p = getPointerClient(e);
+  const m = clientToMath(svg, p.x, p.y);
+  drag = {
+    startMath: m,
+    origShape: state.currentShape.map(pt => ({...pt}))
+  };
+  window.addEventListener('mousemove', onDragMove);
+  window.addEventListener('mouseup',   onDragEnd);
+  window.addEventListener('touchmove', onDragMove, {passive: false});
+  window.addEventListener('touchend',  onDragEnd);
+}
+
+function onDragMove(e) {
+  if (!drag) return;
+  e.preventDefault();
+  const svg = document.getElementById('grid');
+  const p = getPointerClient(e);
+  const m = clientToMath(svg, p.x, p.y);
+  const dx = m.x - drag.startMath.x;
+  const dy = m.y - drag.startMath.y;
+  state.currentShape = drag.origShape.map(pt => ({x: pt.x + dx, y: pt.y + dy}));
+  // Live update only the polygon points
+  const poly = document.getElementById('cur-shape');
+  if (poly) poly.setAttribute('points', shapeToSvgPoints(state.currentShape));
+}
+
+function onDragEnd(e) {
+  if (!drag) return;
+  window.removeEventListener('mousemove', onDragMove);
+  window.removeEventListener('mouseup',   onDragEnd);
+  window.removeEventListener('touchmove', onDragMove);
+  window.removeEventListener('touchend',  onDragEnd);
+  // Snap
+  const dxRaw = state.currentShape[0].x - drag.origShape[0].x;
+  const dyRaw = state.currentShape[0].y - drag.origShape[0].y;
+  const dx = Math.round(dxRaw);
+  const dy = Math.round(dyRaw);
+  state.currentShape = drag.origShape.map(pt => ({x: pt.x + dx, y: pt.y + dy}));
+  if (dx !== 0 || dy !== 0) {
+    state.moves.push({type:'translate', args:{dx, dy}});
+    pulseShape();
+  }
+  drag = null;
+  render();
+  checkWin();
+}
+
+/* ---------- WIN CHECK ---------- */
+function checkWin() {
+  if (state.solved) return;
+  if (shapesMatch(state.currentShape, state.puzzle.target)) {
+    state.solved = true;
+    const el = document.getElementById('cur-shape');
+    if (el) el.classList.add('solved');
+    setTimeout(showPuzzleComplete, 600);
+  }
+}
+
+function showPuzzleComplete() {
+  const p = state.puzzle;
+  const total = PUZZLES[state.level].length;
+  const isLast = state.puzzleIdx === total - 1;
+
+  const statsEl = document.getElementById('puzzle-complete-stats');
+  statsEl.innerHTML = `
+    <div><strong>Moves:</strong> ${state.moves.length}</div>
+    <div><strong>Hints used:</strong> ${state.hintsUsed}</div>
+  `;
+
+  if (isLast) {
+    closeModal('puzzle-complete');
+    const lvlStats = document.getElementById('level-complete-stats');
+    lvlStats.innerHTML = `
+      <div><strong>Level:</strong> ${state.level}</div>
+      <div><strong>Puzzles:</strong> ${total}</div>
+    `;
+    const msg = document.getElementById('level-complete-msg');
+    if (state.level < 3) {
+      msg.textContent = `Level ${state.level} complete! Ready to move on?`;
+      document.getElementById('level-next-btn').textContent = 'Next Level →';
+    } else {
+      msg.textContent = `You finished all three levels. Transformation master!`;
+      document.getElementById('level-next-btn').textContent = 'Play Again';
+    }
+    openModal('level-complete');
+  } else {
+    document.getElementById('puzzle-complete-msg').textContent =
+      `You matched "${p.name}" in ${state.moves.length} move${state.moves.length === 1 ? '' : 's'}.`;
+    openModal('puzzle-complete');
+  }
+}
+
+/* ---------- HINT ---------- */
+function giveHint() {
+  if (state.solved) return;
+  const sol = state.puzzle.solution;
+  // Check how many steps of the canonical solution student has already
+  // satisfied via any path: does their current shape match the shape after n
+  // canonical steps?
+  let stepsDone = 0;
+  let progressShape = state.puzzle.start;
+  for (let i = 0; i < sol.length; i++) {
+    progressShape = applyTransform(progressShape, sol[i]);
+    if (shapesMatch(state.currentShape, progressShape)) stepsDone = i + 1;
+  }
+  // Hint = the next canonical step, or a nudge if fully off-path
+  const nextIdx = stepsDone;
+  if (nextIdx >= sol.length) {
+    // They've matched all canonical steps — they should be done already, but if not:
+    showMessage('You may have deviated. Try <strong>Reset</strong> and follow a hint path.', 'hint');
+    return;
+  }
+  const next = sol[nextIdx];
+  const desc = describeTransform(next);
+  const stepNum = nextIdx + 1;
+  const totalSteps = sol.length;
+  state.hintsUsed++;
+  showMessage(`<strong>Hint — step ${stepNum} of ${totalSteps}:</strong> ${desc}.`, 'hint');
+  updateStats();
+}
+
+/* ---------- RENDER ---------- */
+function render() {
+  renderGrid();
+  // Update puzzle header
+  document.getElementById('puzzle-name').textContent = state.puzzle.name;
+  document.getElementById('puzzle-progress').textContent =
+    `Level ${state.level} · Puzzle ${state.puzzleIdx + 1} of ${PUZZLES[state.level].length}`;
+  document.getElementById('puzzle-prompt').textContent = state.puzzle.prompt;
+  // Update move history
+  renderMoveHistory();
+  updateStats();
+  // Re-attach reflect line events if reflect tool active
+  if (state.currentTool === 'reflect') showReflectionLines();
+}
+
+function renderMoveHistory() {
+  const el = document.getElementById('move-history');
+  if (state.moves.length === 0) {
+    el.innerHTML = `<div class="move-history-empty">No moves yet.</div>`;
+    return;
+  }
+  el.innerHTML = state.moves.map((m, i) =>
+    `<div class="move-entry"><span class="num">${i + 1}.</span>${describeTransform(m)}</div>`
+  ).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+function updateStats() {
+  document.getElementById('moves-stat').textContent = state.moves.length;
+  document.getElementById('hints-stat').textContent = state.hintsUsed;
+}
+
+/* ---------- MESSAGES & MODALS ---------- */
+let msgTimer;
+function showMessage(html, type = 'info') {
+  const bar = document.getElementById('message');
+  bar.innerHTML = html;
+  bar.className = 'message-bar show ' + type;
+  clearTimeout(msgTimer);
+  msgTimer = setTimeout(() => { bar.className = 'message-bar'; }, 4500);
+}
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+/* ---------- EVENT WIRING ---------- */
+function wireEvents() {
+  // Back link
+  document.getElementById('back-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (RETURN_URL) window.location.href = RETURN_URL;
+    else if (window.history.length > 1) window.history.back();
+    else showMessage('Open from Unit 8 for the back button, or set RETURN_URL in the file.', 'info');
+  });
+
+  // Level buttons
+  document.getElementById('level-group').addEventListener('click', (e) => {
+    const btn = e.target.closest('.level-btn');
+    if (btn) initLevel(+btn.dataset.level, 0);
+  });
+
+  // Tool buttons
+  document.getElementById('tool-buttons').addEventListener('click', (e) => {
+    const btn = e.target.closest('.tool-btn');
+    if (!btn) return;
+    const tool = btn.dataset.tool;
+    state.currentTool = (state.currentTool === tool) ? null : tool;
+    document.querySelectorAll('.tool-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.tool === state.currentTool);
+    });
+    setToolOptions();
+    render();
+  });
+
+  // Other actions
+  document.getElementById('help-btn').addEventListener('click', () => openModal('help-modal'));
+  document.getElementById('hint-btn').addEventListener('click', giveHint);
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    resetPuzzle();
+    showMessage('Puzzle reset.', 'info');
+  });
+
+  // Next puzzle button
+  document.getElementById('next-puzzle-btn').addEventListener('click', () => {
+    closeModal('puzzle-complete');
+    loadPuzzle(state.puzzleIdx + 1);
+  });
+  // Next level button
+  document.getElementById('level-next-btn').addEventListener('click', () => {
+    closeModal('level-complete');
+    if (state.level < 3) initLevel(state.level + 1, 0);
+    else initLevel(1, 0);
+  });
+
+  // Close buttons
+  document.querySelectorAll('[data-close]').forEach(b => {
+    b.addEventListener('click', () => closeModal(b.dataset.close));
+  });
+
+  // Click outside modal to close (except win modals which require button)
+  document.getElementById('help-modal').addEventListener('click', (e) => {
+    if (e.target.id === 'help-modal') closeModal('help-modal');
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea')) return;
+    if (e.key === 'Escape') {
+      state.currentTool = null;
+      document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+      setToolOptions();
+      renderGrid();
+      document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+    }
+    if (e.key === 'h' || e.key === 'H') giveHint();
+    if (e.key === 'r' || e.key === 'R') resetPuzzle();
+    if (e.key === '1') { state.currentTool = 'translate'; syncTools(); }
+    if (e.key === '2') { state.currentTool = 'reflect'; syncTools(); }
+    if (e.key === '3') { state.currentTool = 'rotate'; syncTools(); }
+    if (e.key === '4') { state.currentTool = 'dilate'; syncTools(); }
+  });
+}
+
+function syncTools() {
+  document.querySelectorAll('.tool-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tool === state.currentTool);
+  });
+  setToolOptions();
+  render();
+}
+
+/* ---------- BOOT ---------- */
+wireEvents();
+initLevel(1, 0);
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>

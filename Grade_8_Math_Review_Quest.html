@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grade 8 Math Review Quest</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1d2330;
+      --muted: #667085;
+      --paper: #fbfcff;
+      --panel: #ffffff;
+      --line: #d9e1ee;
+      --teal: #0f766e;
+      --teal-soft: #d9f4ef;
+      --gold: #b7791f;
+      --gold-soft: #fff3c4;
+      --rose: #be123c;
+      --rose-soft: #ffe3ea;
+      --blue: #1d4ed8;
+      --blue-soft: #dbeafe;
+      --green: #15803d;
+      --green-soft: #dcfce7;
+      --shadow: 0 16px 50px rgba(29, 35, 48, .12);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, .14), transparent 32rem),
+        linear-gradient(135deg, #f8fbff 0%, #f7fbf6 48%, #fffaf0 100%);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      color: inherit;
+    }
+
+    .app {
+      width: min(1180px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 22px 0 34px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 4rem);
+      line-height: .95;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 68ch;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-btn, .primary, .secondary, .answer-btn {
+      min-height: 42px;
+      border-radius: 8px;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .icon-btn {
+      width: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: 0 7px 18px rgba(29, 35, 48, .07);
+    }
+
+    .icon-btn:hover, .primary:hover, .secondary:hover, .answer-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .primary {
+      padding: 0 18px;
+      background: var(--teal);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 10px 24px rgba(15, 118, 110, .22);
+    }
+
+    .secondary {
+      padding: 0 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-weight: 750;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .side, .main-panel, .setup {
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(217, 225, 238, .88);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .side {
+      padding: 16px;
+      position: sticky;
+      top: 16px;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 76px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.75rem;
+      line-height: 1;
+    }
+
+    .meter {
+      margin: 16px 0;
+      height: 14px;
+      border-radius: 999px;
+      background: #e8edf5;
+      overflow: hidden;
+      border: 1px solid #d6dfec;
+    }
+
+    .meter > div {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), #22c55e);
+      transition: width .25s ease;
+    }
+
+    .teams {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .team {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 8px;
+    }
+
+    .team.active {
+      border-color: var(--teal);
+      background: var(--teal-soft);
+    }
+
+    .team b {
+      font-size: .95rem;
+    }
+
+    .team small {
+      color: var(--muted);
+      display: block;
+      margin-top: 2px;
+    }
+
+    .topic-list {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      padding: 6px 9px;
+      border-radius: 999px;
+      background: var(--blue-soft);
+      color: #1e3a8a;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .setup {
+      padding: 18px;
+      margin-bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: .8rem;
+      color: var(--muted);
+      font-weight: 850;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 0 12px;
+      background: white;
+      color: var(--ink);
+    }
+
+    .main-panel {
+      min-height: 640px;
+      overflow: hidden;
+    }
+
+    .question-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, #ffffff, #f2faf8);
+    }
+
+    .question-head h2 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: .78rem;
+      font-weight: 850;
+      background: var(--gold-soft);
+      color: #7c4a03;
+    }
+
+    .badge.source {
+      background: var(--green-soft);
+      color: #14532d;
+    }
+
+    .question-body {
+      padding: 22px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .prompt {
+      font-size: clamp(1.22rem, 2vw, 1.7rem);
+      line-height: 1.32;
+      font-weight: 850;
+      max-width: 900px;
+    }
+
+    .note {
+      color: var(--muted);
+      background: #f5f7fb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      line-height: 1.45;
+    }
+
+    .visual {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .answer-btn {
+      text-align: left;
+      padding: 14px;
+      border: 1px solid var(--line);
+      background: white;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 12px;
+      align-items: start;
+      min-height: 82px;
+    }
+
+    .answer-btn .letter {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: var(--blue-soft);
+      color: var(--blue);
+      font-weight: 950;
+    }
+
+    .answer-btn.correct {
+      border-color: #22c55e;
+      background: var(--green-soft);
+    }
+
+    .answer-btn.wrong {
+      border-color: #fb7185;
+      background: var(--rose-soft);
+    }
+
+    .answer-btn.disabled {
+      pointer-events: none;
+    }
+
+    .free-response {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      max-width: 540px;
+    }
+
+    .free-response input {
+      min-height: 48px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 0 14px;
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .feedback {
+      min-height: 72px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      display: none;
+      line-height: 1.45;
+    }
+
+    .feedback.show {
+      display: block;
+    }
+
+    .feedback.good {
+      background: var(--green-soft);
+      border-color: #86efac;
+    }
+
+    .feedback.try {
+      background: var(--rose-soft);
+      border-color: #fda4af;
+    }
+
+    .round-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+      gap: 7px;
+      margin-top: 14px;
+    }
+
+    .tile {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fff;
+      display: grid;
+      place-items: center;
+      font-size: .8rem;
+      font-weight: 900;
+    }
+
+    .tile.done { background: var(--blue-soft); color: var(--blue); }
+    .tile.good { background: var(--green-soft); color: var(--green); }
+    .tile.miss { background: var(--rose-soft); color: var(--rose); }
+
+    .results {
+      display: none;
+      padding: 22px;
+    }
+
+    .results.show {
+      display: block;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      background: rgba(15, 23, 42, .64);
+      z-index: 20;
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: grid;
+      place-items: center;
+    }
+
+    .modal-panel {
+      width: min(1000px, 100%);
+      height: min(760px, calc(100vh - 40px));
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+    }
+
+    .modal-head {
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    svg {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .topbar, .layout, .setup, .question-head {
+        grid-template-columns: 1fr;
+      }
+      .toolbar, .badges {
+        justify-content: flex-start;
+      }
+      .side {
+        position: static;
+      }
+      .answers {
+        grid-template-columns: 1fr;
+      }
+      .free-response {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Grade 8 Math Review Quest</h1>
+        <p>Built from the released EOG questions. Play solo, split into teams, grab streak bonuses, and jump back to the original PDF page whenever a diagram matters.</p>
+      </div>
+      <div class="toolbar">
+        <button class="icon-btn" id="soundToggle" title="Sound on/off" aria-label="Sound on/off">♪</button>
+        <button class="secondary" id="sourceAll">PDF</button>
+        <button class="secondary" id="restartTop">Restart</button>
+      </div>
+    </header>
+
+    <section class="setup" id="setup">
+      <div class="field">
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="solo">Solo sprint</option>
+          <option value="teams">Team relay</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="questionCount">Questions</label>
+        <select id="questionCount">
+          <option value="10">10 quick hits</option>
+          <option value="20">20 review round</option>
+          <option value="45">All 45</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="topicFilter">Topic</label>
+        <select id="topicFilter">
+          <option value="all">All standards</option>
+          <option value="8.F">Functions</option>
+          <option value="8.EE">Expressions & equations</option>
+          <option value="8.G">Geometry</option>
+          <option value="8.SP">Statistics</option>
+          <option value="8.NS">Number system</option>
+        </select>
+      </div>
+      <button class="primary" id="startBtn">Start Game</button>
+    </section>
+
+    <section class="layout">
+      <aside class="side">
+        <div class="stat-grid">
+          <div class="stat"><span>Score</span><strong id="score">0</strong></div>
+          <div class="stat"><span>Streak</span><strong id="streak">0</strong></div>
+          <div class="stat"><span>Round</span><strong id="round">⁰⁄₀</strong></div>
+          <div class="stat"><span>XP</span><strong id="xp">0</strong></div>
+        </div>
+        <div class="meter" aria-label="progress"><div id="progress"></div></div>
+        <div class="teams" id="teams"></div>
+        <div class="topic-list" id="topicList"></div>
+        <div class="board" id="board"></div>
+      </aside>
+
+      <section class="main-panel">
+        <div id="game">
+          <div class="question-head">
+            <div>
+              <h2 id="questionLabel">Ready Check</h2>
+            </div>
+            <div class="badges" id="badges"></div>
+          </div>
+          <div class="question-body">
+            <div class="prompt" id="prompt">Pick a mode and start the review quest.</div>
+            <div class="note" id="note">Correct answers are worth 100 points. A streak adds bonus XP. Diagram questions include a source button so students can inspect the released-form image.</div>
+            <div class="visual hidden" id="visual"></div>
+            <div class="answers" id="answers"></div>
+            <div class="free-response hidden" id="freeResponse">
+              <input id="freeInput" autocomplete="off" placeholder="Type answer">
+              <button class="primary" id="submitFree">Submit</button>
+            </div>
+            <div class="feedback" id="feedback"></div>
+            <div class="round-actions">
+              <button class="secondary hidden" id="sourceBtn">Open Source Page</button>
+              <button class="primary hidden" id="nextBtn">Next</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="results" id="results">
+          <h2>Quest Complete</h2>
+          <p id="resultText"></p>
+          <div class="summary-grid" id="summaryGrid"></div>
+          <button class="primary" id="playAgain">Play Again</button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="modal" id="modal">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <strong id="modalTitle">Source Page</strong>
+        <button class="secondary" id="closeModal">Close</button>
+      </div>
+      <iframe id="pdfFrame" title="Released Questions PDF"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const PDF = "Released Questions 3.pdf";
+    const questions = [
+      {n:1,type:"mc",standard:"8.SP.1",topic:"Statistics",dok:1,page:3,answer:"C",prompt:"Which graph shows a negative association?",choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},source:true,hint:"A negative association trends downward as x increases."},
+      {n:2,type:"mc",standard:"8.F.3",topic:"Functions",dok:1,page:5,answer:"D",prompt:"In which equation is y a linear function of x?",choices:{A:"y = x²",B:"xy = 2",C:"y = x² + 8",D:"y = 2x + 4"},hint:"Linear functions can be written in the form y = mx + b."},
+      {n:3,type:"mc",standard:"8.EE.3",topic:"Scientific notation",dok:2,page:5,answer:"A",prompt:"A charity event raised 4 × 10⁶ dollars. This was 5 times as much as the previous year. How much was raised the previous year?",choices:{A:"8 × 10⁵ dollars",B:"2 × 10⁶ dollars",C:"8 × 10⁶ dollars",D:"2 × 10⁷ dollars"},hint:"Divide 4,000,000 by 5."},
+      {n:4,type:"mc",standard:"8.F.1",topic:"Functions",dok:1,page:6,answer:"B",prompt:"In which graph is y not a function of x?",choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},source:true,hint:"Use the vertical line test."},
+      {n:5,type:"mc",standard:"8.NS.1",topic:"Number system",dok:1,page:9,answer:"C",prompt:"Which choice is irrational?",choices:{A:"√83 - y",B:"¹⁷⁄₅₃",C:"√20",D:"√9"},hint:"A non-perfect square under a square root is irrational."},
+      {n:6,type:"mc",standard:"8.EE.2",topic:"Squares",dok:2,page:9,answer:"A",prompt:"A square has area 36 square feet. A second square has area 144 square feet. How much greater is the second side length?",choices:{A:"6 feet",B:"12 feet",C:"54 feet",D:"108 feet"},hint:"Compare √144 and √36."},
+      {n:7,type:"mc",standard:"8.G.3",topic:"Transformations",dok:3,page:10,answer:"D",prompt:"A transformation sequence maps triangle EGH onto triangle MPT. After the first transformation, the shape is dilated by scale factor 2 and translated 7 right and 13 up. Which description should replace the first transformation?",choices:{A:"Reflection across the x-axis",B:"Reflection across the y-axis",C:"90° clockwise rotation about the origin",D:"90° counterclockwise rotation about the origin"},source:true,hint:"Track how orientation changes before the dilation and translation."},
+      {n:8,type:"mc",standard:"8.SP.3",topic:"Linear models",dok:2,page:12,answer:"C",prompt:"For the model y = 5x + 60, x is driving practices attended and y is written exam score. What does the y-intercept mean?",choices:{A:"Score increases about 5 points for each practice.",B:"Score increases about 60 points for each practice.",C:"Expected score is 60 with 0 practices.",D:"Expected score is 5 with 0 practices."},hint:"The y-intercept is the predicted y-value when x = 0."},
+      {n:9,type:"mc",standard:"8.F.1",topic:"Functions",dok:2,page:13,answer:"D",prompt:"In which set of points is y a function of x?",choices:{A:"{(-2,3), (0,3), (-2,0), (3,3)}",B:"{(3,-2), (3,0), (3,-4), (3,2)}",C:"{(3,-2), (0,0), (4,-3), (3,2)}",D:"{(2,4), (1,4), (-2,4), (-1,4)}"},hint:"Each x-value gets exactly one y-value."},
+      {n:10,type:"mc",standard:"8.SP.3",topic:"Linear models",dok:2,page:13,answer:"B",prompt:"The equation y = 1500 - 30x estimates cars in a parking lot x minutes after a concert. What does the slope mean?",choices:{A:"About 1,500 cars leave every minute.",B:"About 30 cars leave every minute.",C:"About 1,500 cars are there when the concert ends.",D:"About 30 cars are there when the concert ends."},hint:"The slope is the rate of change per minute."},
+      {n:11,type:"fr",standard:"8.EE.1",topic:"Exponents",dok:3,page:14,answer:"0.1",prompt:"Evaluate the expression shown in item 11 of the released form.",source:true,hint:"Use exponent rules before multiplying."},
+      {n:12,type:"fr",standard:"8.F.4",topic:"Slope",dok:1,page:14,answer:"3.5",prompt:"The table defines y as a linear function of x. What is the slope?",source:true,hint:"Slope is change in y divided by change in x."},
+      {n:13,type:"fr",standard:"8.NS.2",topic:"Square roots",dok:1,page:15,answer:"13",prompt:"What positive integer is closest to √172?",hint:"13² = 169 and 14² = 196."},
+      {n:14,type:"fr",standard:"8.EE.1",topic:"Exponents",dok:1,page:15,answer:"81",prompt:"Evaluate the exponent expression shown in item 14 of the released form.",source:true,hint:"Rewrite with the same base, then simplify."},
+      {n:15,type:"fr",standard:"8.F.4",topic:"Linear functions",dok:1,page:16,answer:"20",prompt:"A linear function passes through the points in the table. What is the y-intercept?",source:true,hint:"Find the slope, then work to x = 0."},
+      {n:16,type:"fr",standard:"8.EE.3",topic:"Scientific notation",dok:3,page:18,answer:"1",prompt:"Expression One is 4 × 10³. Expression Two is x x 10⁵. Expression Two is 25 times Expression One. What is x?",hint:"25 x 4 × 10³ = 100 × 10³ = 1 × 10⁵."},
+      {n:17,type:"fr",standard:"8.EE.7",topic:"Equations",dok:1,page:18,answer:"-12",prompt:"Solve for x in the equation shown in item 17 of the released form.",source:true,hint:"Clear fractions first, then combine like terms."},
+      {n:18,type:"fr",standard:"8.F.4",topic:"Linear models",dok:2,page:19,answer:"10",prompt:"Concert tickets cost $91 for 3, $145 for 5, and $172 for 6 tickets. The total includes a constant processing fee. What is the fee?",hint:"Find the ticket price per ticket, then subtract ticket cost from a total."},
+      {n:19,type:"fr",standard:"8.G.5",topic:"Angle relationships",dok:2,page:20,answer:"67",prompt:"Lines R and S are parallel and cut by transversal Q. What is x in the diagram?",source:true,hint:"Use corresponding, alternate interior, or supplementary angle relationships."},
+      {n:20,type:"fr",standard:"8.G.8",topic:"Distance",dok:1,page:21,answer:"13",prompt:"What is the distance between (-4, 6) and (8, 1)?",hint:"Use the distance formula with horizontal change 12 and vertical change -5."},
+      {n:21,type:"mc",standard:"8.F.2",topic:"Slope",dok:2,page:22,answer:"C",prompt:"Which table represents a linear function with slope greater than the slope of y = 6x + 5?",choices:{A:"x: 3,1; y: 3,7",B:"x: 4,2; y: 4,6",C:"x: 6,5; y: 4,11",D:"x: 1,5; y: 9,9"},hint:"The comparison slope is 6."},
+      {n:22,type:"mc",standard:"8.G.3",topic:"Dilations",dok:2,page:23,answer:"D",prompt:"Which choice shows the pentagon after it is dilated with respect to the origin by a scale factor of 2?",choices:{A:"Choice A",B:"Choice B",C:"Choice C",D:"Choice D"},source:true,hint:"A dilation from the origin doubles both x- and y-coordinates."},
+      {n:23,type:"mc",standard:"8.F.2",topic:"Rates",dok:2,page:26,answer:"C",prompt:"The equation y = 12.50x models olive oil cost. Which table shows a lower cost per bottle?",choices:{A:"3 bottles $39.00; 7 bottles $91.00",B:"4 bottles $50.00; 9 bottles $112.50",C:"5 bottles $61.25; 8 bottles $98.00",D:"2 bottles $25.50; 6 bottles $76.50"},hint:"Divide total cost by bottles."},
+      {n:24,type:"mc",standard:"8.G.8",topic:"Distance",dok:1,page:27,answer:"D",prompt:"What is the approximate distance between (-2, 7) and (4, -3)?",choices:{A:"4.5 units",B:"5.1 units",C:"11.4 units",D:"11.7 units"},hint:"Horizontal change is 6 and vertical change is -10."},
+      {n:25,type:"mc",standard:"8.SP.4",topic:"Two-way tables",dok:2,page:28,answer:"A",prompt:"A school has 250 students. 65 play football, 40 play basketball, and 12 play both. Which two-way table represents the data?",choices:{A:"Choice A",B:"Choice B",C:"Choice C",D:"Choice D"},source:true,hint:"The intersection of football and basketball should be 12."},
+      {n:26,type:"mc",standard:"8.G.7",topic:"Pythagorean theorem",dok:2,page:30,answer:"B",prompt:"A rectangular park is 200 yd by 320 yd. A 1-yard-wide path follows the diagonal and costs $10.75 per square yard. Which estimate is closest to the path cost?",choices:{A:"$5,590",B:"$4,060",C:"$3,770",D:"$2,720"},hint:"Find the diagonal length, then multiply by width and cost."},
+      {n:27,type:"mc",standard:"8.F.5",topic:"Graphs",dok:2,page:31,answer:"D",prompt:"Alex rode at a constant speed, sped up to reach a friend, then stopped to talk. Which graph best shows the ride?",choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},source:true,hint:"Look for a steady increase, then steeper increase, then a flat section."},
+      {n:28,type:"mc",standard:"8.EE.8",topic:"Systems",dok:2,page:33,answer:"B",prompt:"Company 1 charges $18 per shirt plus $12 shipping. Company 2 charges $20 per shirt plus $4 shipping. How many shirts make the costs equal?",choices:{A:"3",B:"4",C:"5",D:"6"},hint:"Solve 18x + 12 = 20x + 4."},
+      {n:29,type:"mc",standard:"8.F.1",topic:"Functions",dok:2,page:34,answer:"A",prompt:"In which table is y a function of x?",choices:{A:"x: 5,4,3,2; y: 6,6,6,6",B:"x: 2,3,4,4; y: 4,3,2,1",C:"x: 5,5,1,1; y: 6,0,0,6",D:"x: 3,3,1,7; y: 7,6,3,1"},hint:"No x-value can be paired with two different y-values."},
+      {n:30,type:"mc",standard:"8.G.7",topic:"Pythagorean theorem",dok:2,page:36,answer:"B",prompt:"A 140-foot tower has a supporting wire attached to the ground 72 feet from its base. To the nearest foot, how long is the wire?",choices:{A:"120 feet",B:"157 feet",C:"182 feet",D:"212 feet"},hint:"The wire is the hypotenuse."},
+      {n:31,type:"mc",standard:"8.F.2",topic:"Slope",dok:2,page:36,answer:"D",prompt:"Which choice is a function with a slope two times the slope of the linear function in the table?",choices:{A:"y = 3x - 2",B:"y = (²⁄₃)x - 1",C:"y = (²⁄₃)x + 1",D:"y = 6x - 4"},source:true,hint:"Find the table's slope first, then double it."},
+      {n:32,type:"mc",standard:"8.G.9",topic:"Volume",dok:1,page:37,answer:"A",prompt:"A cone has radius 5 cm and height 12 cm. What is its approximate volume?",choices:{A:"314 cm³",B:"754 cm³",C:"942 cm³",D:"2,261 cm³"},hint:"Cone volume is (¹⁄₃)pi r² h."},
+      {n:33,type:"mc",standard:"8.SP.1",topic:"Statistics",dok:1,page:38,answer:"B",prompt:"Which graph shows a positive association?",choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},source:true,hint:"A positive association trends upward as x increases."},
+      {n:34,type:"mc",standard:"8.F.3",topic:"Functions",dok:2,page:41,answer:"A",prompt:"In which choice is y a linear function of x?",choices:{A:"y = 3x + 5",B:"y = 5x² + 3",C:"y = 5ˣ",D:"y = 3/x"},hint:"Linear means constant rate of change and x to the first power."},
+      {n:35,type:"mc",standard:"8.G.9",topic:"Volume",dok:1,page:41,answer:"C",prompt:"A cylinder has diameter 5 cm and height 7.5 cm. What is its approximate volume?",choices:{A:"38 cubic centimeters",B:"118 cubic centimeters",C:"147 cubic centimeters",D:"589 cubic centimeters"},hint:"Radius is half the diameter."},
+      {n:36,type:"mc",standard:"8.EE.8",topic:"Systems",dok:2,page:42,answer:"A",prompt:"Book club 1 charges $20 plus $12 per book. Book club 2 charges $35 plus $9 per book. How many books make the cost the same?",choices:{A:"5",B:"21",C:"55",D:"80"},hint:"Solve 20 + 12x = 35 + 9x."},
+      {n:37,type:"mc",standard:"8.SP.2",topic:"Scatterplots",dok:2,page:43,answer:"B",prompt:"Which choice best models the data in the scatterplot?",choices:{A:"y = x - 4",B:"y = x + 4",C:"y = 2x - 4",D:"y = 2x + 4"},source:true,hint:"Estimate both the slope and y-intercept from the trend."},
+      {n:38,type:"mc",standard:"8.SP.3",topic:"Linear models",dok:2,page:44,answer:"C",prompt:"For the model y = -3.6x + 92 relating absences to semester grade, what does the slope mean?",choices:{A:"The class averaged a 92.",B:"The highest grade was 92.",C:"For every one absence, grade went down by about 3.6 points.",D:"For every 3.6 absences, grade went down by 1 point."},hint:"The slope is the predicted change in y for each increase of 1 in x."},
+      {n:39,type:"mc",standard:"8.G.7",topic:"Pythagorean theorem",dok:2,page:45,answer:"A",prompt:"A 15-foot ladder is 5 feet from the base of a building. To the nearest foot, how high does it reach?",choices:{A:"14 feet",B:"15 feet",C:"16 feet",D:"20 feet"},hint:"The ladder is the hypotenuse."},
+      {n:40,type:"mc",standard:"8.F.2",topic:"Linear functions",dok:2,page:46,answer:"B",prompt:"Which table represents a linear function with the same y-intercept as y = 5x - 3?",choices:{A:"(-3,-8), (-2,-7), (-1,-6)",B:"(-3,-9), (-2,-7), (-1,-5)",C:"(0,-1), (1,4), (2,9)",D:"(0,0), (1,-3), (2,-6)"},hint:"Find which table's line crosses the y-axis at -3."},
+      {n:41,type:"mc",standard:"8.G.5",topic:"Angle relationships",dok:2,page:47,answer:"C",prompt:"What is the measure of angle z in the diagram?",choices:{A:"15°",B:"36°",C:"69°",D:"75°"},source:true,hint:"Use angle relationships from intersecting/parallel lines and triangle angle sums."},
+      {n:42,type:"mc",standard:"8.EE.7",topic:"Equations",dok:3,page:47,answer:"B",prompt:"For 3x + 6(2x + 5) = k(3x + 4), what value of k makes the equation have no solutions?",choices:{A:"3",B:"5",C:"6",D:"15"},hint:"No solutions happen when x-coefficients match but constants do not."},
+      {n:43,type:"mc",standard:"8.G.3",topic:"Transformations",dok:2,page:48,answer:"D",prompt:"Triangle PQR is reflected over the y-axis and then translated 2 units right. What are the coordinates of P'?",choices:{A:"(-5, 4)",B:"(-1, 4)",C:"(1, -4)",D:"(5, -4)"},source:true,hint:"Reflect across y: change x's sign. Then add 2 to x."},
+      {n:44,type:"mc",standard:"8.EE.8",topic:"Systems",dok:2,page:49,answer:"A",prompt:"Provider 1 charges $10 plus $2 per movie. Provider 2 charges $8 plus $3 per movie. How many movies make the charges equal?",choices:{A:"2",B:"8",C:"10",D:"14"},hint:"Solve 10 + 2x = 8 + 3x."},
+      {n:45,type:"mc",standard:"8.F.2",topic:"Slope",dok:2,page:49,answer:"C",prompt:"Which function has the same rate of change as the line through (3, 1) and (8, 7)?",choices:{A:"y = (¹⁄₄)x - 6",B:"y = (⁵⁄₃)x + 6",C:"y = (⁶⁄₅)x + 2",D:"y = (¹³⁄₅)x - 4"},hint:"Slope = (7 - 1) / (8 - 3)."}
+    ];
+
+    const state = {
+      active: [],
+      index: 0,
+      score: 0,
+      streak: 0,
+      xp: 0,
+      answered: false,
+      results: [],
+      teams: [],
+      teamTurn: 0,
+      sound: true
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      mode: $("mode"),
+      count: $("questionCount"),
+      topic: $("topicFilter"),
+      score: $("score"),
+      streak: $("streak"),
+      round: $("round"),
+      xp: $("xp"),
+      progress: $("progress"),
+      teams: $("teams"),
+      board: $("board"),
+      topicList: $("topicList"),
+      questionLabel: $("questionLabel"),
+      badges: $("badges"),
+      prompt: $("prompt"),
+      note: $("note"),
+      visual: $("visual"),
+      answers: $("answers"),
+      freeResponse: $("freeResponse"),
+      freeInput: $("freeInput"),
+      feedback: $("feedback"),
+      sourceBtn: $("sourceBtn"),
+      nextBtn: $("nextBtn"),
+      results: $("results"),
+      game: $("game"),
+      resultText: $("resultText"),
+      summaryGrid: $("summaryGrid"),
+      modal: $("modal"),
+      pdfFrame: $("pdfFrame"),
+      modalTitle: $("modalTitle")
+    };
+
+    function shuffle(items) {
+      return [...items].sort(() => Math.random() - 0.5);
+    }
+
+    function beep(kind) {
+      if (!state.sound) return;
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContext) return;
+      const ctx = new AudioContext();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = kind === "good" ? 660 : 180;
+      gain.gain.setValueAtTime(.0001, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.08, ctx.currentTime + .02);
+      gain.gain.exponentialRampToValueAtTime(.0001, ctx.currentTime + .18);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + .2);
+    }
+
+    function normalize(value) {
+      return String(value).trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function topicColor(topic) {
+      if (topic.includes("Geometry") || topic.includes("Pythagorean") || topic.includes("Volume")) return "source";
+      if (topic.includes("Statistics") || topic.includes("Scatter")) return "badge";
+      return "";
+    }
+
+    function startGame() {
+      const filter = els.topic.value;
+      let pool = questions.filter(q => filter === "all" || q.standard.startsWith(filter));
+      const count = Math.min(Number(els.count.value), pool.length);
+      state.active = shuffle(pool).slice(0, count);
+      state.index = 0;
+      state.score = 0;
+      state.streak = 0;
+      state.xp = 0;
+      state.answered = false;
+      state.results = [];
+      state.teamTurn = 0;
+      state.teams = els.mode.value === "teams"
+        ? [{name:"Team A", score:0}, {name:"Team B", score:0}]
+        : [{name:"Solo", score:0}];
+      els.results.classList.remove("show");
+      els.game.classList.remove("hidden");
+      renderTopics(pool);
+      renderBoard();
+      renderTeams();
+      renderQuestion();
+    }
+
+    function renderTopics(pool = questions) {
+      const counts = pool.reduce((acc, q) => {
+        acc[q.standard] = (acc[q.standard] || 0) + 1;
+        return acc;
+      }, {});
+      els.topicList.innerHTML = Object.entries(counts)
+        .sort(([a],[b]) => a.localeCompare(b))
+        .map(([standard,count]) => `<span class="chip">${standard} · ${count}</span>`)
+        .join("");
+    }
+
+    function renderBoard() {
+      els.board.innerHTML = state.active.map((q, i) => {
+        const r = state.results.find(item => item.n === q.n);
+        const cls = r ? (r.correct ? "good" : "miss") : (i < state.index ? "done" : "");
+        return `<div class="tile ${cls}" title="Question ${q.n}">${q.n}</div>`;
+      }).join("");
+    }
+
+    function renderTeams() {
+      els.teams.innerHTML = state.teams.map((team, i) => `
+        <div class="team ${i === state.teamTurn ? "active" : ""}">
+          <div><b>${team.name}</b><small>${i === state.teamTurn ? "at bat" : "ready"}</small></div>
+          <strong>${team.score}</strong>
+        </div>
+      `).join("");
+    }
+
+    function renderStats() {
+      els.score.textContent = state.score;
+      els.streak.textContent = state.streak;
+      els.xp.textContent = state.xp;
+      els.round.textContent = `${Math.min(state.index + 1, state.active.length)}/${state.active.length}`;
+      const pct = state.active.length ? (state.index / state.active.length) * 100 : 0;
+      els.progress.style.width = `${pct}%`;
+    }
+
+    function renderQuestion() {
+      const q = state.active[state.index];
+      state.answered = false;
+      renderStats();
+      renderBoard();
+      renderTeams();
+      els.feedback.className = "feedback";
+      els.feedback.textContent = "";
+      els.nextBtn.classList.add("hidden");
+      els.sourceBtn.classList.toggle("hidden", !q.source);
+      els.questionLabel.textContent = `Question ${q.n}`;
+      els.badges.innerHTML = `<span class="badge">${q.standard}</span><span class="badge">DOK ${q.dok}</span><span class="badge source">Page ${q.page}</span>`;
+      els.prompt.textContent = q.prompt;
+      els.note.textContent = q.source
+        ? "This item uses a source diagram or a table from the released form. Open the source page if your class needs the exact visual."
+        : q.hint;
+      renderVisual(q);
+      if (q.type === "mc") {
+        els.freeResponse.classList.add("hidden");
+        els.answers.classList.remove("hidden");
+        els.answers.innerHTML = Object.entries(q.choices).map(([letter, text]) => `
+          <button class="answer-btn" data-choice="${letter}">
+            <span class="letter">${letter}</span>
+            <span>${text}</span>
+          </button>
+        `).join("");
+        els.answers.querySelectorAll("button").forEach(btn => btn.addEventListener("click", () => answer(btn.dataset.choice)));
+      } else {
+        els.answers.classList.add("hidden");
+        els.freeResponse.classList.remove("hidden");
+        els.freeInput.value = "";
+        els.freeInput.focus();
+      }
+    }
+
+    function renderVisual(q) {
+      const needsMini = ["Slope", "Distance", "Pythagorean theorem", "Volume", "Linear models"].some(t => q.topic.includes(t));
+      if (!needsMini || q.source) {
+        els.visual.classList.add("hidden");
+        els.visual.innerHTML = "";
+        return;
+      }
+      els.visual.classList.remove("hidden");
+      els.visual.innerHTML = `
+        <svg viewBox="0 0 560 140" role="img" aria-label="Math review energy meter">
+          <rect x="14" y="18" width="532" height="104" rx="8" fill="#f8fafc" stroke="#d9e1ee"/>
+          <path d="M50 96 C130 82 170 52 230 66 S330 102 408 54 S492 46 520 38" fill="none" stroke="#0f766e" stroke-width="7" stroke-linecap="round"/>
+          <circle cx="50" cy="96" r="8" fill="#b7791f"/>
+          <circle cx="230" cy="66" r="8" fill="#1d4ed8"/>
+          <circle cx="408" cy="54" r="8" fill="#be123c"/>
+          <text x="32" y="34" fill="#667085" font-size="16" font-weight="700">Use the formula, then check the answer choice.</text>
+        </svg>`;
+    }
+
+    function answer(choice) {
+      if (state.answered) return;
+      const q = state.active[state.index];
+      const correct = normalize(choice) === normalize(q.answer);
+      finishAnswer(correct, choice);
+      if (q.type === "mc") {
+        els.answers.querySelectorAll("button").forEach(btn => {
+          btn.classList.add("disabled");
+          if (btn.dataset.choice === q.answer) btn.classList.add("correct");
+          if (btn.dataset.choice === choice && !correct) btn.classList.add("wrong");
+        });
+      }
+    }
+
+    function answerFree() {
+      const q = state.active[state.index];
+      const choice = els.freeInput.value;
+      const correct = normalize(choice) === normalize(q.answer);
+      finishAnswer(correct, choice || "(blank)");
+    }
+
+    function finishAnswer(correct, choice) {
+      const q = state.active[state.index];
+      state.answered = true;
+      const base = correct ? 100 : 0;
+      state.streak = correct ? state.streak + 1 : 0;
+      const bonus = correct ? Math.min(50, state.streak * 10) : 0;
+      const earned = base + bonus;
+      state.score += earned;
+      state.xp += correct ? 25 + bonus : 5;
+      state.teams[state.teamTurn].score += earned;
+      state.results.push({n:q.n, correct, choice, answer:q.answer, standard:q.standard, topic:q.topic});
+      els.feedback.className = `feedback show ${correct ? "good" : "try"}`;
+      els.feedback.innerHTML = correct
+        ? `<strong>Correct.</strong> +${earned} points. ${state.streak >= 3 ? "Streak bonus is awake." : q.hint}`
+        : `<strong>Not this time.</strong> Correct answer: <b>${q.answer}</b>. ${q.hint}`;
+      beep(correct ? "good" : "bad");
+      els.nextBtn.classList.remove("hidden");
+      if (!correct && q.source) els.sourceBtn.classList.remove("hidden");
+      if (state.teams.length > 1) state.teamTurn = (state.teamTurn + 1) % state.teams.length;
+      renderStats();
+      renderBoard();
+      renderTeams();
+    }
+
+    function nextQuestion() {
+      if (state.index >= state.active.length - 1) {
+        finishGame();
+      } else {
+        state.index += 1;
+        renderQuestion();
+      }
+    }
+
+    function finishGame() {
+      els.progress.style.width = "100%";
+      els.game.classList.add("hidden");
+      els.results.classList.add("show");
+      const correct = state.results.filter(r => r.correct).length;
+      const pct = Math.round((correct / state.results.length) * 100);
+      const teamText = state.teams.length > 1
+        ? ` ${[...state.teams].sort((a,b) => b.score - a.score)[0].name} takes the round.`
+        : "";
+      els.resultText.textContent = `You answered ${correct} of ${state.results.length} correctly (${pct}%).${teamText}`;
+      const byStandard = state.results.reduce((acc, r) => {
+        acc[r.standard] ||= {right:0,total:0};
+        acc[r.standard].total += 1;
+        if (r.correct) acc[r.standard].right += 1;
+        return acc;
+      }, {});
+      els.summaryGrid.innerHTML = Object.entries(byStandard).sort(([a],[b]) => a.localeCompare(b)).map(([standard, v]) => `
+        <div class="stat"><span>${standard}</span><strong>${v.right}/${v.total}</strong></div>
+      `).join("");
+    }
+
+    function openSource(page = null) {
+      const q = state.active[state.index];
+      const target = page || (q ? q.page : 1);
+      els.modalTitle.textContent = `Released Questions 3.pdf · page ${target}`;
+      els.pdfFrame.src = `${PDF}#page=${target}&zoom=page-fit`;
+      els.modal.classList.add("show");
+    }
+
+    $("startBtn").addEventListener("click", startGame);
+    $("restartTop").addEventListener("click", startGame);
+    $("playAgain").addEventListener("click", startGame);
+    $("nextBtn").addEventListener("click", nextQuestion);
+    $("submitFree").addEventListener("click", answerFree);
+    $("freeInput").addEventListener("keydown", e => {
+      if (e.key === "Enter") answerFree();
+    });
+    $("sourceBtn").addEventListener("click", () => openSource());
+    $("sourceAll").addEventListener("click", () => openSource(1));
+    $("closeModal").addEventListener("click", () => els.modal.classList.remove("show"));
+    $("modal").addEventListener("click", e => {
+      if (e.target === els.modal) els.modal.classList.remove("show");
+    });
+    $("soundToggle").addEventListener("click", () => {
+      state.sound = !state.sound;
+      $("soundToggle").textContent = state.sound ? "♪" : "×";
+    });
+
+    renderTopics();
+    renderStats();
+  </script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>
