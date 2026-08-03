@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>8th Grade Math — Fluency Drills</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E2D4F;
+  --gold:#FFC107;
+  --white:#FFFFFF;
+  --light-gray:#F4F4F4;
+  --royal-blue:#0056B3;
+  --green:#22AC00;
+  --dark-green:#1a7000;
+  --red:#cc3333;
+  --mid-gray:#75787B;
+  --text-dark:#1a1a24;
+  --text-muted:#4a4a5a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--light-gray);color:var(--text-dark);min-height:100vh;font-size:18px}
+
+/* NAV */
+nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-index:1000;border-bottom:3px solid var(--gold)}
+.nb{font-family:'Inter',sans-serif;font-size:0.75em;font-weight:bold;padding:7px 12px;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.3);border-radius:4px;color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s}
+.nb:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,193,7,0.15)}
+.nb.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+.nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav-title{font-family:'Arvo',serif;font-size:0.9em;margin-right:auto;font-weight:700;color:var(--gold)}
+.nav-title span{color:#fff}
+
+/* LAYOUT */
+.page-section{min-height:calc(100vh - 54px);padding:20px 15px;background:var(--light-gray)}
+.arcade-panel{background:#fff;border:3px solid var(--navy);border-radius:12px;padding:20px;box-shadow:0 4px 20px rgba(30,45,79,0.12);max-width:1000px;margin:0 auto}
+.arcade-title{font-family:'Arvo',serif;font-size:1.15em;text-align:center;margin-bottom:6px;color:var(--navy)}
+.arcade-subtitle{text-align:center;color:var(--text-muted);margin-bottom:16px;font-size:0.9em}
+
+/* TABS */
+.nav-tab{font-family:'Inter',sans-serif;font-size:0.78em;font-weight:700;padding:9px 14px;background:rgba(30,45,79,0.08);border:2px solid var(--navy);border-radius:6px;color:var(--navy);cursor:pointer;transition:all 0.2s}
+.nav-tab:hover{background:rgba(30,45,79,0.15)}
+.nav-tab.active{background:var(--navy);border-color:var(--navy);color:var(--gold)}
+.part-panel{display:none;background:var(--light-gray);border:2px solid var(--mid-gray);border-radius:8px;padding:16px;margin-bottom:16px}
+.part-panel.active{display:block}
+
+/* QUESTION CARD */
+.question-card{background:#fff;border:2px solid #ccc;border-radius:8px;padding:16px;margin-bottom:12px}
+.q-text{font-size:1.1em;margin-bottom:14px;text-align:center;font-weight:700;color:var(--navy);min-height:44px;line-height:1.4}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt-btn{font-family:'Inter',sans-serif;font-size:1em;padding:14px;background:var(--light-gray);border:2px solid var(--mid-gray);border-radius:6px;color:var(--text-dark);cursor:pointer;transition:all 0.15s;text-align:center;font-weight:600}
+.opt-btn:hover:not([disabled]){border-color:var(--navy);background:rgba(30,45,79,0.08);transform:translateY(-1px)}
+.opt-btn.correct{background:#d4f0d0;border-color:var(--green);color:var(--dark-green);font-weight:700}
+.opt-btn.incorrect{background:#ffe0e0;border-color:var(--red);color:#8b0000}
+.feedback{padding:10px;border-radius:6px;margin-top:10px;text-align:center;font-weight:700;display:none;font-size:0.95em}
+.feedback.show{display:block}
+.feedback.correct{background:#d4f0d0;border:2px solid var(--green);color:var(--dark-green)}
+.feedback.incorrect{background:#ffe0e0;border:2px solid var(--red);color:#8b0000}
+.next-btn{display:none;margin:12px auto 0;padding:10px 26px;font-size:0.95em;font-weight:700;background:var(--navy);border:2px solid var(--gold);border-radius:6px;color:#fff;cursor:pointer}
+.next-btn:hover{background:#2a3f6f}
+.results-panel{text-align:center;padding:24px;display:none}
+.results-panel h3{font-family:'Arvo',serif;color:var(--navy);font-size:1.1em;margin-bottom:14px}
+.final-score{font-family:'Arvo',serif;font-size:1.8em;color:var(--dark-green);margin:10px 0}
+.restart-btn{margin-top:14px;padding:12px 30px;font-family:'Arvo',serif;font-size:0.9em;background:var(--navy);border:2px solid var(--gold);border-radius:6px;color:#fff;cursor:pointer}
+.part-desc{background:rgba(30,45,79,0.06);border-left:4px solid var(--navy);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:0.92em;color:var(--text-muted)}
+
+/* PROGRESS BAR */
+.progress-bar{background:#ddd;border:1px solid #bbb;border-radius:6px;height:14px;margin-bottom:10px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cc55);border-radius:5px;transition:width 0.3s}
+.score-bar{display:flex;justify-content:space-between;margin-bottom:10px;font-size:0.85em;color:var(--navy);font-weight:600}
+.score-bar span{background:#fff;padding:5px 10px;border-radius:4px;border:1px solid #bbb}
+
+/* ERROR LABEL (part 3) */
+.error-label{display:block;background:rgba(200,0,0,0.08);border:2px solid var(--red);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-family:'Courier New',monospace;color:#8b0000;font-size:0.95em;text-align:center}
+
+/* ========================
+   GAMIFIED INTEGER BLASTER
+   ======================== */
+#blaster-wrapper{max-width:700px;margin:0 auto}
+
+/* HUD */
+.blaster-hud{display:flex;justify-content:space-between;align-items:center;background:var(--navy);border-radius:10px;padding:12px 18px;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.hud-hearts{font-size:1.4em;letter-spacing:4px}
+.hud-level{font-family:'Arvo',serif;color:var(--gold);font-size:0.95em;font-weight:700}
+.hud-xp{color:#aac4ff;font-size:0.85em}
+.hud-streak{font-size:0.9em;font-weight:700;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.1);color:#fff;min-width:80px;text-align:center}
+.hud-streak.hot{background:rgba(255,130,0,0.3);color:#ffaa00;animation:streakPulse 0.6s ease infinite alternate}
+@keyframes streakPulse{from{box-shadow:0 0 4px #ffaa00}to{box-shadow:0 0 14px #ffaa00}}
+
+/* XP BAR */
+.xp-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.xp-bar-wrap span{font-size:0.8em;color:var(--navy);font-weight:600;white-space:nowrap}
+.xp-bar{flex:1;height:10px;background:#dde;border-radius:5px;overflow:hidden}
+.xp-fill{height:100%;background:linear-gradient(90deg,var(--gold),#ffd740);border-radius:5px;transition:width 0.4s}
+
+/* QUESTION BOX */
+.blaster-card{background:#fff;border:3px solid var(--navy);border-radius:12px;padding:20px;margin-bottom:12px;text-align:center;box-shadow:0 2px 12px rgba(30,45,79,0.1);transition:border-color 0.2s}
+.blaster-card.flash-correct{border-color:var(--green);animation:flashGreen 0.5s ease}
+.blaster-card.flash-wrong{border-color:var(--red);animation:flashRed 0.4s ease}
+@keyframes flashGreen{0%{background:#fff}50%{background:#e8ffe8}100%{background:#fff}}
+@keyframes flashRed{0%{background:#fff}25%{background:#ffe8e8}75%{background:#ffe8e8}100%{background:#fff}}
+.blaster-q-num{font-size:0.75em;color:var(--mid-gray);margin-bottom:8px}
+.blaster-q-text{font-family:'Arvo',serif;font-size:1.4em;color:var(--navy);font-weight:700;margin:10px 0}
+.multiplier-badge{display:inline-block;font-size:0.8em;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.mult-1{background:rgba(30,45,79,0.1);color:var(--navy)}
+.mult-2{background:rgba(255,193,7,0.3);color:#7a5900}
+.mult-3{background:rgba(255,130,0,0.25);color:#8a3800}
+.mult-4{background:rgba(255,40,40,0.2);color:#8a0000}
+.blaster-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.blaster-btn{font-family:'Inter',sans-serif;font-size:1em;font-weight:700;padding:16px;background:var(--light-gray);border:2px solid var(--mid-gray);border-radius:8px;color:var(--text-dark);cursor:pointer;transition:all 0.15s}
+.blaster-btn:hover:not([disabled]){border-color:var(--navy);background:rgba(30,45,79,0.08);transform:translateY(-2px);box-shadow:0 3px 8px rgba(30,45,79,0.15)}
+.blaster-btn.correct{background:#d4f0d0;border-color:var(--green);color:var(--dark-green)}
+.blaster-btn.incorrect{background:#ffe0e0;border-color:var(--red);color:#8b0000}
+.blaster-btn.reveal{background:#d4f0d0;border-color:var(--green);color:var(--dark-green)}
+.blaster-feedback{font-size:0.95em;font-weight:700;margin-top:10px;min-height:28px;transition:all 0.2s}
+.blaster-feedback.correct{color:var(--dark-green)}
+.blaster-feedback.incorrect{color:#8b0000}
+.blaster-next{display:none;margin:12px auto 0;padding:10px 30px;font-size:1em;font-weight:700;background:var(--navy);border:2px solid var(--gold);border-radius:8px;color:#fff;cursor:pointer}
+
+/* +XP popup */
+.xp-popup{position:absolute;font-weight:700;font-size:1.1em;color:var(--gold);pointer-events:none;animation:xpFloat 1s ease forwards;opacity:0;z-index:999}
+@keyframes xpFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+
+/* GAME OVER */
+.game-over-panel{text-align:center;padding:20px;display:none}
+.game-over-panel h3{font-family:'Arvo',serif;font-size:1.3em;color:var(--red);margin-bottom:10px}
+.game-over-panel .go-score{font-family:'Arvo',serif;font-size:2em;color:var(--navy);margin:10px 0}
+.game-over-panel p{color:var(--text-muted);margin-bottom:16px}
+
+/* VICTORY */
+.victory-panel{text-align:center;padding:20px;display:none}
+.victory-panel h3{font-family:'Arvo',serif;font-size:1.3em;color:var(--dark-green);margin-bottom:10px}
+.victory-panel .vc-score{font-family:'Arvo',serif;font-size:2em;color:var(--navy);margin:10px 0}
+.stars-display{font-size:2.5em;margin:10px 0}
+.play-again-btn{margin-top:14px;padding:12px 32px;font-family:'Arvo',serif;font-size:0.9em;background:var(--navy);border:2px solid var(--gold);border-radius:8px;color:#fff;cursor:pointer}
+
+/* Misc */
+.error-label{display:block;background:rgba(200,0,0,0.08);border:2px solid var(--red);border-radius:6px;padding:10px 14px;margin-bottom:12px;font-family:'Courier New',monospace;color:#8b0000;font-size:0.95em;text-align:center}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+<div class="nav-container">
+  <span class="nav-title">🦅 <span>IC Imagine</span> 8th Grade Math</span>
+  <a class="nb" href="index.html">🏠 Home</a>
+  <a class="nb" href="unit1.html">U1</a>
+  <a class="nb" href="unit2.html">U2</a>
+  <a class="nb" href="unit3.html">U3</a>
+  <a class="nb" href="unit4.html">U4</a>
+  <a class="nb" href="unit5.html">U5</a>
+  <a class="nb" href="unit6.html">U6</a>
+  <a class="nb" href="unit7.html">U7</a>
+  <a class="nb" href="unit8.html">U8</a>
+  <a class="nb active" href="fluency.html">⚡ Fluency</a>
+  <a class="nb" href="volume.html">📦 U9</a>
+</div>
+</nav>
+
+<div class="page-section">
+<div class="arcade-panel">
+<div class="arcade-title">⚡ NUMBER HUNTER ⚡</div>
+<div class="arcade-subtitle">Integer Blaster • Fraction Skills • Error Analysis • Multiply &amp; Divide</div>
+<div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap">
+<button class="nav-tab active" onclick="showPart(1)">🎮 Integer Blaster</button>
+<button class="nav-tab" onclick="showPart(2)">🧮 Fractions (20)</button>
+<button class="nav-tab" onclick="showPart(3)">🔍 Error Analysis (12)</button>
+<button class="nav-tab" onclick="showPart(4)">✖️ Multiply &amp; Divide (12)</button>
+</div>
+
+<!-- ===================== PART 1: INTEGER BLASTER ===================== -->
+<div id="part1" class="part-panel active">
+<div class="part-desc">🎮 <strong>Integer Blaster:</strong> Race through 30 questions using +, −, ×, ÷ with integers from −12 to 12. Earn XP, build streaks, and level up! You have <strong>3 lives</strong> — don't let them run out!</div>
+
+<div id="blaster-wrapper" style="position:relative">
+  <!-- HUD -->
+  <div class="blaster-hud">
+    <div>
+      <div class="hud-hearts" id="b-hearts">❤️❤️❤️</div>
+      <div class="hud-xp">XP: <span id="b-xp">0</span></div>
+    </div>
+    <div style="text-align:center">
+      <div class="hud-level" id="b-level">⭐ Level 1</div>
+      <div id="b-streak" class="hud-streak">Streak: 0</div>
+    </div>
+    <div style="text-align:right;color:#aac4ff;font-size:0.85em">
+      Q <span id="b-cur">1</span> / <span id="b-total">30</span><br>
+      ✅ <span id="b-correct">0</span> &nbsp; ❌ <span id="b-wrong">0</span>
+    </div>
+  </div>
+
+  <!-- XP bar -->
+  <div class="xp-bar-wrap">
+    <span id="b-lvl-label">Lv.1</span>
+    <div class="xp-bar"><div class="xp-fill" id="b-xp-fill" style="width:0%"></div></div>
+    <span id="b-xp-next">50 XP to next</span>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar"><div class="progress-fill" id="b-prog" style="width:0%"></div></div>
+
+  <!-- Question area -->
+  <div id="b-qa">
+    <div class="blaster-card" id="b-card">
+      <div class="blaster-q-num">Question <span id="b-qnum">1</span> of <span id="b-qtotal">30</span></div>
+      <div class="multiplier-badge mult-1" id="b-mult-badge">1× Points</div>
+      <div class="blaster-q-text" id="b-qtext">Loading…</div>
+      <div class="blaster-opts" id="b-opts"></div>
+      <div class="blaster-feedback" id="b-fb"></div>
+    </div>
+    <button class="blaster-next" id="b-next" onclick="bNext()">Next →</button>
+  </div>
+
+  <!-- Game Over -->
+  <div class="game-over-panel" id="b-gameover">
+    <h3>💔 Game Over!</h3>
+    <p>You ran out of lives!</p>
+    <div class="go-score">Score: <span id="b-go-correct">0</span> / <span id="b-go-asked">0</span></div>
+    <div style="font-size:0.9em;color:#4a4a5a;margin-bottom:8px">Total XP earned: <strong id="b-go-xp">0</strong></div>
+    <button class="play-again-btn" onclick="bStart()">Try Again 🔄</button>
+  </div>
+
+  <!-- Victory -->
+  <div class="victory-panel" id="b-victory">
+    <div class="stars-display" id="b-stars">⭐⭐⭐</div>
+    <h3 id="b-victory-msg">🏆 Blaster Complete!</h3>
+    <div class="vc-score"><span id="b-vc-correct">0</span> / 30 correct</div>
+    <div style="font-size:1em;color:var(--navy);margin-bottom:8px">Total XP: <strong id="b-vc-xp">0</strong> &nbsp;|&nbsp; Max Streak: <strong id="b-vc-streak">0</strong>🔥</div>
+    <button class="play-again-btn" onclick="bStart()">Play Again 🔄</button>
+  </div>
+</div>
+</div>
+
+<!-- ===================== PART 2: FRACTIONS ===================== -->
+<div id="part2" class="part-panel">
+<div class="part-desc">🧮 <strong>Part 2 — Fraction Skills (20 Questions):</strong> Simplify fractions to lowest terms and convert between mixed numbers and improper fractions.</div>
+<div class="progress-bar"><div class="progress-fill" id="p2-prog" style="width:0%"></div></div>
+<div class="score-bar"><span>Q: <span id="p2-cur">1</span>/20</span><span>Score: <span id="p2-sc">0</span></span></div>
+<div id="p2-qa">
+  <div class="question-card"><div class="q-text" id="p2-q"></div><div class="options-grid" id="p2-opts"></div><div class="feedback" id="p2-fb"></div></div>
+  <button class="next-btn" id="p2-next" onclick="p2Next()" style="display:none">Next →</button>
+</div>
+<div class="results-panel" id="p2-res"><h3>🎉 Part 2 Complete!</h3><div class="final-score"><span id="p2-fs">0</span>/20</div><button class="restart-btn" onclick="p2Start()">Try Again</button></div>
+</div>
+
+<!-- ===================== PART 3: ERROR ANALYSIS ===================== -->
+<div id="part3" class="part-panel">
+<div class="part-desc">🔍 <strong>Part 3 — Error Analysis (12 Questions):</strong> A student made a mistake adding or subtracting fractions. Identify the error and choose the correct answer!</div>
+<div class="progress-bar"><div class="progress-fill" id="p3-prog" style="width:0%"></div></div>
+<div class="score-bar"><span>Q: <span id="p3-cur">1</span>/12</span><span>Score: <span id="p3-sc">0</span></span></div>
+<div id="p3-qa">
+  <div class="question-card"><div class="q-text" id="p3-q"></div><div class="error-label" id="p3-err"></div><div class="options-grid" id="p3-opts"></div><div class="feedback" id="p3-fb"></div></div>
+  <button class="next-btn" id="p3-next" onclick="p3Next()" style="display:none">Next →</button>
+</div>
+<div class="results-panel" id="p3-res"><h3>🎉 Part 3 Complete!</h3><div class="final-score"><span id="p3-fs">0</span>/12</div><button class="restart-btn" onclick="p3Start()">Try Again</button></div>
+</div>
+
+<!-- ===================== PART 4: MULTIPLY & DIVIDE ===================== -->
+<div id="part4" class="part-panel">
+<div class="part-desc">✖️ <strong>Part 4 — Multiply &amp; Divide Fractions (12 Questions):</strong> Multiply and divide fractions and mixed numbers. Answers must be in simplified or mixed number form!</div>
+<div class="progress-bar"><div class="progress-fill" id="p4-prog" style="width:0%"></div></div>
+<div class="score-bar"><span>Q: <span id="p4-cur">1</span>/12</span><span>Score: <span id="p4-sc">0</span></span></div>
+<div id="p4-qa">
+  <div class="question-card"><div class="q-text" id="p4-q"></div><div class="options-grid" id="p4-opts"></div><div class="feedback" id="p4-fb"></div></div>
+  <button class="next-btn" id="p4-next" onclick="p4Next()" style="display:none">Next →</button>
+</div>
+<div class="results-panel" id="p4-res"><h3>🎉 Part 4 Complete!</h3><div class="final-score"><span id="p4-fs">0</span>/12</div><button class="restart-btn" onclick="p4Start()">Try Again</button></div>
+</div>
+
+</div><!-- end arcade-panel -->
+</div><!-- end page-section -->
+
+<script>
+/* ===================== UTILS ===================== */
+function shuffle(a){var arr=a.slice();for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}return arr;}
+function rnd(mn,mx){return Math.floor(Math.random()*(mx-mn+1))+mn;}
+function rndNZ(mn,mx){var v;do{v=rnd(mn,mx);}while(v===0);return v;}
+function showPart(n){
+  document.querySelectorAll('.part-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('part'+n).classList.add('active');
+  document.querySelectorAll('.nav-tab')[n-1].classList.add('active');
+}
+
+/* ===================== PART 1: INTEGER BLASTER ===================== */
+/* Config: integers -12 to 12, basic ops only (no OoO) */
+var bQuestions=[], bIndex=0, bLives=3, bXP=0, bStreak=0, bMaxStreak=0;
+var bCorrectCount=0, bWrongCount=0, bTotalQ=30;
+/* XP thresholds for levels */
+var bLevels=[
+  {name:'Level 1 — Rookie',min:0,max:49},
+  {name:'Level 2 — Apprentice',min:50,max:149},
+  {name:'Level 3 — Solver',min:150,max:299},
+  {name:'Level 4 — Expert',min:300,max:499},
+  {name:'Level 5 — MASTER',min:500,max:99999}
+];
+function bGetLevel(){
+  for(var i=bLevels.length-1;i>=0;i--){if(bXP>=bLevels[i].min)return i;}return 0;
+}
+function bGetMultiplier(){
+  if(bStreak>=6)return 4;
+  if(bStreak>=4)return 3;
+  if(bStreak>=2)return 2;
+  return 1;
+}
+function genIntQ(){
+  var type=rnd(1,4),q,a,wrongs=[];
+  /* types: 1=add, 2=sub, 3=mul, 4=div — all with -12 to 12 */
+  if(type===1){
+    var x=rnd(-12,12),y=rnd(-12,12);
+    q='What is '+x+' + ('+y+')?';a=x+y;
+  } else if(type===2){
+    var x=rnd(-12,12),y=rnd(-12,12);
+    q='What is '+x+' − ('+y+')?';a=x-y;
+  } else if(type===3){
+    var x=rnd(-12,12),y=rnd(-12,12);
+    q='What is ('+x+') × ('+y+')?';a=x*y;
+  } else {
+    /* division: pick quotient and divisor in -12..12, form dividend */
+    var r=rndNZ(-12,12),b=rndNZ(-12,12),dvd=r*b;
+    q='What is ('+dvd+') ÷ ('+b+')?';a=r;
+  }
+  /* generate 3 unique wrong answers close to correct */
+  var seen={};seen[a]=1;
+  var offs=[1,-1,2,-2,3,-3,rnd(4,10),rnd(-10,-4)];
+  for(var i=0;i<offs.length&&wrongs.length<3;i++){
+    var w=a+offs[i];
+    if(!seen[w]){seen[w]=1;wrongs.push(String(w));}
+  }
+  while(wrongs.length<3){var w=a+rnd(-15,15);if(!seen[w]){seen[w]=1;wrongs.push(String(w));}}
+  return{q:q,a:String(a),w:wrongs.slice(0,3)};
+}
+function bStart(){
+  bQuestions=[];
+  for(var i=0;i<bTotalQ;i++) bQuestions.push(genIntQ());
+  bIndex=0;bLives=3;bXP=0;bStreak=0;bMaxStreak=0;bCorrectCount=0;bWrongCount=0;
+  document.getElementById('b-qa').style.display='block';
+  document.getElementById('b-gameover').style.display='none';
+  document.getElementById('b-victory').style.display='none';
+  bUpdateHUD();bShowQ();
+}
+function bUpdateHUD(){
+  /* hearts */
+  var h='';
+  for(var i=0;i<bLives;i++) h+='❤️';
+  for(var i=bLives;i<3;i++) h+='🖤';
+  document.getElementById('b-hearts').textContent=h;
+  /* XP */
+  document.getElementById('b-xp').textContent=bXP;
+  /* level */
+  var lvlIdx=bGetLevel();
+  var lvl=bLevels[lvlIdx];
+  document.getElementById('b-level').textContent='⭐ '+lvl.name;
+  document.getElementById('b-lvl-label').textContent='Lv.'+(lvlIdx+1);
+  var nextMin=(lvlIdx+1<bLevels.length)?bLevels[lvlIdx+1].min:bXP+1;
+  var xpRange=nextMin-lvl.min;
+  var xpProgress=Math.min(bXP-lvl.min,xpRange);
+  var pct=lvlIdx+1<bLevels.length ? Math.round((xpProgress/xpRange)*100) : 100;
+  document.getElementById('b-xp-fill').style.width=pct+'%';
+  if(lvlIdx+1<bLevels.length){
+    document.getElementById('b-xp-next').textContent=(nextMin-bXP)+' XP to next';
+  } else {
+    document.getElementById('b-xp-next').textContent='MAX!';
+  }
+  /* streak */
+  var sd=document.getElementById('b-streak');
+  if(bStreak>=3){sd.textContent='🔥 Streak: '+bStreak;sd.className='hud-streak hot';}
+  else{sd.textContent='Streak: '+bStreak;sd.className='hud-streak';}
+  /* counts */
+  document.getElementById('b-correct').textContent=bCorrectCount;
+  document.getElementById('b-wrong').textContent=bWrongCount;
+}
+function bShowQ(){
+  var q=bQuestions[bIndex];
+  document.getElementById('b-qnum').textContent=bIndex+1;
+  document.getElementById('b-qtotal').textContent=bTotalQ;
+  document.getElementById('b-cur').textContent=bIndex+1;
+  document.getElementById('b-total').textContent=bTotalQ;
+  document.getElementById('b-prog').style.width=((bIndex/bTotalQ)*100)+'%';
+  document.getElementById('b-qtext').textContent=q.q;
+  document.getElementById('b-fb').textContent='';
+  document.getElementById('b-fb').className='blaster-feedback';
+  document.getElementById('b-next').style.display='none';
+  document.getElementById('b-card').className='blaster-card';
+  /* multiplier badge */
+  var mult=bGetMultiplier();
+  var mb=document.getElementById('b-mult-badge');
+  mb.textContent=mult+'× Points'+(bStreak>=2?' 🔥':'');
+  mb.className='multiplier-badge mult-'+Math.min(mult,4);
+  /* options */
+  var opts=shuffle([q.a,q.w[0],q.w[1],q.w[2]]);
+  var grid=document.getElementById('b-opts');grid.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.className='blaster-btn';b.textContent=o;
+    b.addEventListener('click',(function(btn,ans){return function(){
+      grid.querySelectorAll('.blaster-btn').forEach(function(x){x.disabled=true;});
+      var isCorrect=(ans===q.a);
+      var mult=bGetMultiplier();
+      if(isCorrect){
+        btn.classList.add('correct');
+        bStreak++;if(bStreak>bMaxStreak)bMaxStreak=bStreak;
+        var earned=10*mult;
+        bXP+=earned;bCorrectCount++;
+        document.getElementById('b-fb').textContent='✓ Correct! +'+earned+' XP'+(mult>1?' ('+mult+'× combo!)':'');
+        document.getElementById('b-fb').className='blaster-feedback correct';
+        document.getElementById('b-card').classList.add('flash-correct');
+        spawnXP('+'+earned+' XP');
+      } else {
+        btn.classList.add('incorrect');
+        grid.querySelectorAll('.blaster-btn').forEach(function(x){if(x.textContent===q.a)x.classList.add('reveal');});
+        bLives--;bStreak=0;bWrongCount++;
+        document.getElementById('b-fb').textContent='✗ Answer: '+q.a;
+        document.getElementById('b-fb').className='blaster-feedback incorrect';
+        document.getElementById('b-card').classList.add('flash-wrong');
+      }
+      bUpdateHUD();
+      if(bLives<=0){
+        setTimeout(function(){bGameOver();},700);
+      } else {
+        document.getElementById('b-next').style.display='block';
+      }
+    };})(b,o));
+    grid.appendChild(b);
+  });
+}
+function spawnXP(text){
+  var el=document.createElement('div');el.className='xp-popup';el.textContent=text;
+  el.style.top='80px';el.style.left='50%';el.style.transform='translateX(-50%)';
+  var wrap=document.getElementById('blaster-wrapper');wrap.style.position='relative';
+  wrap.appendChild(el);
+  setTimeout(function(){el.remove();},1000);
+}
+function bNext(){
+  bIndex++;
+  if(bIndex>=bTotalQ){bVictory();}
+  else{bShowQ();}
+}
+function bGameOver(){
+  document.getElementById('b-qa').style.display='none';
+  document.getElementById('b-gameover').style.display='block';
+  document.getElementById('b-go-correct').textContent=bCorrectCount;
+  document.getElementById('b-go-asked').textContent=bIndex;
+  document.getElementById('b-go-xp').textContent=bXP;
+}
+function bVictory(){
+  document.getElementById('b-qa').style.display='none';
+  document.getElementById('b-prog').style.width='100%';
+  document.getElementById('b-victory').style.display='block';
+  document.getElementById('b-vc-correct').textContent=bCorrectCount;
+  document.getElementById('b-vc-xp').textContent=bXP;
+  document.getElementById('b-vc-streak').textContent=bMaxStreak;
+  /* Stars */
+  var pct=bCorrectCount/bTotalQ;
+  var stars=pct>=0.9?'⭐⭐⭐':pct>=0.7?'⭐⭐':pct>=0.5?'⭐':'';
+  document.getElementById('b-stars').textContent=stars;
+  var msg=pct>=0.9?'🏆 AMAZING! You\'re an Integer Master!':pct>=0.7?'🎉 Great work! Keep grinding!':pct>=0.5?'👍 Good effort — practice makes perfect!':'💪 Don\'t give up — try again!';
+  document.getElementById('b-victory-msg').textContent=msg;
+}
+
+/* ===================== PART 2: FRACTIONS ===================== */
+var p2Bank=[
+  {q:"Simplify: 6/8",a:"3/4",w:["6/8","1/2","2/3"]},
+  {q:"Simplify: 4/12",a:"1/3",w:["2/6","1/4","2/3"]},
+  {q:"Simplify: 10/15",a:"2/3",w:["5/7","3/5","1/2"]},
+  {q:"Simplify: 8/20",a:"2/5",w:["4/10","1/3","3/8"]},
+  {q:"Simplify: 9/27",a:"1/3",w:["3/9","1/4","2/6"]},
+  {q:"Simplify: 14/21",a:"2/3",w:["7/10","1/2","3/5"]},
+  {q:"Simplify: 15/25",a:"3/5",w:["5/8","1/2","3/4"]},
+  {q:"Simplify: 12/16",a:"3/4",w:["6/8","2/3","4/5"]},
+  {q:"Simplify: 18/24",a:"3/4",w:["9/12","2/3","4/6"]},
+  {q:"Simplify: 20/30",a:"2/3",w:["10/15","4/6","1/2"]},
+  {q:"Convert to improper fraction: 2 3/4",a:"11/4",w:["9/4","7/4","10/4"]},
+  {q:"Convert to improper fraction: 3 1/2",a:"7/2",w:["6/2","5/2","8/2"]},
+  {q:"Convert to improper fraction: 1 5/6",a:"11/6",w:["7/6","5/6","10/6"]},
+  {q:"Convert to improper fraction: 4 2/3",a:"14/3",w:["12/3","10/3","13/3"]},
+  {q:"Convert to improper fraction: 2 7/8",a:"23/8",w:["21/8","19/8","20/8"]},
+  {q:"Convert to a mixed number: 11/3",a:"3 2/3",w:["3 1/3","4 1/3","2 2/3"]},
+  {q:"Convert to a mixed number: 17/5",a:"3 2/5",w:["3 4/5","4 1/5","2 3/5"]},
+  {q:"Convert to a mixed number: 13/4",a:"3 1/4",w:["3 3/4","2 1/4","4 1/4"]},
+  {q:"Convert to a mixed number: 19/6",a:"3 1/6",w:["3 5/6","2 5/6","4 1/6"]},
+  {q:"Convert to a mixed number: 22/7",a:"3 1/7",w:["3 2/7","2 6/7","4 1/7"]}
+];
+var p2Q=[],p2C=0,p2S=0;
+function p2Start(){
+  p2Q=shuffle(p2Bank.slice()).slice(0,20);p2C=0;p2S=0;
+  document.getElementById('p2-qa').style.display='block';
+  document.getElementById('p2-res').style.display='none';
+  p2Show();
+}
+function p2Show(){
+  var q=p2Q[p2C];
+  document.getElementById('p2-q').textContent=q.q;
+  document.getElementById('p2-cur').textContent=p2C+1;
+  document.getElementById('p2-sc').textContent=p2S;
+  document.getElementById('p2-prog').style.width=((p2C/20)*100)+'%';
+  document.getElementById('p2-fb').className='feedback';
+  document.getElementById('p2-next').style.display='none';
+  var opts=shuffle([q.a,q.w[0],q.w[1],q.w[2]]);
+  var grid=document.getElementById('p2-opts');grid.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.className='opt-btn';b.textContent=o;
+    b.addEventListener('click',(function(btn,ans){return function(){
+      grid.querySelectorAll('.opt-btn').forEach(function(x){x.disabled=true;});
+      var fb=document.getElementById('p2-fb');
+      if(ans===q.a){btn.classList.add('correct');fb.className='feedback show correct';fb.textContent='✓ Correct!';p2S++;document.getElementById('p2-sc').textContent=p2S;}
+      else{btn.classList.add('incorrect');grid.querySelectorAll('.opt-btn').forEach(function(x){if(x.textContent===q.a)x.classList.add('correct');});fb.className='feedback show incorrect';fb.textContent='✗ Correct: '+q.a;}
+      document.getElementById('p2-next').style.display='block';
+    };})(b,o));
+    grid.appendChild(b);
+  });
+}
+function p2Next(){p2C++;if(p2C<20)p2Show();else{document.getElementById('p2-qa').style.display='none';document.getElementById('p2-res').style.display='block';document.getElementById('p2-fs').textContent=p2S;document.getElementById('p2-prog').style.width='100%';}}
+
+/* ===================== PART 3: ERROR ANALYSIS ===================== */
+var p3Bank=[
+  {q:"A student added 1/3 + 1/4. Find the error and the correct answer.",err:"Student wrote: 1/3 + 1/4 = 2/7  ❌",a:"Added tops & bottoms — must use LCD=12. Correct answer: 7/12",w:["Added correctly but didn't simplify","Should have subtracted","Used the wrong LCD of 7"]},
+  {q:"A student subtracted 3/4 − 1/3. Find the error.",err:"Student wrote: 3/4 − 1/3 = 2/1 = 2  ❌",a:"Subtracted tops & bottoms separately — LCD=12. Correct answer: 5/12",w:["Forgot to simplify the result","Used the wrong operation","The answer of 2 is actually correct"]},
+  {q:"A student added 2/5 + 1/2. Find the error.",err:"Student wrote: 2/5 + 1/2 = 3/7  ❌",a:"Added numerators AND denominators — must use LCD=10. Correct: 9/10",w:["Forgot to simplify 3/7","Made an arithmetic error adding","The answer 3/7 is correct"]},
+  {q:"A student subtracted 5/6 − 1/4. Find the mistake.",err:"Student wrote: 5/6 − 1/4 = 4/2 = 2  ❌",a:"Subtracted tops & bottoms — LCD=12. Correct answer: 7/12",w:["The student simplified incorrectly","The student should have added","The answer of 2 is correct"]},
+  {q:"A student added 1 1/2 + 2/3. Find the error.",err:"Student wrote: 1 1/2 + 2/3 = 1 3/5  ❌",a:"Added fraction denominators instead of finding LCD=6. Correct: 2 1/6",w:["Forgot to carry the whole number","The answer is correct","Should have subtracted"]},
+  {q:"A student subtracted 3/4 − 3/8. Find the mistake.",err:"Student wrote: 3/4 − 3/8 = 0/4 = 0  ❌",a:"Subtracted without converting 3/4 to 6/8 first. Correct answer: 3/8",w:["The answer of 0 is correct","Added instead of subtracted","Should multiply instead"]},
+  {q:"A student added 2/3 + 1/6. Find the error.",err:"Student wrote: 2/3 + 1/6 = 3/9 = 1/3  ❌",a:"Added numerators without converting 2/3 to 4/6. Correct answer: 5/6",w:["Simplified 3/9 incorrectly","The answer 1/3 is correct","Used wrong LCD"]},
+  {q:"A student subtracted 1/2 − 1/5. Find the mistake.",err:"Student wrote: 1/2 − 1/5 = 0/3 = 0  ❌",a:"Subtracted tops AND bottoms — LCD=10. Correct answer: 3/10",w:["Forgot to simplify","The answer of 0 is correct","Used the wrong operation"]},
+  {q:"A student added 3/5 + 1/3. What went wrong?",err:"Student wrote: 3/5 + 1/3 = 4/8 = 1/2  ❌",a:"Added tops and bottoms — must use LCD=15. Correct: 14/15",w:["Simplified 4/8 incorrectly","The answer 1/2 is correct","The student should divide"]},
+  {q:"A student added 2 1/4 + 1 3/8. Find the mistake.",err:"Student wrote: 2 1/4 + 1 3/8 = 3 4/12 = 3 1/3  ❌",a:"Did not convert 1/4 to 2/8 before adding — Correct: 3 5/8",w:["Simplified 4/12 to 1/3 incorrectly","The answer is correct","Should subtract the fractions"]},
+  {q:"A student subtracted 2 3/4 − 1 1/2. Find the error.",err:"Student wrote: 2 3/4 − 1 1/2 = 1 2/2 = 2  ❌",a:"Subtracted fraction parts without LCD — Correct: 1 1/4",w:["Forgot to borrow from whole number","The answer of 2 is correct","Should multiply instead"]},
+  {q:"A student added 5/6 + 3/4. What mistake was made?",err:"Student wrote: 5/6 + 3/4 = 8/10 = 4/5  ❌",a:"Added tops & bottoms — LCD=12. Correct: 1 7/12",w:["Simplified 8/10 incorrectly","The answer 4/5 is correct","Should have subtracted"]}
+];
+var p3Q=[],p3C=0,p3S=0;
+function p3Start(){
+  p3Q=shuffle(p3Bank.slice()).slice(0,12);p3C=0;p3S=0;
+  document.getElementById('p3-qa').style.display='block';
+  document.getElementById('p3-res').style.display='none';
+  p3Show();
+}
+function p3Show(){
+  var q=p3Q[p3C];
+  document.getElementById('p3-q').textContent=q.q;
+  document.getElementById('p3-err').textContent=q.err;
+  document.getElementById('p3-cur').textContent=p3C+1;
+  document.getElementById('p3-sc').textContent=p3S;
+  document.getElementById('p3-prog').style.width=((p3C/12)*100)+'%';
+  document.getElementById('p3-fb').className='feedback';
+  document.getElementById('p3-next').style.display='none';
+  var opts=shuffle([q.a,q.w[0],q.w[1],q.w[2]]);
+  var grid=document.getElementById('p3-opts');grid.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.className='opt-btn';b.textContent=o;
+    b.addEventListener('click',(function(btn,ans){return function(){
+      grid.querySelectorAll('.opt-btn').forEach(function(x){x.disabled=true;});
+      var fb=document.getElementById('p3-fb');
+      if(ans===q.a){btn.classList.add('correct');fb.className='feedback show correct';fb.textContent='✓ Correct! You spotted the error!';p3S++;document.getElementById('p3-sc').textContent=p3S;}
+      else{btn.classList.add('incorrect');grid.querySelectorAll('.opt-btn').forEach(function(x){if(x.textContent===q.a)x.classList.add('correct');});fb.className='feedback show incorrect';fb.textContent='✗ Explanation: '+q.a;}
+      document.getElementById('p3-next').style.display='block';
+    };})(b,o));
+    grid.appendChild(b);
+  });
+}
+function p3Next(){p3C++;if(p3C<12)p3Show();else{document.getElementById('p3-qa').style.display='none';document.getElementById('p3-res').style.display='block';document.getElementById('p3-fs').textContent=p3S;document.getElementById('p3-prog').style.width='100%';}}
+
+/* ===================== PART 4: MULTIPLY & DIVIDE ===================== */
+var p4Bank=[
+  {q:"Multiply: 2/3 × 3/4",a:"1/2",w:["1/4","3/4","5/12"]},
+  {q:"Multiply: 3/5 × 5/6",a:"1/2",w:["1/3","2/3","8/11"]},
+  {q:"Multiply: 4/7 × 7/8",a:"1/2",w:["1/4","3/7","28/56"]},
+  {q:"Multiply: 2/9 × 3/4",a:"1/6",w:["1/3","5/36","2/12"]},
+  {q:"Multiply: 5/8 × 4/5",a:"1/2",w:["20/40","1/4","9/13"]},
+  {q:"Divide: 3/4 ÷ 1/2",a:"1 1/2",w:["3/8","3","1/2"]},
+  {q:"Divide: 2/3 ÷ 4/9",a:"1 1/2",w:["8/27","1/2","2/4"]},
+  {q:"Divide: 5/6 ÷ 1/3",a:"2 1/2",w:["5/18","5/3","1 1/6"]},
+  {q:"Divide: 3/8 ÷ 3/4",a:"1/2",w:["9/32","3/4","1/4"]},
+  {q:"Multiply mixed numbers: 1 1/2 × 2 2/3",a:"4",w:["3","2 2/3","5"]},
+  {q:"Multiply mixed numbers: 2 1/4 × 1 1/3",a:"3",w:["2 1/4","3 1/3","2 3/4"]},
+  {q:"Divide mixed numbers: 3 1/2 ÷ 1 3/4",a:"2",w:["3","1 3/4","2 1/2"]}
+];
+var p4Q=[],p4C=0,p4S=0;
+function p4Start(){
+  p4Q=shuffle(p4Bank.slice()).slice(0,12);p4C=0;p4S=0;
+  document.getElementById('p4-qa').style.display='block';
+  document.getElementById('p4-res').style.display='none';
+  p4Show();
+}
+function p4Show(){
+  var q=p4Q[p4C];
+  document.getElementById('p4-q').textContent=q.q;
+  document.getElementById('p4-cur').textContent=p4C+1;
+  document.getElementById('p4-sc').textContent=p4S;
+  document.getElementById('p4-prog').style.width=((p4C/12)*100)+'%';
+  document.getElementById('p4-fb').className='feedback';
+  document.getElementById('p4-next').style.display='none';
+  var opts=shuffle([q.a,q.w[0],q.w[1],q.w[2]]);
+  var grid=document.getElementById('p4-opts');grid.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.className='opt-btn';b.textContent=o;
+    b.addEventListener('click',(function(btn,ans){return function(){
+      grid.querySelectorAll('.opt-btn').forEach(function(x){x.disabled=true;});
+      var fb=document.getElementById('p4-fb');
+      if(ans===q.a){btn.classList.add('correct');fb.className='feedback show correct';fb.textContent='✓ Correct!';p4S++;document.getElementById('p4-sc').textContent=p4S;}
+      else{btn.classList.add('incorrect');grid.querySelectorAll('.opt-btn').forEach(function(x){if(x.textContent===q.a)x.classList.add('correct');});fb.className='feedback show incorrect';fb.textContent='✗ Correct: '+q.a;}
+      document.getElementById('p4-next').style.display='block';
+    };})(b,o));
+    grid.appendChild(b);
+  });
+}
+function p4Next(){p4C++;if(p4C<12)p4Show();else{document.getElementById('p4-qa').style.display='none';document.getElementById('p4-res').style.display='block';document.getElementById('p4-fs').textContent=p4S;document.getElementById('p4-prog').style.width='100%';}}
+
+/* INIT */
+bStart();p2Start();p3Start();p4Start();
+</script>
+
+
+</body>
+</html>

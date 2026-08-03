@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guided Notes: The Real Number System</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #1B2A4A;
+  --gold: #C8A951;
+  --light-bg: #F0F4FA;
+  --light-gold: #FDF8EC;
+  --green: #2E7D32;
+  --red: #C62828;
+  --gray: #666;
+  --border: #D0D7E3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;color:var(--navy);background:#FAFBFE;line-height:1.65}
+
+/* ── Header ── */
+header{background:var(--navy);color:#fff;text-align:center;padding:2.5rem 1rem 2rem;position:relative}
+header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--gold)}
+header h1{font-family:'Arvo',serif;font-size:2rem;letter-spacing:.03em}
+header p{color:var(--gold);font-size:1rem;margin-top:.3rem}
+
+.container{max-width:860px;margin:0 auto;padding:1.5rem 1rem 4rem}
+
+/* ── Nav ── */
+nav.topics{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:1.5rem 0 2rem;position:sticky;top:0;z-index:100;background:#FAFBFE;padding:.75rem 0;border-bottom:1px solid var(--border)}
+nav.topics a{font-size:.85rem;font-weight:600;text-decoration:none;padding:.45rem 1rem;border-radius:999px;background:var(--light-bg);color:var(--navy);border:1px solid var(--border);transition:all .2s}
+nav.topics a:hover,nav.topics a.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ── Typography ── */
+section.topic{margin-bottom:3rem;scroll-margin-top:80px}
+section.topic h2{font-family:'Arvo',serif;font-size:1.5rem;color:var(--navy);border-bottom:3px solid var(--gold);padding-bottom:.4rem;margin-bottom:1rem}
+h3{font-size:1.1rem;color:var(--navy);margin:1.5rem 0 .6rem}
+p,li{font-size:.95rem;margin-bottom:.5rem}
+ol.steps{padding-left:1.5rem}
+ol.steps li{margin-bottom:.4rem}
+
+/* ── Fraction CSS ── */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .15em;font-size:.92em;line-height:1.1}
+.frac .num{padding:0 .2em .1em}
+.frac .bar{width:100%;height:1.5px;background:var(--navy);min-width:1em}
+.frac .den{padding:.1em .2em 0}
+.frac.lg{font-size:1em}
+.frac.lg .num,.frac.lg .den{font-weight:600}
+/* Mixed number */
+.mixed{display:inline-flex;align-items:center;gap:.1em;vertical-align:middle}
+.mixed .whole{font-size:1em}
+
+/* Bar notation (overline) */
+.overline{text-decoration:overline;font-weight:700}
+
+/* ── Long Division ── */
+.long-div{font-family:'JetBrains Mono',monospace;font-size:.88rem;background:var(--light-bg);border-radius:8px;padding:1rem 1.25rem;margin:.75rem 0;line-height:1.8;overflow-x:auto;white-space:pre}
+.long-div .quotient{color:var(--navy);font-weight:700}
+.long-div .subtract{color:var(--red)}
+.long-div .result{color:var(--green);font-weight:600}
+
+/* ── Example boxes ── */
+.example{background:var(--light-bg);border-left:5px solid var(--gold);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1rem 0;cursor:pointer;position:relative}
+.example .toggle{position:absolute;right:1rem;top:1rem;font-size:.8rem;color:var(--gray);user-select:none}
+.example .title{font-weight:700;color:var(--navy);margin-bottom:.5rem}
+.example .body{margin-top:.5rem}
+.example .body .step{margin:.25rem 0;font-size:.92rem;padding-left:.5rem}
+.example .body .step b{color:var(--navy)}
+.example .body .result{font-weight:700}
+.example .body .check{color:var(--gray);font-style:italic;font-size:.88rem}
+.example.collapsed .body{display:none}
+.example.collapsed .toggle::after{content:'Show ▼'}
+.example:not(.collapsed) .toggle::after{content:'Hide ▲'}
+
+/* ── Insight / Formula boxes ── */
+.insight{background:var(--light-gold);border:2px solid var(--gold);border-radius:8px;padding:1rem 1.25rem;margin:1.25rem 0}
+.insight .title{font-weight:700;color:var(--navy);margin-bottom:.5rem}
+.formula-box{background:var(--light-gold);border:2px solid var(--gold);border-radius:8px;padding:1.25rem;margin:1rem auto;text-align:center;max-width:520px}
+.formula-box .numer,.formula-box .denom{font-weight:700;font-size:.95rem}
+.formula-box .frac-line{border-top:2px solid var(--navy);margin:.3rem auto;width:80%}
+
+/* ── Squares table ── */
+.sq-table{width:100%;border-collapse:collapse;margin:.75rem 0;font-size:.85rem}
+.sq-table th{background:var(--navy);color:#fff;padding:.35rem .25rem;text-align:center;border:1px solid var(--border);font-weight:600}
+.sq-table td{background:var(--light-bg);padding:.35rem .25rem;text-align:center;border:1px solid var(--border)}
+
+/* ── Interactive Number Line ── */
+.nl-widget{background:#fff;border:2px solid var(--border);border-radius:12px;padding:1.25rem;margin:1rem 0}
+.nl-widget .nl-header{font-weight:700;color:var(--navy);margin-bottom:.75rem;font-size:1.05rem}
+.nl-controls{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;margin-bottom:1rem}
+.nl-controls label{font-size:.95rem;font-weight:600}
+.nl-controls input[type="number"]{width:75px;padding:.3rem .5rem;border:2px solid var(--border);border-radius:6px;font-family:'Inter';font-size:.9rem}
+.nl-controls button{padding:.4rem 1rem;border:none;border-radius:6px;font-family:'Inter';font-weight:600;font-size:.9rem;cursor:pointer;transition:all .2s}
+.btn-go{background:var(--navy);color:#fff}.btn-go:hover{background:#2c3f6e}
+.btn-check{background:var(--gold);color:var(--navy)}.btn-check:hover{background:#b8993e}
+.btn-reset{background:var(--light-bg);color:var(--navy);border:1px solid var(--border) !important}
+.nl-svg-wrap{position:relative;user-select:none;touch-action:none}
+.nl-readout{display:flex;gap:1.5rem;margin-top:.6rem;flex-wrap:wrap;font-size:.92rem}
+.nl-feedback{margin-top:.75rem;padding:.6rem .8rem;border-radius:6px;font-size:.9rem;font-weight:500;display:none}
+.nl-feedback.correct{display:block;background:#E8F5E9;color:var(--green);border:1px solid #A5D6A7}
+.nl-feedback.incorrect{display:block;background:#FFEBEE;color:var(--red);border:1px solid #EF9A9A}
+.nl-feedback.info{display:block;background:var(--light-bg);color:var(--navy);border:1px solid var(--border)}
+
+/* ── Practice ── */
+.practice{margin-top:2rem}
+.practice h3{background:var(--navy);color:#fff;display:inline-block;padding:.35rem 1rem;border-radius:6px;font-size:1rem;margin-bottom:1rem}
+.problem{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-bottom:.75rem;transition:border-color .3s}
+.problem.correct{border-color:var(--green);background:#FAFFF9}
+.problem.incorrect{border-color:var(--red);background:#FFFAFA}
+.problem .q{font-weight:600;margin-bottom:.6rem;font-size:.95rem}
+.problem input[type="text"]{width:200px;padding:.35rem .6rem;border:2px solid var(--border);border-radius:6px;font-family:'Inter';font-size:.95rem;transition:border-color .2s}
+.problem input:focus{outline:none;border-color:var(--gold)}
+.problem .check-btn{margin-left:.5rem;padding:.35rem .8rem;background:var(--navy);color:#fff;border:none;border-radius:6px;font-family:'Inter';font-weight:600;font-size:.85rem;cursor:pointer}
+.problem .check-btn:hover{background:#2c3f6e}
+.problem .feedback{margin-top:.4rem;font-size:.88rem;font-weight:500;min-height:1.3em}
+.problem .feedback.correct{color:var(--green)}
+.problem .feedback.incorrect{color:var(--red)}
+.problem .hint-btn{background:none;border:none;color:var(--gold);cursor:pointer;font-size:.85rem;font-weight:600;margin-left:.5rem}
+.problem .hint{font-size:.85rem;color:var(--gray);font-style:italic;margin-top:.3rem;display:none}
+
+/* ── Drag ordering ── */
+.order-zone{display:flex;gap:.5rem;flex-wrap:wrap;min-height:54px;background:var(--light-bg);border:2px dashed var(--border);border-radius:8px;padding:.6rem;margin:.5rem 0;align-items:center}
+.order-zone.over{border-color:var(--gold);background:var(--light-gold)}
+.drag-item{padding:.4rem .8rem;background:#fff;border:2px solid var(--navy);border-radius:6px;font-weight:600;cursor:grab;user-select:none;font-size:.95rem;transition:all .15s;touch-action:none}
+.drag-item:active{cursor:grabbing;opacity:.7;transform:scale(1.05)}
+.drag-item.dragging{opacity:.3}
+
+/* ── Responsive ── */
+@media(max-width:600px){
+  header h1{font-size:1.5rem}
+  .sq-table{font-size:.7rem}
+  .sq-table th,.sq-table td{padding:.25rem .15rem}
+  .nl-controls{flex-direction:column;align-items:flex-start}
+  .frac{font-size:.85em}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>GUIDED NOTES</h1>
+  <p>The Real Number System &mdash; Converting &bull; Estimating &bull; Ordering</p>
+</header>
+
+<div class="container">
+
+<nav class="topics">
+  <a href="#target1" class="active">① Converting</a>
+  <a href="#target2">② Estimating √</a>
+  <a href="#target3">③ Ordering</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TARGET 1: CONVERTING -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="topic" id="target1">
+<h2>① Converting Between Decimals and Fractions</h2>
+
+<p><strong>Key Idea:</strong> Every decimal can be written as a fraction, and every fraction can be written as a decimal. Some decimals <em><strong>terminate</strong></em> (end), while others <em><strong>repeat</strong></em> (go on forever in a pattern).</p>
+
+<!-- ── Part A ── -->
+<h3>Part A: Terminating Decimals → Fractions</h3>
+<ol class="steps">
+  <li><strong>Read</strong> the decimal using place value (tenths, hundredths, thousandths…).</li>
+  <li><strong>Write</strong> the digits as the numerator over the place value as the denominator.</li>
+  <li><strong>Simplify</strong> by dividing numerator and denominator by the GCF.</li>
+</ol>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 1: Convert 0.75 to a fraction.</div>
+  <div class="body">
+    <div class="step">0.75 → "seventy-five hundredths" → <span class="frac"><span class="num">75</span><span class="bar"></span><span class="den">100</span></span></div>
+    <div class="step">GCF(75, 100) = 25</div>
+    <div class="step result">75 ÷ 25 &frasl; 100 ÷ 25 = <span class="frac lg"><span class="num"><b>3</b></span><span class="bar"></span><span class="den"><b>4</b></span></span></div>
+  </div>
+</div>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 2: Convert 0.125 to a fraction.</div>
+  <div class="body">
+    <div class="step">0.125 → "one hundred twenty-five thousandths" → <span class="frac"><span class="num">125</span><span class="bar"></span><span class="den">1000</span></span></div>
+    <div class="step">GCF(125, 1000) = 125</div>
+    <div class="step result">125 ÷ 125 &frasl; 1000 ÷ 125 = <span class="frac lg"><span class="num"><b>1</b></span><span class="bar"></span><span class="den"><b>8</b></span></span></div>
+  </div>
+</div>
+
+<!-- ── Part B ── -->
+<h3>Part B: Fractions → Decimals (Long Division)</h3>
+<ol class="steps">
+  <li><strong>Divide</strong> the numerator by the denominator using long division.</li>
+  <li>The result will either <strong>terminate</strong> (end) or <strong>repeat</strong> (show a pattern).</li>
+</ol>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 3: Convert <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">8</span></span> to a decimal.</div>
+  <div class="body">
+    <div class="step">3 ÷ 8 — use long division:</div>
+    <div class="long-div">        <span class="quotient">0.375</span>
+       ┌──────
+    8  │ 3.000
+       │<span class="subtract"> 2 4 ↓</span>       8 × 3 = 24
+       │  ───
+       │   60
+       │<span class="subtract">   56 ↓</span>      8 × 7 = 56
+       │   ───
+       │    40
+       │<span class="subtract">    40</span>       8 × 5 = 40
+       │    ──
+       │  <span class="result">   0  ← no remainder!</span></div>
+    <div class="step result"><span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">8</span></span> = <strong>0.375</strong> — this is a <strong>terminating decimal</strong>.</div>
+  </div>
+</div>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 4: Convert <span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">6</span></span> to a decimal.</div>
+  <div class="body">
+    <div class="step">5 ÷ 6 — use long division:</div>
+    <div class="long-div">        <span class="quotient">0.833...</span>
+       ┌──────
+    6  │ 5.000
+       │<span class="subtract"> 4 8 ↓</span>       6 × 8 = 48
+       │  ───
+       │   20
+       │<span class="subtract">   18 ↓</span>      6 × 3 = 18
+       │   ───
+       │    20
+       │<span class="subtract">    18</span>       6 × 3 = 18
+       │    ──
+       │  <span class="result">   2  ← same remainder — it repeats!</span></div>
+    <div class="step">The 3 repeats forever. We write this with <strong>bar notation</strong>:</div>
+    <div class="step result"><span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">6</span></span> = 0.8<span class="overline">3</span> &nbsp; (the bar over the 3 means it repeats forever)</div>
+  </div>
+</div>
+
+<!-- ── Part C: Quick Pattern ── -->
+<h3>Part C: Repeating Decimals → Fractions (Quick Pattern)</h3>
+<p>There's a powerful shortcut for converting repeating decimals to fractions:</p>
+
+<div class="insight">
+  <div class="title">⚡ The Quick Pattern:</div>
+  <p style="margin-top:.5rem"><strong>One digit repeats?</strong> Put it over <strong>9</strong>.</p>
+  <p style="display:flex;align-items:center;gap:.5rem;margin:.4rem 0 .4rem 1.5rem;">
+    0.<span class="overline">7</span> &nbsp;=&nbsp; <span class="frac lg"><span class="num"><b>7</b></span><span class="bar"></span><span class="den"><b>9</b></span></span>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    0.<span class="overline">4</span> &nbsp;=&nbsp; <span class="frac lg"><span class="num"><b>4</b></span><span class="bar"></span><span class="den"><b>9</b></span></span>
+  </p>
+
+  <p style="margin-top:.75rem"><strong>Two digits repeat?</strong> Put them over <strong>99</strong>.</p>
+  <p style="display:flex;align-items:center;gap:.5rem;margin:.4rem 0 .4rem 1.5rem;">
+    0.<span class="overline">21</span> &nbsp;=&nbsp; <span class="frac"><span class="num">21</span><span class="bar"></span><span class="den">99</span></span> &nbsp;=&nbsp; <span class="frac lg"><span class="num"><b>7</b></span><span class="bar"></span><span class="den"><b>33</b></span></span>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    0.<span class="overline">36</span> &nbsp;=&nbsp; <span class="frac"><span class="num">36</span><span class="bar"></span><span class="den">99</span></span> &nbsp;=&nbsp; <span class="frac lg"><span class="num"><b>4</b></span><span class="bar"></span><span class="den"><b>11</b></span></span>
+  </p>
+
+  <p style="margin-top:.75rem"><strong>Three digits repeat?</strong> Put them over <strong>999</strong>.</p>
+  <p style="display:flex;align-items:center;gap:.5rem;margin:.4rem 0 .4rem 1.5rem;">
+    0.<span class="overline">125</span> &nbsp;=&nbsp; <span class="frac lg"><span class="num"><b>125</b></span><span class="bar"></span><span class="den"><b>999</b></span></span>
+  </p>
+
+  <p style="margin-top:.75rem;color:var(--red);font-weight:600">⚠ Always simplify the resulting fraction!</p>
+</div>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 5: Convert 0.<span class="overline">63</span> to a fraction.</div>
+  <div class="body">
+    <div class="step">Two digits repeat → put over 99: <span class="frac"><span class="num">63</span><span class="bar"></span><span class="den">99</span></span></div>
+    <div class="step">GCF(63, 99) = 9</div>
+    <div class="step result">63 ÷ 9 &frasl; 99 ÷ 9 = <span class="frac lg"><span class="num"><b>7</b></span><span class="bar"></span><span class="den"><b>11</b></span></span></div>
+  </div>
+</div>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 6: Convert 0.<span class="overline">54</span> to a fraction.</div>
+  <div class="body">
+    <div class="step">Two digits repeat → put over 99: <span class="frac"><span class="num">54</span><span class="bar"></span><span class="den">99</span></span></div>
+    <div class="step">GCF(54, 99) = 9</div>
+    <div class="step result">54 ÷ 9 &frasl; 99 ÷ 9 = <span class="frac lg"><span class="num"><b>6</b></span><span class="bar"></span><span class="den"><b>11</b></span></span></div>
+  </div>
+</div>
+
+<!-- ── Practice Target 1 ── -->
+<div class="practice">
+<h3>✎ Practice: Converting</h3>
+
+<div class="problem" id="p1-1">
+  <div class="q">1. Convert 0.375 to a fraction in simplest form.</div>
+  <input type="text" placeholder="Your fraction" id="a1-1">
+  <button class="check-btn" onclick="checkFrac('1-1',3,8)">Check</button>
+  <button class="hint-btn" onclick="showHint('1-1')">Hint</button>
+  <div class="feedback" id="f1-1"></div>
+  <div class="hint" id="h1-1">375 thousandths → 375/1000. GCF(375, 1000) = 125.</div>
+</div>
+
+<div class="problem" id="p1-2">
+  <div class="q">2. Convert <span class="frac"><span class="num">7</span><span class="bar"></span><span class="den">11</span></span> to a decimal with bar notation. <em style="color:var(--gray)">(Type repeating digits in parentheses: 0.(63))</em></div>
+  <input type="text" placeholder="Your decimal" id="a1-2">
+  <button class="check-btn" onclick="checkAnswer('1-2','0.(63)')">Check</button>
+  <button class="hint-btn" onclick="showHint('1-2')">Hint</button>
+  <div class="feedback" id="f1-2"></div>
+  <div class="hint" id="h1-2">Do the long division: 7 ÷ 11. Watch for the two-digit pattern!</div>
+</div>
+
+<div class="problem" id="p1-3">
+  <div class="q">3. Convert 2.08 to a mixed number in simplest form. <em style="color:var(--gray)">(Type as: 2 ²⁄₂₅)</em></div>
+  <input type="text" placeholder="Your mixed number" id="a1-3">
+  <button class="check-btn" onclick="checkAnswer('1-3','2 2/25')">Check</button>
+  <button class="hint-btn" onclick="showHint('1-3')">Hint</button>
+  <div class="feedback" id="f1-3"></div>
+  <div class="hint" id="h1-3">Whole part is 2. Then 0.08 = 8/100. GCF(8,100) = 4.</div>
+</div>
+
+<div class="problem" id="p1-4">
+  <div class="q">4. Use the quick pattern: Convert 0.<span class="overline">4</span> to a fraction.</div>
+  <input type="text" placeholder="Your fraction" id="a1-4">
+  <button class="check-btn" onclick="checkFrac('1-4',4,9)">Check</button>
+  <button class="hint-btn" onclick="showHint('1-4')">Hint</button>
+  <div class="feedback" id="f1-4"></div>
+  <div class="hint" id="h1-4">One digit repeats → put it over 9.</div>
+</div>
+
+<div class="problem" id="p1-5">
+  <div class="q">5. Use the quick pattern: Convert 0.<span class="overline">27</span> to a fraction in simplest form.</div>
+  <input type="text" placeholder="Your fraction" id="a1-5">
+  <button class="check-btn" onclick="checkFrac('1-5',3,11)">Check</button>
+  <button class="hint-btn" onclick="showHint('1-5')">Hint</button>
+  <div class="feedback" id="f1-5"></div>
+  <div class="hint" id="h1-5">Two digits repeat → ²⁷⁄₉₉. Now simplify: GCF(27, 99) = 9.</div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TARGET 2: ESTIMATING SQUARE ROOTS -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="topic" id="target2">
+<h2>② Estimating Non-Perfect Square Roots</h2>
+
+<p><strong>Key Idea:</strong> Estimate square roots by finding the two consecutive perfect squares the target falls between, then refining with a fraction.</p>
+
+<h3>Reference: Perfect Squares You Should Know</h3>
+<table class="sq-table">
+  <tr><th>1²</th><th>2²</th><th>3²</th><th>4²</th><th>5²</th><th>6²</th><th>7²</th><th>8²</th><th>9²</th><th>10²</th></tr>
+  <tr><td>1</td><td>4</td><td>9</td><td>16</td><td>25</td><td>36</td><td>49</td><td>64</td><td>81</td><td>100</td></tr>
+  <tr><th>11²</th><th>12²</th><th>13²</th><th>14²</th><th>15²</th><th>16²</th><th>17²</th><th>18²</th><th>19²</th><th>20²</th></tr>
+  <tr><td>121</td><td>144</td><td>169</td><td>196</td><td>225</td><td>256</td><td>289</td><td>324</td><td>361</td><td>400</td></tr>
+</table>
+
+<h3>The Estimation Algorithm</h3>
+<ol class="steps">
+  <li><strong>Find</strong> the two perfect squares the target falls between.</li>
+  <li>The <strong>lesser square root</strong> is the integer part of your estimate.</li>
+  <li><strong>Build a fraction:</strong></li>
+</ol>
+
+<div class="formula-box">
+  <div class="numer">target number − lesser perfect square</div>
+  <div class="frac-line"></div>
+  <div class="denom">greater perfect square − lesser perfect square</div>
+</div>
+
+<ol class="steps" start="4">
+  <li><strong>Convert</strong> that fraction to a decimal.</li>
+  <li><strong>Add</strong> the decimal to the lesser square root for your estimate.</li>
+</ol>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 1: Estimate √18</div>
+  <div class="body">
+    <div class="step"><b>Step 1:</b> 16 &lt; 18 &lt; 25</div>
+    <div class="step"><b>Step 2:</b> √16 = 4 and √25 = 5 → Integer part = <strong>4</strong></div>
+    <div class="step"><b>Step 3:</b> <span class="frac"><span class="num">18 − 16</span><span class="bar"></span><span class="den">25 − 16</span></span> = <span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">9</span></span></div>
+    <div class="step"><b>Step 4:</b> 2 ÷ 9 ≈ 0.222</div>
+    <div class="step result"><b>Step 5:</b> 4 + 0.222 = <strong>√18 ≈ 4.222</strong></div>
+    <div class="step check">Check: 4.222² ≈ 17.83 ✓</div>
+  </div>
+</div>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 2: Estimate √55</div>
+  <div class="body">
+    <div class="step"><b>Step 1:</b> 49 &lt; 55 &lt; 64</div>
+    <div class="step"><b>Step 2:</b> √49 = 7 and √64 = 8 → Integer part = <strong>7</strong></div>
+    <div class="step"><b>Step 3:</b> <span class="frac"><span class="num">55 − 49</span><span class="bar"></span><span class="den">64 − 49</span></span> = <span class="frac"><span class="num">6</span><span class="bar"></span><span class="den">15</span></span> = <span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">5</span></span></div>
+    <div class="step"><b>Step 4:</b> 2 ÷ 5 = 0.4</div>
+    <div class="step result"><b>Step 5:</b> 7 + 0.4 = <strong>√55 ≈ 7.4</strong></div>
+    <div class="step check">Check: 7.4² = 54.76 ✓</div>
+  </div>
+</div>
+
+<h3>Plotting on a Number Line</h3>
+<p>Use the decimal part to judge position between the two integers.</p>
+
+<!-- ── INTERACTIVE NUMBER LINE WIDGET ── -->
+<div class="nl-widget">
+  <div class="nl-header">🎯 Interactive: Estimate a Square Root on the Number Line</div>
+  <p style="font-size:.9rem;margin-bottom:.75rem;">Enter a non-perfect square below, then <strong>drag the orange point</strong> to where you think √n falls. Click <em>Check</em> to see how close you are!</p>
+
+  <div class="nl-controls">
+    <label>√</label>
+    <input type="number" id="nl-target" min="2" max="399" value="18">
+    <button class="btn-go" onclick="nlSetup()">Go</button>
+    <button class="btn-check" onclick="nlCheck()">Check My Estimate</button>
+    <button class="btn-reset" onclick="nlReset()">New Problem</button>
+  </div>
+
+  <div class="nl-svg-wrap" id="nl-svg-wrap"></div>
+  <div class="nl-readout">
+    <div><strong>Your estimate:</strong> <span id="nl-estimate" style="color:var(--gold);font-weight:700;">—</span></div>
+    <div><strong>Algorithm says:</strong> <span id="nl-algo" style="color:var(--gray);">—</span></div>
+    <div><strong>Actual √:</strong> <span id="nl-actual" style="color:var(--gray);">—</span></div>
+  </div>
+  <div class="nl-feedback" id="nl-feedback"></div>
+
+  <div id="nl-steps" style="margin-top:1rem;display:none;">
+    <div class="insight">
+      <div class="title">Algorithm Steps:</div>
+      <div id="nl-steps-content" style="font-size:.92rem;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Practice Target 2 ── -->
+<div class="practice">
+<h3>✎ Practice: Estimating Square Roots</h3>
+
+<div class="problem" id="p2-1">
+  <div class="q">1. Estimate √10 using the algorithm. Round to 3 decimal places.</div>
+  <input type="text" placeholder="Your estimate" id="a2-1">
+  <button class="check-btn" onclick="checkSqrt('2-1',10)">Check</button>
+  <button class="hint-btn" onclick="showHint('2-1')">Hint</button>
+  <div class="feedback" id="f2-1"></div>
+  <div class="hint" id="h2-1">9 &lt; 10 &lt; 16. Lesser root = 3. Fraction = (10−9)/(16−9) = ¹⁄₇ ≈ 0.143.</div>
+</div>
+
+<div class="problem" id="p2-2">
+  <div class="q">2. Estimate √45 using the algorithm. Round to 3 decimal places.</div>
+  <input type="text" placeholder="Your estimate" id="a2-2">
+  <button class="check-btn" onclick="checkSqrt('2-2',45)">Check</button>
+  <button class="hint-btn" onclick="showHint('2-2')">Hint</button>
+  <div class="feedback" id="f2-2"></div>
+  <div class="hint" id="h2-2">36 &lt; 45 &lt; 49. Lesser root = 6. Fraction = (45−36)/(49−36) = ⁹⁄₁₃ ≈ 0.692.</div>
+</div>
+
+<div class="problem" id="p2-3">
+  <div class="q">3. Estimate √150 using the algorithm. Round to 3 decimal places.</div>
+  <input type="text" placeholder="Your estimate" id="a2-3">
+  <button class="check-btn" onclick="checkSqrt('2-3',150)">Check</button>
+  <button class="hint-btn" onclick="showHint('2-3')">Hint</button>
+  <div class="feedback" id="f2-3"></div>
+  <div class="hint" id="h2-3">144 &lt; 150 &lt; 169. Lesser root = 12. Fraction = ⁶⁄₂₅ = 0.24.</div>
+</div>
+
+<div class="problem" id="p2-4">
+  <div class="q">4. Which is greater: √40 or 6.5? <em style="color:var(--gray)">(Type the greater value, e.g. "6.5" or "sqrt40")</em></div>
+  <input type="text" placeholder="Your answer" id="a2-4">
+  <button class="check-btn" onclick="checkAnswer('2-4','6.5')">Check</button>
+  <button class="hint-btn" onclick="showHint('2-4')">Hint</button>
+  <div class="feedback" id="f2-4"></div>
+  <div class="hint" id="h2-4">36 &lt; 40 &lt; 49. Fraction = ⁴⁄₁₃ ≈ 0.308 → √40 ≈ 6.308. Compare to 6.5.</div>
+</div>
+
+<div class="problem" id="p2-5">
+  <div class="q">5. A square patio has area = 200 sq ft. Estimate the side length to the nearest tenth.</div>
+  <input type="text" placeholder="Your answer" id="a2-5">
+  <button class="check-btn" onclick="checkClose('2-5',14.1,0.1)">Check</button>
+  <button class="hint-btn" onclick="showHint('2-5')">Hint</button>
+  <div class="feedback" id="f2-5"></div>
+  <div class="hint" id="h2-5">Side = √200. 196 &lt; 200 &lt; 225. Fraction = ⁴⁄₂₉ ≈ 0.138 → 14.138 → round to 14.1.</div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- TARGET 3: ORDERING -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<section class="topic" id="target3">
+<h2>③ Ordering Mixed Numbers</h2>
+
+<p><strong>Key Idea:</strong> Convert everything to the <strong>same form</strong> (decimals or common denominator) to compare directly.</p>
+
+<h3>Method 1: Convert Everything to Decimals</h3>
+<ol class="steps">
+  <li>Convert each mixed number / fraction to a decimal.</li>
+  <li>Compare the decimals.</li>
+  <li>Write the original numbers in order.</li>
+</ol>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 1: Order least to greatest: &nbsp;<span class="mixed"><span class="whole">2</span><span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span></span>, &nbsp; 2.6, &nbsp; <span class="mixed"><span class="whole">2</span><span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">8</span></span></span></div>
+  <div class="body">
+    <div class="step"><span class="mixed"><span class="whole">2</span><span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span></span> = 2.75 &nbsp;&nbsp;&nbsp; 2.6 = 2.6 &nbsp;&nbsp;&nbsp; <span class="mixed"><span class="whole">2</span><span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">8</span></span></span> = 2.625</div>
+    <div class="step">2.6 &lt; 2.625 &lt; 2.75</div>
+    <div class="step result">Answer: <strong>2.6, &nbsp; 2 <span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">8</span></span>, &nbsp; 2 <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span></strong></div>
+  </div>
+</div>
+
+<h3>Method 2: Find a Common Denominator</h3>
+<ol class="steps">
+  <li>Compare whole parts first — different wholes determine order immediately.</li>
+  <li>For same whole parts, find the LCD of the fraction parts.</li>
+  <li>Compare numerators.</li>
+</ol>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 2: Order least to greatest: &nbsp;<span class="mixed"><span class="whole">3</span><span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span></span>, &nbsp; <span class="mixed"><span class="whole">3</span><span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">5</span></span></span>, &nbsp; <span class="mixed"><span class="whole">3</span><span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">4</span></span></span></div>
+  <div class="body">
+    <div class="step">Same whole part (3). LCD(3, 5, 4) = 60</div>
+    <div class="step"><span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span> = <span class="frac"><span class="num">20</span><span class="bar"></span><span class="den">60</span></span> &nbsp;&nbsp; <span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">5</span></span> = <span class="frac"><span class="num">24</span><span class="bar"></span><span class="den">60</span></span> &nbsp;&nbsp; <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">4</span></span> = <span class="frac"><span class="num">15</span><span class="bar"></span><span class="den">60</span></span></div>
+    <div class="step result">Answer: <strong>3 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">4</span></span>, &nbsp; 3 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span>, &nbsp; 3 <span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">5</span></span></strong></div>
+  </div>
+</div>
+
+<h3>Dealing with Negatives</h3>
+<p><strong>Remember:</strong> For two negative numbers, the one with the <strong>larger absolute value is less</strong>. Farther left on the number line = smaller.</p>
+
+<div class="example" onclick="this.classList.toggle('collapsed')">
+  <span class="toggle"></span>
+  <div class="title">Example 3: Order: &nbsp;−<span class="mixed"><span class="whole">1</span><span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">2</span></span></span>, &nbsp; <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span>, &nbsp; −0.8, &nbsp; <span class="mixed"><span class="whole">1</span><span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span></span></div>
+  <div class="body">
+    <div class="step">−1 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">2</span></span> = −1.5 &nbsp;&nbsp; <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span> = 0.75 &nbsp;&nbsp; −0.8 &nbsp;&nbsp; 1 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span> ≈ 1.333</div>
+    <div class="step">−1.5 &lt; −0.8 &lt; 0.75 &lt; 1.333</div>
+    <div class="step result">Answer: <strong>−1 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">2</span></span>, &nbsp; −0.8, &nbsp; <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span>, &nbsp; 1 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">3</span></span></strong></div>
+  </div>
+</div>
+
+<!-- ── Practice Target 3: Drag-to-Order ── -->
+<div class="practice">
+<h3>✎ Practice: Ordering (Drag to Order Least → Greatest)</h3>
+
+<div class="problem" id="p3-1">
+  <div class="q">1. Order: &nbsp; 4 <span class="frac"><span class="num">5</span><span class="bar"></span><span class="den">6</span></span>, &nbsp; 4.9, &nbsp; 4 <span class="frac"><span class="num">7</span><span class="bar"></span><span class="den">8</span></span>, &nbsp; 4 <span class="frac"><span class="num">2</span><span class="bar"></span><span class="den">3</span></span></div>
+  <div class="order-zone" id="zone3-1"></div>
+  <button class="check-btn" onclick="checkOrder('3-1','zone3-1')">Check Order</button>
+  <div class="feedback" id="f3-1"></div>
+</div>
+
+<div class="problem" id="p3-2">
+  <div class="q">2. Order: &nbsp; −<span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">4</span></span>, &nbsp; 0.5, &nbsp; −1 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">8</span></span>, &nbsp; <span class="frac"><span class="num">3</span><span class="bar"></span><span class="den">5</span></span></div>
+  <div class="order-zone" id="zone3-2"></div>
+  <button class="check-btn" onclick="checkOrder('3-2','zone3-2')">Check Order</button>
+  <div class="feedback" id="f3-2"></div>
+</div>
+
+<div class="problem" id="p3-3">
+  <div class="q">3. Order: &nbsp; √5, &nbsp; 2 <span class="frac"><span class="num">1</span><span class="bar"></span><span class="den">4</span></span>, &nbsp; 2.<span class="overline">3</span>, &nbsp; <span class="frac"><span class="num">11</span><span class="bar"></span><span class="den">5</span></span></div>
+  <div class="order-zone" id="zone3-3"></div>
+  <button class="check-btn" onclick="checkOrder('3-3','zone3-3')">Check Order</button>
+  <div class="feedback" id="f3-3"></div>
+</div>
+</div>
+</section>
+</div><!-- end container -->
+
+<script>
+// ══════════════ NAV HIGHLIGHTING ══════════════
+const navLinks = document.querySelectorAll('nav.topics a');
+const sections = document.querySelectorAll('section.topic');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
+});
+
+// ══════════════ ANSWER CHECKING ══════════════
+function showHint(id) {
+  const h = document.getElementById('h' + id);
+  h.style.display = h.style.display === 'block' ? 'none' : 'block';
+}
+
+function checkAnswer(id, correct) {
+  const val = document.getElementById('a' + id).value.trim().toLowerCase().replace(/\s+/g,' ');
+  const fb = document.getElementById('f' + id);
+  const prob = document.getElementById('p' + id);
+  if (val === correct.toLowerCase()) {
+    fb.textContent = '✓ Correct!'; fb.className = 'feedback correct'; prob.className = 'problem correct';
+  } else {
+    fb.textContent = '✗ Not quite — try again!'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
+  }
+}
+
+function checkFrac(id, num, den) {
+  const val = document.getElementById('a' + id).value.trim().replace(/\s+/g,'');
+  const fb = document.getElementById('f' + id);
+  const prob = document.getElementById('p' + id);
+  // Accept n/d format
+  const match = val.match(/^(-?\d+)\/(\d+)$/);
+  if (match) {
+    const n = parseInt(match[1]), d = parseInt(match[2]);
+    // Check equivalence
+    if (n * den === num * d && d > 0) {
+      // Check simplest form
+      if (gcd(Math.abs(n), d) === 1) {
+        fb.textContent = '✓ Correct!'; fb.className = 'feedback correct'; prob.className = 'problem correct'; return;
+      } else {
+        fb.textContent = '✗ Equivalent but not fully simplified. Keep going!'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect'; return;
+      }
+    }
+  }
+  fb.textContent = '✗ Not quite — try again!'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
+}
+
+function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+function checkSqrt(id, target) {
+  const val = parseFloat(document.getElementById('a' + id).value.trim());
+  const fb = document.getElementById('f' + id);
+  const prob = document.getElementById('p' + id);
+  if (isNaN(val)) { fb.textContent = '✗ Enter a number.'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect'; return; }
+  const algo = sqrtAlgo(target);
+  const diff = Math.abs(val - algo);
+  if (diff < 0.015) {
+    fb.textContent = `✓ Correct! Algorithm gives ${algo.toFixed(3)}.`; fb.className = 'feedback correct'; prob.className = 'problem correct';
+  } else {
+    fb.textContent = `✗ Not quite. Check your steps! (Your answer: ${val})`; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
+  }
+}
+
+function checkClose(id, target, tol) {
+  const val = parseFloat(document.getElementById('a' + id).value.trim());
+  const fb = document.getElementById('f' + id);
+  const prob = document.getElementById('p' + id);
+  if (isNaN(val)) { fb.textContent = '✗ Enter a number.'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect'; return; }
+  if (Math.abs(val - target) <= tol) {
+    fb.textContent = `✓ Correct! ≈ ${target}`; fb.className = 'feedback correct'; prob.className = 'problem correct';
+  } else {
+    fb.textContent = '✗ Not quite — try again!'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
+  }
+}
+
+function sqrtAlgo(n) {
+  const perfectSquares = [];
+  for (let i = 1; i <= 20; i++) perfectSquares.push(i * i);
+  let lo = 1;
+  for (let i = 1; i <= 20; i++) { if (i * i <= n) lo = i; else break; }
+  const hi = lo + 1;
+  const loSq = lo * lo, hiSq = hi * hi;
+  const frac = (n - loSq) / (hiSq - loSq);
+  return lo + frac;
+}
+
+// ══════════════ INTERACTIVE NUMBER LINE ══════════════
+let nlState = { target: 18, lo: 4, hi: 5, loSq: 16, hiSq: 25, pointX: 0.5, dragging: false };
+
+function nlSetup() {
+  const n = parseInt(document.getElementById('nl-target').value);
+  if (isNaN(n) || n < 2 || n > 399) return;
+  // Check if perfect square
+  const sq = Math.sqrt(n);
+  if (sq === Math.floor(sq)) {
+    document.getElementById('nl-feedback').textContent = `${n} is a perfect square! √${n} = ${sq}. Try a non-perfect square.`;
+    document.getElementById('nl-feedback').className = 'nl-feedback info';
+    return;
+  }
+  const lo = Math.floor(sq);
+  nlState = { target: n, lo, hi: lo + 1, loSq: lo * lo, hiSq: (lo + 1) * (lo + 1), pointX: 0.5, dragging: false };
+  document.getElementById('nl-estimate').textContent = '—';
+  document.getElementById('nl-algo').textContent = '—';
+  document.getElementById('nl-actual').textContent = '—';
+  document.getElementById('nl-feedback').className = 'nl-feedback';
+  document.getElementById('nl-feedback').style.display = 'none';
+  document.getElementById('nl-steps').style.display = 'none';
+  renderNL();
+}
+
+function renderNL() {
+  const wrap = document.getElementById('nl-svg-wrap');
+  const W = 700, H = 100, pad = 50, trackY = 50;
+  const trackW = W - 2 * pad;
+  const { lo, hi, pointX } = nlState;
+
+  // Tick positions for tenths
+  let svg = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="max-width:100%">`;
+  // Track
+  svg += `<line x1="${pad}" y1="${trackY}" x2="${W - pad}" y2="${trackY}" stroke="#1B2A4A" stroke-width="3"/>`;
+  // End ticks & labels
+  svg += `<line x1="${pad}" y1="${trackY - 15}" x2="${pad}" y2="${trackY + 15}" stroke="#1B2A4A" stroke-width="3"/>`;
+  svg += `<text x="${pad}" y="${trackY + 32}" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#1B2A4A">${lo}</text>`;
+  svg += `<line x1="${W - pad}" y1="${trackY - 15}" x2="${W - pad}" y2="${trackY + 15}" stroke="#1B2A4A" stroke-width="3"/>`;
+  svg += `<text x="${W - pad}" y="${trackY + 32}" text-anchor="middle" font-family="Inter" font-size="14" font-weight="700" fill="#1B2A4A">${hi}</text>`;
+  // Tenth ticks
+  for (let i = 1; i <= 9; i++) {
+    const x = pad + (i / 10) * trackW;
+    svg += `<line x1="${x}" y1="${trackY - 8}" x2="${x}" y2="${trackY + 8}" stroke="#D0D7E3" stroke-width="1.5"/>`;
+    svg += `<text x="${x}" y="${trackY + 25}" text-anchor="middle" font-family="Inter" font-size="10" fill="#999">.${i}</text>`;
+  }
+  // Half tick
+  const halfX = pad + 0.5 * trackW;
+  svg += `<line x1="${halfX}" y1="${trackY - 12}" x2="${halfX}" y2="${trackY + 12}" stroke="#D0D7E3" stroke-width="2"/>`;
+
+  // Draggable point
+  const px = pad + pointX * trackW;
+  svg += `<circle cx="${px}" cy="${trackY}" r="12" fill="#C8A951" stroke="#1B2A4A" stroke-width="2.5" style="cursor:grab" id="nl-point"/>`;
+  svg += `<text x="${px}" y="${trackY - 20}" text-anchor="middle" font-family="Inter" font-size="12" font-weight="700" fill="#C8A951">▼</text>`;
+  svg += `</svg>`;
+
+  wrap.innerHTML = svg;
+
+  // Update readout
+  const est = lo + pointX;
+  document.getElementById('nl-estimate').textContent = est.toFixed(3);
+
+  // Drag events
+  const svgEl = wrap.querySelector('svg');
+  const point = document.getElementById('nl-point');
+
+  function getX(e) {
+    const rect = svgEl.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const svgX = (clientX - rect.left) / rect.width * W;
+    return Math.max(0, Math.min(1, (svgX - pad) / trackW));
+  }
+
+  function onStart(e) { e.preventDefault(); nlState.dragging = true; }
+  function onMove(e) {
+    if (!nlState.dragging) return;
+    e.preventDefault();
+    nlState.pointX = getX(e);
+    renderNL();
+  }
+  function onEnd() { nlState.dragging = false; }
+
+  point.addEventListener('mousedown', onStart);
+  point.addEventListener('touchstart', onStart, { passive: false });
+  svgEl.addEventListener('mousemove', onMove);
+  svgEl.addEventListener('touchmove', onMove, { passive: false });
+  svgEl.addEventListener('mouseup', onEnd);
+  svgEl.addEventListener('touchend', onEnd);
+  svgEl.addEventListener('mouseleave', onEnd);
+  // Click anywhere on track
+  svgEl.addEventListener('click', (e) => {
+    nlState.pointX = getX(e);
+    renderNL();
+  });
+}
+
+function nlCheck() {
+  const { target, lo, hi, loSq, hiSq, pointX } = nlState;
+  const estimate = lo + pointX;
+  const algoVal = sqrtAlgo(target);
+  const actual = Math.sqrt(target);
+  const diff = Math.abs(estimate - algoVal);
+
+  document.getElementById('nl-algo').textContent = algoVal.toFixed(3);
+  document.getElementById('nl-actual').textContent = actual.toFixed(4);
+
+  const fb = document.getElementById('nl-feedback');
+  if (diff < 0.05) {
+    fb.textContent = `🎉 Excellent! Your estimate (${estimate.toFixed(3)}) is within ${diff.toFixed(3)} of the algorithm result!`;
+    fb.className = 'nl-feedback correct';
+  } else if (diff < 0.15) {
+    fb.textContent = `👍 Close! Your estimate (${estimate.toFixed(3)}) is ${diff.toFixed(3)} away from ${algoVal.toFixed(3)}. Try refining!`;
+    fb.className = 'nl-feedback info';
+  } else {
+    fb.textContent = `Try again! Your estimate (${estimate.toFixed(3)}) is ${diff.toFixed(2)} away. The algorithm gives ${algoVal.toFixed(3)}.`;
+    fb.className = 'nl-feedback incorrect';
+  }
+
+  // Show steps
+  const numer = target - loSq;
+  const denom = hiSq - loSq;
+  const g = gcd(numer, denom);
+  const sn = numer / g, sd = denom / g;
+  const fracDec = (numer / denom);
+  let stepsHTML = `
+    <p><b>Step 1:</b> ${loSq} &lt; ${target} &lt; ${hiSq}</p>
+    <p><b>Step 2:</b> √${loSq} = ${lo} and √${hiSq} = ${hi} → Integer part = <b>${lo}</b></p>
+    <p><b>Step 3:</b> (${target} − ${loSq}) / (${hiSq} − ${loSq}) = ${numer}/${denom}${g > 1 ? ` = ${sn}/${sd}` : ''}</p>
+    <p><b>Step 4:</b> ${numer} ÷ ${denom} ≈ ${fracDec.toFixed(3)}</p>
+    <p><b>Step 5:</b> ${lo} + ${fracDec.toFixed(3)} = <b>√${target} ≈ ${algoVal.toFixed(3)}</b></p>
+    <p style="color:var(--gray);font-style:italic">Actual: √${target} = ${actual.toFixed(4)}</p>
+  `;
+  document.getElementById('nl-steps-content').innerHTML = stepsHTML;
+  document.getElementById('nl-steps').style.display = 'block';
+}
+
+function nlReset() {
+  // Pick random non-perfect square 2-200
+  let n;
+  do { n = Math.floor(Math.random() * 199) + 2; } while (Math.sqrt(n) === Math.floor(Math.sqrt(n)));
+  document.getElementById('nl-target').value = n;
+  nlSetup();
+}
+
+// Init number line
+nlSetup();
+
+// ══════════════ DRAG-TO-ORDER ══════════════
+const orderData = {
+  '3-1': [
+    { label: '4 ⁵⁄₆', val: 4.833 },
+    { label: '4.9', val: 4.9 },
+    { label: '4 ⁷⁄₈', val: 4.875 },
+    { label: '4 ²⁄₃', val: 4.667 },
+  ],
+  '3-2': [
+    { label: '−³⁄₄', val: -0.75 },
+    { label: '0.5', val: 0.5 },
+    { label: '−1 ¹⁄₈', val: -1.125 },
+    { label: '³⁄₅', val: 0.6 },
+  ],
+  '3-3': [
+    { label: '√5', val: 2.236 },
+    { label: '2 ¹⁄₄', val: 2.25 },
+    { label: '2.3̄', val: 2.333 },
+    { label: '¹¹⁄₅', val: 2.2 },
+  ],
+};
+
+// Populate drag zones
+Object.keys(orderData).forEach(key => {
+  const zone = document.getElementById('zone' + key);
+  if (!zone) return;
+  // Shuffle items
+  const items = [...orderData[key]];
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j], items[i]];
+  }
+  items.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'drag-item';
+    el.draggable = true;
+    el.setAttribute('data-val', item.val);
+    el.textContent = item.label;
+    el.addEventListener('dragstart', dragStart);
+    // Touch support
+    el.addEventListener('touchstart', touchStart, { passive: false });
+    zone.appendChild(el);
+  });
+});
+
+let draggedEl = null;
+let touchClone = null;
+let touchSourceZone = null;
+
+function dragStart(e) {
+  draggedEl = e.target;
+  e.target.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+}
+
+function dragOver(e) { e.preventDefault(); }
+
+function dropItem(e, zoneId) {
+  e.preventDefault();
+  const zone = document.getElementById(zoneId);
+  zone.classList.remove('over');
+  if (!draggedEl) return;
+  draggedEl.classList.remove('dragging');
+
+  // Find insertion position
+  const items = [...zone.querySelectorAll('.drag-item:not(.dragging)')];
+  const rect = zone.getBoundingClientRect();
+  const mouseX = e.clientX - rect.left;
+  let inserted = false;
+  for (const item of items) {
+    const itemRect = item.getBoundingClientRect();
+    const itemMid = itemRect.left + itemRect.width / 2 - rect.left;
+    if (mouseX < itemMid) {
+      zone.insertBefore(draggedEl, item);
+      inserted = true;
+      break;
+    }
+  }
+  if (!inserted) zone.appendChild(draggedEl);
+  draggedEl = null;
+}
+
+// Touch drag support
+function touchStart(e) {
+  e.preventDefault();
+  draggedEl = e.target;
+  touchSourceZone = draggedEl.parentElement;
+  draggedEl.classList.add('dragging');
+  const touch = e.touches[0];
+  touchClone = draggedEl.cloneNode(true);
+  touchClone.style.position = 'fixed';
+  touchClone.style.pointerEvents = 'none';
+  touchClone.style.zIndex = '9999';
+  touchClone.style.opacity = '0.8';
+  touchClone.style.transform = 'scale(1.1)';
+  touchClone.style.left = (touch.clientX - 40) + 'px';
+  touchClone.style.top = (touch.clientY - 20) + 'px';
+  document.body.appendChild(touchClone);
+
+  document.addEventListener('touchmove', touchMove, { passive: false });
+  document.addEventListener('touchend', touchEnd);
+}
+
+function touchMove(e) {
+  e.preventDefault();
+  if (!touchClone) return;
+  const touch = e.touches[0];
+  touchClone.style.left = (touch.clientX - 40) + 'px';
+  touchClone.style.top = (touch.clientY - 20) + 'px';
+}
+
+function touchEnd(e) {
+  document.removeEventListener('touchmove', touchMove);
+  document.removeEventListener('touchend', touchEnd);
+  if (touchClone) { document.body.removeChild(touchClone); touchClone = null; }
+  if (!draggedEl || !touchSourceZone) return;
+  draggedEl.classList.remove('dragging');
+
+  const touch = e.changedTouches[0];
+  const zone = touchSourceZone;
+  const items = [...zone.querySelectorAll('.drag-item:not(.dragging)')];
+  const rect = zone.getBoundingClientRect();
+  const touchX = touch.clientX - rect.left;
+  let inserted = false;
+  for (const item of items) {
+    const itemRect = item.getBoundingClientRect();
+    const mid = itemRect.left + itemRect.width / 2 - rect.left;
+    if (touchX < mid) { zone.insertBefore(draggedEl, item); inserted = true; break; }
+  }
+  if (!inserted) zone.appendChild(draggedEl);
+  draggedEl = null;
+  touchSourceZone = null;
+}
+
+function checkOrder(id, zoneId) {
+  const zone = document.getElementById(zoneId);
+  const items = [...zone.querySelectorAll('.drag-item')];
+  const vals = items.map(el => parseFloat(el.getAttribute('data-val')));
+  const fb = document.getElementById('f' + id);
+  const prob = document.getElementById('p' + id);
+
+  let sorted = true;
+  for (let i = 1; i < vals.length; i++) {
+    if (vals[i] < vals[i - 1]) { sorted = false; break; }
+  }
+  if (sorted) {
+    fb.textContent = '✓ Correct! Great job!'; fb.className = 'feedback correct'; prob.className = 'problem correct';
+  } else {
+    fb.textContent = '✗ Not quite — try converting each to a decimal and comparing.'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
+  }
+}
+
+// Add drop listeners to zones
+document.querySelectorAll('.order-zone').forEach(zone => {
+  zone.addEventListener('dragover', dragOver);
+  zone.addEventListener('drop', (e) => dropItem(e, zone.id));
+  zone.addEventListener('dragenter', () => zone.classList.add('over'));
+  zone.addEventListener('dragleave', () => zone.classList.remove('over'));
+});
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>

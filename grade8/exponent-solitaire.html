@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exponent Solitaire · 8th Grade Math · Unit 2</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --felt:        #0f3a2e;
+    --felt-light:  #16513f;
+    --felt-dark:   #081f18;
+    --cream:       #f7f0e3;
+    --cream-2:     #ebe1cc;
+    --ink:         #14181c;
+    --gold:        #d4a437;
+    --gold-soft:   #b88a2a;
+    --navy:        #1e3a5f;
+    --navy-deep:   #0f2442;
+    --base-x:      #b91c1c;
+    --base-y:      #1e40af;
+    --base-m:      #166534;
+    --base-n:      #7e22ce;
+    --err:         #c2410c;
+    --ok:          #15803d;
+    --shadow-card:       0 4px 10px rgba(0,0,0,.28), 0 1px 3px rgba(0,0,0,.35);
+    --shadow-card-hover: 0 10px 22px rgba(0,0,0,.38), 0 2px 6px rgba(0,0,0,.45);
+    --shadow-sel:        0 0 0 3px var(--gold), 0 10px 22px rgba(212,164,55,.45);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--cream);
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 20%, var(--felt-light) 0%, var(--felt) 45%, var(--felt-dark) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: .35;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 16px 22px 40px;
+  }
+
+  /* ============ Back link ============ */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px 7px 11px;
+    background: rgba(0,0,0,.3);
+    color: var(--gold);
+    border: 1px solid rgba(212,164,55,.3);
+    border-radius: 8px;
+    font: 600 .85rem 'DM Sans', sans-serif;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 12px;
+  }
+  .back-link:hover {
+    background: rgba(212,164,55,.12);
+    border-color: var(--gold);
+    transform: translateX(-2px);
+  }
+  .back-link .arrow { font-size: 1.1em; }
+
+  /* ============ Header ============ */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: clamp(1.4rem, 2.6vw, 2.1rem);
+    letter-spacing: -.02em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  h1 .accent {
+    color: var(--gold);
+    font-style: italic;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .diff-group {
+    display: inline-flex;
+    background: rgba(0,0,0,.3);
+    border-radius: 10px;
+    padding: 4px;
+    border: 1px solid rgba(247,240,227,.1);
+  }
+  .diff-btn {
+    padding: 7px 16px;
+    border: 0;
+    background: transparent;
+    color: var(--cream);
+    font: 500 .88rem 'DM Sans', sans-serif;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .diff-btn:hover { background: rgba(247,240,227,.08); }
+  .diff-btn.active {
+    background: var(--gold);
+    color: var(--felt-dark);
+    font-weight: 700;
+  }
+
+  .action-btn {
+    padding: 8px 14px;
+    border: 1px solid rgba(247,240,227,.2);
+    background: rgba(0,0,0,.3);
+    color: var(--cream);
+    font: 500 .86rem 'DM Sans', sans-serif;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .action-btn:hover {
+    background: rgba(247,240,227,.08);
+    border-color: var(--gold);
+  }
+  .action-btn.on {
+    background: var(--gold);
+    color: var(--felt-dark);
+    border-color: var(--gold);
+    font-weight: 700;
+  }
+
+  .stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem;
+    color: rgba(247,240,227,.75);
+    padding: 6px 10px;
+    background: rgba(0,0,0,.2);
+    border-radius: 6px;
+  }
+
+  /* ============ Top row: foundations + stock/waste ============ */
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 28px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .section-label {
+    font: 700 .65rem 'DM Sans', sans-serif;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: rgba(247,240,227,.5);
+    margin-bottom: 8px;
+  }
+
+  .foundations, .stock-waste {
+    display: flex;
+    gap: 12px;
+  }
+
+  /* ============ Tableau ============ */
+  .tableau {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    min-height: 400px;
+    flex-wrap: wrap;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    width: 132px;
+    min-height: 180px;
+  }
+  .column > .card-wrap + .card-wrap { margin-top: -122px; }
+
+  /* ============ Card ============ */
+  .card-wrap { position: relative; }
+
+  .card, .card-slot {
+    width: 132px;
+    height: 180px;
+    border-radius: 10px;
+    position: relative;
+  }
+
+  .card-slot {
+    border: 2px dashed rgba(247,240,227,.15);
+    background: rgba(0,0,0,.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: rgba(247,240,227,.28);
+    font-size: 1.6rem;
+    transition: border-color .2s, background .2s;
+  }
+
+  .card {
+    background: linear-gradient(170deg, var(--cream) 0%, var(--cream-2) 100%);
+    color: var(--ink);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s;
+    border: 1px solid rgba(20,24,28,.1);
+    padding: 9px 10px;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 1;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-card-hover);
+    z-index: 4;
+  }
+  .card.selected {
+    box-shadow: var(--shadow-sel);
+    transform: translateY(-5px);
+    z-index: 10;
+  }
+
+  .card.face-down {
+    cursor: default;
+    background:
+      repeating-linear-gradient(45deg, rgba(212,164,55,.07) 0 2px, transparent 2px 10px),
+      radial-gradient(circle at 50% 45%, rgba(212,164,55,.18) 0%, transparent 60%),
+      linear-gradient(155deg, var(--navy) 0%, var(--navy-deep) 100%);
+    border-color: var(--gold-soft);
+  }
+  .card.face-down::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border: 1.5px solid rgba(212,164,55,.55);
+    border-radius: 5px;
+  }
+  .card.face-down::after {
+    content: 'x';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-55%, -55%);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 900;
+    font-size: 3.3rem;
+    color: var(--gold);
+    text-shadow: 0 2px 8px rgba(0,0,0,.4);
+  }
+
+  .card.base-x { border-top: 4px solid var(--base-x); }
+  .card.base-y { border-top: 4px solid var(--base-y); }
+  .card.base-m { border-top: 4px solid var(--base-m); }
+  .card.base-n { border-top: 4px solid var(--base-n); }
+
+  .card-corner {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  .card.base-x .card-corner { color: var(--base-x); }
+  .card.base-y .card-corner { color: var(--base-y); }
+  .card.base-m .card-corner { color: var(--base-m); }
+  .card.base-n .card-corner { color: var(--base-n); }
+  .card-corner.bot {
+    align-self: flex-end;
+    transform: rotate(180deg);
+  }
+
+  .card-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 4px;
+    padding: 2px 0;
+  }
+
+  .card-expression {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1.25;
+    color: var(--ink);
+    letter-spacing: -.01em;
+  }
+  .card-expression sup { font-size: .62em; line-height: 0; position: relative; top: -.55em; }
+
+  .card-simplified {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: .72rem;
+    color: var(--navy);
+    background: rgba(30,58,95,.1);
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+  .card-simplified sup { font-size: .7em; position: relative; top: -.4em; }
+
+  .card-rule {
+    font-family: 'DM Sans', sans-serif;
+    font-size: .57rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--ink);
+    opacity: .38;
+    margin-top: auto;
+    padding-top: 2px;
+  }
+
+  /* Fraction rendering for quotient expressions */
+  .frac {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    vertical-align: middle;
+    margin: 0 .08em;
+    line-height: 1.05;
+  }
+  .frac .num, .frac .den {
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+  .frac .den { border-top: 1.6px solid currentColor; padding-top: 2px; }
+
+  /* ============ Foundation styling ============ */
+  .foundation-pile[data-base="x"] .card-slot { color: var(--base-x); border-color: rgba(185,28,28,.4); }
+  .foundation-pile[data-base="y"] .card-slot { color: var(--base-y); border-color: rgba(30,64,175,.4); }
+  .foundation-pile[data-base="m"] .card-slot { color: var(--base-m); border-color: rgba(22,101,52,.4); }
+  .foundation-pile[data-base="n"] .card-slot { color: var(--base-n); border-color: rgba(126,34,206,.4); }
+
+  /* ============ Stock / Waste ============ */
+  .stock-count {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--gold);
+    color: var(--felt-dark);
+    padding: 2px 7px;
+    font: 700 .72rem 'JetBrains Mono', monospace;
+    border-radius: 10px;
+    z-index: 3;
+  }
+  .empty-stock {
+    cursor: pointer;
+    color: var(--gold);
+    font-size: 1.8rem;
+    border-color: rgba(212,164,55,.45);
+  }
+  .empty-stock:hover { background: rgba(212,164,55,.1); }
+
+  /* ============ Message bar ============ */
+  .message-bar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(140%);
+    background: var(--cream);
+    color: var(--ink);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font: 500 .92rem 'DM Sans', sans-serif;
+    box-shadow: 0 14px 36px rgba(0,0,0,.35);
+    z-index: 120;
+    max-width: 90vw;
+    text-align: center;
+    transition: transform .36s cubic-bezier(.16,1,.3,1);
+    pointer-events: none;
+    border-left: 5px solid var(--navy);
+  }
+  .message-bar.show { transform: translateX(-50%) translateY(0); }
+  .message-bar.error { border-left-color: var(--err); background: #fef6f0; }
+  .message-bar.success { border-left-color: var(--ok); background: #f0fdf4; }
+  .message-bar sup { font-size: .7em; position: relative; top: -.4em; }
+
+  /* ============ Modal ============ */
+  .modal {
+    position: fixed; inset: 0;
+    background: rgba(8,31,24,.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal.show { display: flex; }
+
+  .modal-content {
+    background: var(--cream);
+    color: var(--ink);
+    padding: 30px 34px;
+    border-radius: 14px;
+    max-width: 640px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    border: 1px solid rgba(212,164,55,.3);
+  }
+  .modal h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.9rem;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.08rem;
+    color: var(--navy);
+    margin: 16px 0 6px;
+  }
+  .modal p, .modal li {
+    font-size: .94rem;
+    line-height: 1.55;
+    margin-bottom: 6px;
+  }
+  .modal ul { padding-left: 22px; margin-bottom: 10px; }
+  .modal code {
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(30,58,95,.08);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: .92em;
+  }
+  .modal code sup { font-size: .7em; position: relative; top: -.4em; }
+
+  .close-btn {
+    margin-top: 18px;
+    padding: 10px 26px;
+    background: var(--navy);
+    color: var(--cream);
+    border: 0;
+    border-radius: 8px;
+    font: 600 .94rem 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+  .close-btn:hover { background: var(--navy-deep); }
+
+  .win-modal .modal-content {
+    text-align: center;
+    border: 3px solid var(--gold);
+  }
+  .win-modal h2 {
+    color: var(--gold);
+    font-size: 2.6rem;
+    margin-bottom: 8px;
+  }
+  .win-stats {
+    display: flex;
+    justify-content: center;
+    gap: 26px;
+    margin: 18px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.02rem;
+    flex-wrap: wrap;
+  }
+  .win-stats div strong { color: var(--navy); }
+
+  /* ============ Animations ============ */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px); }
+    40%      { transform: translateX(6px); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
+  .shake { animation: shake .35s; }
+
+  @keyframes pop {
+    0% { transform: scale(.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .pop { animation: pop .22s ease-out; }
+
+  /* ============ Responsive ============ */
+  @media (max-width: 880px) {
+    .column { width: 100px; }
+    .card, .card-slot { width: 100px; height: 140px; }
+    .column > .card-wrap + .card-wrap { margin-top: -92px; }
+    .card-expression { font-size: .88rem; }
+    .card.face-down::after { font-size: 2.4rem; }
+    .top-row { flex-direction: column; align-items: center; }
+  }
+  @media (max-width: 560px) {
+    .column { width: 84px; }
+    .card, .card-slot { width: 84px; height: 118px; }
+    .column > .card-wrap + .card-wrap { margin-top: -78px; }
+    .card-expression { font-size: .76rem; }
+    .card-rule { font-size: .48rem; }
+    .tableau { gap: 8px; }
+    .foundations, .stock-waste { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div style="max-width:600px;margin:12px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:12px 16px;font-family:'Inter',system-ui,sans-serif;text-align:left">
+<div style="font-weight:800;color:#1E2D4F;font-size:.98rem;margin-bottom:5px">📋 How to Play</div>
+<div style="color:#333;font-size:.9rem;line-height:1.5">Simplify each exponent card, then move it onto the matching foundation pile (x, y, m, or n), building each pile from exponent 1 up to 7. Tap <b>Rules</b> any time for full details. Pick a difficulty to start.</div>
+</div>
+
+<div class="wrap">
+
+  <!-- Back button: uses browser history by default. To hard-code, set RETURN_URL in the <script> below. -->
+  <a class="back-link" id="back-link" href="#">
+    <span class="arrow">←</span> <span>Back to Unit 2</span>
+  </a>
+
+  <header>
+    <h1>Exponent <span class="accent">Solitaire</span></h1>
+    <div class="toolbar">
+      <div class="diff-group" id="diff-group">
+        <button class="diff-btn active" data-diff="easy">Easy</button>
+        <button class="diff-btn" data-diff="medium">Medium</button>
+        <button class="diff-btn" data-diff="hard">Hard</button>
+      </div>
+      <button class="action-btn" id="hints-btn">Show Simplified</button>
+      <button class="action-btn" id="help-btn">Rules</button>
+      <button class="action-btn" id="new-btn">↻ New Deal</button>
+      <div class="stats" id="stats">Moves: 0</div>
+    </div>
+  </header>
+
+  <div class="top-row">
+    <div>
+      <div class="section-label">Foundations · build up from exponent 1</div>
+      <div class="foundations" id="foundations"></div>
+    </div>
+    <div>
+      <div class="section-label">Stock · click to draw</div>
+      <div class="stock-waste">
+        <div id="stock-pile"></div>
+        <div id="waste-pile"></div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label" style="text-align:center;">Tableau · build down by exponent (any base)</div>
+    <div class="tableau" id="tableau"></div>
+  </div>
+</div>
+
+<div class="message-bar" id="message"></div>
+
+<div class="modal" id="help-modal">
+  <div class="modal-content">
+    <h2>How to Play</h2>
+    <p><strong>Your goal:</strong> Move all 28 cards onto the four foundation piles at the top. Each foundation is labeled with a base (<em>x</em>, <em>y</em>, <em>m</em>, or <em>n</em>). Build each one <strong>up</strong> from exponent 1 all the way to 7.</p>
+
+    <h3>Every Card Shows an Unsimplified Expression</h3>
+    <p>Like <code>x<sup>2</sup> · x<sup>3</sup></code> or <code>(2y<sup>3</sup>)<sup>2</sup></code>. Figure out what it simplifies to before placing it.</p>
+
+    <h3>Where You Can Move a Card</h3>
+    <ul>
+      <li><strong>To a foundation:</strong> The card must simplify to that foundation's base with the <em>next</em> exponent needed. If the <em>x</em>-pile shows <code>x<sup>3</sup></code>, you need a card that simplifies to <code>x<sup>4</sup></code>.</li>
+      <li><strong>To a tableau column:</strong> Build <strong>down</strong> by exponent, any base. A card simplifying to <code>y<sup>5</sup></code> can go on any card simplifying to exponent 6.</li>
+      <li><strong>To an empty column:</strong> Any card works.</li>
+      <li><strong>Moving a stack:</strong> Select a card partway down a column to move it and everything below it — but only if those cards form a valid descending sequence.</li>
+    </ul>
+
+    <h3>The Stock Pile</h3>
+    <p>Click the face-down stock pile to flip a card to the waste. The top waste card is playable. When stock empties, click the empty spot to recycle the waste.</p>
+
+    <h3>How to Move</h3>
+    <p>Click a card to select it (it glows gold). Then click where you want to move it. Click it again to deselect.</p>
+
+    <h3>Stuck?</h3>
+    <p>Click <strong>Show Simplified</strong> for training-wheels mode — each card reveals what it simplifies to. Hit <strong>New Deal</strong> any time for a fresh game. Press <strong>Esc</strong> to deselect or close dialogs.</p>
+
+    <h3>Difficulty Levels</h3>
+    <ul>
+      <li><strong>Easy:</strong> Product, quotient, and power-of-a-power rules.</li>
+      <li><strong>Medium:</strong> Adds zero exponents and negative exponents inside expressions.</li>
+      <li><strong>Hard:</strong> Adds monomials with coefficients — like <code>3x<sup>2</sup> · 4x<sup>3</sup> = 12x<sup>5</sup></code>.</li>
+    </ul>
+
+    <button class="close-btn" data-close="help-modal">Got it</button>
+  </div>
+</div>
+
+<div class="modal win-modal" id="win-modal">
+  <div class="modal-content">
+    <h2>🏆 You Win!</h2>
+    <p>You simplified every expression and filled all four foundations.</p>
+    <div class="win-stats" id="win-stats"></div>
+    <button class="close-btn" id="win-again">Play Again</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   EXPONENT SOLITAIRE  ·  IC Imagine 8th Grade Math, Unit 2
+   Standalone HTML game. No dependencies.
+   ============================================================================ */
+
+/* ---------- CONFIG ----------
+   Change RETURN_URL to hard-code a back-link destination (e.g., 'unit2.html'
+   or '/math8/unit2/index.html'). If left null, the button uses browser
+   history, which works perfectly when the page is linked from Unit 2.
+*/
+const RETURN_URL = 'unit2.html';
+
+/* ---------- EXPRESSION RENDERING ---------- */
+function toSupHtml(n) { return '<sup>' + n + '</sup>'; }
+
+function renderTerm(s) {
+  return s
+    .replace(/\^(-?\d+)/g, (_, n) => toSupHtml(n))
+    .replace(/\s*\*\s*/g, ' · ');
+}
+
+function renderRaw(raw) {
+  const parts = raw.split(' / ');
+  if (parts.length === 2) {
+    return `<span class="frac"><span class="num">${renderTerm(parts[0])}</span><span class="den">${renderTerm(parts[1])}</span></span>`;
+  }
+  return renderTerm(raw);
+}
+
+function renderSimplified(coef, base, exp) {
+  if (exp === 0) return String(coef);
+  const c = coef === 1 ? '' : String(coef);
+  return `${c}${base}${toSupHtml(exp)}`;
+}
+
+/* ---------- UTILS ---------- */
+const randInt  = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+const randPick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function factorPairs(n) {
+  const pairs = [];
+  for (let i = 2; i <= Math.sqrt(n); i++) {
+    if (n % i === 0) {
+      pairs.push([i, n / i]);
+      if (i !== n / i) pairs.push([n / i, i]);
+    }
+  }
+  return pairs;
+}
+
+/* ---------- CARD GENERATION ---------- */
+const BASES = ['x', 'y', 'm', 'n'];
+
+function makeExpression(base, target, difficulty) {
+  const templates = [];
+
+  // Rules in all difficulties
+  if (target >= 2) {
+    templates.push(() => {
+      const a = randInt(1, target - 1);
+      return { raw: `${base}^${a} * ${base}^${target - a}`, rule: 'Product Rule', coef: 1 };
+    });
+  }
+  templates.push(() => {
+    const k = randInt(1, difficulty === 'easy' ? 3 : 5);
+    return { raw: `${base}^${target + k} / ${base}^${k}`, rule: 'Quotient Rule', coef: 1 };
+  });
+  const fps = factorPairs(target);
+  if (fps.length > 0) {
+    templates.push(() => {
+      const [a, b] = randPick(fps);
+      return { raw: `(${base}^${a})^${b}`, rule: 'Power of a Power', coef: 1 };
+    });
+  }
+
+  // Medium+ additions
+  if (difficulty !== 'easy') {
+    templates.push(() => ({
+      raw: `${base}^0 * ${base}^${target}`, rule: 'Zero Exponent', coef: 1
+    }));
+    templates.push(() => {
+      const k = randInt(1, 3);
+      return { raw: `${base}^${target + k} * ${base}^-${k}`, rule: 'Negative Exponent', coef: 1 };
+    });
+  }
+
+  // Hard additions: monomials with coefficients
+  if (difficulty === 'hard') {
+    if (target >= 2) {
+      templates.push(() => {
+        const a = randInt(1, target - 1);
+        const c = randInt(2, 5);
+        const d = randInt(2, 4);
+        return { raw: `${c}${base}^${a} * ${d}${base}^${target - a}`, rule: 'Monomial Product', coef: c * d };
+      });
+    }
+    if (fps.length > 0) {
+      templates.push(() => {
+        const [a, b] = randPick(fps);
+        const c = randInt(2, 3);
+        return { raw: `(${c}${base}^${a})^${b}`, rule: 'Power of a Monomial', coef: Math.pow(c, b) };
+      });
+    }
+    templates.push(() => {
+      const k = randInt(1, 3);
+      const c = randInt(2, 5);
+      const d = randInt(2, 4);
+      return { raw: `${c * d}${base}^${target + k} / ${d}${base}^${k}`, rule: 'Monomial Quotient', coef: c };
+    });
+  }
+
+  const t = randPick(templates);
+  const r = t();
+  r.base = base;
+  r.exp = target;
+  return r;
+}
+
+function generateDeck(difficulty) {
+  const cards = [];
+  let id = 0;
+  for (const base of BASES) {
+    for (let exp = 1; exp <= 7; exp++) {
+      const e = makeExpression(base, exp, difficulty);
+      cards.push({
+        id: 'c' + (id++),
+        base: e.base,
+        exp: e.exp,
+        coef: e.coef,
+        raw: e.raw,
+        rule: e.rule,
+        faceUp: false
+      });
+    }
+  }
+  return shuffle(cards);
+}
+
+/* ---------- STATE ---------- */
+let state = null;
+
+function initGame(difficulty) {
+  const deck = generateDeck(difficulty);
+  const tableau = [[], [], [], [], []];
+  let i = 0;
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row <= col; row++) {
+      const card = deck[i++];
+      card.faceUp = (row === col);
+      tableau[col].push(card);
+    }
+  }
+  const stock = deck.slice(i).map(c => ({ ...c, faceUp: false }));
+
+  state = {
+    difficulty,
+    foundations: BASES.map(b => ({ base: b, cards: [] })),
+    tableau,
+    stock,
+    waste: [],
+    selected: null,
+    moves: 0,
+    hintMode: false,
+    won: false,
+    startTime: Date.now()
+  };
+
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.diff === difficulty);
+  });
+  document.getElementById('hints-btn').classList.remove('on');
+
+  render();
+}
+
+/* ---------- MOVE LOGIC ---------- */
+function getSelectedStack() {
+  const s = state.selected;
+  if (!s) return [];
+  if (s.type === 'waste') return [state.waste[state.waste.length - 1]];
+  if (s.type === 'tableau') return state.tableau[s.colIdx].slice(s.cardIdx);
+  return [];
+}
+
+function removeSelectedFromSource() {
+  const s = state.selected;
+  if (s.type === 'waste') {
+    state.waste.pop();
+  } else if (s.type === 'tableau') {
+    state.tableau[s.colIdx] = state.tableau[s.colIdx].slice(0, s.cardIdx);
+    const col = state.tableau[s.colIdx];
+    if (col.length > 0 && !col[col.length - 1].faceUp) {
+      col[col.length - 1].faceUp = true;
+    }
+  }
+}
+
+function canPlaceOnFoundation(card, f) {
+  if (card.base !== f.base) {
+    return {
+      ok: false,
+      reason: `That card simplifies to <strong>${renderSimplified(card.coef, card.base, card.exp)}</strong>, which needs the <strong>${card.base}</strong>-foundation — not <strong>${f.base}</strong>.`
+    };
+  }
+  const needed = f.cards.length + 1;
+  if (card.exp !== needed) {
+    return {
+      ok: false,
+      reason: `The <strong>${f.base}</strong>-foundation needs <strong>${f.base}${toSupHtml(needed)}</strong> next. Your card simplifies to <strong>${renderSimplified(card.coef, card.base, card.exp)}</strong>.`
+    };
+  }
+  return { ok: true };
+}
+
+function canPlaceOnTableau(stack, col) {
+  if (stack.length === 0) return { ok: false, reason: 'Nothing selected.' };
+  if (col.length === 0) return { ok: true };
+  const top = col[col.length - 1];
+  if (!top.faceUp) return { ok: false, reason: 'Cannot place on a face-down card.' };
+  const moving = stack[0];
+  if (moving.exp !== top.exp - 1) {
+    return {
+      ok: false,
+      reason: `Tableau builds down by exponent. <strong>${renderSimplified(top.coef, top.base, top.exp)}</strong> needs exponent <strong>${top.exp - 1}</strong> next; your card has exponent <strong>${moving.exp}</strong>.`
+    };
+  }
+  return { ok: true };
+}
+
+function canSelectTableauStack(colIdx, cardIdx) {
+  const col = state.tableau[colIdx];
+  for (let i = cardIdx; i < col.length; i++) {
+    if (!col[i].faceUp) return false;
+    if (i > cardIdx && col[i].exp !== col[i - 1].exp - 1) return false;
+  }
+  return true;
+}
+
+function tryMoveToFoundation(fIdx) {
+  const stack = getSelectedStack();
+  if (stack.length === 0) return;
+  if (stack.length !== 1) {
+    showMessage('Only a single card can go on a foundation.', 'error');
+    shakeSelected();
+    return;
+  }
+  const card = stack[0];
+  const f = state.foundations[fIdx];
+  const check = canPlaceOnFoundation(card, f);
+  if (!check.ok) {
+    showMessage(check.reason, 'error');
+    shakeSelected();
+    return;
+  }
+  removeSelectedFromSource();
+  f.cards.push(card);
+  state.selected = null;
+  state.moves++;
+  render();
+  showMessage(`Nice — ${renderSimplified(card.coef, card.base, card.exp)} placed on the ${f.base}-foundation.`, 'success');
+  checkWin();
+}
+
+function tryMoveToTableau(colIdx) {
+  const stack = getSelectedStack();
+  if (stack.length === 0) return;
+  const col = state.tableau[colIdx];
+  const check = canPlaceOnTableau(stack, col);
+  if (!check.ok) {
+    showMessage(check.reason, 'error');
+    shakeSelected();
+    return;
+  }
+  removeSelectedFromSource();
+  col.push(...stack);
+  state.selected = null;
+  state.moves++;
+  render();
+}
+
+function handleStockClick() {
+  if (state.stock.length === 0) {
+    if (state.waste.length === 0) return;
+    state.stock = [...state.waste].reverse().map(c => ({ ...c, faceUp: false }));
+    state.waste = [];
+    state.selected = null;
+    state.moves++;
+    render();
+    return;
+  }
+  const card = state.stock.pop();
+  card.faceUp = true;
+  state.waste.push(card);
+  state.selected = null;
+  render();
+}
+
+function selectTableau(colIdx, cardIdx) {
+  const col = state.tableau[colIdx];
+  if (!col[cardIdx].faceUp) return;
+  if (!canSelectTableauStack(colIdx, cardIdx)) {
+    showMessage('That stack is not a valid descending sequence — try a single card instead.', 'error');
+    return;
+  }
+  const s = state.selected;
+  if (s && s.type === 'tableau' && s.colIdx === colIdx && s.cardIdx === cardIdx) {
+    state.selected = null;
+  } else {
+    state.selected = { type: 'tableau', colIdx, cardIdx };
+  }
+  render();
+}
+
+function selectWaste() {
+  if (state.waste.length === 0) return;
+  if (state.selected && state.selected.type === 'waste') {
+    state.selected = null;
+  } else {
+    state.selected = { type: 'waste' };
+  }
+  render();
+}
+
+function clickTableauCardWithSelection(colIdx, cardIdx) {
+  const s = state.selected;
+  if (s && s.type === 'tableau' && s.colIdx === colIdx && s.cardIdx === cardIdx) {
+    state.selected = null;
+    render();
+    return;
+  }
+  tryMoveToTableau(colIdx);
+}
+
+function checkWin() {
+  const total = state.foundations.reduce((s, f) => s + f.cards.length, 0);
+  if (total === 28) {
+    state.won = true;
+    setTimeout(showWinModal, 450);
+  }
+}
+
+/* ---------- RENDERING ---------- */
+function el(tag, cls) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  return e;
+}
+
+function cardNode(card, opts = {}) {
+  const wrap = el('div', 'card-wrap');
+  if (!card.faceUp) {
+    wrap.appendChild(el('div', 'card face-down'));
+    return wrap;
+  }
+  const c = el('div', 'card pop base-' + card.base + (opts.selected ? ' selected' : ''));
+
+  const topC = el('div', 'card-corner');
+  topC.textContent = card.base;
+  c.appendChild(topC);
+
+  const main = el('div', 'card-main');
+  const expr = el('div', 'card-expression');
+  expr.innerHTML = renderRaw(card.raw);
+  main.appendChild(expr);
+
+  if (state.hintMode) {
+    const simp = el('div', 'card-simplified');
+    simp.innerHTML = '= ' + renderSimplified(card.coef, card.base, card.exp);
+    main.appendChild(simp);
+  }
+
+  const rule = el('div', 'card-rule');
+  rule.textContent = card.rule;
+  main.appendChild(rule);
+  c.appendChild(main);
+
+  const botC = el('div', 'card-corner bot');
+  botC.textContent = card.base;
+  c.appendChild(botC);
+
+  if (opts.onclick) {
+    c.onclick = (e) => { e.stopPropagation(); opts.onclick(e); };
+  }
+  wrap.appendChild(c);
+  return wrap;
+}
+
+function renderFoundations() {
+  const container = document.getElementById('foundations');
+  container.innerHTML = '';
+  state.foundations.forEach((f, idx) => {
+    const pile = el('div', 'foundation-pile');
+    pile.setAttribute('data-base', f.base);
+    pile.onclick = () => { if (state.selected) tryMoveToFoundation(idx); };
+    if (f.cards.length === 0) {
+      const slot = el('div', 'card-slot');
+      slot.innerHTML = `${f.base}<sup>1</sup>`;
+      pile.appendChild(slot);
+    } else {
+      pile.appendChild(cardNode(f.cards[f.cards.length - 1]));
+    }
+    container.appendChild(pile);
+  });
+}
+
+function renderStockWaste() {
+  const stockP = document.getElementById('stock-pile');
+  stockP.innerHTML = '';
+  stockP.onclick = handleStockClick;
+
+  if (state.stock.length > 0) {
+    const c = el('div', 'card face-down');
+    const count = el('div', 'stock-count');
+    count.textContent = state.stock.length;
+    c.appendChild(count);
+    stockP.appendChild(c);
+  } else {
+    const empty = el('div', 'card-slot empty-stock');
+    empty.innerHTML = '↻';
+    stockP.appendChild(empty);
+  }
+
+  const wasteP = document.getElementById('waste-pile');
+  wasteP.innerHTML = '';
+  if (state.waste.length === 0) {
+    wasteP.appendChild(el('div', 'card-slot'));
+  } else {
+    const top = state.waste[state.waste.length - 1];
+    const selected = state.selected && state.selected.type === 'waste';
+    wasteP.appendChild(cardNode(top, { selected, onclick: selectWaste }));
+  }
+}
+
+function renderTableau() {
+  const container = document.getElementById('tableau');
+  container.innerHTML = '';
+  state.tableau.forEach((col, colIdx) => {
+    const colEl = el('div', 'column');
+    colEl.onclick = () => {
+      if (col.length === 0 && state.selected) tryMoveToTableau(colIdx);
+    };
+    if (col.length === 0) {
+      colEl.appendChild(el('div', 'card-slot'));
+    } else {
+      col.forEach((card, cardIdx) => {
+        const isSelected = state.selected
+          && state.selected.type === 'tableau'
+          && state.selected.colIdx === colIdx
+          && cardIdx >= state.selected.cardIdx;
+        const onclick = card.faceUp
+          ? () => {
+              if (state.selected) clickTableauCardWithSelection(colIdx, cardIdx);
+              else selectTableau(colIdx, cardIdx);
+            }
+          : null;
+        colEl.appendChild(cardNode(card, { selected: isSelected, onclick }));
+      });
+    }
+    container.appendChild(colEl);
+  });
+}
+
+function renderStats() {
+  const placed = state.foundations.reduce((s, f) => s + f.cards.length, 0);
+  document.getElementById('stats').innerHTML =
+    `Moves: ${state.moves} &nbsp;·&nbsp; ${placed}/28 placed`;
+}
+
+function render() {
+  renderFoundations();
+  renderStockWaste();
+  renderTableau();
+  renderStats();
+}
+
+/* ---------- MESSAGES & MODALS ---------- */
+let msgTimer;
+function showMessage(html, type = 'info') {
+  const bar = document.getElementById('message');
+  bar.innerHTML = html;
+  bar.className = 'message-bar show ' + type;
+  clearTimeout(msgTimer);
+  const dur = type === 'error' ? 4200 : 2600;
+  msgTimer = setTimeout(() => { bar.className = 'message-bar'; }, dur);
+}
+
+function shakeSelected() {
+  document.querySelectorAll('.card.selected').forEach(c => {
+    c.classList.add('shake');
+    setTimeout(() => c.classList.remove('shake'), 400);
+  });
+}
+
+function showWinModal() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  const diffLabel = state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1);
+  document.getElementById('win-stats').innerHTML = `
+    <div><strong>Moves:</strong> ${state.moves}</div>
+    <div><strong>Time:</strong> ${mm}:${ss}</div>
+    <div><strong>Level:</strong> ${diffLabel}</div>
+  `;
+  document.getElementById('win-modal').classList.add('show');
+}
+
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+/* ---------- EVENT WIRING ---------- */
+function wireEvents() {
+  // Back link: configurable URL or browser history
+  document.getElementById('back-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (RETURN_URL) {
+      window.location.href = RETURN_URL;
+    } else if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      showMessage('Open this game from your Unit 2 page for the back button to work, or set RETURN_URL inside the file.', 'info');
+    }
+  });
+
+  // Difficulty
+  document.getElementById('diff-group').addEventListener('click', (e) => {
+    const btn = e.target.closest('.diff-btn');
+    if (btn) initGame(btn.dataset.diff);
+  });
+
+  // Toolbar
+  document.getElementById('hints-btn').addEventListener('click', (e) => {
+    state.hintMode = !state.hintMode;
+    e.currentTarget.classList.toggle('on', state.hintMode);
+    render();
+  });
+  document.getElementById('help-btn').addEventListener('click', () => openModal('help-modal'));
+  document.getElementById('new-btn').addEventListener('click', () => initGame(state.difficulty));
+
+  // Close buttons
+  document.querySelectorAll('[data-close]').forEach(b => {
+    b.addEventListener('click', () => closeModal(b.dataset.close));
+  });
+  document.getElementById('win-again').addEventListener('click', () => {
+    closeModal('win-modal');
+    initGame(state.difficulty);
+  });
+
+  // Click outside modal to close
+  document.querySelectorAll('.modal').forEach(m => {
+    m.addEventListener('click', (e) => {
+      if (e.target === m) m.classList.remove('show');
+    });
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (state.selected) { state.selected = null; render(); }
+      document.querySelectorAll('.modal.show').forEach(m => m.classList.remove('show'));
+    }
+    if (e.key === 'h' || e.key === 'H') {
+      document.getElementById('hints-btn').click();
+    }
+    if (e.key === 'n' || e.key === 'N') {
+      initGame(state.difficulty);
+    }
+  });
+}
+
+/* ---------- BOOT ---------- */
+wireEvents();
+initGame('easy');
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>

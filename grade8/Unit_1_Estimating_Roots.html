@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estimating Square &amp; Cube Roots — IC Imagine 8th Grade Math</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#1E2D4F; --navy-dk:#0d1f3f; --gold:#FFC107; --gold-dp:#c8980a;
+    --cream:#FFF9E8; --paper:#fbfaf5; --ink:#1b1f26; --good:#1f7a4d; --bad:#b5341f; --line:#e3e0d4;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;color:var(--ink);background:var(--paper);line-height:1.55}
+  /* ===== nav ===== */
+  .nav{background:var(--navy);display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:8px 14px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+  .nav .brand{color:var(--gold);font-family:'Arvo',serif;font-weight:700;font-size:.95em;margin-right:10px}
+  .nav a.nb{color:#dfe6f5;text-decoration:none;font-size:.82em;font-weight:600;padding:5px 9px;border-radius:6px}
+  .nav a.nb:hover{background:rgba(255,255,255,.12)}
+  .nav a.nb.active{background:var(--gold);color:var(--navy)}
+  /* ===== header ===== */
+  header{background:linear-gradient(135deg,var(--navy),var(--navy-dk));color:#fff;padding:30px 20px 26px;text-align:center}
+  header h1{font-family:'Arvo',serif;font-size:clamp(1.5em,4.5vw,2.3em);color:#fff}
+  header h1 .em{color:var(--gold)}
+  header .std{display:inline-block;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.72em;letter-spacing:.06em;
+    color:var(--navy);background:var(--gold);padding:4px 12px;border-radius:20px;font-weight:700}
+  header p{max-width:640px;margin:12px auto 0;font-size:.95em;opacity:.9}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 18px 70px}
+  /* ===== section ===== */
+  .part{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 22px;margin:22px 0;box-shadow:0 6px 18px rgba(30,45,79,.06)}
+  .part>h2{font-family:'Arvo',serif;color:var(--navy);font-size:1.3em;display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .part>h2 .num{background:var(--navy);color:var(--gold);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:.8em;flex:0 0 auto}
+  .lead{color:#555;font-size:.95em;margin-bottom:18px}
+  h3{font-family:'Arvo',serif;color:var(--navy);font-size:1.02em;margin:18px 0 8px}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .rad{border-top:2px solid currentColor;padding:0 .12em}
+  /* ===== value picker ===== */
+  .picker{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px}
+  .pill{cursor:pointer;border:2px solid var(--navy);background:#fff;color:var(--navy);font-family:'JetBrains Mono',monospace;
+    font-weight:700;font-size:1em;padding:6px 13px;border-radius:22px;transition:.15s}
+  .pill:hover{background:#eef1f8}
+  .pill.on{background:var(--navy);color:var(--gold)}
+  .pick-label{font-size:.78em;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.05em;margin:14px 0 6px}
+  .grp{margin-bottom:4px}
+  /* ===== number line ===== */
+  .nlwrap{background:var(--cream);border:1px solid var(--line);border-radius:12px;padding:18px 10px 8px;margin:14px 0}
+  svg.nl{width:100%;height:150px;display:block}
+  .nl-title{text-align:center;font-family:'Arvo',serif;color:var(--navy);font-size:1.15em;margin-bottom:4px}
+  .nl-title b{color:var(--gold-dp)}
+  /* ===== steps ===== */
+  .steps{counter-reset:s;margin:6px 0}
+  .step{position:relative;padding:11px 14px 11px 46px;border-left:3px solid var(--gold);background:var(--paper);
+    border-radius:0 8px 8px 0;margin:8px 0;font-size:.95em}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;left:10px;top:11px;width:24px;height:24px;background:var(--navy);
+    color:var(--gold);border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.8em}
+  .step b{color:var(--navy)}
+  .formula{background:var(--navy);color:#fff;font-family:'JetBrains Mono',monospace;font-size:.98em;padding:12px 16px;border-radius:10px;
+    text-align:center;margin:10px 0;line-height:1.7;border:2px solid var(--gold)}
+  .formula .hl{color:var(--gold);font-weight:700}
+  .ans-tag{display:inline-block;background:var(--good);color:#fff;font-weight:700;padding:2px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace}
+  .actual{color:#777;font-size:.85em;font-style:italic}
+  /* ===== try it ===== */
+  .tryit{background:#f3f6ff;border:1px dashed var(--navy);border-radius:10px;padding:16px;margin-top:16px}
+  .tryit h4{font-family:'Arvo',serif;color:var(--navy);margin-bottom:8px;font-size:1em}
+  .tryit input{font-family:'JetBrains Mono',monospace;font-size:1.05em;width:90px;padding:7px 9px;border:2px solid var(--navy);border-radius:7px;text-align:center}
+  .btn{cursor:pointer;border:none;background:var(--navy);color:var(--gold);font-family:'Arvo',serif;font-weight:700;
+    padding:8px 18px;border-radius:8px;font-size:.92em;transition:.15s}
+  .btn:hover{background:var(--navy-dk)}
+  .fb{margin-top:10px;font-weight:600;min-height:1.2em}
+  .fb.ok{color:var(--good)} .fb.no{color:var(--bad)}
+  /* reveal */
+  .reveal{cursor:pointer;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:6px 0;font-size:.93em;transition:.15s}
+  .reveal:hover{border-color:var(--gold)}
+  .reveal .hidden{display:none;margin-top:8px;color:var(--navy)}
+  .reveal.open{background:#fffdf3;border-color:var(--gold)}
+  .reveal.open .hidden{display:block}
+  .reveal .cue{font-size:.78em;color:#999;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+  /* ===== ordering table ===== */
+  table.ord{width:100%;border-collapse:collapse;margin:10px 0;font-size:.94em}
+  table.ord th,table.ord td{border:1px solid var(--line);padding:9px 10px;text-align:left}
+  table.ord th{background:var(--navy);color:#fff;font-family:'Arvo',serif;font-weight:700;font-size:.85em}
+  table.ord td.mono{font-family:'JetBrains Mono',monospace;text-align:center}
+  table.ord .dec{color:var(--gold-dp);font-weight:700;cursor:pointer}
+  .ordered{font-family:'JetBrains Mono',monospace;font-size:1.05em;text-align:center;background:var(--cream);
+    border:1px solid var(--gold);border-radius:10px;padding:12px;margin-top:10px;color:var(--navy);font-weight:700;display:none}
+  .ordered.show{display:block}
+  .tip{background:#fffbe9;border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:.9em;margin:14px 0}
+  .tip b{color:var(--navy)}
+  footer{text-align:center;color:#888;font-size:.78em;padding:24px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+  @media print{.nav,.tryit .btn,.reveal .cue{display:none}.part{box-shadow:none;break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="brand">🦅 IC Imagine 8th Grade Math</span>
+  <a class="nb" href="index.html">🏠 Home</a>
+  <a class="nb active" href="unit1.html">U1</a>
+  <a class="nb" href="unit2.html">U2</a>
+  <a class="nb" href="unit3.html">U3</a>
+  <a class="nb" href="unit4.html">U4</a>
+  <a class="nb" href="unit5.html">U5</a>
+  <a class="nb" href="unit6.html">U6</a>
+  <a class="nb" href="unit7.html">U7</a>
+  <a class="nb" href="unit8.html">U8</a>
+  <a class="nb" href="tools.html">🛠 Tools</a>
+</nav>
+
+<header>
+  <h1>Estimating <span class="em">Square &amp; Cube Roots</span></h1>
+  <span class="std">NC.8.NS.2 · estimate roots to the nearest tenth · locate &amp; order on a number line</span>
+  <p>Pick a root, watch it land between two whole numbers, run the 4-step algorithm, then order a mixed set by turning everything into a decimal.</p>
+</header>
+
+<div class="wrap">
+
+  <!-- ===================== PART 1 + 2 (shared picker) ===================== -->
+  <section class="part">
+    <h2><span class="num">1</span> Place it on a number line</h2>
+    <p class="lead">A non-perfect root always sits <b>between two consecutive whole numbers</b>. Pick one and see where it falls.</p>
+
+    <div class="grp"><div class="pick-label">Square roots</div>
+      <div class="picker" id="sqPicker"></div></div>
+    <div class="grp"><div class="pick-label">Cube roots</div>
+      <div class="picker" id="cuPicker"></div></div>
+
+    <div class="nlwrap">
+      <div class="nl-title" id="nlTitle"></div>
+      <svg class="nl" id="nl" viewBox="0 0 800 150" preserveAspectRatio="xMidYMid meet" aria-label="number line"></svg>
+    </div>
+
+    <div class="steps" id="nlSteps"></div>
+  </section>
+
+  <section class="part">
+    <h2><span class="num">2</span> The 4-step algorithm</h2>
+    <p class="lead">Same idea, but it gives you a <b>decimal to the nearest tenth</b>. It works the same for cube roots — just use cubes.</p>
+
+    <div class="formula" id="formula"></div>
+    <div class="steps" id="algoSteps"></div>
+    <p class="actual" id="algoActual"></p>
+
+    <div class="tip">🔎 <b>Check by squaring:</b> the algorithm gets you close. To be sure of the tenth, square (or cube) your answer — it should land just under your number. Example: 6.7² = 44.89 and 6.8² = 46.24, so √45 rounds to 6.7.</div>
+
+    <div class="tryit">
+      <h4>🎯 Your turn</h4>
+      <p id="tryPrompt" style="font-size:.95em;margin-bottom:10px"></p>
+      <input id="tryInput" type="text" inputmode="decimal" placeholder="?.?" aria-label="your estimate">
+      <button class="btn" id="tryCheck">Check</button>
+      <button class="btn" id="tryNew" style="background:#eef1f8;color:var(--navy)">New root</button>
+      <div class="fb" id="tryFb"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PART 3 ===================== -->
+  <section class="part">
+    <h2><span class="num">3</span> Order a mixed set</h2>
+    <p class="lead">Rational, irrational, fractions, mixed numbers — to compare them, turn <b>everything into a decimal</b> first.</p>
+
+    <h3>Example: order from least to greatest</h3>
+    <table class="ord" id="ordTable">
+      <thead><tr><th>Number</th><th>How to convert</th><th>Decimal</th></tr></thead>
+      <tbody id="ordBody"></tbody>
+    </table>
+    <p style="font-size:.85em;color:#888">👆 Tap a row's decimal to reveal it.</p>
+    <button class="btn" id="ordReveal" style="margin-top:6px">Reveal the order</button>
+    <div class="ordered" id="ordResult"></div>
+
+    <div class="tip">📌 <b>Mixed number → decimal:</b> whole + (numerator ÷ denominator). Example: 3⅖ = 3 + (2÷5) = 3.4. &nbsp; <b>Line up decimals</b> to the same place before you compare — 2.25 vs 2.3 is easy to misread quickly.</div>
+
+    <h3>⚠️ Error analysis</h3>
+    <div class="reveal" id="errCard">
+      <span class="cue">▸ tap to check the student's work</span><br>
+      To order <span class="mono">1.5, √2, ⁷⁄₄, √3</span>, a student wrote
+      <span class="mono">1.5 &lt; √2 &lt; √3 &lt; ⁷⁄₄</span>. Are they right?
+      <div class="hidden">
+        Convert first: 1.5 = 1.5, √2 ≈ 1.41, ⁷⁄₄ = 1.75, √3 ≈ 1.73.
+        The student forgot that <b>√2 ≈ 1.41 is the smallest</b> — it belongs first, not second.
+        ✅ Correct order: <span class="mono">√2 &lt; 1.5 &lt; √3 &lt; ⁷⁄₄</span>.
+      </div>
+    </div>
+  </section>
+
+  <footer>IC IMAGINE · 8TH GRADE MATH · UNIT 1 · NC.8.NS.2 — THE REAL NUMBER SYSTEM</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NAVY="#1E2D4F", GOLD="#FFC107", GOLDDP="#c8980a", INK="#1b1f26", GREY="#b9b4a3";
+  function $(id){return document.getElementById(id);}
+
+  // featured values where the 4-step estimate matches the true nearest tenth
+  var SQ=[3,5,7,8,30,40,45,50,60,90];
+  var CU=[30,40,70,100,200];
+
+  function compute(type,n){
+    var k=(type==='sq')?2:3;
+    var root=(type==='sq')?Math.sqrt(n):Math.cbrt(n);
+    var lo=Math.floor(root+1e-9), hi=lo+1;
+    var loP=Math.pow(lo,k), hiP=Math.pow(hi,k);
+    var num=n-loP, den=hiP-loP;
+    var fracDec=num/den;
+    var est=lo+fracDec;
+    var tenth=Math.round(est*10)/10;
+    return {type:type,n:n,k:k,sym:(type==='sq'?'√':'∛'),lo:lo,hi:hi,loP:loP,hiP:hiP,
+            num:num,den:den,fracDec:fracDec,est:est,tenth:tenth,actual:root};
+  }
+  function radHTML(c){return c.sym+'<span class="rad">'+c.n+'</span>';}
+  var current=null;
+
+  // ---------- number line ----------
+  function drawNL(c){
+    var W=800,H=150, x0=70,x1=730,y=92;
+    var svg=$('nl'); svg.innerHTML='';
+    function el(t,a){var e=document.createElementNS('http://www.w3.org/2000/svg',t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+    // baseline
+    svg.appendChild(el('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:NAVY,'stroke-width':3}));
+    // arrows
+    svg.appendChild(el('polygon',{points:(x0)+','+y+' '+(x0+12)+','+(y-6)+' '+(x0+12)+','+(y+6),fill:NAVY}));
+    svg.appendChild(el('polygon',{points:(x1)+','+y+' '+(x1-12)+','+(y-6)+' '+(x1-12)+','+(y+6),fill:NAVY}));
+    // tenth ticks
+    for(var i=0;i<=10;i++){
+      var x=x0+(x1-x0)*i/10, major=(i===0||i===10);
+      svg.appendChild(el('line',{x1:x,y1:y-(major?14:8),x2:x,y2:y+(major?14:8),stroke:major?NAVY:GREY,'stroke-width':major?3:1.5}));
+      if(major){
+        var lab=el('text',{x:x,y:y+36,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':22,'font-weight':700,fill:NAVY});
+        lab.textContent=(i===0?c.lo:c.hi); svg.appendChild(lab);
+        var pl=el('text',{x:x,y:y-22,'text-anchor':'middle','font-family':'JetBrains Mono, monospace','font-size':12,fill:'#999'});
+        pl.textContent=(i===0?c.loP:c.hiP)+(c.type==='sq'?'':''); // perfect power label
+        svg.appendChild(pl);
+      }
+    }
+    // marker at tenth
+    var mx=x0+(x1-x0)*(c.tenth-c.lo);
+    var grp=el('g',{}); 
+    grp.appendChild(el('line',{x1:mx,y1:y-30,x2:mx,y2:y,stroke:GOLDDP,'stroke-width':3}));
+    grp.appendChild(el('circle',{cx:mx,cy:y,r:8,fill:GOLD,stroke:NAVY,'stroke-width':2.5}));
+    var t=el('text',{x:mx,y:y-38,'text-anchor':'middle','font-family':'Arvo, serif','font-size':17,'font-weight':700,fill:GOLDDP});
+    t.innerHTML=''; t.textContent=c.sym+c.n+' ≈ '+c.tenth.toFixed(1);
+    grp.appendChild(t); svg.appendChild(grp);
+    // animate marker
+    try{
+      grp.style.transformOrigin=mx+'px '+y+'px';
+      grp.animate([{opacity:0,transform:'translateY(-8px)'},{opacity:1,transform:'none'}],{duration:380,easing:'cubic-bezier(.2,.7,.2,1)'});
+    }catch(e){}
+  }
+
+  function step(html){return '<div class="step">'+html+'</div>';}
+  function renderNLSteps(c){
+    var closer = (c.tenth-c.lo) < 0.5 ? c.lo : c.hi;
+    $('nlTitle').innerHTML='Where does <b>'+radHTML(c)+'</b> land?';
+    $('nlSteps').innerHTML =
+      step('Find the two perfect '+(c.type==='sq'?'squares':'cubes')+' around <b>'+c.n+'</b>: &nbsp;<span class="mono">'+c.loP+' &lt; '+c.n+' &lt; '+c.hiP+'</span>.')+
+      step('Take the '+(c.type==='sq'?'square':'cube')+' root of each: &nbsp;<span class="mono">'+c.sym+c.loP+' = '+c.lo+'</span> and <span class="mono">'+c.sym+c.hiP+' = '+c.hi+'</span>. So '+radHTML(c)+' is between <b>'+c.lo+'</b> and <b>'+c.hi+'</b>.')+
+      step('Is '+c.n+' closer to <b>'+c.loP+'</b> or <b>'+c.hiP+'</b>? It is closer to <b>'+(c.n-c.loP < c.hiP-c.n ? c.loP+'</b>, so the root is nearer <b>'+c.lo : c.hiP+'</b>, so the root is nearer <b>'+c.hi)+'</b>.')+
+      step('Place it on the line at about <span class="ans-tag">'+c.tenth.toFixed(1)+'</span>.');
+  }
+
+  // ---------- algorithm ----------
+  function renderAlgo(c){
+    var pw=(c.type==='sq')?'²':'³';
+    $('formula').innerHTML = c.sym+'n ≈ <span class="hl">lower root</span> + ( n − <span class="hl">lower'+pw+'</span> ) ÷ ( <span class="hl">upper'+pw+'</span> − <span class="hl">lower'+pw+'</span> )';
+    $('algoSteps').innerHTML =
+      step('Trap it: &nbsp;<span class="mono">'+c.loP+' &lt; '+c.n+' &lt; '+c.hiP+'</span> &nbsp;→&nbsp; roots <b>'+c.lo+'</b> and <b>'+c.hi+'</b>.')+
+      step('Build the fraction: &nbsp;<span class="mono">( '+c.n+' − '+c.loP+' ) ÷ ( '+c.hiP+' − '+c.loP+' ) = '+c.num+' ÷ '+c.den+'</span>.')+
+      step('Divide: &nbsp;<span class="mono">'+c.num+' ÷ '+c.den+' ≈ '+c.fracDec.toFixed(2)+'</span>.')+
+      step('Add &amp; round: &nbsp;<span class="mono">'+c.lo+' + '+c.fracDec.toFixed(2)+' = '+c.est.toFixed(2)+'</span> &nbsp;→&nbsp; <span class="ans-tag">'+c.sym+c.n+' ≈ '+c.tenth.toFixed(1)+'</span>');
+    $('algoActual').textContent='Calculator: '+c.sym+c.n+' = '+c.actual.toFixed(3)+'…  (our estimate '+c.tenth.toFixed(1)+' is right on the tenth!)';
+  }
+
+  // ---------- selection ----------
+  function select(type,n,btn){
+    document.querySelectorAll('.pill').forEach(function(p){p.classList.remove('on');});
+    if(btn) btn.classList.add('on');
+    current=compute(type,n);
+    drawNL(current); renderNLSteps(current); renderAlgo(current);
+  }
+
+  function buildPickers(){
+    SQ.forEach(function(n){var b=document.createElement('button');b.className='pill';b.innerHTML='√<span class="rad">'+n+'</span>';
+      b.onclick=function(){select('sq',n,b);};$('sqPicker').appendChild(b);});
+    CU.forEach(function(n){var b=document.createElement('button');b.className='pill';b.innerHTML='∛<span class="rad">'+n+'</span>';
+      b.onclick=function(){select('cu',n,b);};$('cuPicker').appendChild(b);});
+  }
+
+  // ---------- try it ----------
+  var tryC=null;
+  function newTry(){
+    var all=SQ.map(function(n){return['sq',n];}).concat(CU.map(function(n){return['cu',n];}));
+    var pick=all[Math.floor(Math.random()*all.length)];
+    tryC=compute(pick[0],pick[1]);
+    $('tryPrompt').innerHTML='Estimate <b>'+radHTML(tryC)+'</b> to the nearest tenth using the algorithm.';
+    $('tryInput').value=''; $('tryFb').textContent=''; $('tryFb').className='fb'; $('tryInput').focus();
+  }
+  function checkTry(){
+    var v=parseFloat($('tryInput').value);
+    if(isNaN(v)){$('tryFb').className='fb no';$('tryFb').textContent='Type a decimal like '+tryC.tenth.toFixed(1)+'.';return;}
+    var fb=$('tryFb');
+    if(Math.abs(v-tryC.tenth)<0.001){
+      fb.className='fb ok';
+      fb.innerHTML='✅ Spot on — '+tryC.sym+tryC.n+' ≈ '+tryC.tenth.toFixed(1)+'. (Calculator: '+tryC.actual.toFixed(3)+'…)';
+    }else if(Math.abs(v-tryC.tenth)<0.15){
+      fb.className='fb no';
+      fb.innerHTML='👀 So close! Check your rounding — it should be '+tryC.tenth.toFixed(1)+'.';
+    }else{
+      fb.className='fb no';
+      fb.innerHTML='Not yet. '+tryC.n+' is between '+tryC.loP+' and '+tryC.hiP+', so start with '+tryC.lo+'. Answer: '+tryC.tenth.toFixed(1)+'.';
+    }
+  }
+
+  // ---------- ordering ----------
+  var ORD=[
+    {disp:'√5', how:'4-step algorithm', dec:2.24, show:'≈ 2.24'},
+    {disp:'2¼', how:'2 + (1 ÷ 4)', dec:2.25, show:'= 2.25'},
+    {disp:'7/3', how:'7 ÷ 3', dec:2.33, show:'≈ 2.33'},
+    {disp:'2.1', how:'already a decimal', dec:2.10, show:'= 2.1'}
+  ];
+  function buildOrder(){
+    var tb=$('ordBody'); tb.innerHTML='';
+    ORD.forEach(function(r){
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td class="mono" style="font-weight:700">'+r.disp+'</td><td>'+r.how+'</td>'+
+        '<td class="mono"><span class="dec" data-d="'+r.show+'">tap →</span></td>';
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll('.dec').forEach(function(s){s.onclick=function(){this.textContent=this.getAttribute('data-d');};});
+  }
+  function revealOrder(){
+    $('ordBody').querySelectorAll('.dec').forEach(function(s){s.textContent=s.getAttribute('data-d');});
+    var sorted=ORD.slice().sort(function(a,b){return a.dec-b.dec;});
+    $('ordResult').classList.add('show');
+    $('ordResult').innerHTML='Least → Greatest: &nbsp;'+sorted.map(function(r){return r.disp;}).join(' &lt; ');
+  }
+
+  // ---------- wire ----------
+  buildPickers(); buildOrder();
+  $('tryCheck').onclick=checkTry;
+  $('tryNew').onclick=newTry;
+  $('tryInput').addEventListener('keydown',function(e){if(e.key==='Enter')checkTry();});
+  $('ordReveal').onclick=revealOrder;
+  $('errCard').onclick=function(){this.classList.toggle('open');};
+  // default selection
+  select('sq',45,$('sqPicker').children[6]);  // √45
+  newTry();
+})();
+</script>
+</body>
+</html>

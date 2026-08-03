@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NC Math 1 — Password Required</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+.gate-wrap{max-width:440px;margin:8vh auto;padding:0 16px;}
+.gate-card{background:var(--card);border:1px solid var(--border);border-top:5px solid var(--gold);border-radius:var(--radius);padding:28px 26px;text-align:center;box-shadow:0 8px 26px rgba(30,45,79,.12);}
+.gate-card h1{font-family:var(--font-head);color:var(--navy);font-size:1.5rem;margin:6px 0 4px;}
+.gate-card p{color:var(--muted);font-size:.95rem;margin:0 0 18px;}
+.gate-card input{width:100%;padding:11px 14px;border:2px solid #cdd5e0;border-radius:8px;font-size:1rem;font-family:var(--font-body);margin-bottom:12px;text-align:center;}
+.gate-card input:focus{outline:none;border-color:var(--royal);}
+.gate-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:8px;padding:11px;font-weight:700;font-size:1rem;cursor:pointer;font-family:var(--font-body);}
+.gate-btn:hover{background:#16203a;}
+.gate-err{color:var(--red);font-size:.9rem;font-weight:600;min-height:1.2em;margin-top:10px;}
+.gate-icon{font-size:2.4rem;}
+.gate-home{display:inline-block;margin-top:16px;color:var(--royal);text-decoration:none;font-size:.88rem;font-weight:600;}
+.gate-home:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+<div class="gate-wrap">
+  <div class="gate-card">
+    <div class="gate-icon">🔒</div>
+    <h1>NC Math 1</h1>
+    <p>This section is password-protected. Please enter the class password to continue.</p>
+    <input type="password" id="pw" placeholder="Class password" onkeydown="if(event.key==='Enter')checkPw()" autofocus>
+    <button class="gate-btn" onclick="checkPw()">Enter</button>
+    <div class="gate-err" id="err"></div>
+    <a class="gate-home" href="../index.html">← Back to Mr. Allen's Home</a>
+  </div>
+</div>
+<script>
+// Lightweight class gate. NOTE: this is a mild deterrent, not real security —
+// the pages are still public. Change the password by editing PW below.
+var PW = "soar2027";
+function checkPw(){
+  var v = document.getElementById('pw').value.trim();
+  if(v.toLowerCase() === PW.toLowerCase()){
+    try{ sessionStorage.setItem('m1ok','1'); }catch(e){}
+    var dest = sessionStorage.getItem('m1dest') || 'index.html';
+    sessionStorage.removeItem('m1dest');
+    window.location.replace(dest);
+  } else {
+    document.getElementById('err').textContent = "Incorrect password — please try again.";
+    document.getElementById('pw').value = "";
+    document.getElementById('pw').focus();
+  }
+}
+</script>
+</body>
+</html>
