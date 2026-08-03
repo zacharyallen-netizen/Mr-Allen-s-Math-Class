@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Linear Equation Art Studio — IC Imagine</title>
+<div style="max-width:640px;margin:14px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:14px 18px;font-family:'Inter',system-ui,sans-serif">
+<div style="font-weight:800;color:#1E2D4F;font-size:1rem;margin-bottom:6px">📋 How to Play</div>
+<div style="color:#333;font-size:.92rem;line-height:1.5">Create art by graphing lines! <b>Add a line</b> by typing its equation in slope-intercept form (<b>y = mx + b</b>). Stack many lines to build a design, try the <b>Challenges</b> for guided goals, and use the <b>Slope Reference</b> if you get stuck. When you're happy with your art, click <b>Save PNG</b> to download it.</div>
+</div>
+  <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --navy: #1E2D4F;
+      --navy-dark: #14213d;
+      --navy-soft: #e8ecf5;
+      --gold: #FFC107;
+      --gold-dark: #e0a800;
+      --gold-soft: #FFF3C4;
+      --ink: #1a2332;
+      --muted: #5d6b85;
+      --paper: #fbfcff;
+      --panel: #ffffff;
+      --line: #d6dde9;
+      --green: #15803d;
+      --green-soft: #dcfce7;
+      --rose: #be123c;
+      --rose-soft: #ffe4e6;
+      --blue: #1d4ed8;
+      --blue-soft: #dbeafe;
+      --shadow: 0 16px 50px rgba(30, 45, 79, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(30, 45, 79, .10), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(255, 193, 7, .12), transparent 28rem),
+        linear-gradient(135deg, #f8fbff 0%, #fbfaf2 100%);
+    }
+
+    button, input, select { font: inherit; }
+    button { border: 0; cursor: pointer; color: inherit; }
+
+    .app {
+      width: min(1280px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 18px 0 34px;
+    }
+
+    /* ======== Header ======== */
+    .brand-bar {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 16px;
+      position: relative;
+      box-shadow: 0 14px 38px rgba(30, 45, 79, .18);
+      overflow: hidden;
+    }
+    .brand-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--gold);
+    }
+    .brand-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+    }
+    .brand-tag {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 800;
+      font-size: .72rem;
+      letter-spacing: .14em;
+      padding: .28rem .7rem;
+      border-radius: 4px;
+      margin-bottom: .55rem;
+      text-transform: uppercase;
+    }
+    .brand-bar h1 {
+      margin: 0;
+      font-family: 'Arvo', serif;
+      font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+      line-height: 1.05;
+      color: #fff;
+    }
+    .brand-bar .sub {
+      margin: 8px 0 0;
+      color: #d4dcec;
+      font-size: .95rem;
+      max-width: 70ch;
+    }
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+    }
+    .home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--gold);
+      color: var(--navy);
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: .92rem;
+      text-decoration: none;
+      box-shadow: 0 6px 18px rgba(255, 193, 7, .28);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .home-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(255, 193, 7, .35);
+    }
+    .home-btn svg { width: 16px; height: 16px; }
+    .secondary {
+      min-height: 40px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .25);
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+    .secondary:hover { background: rgba(255, 255, 255, .22); }
+
+    /* ======== Layout ======== */
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    /* ======== Canvas ======== */
+    .canvas-wrap {
+      padding: 14px;
+    }
+    .canvas-shell {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+    .canvas-shell svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .canvas-tools {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .tool-btn {
+      padding: 9px 14px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: .88rem;
+      color: var(--ink);
+      transition: background .15s, transform .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tool-btn:hover { background: white; transform: translateY(-1px); }
+    .tool-btn.danger { color: var(--rose); border-color: #fda4af; background: var(--rose-soft); }
+    .tool-btn.danger:hover { background: #fecdd3; }
+    .tool-btn.gold {
+      background: var(--gold);
+      color: var(--navy);
+      border-color: var(--gold-dark);
+      font-weight: 800;
+    }
+    .tool-btn.gold:hover { background: var(--gold-dark); }
+    .tool-btn.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy-dark);
+    }
+    .tool-btn svg { width: 14px; height: 14px; }
+
+    .stat-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      background: var(--navy-soft);
+      color: var(--navy);
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+    .stat-pill b {
+      font-family: 'Arvo', serif;
+      font-size: 1rem;
+    }
+
+    /* ======== Sidebar ======== */
+    .sidebar {
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel section { padding: 16px; }
+    .panel h2 {
+      margin: 0 0 12px;
+      font-family: 'Arvo', serif;
+      font-size: 1.05rem;
+      color: var(--navy);
+      letter-spacing: .02em;
+    }
+
+    /* Big equation display in form */
+    .equation-display {
+      background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+      color: #fff;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      font-family: 'Arvo', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      border: 3px solid var(--gold);
+      box-shadow: 0 6px 18px rgba(30, 45, 79, .25);
+      letter-spacing: .01em;
+    }
+    .equation-display .eq-label {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .14em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .field label {
+      display: block;
+      font-size: .72rem;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .field input {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      padding: 0 12px;
+      background: white;
+      color: var(--navy);
+      font-family: 'Arvo', serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .field input:focus {
+      outline: 2px solid var(--gold);
+      border-color: var(--gold);
+    }
+    .field .hint {
+      font-size: .7rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .color-picker {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      border: 2px solid white;
+      box-shadow: 0 0 0 1px var(--line);
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .color-swatch:hover { transform: scale(1.08); }
+    .color-swatch.active {
+      box-shadow: 0 0 0 3px var(--navy);
+      transform: scale(1.05);
+    }
+
+    .width-control {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      padding: 10px 12px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .width-control label {
+      font-size: .76rem;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .width-control input[type="range"] {
+      width: 100%;
+      accent-color: var(--gold);
+    }
+    .width-control b {
+      font-family: 'Arvo', serif;
+      color: var(--navy);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .add-btn {
+      width: 100%;
+      min-height: 50px;
+      background: var(--gold);
+      color: var(--navy);
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: .02em;
+      box-shadow: 0 8px 20px rgba(255, 193, 7, .35);
+      transition: transform .15s ease, background .15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .add-btn:hover {
+      transform: translateY(-1px);
+      background: var(--gold-dark);
+    }
+    .add-btn svg { width: 18px; height: 18px; }
+    .add-btn:disabled {
+      background: #d6dde9;
+      color: var(--muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* Gallery */
+    .gallery-list {
+      max-height: 300px;
+      overflow-y: auto;
+      display: grid;
+      gap: 6px;
+      padding-right: 4px;
+    }
+    .gallery-list::-webkit-scrollbar { width: 6px; }
+    .gallery-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+    .gallery-item {
+      display: grid;
+      grid-template-columns: 14px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      transition: background .15s;
+    }
+    .gallery-item:hover { background: var(--gold-soft); border-color: var(--gold); }
+    .gallery-item .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+    }
+    .gallery-item .eq {
+      font-family: 'Arvo', serif;
+      color: var(--navy);
+      font-weight: 700;
+      font-size: .92rem;
+    }
+    .gallery-item .delete {
+      background: transparent;
+      color: var(--muted);
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      transition: background .15s, color .15s;
+    }
+    .gallery-item .delete:hover {
+      background: var(--rose-soft);
+      color: var(--rose);
+    }
+    .gallery-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: .88rem;
+      padding: 24px 12px;
+      background: var(--paper);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+    }
+
+    /* Challenges */
+    .challenge-card {
+      padding: 12px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .challenge-card:hover {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+      transform: translateY(-1px);
+    }
+    .challenge-card h3 {
+      margin: 0 0 4px;
+      font-family: 'Arvo', serif;
+      color: var(--navy);
+      font-size: .92rem;
+    }
+    .challenge-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .8rem;
+      line-height: 1.4;
+    }
+    .challenge-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    /* Reference card */
+    .reference {
+      margin-top: 16px;
+    }
+    .ref-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      padding: 16px;
+    }
+    .ref-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .ref-card svg { width: 80px; height: 60px; }
+    .ref-card h4 {
+      margin: 0 0 3px;
+      font-family: 'Arvo', serif;
+      color: var(--navy);
+      font-size: .9rem;
+    }
+    .ref-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.4;
+    }
+
+    /* Toast for feedback */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      padding: 12px 20px;
+      background: var(--navy);
+      color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .25);
+      border: 2px solid var(--gold);
+      font-weight: 700;
+      font-size: .92rem;
+      transition: transform .25s ease, opacity .25s ease;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 1024px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .brand-row { grid-template-columns: 1fr; }
+      .toolbar { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="brand-bar">
+      <div class="brand-row">
+        <div>
+          <span class="brand-tag">IC Imagine · 8th Grade Math</span>
+          <h1>Linear Equation Art Studio</h1>
+          <p class="sub">Build artwork by entering equations in slope-intercept form. Each line you draw is recorded as <em>y = mx + b</em>. Watch your math turn into geometry.</p>
+        </div>
+        <div class="toolbar">
+          <a class="home-btn" href="index.html" title="Back to course home">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V9.5z"/></svg>
+            Home
+          </a>
+          <button class="secondary" id="savePngBtn">Save PNG</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- ============== CANVAS ============== -->
+      <main class="panel canvas-wrap">
+        <div class="canvas-shell">
+          <svg id="canvas" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <!-- Grid + axes are generated by JS -->
+            <g id="grid"></g>
+            <g id="axes"></g>
+            <g id="labels"></g>
+            <g id="userLines"></g>
+            <g id="preview"></g>
+          </svg>
+        </div>
+
+        <div class="canvas-tools">
+          <button class="tool-btn active" id="toggleGrid" title="Show or hide grid">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+            Grid
+          </button>
+          <button class="tool-btn active" id="toggleAxes" title="Show or hide labels">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 20V4M4 20h16"/></svg>
+            Labels
+          </button>
+          <button class="tool-btn" id="undoBtn" title="Remove the last line">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h13a5 5 0 010 10H9M3 7l4-4M3 7l4 4"/></svg>
+            Undo
+          </button>
+          <button class="tool-btn danger" id="clearAllBtn" title="Clear all lines">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+            Clear
+          </button>
+          <button class="tool-btn gold" id="savePngBtn2" title="Download as PNG">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Save PNG
+          </button>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-pill">Lines: <b id="lineCount">0</b></span>
+          <span class="stat-pill">Positive slopes: <b id="posCount">0</b></span>
+          <span class="stat-pill">Negative slopes: <b id="negCount">0</b></span>
+          <span class="stat-pill">Zero slopes: <b id="zeroCount">0</b></span>
+        </div>
+      </main>
+
+      <!-- ============== SIDEBAR ============== -->
+      <aside class="sidebar">
+        <!-- Add a Line -->
+        <div class="panel">
+          <section>
+            <h2>Add a Line</h2>
+
+            <div class="equation-display" id="eqDisplay">
+              <span class="eq-label">Slope-Intercept Form</span>
+              <span id="eqText">y = mx + b</span>
+            </div>
+
+            <div class="form-grid">
+              <div class="field">
+                <label for="m">Slope (m)</label>
+                <input id="m" type="text" value="1" autocomplete="off">
+                <div class="hint">e.g., 2, -¹⁄₂, 0.75</div>
+              </div>
+              <div class="field">
+                <label for="b">y-intercept (b)</label>
+                <input id="b" type="text" value="0" autocomplete="off">
+                <div class="hint">where line crosses y-axis</div>
+              </div>
+              <div class="field">
+                <label for="xStart">From x =</label>
+                <input id="xStart" type="text" value="-10" autocomplete="off">
+              </div>
+              <div class="field">
+                <label for="xEnd">To x =</label>
+                <input id="xEnd" type="text" value="10" autocomplete="off">
+              </div>
+            </div>
+
+            <div class="field" style="margin-bottom: 10px;">
+              <label>Color</label>
+              <div class="color-picker" id="colorPicker"></div>
+            </div>
+
+            <div class="width-control">
+              <label>Width</label>
+              <input id="widthSlider" type="range" min="1" max="6" step="1" value="3">
+              <b id="widthValue">3</b>
+            </div>
+
+            <button class="add-btn" id="addLineBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+              Add to Canvas
+            </button>
+          </section>
+        </div>
+
+        <!-- Gallery -->
+        <div class="panel">
+          <section>
+            <h2>Equation Gallery</h2>
+            <div class="gallery-list" id="galleryList">
+              <div class="gallery-empty">Your equations will appear here.</div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Challenges -->
+        <div class="panel">
+          <section>
+            <h2>Challenges</h2>
+            <div class="challenge-grid" id="challenges">
+              <!-- generated by JS -->
+            </div>
+          </section>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ============== SLOPE REFERENCE ============== -->
+    <section class="panel reference">
+      <section style="padding-bottom: 0;">
+        <h2>Slope Reference</h2>
+      </section>
+      <div class="ref-grid" id="refGrid"></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ======================================================
+    // CONFIG
+    // ======================================================
+    const VIEW = 600;
+    const RANGE = 12;        // axis range -RANGE..RANGE
+    const SCALE = (VIEW / 2) / RANGE; // 25 px per unit
+    const CX = VIEW / 2;     // center x in svg
+    const CY = VIEW / 2;     // center y in svg
+
+    const PALETTE = [
+      "#1E2D4F", // navy
+      "#FFC107", // gold
+      "#DC2626", // crimson
+      "#15803D", // forest
+      "#2563EB", // royal
+      "#7C3AED", // plum
+      "#F97316", // coral
+      "#0D9488", // teal
+      "#1F2937", // black
+      "#EC4899"  // pink
+    ];
+
+    // Convert math (x, y) to SVG coordinates
+    const toX = mx => CX + mx * SCALE;
+    const toY = my => CY - my * SCALE;
+
+    // Parse "1/2", "-3", "0.75", etc.
+    function parseNum(raw) {
+      const s = String(raw).trim();
+      if (!s) return NaN;
+      if (s.includes('/')) {
+        const parts = s.split('/');
+        if (parts.length !== 2) return NaN;
+        const n = Number(parts[0]);
+        const d = Number(parts[1]);
+        if (!isFinite(n) || !isFinite(d) || d === 0) return NaN;
+        return n / d;
+      }
+      const n = Number(s);
+      return isFinite(n) ? n : NaN;
+    }
+
+    // Format slope-intercept equation, preserving fractions when input as fractions
+    function formatEq(mRaw, bRaw) {
+      const m = parseNum(mRaw);
+      const b = parseNum(bRaw);
+      if (!isFinite(m) || !isFinite(b)) return "y = ?";
+
+      let mPart;
+      if (m === 0) mPart = "";
+      else if (m === 1) mPart = "x";
+      else if (m === -1) mPart = "-x";
+      else mPart = `${formatCoef(mRaw, m)}x`;
+
+      let bPart;
+      if (b === 0) bPart = (m === 0 ? "0" : "");
+      else if (m === 0) bPart = formatTerm(bRaw, b);
+      else if (b > 0) bPart = ` + ${formatTerm(bRaw, b, true)}`;
+      else bPart = ` − ${formatTerm(bRaw, Math.abs(b), true)}`;
+
+      return `y = ${mPart}${bPart}`;
+    }
+
+    function formatCoef(raw, val) {
+      const s = String(raw).trim();
+      if (s.startsWith('-') && s.length > 1) {
+        // Preserve "-1/2" style
+        return `−${s.slice(1)}`;
+      }
+      return s;
+    }
+    function formatTerm(raw, val, alreadyAbs) {
+      const s = String(raw).trim();
+      if (alreadyAbs) {
+        return s.startsWith('-') ? s.slice(1) : s;
+      }
+      return s.startsWith('-') ? `−${s.slice(1)}` : s;
+    }
+
+    // ======================================================
+    // STATE
+    // ======================================================
+    const state = {
+      lines: [],            // {mRaw, bRaw, m, b, xStart, xEnd, color, width, id}
+      currentColor: PALETTE[0],
+      gridVisible: true,
+      labelsVisible: true,
+      nextId: 1
+    };
+
+    // ======================================================
+    // CANVAS RENDERING
+    // ======================================================
+    function buildGrid() {
+      const grid = document.getElementById('grid');
+      let html = '';
+      // Light gridlines every 1 unit
+      for (let i = -RANGE; i <= RANGE; i++) {
+        const x = toX(i);
+        const y = toY(i);
+        const major = (i % 5 === 0);
+        html += `<line x1="${x}" y1="0" x2="${x}" y2="${VIEW}" stroke="${major ? '#cbd5e1' : '#e2e8f0'}" stroke-width="${major ? 1 : 0.6}"/>`;
+        html += `<line x1="0" y1="${y}" x2="${VIEW}" y2="${y}" stroke="${major ? '#cbd5e1' : '#e2e8f0'}" stroke-width="${major ? 1 : 0.6}"/>`;
+      }
+      grid.innerHTML = html;
+    }
+
+    function buildAxes() {
+      const axes = document.getElementById('axes');
+      const labels = document.getElementById('labels');
+      // Axis lines
+      let aHtml = `
+        <line x1="0" y1="${CY}" x2="${VIEW}" y2="${CY}" stroke="#1E2D4F" stroke-width="1.6"/>
+        <line x1="${CX}" y1="0" x2="${CX}" y2="${VIEW}" stroke="#1E2D4F" stroke-width="1.6"/>
+        <polygon points="${VIEW-2},${CY} ${VIEW-12},${CY-5} ${VIEW-12},${CY+5}" fill="#1E2D4F"/>
+        <polygon points="${CX},2 ${CX-5},12 ${CX+5},12" fill="#1E2D4F"/>
+        <text x="${VIEW-14}" y="${CY-8}" font-family="Arvo, serif" font-weight="700" font-size="14" fill="#1E2D4F">x</text>
+        <text x="${CX+8}" y="14" font-family="Arvo, serif" font-weight="700" font-size="14" fill="#1E2D4F">y</text>
+      `;
+      axes.innerHTML = aHtml;
+
+      // Tick labels every 2 units
+      let lHtml = '';
+      for (let i = -RANGE; i <= RANGE; i++) {
+        if (i === 0 || i % 2 !== 0) continue;
+        // x labels (under x-axis)
+        const xPos = toX(i);
+        lHtml += `<text x="${xPos}" y="${CY+15}" text-anchor="middle" font-family="Inter, sans-serif" font-size="10" fill="#5d6b85" font-weight="600">${i}</text>`;
+        // y labels (left of y-axis)
+        const yPos = toY(i);
+        lHtml += `<text x="${CX-7}" y="${yPos+4}" text-anchor="end" font-family="Inter, sans-serif" font-size="10" fill="#5d6b85" font-weight="600">${i}</text>`;
+      }
+      // origin
+      lHtml += `<text x="${CX-6}" y="${CY+13}" text-anchor="end" font-family="Inter, sans-serif" font-size="10" fill="#5d6b85" font-weight="600">0</text>`;
+      labels.innerHTML = lHtml;
+    }
+
+    function applyVisibility() {
+      document.getElementById('grid').style.display = state.gridVisible ? '' : 'none';
+      document.getElementById('labels').style.display = state.labelsVisible ? '' : 'none';
+    }
+
+    function clipToView(line) {
+      // Clip the line segment so it doesn't extend beyond the visible canvas
+      // Math: the line is y = m*x + b from xStart to xEnd
+      // Clip to [-RANGE, RANGE] in both x and y
+      let { m, b, xStart, xEnd } = line;
+      if (xStart > xEnd) [xStart, xEnd] = [xEnd, xStart];
+
+      // Clamp x to view range
+      let x1 = Math.max(xStart, -RANGE);
+      let x2 = Math.min(xEnd, RANGE);
+      if (x1 > x2) return null; // out of view
+
+      let y1 = m * x1 + b;
+      let y2 = m * x2 + b;
+
+      // Liang-Barsky-ish clipping for y bounds
+      const yMin = -RANGE, yMax = RANGE;
+      if (y1 < yMin && y2 < yMin) return null;
+      if (y1 > yMax && y2 > yMax) return null;
+
+      // Clip y endpoints when slope is non-zero
+      if (m !== 0) {
+        if (y1 < yMin) { x1 = (yMin - b) / m; y1 = yMin; }
+        if (y1 > yMax) { x1 = (yMax - b) / m; y1 = yMax; }
+        if (y2 < yMin) { x2 = (yMin - b) / m; y2 = yMin; }
+        if (y2 > yMax) { x2 = (yMax - b) / m; y2 = yMax; }
+      } else {
+        // Horizontal line: just check if y is in range
+        if (y1 < yMin || y1 > yMax) return null;
+      }
+      return { x1, y1, x2, y2 };
+    }
+
+    function lineToSvg(line, opts={}) {
+      const c = clipToView(line);
+      if (!c) return '';
+      const { x1, y1, x2, y2 } = c;
+      const sx1 = toX(x1).toFixed(2);
+      const sy1 = toY(y1).toFixed(2);
+      const sx2 = toX(x2).toFixed(2);
+      const sy2 = toY(y2).toFixed(2);
+      const stroke = line.color;
+      const w = line.width;
+      const dash = opts.preview ? 'stroke-dasharray="5 4"' : '';
+      const opacity = opts.preview ? 0.55 : 1;
+      return `<line x1="${sx1}" y1="${sy1}" x2="${sx2}" y2="${sy2}" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" opacity="${opacity}" ${dash}/>`;
+    }
+
+    function renderUserLines() {
+      const g = document.getElementById('userLines');
+      g.innerHTML = state.lines.map(l => lineToSvg(l)).join('');
+      updateStats();
+    }
+
+    function renderPreview() {
+      const g = document.getElementById('preview');
+      const m = parseNum(els.m.value);
+      const b = parseNum(els.b.value);
+      const xs = parseNum(els.xStart.value);
+      const xe = parseNum(els.xEnd.value);
+      if (![m,b,xs,xe].every(isFinite)) {
+        g.innerHTML = '';
+        return;
+      }
+      const previewLine = {
+        m, b, xStart: xs, xEnd: xe,
+        color: state.currentColor,
+        width: Number(els.widthSlider.value)
+      };
+      g.innerHTML = lineToSvg(previewLine, {preview: true});
+    }
+
+    function updateStats() {
+      const lines = state.lines;
+      let pos = 0, neg = 0, zero = 0;
+      lines.forEach(l => {
+        if (l.m > 0) pos++;
+        else if (l.m < 0) neg++;
+        else zero++;
+      });
+      document.getElementById('lineCount').textContent = lines.length;
+      document.getElementById('posCount').textContent = pos;
+      document.getElementById('negCount').textContent = neg;
+      document.getElementById('zeroCount').textContent = zero;
+    }
+
+    // ======================================================
+    // GALLERY
+    // ======================================================
+    function renderGallery() {
+      const list = document.getElementById('galleryList');
+      if (state.lines.length === 0) {
+        list.innerHTML = `<div class="gallery-empty">Your equations will appear here.</div>`;
+        return;
+      }
+      list.innerHTML = state.lines.map(l => `
+        <div class="gallery-item">
+          <span class="swatch" style="background:${l.color}"></span>
+          <span class="eq">${formatEq(l.mRaw, l.bRaw)}</span>
+          <button class="delete" data-id="${l.id}" title="Remove this line">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      `).join('');
+      list.querySelectorAll('.delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = Number(btn.dataset.id);
+          state.lines = state.lines.filter(l => l.id !== id);
+          renderUserLines();
+          renderGallery();
+        });
+      });
+    }
+
+    // ======================================================
+    // CHALLENGES
+    // ======================================================
+    const CHALLENGES = [
+      {
+        title: "Mountain Range",
+        text: "Use 5 lines with mixed positive and negative slopes to make a mountain skyline.",
+        slopes: [2, -2, 1.5, -1.5, 1]
+      },
+      {
+        title: "Rainbow Stairs",
+        text: "Draw 4 parallel lines (same slope, different y-intercepts) using 4 different colors.",
+        slopes: [1, 1, 1, 1]
+      },
+      {
+        title: "Starburst",
+        text: "8 lines all passing through the origin (b = 0) with different slopes.",
+        slopes: ["3", "1", "1/2", "1/4", "-1/4", "-1/2", "-1", "-3"]
+      },
+      {
+        title: "Block Letter",
+        text: "Spell your initial using only horizontal lines (m = 0) and very steep lines (|m| ≥ 6).",
+        slopes: [0, 6]
+      },
+      {
+        title: "Sunset Scene",
+        text: "Add a horizon (m = 0) plus 5 sun rays from a single point. Pick a warm color palette.",
+        slopes: [0]
+      },
+      {
+        title: "Gentle vs. Steep",
+        text: "Place a gentle line (|m| < 1) next to a steep line (|m| > 3) to compare visually.",
+        slopes: ["1/3", "5"]
+      }
+    ];
+
+    function renderChallenges() {
+      const grid = document.getElementById('challenges');
+      grid.innerHTML = CHALLENGES.map(c => `
+        <div class="challenge-card">
+          <h3>${c.title}</h3>
+          <p>${c.text}</p>
+        </div>
+      `).join('');
+    }
+
+    // ======================================================
+    // SLOPE REFERENCE
+    // ======================================================
+    function buildRefSvg(m, b=0) {
+      // Mini coord plane 80x60, range -3..3
+      const w = 80, h = 60;
+      const cx = w/2, cy = h/2;
+      const sc = (w/2) / 3;
+      const tx = x => cx + x * sc;
+      const ty = y => cy - y * sc;
+      // Axes
+      let svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+      svg += `<line x1="0" y1="${cy}" x2="${w}" y2="${cy}" stroke="#cbd5e1" stroke-width="0.8"/>`;
+      svg += `<line x1="${cx}" y1="0" x2="${cx}" y2="${h}" stroke="#cbd5e1" stroke-width="0.8"/>`;
+      // Line: y = mx + b, x from -3 to 3, clipped to y in [-2.5, 2.5]
+      let x1 = -3, x2 = 3;
+      let y1 = m*x1 + b, y2 = m*x2 + b;
+      const yMin = -2.5, yMax = 2.5;
+      if (m !== 0) {
+        if (y1 < yMin) { x1 = (yMin - b)/m; y1 = yMin; }
+        if (y1 > yMax) { x1 = (yMax - b)/m; y1 = yMax; }
+        if (y2 < yMin) { x2 = (yMin - b)/m; y2 = yMin; }
+        if (y2 > yMax) { x2 = (yMax - b)/m; y2 = yMax; }
+      }
+      svg += `<line x1="${tx(x1)}" y1="${ty(y1)}" x2="${tx(x2)}" y2="${ty(y2)}" stroke="#FFC107" stroke-width="2.4" stroke-linecap="round"/>`;
+      svg += `</svg>`;
+      return svg;
+    }
+
+    function renderRefGrid() {
+      const cards = [
+        { m:2, label:"Steep, Positive", desc:"Slope m = 2 means: rise 2 for every 1 right. Line tilts up-right." },
+        { m:0.5, label:"Gentle, Positive", desc:"Slope m = 1/2 means: rise 1 for every 2 right. Mild upward slant." },
+        { m:0, label:"Zero (Horizontal)", desc:"Slope m = 0 means y stays constant — a flat horizontal line." },
+        { m:-0.5, label:"Gentle, Negative", desc:"Slope m = -1/2 means: down 1 for every 2 right. Mild downward slant." },
+        { m:-2, label:"Steep, Negative", desc:"Slope m = -2 means: down 2 for every 1 right. Tilts down-right." },
+        { m:1, label:"Diagonal (m = 1)", desc:"The classic 45° line — slope of exactly 1 (or -1 going the other way)." }
+      ];
+      const grid = document.getElementById('refGrid');
+      grid.innerHTML = cards.map(c => `
+        <div class="ref-card">
+          ${buildRefSvg(c.m, 0)}
+          <div>
+            <h4>${c.label}</h4>
+            <p>${c.desc}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ======================================================
+    // FORM HANDLERS
+    // ======================================================
+    const els = {
+      m: document.getElementById('m'),
+      b: document.getElementById('b'),
+      xStart: document.getElementById('xStart'),
+      xEnd: document.getElementById('xEnd'),
+      eqText: document.getElementById('eqText'),
+      eqDisplay: document.getElementById('eqDisplay'),
+      widthSlider: document.getElementById('widthSlider'),
+      widthValue: document.getElementById('widthValue'),
+      addLineBtn: document.getElementById('addLineBtn'),
+      colorPicker: document.getElementById('colorPicker')
+    };
+
+    function buildColorPicker() {
+      els.colorPicker.innerHTML = PALETTE.map(c => `
+        <button class="color-swatch ${c === state.currentColor ? 'active' : ''}" data-color="${c}" style="background:${c}" title="${c}" aria-label="Color ${c}"></button>
+      `).join('');
+      els.colorPicker.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.currentColor = btn.dataset.color;
+          buildColorPicker();
+          renderPreview();
+        });
+      });
+    }
+
+    function updateEqDisplay() {
+      els.eqText.textContent = formatEq(els.m.value, els.b.value);
+      // Validate inputs
+      const valid = isFinite(parseNum(els.m.value))
+                 && isFinite(parseNum(els.b.value))
+                 && isFinite(parseNum(els.xStart.value))
+                 && isFinite(parseNum(els.xEnd.value));
+      els.addLineBtn.disabled = !valid;
+    }
+
+    function addLine() {
+      const m = parseNum(els.m.value);
+      const b = parseNum(els.b.value);
+      const xs = parseNum(els.xStart.value);
+      const xe = parseNum(els.xEnd.value);
+      if (![m,b,xs,xe].every(isFinite)) {
+        showToast("Check your inputs — slope, y-intercept, and x-range must be numbers.");
+        return;
+      }
+      const newLine = {
+        id: state.nextId++,
+        mRaw: els.m.value.trim(),
+        bRaw: els.b.value.trim(),
+        m, b,
+        xStart: Math.min(xs, xe),
+        xEnd: Math.max(xs, xe),
+        color: state.currentColor,
+        width: Number(els.widthSlider.value)
+      };
+      state.lines.push(newLine);
+      renderUserLines();
+      renderGallery();
+      showToast(`Added: ${formatEq(newLine.mRaw, newLine.bRaw)}`);
+    }
+
+    // ======================================================
+    // TOAST
+    // ======================================================
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ======================================================
+    // PNG EXPORT
+    // ======================================================
+    function savePng() {
+      const svg = document.getElementById('canvas');
+      // Clone so we can ensure a white background for export
+      const clone = svg.cloneNode(true);
+      const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
+      bg.setAttribute('width', VIEW); bg.setAttribute('height', VIEW);
+      bg.setAttribute('fill', 'white');
+      clone.insertBefore(bg, clone.firstChild);
+      // Hide preview group in clone
+      const previewG = clone.querySelector('#preview');
+      if (previewG) previewG.innerHTML = '';
+
+      const xml = new XMLSerializer().serializeToString(clone);
+      const svgBlob = new Blob([xml], {type: 'image/svg+xml;charset=utf-8'});
+      const url = URL.createObjectURL(svgBlob);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const SIZE = 1600;
+        canvas.width = SIZE; canvas.height = SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, SIZE, SIZE);
+        ctx.drawImage(img, 0, 0, SIZE, SIZE);
+        canvas.toBlob(blob => {
+          const a = document.createElement('a');
+          a.download = `linear-art-${Date.now()}.png`;
+          a.href = URL.createObjectURL(blob);
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast("Saved as PNG.");
+        }, 'image/png');
+      };
+      img.onerror = () => {
+        showToast("Could not save — try refreshing the page.");
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
+    }
+
+    // ======================================================
+    // EVENT WIRING
+    // ======================================================
+    function wire() {
+      // Live preview & equation display
+      ['m','b','xStart','xEnd'].forEach(k => {
+        els[k].addEventListener('input', () => {
+          updateEqDisplay();
+          renderPreview();
+        });
+      });
+      els.widthSlider.addEventListener('input', () => {
+        els.widthValue.textContent = els.widthSlider.value;
+        renderPreview();
+      });
+
+      els.addLineBtn.addEventListener('click', addLine);
+
+      // Press Enter in any input → add line
+      ['m','b','xStart','xEnd'].forEach(k => {
+        els[k].addEventListener('keydown', e => {
+          if (e.key === 'Enter') addLine();
+        });
+      });
+
+      // Toolbar
+      document.getElementById('toggleGrid').addEventListener('click', e => {
+        state.gridVisible = !state.gridVisible;
+        e.currentTarget.classList.toggle('active', state.gridVisible);
+        applyVisibility();
+      });
+      document.getElementById('toggleAxes').addEventListener('click', e => {
+        state.labelsVisible = !state.labelsVisible;
+        e.currentTarget.classList.toggle('active', state.labelsVisible);
+        applyVisibility();
+      });
+      document.getElementById('undoBtn').addEventListener('click', () => {
+        if (state.lines.length === 0) {
+          showToast("Nothing to undo.");
+          return;
+        }
+        const last = state.lines.pop();
+        renderUserLines();
+        renderGallery();
+        showToast(`Removed: ${formatEq(last.mRaw, last.bRaw)}`);
+      });
+      document.getElementById('clearAllBtn').addEventListener('click', () => {
+        if (state.lines.length === 0) return;
+        if (!confirm(`Remove all ${state.lines.length} lines?`)) return;
+        state.lines = [];
+        renderUserLines();
+        renderGallery();
+        showToast("Canvas cleared.");
+      });
+      document.getElementById('savePngBtn').addEventListener('click', savePng);
+      document.getElementById('savePngBtn2').addEventListener('click', savePng);
+    }
+
+    // ======================================================
+    // INIT
+    // ======================================================
+    buildGrid();
+    buildAxes();
+    buildColorPicker();
+    renderChallenges();
+    renderRefGrid();
+    updateEqDisplay();
+    renderPreview();
+    wire();
+  </script>
+</body>
+</html>

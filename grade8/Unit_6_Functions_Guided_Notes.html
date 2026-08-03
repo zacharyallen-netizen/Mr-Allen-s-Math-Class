@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 6 Guided Notes — Functions & Linear Relationships | IC Imagine 8th Grade Math</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #fbf7ee;
+  --bg-card: #ffffff;
+  --bg-soft: #f4ecdb;
+  --ink: #1f2730;
+  --ink-soft: #4b5662;
+  --ink-muted: #7d8893;
+  --accent: #c25a3f;
+  --accent-soft: #f4dcd2;
+  --navy: #1c3a52;
+  --sage: #4a8a6b;
+  --sage-soft: #e1efe6;
+  --teal: #2d7a8a;
+  --teal-soft: #d6e9ee;
+  --purple: #6b4d8a;
+  --purple-soft: #e3d8f0;
+  --gold: #d4a64a;
+  --gold-soft: #fff3d6;
+  --red: #b83a3a;
+  --red-soft: #f5dada;
+  --line: #d9cfb8;
+  --line-soft: #ece4d1;
+  --shadow: 0 1px 2px rgba(31, 39, 48, 0.04), 0 4px 12px rgba(31, 39, 48, 0.06);
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Public Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(212, 166, 74, 0.05), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(194, 90, 63, 0.04), transparent 40%);
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 36px 24px 80px;
+}
+
+/* === HEADER === */
+header.title {
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(32px, 4.5vw, 44px);
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: var(--navy);
+  font-variation-settings: "opsz" 144;
+  letter-spacing: -0.02em;
+}
+h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
+.subtitle {
+  font-size: 16px;
+  color: var(--ink-soft);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* === TAB NAV === */
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 32px;
+  padding-bottom: 0;
+  position: sticky;
+  top: 0;
+  background: rgba(251, 247, 238, 0.96);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+  padding-top: 12px;
+  margin-left: -8px;
+  margin-right: -8px;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.tab-btn {
+  font-family: var(--serif);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  position: relative;
+  bottom: -2px;
+}
+.tab-btn .tab-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 4px;
+  letter-spacing: 0.05em;
+}
+.tab-btn:hover {
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+.tab-btn.active {
+  background: var(--bg-card);
+  border-color: var(--line);
+  border-bottom-color: var(--bg-card);
+  color: var(--navy);
+  font-weight: 600;
+  box-shadow: 0 -2px 8px rgba(31, 39, 48, 0.04);
+}
+.tab-btn .check {
+  display: none;
+  margin-left: 4px;
+  color: var(--sage);
+  font-weight: 700;
+}
+.tab-btn.completed .check { display: inline; }
+
+.tab-pane {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+.tab-pane.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === SECTION HEADERS === */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 8px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--navy);
+}
+.sec-num {
+  font-family: var(--serif);
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1;
+  font-variation-settings: "opsz" 144;
+}
+.sec-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--navy);
+  margin: 0;
+  line-height: 1.15;
+  font-variation-settings: "opsz" 100;
+}
+.sec-standard {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-muted);
+  margin: 0 0 24px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* === CONTENT BLOCKS === */
+.intro {
+  background: var(--gold-soft);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  font-size: 15px;
+}
+.intro strong { color: var(--navy); font-family: var(--serif); }
+
+.concept {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px 26px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+}
+.concept-h {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 0 0 12px;
+  font-variation-settings: "opsz" 100;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.concept-h .badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.concept p { font-size: 15px; line-height: 1.6; margin: 8px 0; }
+.concept ul, .concept ol { font-size: 15px; line-height: 1.6; padding-left: 22px; }
+.concept ul li, .concept ol li { margin-bottom: 4px; }
+.concept code, .concept .eq {
+  font-family: var(--mono);
+  background: var(--bg-soft);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 0.93em;
+  color: var(--navy);
+}
+.concept .eq-block {
+  font-family: var(--mono);
+  font-size: 16px;
+  background: var(--bg-soft);
+  padding: 6px 14px;
+  border-radius: 6px;
+  display: inline-block;
+  margin: 4px 0;
+  color: var(--navy);
+  font-weight: 500;
+}
+
+/* === FILL IN THE BLANK === */
+.fill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 4px 10px;
+  border: none;
+  border-bottom: 2px solid var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+  min-width: 80px;
+  width: auto;
+  border-radius: 3px 3px 0 0;
+  margin: 0 2px;
+  text-align: center;
+  transition: all 0.2s ease;
+  vertical-align: baseline;
+}
+.fill:focus {
+  outline: none;
+  background: white;
+  border-bottom-color: var(--navy);
+}
+.fill.correct {
+  background: var(--sage-soft);
+  border-bottom-color: var(--sage);
+  color: #2e5a44;
+  font-weight: 600;
+}
+.fill.incorrect {
+  background: var(--red-soft);
+  border-bottom-color: var(--red);
+  color: #7a2828;
+}
+.fill.wide { min-width: 130px; }
+.fill.narrow { min-width: 50px; }
+
+.fill-row {
+  margin: 14px 0;
+  padding: 12px 16px;
+  background: var(--bg-soft);
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  font-size: 15px;
+  line-height: 2;
+}
+.fill-row strong { color: var(--accent); }
+
+.btn-show {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 6px;
+  vertical-align: baseline;
+}
+.btn-show:hover {
+  background: var(--bg-soft);
+  color: var(--navy);
+  border-color: var(--accent);
+}
+
+/* === KEY FACT BOX === */
+.key-fact {
+  background: var(--sage-soft);
+  border-left: 4px solid var(--sage);
+  border-radius: 6px;
+  padding: 12px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.key-fact strong {
+  color: var(--sage);
+  font-family: var(--serif);
+  font-size: 15px;
+}
+
+.callout {
+  background: var(--gold-soft);
+  border-left: 4px solid var(--gold);
+  border-radius: 6px;
+  padding: 12px 18px;
+  margin: 14px 0;
+  font-size: 14px;
+}
+.callout strong { color: #b8862e; font-family: var(--serif); font-size: 15px; }
+
+.callout.warning {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+}
+.callout.warning strong { color: var(--accent); }
+
+/* === EXAMPLE BLOCK === */
+.example {
+  background: var(--bg-card);
+  border: 1.5px solid var(--teal);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 16px 0;
+  position: relative;
+}
+.example::before {
+  content: "EXAMPLE";
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  background: var(--teal);
+  color: white;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+.example p { font-size: 15px; }
+.example .work {
+  background: var(--bg-soft);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--navy);
+}
+
+/* === TRY IT BLOCK === */
+.try-it {
+  background: linear-gradient(135deg, var(--purple-soft) 0%, #f0e7fa 100%);
+  border: 1.5px solid var(--purple);
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin: 18px 0;
+  position: relative;
+}
+.try-it::before {
+  content: "TRY IT";
+  position: absolute;
+  top: -10px;
+  left: 18px;
+  background: var(--purple);
+  color: white;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 3px 10px;
+  border-radius: 3px;
+}
+.try-it p { font-size: 15px; }
+
+/* === VISUAL CONTAINER === */
+.visual {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 16px;
+}
+.visual svg { max-width: 100%; height: auto; }
+
+/* === DATA TABLE === */
+.data-table {
+  border-collapse: collapse;
+  margin: 10px auto 14px;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.data-table th, .data-table td {
+  border: 1px solid var(--ink);
+  padding: 7px 14px;
+  text-align: center;
+  background: white;
+}
+.data-table th {
+  background: var(--bg-soft);
+  color: var(--navy);
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* === TWO-WAY TABLE === */
+.two-way {
+  border-collapse: collapse;
+  margin: 12px auto 16px;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.two-way th, .two-way td {
+  border: 1px solid var(--navy);
+  padding: 8px 14px;
+  text-align: center;
+  background: white;
+}
+.two-way thead th {
+  background: var(--navy);
+  color: white;
+  font-style: italic;
+}
+.two-way tbody th {
+  background: var(--bg-soft);
+  color: var(--navy);
+  text-align: right;
+}
+.two-way .totals {
+  background: var(--gold-soft);
+}
+.two-way .totals th, .two-way .totals td {
+  font-weight: 700;
+  background: var(--gold-soft);
+}
+
+/* === MC CHOICES === */
+.mc-choices { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.mc-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  background: white;
+  transition: all 0.15s ease;
+  user-select: none;
+  font-size: 14.5px;
+}
+.mc-choice:hover:not(.locked) { border-color: var(--accent); background: var(--bg-soft); }
+.mc-letter {
+  font-family: var(--mono);
+  font-weight: 600;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--bg-soft);
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.mc-choice.selected .mc-letter { background: var(--accent); color: white; }
+.mc-choice.correct { border-color: var(--sage); background: var(--sage-soft); }
+.mc-choice.correct .mc-letter { background: var(--sage); color: white; }
+.mc-choice.incorrect { border-color: var(--red); background: var(--red-soft); }
+.mc-choice.incorrect .mc-letter { background: var(--red); color: white; }
+.mc-choice.locked { cursor: default; }
+
+.btn-check {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 13px;
+  padding: 7px 16px;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.15s ease;
+}
+.btn-check:hover:not(:disabled) { background: var(--accent); }
+.btn-check:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.feedback {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.feedback.show { display: block; }
+.feedback.correct { background: var(--sage-soft); color: #2e5a44; border-left: 3px solid var(--sage); }
+.feedback.incorrect { background: var(--red-soft); color: #7a2828; border-left: 3px solid var(--red); }
+.feedback strong { display: block; margin-bottom: 3px; }
+
+/* === FRACTION === */
+.frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  font-size: 0.85em;
+  line-height: 1.1;
+}
+.frac .num { border-bottom: 1.5px solid currentColor; padding: 0 4px 1px; }
+.frac .den { padding: 1px 4px 0; }
+
+/* === SECTION PROGRESS === */
+.sec-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+  padding: 8px 14px;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  font-family: var(--mono);
+}
+.sec-progress strong { color: var(--navy); font-weight: 600; }
+.sec-progress .bar {
+  flex: 1;
+  height: 5px;
+  background: var(--line-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sec-progress .fill-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sage) 0%, var(--gold) 100%);
+  width: 0%;
+  transition: width 0.4s ease;
+}
+
+/* === TWO-COL LAYOUT === */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* === Mobile === */
+@media (max-width: 720px) {
+  .wrap { padding: 24px 12px 64px; }
+  .two-col { grid-template-columns: 1fr; }
+  .tabs { gap: 2px; }
+  .tab-btn { padding: 8px 10px; font-size: 13px; }
+  .sec-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .sec-num { font-size: 32px; }
+  .sec-title { font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<nav style="background:#1E2D4F;border-bottom:3px solid #FFC107;padding:10px 16px;position:sticky;top:0;z-index:200;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-family:Georgia,serif">
+<span style="color:#FFC107;font-weight:700;margin-right:auto">🦅 IC Imagine <span style="color:#fff">8th Grade Math</span></span>
+<a href="index.html" style="font-size:.8rem;font-weight:600;padding:7px 12px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:5px;color:#fff;text-decoration:none">🏠 Home</a>
+    <a href="../class-information.html" style="font-size:.8rem;font-weight:600;padding:7px 12px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:5px;color:#fff;text-decoration:none">📋 Class Info</a>
+<a href="unit6.html" style="font-size:.8rem;font-weight:600;padding:7px 12px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.3);border-radius:5px;color:#fff;text-decoration:none">← Unit 6</a>
+</nav>
+
+<div class="wrap">
+
+<header class="title">
+  <div class="eyebrow">Unit 6 · Guided Notes</div>
+  <h1>Unit 6 — Functions &amp; <em>Linear Relationships</em></h1>
+  <p class="subtitle">Interactive guided notes for Unit 6 — real-world context, comparing functions, and qualitative graphs. Fill in the blanks to learn — your progress saves automatically.</p>
+
+<div style="background:#fff8e1;border:1px solid #FFC107;border-left:5px solid #FFC107;border-radius:8px;padding:12px 16px;margin:0 0 16px"><div style="font-family:Arvo,serif;font-weight:bold;color:#1E2D4F;margin-bottom:4px">🎯 By the end of this unit, I can…</div><ul style="margin:4px 0 0;padding-left:20px;color:#333;font-size:.92em"><li style="margin:2px 0">Decide whether a relation is a function</li><li style="margin:2px 0">Find and interpret slope and y-intercept in context</li><li style="margin:2px 0">Compare functions shown as graphs, tables, and equations</li><li style="margin:2px 0">Solve systems of linear equations</li></ul></div></header>
+<section style="max-width:980px;margin:18px auto 8px;padding:0 4px">
+  <div style="background:#fffaf0;border:2px solid #f0e2b0;border-radius:14px;padding:18px 20px;margin-bottom:14px">
+    <h2 style="font-family:Georgia,serif;color:#1E2D4F;margin:0 0 4px;font-size:1.25rem">📚 Unit 6 — All Topics</h2>
+    <p style="color:#6a6256;font-size:.86rem;margin:0 0 14px">Your complete Unit 6 guided notes. Topics 6.4–6.6 are interactive on this page; 6.1, 6.2, 6.3, and 6.7 open their full guided-notes pages.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:10px">
+      <a href="unit6.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.1</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Functions — relations, mappings, function rule</span><span style="background:#0056B3;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">OPEN NOTES →</span></a><a href="slope_guided_notes.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.2</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Slope — rise/run, the slope formula</span><span style="background:#0056B3;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">OPEN NOTES →</span></a><a href="tables-and-systems-guided-notes.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.3</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Tables → Equations — write a linear rule from a table</span><span style="background:#0056B3;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">OPEN NOTES →</span></a><a href="#" onclick="switchTab('tab-6-4');document.querySelector('.tabs').scrollIntoView({behavior:'smooth',block:'start'});return false;" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.4</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Linear Functions in Real-World Context</span><span style="background:#1a7000;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">ON THIS PAGE ↓</span></a><a href="#" onclick="switchTab('tab-6-5');document.querySelector('.tabs').scrollIntoView({behavior:'smooth',block:'start'});return false;" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.5</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Comparing Functions</span><span style="background:#1a7000;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">ON THIS PAGE ↓</span></a><a href="#" onclick="switchTab('tab-6-6');document.querySelector('.tabs').scrollIntoView({behavior:'smooth',block:'start'});return false;" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.6</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Qualitative Graphs</span><span style="background:#1a7000;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">ON THIS PAGE ↓</span></a><a href="tables-and-systems-guided-notes.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;border:2px solid #e4dcc8;border-left:5px solid #FFC107;border-radius:10px;padding:11px 14px;transition:.15s"><span style="font-family:Georgia,serif;font-weight:700;color:#1E2D4F;font-size:1.05rem;min-width:34px">6.7</span><span style="flex:1;color:#2a2a35;font-weight:600;font-size:.92rem">Systems of Equations — graphing & substitution</span><span style="background:#0056B3;color:#fff;font-size:.62rem;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap">OPEN NOTES →</span></a>
+    </div>
+  </div>
+  <div style="background:#0d1f3f;border-radius:14px;padding:18px 20px">
+    <h2 style="font-family:Georgia,serif;color:#FFC107;margin:0 0 4px;font-size:1.2rem">🎮 Games &amp; Activities</h2>
+    <p style="color:#b8c8e8;font-size:.86rem;margin:0 0 14px">Self-paced games and activities that reinforce Unit 6 — a class favorite.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px">
+      <a href="line_detective.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">🔍</span><span style="flex:1">Line Detective Activity</span><span style="color:#FFC107">→</span></a><a href="ufo_blaster.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">🛸</span><span style="flex:1">UFO Blaster Game</span><span style="color:#FFC107">→</span></a><a href="slope_intercept_interactive.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">📈</span><span style="flex:1">Slope-Intercept Intro</span><span style="color:#FFC107">→</span></a><a href="slope_intercept_practice.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">✏️</span><span style="flex:1">Slope-Intercept Practice</span><span style="color:#FFC107">→</span></a><a href="tables_linear_functions.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">📊</span><span style="flex:1">Tables & Linear Functions</span><span style="color:#FFC107">→</span></a><a href="Unit_6_Functions_Guided_Notes.html" target="_blank" style="display:flex;align-items:center;gap:9px;text-decoration:none;background:#1E2D4F;border-radius:9px;padding:10px 13px;color:#fff;font-weight:600;font-size:.86rem"><span style="font-size:1.1rem">⭐</span><span style="flex:1">Unit 6 Interactive Review (25 Q)</span><span style="color:#FFC107">→</span></a>
+    </div>
+  </div>
+</section>
+
+
+<div class="tabs">
+<button class="tab-btn active" data-tab="tab-6-4" onclick="switchTab('tab-6-4')"><span class="tab-num">6.4</span>Real-World Linear<span class="check">✓</span></button><button class="tab-btn" data-tab="tab-6-5" onclick="switchTab('tab-6-5')"><span class="tab-num">6.5</span>Comparing Functions<span class="check">✓</span></button><button class="tab-btn" data-tab="tab-6-6" onclick="switchTab('tab-6-6')"><span class="tab-num">6.6</span>Qualitative Graphs<span class="check">✓</span></button>
+</div>
+
+<div class="tab-pane active" id="tab-6-4">
+<div class="sec-head">
+  <span class="sec-num">6.4</span>
+  <h2 class="sec-title">Linear Functions in Real-World Context</h2>
+</div>
+<p class="sec-standard">NC.8.F.4 — Construct a function to model a linear relationship; interpret rate of change and initial value in context.</p>
+
+<div class="sec-progress">
+  <span><strong id="prog-6-4-count">0</strong> of <strong id="prog-6-4-total">0</strong> filled</span>
+  <div class="bar"><div class="fill-bar" id="prog-6-4-bar"></div></div>
+</div>
+
+<div class="intro">
+  <strong>What is this section about?</strong> Real-world problems often follow a linear pattern — a steady rate of change plus a starting value. We can write equations in <code>y = mx + b</code> form to model these situations and use them to make predictions.
+</div>
+
+<div class="concept">
+  <h3 class="concept-h">Slope &amp; Y-Intercept in Context</h3>
+  <p>In real-world problems, the slope and y-intercept have specific meanings:</p>
+  <div class="fill-row">
+    <p><strong>m (slope)</strong> = the <input type="text" class="fill wide" data-qid="6-4-1" data-answer="rate" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-1" onclick="showFill('6-4-1')">show</button> of change &mdash; how much y changes per unit of x.</p>
+    <p><strong>b (y-intercept)</strong> = the <input type="text" class="fill wide" data-qid="6-4-2" data-answer="starting" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-2" onclick="showFill('6-4-2')">show</button> value &mdash; what y equals when x = <input type="text" class="fill narrow" data-qid="6-4-3" data-answer="0" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-3" onclick="showFill('6-4-3')">show</button>.</p>
+  </div>
+  <div class="key-fact">
+    <strong>💡 Quick check:</strong> The y-intercept is always the "before-anything-happens" value — the initial cost, starting amount, or fixed fee.
+  </div>
+</div>
+
+<div class="concept">
+  <h3 class="concept-h">Keywords for Slope and Y-Intercept</h3>
+  <div class="two-col">
+    <div>
+      <p><strong style="color: var(--accent);">Slope keywords (rate):</strong></p>
+      <ul>
+        <li>per hour, per mile, per day</li>
+        <li>each, every</li>
+        <li>increases by, decreases by</li>
+        <li>price/cost per item</li>
+      </ul>
+    </div>
+    <div>
+      <p><strong style="color: var(--sage);">Y-intercept keywords (start):</strong></p>
+      <ul>
+        <li>flat fee, base cost</li>
+        <li>starting amount, initial</li>
+        <li>up-front, deposit</li>
+        <li>"to begin with"</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>Plumber example:</strong> A plumber charges $50 to come to your house, plus $30 per hour of work.</p>
+  <div class="work">
+    <div>The flat fee ($50) is paid before any work happens → b = <strong>50</strong></div>
+    <div>The $30 per hour is the rate of change → m = <strong>30</strong></div>
+    <div>Equation: y = 30x + 50</div>
+  </div>
+  <p><strong>Interpret:</strong> If x = 4 hours, then y = 30(4) + 50 = $170 total.</p>
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 1:</strong> A gym charges a $40 sign-up fee plus $25 per month. Write the equation in slope-intercept form for the total cost <em>y</em> after <em>x</em> months.</p>
+  <div class="fill-row">
+    <p>Slope (m) = <input type="text" class="fill narrow" data-qid="6-4-4" data-answer="25" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-4" onclick="showFill('6-4-4')">show</button> &nbsp;&nbsp;&middot;&nbsp;&nbsp; Y-intercept (b) = <input type="text" class="fill narrow" data-qid="6-4-5" data-answer="40" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-5" onclick="showFill('6-4-5')">show</button></p>
+    <p>Equation: y = <input type="text" class="fill narrow" data-qid="6-4-6" data-answer="25" autocomplete="off">x + <input type="text" class="fill narrow" data-qid="6-4-7" data-answer="40" autocomplete="off"></p>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>Car value example:</strong> The value of a car after x years is modeled by <code>y = −1500x + 24,000</code>.</p>
+  <div class="visual"><svg viewBox="0 0 273.33333333333337 410.0" width="273.33333333333337" height="410.0" xmlns="http://www.w3.org/2000/svg"><line x1="30.0" y1="30" x2="30.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="43.333333333333336" y1="30" x2="43.333333333333336" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="56.66666666666667" y1="30" x2="56.66666666666667" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="70.0" y1="30" x2="70.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="83.33333333333334" y1="30" x2="83.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="96.66666666666667" y1="30" x2="96.66666666666667" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="110.0" y1="30" x2="110.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="123.33333333333334" y1="30" x2="123.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="136.66666666666669" y1="30" x2="136.66666666666669" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="150.0" y1="30" x2="150.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="163.33333333333334" y1="30" x2="163.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="176.66666666666669" y1="30" x2="176.66666666666669" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="190.0" y1="30" x2="190.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="203.33333333333334" y1="30" x2="203.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="216.66666666666669" y1="30" x2="216.66666666666669" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="230.0" y1="30" x2="230.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="243.33333333333334" y1="30" x2="243.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="350.0" x2="243.33333333333334" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="336.6666666666667" x2="243.33333333333334" y2="336.6666666666667" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="323.3333333333333" x2="243.33333333333334" y2="323.3333333333333" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="310.0" x2="243.33333333333334" y2="310.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="296.6666666666667" x2="243.33333333333334" y2="296.6666666666667" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="283.3333333333333" x2="243.33333333333334" y2="283.3333333333333" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="270.0" x2="243.33333333333334" y2="270.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="256.66666666666663" x2="243.33333333333334" y2="256.66666666666663" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="243.33333333333331" x2="243.33333333333334" y2="243.33333333333331" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="230.0" x2="243.33333333333334" y2="230.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="216.66666666666666" x2="243.33333333333334" y2="216.66666666666666" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="203.33333333333331" x2="243.33333333333334" y2="203.33333333333331" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="190.0" x2="243.33333333333334" y2="190.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="176.66666666666666" x2="243.33333333333334" y2="176.66666666666666" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="163.33333333333331" x2="243.33333333333334" y2="163.33333333333331" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="150.0" x2="243.33333333333334" y2="150.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="136.66666666666666" x2="243.33333333333334" y2="136.66666666666666" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="123.33333333333331" x2="243.33333333333334" y2="123.33333333333331" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="110.0" x2="243.33333333333334" y2="110.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="96.66666666666666" x2="243.33333333333334" y2="96.66666666666666" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="83.33333333333331" x2="243.33333333333334" y2="83.33333333333331" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="70.0" x2="243.33333333333334" y2="70.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="56.66666666666663" x2="243.33333333333334" y2="56.66666666666663" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="43.333333333333314" x2="243.33333333333334" y2="43.333333333333314" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30.0" x2="243.33333333333334" y2="30.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30" x2="30" y2="350.0" stroke="#1c3a52" stroke-width="1.8"/><line x1="30" y1="350.0" x2="243.33333333333334" y2="350.0" stroke="#1c3a52" stroke-width="1.8"/><text x="30.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="56.66666666666667" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="83.33333333333334" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="110.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="136.66666666666669" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="163.33333333333334" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><text x="190.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">12</text><text x="216.66666666666669" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">14</text><text x="243.33333333333334" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">16</text><text x="24" y="353.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="24" y="326.3333333333333" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="24" y="299.6666666666667" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="24" y="273.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="24" y="246.33333333333331" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="24" y="219.66666666666666" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><text x="24" y="193.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">12</text><text x="24" y="166.33333333333331" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">14</text><text x="24" y="139.66666666666666" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">16</text><text x="24" y="113.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">18</text><text x="24" y="86.33333333333331" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">20</text><text x="24" y="59.66666666666663" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">22</text><text x="24" y="33.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">24</text><line x1="30.00" y1="30.00" x2="243.33" y2="350.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><text x="136.66666666666669" y="402.0" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Years</text><text x="15" y="190.0" text-anchor="middle" transform="rotate(-90 15 190.0)" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Value (× $1000)</text><text x="136.66666666666669" y="18" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-weight="600" font-size="13" fill="#1c3a52">y = −1500x + 24,000</text></svg></div>
+  <div class="work">
+    <div>m = −1500 → the car loses <strong>$1,500 per year</strong> (slope is negative because value decreases)</div>
+    <div>b = 24,000 → the car was worth <strong>$24,000</strong> when new (when x = 0)</div>
+  </div>
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 2:</strong> A swimming pool is being filled. After 3 minutes there are 90 gallons; after 8 minutes there are 240 gallons. The pool was empty before filling started.</p>
+  <div class="fill-row">
+    <p>Find the slope (gallons per minute): m = <input type="text" class="fill narrow" data-qid="6-4-8" data-answer="30" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-8" onclick="showFill('6-4-8')">show</button></p>
+    <p>The y-intercept (initial gallons) = <input type="text" class="fill narrow" data-qid="6-4-9" data-answer="0" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-9" onclick="showFill('6-4-9')">show</button></p>
+    <p>Equation: y = <input type="text" class="fill narrow" data-qid="6-4-10" data-answer="30" autocomplete="off">x</p>
+  </div>
+  <p style="font-size: 13px; color: var(--ink-muted); font-style: italic;">Hint: slope = (240 − 90) ÷ (8 − 3) = 150 ÷ 5 = ?</p>
+</div>
+
+<div class="callout warning">
+  <strong>⚠️ Watch the sign of the slope:</strong> If the quantity is <em>increasing</em> over time (filling, growing, earning), m is <strong>positive</strong>. If <em>decreasing</em> (depreciating, draining, using up), m is <strong>negative</strong>.
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 3:</strong> Your phone has 80% battery and loses 5% per hour of use. Write an equation for battery percent y after x hours.</p>
+  <div class="fill-row">
+    <p>m = <input type="text" class="fill narrow" data-qid="6-4-11" data-answer="-5" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-11" onclick="showFill('6-4-11')">show</button> &nbsp;&nbsp;&middot;&nbsp;&nbsp; b = <input type="text" class="fill narrow" data-qid="6-4-12" data-answer="80" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-12" onclick="showFill('6-4-12')">show</button></p>
+    <p>Equation: y = <input type="text" class="fill narrow" data-qid="6-4-13" data-answer="-5" autocomplete="off">x + <input type="text" class="fill narrow" data-qid="6-4-14" data-answer="80" autocomplete="off"></p>
+    <p>After 4 hours, battery = <input type="text" class="fill narrow" data-qid="6-4-15" data-answer="60" autocomplete="off"><button type="button" class="btn-show" data-target="6-4-15" onclick="showFill('6-4-15')">show</button>%</p>
+  </div>
+</div>
+</div><div class="tab-pane" id="tab-6-5">
+<div class="sec-head">
+  <span class="sec-num">6.5</span>
+  <h2 class="sec-title">Comparing Functions</h2>
+</div>
+<p class="sec-standard">NC.8.F.2 — Compare properties of two functions each represented in a different way (algebraically, graphically, in a table, or verbally).</p>
+
+<div class="sec-progress">
+  <span><strong id="prog-6-5-count">0</strong> of <strong id="prog-6-5-total">0</strong> filled</span>
+  <div class="bar"><div class="fill-bar" id="prog-6-5-bar"></div></div>
+</div>
+
+<div class="intro">
+  <strong>The big idea:</strong> Linear functions can be shown four ways — equation, table, graph, or verbal description. To compare two functions, get both into <code>y = mx + b</code> form (or just identify their slopes and y-intercepts). Then you can compare directly.
+</div>
+
+<div class="concept">
+  <h3 class="concept-h">The Strategy</h3>
+  <p>Before answering <em>any</em> comparison question, find the slope (m) and y-intercept (b) for <strong>BOTH</strong> functions first.</p>
+  <div class="fill-row">
+    <p>To compare <em>rate of change</em>, look at: <input type="text" class="fill wide" data-qid="6-5-1" data-answer="slope" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-1" onclick="showFill('6-5-1')">show</button></p>
+    <p>To compare <em>starting value</em>, look at: <input type="text" class="fill wide" data-qid="6-5-2" data-answer="y-intercept" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-2" onclick="showFill('6-5-2')">show</button></p>
+    <p>The function with the steeper graph has the <input type="text" class="fill wide" data-qid="6-5-3" data-answer="greater" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-3" onclick="showFill('6-5-3')">show</button> slope.</p>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>Compare these two functions:</strong></p>
+  <div class="two-col">
+    <div>
+      <p style="text-align: center;"><strong>Function A</strong> (equation):</p>
+      <p style="text-align: center;"><span class="eq-block">y = x + 3</span></p>
+    </div>
+    <div>
+      <p style="text-align: center;"><strong>Function B</strong> (table):</p>
+      <table class="data-table"><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>1</td><td>4</td><td>7</td><td>10</td></tr></table>
+    </div>
+  </div>
+  <div class="visual"><svg viewBox="0 0 284.00 284.00" width="284.00" height="284.00" data-cell="24.0" data-ox="142.0" data-oy="142.0" data-minx="-5" data-maxx="5" data-miny="-5" data-maxy="5"  xmlns="http://www.w3.org/2000/svg"><line class="g-line" x1="22.00" y1="22" x2="22.00" y2="262.0"/><line class="g-line" x1="46.00" y1="22" x2="46.00" y2="262.0"/><line class="g-line" x1="70.00" y1="22" x2="70.00" y2="262.0"/><line class="g-line" x1="94.00" y1="22" x2="94.00" y2="262.0"/><line class="g-line" x1="118.00" y1="22" x2="118.00" y2="262.0"/><line class="g-line" x1="142.00" y1="22" x2="142.00" y2="262.0"/><line class="g-line" x1="166.00" y1="22" x2="166.00" y2="262.0"/><line class="g-line" x1="190.00" y1="22" x2="190.00" y2="262.0"/><line class="g-line" x1="214.00" y1="22" x2="214.00" y2="262.0"/><line class="g-line" x1="238.00" y1="22" x2="238.00" y2="262.0"/><line class="g-line" x1="262.00" y1="22" x2="262.00" y2="262.0"/><line class="g-line" x1="22" y1="262.00" x2="262.0" y2="262.00"/><line class="g-line" x1="22" y1="238.00" x2="262.0" y2="238.00"/><line class="g-line" x1="22" y1="214.00" x2="262.0" y2="214.00"/><line class="g-line" x1="22" y1="190.00" x2="262.0" y2="190.00"/><line class="g-line" x1="22" y1="166.00" x2="262.0" y2="166.00"/><line class="g-line" x1="22" y1="142.00" x2="262.0" y2="142.00"/><line class="g-line" x1="22" y1="118.00" x2="262.0" y2="118.00"/><line class="g-line" x1="22" y1="94.00" x2="262.0" y2="94.00"/><line class="g-line" x1="22" y1="70.00" x2="262.0" y2="70.00"/><line class="g-line" x1="22" y1="46.00" x2="262.0" y2="46.00"/><line class="g-line" x1="22" y1="22.00" x2="262.0" y2="22.00"/><line class="g-axis" x1="142.00" y1="22" x2="142.00" y2="262.0"/><line class="g-axis" x1="22" y1="142.00" x2="262.0" y2="142.00"/><polygon class="g-arrow" points="142.00,16 138.00,24 146.00,24"/><polygon class="g-arrow" points="142.00,268.0 138.00,260.0 146.00,260.0"/><polygon class="g-arrow" points="268.00,142.00 260.00,138.00 260.00,146.00"/><polygon class="g-arrow" points="16,142.00 24,138.00 24,146.00"/><text class="g-axislabel" x="272.00" y="146.00">x</text><text class="g-axislabel" x="148.00" y="14">y</text><text class="g-tick" text-anchor="middle" x="22.00" y="156.00">-5</text><text class="g-tick" text-anchor="middle" x="46.00" y="156.00">-4</text><text class="g-tick" text-anchor="middle" x="70.00" y="156.00">-3</text><text class="g-tick" text-anchor="middle" x="94.00" y="156.00">-2</text><text class="g-tick" text-anchor="middle" x="118.00" y="156.00">-1</text><text class="g-tick" text-anchor="middle" x="166.00" y="156.00">1</text><text class="g-tick" text-anchor="middle" x="190.00" y="156.00">2</text><text class="g-tick" text-anchor="middle" x="214.00" y="156.00">3</text><text class="g-tick" text-anchor="middle" x="238.00" y="156.00">4</text><text class="g-tick" text-anchor="middle" x="262.00" y="156.00">5</text><text class="g-tick" text-anchor="end" x="137.00" y="265.00">-5</text><text class="g-tick" text-anchor="end" x="137.00" y="241.00">-4</text><text class="g-tick" text-anchor="end" x="137.00" y="217.00">-3</text><text class="g-tick" text-anchor="end" x="137.00" y="193.00">-2</text><text class="g-tick" text-anchor="end" x="137.00" y="169.00">-1</text><text class="g-tick" text-anchor="end" x="137.00" y="121.00">1</text><text class="g-tick" text-anchor="end" x="137.00" y="97.00">2</text><text class="g-tick" text-anchor="end" x="137.00" y="73.00">3</text><text class="g-tick" text-anchor="end" x="137.00" y="49.00">4</text><text class="g-tick" text-anchor="end" x="137.00" y="25.00">5</text><g class="content"><line x1="22.00" y1="440.00" x2="242.00" y2="-220.00" stroke="#c25a3f" stroke-width="2.2" stroke-linecap="round"/><line x1="22.00" y1="176.00" x2="242.00" y2="-44.00" stroke="#2d7a8a" stroke-width="2.2" stroke-linecap="round"/><text x="165" y="33" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#c25a3f">B: y=3x+1</text><text x="154" y="32" font-family="JetBrains Mono, monospace" font-size="11" font-weight="700" fill="#2d7a8a">A: y=x+3</text></g></svg></div>
+  <div class="work">
+    <div>Function A: m = 1, b = 3</div>
+    <div>Function B: m = 3 (each row, y goes up by 3); b = 1 (when x = 0)</div>
+  </div>
+  <p><strong>Greater rate of change?</strong> Function B (slope of 3 &gt; slope of 1).</p>
+  <p><strong>Higher starting value?</strong> Function A (b = 3 &gt; b = 1).</p>
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 1:</strong> Compare these two functions:</p>
+  <div class="two-col">
+    <div>
+      <p style="text-align: center;"><strong>Function A:</strong></p>
+      <p style="text-align: center;"><span class="eq-block">y = 4x + 2</span></p>
+    </div>
+    <div>
+      <p style="text-align: center;"><strong>Function B:</strong></p>
+      <table class="data-table"><tr><th>x</th><td>0</td><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>5</td><td>7</td><td>9</td><td>11</td></tr></table>
+    </div>
+  </div>
+  <div class="fill-row">
+    <p>Function A: m = <input type="text" class="fill narrow" data-qid="6-5-4" data-answer="4" autocomplete="off">, b = <input type="text" class="fill narrow" data-qid="6-5-5" data-answer="2" autocomplete="off"></p>
+    <p>Function B: m = <input type="text" class="fill narrow" data-qid="6-5-6" data-answer="2" autocomplete="off">, b = <input type="text" class="fill narrow" data-qid="6-5-7" data-answer="5" autocomplete="off"></p>
+    <p>Which has the higher rate of change? Function <input type="text" class="fill narrow" data-qid="6-5-8" data-answer="A" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-8" onclick="showFill('6-5-8')">show</button></p>
+    <p>Which has the higher starting value? Function <input type="text" class="fill narrow" data-qid="6-5-9" data-answer="B" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-9" onclick="showFill('6-5-9')">show</button></p>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>Cell phone plans:</strong> Plan A costs $20/month plus $0.05/minute. Plan B costs $30/month plus $0.03/minute.</p>
+  <div class="work">
+    <div>Plan A: y = 0.05x + 20</div>
+    <div>Plan B: y = 0.03x + 30</div>
+    <div>At x = 0 minutes: Plan A = $20, Plan B = $30 → Plan A starts cheaper</div>
+    <div>At x = 500 minutes: Plan A = $45, Plan B = $45 → tied!</div>
+    <div>At x = 1000 minutes: Plan A = $70, Plan B = $60 → Plan B is cheaper for heavy use</div>
+  </div>
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 2:</strong> Two savings accounts:</p>
+  <ul>
+    <li>Account A starts with $300 and adds $25/week → y = 25x + 300</li>
+    <li>Account B starts with $400 and adds $20/week → y = 20x + 400</li>
+  </ul>
+  <p>Which has more money after 10 weeks?</p>
+  <div class="fill-row">
+    <p>Account A after 10 weeks: y = 25(<input type="text" class="fill narrow" data-qid="6-5-10" data-answer="10" autocomplete="off">) + 300 = $<input type="text" class="fill narrow" data-qid="6-5-11" data-answer="550" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-11" onclick="showFill('6-5-11')">show</button></p>
+    <p>Account B after 10 weeks: y = 20(10) + 400 = $<input type="text" class="fill narrow" data-qid="6-5-12" data-answer="600" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-12" onclick="showFill('6-5-12')">show</button></p>
+    <p>Account <input type="text" class="fill narrow" data-qid="6-5-13" data-answer="B" autocomplete="off"><button type="button" class="btn-show" data-target="6-5-13" onclick="showFill('6-5-13')">show</button> has more after 10 weeks.</p>
+  </div>
+</div>
+
+<div class="key-fact">
+  <strong>🔑 Strategy:</strong> When word problems compare two situations, write <em>both</em> equations first, then plug in the same value of x to compare. Or, if asked about long-term, look at the slopes — steeper slope wins eventually.
+</div>
+</div><div class="tab-pane" id="tab-6-6">
+<div class="sec-head">
+  <span class="sec-num">6.6</span>
+  <h2 class="sec-title">Qualitative Graphs</h2>
+</div>
+<p class="sec-standard">NC.8.F.5 — Describe qualitatively the functional relationship between two quantities by analyzing a graph; sketch a graph from a verbal description.</p>
+
+<div class="sec-progress">
+  <span><strong id="prog-6-6-count">0</strong> of <strong id="prog-6-6-total">0</strong> filled</span>
+  <div class="bar"><div class="fill-bar" id="prog-6-6-bar"></div></div>
+</div>
+
+<div class="intro">
+  <strong>What's a qualitative graph?</strong> A graph that shows the <em>shape</em> of a relationship over time without exact numbers. The story of the graph matters more than specific values. Common examples: distance-time graphs, temperature-time graphs.
+</div>
+
+<div class="concept">
+  <h3 class="concept-h">Reading the Shape</h3>
+  <p>Each section of a qualitative graph tells you something. Going left-to-right, ask:</p>
+  <div class="fill-row">
+    <p>Going UP means the quantity is <input type="text" class="fill wide" data-qid="6-6-1" data-answer="increasing" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-1" onclick="showFill('6-6-1')">show</button>.</p>
+    <p>Going DOWN means the quantity is <input type="text" class="fill wide" data-qid="6-6-2" data-answer="decreasing" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-2" onclick="showFill('6-6-2')">show</button>.</p>
+    <p>FLAT (horizontal) means the quantity is <input type="text" class="fill wide" data-qid="6-6-3" data-answer="constant" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-3" onclick="showFill('6-6-3')">show</button> (not changing).</p>
+    <p>STEEPER lines mean the change is <input type="text" class="fill wide" data-qid="6-6-4" data-answer="faster" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-4" onclick="showFill('6-6-4')">show</button>.</p>
+    <p>SHALLOWER (gentler) lines mean the change is <input type="text" class="fill wide" data-qid="6-6-5" data-answer="slower" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-5" onclick="showFill('6-6-5')">show</button>.</p>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>Maria rides her bike to school:</strong></p>
+  <div class="visual"><svg viewBox="0 0 380.0 282.0" width="380.0" height="282.0" xmlns="http://www.w3.org/2000/svg"><line x1="30.0" y1="30" x2="30.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="62.0" y1="30" x2="62.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="94.0" y1="30" x2="94.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="126.0" y1="30" x2="126.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="158.0" y1="30" x2="158.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="190.0" y1="30" x2="190.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="222.0" y1="30" x2="222.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="254.0" y1="30" x2="254.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="286.0" y1="30" x2="286.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="318.0" y1="30" x2="318.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="350.0" y1="30" x2="350.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="222.0" x2="350.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="190.0" x2="350.0" y2="190.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="158.0" x2="350.0" y2="158.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="126.0" x2="350.0" y2="126.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="94.0" x2="350.0" y2="94.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="62.0" x2="350.0" y2="62.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30.0" x2="350.0" y2="30.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30" x2="30" y2="222.0" stroke="#1c3a52" stroke-width="1.8"/><line x1="30" y1="222.0" x2="350.0" y2="222.0" stroke="#1c3a52" stroke-width="1.8"/><text x="30.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="94.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="158.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="222.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="286.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="350.0" y="236.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><text x="24" y="225.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="24" y="161.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="24" y="97.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="24" y="33.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><line x1="30.00" y1="222.00" x2="158.00" y2="62.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="158.00" y1="62.00" x2="222.00" y2="62.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="222.00" y1="62.00" x2="318.00" y2="222.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><text x="190.0" y="274.0" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Time (min)</text><text x="15" y="126.0" text-anchor="middle" transform="rotate(-90 15 126.0)" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Distance from home (mi)</text><text x="190.0" y="18" text-anchor="middle" font-family="Fraunces, serif" font-style="italic" font-weight="600" font-size="13" fill="#1c3a52">Maria's Bike Ride</text></svg></div>
+  <p>The graph shows Maria's distance from home over time. We can read the story:</p>
+  <ul>
+    <li><strong>0 to 4 min:</strong> line goes UP at a steady rate → Maria is biking <em>away</em> from home toward school.</li>
+    <li><strong>4 to 6 min:</strong> line is FLAT → Maria stays at school (distance doesn't change).</li>
+    <li><strong>6 to 9 min:</strong> line goes DOWN steeper than it went up → Maria rides home <em>faster</em> than she went.</li>
+  </ul>
+</div>
+
+<div class="callout warning">
+  <strong>⚠️ Common mistake:</strong> When someone is <em>returning home</em>, the distance-from-home line goes DOWN (toward zero), not back up! The y-axis is "distance from start" — if you're getting closer to home, your distance is decreasing.
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 1:</strong> A swimmer dives into a pool, swims at a steady pace to the far wall, rests for a moment, then swims back <em>faster</em> than she went.</p>
+  <p>The graph below should show distance from start versus time. Match each phase to the correct description:</p>
+  <div class="visual"><svg viewBox="0 0 380.0 346.0" width="380.0" height="346.0" xmlns="http://www.w3.org/2000/svg"><line x1="30.0" y1="30" x2="30.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="62.0" y1="30" x2="62.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="94.0" y1="30" x2="94.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="126.0" y1="30" x2="126.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="158.0" y1="30" x2="158.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="190.0" y1="30" x2="190.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="222.0" y1="30" x2="222.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="254.0" y1="30" x2="254.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="286.0" y1="30" x2="286.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="318.0" y1="30" x2="318.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="350.0" y1="30" x2="350.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="286.0" x2="350.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="254.0" x2="350.0" y2="254.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="222.0" x2="350.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="190.0" x2="350.0" y2="190.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="158.0" x2="350.0" y2="158.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="126.0" x2="350.0" y2="126.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="94.0" x2="350.0" y2="94.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="62.0" x2="350.0" y2="62.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30.0" x2="350.0" y2="30.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30" x2="30" y2="286.0" stroke="#1c3a52" stroke-width="1.8"/><line x1="30" y1="286.0" x2="350.0" y2="286.0" stroke="#1c3a52" stroke-width="1.8"/><text x="30.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="94.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="158.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="222.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="286.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="350.0" y="300.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><text x="24" y="289.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="24" y="225.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="24" y="161.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="24" y="97.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="24" y="33.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><line x1="30.00" y1="286.00" x2="190.00" y2="94.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="190.00" y1="94.00" x2="254.00" y2="94.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="254.00" y1="94.00" x2="350.00" y2="286.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><text x="190.0" y="338.0" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Time (min)</text><text x="15" y="158.0" text-anchor="middle" transform="rotate(-90 15 158.0)" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Distance from start</text></svg></div>
+  <div class="fill-row">
+    <p>Phase 1 (going up at steady rate): she swam <input type="text" class="fill narrow" data-qid="6-6-6" data-answer="out" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-6" onclick="showFill('6-6-6')">show</button> to the far wall at a steady pace.</p>
+    <p>Phase 2 (flat line): she <input type="text" class="fill wide" data-qid="6-6-7" data-answer="rested" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-7" onclick="showFill('6-6-7')">show</button> at the far wall.</p>
+    <p>Phase 3 (going down steeper): she swam <input type="text" class="fill narrow" data-qid="6-6-8" data-answer="back" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-8" onclick="showFill('6-6-8')">show</button> faster than she went.</p>
+  </div>
+</div>
+
+<div class="example">
+  <p><strong>A pot of water:</strong> A pot of water is placed on a stove. It heats slowly at first, then more rapidly, stays at boiling for several minutes, then is removed and cools gradually.</p>
+  <div class="visual"><svg viewBox="0 0 380.0 410.0" width="380.0" height="410.0" xmlns="http://www.w3.org/2000/svg"><line x1="30.0" y1="30" x2="30.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="62.0" y1="30" x2="62.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="94.0" y1="30" x2="94.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="126.0" y1="30" x2="126.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="158.0" y1="30" x2="158.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="190.0" y1="30" x2="190.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="222.0" y1="30" x2="222.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="254.0" y1="30" x2="254.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="286.0" y1="30" x2="286.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="318.0" y1="30" x2="318.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="350.0" y1="30" x2="350.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="350.0" x2="350.0" y2="350.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="318.0" x2="350.0" y2="318.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="286.0" x2="350.0" y2="286.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="254.0" x2="350.0" y2="254.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="222.0" x2="350.0" y2="222.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="190.0" x2="350.0" y2="190.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="158.0" x2="350.0" y2="158.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="126.0" x2="350.0" y2="126.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="94.0" x2="350.0" y2="94.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="62.0" x2="350.0" y2="62.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30.0" x2="350.0" y2="30.0" stroke="#e5dcc4" stroke-width="0.8"/><line x1="30" y1="30" x2="30" y2="350.0" stroke="#1c3a52" stroke-width="1.8"/><line x1="30" y1="350.0" x2="350.0" y2="350.0" stroke="#1c3a52" stroke-width="1.8"/><text x="30.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="94.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="158.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="222.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="286.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="350.0" y="364.0" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><text x="24" y="353.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">0</text><text x="24" y="289.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">2</text><text x="24" y="225.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">4</text><text x="24" y="161.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">6</text><text x="24" y="97.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">8</text><text x="24" y="33.0" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#7d8893">10</text><line x1="30.00" y1="350.00" x2="126.00" y2="286.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="126.00" y1="286.00" x2="222.00" y2="94.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="222.00" y1="94.00" x2="286.00" y2="94.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><line x1="286.00" y1="94.00" x2="350.00" y2="222.00" stroke="#c25a3f" stroke-width="3" stroke-linecap="round"/><text x="190.0" y="402.0" text-anchor="middle" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Time (min)</text><text x="15" y="190.0" text-anchor="middle" transform="rotate(-90 15 190.0)" font-family="Fraunces, serif" font-size="12" font-style="italic" fill="#1c3a52">Temperature</text></svg></div>
+  <ul>
+    <li><strong>Phase 1 (shallow up):</strong> heats slowly</li>
+    <li><strong>Phase 2 (steep up):</strong> heats more rapidly</li>
+    <li><strong>Phase 3 (flat):</strong> at boiling, temperature stays constant</li>
+    <li><strong>Phase 4 (down):</strong> removed from stove, cools off gradually</li>
+  </ul>
+</div>
+
+<div class="try-it">
+  <p><strong>Practice 2:</strong> Look at a distance-time graph with three phases:</p>
+  <ul style="font-size: 14px;">
+    <li>Phase 1 (0–3 min): steep upward line</li>
+    <li>Phase 2 (3–6 min): flat line</li>
+    <li>Phase 3 (6–10 min): gradual upward line</li>
+  </ul>
+  <div class="fill-row">
+    <p>Phase 1: the person is moving <input type="text" class="fill narrow" data-qid="6-6-9" data-answer="fast" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-9" onclick="showFill('6-6-9')">show</button> (away from start).</p>
+    <p>Phase 2: the person is <input type="text" class="fill wide" data-qid="6-6-10" data-answer="stopped" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-10" onclick="showFill('6-6-10')">show</button> (not moving).</p>
+    <p>Phase 3: the person is moving <input type="text" class="fill wide" data-qid="6-6-11" data-answer="slowly" autocomplete="off"><button type="button" class="btn-show" data-target="6-6-11" onclick="showFill('6-6-11')">show</button> (still away from start).</p>
+  </div>
+</div>
+
+<div class="key-fact">
+  <strong>📐 Steps for sketching from a story:</strong>
+  <ol style="margin: 6px 0 0; font-size: 14px;">
+    <li>Break the story into 2–4 phases.</li>
+    <li>For each phase, decide: increase, decrease, or stay the same?</li>
+    <li>Decide if the change is fast (steep) or slow (shallow).</li>
+    <li>Connect phases at their endpoints — no jumps in the line!</li>
+  </ol>
+</div>
+</div></div>
+<script>
+// =============================================================================
+// JS - tab switching, fill checking, progress
+// =============================================================================
+
+const ANSWER_KEY = {};
+const SHOWN_HINTS = new Set();
+
+function init() {
+  // Collect all answer data from inputs
+  document.querySelectorAll('input.fill').forEach(input => {
+    const qid = input.dataset.qid;
+    const ans = input.dataset.answer;
+    ANSWER_KEY[qid] = normalize(ans);
+    input.addEventListener('input', e => onFillChange(e.target));
+    input.addEventListener('blur', e => checkFill(e.target));
+  });
+  updateAllProgress();
+}
+
+function normalize(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).trim().toLowerCase()
+    .replace(/\u2212/g, '-')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\s+/g, ' ');  // collapse spaces but keep one
+}
+
+function onFillChange(input) {
+  // Remove correct/incorrect markers as user types
+  input.classList.remove('correct', 'incorrect');
+}
+
+function checkFill(input) {
+  const qid = input.dataset.qid;
+  const userAnswer = normalize(input.value);
+  if (!userAnswer) return;
+  const expected = ANSWER_KEY[qid];
+  if (userAnswer === expected) {
+    input.classList.add('correct');
+    input.classList.remove('incorrect');
+  } else {
+    // Be a bit forgiving: also accept extra spaces removed
+    const userNoSpaces = userAnswer.replace(/\s+/g, '');
+    const expNoSpaces = expected.replace(/\s+/g, '');
+    if (userNoSpaces === expNoSpaces) {
+      input.classList.add('correct');
+    } else {
+      input.classList.add('incorrect');
+    }
+  }
+  updateAllProgress();
+  updateTabCompletion();
+}
+
+function showFill(qid) {
+  const input = document.querySelector(`input.fill[data-qid="${qid}"]`);
+  if (!input) return;
+  input.value = input.dataset.answer;
+  input.classList.add('correct');
+  SHOWN_HINTS.add(qid);
+  updateAllProgress();
+  updateTabCompletion();
+}
+
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelector(`button[data-tab="${tabId}"]`).classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+  // Scroll to top of content area
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function updateAllProgress() {
+  // Update each section's progress bar
+  document.querySelectorAll('.tab-pane').forEach(pane => {
+    const sectionInputs = pane.querySelectorAll('input.fill');
+    const total = sectionInputs.length;
+    let filled = 0;
+    sectionInputs.forEach(inp => {
+      if (inp.classList.contains('correct')) filled++;
+    });
+    // Find the progress widget
+    const sectionId = pane.id.replace('tab-', '');
+    const countEl = document.getElementById(`prog-${sectionId}-count`);
+    const totalEl = document.getElementById(`prog-${sectionId}-total`);
+    const barEl = document.getElementById(`prog-${sectionId}-bar`);
+    if (countEl) countEl.textContent = filled;
+    if (totalEl) totalEl.textContent = total;
+    if (barEl) barEl.style.width = (total > 0 ? (filled / total * 100) : 0) + '%';
+  });
+}
+
+function updateTabCompletion() {
+  document.querySelectorAll('.tab-pane').forEach(pane => {
+    const sectionInputs = pane.querySelectorAll('input.fill');
+    const total = sectionInputs.length;
+    let filled = 0;
+    sectionInputs.forEach(inp => { if (inp.classList.contains('correct')) filled++; });
+    const tabId = pane.id;
+    const tabBtn = document.querySelector(`button[data-tab="${tabId}"]`);
+    if (tabBtn) {
+      if (total > 0 && filled === total) {
+        tabBtn.classList.add('completed');
+      } else {
+        tabBtn.classList.remove('completed');
+      }
+    }
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+</body>
+</html>
