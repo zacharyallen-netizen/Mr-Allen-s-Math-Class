@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 1 Guided Notes — The Real Number System | IC Imagine 8th Grade Math</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E2D4F;
+  --navy-dk:#0d1f3f;
+  --gold:#FFC107;
+  --gold-dk:#b08800;
+  --white:#fff;
+  --lgray:#F4F4F4;
+  --royal:#0056B3;
+  --green:#22AC00;
+  --dkgreen:#1a7000;
+  --red:#cc2222;
+  --mid:#e8edf5;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--lgray);
+  color:#1a1a24;
+  font-size:17px;
+  line-height:1.6;
+}
+
+/* ── Top nav ─────────────────────────────────────── */
+nav.top-nav{
+  background:var(--navy);
+  padding:10px 14px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+  border-bottom:3px solid var(--gold);
+}
+.nav-container{
+  max-width:1400px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.nav-title{
+  font-family:'Arvo',serif;
+  font-size:.95em;
+  margin-right:auto;
+  font-weight:700;
+  color:var(--gold);
+}
+.nav-title span{color:#fff}
+.nb{
+  font-family:'Inter',sans-serif;
+  font-size:.78em;
+  font-weight:600;
+  padding:7px 12px;
+  background:rgba(255,255,255,.12);
+  border:2px solid rgba(255,255,255,.3);
+  border-radius:5px;
+  color:#fff;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .2s;
+}
+.nb:hover{
+  border-color:var(--gold);
+  color:var(--gold);
+  background:rgba(255,193,7,.15);
+}
+
+/* ── Page header ─────────────────────────────────── */
+.page-wrap{max-width:980px;margin:0 auto;padding:18px 16px 80px}
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 14px;
+  background:#fff;
+  color:var(--navy);
+  font-family:'Arvo',serif;
+  font-weight:bold;
+  font-size:.85em;
+  border-radius:6px;
+  border:2px solid var(--navy);
+  text-decoration:none;
+  margin-bottom:14px;
+}
+.page-hdr{
+  background:linear-gradient(135deg,var(--navy),var(--navy-dk));
+  border-radius:14px;
+  padding:22px 26px;
+  margin-bottom:14px;
+  border:3px solid var(--gold);
+}
+.page-hdr h1{
+  font-family:'Arvo',serif;
+  color:var(--gold);
+  font-size:1.45em;
+  margin-bottom:5px;
+}
+.page-hdr p{color:#b8c8e8;font-size:.9em;margin-bottom:4px}
+.page-hdr .stds{color:#b8c8e8;font-size:.82em;font-style:italic}
+
+/* ── Sticky topic nav ────────────────────────────── */
+.topic-nav{
+  position:sticky;
+  top:60px;
+  z-index:99;
+  background:#fff;
+  border:2px solid var(--navy);
+  border-radius:10px;
+  padding:8px;
+  margin-bottom:18px;
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+  box-shadow:0 2px 8px rgba(30,45,79,.08);
+}
+.topic-nav a{
+  font-family:'Arvo',serif;
+  font-size:.78em;
+  padding:7px 11px;
+  background:var(--lgray);
+  color:var(--navy);
+  border-radius:5px;
+  text-decoration:none;
+  border:2px solid transparent;
+  transition:all .15s;
+  white-space:nowrap;
+}
+.topic-nav a:hover{
+  background:var(--navy);
+  color:var(--gold);
+}
+
+/* ── Intro paragraph ─────────────────────────────── */
+.intro{
+  background:#fff;
+  border-left:5px solid var(--gold);
+  border-radius:8px;
+  padding:18px 24px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(30,45,79,.06);
+  font-size:.98em;
+  line-height:1.65;
+}
+.intro p{margin:0}
+
+/* ── Practice item with graph layout ─────────────── */
+.chk-graph{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+}
+.chk-graph-text{flex:1;min-width:240px}
+.chk-graph-svg{
+  flex:0 0 auto;
+  background:#fafcff;
+  border:1px solid #cdd5e0;
+  border-radius:6px;
+  padding:4px;
+}
+
+/* ── Example mini-graph ──────────────────────────── */
+.ex-graph{
+  margin:8px 0 10px;
+  background:#fafcff;
+  border:1px solid #cdd5e0;
+  border-radius:6px;
+  padding:8px;
+  display:inline-block;
+}
+.ex-graph-cap{
+  font-size:.82em;
+  color:#5a6680;
+  font-style:italic;
+  margin-bottom:4px;
+}
+
+/* ── Topic section ───────────────────────────────── */
+.topic{
+  background:#fff;
+  border-radius:12px;
+  border:2px solid #d0d8e8;
+  padding:24px;
+  margin-bottom:20px;
+  box-shadow:0 2px 8px rgba(30,45,79,.06);
+  scroll-margin-top:130px;
+}
+.topic h2{
+  font-family:'Arvo',serif;
+  color:var(--navy);
+  font-size:1.3em;
+  padding-bottom:11px;
+  border-bottom:3px solid var(--gold);
+  margin-bottom:16px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.topic h2 .num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--gold);
+  color:var(--navy);
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  font-size:.85em;
+  font-weight:bold;
+}
+h3.sub{
+  font-family:'Arvo',serif;
+  font-size:1.02em;
+  color:var(--navy);
+  margin:18px 0 9px;
+  border-left:4px solid var(--gold);
+  padding-left:11px;
+}
+
+/* ── Callout boxes ───────────────────────────────── */
+.key{
+  background:#e8f5e2;
+  border:2px solid var(--green);
+  border-radius:8px;
+  padding:13px 17px;
+  margin:12px 0;
+}
+.key strong{color:var(--dkgreen)}
+.warn{
+  background:#fde8e8;
+  border:2px solid var(--red);
+  border-radius:8px;
+  padding:13px 17px;
+  margin:12px 0;
+}
+.warn strong{color:var(--red)}
+.note{
+  background:#fff8e1;
+  border:2px solid var(--gold);
+  border-radius:8px;
+  padding:13px 17px;
+  margin:12px 0;
+}
+.note strong{color:var(--gold-dk)}
+.rule-box{
+  background:#fff;
+  border:3px solid var(--royal);
+  border-radius:8px;
+  padding:14px 18px;
+  margin:14px 0;
+  text-align:center;
+}
+.rule-box .rule{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.2em;
+  color:var(--royal);
+  font-weight:bold;
+  display:block;
+  margin:6px 0;
+}
+
+/* ── Tables ─────────────────────────────────────── */
+.rules-table{
+  width:100%;
+  border-collapse:collapse;
+  margin:14px 0;
+  font-size:.93em;
+}
+.rules-table th{
+  background:var(--navy);
+  color:var(--gold);
+  padding:11px 10px;
+  border:2px solid #cdd5e0;
+  text-align:center;
+  font-family:'Arvo',serif;
+}
+.rules-table td{
+  padding:10px 10px;
+  border:2px solid #cdd5e0;
+  text-align:center;
+  background:#fff;
+}
+.rules-table tr:nth-child(even) td{background:var(--lgray)}
+.rules-table .rule{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--royal);
+  font-weight:bold;
+}
+
+/* ── Worked example with click-to-reveal ─────────── */
+.example{
+  background:#f8faff;
+  border:2px solid var(--royal);
+  border-radius:10px;
+  padding:16px;
+  margin:14px 0;
+}
+.example h4{
+  font-family:'Arvo',serif;
+  color:var(--royal);
+  margin-bottom:10px;
+  font-size:1em;
+}
+.problem{
+  background:#fff;
+  border:1.5px solid #cdd5e0;
+  border-radius:6px;
+  padding:10px 14px;
+  margin:8px 0 12px;
+  font-weight:600;
+}
+.steps{margin-top:6px}
+.step{
+  background:#fff;
+  border:1.5px dashed #cdd5e0;
+  border-radius:6px;
+  padding:9px 13px;
+  margin:6px 0;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.93em;
+  color:var(--navy);
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;
+}
+.step:hover{border-color:var(--royal);background:#f0f5ff}
+.step .hidden-content{
+  display:none;
+  color:var(--navy);
+}
+.step.revealed{
+  background:#e8f0ff;
+  border-style:solid;
+  border-color:var(--royal);
+  cursor:default;
+}
+.step.revealed .placeholder{display:none}
+.step.revealed .hidden-content{display:inline}
+.step.final.revealed{
+  background:#e8f5e2;
+  border-color:var(--green);
+  color:var(--dkgreen);
+  font-weight:bold;
+}
+.placeholder{color:#999;font-style:italic}
+.reveal-all{
+  background:var(--navy);
+  color:var(--gold);
+  border:2px solid var(--navy);
+  border-radius:6px;
+  padding:7px 14px;
+  font-family:'Arvo',serif;
+  font-size:.82em;
+  cursor:pointer;
+  margin-top:8px;
+  transition:all .2s;
+}
+.reveal-all:hover{background:var(--gold);color:var(--navy)}
+
+/* ── Practice / check ────────────────────────────── */
+.chk{
+  background:#fffdf5;
+  border:2px solid var(--gold);
+  border-radius:10px;
+  padding:14px 16px;
+  margin:14px 0;
+}
+.chk-q{
+  font-weight:600;
+  margin-bottom:10px;
+  color:var(--navy);
+}
+.chk-q .badge{
+  display:inline-block;
+  background:var(--gold);
+  color:var(--navy);
+  padding:2px 8px;
+  border-radius:4px;
+  font-size:.78em;
+  font-weight:bold;
+  margin-right:6px;
+}
+.chk-opts{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:8px;
+}
+.chk-btn{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.93em;
+  padding:10px;
+  background:#fff;
+  border:2px solid #cdd5e0;
+  border-radius:6px;
+  cursor:pointer;
+  text-align:center;
+  transition:all .15s;
+  color:var(--navy);
+}
+.chk-btn:hover:not(:disabled){
+  border-color:var(--navy);
+  background:#e8edf5;
+}
+.chk-btn:disabled{cursor:default;opacity:.7}
+.chk-btn.correct{
+  background:#d4f0d0;
+  border-color:var(--green);
+  color:var(--dkgreen);
+  font-weight:bold;
+}
+.chk-btn.wrong{
+  background:#ffe0e0;
+  border-color:var(--red);
+  color:var(--red);
+}
+.chk-fb{
+  display:none;
+  margin-top:10px;
+  padding:9px 13px;
+  border-radius:6px;
+  font-size:.9em;
+}
+.chk-fb.show{display:block}
+.chk-fb.c{
+  background:#d4f0d0;
+  border:1.5px solid var(--green);
+  color:var(--dkgreen);
+}
+.chk-fb.w{
+  background:#ffe0e0;
+  border:1.5px solid var(--red);
+  color:var(--red);
+}
+
+.input-chk{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.input-chk input{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1em;
+  padding:8px 10px;
+  border:2px solid #cdd5e0;
+  border-radius:5px;
+  width:90px;
+  text-align:center;
+  color:var(--navy);
+}
+.input-chk input:focus{outline:none;border-color:var(--royal)}
+.input-chk button{
+  font-family:'Arvo',serif;
+  font-size:.85em;
+  padding:8px 16px;
+  background:var(--navy);
+  color:var(--gold);
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+}
+.input-chk button:hover{background:var(--navy-dk)}
+.input-chk .label{
+  font-weight:600;
+  color:var(--navy);
+}
+
+/* ── Coordinate plane ────────────────────────────── */
+.diagram{
+  background:#fff;
+  border:2px solid #cdd5e0;
+  border-radius:8px;
+  padding:14px;
+  margin:14px 0;
+  text-align:center;
+  overflow-x:auto;
+}
+.diagram svg{max-width:100%;height:auto}
+
+/* ── Two-col & utilities ─────────────────────────── */
+.two-col{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin:12px 0;
+}
+@media(max-width:680px){.two-col{grid-template-columns:1fr}}
+
+.coord{font-family:'JetBrains Mono',monospace;color:var(--royal);font-weight:600}
+.prime{font-family:'JetBrains Mono',monospace;color:var(--gold-dk);font-weight:600}
+
+/* ── Print friendly ─────────────────────────────── */
+@media print{
+  nav.top-nav,.topic-nav,.back-link,.reveal-all,.chk-btn,.input-chk button{display:none!important}
+  .step{cursor:default;break-inside:avoid}
+  .step .placeholder{display:none}
+  .step .hidden-content{display:inline!important}
+  .chk-fb{display:block!important;background:#fff!important;border:1.5px solid #999!important}
+  .topic{break-inside:avoid;box-shadow:none;border:1px solid #999}
+}
+</style>
+<style>
+/* ── Inline fill-in-the-blank ─────────────────────── */
+.blank{display:inline-block;min-width:54px;padding:1px 9px;margin:0 2px;
+  font-family:'JetBrains Mono',monospace;font-weight:700;color:#9aa3b2;
+  background:#fff;border:none;border-bottom:2px dashed var(--gold-dk);
+  border-radius:3px;cursor:pointer;text-align:center;transition:all .15s;
+  font-style:italic;font-size:.95em;vertical-align:baseline}
+.blank:hover{background:#fff8e1;border-bottom-color:var(--royal)}
+.blank.revealed{color:var(--dkgreen);background:#e8f5e2;
+  border-bottom:2px solid var(--green);font-style:normal;cursor:default}
+.blank-tip{font-size:.82em;color:#5a6680;font-style:italic;margin:6px 0 2px}
+
+/* ── Matching ─────────────────────────────────────── */
+.match{display:grid;grid-template-columns:1fr 1fr;gap:9px 24px;margin:12px 0}
+.match-col-h{font-family:'Arvo',serif;font-weight:700;color:var(--navy);
+  font-size:.88em;border-bottom:2px solid var(--gold);padding-bottom:4px;
+  margin-bottom:3px}
+.match-item{font-family:'Inter',sans-serif;font-size:.9em;padding:9px 12px;
+  background:#fff;border:2px solid #cdd5e0;border-radius:6px;cursor:pointer;
+  transition:all .12s;color:var(--navy)}
+.match-item:hover:not(.locked){border-color:var(--navy);background:#e8edf5}
+.match-item.sel{border-color:var(--royal);background:#e8f0ff;
+  box-shadow:0 0 0 2px rgba(0,86,179,.2)}
+.match-item.locked{background:#d4f0d0;border-color:var(--green);
+  color:var(--dkgreen);cursor:default;font-weight:600}
+.match-item.miss{border-color:var(--red);background:#ffe0e0}
+.match-status{margin-top:9px;font-size:.88em;font-weight:600;color:var(--navy)}
+.match-reset{background:none;border:1.5px solid #cdd5e0;border-radius:5px;
+  padding:4px 11px;font-family:'Arvo',serif;font-size:.76em;color:var(--navy);
+  cursor:pointer;margin-left:10px}
+.match-reset:hover{border-color:var(--navy);background:var(--lgray)}
+
+/* ── Short answer / error-analysis reveal ─────────── */
+.sa{background:#fff;border:1.5px dashed #cdd5e0;border-radius:8px;
+  padding:12px 15px;margin:10px 0}
+.sa-ans{display:none;margin-top:10px;padding:11px 14px;background:#e8f5e2;
+  border:1.5px solid var(--green);border-radius:6px;color:var(--dkgreen);
+  font-size:.93em;line-height:1.55}
+.sa-ans.show{display:block}
+.sa-btn{background:var(--navy);color:var(--gold);border:none;border-radius:6px;
+  padding:8px 16px;font-family:'Arvo',serif;font-size:.82em;cursor:pointer;
+  margin-top:8px;transition:all .2s}
+.sa-btn:hover{background:var(--gold);color:var(--navy)}
+.err-bad{font-family:'JetBrains Mono',monospace;color:var(--red);
+  background:#fde8e8;border-radius:5px;padding:2px 9px;display:inline-block}
+.err-bad s{text-decoration-color:var(--red)}
+
+/* ── Single-value typed check (calculation/short) ─── */
+.val-chk{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.val-chk input{font-family:'JetBrains Mono',monospace;font-size:1em;
+  padding:8px 10px;border:2px solid #cdd5e0;border-radius:5px;min-width:120px;
+  color:var(--navy)}
+.val-chk input:focus{outline:none;border-color:var(--royal)}
+.val-chk button{font-family:'Arvo',serif;font-size:.85em;padding:8px 16px;
+  background:var(--navy);color:var(--gold);border:none;border-radius:5px;
+  cursor:pointer}
+.val-chk button:hover{background:var(--navy-dk)}
+
+/* Answer-key section divider */
+.keyhdr{background:linear-gradient(135deg,var(--gold),var(--gold-dk));
+  border-radius:12px;padding:16px 22px;margin:26px 0 16px;border:3px solid var(--navy);
+  text-align:center}
+.keyhdr h2{font-family:'Arvo',serif;color:var(--navy);font-size:1.25em;border:none;justify-content:center}
+.keyhdr p{color:#3a2e00;font-size:.85em;font-style:italic;margin-top:3px}
+
+@media print{
+  .match-reset,.sa-btn,.val-chk button{display:none!important}
+  .sa-ans{display:block!important;background:#fff!important;border:1px solid #999!important}
+  .blank:not(.revealed){color:transparent!important;background:#fff!important;border-bottom:2px solid #333!important}
+  .blank.revealed{color:#1a7000!important;font-style:normal!important}
+  .match-item{break-inside:avoid}
+}
+</style>
+
+<style>
+/* ── Estimation algorithm (redesigned for clarity) ─────────────── */
+.algo{background:#f8faff;border:2px solid var(--royal);border-radius:10px;padding:16px 18px;margin:14px 0}
+.algo h4{font-family:'Arvo',serif;color:var(--royal);margin-bottom:6px;font-size:1em}
+.algo .lead{font-size:.95em;color:#33405c;margin-bottom:10px}
+.astep{background:#fff;border:1.5px solid #cdd5e0;border-left:5px solid var(--royal);
+  border-radius:7px;padding:11px 15px;margin:10px 0}
+.astep .lab{font-family:'Arvo',serif;font-weight:700;color:var(--navy);display:block;margin-bottom:6px}
+.trap{font-family:'JetBrains Mono',monospace;font-size:1.15em;text-align:center;margin:6px 0 2px;letter-spacing:1px}
+.between{text-align:center;font-size:.9em;color:#33405c;margin-top:4px}
+.sq{color:var(--gold-dk);font-weight:700}        /* perfect squares  */
+.rt{color:var(--dkgreen);font-weight:700}         /* the roots        */
+.tg{color:var(--royal);font-weight:700}           /* the target number*/
+.legend{font-size:.82em;color:#5a6680;text-align:center;margin-top:8px}
+.legend b{padding:1px 4px;border-radius:3px}
+/* labeled fraction */
+.fracwrap{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:10px 0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;font-family:'JetBrains Mono',monospace;font-size:1.05em}
+.frac .top{border-bottom:2.5px solid var(--navy);padding:0 12px 3px}
+.frac .bot{padding:4px 12px 0}
+.frac .cap{font-size:.7em;color:#5a6680;font-family:'Inter',sans-serif;font-style:italic}
+.eq{font-family:'JetBrains Mono',monospace;font-size:1.1em;font-weight:700;color:var(--navy)}
+.answer-line{text-align:center;font-family:'JetBrains Mono',monospace;font-size:1.15em;
+  color:var(--dkgreen);font-weight:700;background:#e8f5e2;border:2px solid var(--green);
+  border-radius:8px;padding:9px;margin-top:6px}
+@media print{.astep{break-inside:avoid}}
+</style>
+
+</head>
+<body>
+<!-- ═══════ TOP NAV ═══════ -->
+<nav class="top-nav">
+  <div class="nav-container">
+    <span class="nav-title">🦅 <span>IC Imagine</span> 8th Grade Math</span>
+    <a class="nb" href="index.html">🏠 Home</a>
+    <a class="nb" href="unit1.html">← Unit 1</a>
+  </div>
+</nav>
+
+<div class="page-wrap">
+<a href="unit1.html" class="back-link">← Back to Unit 1</a>
+
+<div class="page-hdr">
+  <h1>📝 Unit 1 Guided Notes — The Real Number System</h1>
+  <p>Classify it, root it, estimate it, convert it, and order it. Every number has a home in the real number system.</p>
+  <div style="background:#fff8e1;border:1px solid #FFC107;border-left:5px solid #FFC107;border-radius:8px;padding:12px 16px;margin:10px 0 4px">
+    <div style="font-family:Arvo,serif;font-weight:bold;color:#1E2D4F;margin-bottom:4px">🎯 By the end of this unit, I can…</div>
+    <ul style="margin:4px 0 0;padding-left:20px;color:#333;font-size:.92em">
+      <li style="margin:2px 0">Sort numbers into the real number system (rational vs. irrational)</li>
+      <li style="margin:2px 0">Find perfect squares, perfect cubes, and their roots</li>
+      <li style="margin:2px 0">Estimate square roots on a number line and to the nearest tenth</li>
+      <li style="margin:2px 0">Convert between fractions and decimals, including repeating decimals</li>
+      <li style="margin:2px 0">Compare and order real numbers from least to greatest</li>
+    </ul>
+  </div>
+  <p class="stds">Standards: NC.8.NS.1 · NC.8.NS.2</p>
+</div>
+
+<div class="intro">
+  <p>This packet has two parts: <strong>Part 1 — Guided Notes</strong> (fill in the blanks as you learn) and <strong>Part 2 — Practice Problems</strong>. Work each blank on your printed copy first, then click any blank, step, or button on screen to check your thinking.</p>
+</div>
+
+<div class="topic-nav">
+  <a href="#t1">① Classification</a>
+  <a href="#t2">② Squares &amp; Roots</a>
+  <a href="#t3">③ Cubes &amp; Roots</a>
+  <a href="#t4">④ Estimating √</a>
+  <a href="#t5">⑤ Fractions ↔ Decimals</a>
+  <a href="#t6">⑥ Ordering</a>
+  <a href="#p2">✏ Practice</a>
+</div>
+
+<section class="topic" id="t1">
+  <h2><span class="num">1</span> Number Classification</h2>
+  <p>Every real number belongs to one or more of these sets. Fill in the definition for each:</p>
+
+  <table class="rules-table" id="t1tbl">
+    <tr><th>Set</th><th>Examples</th><th>Definition</th></tr>
+    <tr><td><strong>Natural Numbers</strong></td><td>1, 2, 3, 4, …</td><td><span class="blank" data-ans="Counting" onclick="rb(this)">?</span> numbers</td></tr>
+    <tr><td><strong>Whole Numbers</strong></td><td>0, 1, 2, 3, …</td><td>Naturals + <span class="blank" data-ans="zero" onclick="rb(this)">?</span></td></tr>
+    <tr><td><strong>Integers</strong></td><td>…, −2, −1, 0, 1, 2, …</td><td>Whole numbers + their <span class="blank" data-ans="negatives" onclick="rb(this)">?</span></td></tr>
+    <tr><td><strong>Rational Numbers</strong></td><td>½, 0.75, −⅗, 0.3̅</td><td>Can be written as a <span class="blank" data-ans="fraction" onclick="rb(this)">?</span> (includes terminating &amp; repeating decimals)</td></tr>
+    <tr><td><strong>Irrational Numbers</strong></td><td>π, √2, √3</td><td>CANNOT be a fraction; <span class="blank" data-ans="non-repeating" onclick="rb(this)">?</span>, <span class="blank" data-ans="non-terminating" onclick="rb(this)">?</span> decimal</td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t1tbl')">Reveal all definitions</button>
+
+  <h3 class="sub">The Real Number System — Nested Sets</h3>
+  <p>Each set fits <em>inside</em> the next. A natural number is also whole, an integer, and rational — but π sits outside the fraction box entirely.</p>
+  <div class="diagram">
+    <svg width="484" height="348" viewBox="0 0 484 348" xmlns="http://www.w3.org/2000/svg">
+      <!-- REAL NUMBERS (outer) -->
+      <rect x="6" y="6" width="472" height="336" rx="10" fill="#f8faff" stroke="#1E2D4F" stroke-width="2.5"/>
+      <text x="242" y="28" text-anchor="middle" font-family="Arvo" font-size="14" font-weight="bold" fill="#1E2D4F">REAL NUMBERS</text>
+      <text x="242" y="46" text-anchor="middle" font-size="10.5" font-style="italic" fill="#5a6680">Every real number is either rational OR irrational</text>
+
+      <!-- RATIONAL (left) with nested sets -->
+      <rect x="22" y="56" width="268" height="268" rx="9" fill="#fff8e1" stroke="#b08800" stroke-width="2"/>
+      <text x="156" y="75" text-anchor="middle" font-family="Arvo" font-size="12.5" font-weight="bold" fill="#b08800">RATIONAL</text>
+      <text x="156" y="91" text-anchor="middle" font-size="10.5" fill="#8a6d00">½, 0.75, −⅗, 0.3̅</text>
+      <rect x="40" y="100" width="232" height="212" rx="8" fill="#e8edf5" stroke="#0056B3" stroke-width="2"/>
+      <text x="156" y="118" text-anchor="middle" font-family="Arvo" font-size="11.5" font-weight="bold" fill="#0056B3">INTEGERS  …−2, −1</text>
+      <rect x="58" y="130" width="196" height="168" rx="7" fill="#fff" stroke="#22AC00" stroke-width="2"/>
+      <text x="156" y="148" text-anchor="middle" font-family="Arvo" font-size="11.5" font-weight="bold" fill="#1a7000">WHOLE  0</text>
+      <rect x="76" y="160" width="160" height="126" rx="6" fill="#e8f5e2" stroke="#1a7000" stroke-width="2"/>
+      <text x="156" y="220" text-anchor="middle" font-family="Arvo" font-size="12.5" font-weight="bold" fill="#1a7000">NATURAL</text>
+      <text x="156" y="238" text-anchor="middle" font-size="11" fill="#1a7000">1, 2, 3, …</text>
+
+      <!-- IRRATIONAL (right, separate) -->
+      <rect x="306" y="56" width="156" height="268" rx="9" fill="#f3edfb" stroke="#6B3FA0" stroke-width="2"/>
+      <text x="384" y="75" text-anchor="middle" font-family="Arvo" font-size="12.5" font-weight="bold" fill="#6B3FA0">IRRATIONAL</text>
+      <text x="384" y="102" text-anchor="middle" font-size="13" fill="#4a2d73">π   √2   √3</text>
+      <text x="384" y="126" text-anchor="middle" font-size="13" fill="#4a2d73">√5   √7   √10</text>
+      <text x="384" y="150" text-anchor="middle" font-size="13" fill="#4a2d73">√11   √13   …</text>
+      <text x="384" y="186" text-anchor="middle" font-size="9.5" font-style="italic" fill="#6B3FA0">Not a fraction.</text>
+      <text x="384" y="204" text-anchor="middle" font-size="9.5" font-style="italic" fill="#6B3FA0">Decimals never</text>
+      <text x="384" y="220" text-anchor="middle" font-size="9.5" font-style="italic" fill="#6B3FA0">end or repeat.</text>
+    </svg>
+  </div>
+
+  <h3 class="sub">Match the Set to its Definition</h3>
+  <div class="chk">
+    <div class="chk-q"><span class="badge">MATCH</span> Click a set on the left, then its definition on the right. <button class="match-reset" onclick="mReset('m1')">Reset</button></div>
+    <div class="match">
+      <div><div class="match-col-h">Set</div>
+        <div class="match-item" data-grp="m1" data-side="L" data-key="a" onclick="mSel('m1',this)">Natural Numbers</div>
+        <div class="match-item" data-grp="m1" data-side="L" data-key="b" onclick="mSel('m1',this)">Whole Numbers</div>
+        <div class="match-item" data-grp="m1" data-side="L" data-key="c" onclick="mSel('m1',this)">Integers</div>
+        <div class="match-item" data-grp="m1" data-side="L" data-key="d" onclick="mSel('m1',this)">Irrational Numbers</div>
+      </div>
+      <div><div class="match-col-h">Definition</div>
+        <div class="match-item" data-grp="m1" data-side="R" onclick="mSel('m1',this,'c')">Whole numbers + their negatives</div>
+        <div class="match-item" data-grp="m1" data-side="R" onclick="mSel('m1',this,'a')">Counting numbers: 1, 2, 3, …</div>
+        <div class="match-item" data-grp="m1" data-side="R" onclick="mSel('m1',this,'d')">Non-repeating, non-terminating decimal</div>
+        <div class="match-item" data-grp="m1" data-side="R" onclick="mSel('m1',this,'b')">Naturals + zero</div>
+      </div>
+    </div>
+    <div class="match-status" id="st-m1">0 of 4 matched</div>
+  </div>
+
+  <h3 class="sub">Quick Check</h3>
+  <div class="chk" id="chk1a">
+    <div class="chk-q"><span class="badge">MC</span> Which number is <em>irrational</em>?</div>
+    <div class="chk-opts">
+      <button class="chk-btn" onclick="chk('chk1a','√7','0.5')">0.55̅</button>
+      <button class="chk-btn" onclick="chk('chk1a','√7','√49')">√49</button>
+      <button class="chk-btn" onclick="chk('chk1a','√7','√7')">√7</button>
+      <button class="chk-btn" onclick="chk('chk1a','√7','−3/4')">−3/4</button>
+    </div>
+    <div class="chk-fb c" id="fb-chk1a">✓ 7 is not a perfect square, so √7 is a non-repeating, non-terminating decimal — irrational.</div>
+  </div>
+
+  <div class="sa">
+    <div class="chk-q"><span class="badge">ERROR ANALYSIS</span> A student claims: <span class="err-bad">"√49 is irrational because it has a square-root symbol."</span> What's the mistake?</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal the fix</button>
+    <div class="sa-ans">The square-root symbol does <strong>not</strong> make a number irrational. √49 = 7, a whole number — so it is <strong>rational</strong>. A root is irrational only when the number underneath is <em>not</em> a perfect square (like √7 or √2).</div>
+  </div>
+</section>
+
+<section class="topic" id="t2">
+  <h2><span class="num">2</span> Perfect Squares &amp; Square Roots</h2>
+
+  <div class="key"><strong>📌 THE RELATIONSHIP:</strong> Squaring and square-rooting are INVERSE OPERATIONS — they undo each other. If 5² = 25, then √25 = 5. Know one, know the other!</div>
+
+  <p>A <strong>perfect square</strong> is a whole number times itself (n × n = n²). Its <strong>square root</strong> takes you back to that whole number. So √(a perfect square) is always a whole number.</p>
+
+  <h3 class="sub">Perfect Squares 1–15 — Reference Chart</h3>
+  <p class="blank-tip">Keep this chart handy — you'll use it constantly for roots and estimating.</p>
+  <table class="rules-table">
+    <tr><th>n</th><th>n²</th><th>n</th><th>n²</th><th>n</th><th>n²</th></tr>
+    <tr><td>1</td><td>1</td><td>6</td><td>36</td><td>11</td><td>121</td></tr>
+    <tr><td>2</td><td>4</td><td>7</td><td>49</td><td>12</td><td>144</td></tr>
+    <tr><td>3</td><td>9</td><td>8</td><td>64</td><td>13</td><td>169</td></tr>
+    <tr><td>4</td><td>16</td><td>9</td><td>81</td><td>14</td><td>196</td></tr>
+    <tr><td>5</td><td>25</td><td>10</td><td>100</td><td>15</td><td>225</td></tr>
+  </table>
+  <div class="note"><strong>💡 READ IT BOTH WAYS:</strong> the chart says 12² = 144, which means √144 = 12. Every row is two facts in one.</div>
+
+  <h3 class="sub">Quick Check</h3>
+  <div class="chk" id="chk2a">
+    <div class="chk-q"><span class="badge">MC</span> Which of these is a <em>perfect square</em>?</div>
+    <div class="chk-opts">
+      <button class="chk-btn" onclick="chk('chk2a','144','30')">30</button>
+      <button class="chk-btn" onclick="chk('chk2a','144','50')">50</button>
+      <button class="chk-btn" onclick="chk('chk2a','144','144')">144</button>
+      <button class="chk-btn" onclick="chk('chk2a','144','200')">200</button>
+    </div>
+    <div class="chk-fb c" id="fb-chk2a">✓ 144 = 12², so √144 = 12 exactly. The others fall between perfect squares.</div>
+  </div>
+
+  <div class="chk" id="chk2b">
+    <div class="chk-q"><span class="badge">CALC</span> What is √169 ?</div>
+    <div class="val-chk">
+      <input id="chk2b-in" type="text" placeholder="a whole number">
+      <button onclick="chkVal('chk2b','13')">Check</button>
+    </div>
+    <div class="chk-fb" id="fb-chk2b"></div>
+  </div>
+
+  <div class="note"><strong>👉 WHAT IF IT'S NOT A PERFECT SQUARE?</strong> Then the root is irrational (like √7 or √20) — it never ends or repeats. We estimate those in <a href="#t4" style="color:var(--royal);font-weight:600">Section 4</a>.</div>
+</section>
+
+<section class="topic" id="t3">
+  <h2><span class="num">3</span> Perfect Cubes &amp; Cube Roots</h2>
+
+  <div class="key"><strong>📌 THE RELATIONSHIP:</strong> Cubing and cube-rooting are INVERSE OPERATIONS too. If 5³ = 125, then ∛125 = 5. The cube-root symbol carries a small <strong>3</strong>: ∛.</div>
+
+  <p>A <strong>perfect cube</strong> is a whole number used as a factor three times (n × n × n = n³). Its <strong>cube root</strong> undoes that.</p>
+
+  <h3 class="sub">Perfect Cubes 1–10 — Reference Chart</h3>
+  <p class="blank-tip">These come up less often than squares, but knowing 1–10 makes cube roots instant.</p>
+  <table class="rules-table">
+    <tr><th>n</th><th>n³</th><th>n</th><th>n³</th></tr>
+    <tr><td>1</td><td>1</td><td>6</td><td>216</td></tr>
+    <tr><td>2</td><td>8</td><td>7</td><td>343</td></tr>
+    <tr><td>3</td><td>27</td><td>8</td><td>512</td></tr>
+    <tr><td>4</td><td>64</td><td>9</td><td>729</td></tr>
+    <tr><td>5</td><td>125</td><td>10</td><td>1000</td></tr>
+  </table>
+
+  <div class="note"><strong>💡 SQUARE ROOT vs CUBE ROOT:</strong> √64 asks "what number times <em>itself</em> = 64?" → 8. ∛64 asks "what number used <em>three times</em> = 64?" → 4. Same number underneath, different answer — watch the little 3!</div>
+
+  <h3 class="sub">Quick Check</h3>
+  <div class="chk" id="chk3a">
+    <div class="chk-q"><span class="badge">CALC</span> What is ∛27 ?</div>
+    <div class="val-chk">
+      <input id="chk3a-in" type="text" placeholder="a whole number">
+      <button onclick="chkVal('chk3a','3')">Check</button>
+    </div>
+    <div class="chk-fb" id="fb-chk3a"></div>
+  </div>
+  <div class="chk" id="chk3b">
+    <div class="chk-q"><span class="badge">MC</span> Which statement is TRUE?</div>
+    <div class="chk-opts">
+      <button class="chk-btn" onclick="chk('chk3b','∛1000 = 10','∛1000 = 100')">∛1000 = 100</button>
+      <button class="chk-btn" onclick="chk('chk3b','∛1000 = 10','∛1000 = 10')">∛1000 = 10</button>
+      <button class="chk-btn" onclick="chk('chk3b','∛1000 = 10','∛1000 = 3')">∛1000 = 3</button>
+      <button class="chk-btn" onclick="chk('chk3b','∛1000 = 10','∛1000 = 500')">∛1000 = 500</button>
+    </div>
+    <div class="chk-fb c" id="fb-chk3b">✓ 10³ = 10 × 10 × 10 = 1000, so ∛1000 = 10.</div>
+  </div>
+</section>
+
+<section class="topic" id="t4">
+  <h2><span class="num">4</span> Estimating Square Roots</h2>
+
+  <div class="key"><strong>📌 THE BIG IDEA:</strong> When a number is NOT a perfect square, its square root is irrational — it never ends or repeats. We can't write it exactly, but we can <em>estimate</em> it. Two tools: a number line, and a step-by-step algorithm.</div>
+
+  <h3 class="sub">Method 1 — Place it on a Number Line</h3>
+  <p class="blank-tip">Great for "between which two whole numbers?" questions.</p>
+  <ol style="margin:6px 0 12px 22px;line-height:1.7">
+    <li>Find the two perfect squares your number lands <strong>between</strong>.</li>
+    <li>Take the √ of each — those are two back-to-back whole numbers. Your root lands between them.</li>
+    <li>Decide which one it's <strong>closer</strong> to: is your number nearer the lower or the upper perfect square?</li>
+    <li>Place it on the number line.</li>
+  </ol>
+
+  <div class="example">
+    <h4>Example: place √20</h4>
+    <p style="margin:2px 0 8px"><span class="sq">16</span> &lt; <span class="tg">20</span> &lt; <span class="sq">25</span>, so √20 is between <span class="rt">4</span> and <span class="rt">5</span>. Since 20 is closer to 16, √20 sits a little below the middle — closer to 4.</p>
+    <div class="diagram">
+      <svg width="440" height="90" viewBox="0 0 440 90" xmlns="http://www.w3.org/2000/svg">
+        <line x1="30" y1="45" x2="410" y2="45" stroke="#1E2D4F" stroke-width="2"/>
+        <polygon points="410,45 401,40 401,50" fill="#1E2D4F"/>
+        <polygon points="30,45 39,40 39,50" fill="#1E2D4F"/>
+        <!-- ticks 4 .. 5 -->
+        <g font-family="JetBrains Mono" font-size="12" fill="#1E2D4F" text-anchor="middle">
+          <line x1="60"  y1="38" x2="60"  y2="52" stroke="#1E2D4F" stroke-width="2"/><text x="60"  y="70">4</text>
+          <line x1="380" y1="38" x2="380" y2="52" stroke="#1E2D4F" stroke-width="2"/><text x="380" y="70">5</text>
+          <line x1="220" y1="40" x2="220" y2="50" stroke="#9aa3b2" stroke-width="1.5"/><text x="220" y="70" fill="#9aa3b2">4.5</text>
+        </g>
+        <circle cx="200" cy="45" r="6" fill="#0056B3"/>
+        <text x="200" y="26" text-anchor="middle" font-family="JetBrains Mono" font-size="12" font-weight="bold" fill="#0056B3">√20 ≈ 4.5</text>
+      </svg>
+    </div>
+  </div>
+
+  <h3 class="sub">Method 2 — The Estimating Algorithm (to the nearest tenth)</h3>
+  <div class="algo">
+    <h4>How far is your number into the gap?</h4>
+    <p class="lead">Between the two perfect squares, find how far along your number sits. That fraction, added to the <span class="rt">smaller root</span>, is your estimate. Watch the colors: <span class="sq">gold = perfect squares</span>, <span class="rt">green = the roots</span>, <span class="tg">blue = your number</span>.</p>
+
+    <div class="astep">
+      <span class="lab">Step 1 — Trap your number between two perfect squares.</span>
+      <div class="trap"><span class="sq">36</span> &nbsp;&lt;&nbsp; <span class="tg">45</span> &nbsp;&lt;&nbsp; <span class="sq">49</span></div>
+      <div class="between">√36 = <span class="rt">6</span>&nbsp;&nbsp;·&nbsp;&nbsp;√49 = <span class="rt">7</span> &nbsp;→&nbsp; so √45 is between <span class="rt">6</span> and <span class="rt">7</span>. The smaller root is <span class="rt">6</span>.</div>
+    </div>
+
+    <div class="astep">
+      <span class="lab">Step 2 — Build the fraction: how far in is your number?</span>
+      <div class="fracwrap">
+        <div class="frac">
+          <span class="cap">your number − lower square</span>
+          <span class="top"><span class="tg">45</span> − <span class="sq">36</span> = 9</span>
+          <span class="bot"><span class="sq">49</span> − <span class="sq">36</span> = 13</span>
+          <span class="cap">upper square − lower square</span>
+        </div>
+        <span class="eq">= 9 ÷ 13 ≈ 0.7</span>
+      </div>
+      <p style="text-align:center;font-size:.86em;color:#5a6680;margin-top:2px">The fraction is always <em>squares on top and bottom</em> — never the roots.</p>
+    </div>
+
+    <div class="astep">
+      <span class="lab">Step 3 — Add the fraction to the smaller root.</span>
+      <div class="answer-line">√45 ≈ <span class="rt">6</span> + 0.7 = 6.7</div>
+      <p style="text-align:center;font-size:.86em;color:#5a6680;margin-top:6px">Calculator check: √45 = 6.708… ✓</p>
+    </div>
+  </div>
+
+  <div class="note"><strong>💡 IN SHORT:</strong> √n ≈ (smaller root) + (n − lower square) ÷ (upper square − lower square). This is an <em>estimate</em> — it can be off by about a tenth from a calculator, and that's fine.</div>
+
+  <div class="warn"><strong>⚠ DON'T MIX THEM UP:</strong> the number you <strong>add</strong> is a <span class="rt">root</span> (6). The numbers <strong>inside the fraction</strong> are the <span class="sq">perfect squares</span> (36 and 49). Roots to add, squares to subtract.</div>
+
+  <div class="chk" id="chk4a">
+    <div class="chk-q"><span class="badge">CALC</span> Estimate √30 to the nearest tenth using the algorithm. <span style="font-weight:400;color:#5a6680">(Hint: 25 &lt; 30 &lt; 36)</span></div>
+    <div class="val-chk">
+      <input id="chk4a-in" type="text" placeholder="≈ ?">
+      <button onclick="chkVal('chk4a',['5.5','5.4','5.45'])">Check</button>
+    </div>
+    <div class="chk-fb" id="fb-chk4a"></div>
+    <button class="sa-btn" onclick="sa(this)" style="margin-top:10px">Show the work</button>
+    <div class="sa-ans">25 &lt; 30 &lt; 36 → roots 5 and 6. Fraction = (30 − 25) ÷ (36 − 25) = 5 ÷ 11 ≈ 0.45. So √30 ≈ 5 + 0.45 = 5.45 → <strong>5.5</strong>. (Calculator: 5.477…)</div>
+  </div>
+
+  <h3 class="sub">Negative Square Roots</h3>
+  <div class="key"><strong>📌 JUST FLIP THE SIGN:</strong> a negative in front puts your estimate on the other side of zero. Estimate the positive root first, then make it negative. Example: −√40 → √40 ≈ 6.3, so −√40 ≈ −6.3.</div>
+
+  <div class="note"><strong>🧭 WHICH METHOD?</strong> Use the <strong>number line</strong> for "between which whole numbers." Use the <strong>algorithm</strong> when you need a decimal to the nearest tenth. Both start the same way: find the two perfect squares that surround your number.</div>
+</section>
+
+<section class="topic" id="t5">
+  <h2><span class="num">5</span> Converting Fractions ↔ Decimals</h2>
+
+  <h3 class="sub">Fraction → Decimal</h3>
+  <p><strong>Divide</strong> the numerator by the denominator (top ÷ bottom).</p>
+  <p class="blank-tip">Fill in each decimal on your printed copy, then click to check.</p>
+  <table class="rules-table" id="t5a">
+    <tr><th>Fraction</th><th>Division</th><th>Decimal</th></tr>
+    <tr><td>3/4</td><td>3 ÷ 4</td><td><span class="blank" data-ans="0.75" onclick="rb(this)">?</span></td></tr>
+    <tr><td>1/8</td><td>1 ÷ 8</td><td><span class="blank" data-ans="0.125" onclick="rb(this)">?</span></td></tr>
+    <tr><td>1/3</td><td>1 ÷ 3</td><td><span class="blank" data-ans="0.333… = 0.3̅" onclick="rb(this)">?</span></td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t5a')">Reveal decimals</button>
+
+  <div class="note"><strong>💡 KEY INSIGHT:</strong> Repeating decimals are <span class="blank" data-ans="RATIONAL" onclick="rb(this)">?</span> because they can be written as fractions. Non-repeating, non-terminating decimals (like π) are <span class="blank" data-ans="IRRATIONAL" onclick="rb(this)">?</span>. Use a <strong>bar</strong> over the digits that repeat: 0.3̅ means 0.3333…</div>
+
+  <h3 class="sub">Decimal → Fraction (terminating)</h3>
+  <p>Read it, write it over its place value, then simplify — proof that every terminating decimal is <strong>rational</strong>.</p>
+  <table class="rules-table" id="t5b">
+    <tr><th>Decimal</th><th>Read / write</th><th>Fraction (simplest form)</th></tr>
+    <tr><td>0.75</td><td>75 hundredths → 75/100</td><td>= <span class="blank" data-ans="3/4" onclick="rb(this)">?</span></td></tr>
+    <tr><td>0.6</td><td>6 tenths → 6/10</td><td>= <span class="blank" data-ans="3/5" onclick="rb(this)">?</span></td></tr>
+    <tr><td>0.125</td><td>125 thousandths → 125/1000</td><td>= <span class="blank" data-ans="1/8" onclick="rb(this)">?</span></td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t5b')">Reveal fractions</button>
+
+  <h3 class="sub">Repeating Decimal → Fraction: The 9's Rule</h3>
+  <div class="key"><strong>📌 THE 9's RULE:</strong> The repeating digits go in the NUMERATOR. The DENOMINATOR is made of 9's — one 9 for each repeating digit.</div>
+  <table class="rules-table" id="t5c">
+    <tr><th>Repeating digits</th><th>Denominator</th><th>Example</th><th>Simplified</th></tr>
+    <tr><td>1 digit</td><td><span class="blank" data-ans="9" onclick="rb(this)">?</span></td><td>0.3̅ = 3/9</td><td>= <span class="blank" data-ans="1/3" onclick="rb(this)">?</span></td></tr>
+    <tr><td>2 digits</td><td><span class="blank" data-ans="99" onclick="rb(this)">?</span></td><td>0.2̅7̅ = 27/99</td><td>= <span class="blank" data-ans="3/11" onclick="rb(this)">?</span></td></tr>
+    <tr><td>3 digits</td><td><span class="blank" data-ans="999" onclick="rb(this)">?</span></td><td>0.1̅2̅5̅ = 125/999</td><td><span class="blank" data-ans="125/999" onclick="rb(this)">?</span></td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t5c')">Reveal all</button>
+
+  <div class="example">
+    <h4>Worked Example — Convert 0.2̅7̅ (0.272727…) to a fraction</h4>
+    <div class="steps" data-example="ex5">
+      <div class="step" onclick="reveal(this)"><strong>Step 1 — Count the repeating digits:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 digits repeat (the block "27").</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Step 2 — Denominator = that many 9's:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 digits → 99.</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Step 3 — Numerator = the repeating block:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 27/99.</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Step 4 — Simplify:</strong><span class="placeholder"> click for final answer</span><span class="hidden-content"> 27/99 = 3/11.</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('ex5')">Reveal all steps</button>
+  </div>
+
+  <div class="warn"><strong>⚠ IMPORTANT:</strong> the 9's rule only works when the decimal starts repeating <em>right after</em> the decimal point. For something like 0.1666… (the 1 doesn't repeat), you need the algebra method. And always simplify your final fraction!</div>
+
+  <h3 class="sub">Quick Check</h3>
+  <div class="chk" id="chk5a">
+    <div class="chk-q"><span class="badge">MC</span> Which decimal equals the fraction 3/8 ?</div>
+    <div class="chk-opts">
+      <button class="chk-btn" onclick="chk('chk5a','0.375','0.38')">0.38</button>
+      <button class="chk-btn" onclick="chk('chk5a','0.375','0.375')">0.375</button>
+      <button class="chk-btn" onclick="chk('chk5a','0.375','0.83')">0.83</button>
+      <button class="chk-btn" onclick="chk('chk5a','0.375','0.625')">0.625</button>
+    </div>
+    <div class="chk-fb c" id="fb-chk5a">✓ 3 ÷ 8 = 0.375, a terminating (rational) decimal.</div>
+  </div>
+</section>
+
+<section class="topic" id="t6">
+  <h2><span class="num">6</span> Ordering Numbers Least to Greatest</h2>
+
+  <div class="key"><strong>📌 THE STRATEGY:</strong> To compare a mix of fractions, decimals, mixed numbers, and roots — turn <em>everything</em> into a decimal first. Then ordering is easy.</div>
+
+  <h3 class="sub">Worked Example — Order √5, 2¼, 7/3, 2.1</h3>
+  <p class="blank-tip">Fill in each decimal, then click to check.</p>
+  <table class="rules-table" id="t6tbl">
+    <tr><th>Number</th><th>Decimal</th><th>How?</th></tr>
+    <tr><td>√5</td><td>≈ <span class="blank" data-ans="2.24" onclick="rb(this)">?</span></td><td>Estimating algorithm (between 4 and 9)</td></tr>
+    <tr><td>2¼</td><td>= <span class="blank" data-ans="2.25" onclick="rb(this)">?</span></td><td>2 + (1 ÷ 4) = 2.25</td></tr>
+    <tr><td>7/3</td><td>≈ <span class="blank" data-ans="2.33" onclick="rb(this)">?</span></td><td>7 ÷ 3 = 2.333…</td></tr>
+    <tr><td>2.1</td><td>= <span class="blank" data-ans="2.1" onclick="rb(this)">?</span></td><td>Already a decimal</td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t6tbl')">Reveal decimals</button>
+  <p style="margin:12px 0 4px">Order from least to greatest: <span class="blank" data-ans="2.1" onclick="rb(this)">?</span> &lt; <span class="blank" data-ans="√5" onclick="rb(this)">?</span> &lt; <span class="blank" data-ans="2¼" onclick="rb(this)">?</span> &lt; <span class="blank" data-ans="7/3" onclick="rb(this)">?</span></p>
+
+  <div class="diagram">
+    <svg width="460" height="90" viewBox="0 0 460 90" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="50" x2="430" y2="50" stroke="#1E2D4F" stroke-width="2"/>
+      <polygon points="430,50 421,45 421,55" fill="#1E2D4F"/>
+      <g font-family="JetBrains Mono" font-size="11" fill="#1E2D4F" text-anchor="middle">
+        <line x1="70"  y1="44" x2="70"  y2="56" stroke="#1E2D4F" stroke-width="2"/><text x="70"  y="72">2.1</text>
+        <line x1="230" y1="44" x2="230" y2="56" stroke="#b08800" stroke-width="2"/><text x="230" y="72" fill="#b08800">√5≈2.24</text>
+        <line x1="260" y1="44" x2="260" y2="56" stroke="#0056B3" stroke-width="2"/><text x="290" y="88" fill="#0056B3">2¼=2.25</text>
+        <line x1="360" y1="44" x2="360" y2="56" stroke="#1a7000" stroke-width="2"/><text x="360" y="72" fill="#1a7000">7/3≈2.33</text>
+      </g>
+      <text x="230" y="20" text-anchor="middle" font-family="Arvo" font-size="12" font-weight="bold" fill="#1E2D4F">Least → Greatest: 2.1 &lt; √5 &lt; 2¼ &lt; 7/3</text>
+    </svg>
+  </div>
+
+  <div class="note"><strong>💡 MIXED NUMBERS:</strong> turn them into a decimal — whole number + (numerator ÷ denominator). Example: 3⅖ = 3 + (2 ÷ 5) = 3 + 0.4 = 3.4.</div>
+
+  <div class="warn"><strong>⚠ WATCH OUT:</strong> line up the same number of decimal places before comparing (3.375 vs 3.5 is easy to misread at a glance), and estimate any irrational roots <em>first</em> so you can place them.</div>
+
+  <div class="sa">
+    <div class="chk-q"><span class="badge">ERROR ANALYSIS</span> To order 1.5, √2, 7/4, √3, a student wrote <span class="err-bad">1.5 &lt; √2 &lt; √3 &lt; 7/4</span>. Are they right?</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal the fix</button>
+    <div class="sa-ans">Convert first: 1.5 = 1.5, √2 ≈ 1.41, 7/4 = 1.75, √3 ≈ 1.73. The student forgot that √2 ≈ 1.41 is the <em>smallest</em>. Correct order: <strong>√2 &lt; 1.5 &lt; √3 &lt; 7/4</strong>.</div>
+  </div>
+</section>
+
+<div class="keyhdr" id="p2">
+  <h2>✏ PART 2 — Practice Problems</h2>
+  <p>Show all work on your printed copy. Circle your final answer, then click to check on screen.</p>
+</div>
+
+<section class="topic">
+  <h2><span class="num">A</span> Classify Each Number</h2>
+  <p>Rational = can be written as a fraction (includes terminating &amp; repeating decimals). Irrational = non-repeating, non-terminating.</p>
+  <table class="rules-table" style="max-width:520px">
+    <tr><th>#</th><th>Classification</th></tr>
+    <tr><td style="text-align:left">1. &nbsp;0.333…</td><td><span class="blank" data-ans="Rational (= 1/3)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">2. &nbsp;π</td><td><span class="blank" data-ans="Irrational" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">3. &nbsp;√49</td><td><span class="blank" data-ans="Rational (√49 = 7)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">4. &nbsp;√10</td><td><span class="blank" data-ans="Irrational" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">5. &nbsp;−3/8</td><td><span class="blank" data-ans="Rational (= −0.375)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">6. &nbsp;0.1212…</td><td><span class="blank" data-ans="Rational (= 4/33)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">7. &nbsp;√144</td><td><span class="blank" data-ans="Rational (√144 = 12)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">8. &nbsp;0.101001…</td><td><span class="blank" data-ans="Irrational (pattern grows, never repeats)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">9. &nbsp;2/7</td><td><span class="blank" data-ans="Rational (repeating decimal)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">10. &nbsp;√2</td><td><span class="blank" data-ans="Irrational" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">11. &nbsp;−√81</td><td><span class="blank" data-ans="Rational (= −9)" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">12. &nbsp;3.14</td><td><span class="blank" data-ans="Rational (= 314/100)" onclick="rb(this)">?</span></td></tr>
+
+  </table>
+</section>
+
+<section class="topic">
+  <h2><span class="num">B</span> Estimate Each Square Root (nearest tenth)</h2>
+  <p>Find the perfect squares just below and just above, then estimate. A leading − just flips the sign.</p>
+  <table class="rules-table" style="max-width:420px">
+    <tr><th>#</th><th>Estimate</th></tr>
+    <tr><td style="text-align:left">1. &nbsp;√5</td><td>≈ <span class="blank" data-ans="2.2" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">2. &nbsp;√10</td><td>≈ <span class="blank" data-ans="3.2" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">3. &nbsp;√20</td><td>≈ <span class="blank" data-ans="4.5" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">4. &nbsp;√30</td><td>≈ <span class="blank" data-ans="5.5" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">5. &nbsp;√50</td><td>≈ <span class="blank" data-ans="7.1" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">6. &nbsp;√8</td><td>≈ <span class="blank" data-ans="2.8" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">7. &nbsp;√15</td><td>≈ <span class="blank" data-ans="3.9" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">8. &nbsp;√40</td><td>≈ <span class="blank" data-ans="6.3" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">9. &nbsp;√65</td><td>≈ <span class="blank" data-ans="8.1" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">10. &nbsp;√90</td><td>≈ <span class="blank" data-ans="9.5" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">11. &nbsp;−√50</td><td>≈ <span class="blank" data-ans="−7.1" onclick="rb(this)">?</span></td></tr>
+
+  </table>
+</section>
+
+<section class="topic">
+  <h2><span class="num">C</span> Order from Least to Greatest</h2>
+  <p>Convert each number to a decimal, then arrange from least to greatest. Show your decimal conversions!</p>
+  <div class="sa">
+    <div class="chk-q">1. Order: π, √10, 10/3, 3.5</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 3.14, 3.16, 3.33, 3.5 &nbsp;→&nbsp; <strong>π < √10 < 10/3 < 3.5</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">2. Order: 1.5, √2, 7/4, √3</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 1.5, 1.41, 1.75, 1.73 &nbsp;→&nbsp; <strong>√2 < 1.5 < √3 < 7/4</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">3. Order: √5, 2.5, 11/5, √7</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 2.24, 2.5, 2.2, 2.65 &nbsp;→&nbsp; <strong>11/5 < √5 < 2.5 < √7</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">4. Order: 4.2, √18, 13/3, √20</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 4.2, 4.24, 4.33, 4.47 &nbsp;→&nbsp; <strong>4.2 < √18 < 13/3 < √20</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">5. Order: −2.5, −√5, −8/3</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: −2.5, −2.24, −2.67 &nbsp;→&nbsp; <strong>−8/3 < −2.5 < −√5</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">6. Order: √50, 7.1, 22/3, √52</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 7.07, 7.1, 7.33, 7.21 &nbsp;→&nbsp; <strong>√50 < 7.1 < √52 < 22/3</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">7. Order: 5/6, √0.5, 0.9, 7/8</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 0.83, 0.71, 0.9, 0.88 &nbsp;→&nbsp; <strong>√0.5 < 5/6 < 7/8 < 0.9</strong></div>
+  </div>
+  <div class="sa">
+    <div class="chk-q">8. Order: √30, 5.5, 17/3, √32</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal</button>
+    <div class="sa-ans">Decimals: 5.48, 5.5, 5.67, 5.66 &nbsp;→&nbsp; <strong>√30 < 5.5 < √32 < 17/3</strong></div>
+  </div>
+
+</section>
+
+<div style="text-align:center;margin-top:26px">
+  <a href="unit1.html" class="back-link">← Back to Unit 1</a>
+</div>
+
+</div><!-- /page-wrap -->
+
+<script>
+// Click-to-reveal individual step
+function reveal(el){
+  if(el.classList.contains('revealed')) return;
+  el.classList.add('revealed');
+}
+
+// Reveal all steps in an example
+function revealAll(exId){
+  document.querySelectorAll('[data-example="'+exId+'"] .step').forEach(s=>s.classList.add('revealed'));
+}
+
+// Multiple choice answer check
+function chk(qid, correct, chosen){
+  const box = document.getElementById(qid);
+  const fb = document.getElementById('fb-'+qid);
+  const buttons = box.querySelectorAll('.chk-btn');
+  buttons.forEach(b=>{
+    b.disabled = true;
+    const btnText = b.textContent.trim().replace(/\s+/g,' ');
+    const chosenText = chosen.replace(/\s+/g,' ');
+    const correctText = correct.replace(/\s+/g,' ');
+    if(btnText === correctText) b.classList.add('correct');
+    else if(btnText === chosenText) b.classList.add('wrong');
+  });
+  if(chosen === correct){
+    fb.classList.add('show','c');
+    fb.classList.remove('w');
+  } else {
+    fb.classList.add('show','w');
+    fb.classList.remove('c');
+    fb.innerHTML = '✗ Not quite — the correct answer is highlighted in green. ' + (fb.dataset.hint || '');
+  }
+}
+
+// Typed-input answer check
+function chkInput(qid, correctPair){
+  const xVal = document.getElementById(qid+'-x').value.trim();
+  const yVal = document.getElementById(qid+'-y').value.trim();
+  const fb = document.getElementById('fb-'+qid);
+  const xNum = parseFloat(xVal.replace(/[−–—]/g,'-'));
+  const yNum = parseFloat(yVal.replace(/[−–—]/g,'-'));
+  fb.classList.remove('c','w');
+  fb.classList.add('show');
+  if(xVal === '' || yVal === '' || isNaN(xNum) || isNaN(yNum)){
+    fb.classList.add('w');
+    fb.innerHTML = 'Enter a number for both x and y.';
+    return;
+  }
+  if(xNum === correctPair[0] && yNum === correctPair[1]){
+    fb.classList.add('c');
+    fb.innerHTML = '✓ Correct! ('+formatNum(correctPair[0])+', '+formatNum(correctPair[1])+')';
+  } else {
+    fb.classList.add('w');
+    fb.innerHTML = '✗ Not quite. The correct answer is ('+formatNum(correctPair[0])+', '+formatNum(correctPair[1])+'). Try again on the next one.';
+  }
+}
+function formatNum(n){
+  return n < 0 ? '−' + Math.abs(n) : '' + n;
+}
+
+
+// ── Inline fill-in-the-blank ──────────────────────
+function rb(el){
+  el.classList.add('revealed');
+  if(el.dataset.ans!==undefined) el.textContent=el.dataset.ans;
+}
+function rbAll(id){
+  document.querySelectorAll('#'+id+' .blank').forEach(b=>{
+    b.classList.add('revealed');
+    if(b.dataset.ans!==undefined) b.textContent=b.dataset.ans;
+  });
+}
+// ── Short-answer / error-analysis reveal ──────────
+function sa(btn){
+  const a=btn.parentElement.querySelector('.sa-ans');
+  a.classList.add('show');
+  btn.style.display='none';
+}
+// ── Single-value typed check ──────────────────────
+function chkVal(qid,answers){
+  const inp=document.getElementById(qid+'-in');
+  const fb=document.getElementById('fb-'+qid);
+  const v=inp.value.trim();
+  fb.classList.remove('c','w'); fb.classList.add('show');
+  const norm=s=>String(s).toLowerCase().replace(/[−–—]/g,'-')
+        .replace(/\s+/g,'').replace(/×/g,'*').replace(/·/g,'*');
+  const list=Array.isArray(answers)?answers:[answers];
+  if(v===''){fb.classList.add('w');fb.innerHTML='Type your answer first.';return;}
+  if(list.some(a=>norm(a)===norm(v))){
+    fb.classList.add('c'); fb.innerHTML='✓ Correct! '+list[0];
+  }else{
+    fb.classList.add('w');
+    fb.innerHTML='✗ Not quite — the answer is '+list[0]+'.';
+  }
+}
+// ── Matching game ─────────────────────────────────
+const _msel={};
+function mSel(grp,el,key){
+  if(el.classList.contains('locked')) return;
+  const st=_msel[grp]||(_msel[grp]={left:null});
+  if(el.dataset.side==='L'){
+    if(st.left) st.left.classList.remove('sel');
+    st.left=el; el.classList.add('sel');
+  }else{
+    if(!st.left) return;
+    if(st.left.dataset.key===key){
+      st.left.classList.add('locked'); st.left.classList.remove('sel');
+      el.classList.add('locked'); st.left=null; mStat(grp);
+    }else{
+      const L=st.left; el.classList.add('miss'); L.classList.add('miss');
+      setTimeout(()=>{el.classList.remove('miss');L.classList.remove('miss','sel');},650);
+      st.left=null;
+    }
+  }
+}
+function mStat(grp){
+  const tot=document.querySelectorAll('[data-grp="'+grp+'"][data-side="L"]').length;
+  const done=document.querySelectorAll('[data-grp="'+grp+'"][data-side="L"].locked').length;
+  const s=document.getElementById('st-'+grp);
+  if(s){s.textContent=done===tot?'✓ All matched!':done+' of '+tot+' matched';
+        s.style.color=done===tot?'#1a7000':'#1E2D4F';}
+}
+function mReset(grp){
+  document.querySelectorAll('[data-grp="'+grp+'"]').forEach(e=>{
+    e.classList.remove('locked','sel','miss');});
+  _msel[grp]={left:null}; mStat(grp);
+}
+
+</script>
+</body>
+</html>
