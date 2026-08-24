@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 6 Practice — Slope-Intercept Form | 8th Grade Math</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', 'Segoe UI', sans-serif;
+    background: #f5f3ed; color: #3a3631;
+    padding: 20px 16px 60px; min-height: 100vh;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  .header { text-align: center; margin-bottom: 12px; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #1e2d4f; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .header p { font-size: 13px; color: #8a8578; }
+  .progress-bar-wrap {
+    background: #e8e5dd; border-radius: 20px; height: 22px; margin: 10px 0 18px;
+    position: relative; overflow: hidden; border: 1px solid #ddd8ce;
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, #1e2d4f, #2e4a7a);
+    border-radius: 20px; transition: width 0.5s ease;
+  }
+  .progress-bar-text {
+    position: absolute; top: 0; left: 0; right: 0; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #1e2d4f; font-family: 'DM Mono', monospace;
+  }
+  .card {
+    background: #fff; border: 1px solid #ddd8ce; border-radius: 10px;
+    padding: 16px 18px; margin-bottom: 16px; transition: box-shadow 0.3s;
+  }
+  .card.completed { border-color: #8aab7a; box-shadow: 0 0 0 2px #8aab7a33; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+  .eq-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%; background: #1e2d4f;
+    color: #ffc107; font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace;
+  }
+  .eq-badge.done { background: #4a7a42; }
+  .eq-label { font-size: 17px; font-weight: 700; color: #1e2d4f; font-family: 'DM Mono', monospace; margin-left: 8px; }
+  .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+  .btn { padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; }
+  .btn-check { background: #1e2d4f; color: #ffc107; }
+  .btn-check:hover { background: #2e4a7a; }
+  .btn-hint { background: #ffc107; color: #1e2d4f; }
+  .btn-hint:hover { background: #e6ad00; }
+  .btn-show { background: #c0785c; color: #fff; }
+  .btn-show:hover { background: #a8654a; }
+  .btn-reset { background: #f5f3ed; color: #555; border: 1px solid #ccc; }
+  .btn-reset:hover { background: #e8e5dd; }
+  .feedback { padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+  .feedback.success { background: #e8f0e4; color: #3a6632; }
+  .feedback.error { background: #f5e0db; color: #8b3a2a; }
+  .feedback.warn { background: #fef6e0; color: #8a6b20; }
+  .feedback.hint { background: #e8eef6; color: #1e2d4f; }
+  .card-content { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+  .eq-table { border-collapse: collapse; font-size: 13px; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+  .eq-table th { padding: 5px 10px; background: #1e2d4f; color: #ffc107; border: 1px solid #1e2d4f; font-size: 11px; font-weight: 700; text-align: center; }
+  .eq-table td { padding: 4px 6px; border: 1px solid #ddd8ce; text-align: center; }
+  .eq-table td.x-cell { background: #f0ede6; font-weight: 600; color: #3a3631; width: 50px; }
+  .eq-table td.y-cell { width: 56px; }
+  .eq-table td.correct { background: #e8f0e4; border-color: #8aab7a; }
+  .eq-table td.wrong { background: #f5e0db; border-color: #c07060; }
+  .eq-table td.revealed { background: #e8eef6; }
+  .y-input { width: 44px; border: none; background: transparent; text-align: center; font-size: 13px; font-family: 'DM Mono', monospace; outline: none; color: #1e2d4f; }
+  .revealed-val { font-weight: 600; color: #2e4a7a; }
+  .grid-wrap { flex: 1; min-width: 220; max-width: 320; }
+  .grid-wrap svg { width: 100%; cursor: crosshair; border-radius: 4px; }
+  .grid-help { font-size: 10px; color: #8a8578; text-align: center; margin-top: 3px; }
+  .point-feedback { font-size: 11px; text-align: center; margin-top: 4px; font-weight: 600; min-height: 16px; }
+  .point-feedback.match { color: #3a6632; }
+  .point-feedback.miss { color: #8b3a2a; }
+  .step-prompt { background: #f9f7f1; border: 1px dashed #d0cdc4; border-radius: 8px; padding: 8px 12px; font-size: 12px; color: #555; margin-top: 6px; font-family: 'DM Mono', monospace; line-height: 1.5; }
+  .step-prompt strong { color: #1e2d4f; }
+  .attempts { font-size: 10px; color: #8a8578; margin-top: 2px; }
+  .celebration { text-align: center; padding: 16px; background: #1e2d4f; color: #ffc107; border-radius: 10px; margin-bottom: 16px; font-size: 18px; font-weight: 700; display: none; }
+  .celebration.show { display: block; animation: pop 0.4s ease; }
+  @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  @media (max-width: 520px) { .card-content { flex-direction: column; } .grid-wrap { max-width: 100%; } .header h1 { font-size: 20px; } }
+</style>
+</head>
+<body>
+<a href="unit6.html" class="back-to-unit6">← Back to Unit 6</a>
+<style>
+.back-to-unit6{position:fixed;top:12px;left:12px;z-index:9999;display:inline-block;padding:8px 14px;background:linear-gradient(135deg,#1E2D4F,#0d1f3f);color:#FFC107;font-family:'Arvo',Georgia,serif;font-weight:bold;font-size:13px;border-radius:8px;border:2px solid #FFC107;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:all .2s}
+.back-to-unit6:hover{background:#FFC107;color:#1E2D4F;transform:translateY(-1px)}
+</style>
+<div class="container">
+  <div class="header">
+    <h1>Slope-Intercept Form — Practice Set</h1>
+    <p>Complete each table, plot points on the graph, then check your work!</p>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    <div class="progress-bar-text" id="progressText">0 of 6 Complete</div>
+  </div>
+  <div class="celebration" id="celebration">🎉 Practice Set Complete! You're a slope-intercept pro! 🎉</div>
+  <div id="cards"></div>
+</div>
+
+<script>
+const EQUATIONS = [
+  { id:1, label:"y = 2x", desc:"2x", fn:x=>2*x, xVals:[-3,-2,-1,0,1,2,3],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> into y = 2x → y = 2 · (${x}) = <strong>?</strong>` },
+  { id:2, label:"y = 2x + 1", desc:"2x+1", fn:x=>2*x+1, xVals:[-3,-2,-1,0,1,2,3],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> into y = 2x + 1 → y = 2·(${x}) + 1 = <strong>?</strong>` },
+  { id:3, label:"y = −2x + 5", desc:"-2x+5", fn:x=>-2*x+5, xVals:[-2,-1,0,1,2,3,4],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = −2·(${x}) + 5 = <strong>?</strong>` },
+  { id:4, label:"y = ⅓x", desc:"⅓x", fn:x=>x/3, xVals:[-6,-3,0,3,6,9],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = ⅓ · (${x}) = <strong>?</strong>` },
+  { id:5, label:"y = ⅓x − 2", desc:"⅓x−2", fn:x=>x/3-2, xVals:[-6,-3,0,3,6,9],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = ⅓·(${x}) − 2 = <strong>?</strong>` },
+  { id:6, label:"y = −½x + 1", desc:"-½x+1", fn:x=>-x/2+1, xVals:[-4,-2,0,2,4,6,8],
+    hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = −½·(${x}) + 1 = <strong>?</strong>` },
+];
+
+const RANGE=10, GPX=280, STEP=GPX/(RANGE*2);
+const toP=v=>GPX/2+v*STEP, fromP=p=>Math.round((p-GPX/2)/STEP);
+
+const state = EQUATIONS.map(eq=>({
+  yVals:eq.xVals.map(()=>""), points:[], attempts:0, revealed:new Set(),
+  complete:false, showLine:false, feedback:null, stepPrompt:null, pointFeedback:null, cellResults:null,
+}));
+
+function updateProgress(){
+  const done=state.filter(s=>s.complete).length;
+  document.getElementById('progressFill').style.width=(done/6*100)+'%';
+  document.getElementById('progressText').textContent=`${done} of 6 Complete`;
+  const c=document.getElementById('celebration');
+  if(done===6)c.classList.add('show');else c.classList.remove('show');
+}
+
+function buildSVG(idx){
+  const eq=EQUATIONS[idx],s=state[idx];
+  let svg=`<svg viewBox="0 0 ${GPX} ${GPX}" xmlns="http://www.w3.org/2000/svg" style="background:#faf8f2">`;
+  for(let i=-RANGE;i<=RANGE;i++){const p=toP(i);if(i!==0){svg+=`<line x1="${p}" y1="0" x2="${p}" y2="${GPX}" stroke="#e0ddd5" stroke-width="0.5"/>`;svg+=`<line x1="0" y1="${p}" x2="${GPX}" y2="${p}" stroke="#e0ddd5" stroke-width="0.5"/>`;}}
+  svg+=`<line x1="0" y1="${toP(0)}" x2="${GPX}" y2="${toP(0)}" stroke="#3a3631" stroke-width="1.2"/>`;
+  svg+=`<line x1="${toP(0)}" y1="0" x2="${toP(0)}" y2="${GPX}" stroke="#3a3631" stroke-width="1.2"/>`;
+  svg+=`<text x="${GPX-4}" y="${toP(0)-5}" font-size="9" font-weight="bold" fill="#3a3631" text-anchor="end">x</text>`;
+  svg+=`<text x="${toP(0)+6}" y="10" font-size="9" font-weight="bold" fill="#3a3631">y</text>`;
+  for(let i=-RANGE;i<=RANGE;i+=5){if(i===0)continue;svg+=`<text x="${toP(i)}" y="${toP(0)+11}" text-anchor="middle" font-size="6" fill="#8a8578">${i}</text>`;svg+=`<text x="${toP(0)-4}" y="${toP(-i)+3}" text-anchor="end" font-size="6" fill="#8a8578">${i}</text>`;}
+  if(s.showLine){let pts=[];for(let gx=-RANGE;gx<=RANGE;gx+=0.25){const gy=eq.fn(gx);if(Math.abs(gy)<=RANGE)pts.push(`${toP(gx)},${toP(-gy)}`);}if(pts.length>1)svg+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#c0785c" stroke-width="1.8" stroke-dasharray="6 3" opacity="0.6"/>`;}
+  if(s.points.length>=2){const sorted=[...s.points].sort((a,b)=>a.x-b.x);svg+=`<polyline points="${sorted.map(p=>`${toP(p.x)},${toP(-p.y)}`).join(' ')}" fill="none" stroke="#1e2d4f" stroke-width="1.5" opacity="0.5"/>`;}
+  s.points.forEach(p=>{const correct=Math.abs(eq.fn(p.x)-p.y)<0.01;const color=s.showLine?(correct?'#4a7a42':'#c04040'):'#c0785c';svg+=`<circle cx="${toP(p.x)}" cy="${toP(-p.y)}" r="5" fill="${color}" stroke="#faf8f2" stroke-width="1.5"/>`;});
+  svg+='</svg>';return svg;
+}
+
+function getHint(idx){
+  const eq=EQUATIONS[idx],s=state[idx];
+  for(let i=0;i<eq.xVals.length;i++){
+    if(s.revealed.has(i))continue;
+    const entered=s.yVals[i].trim(),correct=eq.fn(eq.xVals[i]);
+    if(entered===""||parseFloat(entered)!==correct){
+      s.stepPrompt=eq.hint(eq.xVals[i]);
+      s.feedback={type:'hint',msg:`💡 Hint for x = ${eq.xVals[i]}:`};
+      render(idx);return;
+    }
+  }
+  s.feedback={type:'success',msg:'All values look good!'};s.stepPrompt=null;render(idx);
+}
+
+function showAnswer(idx){
+  const eq=EQUATIONS[idx],s=state[idx];
+  for(let i=0;i<eq.xVals.length;i++){
+    if(s.revealed.has(i))continue;
+    const entered=s.yVals[i].trim(),correct=eq.fn(eq.xVals[i]);
+    if(entered===""||parseFloat(entered)!==correct){
+      s.revealed.add(i);s.yVals[i]=String(correct);
+      s.feedback={type:'hint',msg:`Revealed: when x = ${eq.xVals[i]}, y = ${correct}`};
+      s.stepPrompt=null;render(idx);return;
+    }
+  }
+}
+
+function checkAnswers(idx){
+  const eq=EQUATIONS[idx],s=state[idx];s.attempts++;
+  let allCorrect=true,allFilled=true;
+  const results=eq.xVals.map((xv,i)=>{
+    if(s.revealed.has(i))return'correct';
+    const entered=s.yVals[i].trim();
+    if(entered===""){allFilled=false;return'empty';}
+    if(parseFloat(entered)===eq.fn(xv))return'correct';
+    allCorrect=false;return'wrong';
+  });
+  s.showLine=true;s.cellResults=results;s.stepPrompt=null;
+  if(!allFilled)s.feedback={type:'warn',msg:'Fill in all y-values first!'};
+  else if(allCorrect){s.feedback={type:'success',msg:'✓ All correct! Great job!'};s.complete=true;updateProgress();}
+  else{const wc=results.filter(r=>r==='wrong').length;s.feedback={type:'error',msg:`${wc} value${wc>1?'s':''} need${wc===1?'s':''} fixing.`+(s.attempts>=3?' Use "Show Answer" if you\'re stuck.':'')};} 
+  render(idx);
+}
+
+function resetEq(idx){
+  const eq=EQUATIONS[idx];
+  state[idx]={yVals:eq.xVals.map(()=>""),points:[],attempts:0,revealed:new Set(),complete:false,showLine:false,feedback:null,stepPrompt:null,pointFeedback:null,cellResults:null};
+  updateProgress();render(idx);
+}
+
+function handleGridClick(idx,e){
+  const svg=e.currentTarget,rect=svg.getBoundingClientRect();
+  const px=(e.clientX-rect.left)*GPX/rect.width,py=(e.clientY-rect.top)*GPX/rect.height;
+  const gx=fromP(px),gy=-fromP(py);
+  if(Math.abs(gx)>RANGE||Math.abs(gy)>RANGE)return;
+  const s=state[idx],eq=EQUATIONS[idx];
+  const ei=s.points.findIndex(p=>p.x===gx&&p.y===gy);
+  if(ei>=0){s.points.splice(ei,1);s.pointFeedback=null;}
+  else{s.points.push({x:gx,y:gy});const cy=eq.fn(gx);s.pointFeedback=Math.abs(cy-gy)<0.01?{type:'match',msg:`✓ (${gx}, ${gy}) is on the line!`}:{type:'miss',msg:`(${gx}, ${gy}) is not on this line.`};}
+  render(idx);
+}
+
+function render(idx){
+  const eq=EQUATIONS[idx],s=state[idx],card=document.getElementById(`card-${idx}`);
+  card.querySelector('.eq-badge').className='eq-badge'+(s.complete?' done':'');
+  card.className='card'+(s.complete?' completed':'');
+  const fb=card.querySelector('.feedback-area');fb.innerHTML=s.feedback?`<div class="feedback ${s.feedback.type}">${s.feedback.msg}</div>`:'';
+  const sp=card.querySelector('.step-area');sp.innerHTML=s.stepPrompt?`<div class="step-prompt">${s.stepPrompt}</div>`:'';
+  eq.xVals.forEach((xv,i)=>{
+    const td=card.querySelector(`.y-cell-${i}`);
+    const r=s.cellResults?s.cellResults[i]:null;
+    td.className=`y-cell y-cell-${i}`+(r==='correct'?' correct':'')+(r==='wrong'?' wrong':'')+(s.revealed.has(i)?' revealed':'');
+    if(s.revealed.has(i))td.innerHTML=`<span class="revealed-val">${s.yVals[i]}</span>`;
+    else{const inp=td.querySelector('.y-input');if(inp)inp.value=s.yVals[i];}
+  });
+  card.querySelector('.attempts').textContent=s.attempts>0?`Attempts: ${s.attempts}`:'';
+  card.querySelector('.btn-show').style.display=s.attempts>=2?'inline-block':'none';
+  const gw=card.querySelector('.grid-svg');gw.innerHTML=buildSVG(idx);gw.querySelector('svg').addEventListener('click',e=>handleGridClick(idx,e));
+  const pf=card.querySelector('.point-feedback');
+  if(s.pointFeedback){pf.className='point-feedback '+s.pointFeedback.type;pf.textContent=s.pointFeedback.msg;}else{pf.className='point-feedback';pf.textContent='';}
+}
+
+function buildCard(idx){
+  const eq=EQUATIONS[idx];
+  let rows='';eq.xVals.forEach((xv,i)=>{rows+=`<tr><td class="x-cell">${xv}</td><td class="y-cell y-cell-${i}"><input type="text" class="y-input" data-idx="${idx}" data-i="${i}" value="" inputmode="numeric"></td></tr>`;});
+  return`<div class="card" id="card-${idx}"><div class="card-header"><div style="display:flex;align-items:center"><span class="eq-badge">${eq.id}</span><span class="eq-label">${eq.label}</span></div><div class="btn-group"><button class="btn btn-hint" onclick="getHint(${idx})">💡 Hint</button><button class="btn btn-check" onclick="checkAnswers(${idx})">Check</button><button class="btn btn-show" style="display:none" onclick="showAnswer(${idx})">Show Answer</button><button class="btn btn-reset" onclick="resetEq(${idx})">Reset</button></div></div><div class="feedback-area"></div><div class="card-content"><div><table class="eq-table"><thead><tr><th>Input (x)</th><th>${eq.label}</th></tr></thead><tbody>${rows}</tbody></table><div class="attempts"></div></div><div class="grid-wrap"><div class="grid-svg"></div><div class="grid-help">Click to plot points · click again to remove</div><div class="point-feedback"></div></div></div><div class="step-area"></div></div>`;
+}
+
+const cardsEl=document.getElementById('cards');
+EQUATIONS.forEach((eq,idx)=>{cardsEl.insertAdjacentHTML('beforeend',buildCard(idx));render(idx);});
+document.addEventListener('input',e=>{
+  if(e.target.classList.contains('y-input')){
+    const idx=+e.target.dataset.idx,i=+e.target.dataset.i;
+    state[idx].yVals[i]=e.target.value;state[idx].feedback=null;state[idx].stepPrompt=null;state[idx].cellResults=null;state[idx].showLine=false;
+    const card=document.getElementById(`card-${idx}`);EQUATIONS[idx].xVals.forEach((_,j)=>{card.querySelector(`.y-cell-${j}`).className=`y-cell y-cell-${j}`;});
+    card.querySelector('.feedback-area').innerHTML='';card.querySelector('.step-area').innerHTML='';
+  }
+});
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>

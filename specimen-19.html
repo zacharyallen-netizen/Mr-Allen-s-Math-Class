@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specimen-19 · Scientific Notation RPG · 8th Grade Math</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Fraunces:opsz,wght@9..144,700;9..144,900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:    #04070c;
+    --bg:         #0a0f18;
+    --bg-mid:     #111827;
+    --panel:      #0f1623;
+    --panel-bri:  #1a2235;
+    --text:       #e4e7ed;
+    --text-dim:   #96a0b4;
+    --text-faint: #5a6580;
+    --accent:     #38bdf8;
+    --accent-glow: rgba(56, 189, 248, .4);
+    --accent-dim: rgba(56, 189, 248, .15);
+    --gold:       #d4a437;
+    --ok:         #4ade80;
+    --warn:       #f97316;
+    --err:        #ef4444;
+    --shadow-md:  0 8px 24px rgba(0,0,0,.5);
+    --glow:       0 0 18px var(--accent-glow);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    background: var(--bg-deep);
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse 120% 60% at 50% 0%, var(--bg-mid) 0%, var(--bg) 40%, var(--bg-deep) 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+    padding-bottom: 40px;
+    transition: background-color .8s, filter .8s;
+  }
+
+  /* Scan lines overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Starfield */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 58% 31%, rgba(255,255,255,.35), transparent),
+      radial-gradient(1px 1px at 83% 14%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 25% 73%, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.2px 1.2px at 42% 88%, rgba(255,255,255,.45), transparent),
+      radial-gradient(1px 1px at 75% 65%, rgba(255,255,255,.3), transparent),
+      radial-gradient(1px 1px at 8% 47%, rgba(255,255,255,.25), transparent),
+      radial-gradient(1.5px 1.5px at 51% 21%, rgba(212,164,55,.4), transparent);
+    pointer-events: none;
+    z-index: 0;
+    opacity: .7;
+    transition: opacity .8s;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 3;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 14px 18px 24px;
+  }
+
+  /* ============ Back link ============ */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px 6px 10px;
+    background: rgba(0,0,0,.4);
+    color: var(--text-dim);
+    border: 1px solid rgba(150, 160, 180, .2);
+    border-radius: 6px;
+    font: 600 .78rem 'JetBrains Mono', monospace;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .15s;
+    margin-bottom: 10px;
+  }
+  .back-link:hover {
+    background: rgba(56,189,248,.1);
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  /* ============ HUD Header ============ */
+  .hud {
+    background: var(--panel);
+    border: 1px solid var(--accent-dim);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-md), inset 0 0 60px rgba(56,189,248,.03);
+    position: relative;
+    overflow: hidden;
+  }
+  .hud::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: .6;
+  }
+  .hud-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 1.6rem;
+    letter-spacing: -.01em;
+    color: var(--accent);
+    text-shadow: 0 0 12px var(--accent-glow);
+    line-height: 1;
+  }
+  .hud-title .prefix {
+    display: inline-block;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-right: 8px;
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 10px var(--accent); }
+    50%      { opacity: .5; box-shadow: 0 0 6px var(--accent); }
+  }
+  .hud-subtitle {
+    font-size: .72rem;
+    color: var(--text-faint);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .hud-meta {
+    text-align: right;
+    font-size: .72rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+    letter-spacing: .08em;
+  }
+  .hud-meta .time {
+    color: var(--accent);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-shadow: 0 0 8px var(--accent-glow);
+    letter-spacing: .1em;
+  }
+  .hud-meta .location {
+    color: var(--text);
+    font-size: .75rem;
+    font-weight: 600;
+    margin-top: 2px;
+    letter-spacing: .15em;
+  }
+
+  /* ============ Progress bar ============ */
+  .progress {
+    display: flex;
+    gap: 4px;
+    padding: 10px 0 18px;
+    align-items: center;
+    justify-content: center;
+  }
+  .progress-dot {
+    width: 28px;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(150, 160, 180, .18);
+    transition: all .35s;
+  }
+  .progress-dot.done {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .progress-dot.current {
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent), 0 0 20px var(--accent-glow);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ============ Scene panel ============ */
+  .scene {
+    background: var(--panel);
+    border: 1px solid var(--accent-dim);
+    border-radius: 10px;
+    padding: 26px 30px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    min-height: 300px;
+  }
+  .scene::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10%;
+    width: 3px; height: 80%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    border-radius: 0 2px 2px 0;
+    opacity: .7;
+  }
+
+  .narrative {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  .narrative-line {
+    font-size: .95rem;
+    line-height: 1.55;
+    color: var(--text);
+    opacity: 0;
+    animation: fadeIn .5s forwards;
+  }
+  .narrative-line.em {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .narrative-line.cmd {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .narrative-line.cmd::before {
+    content: '> ';
+    opacity: .6;
+  }
+  .narrative-line.whisper {
+    color: var(--text-faint);
+    font-size: .85rem;
+    font-style: italic;
+    letter-spacing: .05em;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ Challenge area ============ */
+  .challenge {
+    background: var(--bg);
+    border: 1px solid var(--accent-dim);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin-top: 10px;
+    position: relative;
+  }
+  .challenge::before {
+    content: '▸ TASK';
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    background: var(--panel);
+    color: var(--accent);
+    font-size: .66rem;
+    font-weight: 700;
+    letter-spacing: .24em;
+    padding: 2px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--accent-dim);
+  }
+
+  .challenge-prompt {
+    font-size: .96rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+  .challenge-prompt .expr {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 7px;
+    border-radius: 3px;
+    display: inline-block;
+    margin: 0 2px;
+  }
+  .challenge-prompt sup { font-size: .7em; position: relative; top: -.4em; }
+
+  /* Sci notation input */
+  .sci-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .sci-input .mul {
+    color: var(--text-dim);
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .sci-input .ten {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 1.05rem;
+  }
+  .sci-input .exp-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .sci-input .exp-wrap::before {
+    content: '10';
+    font-weight: 700;
+    margin-right: 2px;
+    color: var(--text);
+  }
+
+  .sci-input input, .std-input input {
+    background: var(--bg-deep);
+    border: 1.5px solid var(--accent-dim);
+    border-radius: 6px;
+    padding: 9px 12px;
+    color: var(--accent);
+    font: 700 1rem 'JetBrains Mono', monospace;
+    width: 110px;
+    text-align: center;
+    transition: all .15s;
+    outline: none;
+  }
+  .sci-input input.exp {
+    width: 70px;
+    font-size: .85rem;
+    padding: 5px 8px;
+    position: relative;
+    top: -.55em;
+  }
+  .std-input input {
+    width: 200px;
+    font-size: 1rem;
+  }
+  .sci-input input:focus, .std-input input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim), 0 0 14px var(--accent-glow);
+  }
+  .sci-input input.err, .std-input input.err {
+    border-color: var(--err);
+    box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+  }
+
+  /* Choice buttons */
+  .choice-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .choice-btn {
+    padding: 12px 16px;
+    background: var(--bg-deep);
+    border: 1.5px solid var(--accent-dim);
+    border-radius: 6px;
+    color: var(--text);
+    font: 500 .95rem 'JetBrains Mono', monospace;
+    cursor: pointer;
+    text-align: left;
+    transition: all .15s;
+  }
+  .choice-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-dim);
+    transform: translateX(2px);
+  }
+  .choice-btn .letter {
+    color: var(--accent);
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  .choice-btn sup { font-size: .7em; position: relative; top: -.4em; }
+
+  /* Submit button */
+  .submit-btn {
+    padding: 10px 22px;
+    background: var(--accent);
+    color: var(--bg-deep);
+    border: 0;
+    border-radius: 6px;
+    font: 700 .88rem 'JetBrains Mono', monospace;
+    letter-spacing: .12em;
+    cursor: pointer;
+    transition: all .15s;
+    text-transform: uppercase;
+    box-shadow: 0 0 0 0 var(--accent-glow);
+  }
+  .submit-btn:hover {
+    box-shadow: 0 0 16px var(--accent-glow);
+    transform: translateY(-1px);
+  }
+  .submit-btn:active { transform: translateY(0); }
+
+  /* Feedback */
+  .feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: .88rem;
+    line-height: 1.5;
+    display: none;
+  }
+  .feedback.show { display: block; animation: fadeIn .35s; }
+  .feedback.hint  { background: rgba(249,115,22,.12); border-left: 3px solid var(--warn); color: #fbbf77; }
+  .feedback.err   { background: rgba(239,68,68,.12); border-left: 3px solid var(--err); color: #fca5a5; }
+  .feedback.ok    { background: rgba(74,222,128,.12); border-left: 3px solid var(--ok); color: #86efac; }
+  .feedback.note  { background: rgba(56,189,248,.1); border-left: 3px solid var(--accent); color: var(--accent); }
+  .feedback sup { font-size: .7em; position: relative; top: -.4em; }
+
+  /* Continue button */
+  .continue-area {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  .continue-btn {
+    padding: 11px 28px;
+    background: transparent;
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    font: 700 .88rem 'JetBrains Mono', monospace;
+    letter-spacing: .12em;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all .15s;
+  }
+  .continue-btn:hover {
+    background: var(--accent-dim);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+  .continue-btn .arrow {
+    display: inline-block;
+    margin-left: 6px;
+    transition: transform .2s;
+  }
+  .continue-btn:hover .arrow { transform: translateX(3px); }
+
+  /* Stats footer */
+  .stats-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--panel);
+    border: 1px solid rgba(150, 160, 180, .12);
+    border-radius: 8px;
+    font-size: .72rem;
+    color: var(--text-faint);
+    letter-spacing: .1em;
+    margin-top: 12px;
+  }
+  .stats-footer span strong { color: var(--accent); }
+
+  /* ============ Mood modifiers ============ */
+  body.mood-uneasy { background-color: #0b111e; }
+  body.mood-uneasy .wrap { filter: hue-rotate(-2deg); }
+
+  body.mood-wrong { background-color: #100c08; }
+  body.mood-wrong .wrap { filter: hue-rotate(-20deg) saturate(1.1); }
+  body.mood-wrong {
+    --accent:      #fb923c;
+    --accent-glow: rgba(251, 146, 60, .4);
+    --accent-dim:  rgba(251, 146, 60, .15);
+  }
+
+  body.mood-alarm  { background-color: #130a08; }
+  body.mood-alarm {
+    --accent:      #f97316;
+    --accent-glow: rgba(249, 115, 22, .5);
+    --accent-dim:  rgba(249, 115, 22, .18);
+  }
+
+  body.mood-panic { background-color: #180808; }
+  body.mood-panic {
+    --accent:      #ef4444;
+    --accent-glow: rgba(239, 68, 68, .55);
+    --accent-dim:  rgba(239, 68, 68, .18);
+  }
+  body.mood-panic::after { opacity: .3; }
+
+  body.mood-terror { background-color: #1a0606; }
+  body.mood-terror {
+    --accent:      #dc2626;
+    --accent-glow: rgba(220, 38, 38, .7);
+    --accent-dim:  rgba(220, 38, 38, .2);
+  }
+  body.mood-terror::after { opacity: .2; }
+  body.mood-terror .hud, body.mood-terror .scene {
+    animation: flicker 4s infinite;
+  }
+
+  body.mood-climax { background-color: #1a0404; }
+  body.mood-climax {
+    --accent:      #b91c1c;
+    --accent-glow: rgba(185, 28, 28, .75);
+    --accent-dim:  rgba(185, 28, 28, .22);
+  }
+  body.mood-climax::after { opacity: .15; }
+  body.mood-climax .hud, body.mood-climax .scene {
+    animation: flicker 2s infinite;
+  }
+
+  body.mood-aftermath { background-color: #080c12; }
+  body.mood-aftermath {
+    --accent:      #64748b;
+    --accent-glow: rgba(100, 116, 139, .3);
+    --accent-dim:  rgba(100, 116, 139, .12);
+  }
+
+  @keyframes flicker {
+    0%, 100%  { opacity: 1; }
+    72%       { opacity: 1; }
+    73%       { opacity: .82; }
+    74%       { opacity: 1; }
+    92%       { opacity: 1; }
+    93%       { opacity: .6; }
+    94%       { opacity: 1; }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(2px); }
+  }
+  .shake { animation: shake .3s; }
+
+  /* ============ Ending screen ============ */
+  .ending {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 10px;
+    padding: 40px 38px;
+    text-align: center;
+    box-shadow: 0 0 40px var(--accent-glow);
+  }
+  .ending h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 2.2rem;
+    color: var(--accent);
+    margin-bottom: 12px;
+    text-shadow: 0 0 16px var(--accent-glow);
+  }
+  .ending .case-file {
+    color: var(--text-dim);
+    font-size: .88rem;
+    line-height: 1.7;
+    margin: 16px 0;
+  }
+  .ending-stats {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin: 22px 0;
+    flex-wrap: wrap;
+    font-size: .88rem;
+  }
+  .ending-stats .stat {
+    text-align: center;
+  }
+  .ending-stats .label {
+    font-size: .68rem;
+    color: var(--text-faint);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .ending-stats .value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .ending-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  /* ============ Intro screen ============ */
+  .intro {
+    background: var(--panel);
+    border: 1px solid var(--accent-dim);
+    border-radius: 10px;
+    padding: 40px 38px;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+  }
+  .intro h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 900;
+    font-size: 2.4rem;
+    color: var(--accent);
+    margin-bottom: 12px;
+    text-shadow: 0 0 20px var(--accent-glow);
+    letter-spacing: .01em;
+  }
+  .intro .brief {
+    font-size: .82rem;
+    color: var(--text-dim);
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .intro .blurb {
+    max-width: 520px;
+    margin: 0 auto 24px;
+    font-size: .95rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .intro .classified {
+    display: inline-block;
+    margin: 14px 0;
+    padding: 4px 14px;
+    border: 1px dashed var(--err);
+    color: var(--err);
+    font-size: .72rem;
+    letter-spacing: .3em;
+    font-weight: 700;
+  }
+
+  /* ============ Responsive ============ */
+  @media (max-width: 680px) {
+    .wrap { padding: 12px 14px 20px; }
+    .hud { padding: 12px 16px; flex-direction: column; align-items: flex-start; }
+    .hud-meta { text-align: left; }
+    .scene { padding: 20px 22px; }
+    .sci-input input { width: 90px; }
+    .sci-input input.exp { width: 60px; }
+    .std-input input { width: 160px; }
+    .intro h2, .ending h2 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+<div style="max-width:640px;margin:14px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:14px 18px;font-family:'Inter',system-ui,sans-serif">
+<div style="font-weight:800;color:#1E2D4F;font-size:1rem;margin-bottom:6px">📋 How to Play</div>
+<div style="color:#333;font-size:.92rem;line-height:1.5">You are a scientist aboard a space station. As the story unfolds, you'll solve <b>scientific-notation problems</b> to keep the station running. Type each answer in scientific notation (for example <b>4.2 × 10⁵</b>, which you can type as <b>4.2x10^5</b>) and press <b>Submit</b>. Correct answers advance the story.</div>
+</div>
+
+<div class="wrap">
+
+  <a class="back-link" id="back-link" href="#"><span>←</span> <span>Back to Unit 2</span></a>
+
+  <div id="game-root"></div>
+
+</div>
+
+<script>
+/* ============================================================================
+   SPECIMEN-19  ·  Scientific Notation RPG
+   IC Imagine 8th Grade Math
+   ============================================================================ */
+
+/* ---------- CONFIG ----------
+   Change to hard-code a back URL (e.g., 'unit1.html'). If null, uses history.
+   Edit the back-link text in the HTML above to match your unit.
+*/
+const RETURN_URL = 'unit2.html';
+
+/* ---------- SCENE DATA ---------- */
+const SCENES = [
+  {
+    day: 142,
+    time: '06:00:12',
+    location: 'VESTA-7 · COMMAND',
+    mood: 'calm',
+    pre: [
+      {type: 'line', text: 'Coffee bloom fills the cabin. Earth turns slow outside the viewport, the terminator line creeping west across the Pacific.'},
+      {type: 'em',   text: 'Day 142 of your 180-day solo rotation aboard Vesta-7.'},
+      {type: 'line', text: 'Your first task of the shift: update the orbital log.'}
+    ],
+    challenge: {
+      type: 'sci',
+      prompt: 'Station altitude is <span class="expr">420,000 m</span>. Enter in scientific notation for the log.',
+      answer: {coef: 4.2, exp: 5},
+      hint: 'Move the decimal 5 places to the left: 4.20000 × 10<sup>?</sup>',
+      explanation: '420,000 = 4.2 × 10<sup>5</sup>. The coefficient must be between 1 and 10.'
+    },
+    post: [
+      {type: 'cmd',  text: 'LOG ACCEPTED: 4.2 × 10⁵ m'},
+      {type: 'cmd',  text: 'ALL SYSTEMS: NOMINAL'},
+      {type: 'line', text: 'Coffee in hand, you pull up the morning cargo manifest.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '07:14:40',
+    location: 'VESTA-7 · CARGO BAY',
+    mood: 'uneasy',
+    pre: [
+      {type: 'line', text: 'One crate waits in the sample bay. The manifest reads:'},
+      {type: 'cmd',  text: 'SPECIMEN-19     ORIGIN: REDACTED     HANDLE: GLOVED'},
+      {type: 'em',   text: 'The corners of the crate feel cold even through your gloves.'},
+      {type: 'line', text: 'The operator display shows the specimen mass in scientific notation. Convert it to standard form for the readout.'}
+    ],
+    challenge: {
+      type: 'std',
+      prompt: 'Specimen-19 mass: <span class="expr">3.2 × 10<sup>−7</sup> g</span>. Enter as a standard decimal.',
+      answer: 0.00000032,
+      hint: '10<sup>−7</sup> means move the decimal 7 places to the left: 0.0000003.2',
+      explanation: '3.2 × 10<sup>−7</sup> = 0.00000032 g.'
+    },
+    post: [
+      {type: 'cmd',  text: 'READOUT: 0.00000032 g'},
+      {type: 'line', text: 'The crate hisses as the seal breaks.'},
+      {type: 'whisper', text: 'For a moment, you think you hear something inhale.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '09:30:55',
+    location: 'VESTA-7 · LAB ONE',
+    mood: 'wrong',
+    pre: [
+      {type: 'line', text: 'Specimen-19 rests under the spectrometer. You begin routine analysis.'},
+      {type: 'em',   text: 'The lab hums. The substance does not hum back, exactly — it waits.'},
+      {type: 'line', text: 'Scanner output shows two values. Multiply them to derive the photon velocity:'}
+    ],
+    challenge: {
+      type: 'sci',
+      prompt: 'Compute <span class="expr">(3 × 10<sup>8</sup>) × (2 × 10<sup>−3</sup>)</span>. Enter in scientific notation.',
+      answer: {coef: 6, exp: 5},
+      hint: 'Multiply the coefficients (3 × 2), then add the exponents (8 + (−3)).',
+      explanation: '(3 × 2) × 10<sup>8 + (−3)</sup> = 6 × 10<sup>5</sup>.'
+    },
+    post: [
+      {type: 'cmd',  text: 'OUTPUT: 6 × 10⁵ m/s'},
+      {type: 'line', text: 'That is wrong.'},
+      {type: 'em',   text: 'Light travels at 3 × 10⁸ m/s. This reading is five hundred times slower.'},
+      {type: 'line', text: 'You re-run the calibration. Same result.'},
+      {type: 'whisper', text: 'The lights overhead dim half a percent.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '13:45:18',
+    location: 'VESTA-7 · LAB ONE',
+    mood: 'alarm',
+    pre: [
+      {type: 'line', text: 'You return after lunch. The specimen is bigger.'},
+      {type: 'em',   text: 'Not "settled into its shape" bigger. Measurably bigger.'},
+      {type: 'cmd',  text: 'MASS AT 07:14:   3.2 × 10⁻⁷ g'},
+      {type: 'cmd',  text: 'MASS AT 13:45:   5.12 × 10⁻⁶ g'},
+      {type: 'line', text: 'Which reading is larger?'}
+    ],
+    challenge: {
+      type: 'choice',
+      prompt: 'Compare the two masses:',
+      options: [
+        {label: '3.2 × 10<sup>−7</sup> g',  correct: false},
+        {label: '5.12 × 10<sup>−6</sup> g', correct: true},
+        {label: 'They are equal',            correct: false}
+      ],
+      hint: 'Compare exponents first: −6 is greater than −7 (closer to zero). Then compare coefficients.',
+      explanation: '10<sup>−6</sup> is ten times 10<sup>−7</sup>, so 5.12 × 10<sup>−6</sup> is the larger reading.'
+    },
+    post: [
+      {type: 'line', text: 'The specimen has grown by a factor of 16 in six hours.'},
+      {type: 'cmd',  text: 'WARNING: GROWTH CURVE → EXPONENTIAL'},
+      {type: 'whisper', text: 'A warning light pulses orange. Then red.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '16:02:07',
+    location: 'VESTA-7 · CONTAINMENT',
+    mood: 'panic',
+    pre: [
+      {type: 'cmd',  text: '*** CONTAINMENT FIELD: FAILING ***'},
+      {type: 'line', text: 'Klaxons. Red lights on every surface.'},
+      {type: 'em',   text: 'Field power per unit mass determines holding strength. You need to know where you stand.'}
+    ],
+    challenge: {
+      type: 'sci',
+      prompt: 'Compute <span class="expr">(8 × 10<sup>9</sup>) ÷ (4 × 10<sup>4</sup>)</span> W/g. Enter in scientific notation.',
+      answer: {coef: 2, exp: 5},
+      hint: 'Divide the coefficients (8 ÷ 4), then subtract the exponents (9 − 4).',
+      explanation: '(8 ÷ 4) × 10<sup>9 − 4</sup> = 2 × 10<sup>5</sup>.'
+    },
+    post: [
+      {type: 'cmd',  text: 'FIELD STRENGTH: 2 × 10⁵ W/g'},
+      {type: 'cmd',  text: '*** BELOW CRITICAL THRESHOLD ***'},
+      {type: 'line', text: 'A tap on the observation glass. Behind you.'},
+      {type: 'em',   text: 'You turn. Nothing there.'},
+      {type: 'whisper', text: 'Another tap. Lower now.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '17:08:33',
+    location: 'VESTA-7 · COMMS',
+    mood: 'terror',
+    pre: [
+      {type: 'line', text: 'Earth does not answer. Static.'},
+      {type: 'whisper', text: 'And briefly — so briefly — a voice like your own, saying your name.'},
+      {type: 'line', text: 'Escape pod fuel requirement = thrust × burn time.'}
+    ],
+    challenge: {
+      type: 'sci',
+      prompt: 'Compute <span class="expr">(2.5 × 10<sup>4</sup>) × (6 × 10<sup>2</sup>)</span> N·s. Enter in scientific notation.',
+      answer: {coef: 1.5, exp: 7},
+      hint: '2.5 × 6 = 15. Then adjust so the coefficient is between 1 and 10: 15 × 10<sup>?</sup> = 1.5 × 10<sup>?+1</sup>.',
+      explanation: '(2.5 × 6) × 10<sup>4 + 2</sup> = 15 × 10<sup>6</sup> = 1.5 × 10<sup>7</sup>.'
+    },
+    post: [
+      {type: 'cmd',  text: 'POD FUEL: 1.5 × 10⁷ N·s — LOADED'},
+      {type: 'line', text: 'The corridor lights go out.'},
+      {type: 'whisper', text: 'You hear breathing. It is not yours.'}
+    ]
+  },
+
+  {
+    day: 142,
+    time: '17:11:49',
+    location: 'VESTA-7 · ESCAPE POD',
+    mood: 'climax',
+    pre: [
+      {type: 'cmd',  text: '*** POD SEALED. ENGINES PRIMING. ***'},
+      {type: 'cmd',  text: 'DISTANCE TO SAFE ZONE:   4.8 × 10⁶ m'},
+      {type: 'cmd',  text: 'MAX POD SPEED:           1.2 × 10³ m/s'},
+      {type: 'line', text: 'Burn time = distance ÷ speed.'},
+      {type: 'em',   text: 'Compute it. Now.'}
+    ],
+    challenge: {
+      type: 'sci',
+      prompt: 'Compute <span class="expr">(4.8 × 10<sup>6</sup>) ÷ (1.2 × 10<sup>3</sup>)</span> seconds.',
+      answer: {coef: 4, exp: 3},
+      hint: '4.8 ÷ 1.2 = 4. Then subtract exponents: 6 − 3.',
+      explanation: '(4.8 ÷ 1.2) × 10<sup>6 − 3</sup> = 4 × 10<sup>3</sup> seconds (about 66 minutes).'
+    },
+    post: [
+      {type: 'cmd',  text: 'BURN TIME LOCKED: 4 × 10³ s'},
+      {type: 'cmd',  text: '*** POD RELEASE ***'},
+      {type: 'line', text: 'Through the viewport, Vesta-7 recedes.'},
+      {type: 'em',   text: 'Half the station is gone, replaced by something that moves without joints.'},
+      {type: 'whisper', text: 'A figure in the broken hull turns its face toward you.'},
+      {type: 'whisper', text: 'It is wearing yours.'}
+    ]
+  }
+];
+
+/* ---------- STATE ---------- */
+let state = null;
+
+function initGame() {
+  state = {
+    sceneIndex: -1,  // -1 = intro
+    attempts: 0,
+    mistakes: 0,
+    startTime: Date.now(),
+    revealed: false
+  };
+  renderIntro();
+}
+
+function startGame() {
+  state.sceneIndex = 0;
+  state.startTime = Date.now();
+  renderScene();
+}
+
+/* ---------- ANSWER VALIDATION ---------- */
+function checkSci(userCoef, userExp, target) {
+  if (isNaN(userCoef) || isNaN(userExp)) return {ok: false, reason: 'Enter a number in both fields.'};
+  const u = userCoef * Math.pow(10, userExp);
+  const t = target.coef * Math.pow(10, target.exp);
+  if (t === 0) return {ok: u === 0};
+  const relErr = Math.abs(u - t) / Math.abs(t);
+  if (relErr < 0.001) {
+    const abs = Math.abs(userCoef);
+    const standardForm = (abs >= 1 && abs < 10) || abs === 0;
+    return {ok: true, standard: standardForm};
+  }
+  return {ok: false};
+}
+
+function checkStd(userVal, target) {
+  if (isNaN(userVal)) return {ok: false, reason: 'Enter a number.'};
+  if (target === 0) return {ok: userVal === 0};
+  const relErr = Math.abs(userVal - target) / Math.abs(target);
+  return {ok: relErr < 0.001};
+}
+
+/* ---------- RENDERING ---------- */
+function setBodyMood(mood) {
+  document.body.className = '';
+  if (mood) document.body.classList.add('mood-' + mood);
+}
+
+function renderIntro() {
+  setBodyMood('calm');
+  const root = document.getElementById('game-root');
+  root.innerHTML = `
+    <div class="intro">
+      <div class="brief">Classified Personnel File · LEVEL 4 CLEARANCE</div>
+      <h2>SPECIMEN-19</h2>
+      <div class="classified">▼ DISTRESS RECORD ▼</div>
+      <p class="blurb">
+        You are the sole crew member aboard <strong>Vesta-7</strong>, a research station in low Earth orbit.
+        Day 142 of a 180-day solo rotation. A new specimen has arrived for analysis.
+        The manifest lists its origin as <em>redacted</em>.
+      </p>
+      <p class="blurb" style="color: var(--text-faint); font-size: .85rem;">
+        You will log observations, run calculations, and manage an escalating situation.
+        Every calculation uses <strong>scientific notation</strong>. Your math is what keeps the station running.
+      </p>
+      <button class="submit-btn" id="start-btn" style="margin-top: 8px;">▸ Begin Shift</button>
+    </div>
+  `;
+  document.getElementById('start-btn').addEventListener('click', startGame);
+}
+
+function renderScene() {
+  const scene = SCENES[state.sceneIndex];
+  setBodyMood(scene.mood);
+  state.attempts = 0;
+  state.revealed = false;
+  const root = document.getElementById('game-root');
+
+  // HUD + progress + scene
+  root.innerHTML = `
+    <div class="hud">
+      <div>
+        <div class="hud-title"><span class="prefix"></span>SPECIMEN-19</div>
+        <div class="hud-subtitle">VESTA-7 · DAY ${scene.day} · SCENE ${state.sceneIndex + 1} OF ${SCENES.length}</div>
+      </div>
+      <div class="hud-meta">
+        <div class="time">${scene.time}</div>
+        <div class="location">${scene.location}</div>
+      </div>
+    </div>
+    <div class="progress" id="progress"></div>
+    <div class="scene">
+      <div class="narrative" id="narrative"></div>
+      <div class="challenge" id="challenge"></div>
+      <div id="post-area" style="display:none;"></div>
+    </div>
+    <div class="stats-footer">
+      <span>MISSION TIME: <strong id="mt">00:00</strong></span>
+      <span>INTEGRITY: <strong id="integ">${Math.max(0, 100 - state.mistakes * 10)}</strong>%</span>
+    </div>
+  `;
+
+  renderProgress();
+  renderNarrative('narrative', scene.pre);
+  setTimeout(() => renderChallenge(scene.challenge), scene.pre.length * 400 + 400);
+  startMissionTimer();
+}
+
+function renderProgress() {
+  const prog = document.getElementById('progress');
+  if (!prog) return;
+  const dots = [];
+  for (let i = 0; i < SCENES.length; i++) {
+    let cls = 'progress-dot';
+    if (i < state.sceneIndex) cls += ' done';
+    else if (i === state.sceneIndex) cls += ' current';
+    dots.push(`<div class="${cls}"></div>`);
+  }
+  prog.innerHTML = dots.join('');
+}
+
+function renderNarrative(containerId, lines) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  lines.forEach((l, i) => {
+    const div = document.createElement('div');
+    div.className = 'narrative-line ' + (l.type || '');
+    div.innerHTML = l.text;
+    div.style.animationDelay = (i * 0.4) + 's';
+    container.appendChild(div);
+  });
+}
+
+function renderChallenge(c) {
+  const container = document.getElementById('challenge');
+  if (!container) return;
+
+  if (c.type === 'sci') {
+    container.innerHTML = `
+      <div class="challenge-prompt">${c.prompt}</div>
+      <div class="sci-input">
+        <input type="number" id="coef" step="any" placeholder="coef" autocomplete="off">
+        <span class="mul">×</span>
+        <span class="ten">10</span>
+        <input type="number" id="exp" class="exp" step="1" placeholder="exp" autocomplete="off">
+        <button class="submit-btn" id="submit-btn">Submit</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    `;
+    const coefEl = document.getElementById('coef');
+    const expEl = document.getElementById('exp');
+    coefEl.focus();
+    [coefEl, expEl].forEach(el => {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('submit-btn').click();
+      });
+    });
+    document.getElementById('submit-btn').addEventListener('click', () => {
+      const u = parseFloat(coefEl.value);
+      const v = parseFloat(expEl.value);
+      handleSciSubmit(u, v, c);
+    });
+  } else if (c.type === 'std') {
+    container.innerHTML = `
+      <div class="challenge-prompt">${c.prompt}</div>
+      <div class="std-input">
+        <input type="number" id="stdval" step="any" placeholder="answer" autocomplete="off">
+        <button class="submit-btn" id="submit-btn">Submit</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    `;
+    const inp = document.getElementById('stdval');
+    inp.focus();
+    inp.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('submit-btn').click();
+    });
+    document.getElementById('submit-btn').addEventListener('click', () => {
+      const v = parseFloat(inp.value);
+      handleStdSubmit(v, c);
+    });
+  } else if (c.type === 'choice') {
+    container.innerHTML = `
+      <div class="challenge-prompt">${c.prompt}</div>
+      <div class="choice-buttons" id="choices">
+        ${c.options.map((opt, i) => `
+          <button class="choice-btn" data-idx="${i}">
+            <span class="letter">${String.fromCharCode(65 + i)}.</span>${opt.label}
+          </button>
+        `).join('')}
+      </div>
+      <div class="feedback" id="feedback"></div>
+    `;
+    document.querySelectorAll('#choices .choice-btn').forEach(b => {
+      b.addEventListener('click', () => handleChoiceSubmit(+b.dataset.idx, c));
+    });
+  }
+}
+
+/* ---------- SUBMIT HANDLERS ---------- */
+function handleSciSubmit(coef, exp, c) {
+  const fb = document.getElementById('feedback');
+  const result = checkSci(coef, exp, c.answer);
+  if (result.ok) {
+    if (!result.standard) {
+      fb.className = 'feedback show note';
+      fb.innerHTML = `Mathematically correct — but write the coefficient between 1 and 10 for standard scientific notation. Accepted as ${c.answer.coef} × 10<sup>${c.answer.exp}</sup>.`;
+      setTimeout(advance, 1800);
+    } else {
+      fb.className = 'feedback show ok';
+      fb.innerHTML = `✓ Correct.`;
+      setTimeout(advance, 800);
+    }
+  } else {
+    handleWrong(c, result.reason);
+  }
+}
+
+function handleStdSubmit(val, c) {
+  const fb = document.getElementById('feedback');
+  const result = checkStd(val, c.answer);
+  if (result.ok) {
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `✓ Correct.`;
+    setTimeout(advance, 800);
+  } else {
+    handleWrong(c, result.reason);
+  }
+}
+
+function handleChoiceSubmit(idx, c) {
+  const fb = document.getElementById('feedback');
+  if (c.options[idx].correct) {
+    fb.className = 'feedback show ok';
+    fb.innerHTML = `✓ Correct.`;
+    document.querySelectorAll('#choices .choice-btn').forEach(b => b.disabled = true);
+    setTimeout(advance, 800);
+  } else {
+    state.attempts++;
+    state.mistakes++;
+    updateIntegrity();
+    const btn = document.querySelector(`#choices .choice-btn[data-idx="${idx}"]`);
+    if (btn) {
+      btn.classList.add('shake');
+      setTimeout(() => btn.classList.remove('shake'), 320);
+    }
+    if (state.attempts >= 2) {
+      revealAnswer(c);
+    } else {
+      fb.className = 'feedback show hint';
+      fb.innerHTML = `<strong>Hint:</strong> ${c.hint}`;
+    }
+  }
+}
+
+function handleWrong(c, reason) {
+  state.attempts++;
+  state.mistakes++;
+  updateIntegrity();
+  const fb = document.getElementById('feedback');
+  // Shake inputs
+  document.querySelectorAll('.sci-input input, .std-input input').forEach(i => {
+    i.classList.add('err', 'shake');
+    setTimeout(() => i.classList.remove('shake'), 320);
+    setTimeout(() => i.classList.remove('err'), 1200);
+  });
+  if (state.attempts >= 2) {
+    revealAnswer(c);
+  } else {
+    fb.className = 'feedback show hint';
+    fb.innerHTML = reason ? reason : `<strong>Hint:</strong> ${c.hint}`;
+  }
+}
+
+function revealAnswer(c) {
+  state.revealed = true;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show err';
+  fb.innerHTML = `<strong>The answer:</strong> ${c.explanation}`;
+  // Disable inputs, show continue
+  document.querySelectorAll('.sci-input input, .std-input input').forEach(i => i.disabled = true);
+  document.querySelectorAll('.submit-btn').forEach(b => b.style.display = 'none');
+  document.querySelectorAll('#choices .choice-btn').forEach(b => b.disabled = true);
+
+  const continueArea = document.createElement('div');
+  continueArea.className = 'continue-area';
+  continueArea.innerHTML = `<button class="continue-btn" id="reveal-continue">Continue <span class="arrow">→</span></button>`;
+  document.getElementById('challenge').appendChild(continueArea);
+  document.getElementById('reveal-continue').addEventListener('click', advance);
+}
+
+function updateIntegrity() {
+  const el = document.getElementById('integ');
+  if (el) el.textContent = Math.max(0, 100 - state.mistakes * 10);
+}
+
+/* ---------- ADVANCE ---------- */
+function advance() {
+  const scene = SCENES[state.sceneIndex];
+  const challengeEl = document.getElementById('challenge');
+  const postArea = document.getElementById('post-area');
+  // Hide challenge, show post
+  challengeEl.style.display = 'none';
+  postArea.style.display = 'block';
+  postArea.innerHTML = `
+    <div class="narrative" id="post-narrative"></div>
+    <div class="continue-area">
+      <button class="continue-btn" id="next-btn">
+        ${state.sceneIndex + 1 < SCENES.length ? 'Continue' : 'View Case File'}
+        <span class="arrow">→</span>
+      </button>
+    </div>
+  `;
+  renderNarrative('post-narrative', scene.post);
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (state.sceneIndex + 1 < SCENES.length) {
+      state.sceneIndex++;
+      renderScene();
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    } else {
+      renderEnding();
+    }
+  });
+}
+
+/* ---------- ENDING ---------- */
+function renderEnding() {
+  setBodyMood('aftermath');
+  stopMissionTimer();
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const ss = String(elapsed % 60).padStart(2, '0');
+  const integrity = Math.max(0, 100 - state.mistakes * 10);
+  const total = SCENES.length;
+  const cleared = total - state.mistakes;
+
+  const root = document.getElementById('game-root');
+  root.innerHTML = `
+    <div class="ending">
+      <div class="brief" style="color: var(--text-faint); font-size: .74rem; letter-spacing: .3em; margin-bottom: 8px;">CASE FILE · DECLASSIFIED EXCERPT</div>
+      <h2>TRANQUILITY-B · DAY 143</h2>
+      <div class="case-file">
+        <p>You dock at Tranquility-B refueling station, eighteen hours after escape.</p>
+        <p>Investigators board Vesta-7. They find the hull intact, all systems powered down,
+        every log entry timestamped and readable. Specimen-19 is gone. The containment bay
+        is clean. There is no sign of struggle.</p>
+        <p style="color: var(--text-faint); font-style: italic;">
+        The escape pod record transmits every calculation you made during the incident,
+        including this one:</p>
+      </div>
+      <div class="ending-stats">
+        <div class="stat">
+          <div class="label">Calculations</div>
+          <div class="value">${cleared}/${total}</div>
+        </div>
+        <div class="stat">
+          <div class="label">Integrity</div>
+          <div class="value">${integrity}%</div>
+        </div>
+        <div class="stat">
+          <div class="label">Mission Time</div>
+          <div class="value">${mm}:${ss}</div>
+        </div>
+      </div>
+      <div class="case-file" style="font-size: .78rem; color: var(--err); letter-spacing: .1em;">
+        STATUS: CLASSIFIED. FILE SEALED. SUBJECT PLACED ON OBSERVATION LEAVE.
+      </div>
+      <div class="ending-actions">
+        <button class="continue-btn" id="replay-btn">Replay <span class="arrow">↻</span></button>
+      </div>
+    </div>
+  `;
+  document.getElementById('replay-btn').addEventListener('click', () => {
+    initGame();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+}
+
+/* ---------- MISSION TIMER ---------- */
+let missionTimerId = null;
+function startMissionTimer() {
+  stopMissionTimer();
+  missionTimerId = setInterval(() => {
+    const el = document.getElementById('mt');
+    if (!el) return;
+    const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+    const mm = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const ss = String(elapsed % 60).padStart(2, '0');
+    el.textContent = `${mm}:${ss}`;
+  }, 500);
+}
+function stopMissionTimer() {
+  if (missionTimerId) { clearInterval(missionTimerId); missionTimerId = null; }
+}
+
+/* ---------- EVENT WIRING ---------- */
+document.getElementById('back-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (RETURN_URL) window.location.href = RETURN_URL;
+  else if (window.history.length > 1) window.history.back();
+  else alert('Open from your course page for the back button, or set RETURN_URL in the file.');
+});
+
+/* ---------- BOOT ---------- */
+initGame();
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>

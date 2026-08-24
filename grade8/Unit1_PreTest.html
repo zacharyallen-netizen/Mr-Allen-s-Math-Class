@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 1 Pre-Test — Real Numbers | Mr. Allen's 8th Grade Math</title>
+<style>
+  :root{
+    --navy:#16233f;
+    --ink:#1f2a44;
+    --gold:#c08a1e;
+    --brick:#a4331f;
+    --page:#faf7f0;
+    --panel:#efe7d4;
+    --line:#d9cfb8;
+    --good:#256d4f;
+    --good-bg:#e7f2ec;
+    --bad:#b23b2e;
+    --bad-bg:#fbeae6;
+    --muted:#6b6659;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;background:var(--page);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+
+  /* ---- Site navigation (matches Mr. Allen's site) ---- */
+  .sitenav{
+    background:var(--navy);color:#fff;
+    display:flex;flex-wrap:wrap;align-items:center;gap:4px 18px;
+    padding:10px 18px;
+  }
+  .sitenav .brand{font-weight:700;margin-right:auto;}
+  .sitenav a{color:#fff;text-decoration:none;font-size:.92rem;opacity:.92;white-space:nowrap;}
+  .sitenav a:hover{opacity:1;text-decoration:underline;}
+  .backrow{
+    max-width:820px;margin:0 auto;padding:12px 22px 0;
+  }
+  .backrow a{
+    color:var(--navy);text-decoration:none;font-weight:600;font-size:.92rem;
+  }
+  .backrow a:hover{text-decoration:underline;}
+
+  .sheet{max-width:820px;margin:0 auto;padding:8px 22px 60px;}
+
+  /* ---- Masthead ---- */
+  .masthead{border-bottom:3px solid var(--navy);padding-bottom:16px;margin-bottom:8px;}
+  .eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brick);font-weight:700;margin:0;}
+  .masthead h1{
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    font-size:2rem;line-height:1.15;margin:.15em 0 .1em;color:var(--navy);letter-spacing:.01em;
+  }
+  .masthead .sub{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;color:var(--muted);font-size:1.05rem;}
+  .meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.85rem;}
+  .meta label{display:flex;align-items:center;gap:6px;color:var(--muted);}
+  .meta input{border:none;border-bottom:1.5px solid var(--line);background:transparent;font:inherit;color:var(--ink);padding:2px 4px;min-width:120px;}
+  .meta input:focus{outline:none;border-bottom-color:var(--gold);}
+
+  /* ---- Sticky score bar ---- */
+  .scorebar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--page);border-bottom:1px solid var(--line);padding:10px 0;margin-top:6px;}
+  .progress{flex:1;height:8px;background:var(--panel);border-radius:99px;overflow:hidden;}
+  .progress span{display:block;height:100%;width:0%;background:var(--good);transition:width .4s ease;}
+  @media (prefers-reduced-motion:reduce){.progress span{transition:none;}}
+  .score-chip{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--navy);white-space:nowrap;}
+  .btn{font:inherit;font-weight:600;border:1.5px solid var(--navy);background:var(--navy);color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;}
+  .btn:hover{background:#0f1a30;}
+  .btn.ghost{background:transparent;color:var(--navy);}
+  .btn.ghost:hover{background:var(--panel);}
+  .btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px;}
+
+  /* ---- Score band banners ---- */
+  .band{display:flex;align-items:baseline;gap:12px;background:var(--navy);color:#fff;padding:12px 16px;border-radius:8px;margin:34px 0 4px;}
+  .band .num{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-style:italic;font-size:1.5rem;color:var(--gold);}
+  .band .lbl{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;opacity:.85;}
+  .band .name{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.2rem;}
+
+  /* ---- Subsection eyebrow ---- */
+  .subsec{margin:24px 0 2px;display:flex;align-items:baseline;gap:8px;}
+  .subsec .code{color:var(--gold);font-weight:700;font-style:italic;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
+  .subsec .title{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.1rem;color:var(--navy);}
+  .directive{color:var(--muted);font-size:.92rem;margin:2px 0 10px;}
+  .directive em{color:var(--ink);}
+
+  /* ---- Question card ---- */
+  .q{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0;background:#fffdf8;transition:border-color .2s ease;}
+  .q.correct{border-left-color:var(--good);background:var(--good-bg);}
+  .q.incorrect{border-left-color:var(--bad);}
+  .q-head{display:flex;gap:10px;align-items:baseline;}
+  .q-no{color:var(--brick);font-weight:800;font-family:ui-monospace,Menlo,monospace;}
+  .q-prompt{font-size:1.05rem;}
+  .q-prompt .math{font-family:"Iowan Old Style",Palatino,Georgia,serif;font-size:1.15rem;}
+  .hint{color:var(--muted);font-size:.82rem;margin-top:4px;}
+
+  .answer-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;}
+  .answer-row .field-label{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;color:var(--muted);}
+  input.answer{font:inherit;padding:8px 10px;border:1.5px solid var(--line);border-radius:7px;background:#fff;min-width:150px;color:var(--ink);}
+  input.answer:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(192,138,30,.18);}
+  input.answer.ok{border-color:var(--good);background:var(--good-bg);}
+  input.answer.no{border-color:var(--bad);background:var(--bad-bg);}
+  .check-btn{font:inherit;font-weight:600;cursor:pointer;border:1.5px solid var(--navy);color:var(--navy);background:transparent;padding:8px 14px;border-radius:7px;}
+  .check-btn:hover{background:var(--navy);color:#fff;}
+  .check-btn:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+
+  .feedback{margin-top:10px;font-size:.92rem;max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .feedback.show{max-height:400px;}
+  .feedback .verdict{font-weight:700;}
+  .feedback.pass .verdict{color:var(--good);}
+  .feedback.fail .verdict{color:var(--bad);}
+  .feedback .why{color:var(--ink);margin-top:3px;}
+
+  /* ---- Number line (clickable) ---- */
+  .nlwrap{margin-top:12px;}
+  .nl-svg{width:100%;max-width:600px;height:auto;display:block;touch-action:manipulation;}
+  .nl-hit{fill:transparent;cursor:pointer;}
+  .nl-hit:focus-visible{outline:none;}
+  .nl-hit:focus-visible + .nl-tick{stroke:var(--gold);stroke-width:3;}
+  .nl-selecthalo{fill:rgba(192,138,30,.18);}
+  .nl-readout{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9rem;color:var(--muted);margin-top:4px;}
+  .nl-readout b{color:var(--navy);}
+
+  /* ---- Ordering (clickable chips + number line) ---- */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .chip{font:inherit;font-size:1.05rem;cursor:pointer;border:1.5px solid var(--navy);color:var(--navy);background:#fff;padding:6px 14px;border-radius:20px;font-family:"Iowan Old Style",Palatino,Georgia,serif;}
+  .chip:hover{background:var(--panel);}
+  .chip:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  .chip.placed{opacity:.4;cursor:default;background:var(--panel);}
+  .order-readout{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;color:var(--muted);margin-top:4px;}
+  .order-readout b{color:var(--navy);}
+  .mini{font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;border:1.5px solid var(--line);color:var(--muted);background:transparent;padding:4px 10px;border-radius:6px;}
+  .mini:hover{border-color:var(--navy);color:var(--navy);}
+
+  /* ---- Garden panel ---- */
+  .garden{width:230px;height:135px;background:var(--panel);border:2px solid var(--navy);border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:"Iowan Old Style",Palatino,Georgia,serif;font-weight:700;color:var(--navy);font-size:1.15rem;margin:12px auto;}
+  .garden sup{font-size:.7em;}
+
+  footer.sitefoot{margin-top:44px;background:var(--navy);color:#fff;text-align:center;padding:18px;font-size:.9rem;}
+  footer.sitefoot a{color:#fff;font-weight:600;}
+  @media(max-width:520px){.masthead h1{font-size:1.6rem;}input.answer{min-width:120px;}}
+</style>
+</head>
+<body>
+
+<nav class="sitenav">
+  <span class="brand">🦅 Mr. Allen · 8th Grade Math</span>
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/index.html">🏠 Home</a>
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/grade8/index.html">🧮 8th Grade Home</a>
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/grade8/unit1.html">🔢 Unit 1</a>
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/grade8/8th_grade_eog_hub.html">🎯 EOG Hub</a>
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/class-information.html">📋 Class Info</a>
+</nav>
+
+<div class="backrow">
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/grade8/unit1.html">← Back to Unit 1 — Real Numbers</a>
+</div>
+
+<div class="sheet">
+
+  <header class="masthead">
+    <p class="eyebrow">Unit 1 Pre-Test</p>
+    <h1>The Real Number System</h1>
+    <span class="sub">Answer each question, then check your work.</span>
+    <div class="meta">
+      <label>Name <input type="text" autocomplete="off"></label>
+      <label>Date <input type="text" autocomplete="off"></label>
+      <label>Period <input type="text" autocomplete="off"></label>
+    </div>
+  </header>
+
+  <div class="scorebar">
+    <div class="progress"><span id="bar"></span></div>
+    <div class="score-chip" id="chip">0 / 14 correct</div>
+  </div>
+  <div class="toolbar">
+    <button class="btn" id="checkAll">Check all answers</button>
+    <button class="btn ghost" id="reset">Reset</button>
+  </div>
+
+  <main id="quiz"></main>
+</div>
+
+<footer class="sitefoot">
+  © 2026–27 · Mr. Allen's Math Class · IC Imagine ·
+  <a href="https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/index.html">Return to Home</a>
+</footer>
+
+<script>
+/* ================= Answer parsing ================= */
+function parseNum(raw){
+  if(raw==null) return NaN;
+  let s = String(raw).toLowerCase().trim();
+  s = s.replace(/≈|=/g,'').replace(/feet|ft/g,'').replace(/\u2026/g,'').replace(/\.\.+/g,'').trim().replace(/\s+/g,' ');
+  if(s==='') return NaN;
+  let m = s.match(/^(?:√|sqrt|root)\s*\(?\s*(\d+(?:\.\d+)?)\s*\)?$/);
+  if(m) return Math.sqrt(parseFloat(m[1]));
+  m = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+  if(m){ const w=parseInt(m[1],10),n=parseInt(m[2],10),d=parseInt(m[3],10); const sign=w<0?-1:1; return w+sign*(n/d); }
+  m = s.match(/^(-?\d+)\/(-?\d+)$/);
+  if(m) return parseInt(m[1],10)/parseInt(m[2],10);
+  m = s.match(/^-?\d*\.?\d+$/);
+  if(m) return parseFloat(s);
+  return NaN;
+}
+function parseClass(raw){
+  let s=String(raw||'').toLowerCase().replace(/[^a-z]/g,'');
+  if(s==='') return null;
+  if(s==='ir'||s.startsWith('irr')||s==='irrational') return 'IR';
+  if(s==='r'||s.startsWith('rat')||s==='rational') return 'R';
+  return null;
+}
+function valCheck(target,tol){ return v=>{const n=parseNum(v);return isFinite(n)&&Math.abs(n-target)<=tol;}; }
+function classCheck(want){ return v=>parseClass(v)===want; }
+
+/* ================= SVG helper ================= */
+const SVGNS='http://www.w3.org/2000/svg';
+function svgEl(tag,attrs){ const e=document.createElementNS(SVGNS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; }
+
+/* ================= Clickable number line (estimate) ================= */
+function buildNumberLine(lo,hi,onChange){
+  const W=600,H=90, px0=45, px1=555, axisY=58;
+  const step=0.1, n=Math.round((hi-lo)/step);
+  const xFor=v=> px0 + (v-lo)/(hi-lo)*(px1-px0);
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,class:'nl-svg',role:'radiogroup','aria-label':`Number line from ${lo} to ${hi}`});
+
+  // arrow defs
+  const defs=svgEl('defs',{});
+  const mk=svgEl('marker',{id:'arw'+lo+'_'+hi,markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+  mk.appendChild(svgEl('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#16233f'}));
+  defs.appendChild(mk); svg.appendChild(defs);
+
+  // axis
+  svg.appendChild(svgEl('line',{x1:px0-14,y1:axisY,x2:px1+14,y2:axisY,stroke:'#16233f','stroke-width':'2','marker-start':`url(#arw${lo}_${hi})`,'marker-end':`url(#arw${lo}_${hi})`}));
+
+  // ticks + labels
+  for(let i=0;i<=n;i++){
+    const v=Math.round((lo+i*step)*10)/10;
+    const x=xFor(v);
+    const isMajor = Math.abs(v-Math.round(v))<1e-9 || Math.abs((v*2)-Math.round(v*2))<1e-9;
+    svg.appendChild(svgEl('line',{class:'nl-tick',x1:x,y1:axisY-(isMajor?11:6),x2:x,y2:axisY+(isMajor?11:6),stroke:'#16233f','stroke-width':isMajor?2:1}));
+    if(isMajor){
+      const t=svgEl('text',{x:x,y:axisY+28,'text-anchor':'middle','font-size':'13',fill:'#1f2a44','font-family':'ui-monospace,Menlo,monospace'});
+      t.textContent=(Math.abs(v-Math.round(v))<1e-9)?String(Math.round(v)):v.toFixed(1);
+      svg.appendChild(t);
+    }
+  }
+
+  // marker group (drawn on select)
+  const markerG=svgEl('g',{}); svg.appendChild(markerG);
+  const halo=svgEl('circle',{class:'nl-selecthalo',r:'11',cx:'-99',cy:axisY}); markerG.appendChild(halo);
+  const dot=svgEl('circle',{class:'nl-marker',r:'6',cx:'-99',cy:axisY,fill:'#c08a1e',stroke:'#16233f','stroke-width':'1.5'}); markerG.appendChild(dot);
+
+  // clickable hit targets
+  let selected=null; const hits=[];
+  function select(v,focusIdx){
+    selected=Math.round(v*10)/10;
+    const x=xFor(selected);
+    halo.setAttribute('cx',x); dot.setAttribute('cx',x);
+    dot.setAttribute('fill','#c08a1e');
+    hits.forEach(h=>h.el.setAttribute('aria-checked', h.v===selected?'true':'false'));
+    onChange&&onChange();
+  }
+  for(let i=0;i<=n;i++){
+    const v=Math.round((lo+i*step)*10)/10;
+    const x=xFor(v);
+    const hit=svgEl('circle',{class:'nl-hit',cx:x,cy:axisY,r:'13',role:'radio','aria-checked':'false',tabindex:'0','aria-label':v.toFixed(1)});
+    hit.addEventListener('click',()=>select(v));
+    hit.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();select(v);}
+      else if(e.key==='ArrowRight'&&i<n){e.preventDefault();hits[i+1].el.focus();}
+      else if(e.key==='ArrowLeft'&&i>0){e.preventDefault();hits[i-1].el.focus();}
+    });
+    hits.push({el:hit,v});
+    svg.appendChild(hit);
+  }
+
+  const wrap=document.createElement('div'); wrap.className='nlwrap';
+  wrap.appendChild(svg);
+  const readout=document.createElement('div'); readout.className='nl-readout';
+  readout.innerHTML='Tap a mark on the line to plot your estimate.';
+  wrap.appendChild(readout);
+
+  return {
+    node:wrap,
+    hasAnswer:()=>selected!=null,
+    getValue:()=>selected,
+    mark:(ok)=>{ dot.setAttribute('fill', ok?'#256d4f':'#b23b2e'); readout.innerHTML='You plotted: <b>'+(selected!=null?selected.toFixed(1):'—')+'</b>'; },
+    reset:()=>{ selected=null; dot.setAttribute('cx','-99'); halo.setAttribute('cx','-99'); hits.forEach(h=>h.el.setAttribute('aria-checked','false')); readout.innerHTML='Tap a mark on the line to plot your estimate.'; }
+  };
+}
+
+/* ================= Clickable ordering (chips + number line) ================= */
+function buildOrderLine(items,lo,hi,onChange){
+  const W=600,H=96, px0=40, px1=560, axisY=64;
+  const xFor=v=> px0 + (v-lo)/(hi-lo)*(px1-px0);
+  const svg=svgEl('svg',{viewBox:`0 0 ${W} ${H}`,class:'nl-svg','aria-label':`Number line from ${lo} to ${hi}`});
+  const defs=svgEl('defs',{});
+  const mk=svgEl('marker',{id:'arwO',markerWidth:'8',markerHeight:'8',refX:'6',refY:'3',orient:'auto'});
+  mk.appendChild(svgEl('path',{d:'M0,0 L6,3 L0,6 Z',fill:'#16233f'})); defs.appendChild(mk); svg.appendChild(defs);
+  svg.appendChild(svgEl('line',{x1:px0-12,y1:axisY,x2:px1+12,y2:axisY,stroke:'#16233f','stroke-width':'2','marker-start':'url(#arwO)','marker-end':'url(#arwO)'}));
+  for(let v=lo; v<=hi+1e-9; v+=0.5){
+    const x=xFor(v), major=Math.abs(v-Math.round(v))<1e-9;
+    svg.appendChild(svgEl('line',{x1:x,y1:axisY-(major?10:5),x2:x,y2:axisY+(major?10:5),stroke:'#16233f','stroke-width':major?2:1}));
+    if(major){const t=svgEl('text',{x:x,y:axisY+27,'text-anchor':'middle','font-size':'13',fill:'#1f2a44','font-family':'ui-monospace,Menlo,monospace'});t.textContent=String(Math.round(v));svg.appendChild(t);}
+  }
+  const markerG=svgEl('g',{}); svg.appendChild(markerG);
+
+  const wrap=document.createElement('div'); wrap.className='nlwrap';
+  wrap.appendChild(svg);
+  const chipsRow=document.createElement('div'); chipsRow.className='chips';
+  const readout=document.createElement('div'); readout.className='order-readout';
+  const clear=document.createElement('button'); clear.type='button'; clear.className='mini'; clear.textContent='Clear placements';
+
+  let placed=[]; // {value,label,chipBtn}
+  const chipBtns=[];
+  items.forEach((it,idx)=>{
+    const b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=it.label;
+    b.addEventListener('click',()=>{ if(b.classList.contains('placed'))return; placeItem(it,b); });
+    chipBtns.push(b); chipsRow.appendChild(b);
+  });
+
+  function drawMarkers(){
+    markerG.textContent='';
+    placed.forEach((p,i)=>{
+      const x=xFor(p.value);
+      const yLab=axisY-14-(i%3)*15;
+      markerG.appendChild(svgEl('line',{x1:x,y1:axisY,x2:x,y2:yLab+4,stroke:'#c08a1e','stroke-width':'1'}));
+      const dot=svgEl('circle',{r:'5',cx:x,cy:axisY,fill:p.color||'#c08a1e',stroke:'#16233f','stroke-width':'1.2'}); markerG.appendChild(dot);
+      const t=svgEl('text',{x:x,y:yLab,'text-anchor':'middle','font-size':'12',fill:'#16233f','font-family':'"Iowan Old Style",Palatino,serif'});
+      t.textContent=(i+1)+'. '+p.label; markerG.appendChild(t);
+    });
+  }
+  function refreshReadout(){
+    readout.innerHTML = placed.length ? 'Order: <b>'+placed.map(p=>p.label).join(', ')+'</b>' : 'Click the values in order from least to greatest.';
+  }
+  function placeItem(it,btn){
+    btn.classList.add('placed'); btn.setAttribute('aria-disabled','true');
+    placed.push({value:it.value,label:it.label,color:null});
+    drawMarkers(); refreshReadout(); onChange&&onChange();
+  }
+  clear.addEventListener('click',reset);
+  function reset(){ placed=[]; chipBtns.forEach(b=>{b.classList.remove('placed');b.removeAttribute('aria-disabled');}); drawMarkers(); refreshReadout(); onChange&&onChange(); }
+
+  refreshReadout();
+  wrap.appendChild(chipsRow); wrap.appendChild(readout);
+  const clearRow=document.createElement('div'); clearRow.className='answer-row'; clearRow.appendChild(clear); wrap.appendChild(clearRow);
+
+  return {
+    node:wrap,
+    hasAnswer:()=>placed.length===items.length,
+    isCorrect:()=>{ if(placed.length!==items.length)return false; for(let i=1;i<placed.length;i++){if(placed[i].value<placed[i-1].value)return false;} return true; },
+    mark:(ok)=>{ placed.forEach(p=>p.color=ok?'#256d4f':'#b23b2e'); drawMarkers(); },
+    reset:reset,
+    needMsg:'Click all four values, least to greatest.'
+  };
+}
+
+/* ================= Quiz data ================= */
+const BANDS = [
+  { band:"3.0", label:"Score", name:"Basic Understanding", sections:[
+    { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
+      { no:1, prompt:'Write as a decimal: <span class="math">3/8</span>', label:"=", hint:"e.g. 0.5", type:'text', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
+      { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', check:valCheck(0.25,1e-6), why:"0.25 = 25/100 = 1/4 in simplest form." },
+    ]},
+    { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
+      { no:3, prompt:'Classify: <span class="math">√144</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('R'), why:"√144 = 12, a whole number, so it is rational." },
+    ]},
+  ]},
+  { band:"4.0", label:"Score", name:"Target Content", sections:[
+    { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
+      { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', check:valCheck(2/3,1e-4), why:"Let x = 0.666…, then 10x − x = 6, so 9x = 6 and x = 2/3." },
+      { no:5, prompt:'Write as a decimal: <span class="math">2&#8541;</span> <span class="hint" style="display:inline">(2 and 5/6)</span>', label:"=", hint:"use … for the repeating part", type:'text', check:valCheck(2.8333,0.005), why:"2 5/6 = 2 + 5/6 = 2.8333… (the 3 repeats)." },
+    ]},
+    { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
+      { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('IR'), why:"20 is not a perfect square, so √20 = 2√5 ≈ 4.47… — non-terminating and non-repeating, so irrational." },
+    ]},
+    { code:"1.2b", hideCode:true, directive:"<em>Simplify each expression first,</em> then classify the result.", qs:[
+      { no:7, prompt:'Classify: <span class="math">√3 × √27</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"√3 × √27 = √81 = 9, a whole number, so rational." },
+      { no:8, prompt:'Classify: <span class="math">√32 ÷ √2</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"√32 ÷ √2 = √16 = 4, a whole number, so rational." },
+    ]},
+    { code:"1.3", title:"Estimating Non-Perfect Square Roots", directive:"Estimate each value to the <em>nearest tenth</em> by clicking the number line.", qs:[
+      { no:9, prompt:'Estimate: <span class="math">√40</span>', type:'numberline', lo:6, hi:7, target:6.3, why:"6² = 36 and 7² = 49, so √40 ≈ 6.32, which rounds to 6.3." },
+      { no:10, prompt:'Estimate: <span class="math">√95</span>', type:'numberline', lo:9, hi:10, target:9.7, why:"9² = 81 and 10² = 100, so √95 ≈ 9.75, which rounds to 9.7." },
+    ]},
+  ]},
+  { band:"5.0", label:"Score", name:"Advanced Content", sections:[
+    { code:"1.2", title:"Real Number Classification", directive:"Evaluate or simplify each expression if possible, then classify as Rational (R) or Irrational (IR).", qs:[
+      { no:11, prompt:'Classify: <span class="math">−(√49 − √36)</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"−(√49 − √36) = −(7 − 6) = −1, an integer, so rational." },
+      { no:12, prompt:'Classify: <span class="math">3 + √5</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('IR'), why:"√5 is irrational, and a rational number (3) plus an irrational number is irrational." },
+    ]},
+    { code:"1.4", title:"Ordering Real Numbers", directive:"Click the values in order from <em>least to greatest</em>. Each one drops onto the number line.", qs:[
+      { no:13, prompt:'Set: <span class="math">{ 0.6, √2, 1.5, 5/3 }</span>', type:'order', lo:0, hi:4,
+        items:[{label:'0.6',value:0.6},{label:'√2',value:Math.SQRT2},{label:'1.5',value:1.5},{label:'5/3',value:5/3}],
+        why:"As decimals: 0.6, √2 ≈ 1.41, 1.5, 5/3 ≈ 1.67 → least to greatest: 0.6, √2, 1.5, 5/3." },
+    ]},
+    { code:"1.5", title:"Area", garden:true, directive:"A square garden has an area of 225 ft². Find the side length and the perimeter.", qs:[
+      { no:14, prompt:'Find the side length and perimeter of the square garden.', type:'multi',
+        multi:[ {label:"Side length =",hint:"ft",check:valCheck(15,0.01)}, {label:"Perimeter =",hint:"ft",check:valCheck(60,0.01)} ],
+        why:"Side = √225 = 15 ft. Perimeter = 4 × 15 = 60 ft." },
+    ]},
+  ]},
+];
+
+/* ================= Render ================= */
+const quiz=document.getElementById('quiz');
+const registry=[];
+
+function makeInput(hint){ const i=document.createElement('input'); i.type='text'; i.className='answer'; i.autocomplete='off'; i.setAttribute('aria-label','Your answer'); if(hint)i.placeholder=hint; return i; }
+function verdict(fb,cls,msg,why){ fb.className='feedback show '+cls; fb.innerHTML='<span class="verdict">'+msg+'</span>'+(why?'<div class="why">'+why+'</div>':''); }
+
+BANDS.forEach(b=>{
+  const banner=document.createElement('div'); banner.className='band';
+  banner.innerHTML=`<span class="lbl">${b.label}</span><span class="num">${b.band}</span><span class="name">${b.name}</span>`;
+  quiz.appendChild(banner);
+
+  b.sections.forEach(sec=>{
+    const head=document.createElement('div'); head.className='subsec';
+    head.innerHTML=sec.hideCode?'':`<span class="code">${sec.code}</span><span class="title">${sec.title}</span>`;
+    quiz.appendChild(head);
+    if(sec.directive){const d=document.createElement('p');d.className='directive';d.innerHTML=sec.directive;quiz.appendChild(d);}
+    if(sec.garden){const g=document.createElement('div');g.className='garden';g.innerHTML='A = 225 ft<sup>2</sup>';quiz.appendChild(g);}
+
+    sec.qs.forEach(q=>{
+      const card=document.createElement('section'); card.className='q';
+      const qhead=document.createElement('div'); qhead.className='q-head';
+      qhead.innerHTML=`<span class="q-no">${q.no}.</span><span class="q-prompt">${q.prompt}</span>`;
+      card.appendChild(qhead);
+
+      const fb=document.createElement('div'); fb.className='feedback'; fb.setAttribute('aria-live','polite');
+      let entry;
+
+      if(q.type==='numberline'){
+        const nl=buildNumberLine(q.lo,q.hi,()=>{});
+        card.appendChild(nl.node);
+        entry={ card, why:q.why, comp:nl,
+          hasAnswer:()=>nl.hasAnswer(),
+          isCorrect:()=>nl.hasAnswer()&&Math.abs(nl.getValue()-q.target)<1e-9,
+          applyMark:(ok)=>nl.mark(ok),
+          reset:()=>nl.reset(),
+          needMsg:'Tap a mark on the number line first.' };
+      }
+      else if(q.type==='order'){
+        const oc=buildOrderLine(q.items,q.lo,q.hi,()=>{});
+        card.appendChild(oc.node);
+        entry={ card, why:q.why, comp:oc,
+          hasAnswer:()=>oc.hasAnswer(),
+          isCorrect:()=>oc.isCorrect(),
+          applyMark:(ok)=>oc.mark(ok),
+          reset:()=>oc.reset(),
+          needMsg:oc.needMsg };
+      }
+      else if(q.type==='multi'){
+        const inputs=[];
+        q.multi.forEach(f=>{ const row=document.createElement('div');row.className='answer-row';
+          const lab=document.createElement('span');lab.className='field-label';lab.textContent=f.label;
+          const inp=makeInput(f.hint);inp._check=f.check;row.appendChild(lab);row.appendChild(inp);card.appendChild(row);inputs.push(inp);});
+        entry={ card, why:q.why, inputs,
+          hasAnswer:()=>inputs.every(i=>i.value.trim()!==''),
+          isCorrect:()=>inputs.every(i=>i.value.trim()!==''&&i._check(i.value.trim())),
+          applyMark:(ok)=>inputs.forEach(i=>{i.classList.remove('ok','no');if(i.value.trim()!=='')i.classList.add(i._check(i.value.trim())?'ok':'no');}),
+          reset:()=>inputs.forEach(i=>{i.value='';i.classList.remove('ok','no');}),
+          needMsg:'Fill in both blanks first.' };
+      }
+      else { // text
+        const row=document.createElement('div');row.className='answer-row';
+        const lab=document.createElement('span');lab.className='field-label';lab.textContent=q.label;
+        const inp=makeInput('');inp._check=q.check;row.appendChild(lab);row.appendChild(inp);card.appendChild(row);
+        if(q.hint){const h=document.createElement('div');h.className='hint';h.textContent=q.hint;card.appendChild(h);}
+        entry={ card, why:q.why, inputs:[inp],
+          hasAnswer:()=>inp.value.trim()!=='',
+          isCorrect:()=>inp.value.trim()!==''&&inp._check(inp.value.trim()),
+          applyMark:(ok)=>{inp.classList.remove('ok','no');if(inp.value.trim()!=='')inp.classList.add(ok?'ok':'no');},
+          reset:()=>{inp.value='';inp.classList.remove('ok','no');},
+          needMsg:'Type an answer first.' };
+      }
+
+      // Check button
+      const btnRow=document.createElement('div');btnRow.className='answer-row';
+      const btn=document.createElement('button');btn.className='check-btn';btn.type='button';btn.textContent='Check';
+      btnRow.appendChild(btn);card.appendChild(btnRow);
+      card.appendChild(fb);
+
+      entry.feedbackEl=fb;
+      entry.evaluate=function(){
+        card.classList.remove('correct','incorrect');
+        if(!entry.hasAnswer()){ verdict(fb,'fail',entry.needMsg); return; }
+        const ok=entry.isCorrect(); entry.applyMark(ok);
+        if(ok){ card.classList.add('correct'); verdict(fb,'pass','Correct.',entry.why); }
+        else { card.classList.add('incorrect'); verdict(fb,'fail','Not quite — try again.'); }
+      };
+      btn.addEventListener('click',()=>{entry.evaluate();updateScore();});
+      (entry.inputs||[]).forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();entry.evaluate();updateScore();}}));
+
+      registry.push(entry);
+      quiz.appendChild(card);
+    });
+  });
+});
+
+/* ================= Score ================= */
+const bar=document.getElementById('bar'), chip=document.getElementById('chip'), total=registry.length;
+function updateScore(){ let c=0; registry.forEach(e=>{if(e.card.classList.contains('correct'))c++;}); chip.textContent=`${c} / ${total} correct`; bar.style.width=(c/total*100)+'%'; }
+
+document.getElementById('checkAll').addEventListener('click',()=>{
+  registry.forEach(e=>{ if(e.hasAnswer()) e.evaluate(); });
+  updateScore();
+  const t=registry.find(e=>!e.card.classList.contains('correct'));
+  if(t)t.card.scrollIntoView({behavior:'smooth',block:'center'});
+});
+document.getElementById('reset').addEventListener('click',()=>{
+  registry.forEach(e=>{ e.reset(); e.card.classList.remove('correct','incorrect'); e.feedbackEl.className='feedback'; e.feedbackEl.innerHTML=''; });
+  updateScore(); window.scrollTo({top:0,behavior:'smooth'});
+});
+updateScore();
+</script>
+</body>
+</html>

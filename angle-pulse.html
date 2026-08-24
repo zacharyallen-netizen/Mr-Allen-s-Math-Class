@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Angle Pulse · 8th Grade Math · Unit 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ANGLE PULSE
+   Click-the-angle runner for parallel lines & triangle theorems
+   ============================================================ */
+:root {
+  --deep:       #0a0420;
+  --deep-mid:   #14073a;
+  --magenta:    #ff2d95;
+  --cyan:       #00e5ff;
+  --cyan-soft:  #5ff5ff;
+  --purple:     #b83dff;
+  --hot:        #ff006e;
+  --sun:        #ffb22d;
+  --cream:      #f0f4ff;
+  --ok:         #00ff88;
+  --err:        #ff3355;
+  --heart:      #ff4466;
+  --panel-bg:   rgba(10, 4, 32, .85);
+  --panel-brd:  rgba(0, 229, 255, .5);
+  --glow-cy:    0 0 18px rgba(0, 229, 255, .55);
+  --glow-mg:    0 0 18px rgba(255, 45, 149, .55);
+  --glow-ok:    0 0 22px rgba(0, 255, 136, .65);
+  --glow-err:   0 0 22px rgba(255, 51, 85, .65);
+  --glow-sun:   0 0 20px rgba(255, 178, 45, .7);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Rajdhani', sans-serif; color: var(--cream); }
+body {
+  background: var(--deep);
+  min-height: 100vh;
+  padding: 12px 18px 30px;
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 5%, rgba(184, 61, 255, .18), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(255, 45, 149, .22), transparent 65%),
+    var(--deep);
+  z-index: -2;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .3 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: .35;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.wrap { max-width: 880px; margin: 0 auto; position: relative; }
+
+/* ---------- HUD top ---------- */
+.hud-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.back-link, .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--panel-bg);
+  color: var(--cyan);
+  border: 1.5px solid var(--panel-brd);
+  border-radius: 6px;
+  font: 600 .85rem 'Rajdhani', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all .15s;
+}
+.back-link:hover, .icon-btn:hover {
+  background: rgba(0, 229, 255, .15);
+  box-shadow: var(--glow-cy);
+}
+.title-block { text-align: center; flex: 1; }
+.title-main {
+  font: 900 1.6rem 'Orbitron', sans-serif;
+  letter-spacing: .06em;
+  color: var(--cream);
+  text-shadow: 0 0 20px rgba(255, 45, 149, .6);
+  line-height: 1;
+}
+.title-main .accent { color: var(--magenta); }
+.title-sub {
+  font: 600 .7rem 'Rajdhani', sans-serif;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-top: 4px;
+  text-shadow: 0 0 8px rgba(0, 229, 255, .5);
+}
+.hud-right { display: flex; gap: 8px; }
+
+/* ---------- Progress bar ---------- */
+.progress {
+  height: 6px;
+  background: rgba(10, 4, 32, .6);
+  border: 1px solid var(--panel-brd);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  box-shadow: 0 0 12px var(--cyan);
+  width: 0;
+  transition: width .5s ease-out;
+}
+
+/* ---------- Main challenge panel ---------- */
+.panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(6px);
+  border: 2px solid var(--panel-brd);
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: var(--glow-cy);
+  position: relative;
+}
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.cat-label {
+  font: 700 .72rem 'Rajdhani', sans-serif;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  padding: 4px 10px;
+  background: rgba(0, 229, 255, .1);
+  border: 1px solid var(--cyan);
+  border-radius: 4px;
+}
+.cat-label.parallel { color: var(--magenta); border-color: var(--magenta); background: rgba(255, 45, 149, .1); }
+.cat-label.triangle { color: var(--sun); border-color: var(--sun); background: rgba(255, 178, 45, .1); }
+.q-counter {
+  font: 600 .75rem 'JetBrains Mono', monospace;
+  color: var(--cream);
+  opacity: .7;
+}
+
+.prompt {
+  font: 700 1.15rem 'Orbitron', sans-serif;
+  color: var(--cream);
+  line-height: 1.4;
+  margin: 12px 0 6px;
+  text-align: center;
+}
+.prompt code {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--sun);
+  font-weight: 700;
+  padding: 2px 6px;
+  background: rgba(255, 178, 45, .1);
+  border-radius: 3px;
+}
+
+.sub-prompt {
+  font: 500 .9rem 'Rajdhani', sans-serif;
+  color: var(--cream);
+  opacity: .8;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* ---------- Diagram stage ---------- */
+.stage {
+  margin: 14px auto;
+  max-width: 560px;
+  position: relative;
+}
+.stage svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* SVG style primitives */
+.sw-line { stroke: var(--cyan); stroke-width: 3; filter: drop-shadow(0 0 4px var(--cyan)); fill: none; }
+.sw-line-2 { stroke: var(--magenta); stroke-width: 3; filter: drop-shadow(0 0 4px var(--magenta)); fill: none; }
+.sw-line-tri { stroke: var(--cyan); stroke-width: 3; filter: drop-shadow(0 0 5px var(--cyan)); fill: rgba(0, 229, 255, .04); }
+.sw-line-ext { stroke: var(--sun); stroke-width: 3; stroke-dasharray: 6 5; filter: drop-shadow(0 0 4px var(--sun)); fill: none; }
+.arc-mark { stroke: var(--cream); stroke-width: 2; fill: none; filter: drop-shadow(0 0 3px var(--cream)); }
+.arc-given { stroke: var(--sun); stroke-width: 3; fill: none; filter: drop-shadow(0 0 5px var(--sun)); }
+.arc-target { stroke: var(--magenta); stroke-width: 2.5; stroke-dasharray: 4 3; fill: none; filter: drop-shadow(0 0 5px var(--magenta)); }
+.hot {
+  fill: rgba(0, 229, 255, .07);
+  stroke: rgba(0, 229, 255, .35);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: all .15s;
+}
+.hot:hover { fill: rgba(0, 229, 255, .22); stroke: var(--cyan); stroke-width: 2; }
+.hot.correct {
+  fill: rgba(0, 255, 136, .4);
+  stroke: var(--ok);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 14px var(--ok));
+  animation: hotPop .5s ease-out;
+}
+@keyframes hotPop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+.hot.wrong {
+  fill: rgba(255, 51, 85, .4);
+  stroke: var(--err);
+  stroke-width: 3;
+  filter: drop-shadow(0 0 14px var(--err));
+  animation: shakeHot .4s;
+}
+@keyframes shakeHot {
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-4px, 0); }
+  50%      { transform: translate(4px, 0); }
+  75%      { transform: translate(-2px, 0); }
+}
+.hot.reveal {
+  fill: rgba(0, 255, 136, .3);
+  stroke: var(--ok);
+  stroke-width: 2.5;
+  stroke-dasharray: 5 3;
+}
+.hot.locked { pointer-events: none; }
+
+.angle-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  font-weight: 700;
+  fill: var(--cream);
+  paint-order: stroke;
+  stroke: var(--deep);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.angle-label.given { fill: var(--sun); filter: drop-shadow(0 0 4px var(--sun)); }
+.angle-label.expr { fill: var(--magenta); filter: drop-shadow(0 0 4px var(--magenta)); }
+.angle-label.target-mark { fill: var(--magenta); font-style: italic; }
+
+.vertex-dot { fill: var(--cream); stroke: var(--cream); stroke-width: 0.5; filter: drop-shadow(0 0 3px var(--cream)); }
+.vertex-label { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 700; fill: var(--cyan); filter: drop-shadow(0 0 3px var(--cyan)); paint-order: stroke; stroke: var(--deep); stroke-width: 2.5; }
+
+.line-label { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-style: italic; fill: var(--cyan); filter: drop-shadow(0 0 3px var(--cyan)); }
+
+/* ---------- Answer tiles (algebra problems) ---------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 560px;
+  margin: 12px auto 0;
+}
+.tile {
+  padding: 16px 10px;
+  background: rgba(10, 4, 32, .6);
+  border: 2px solid var(--cyan);
+  border-radius: 8px;
+  color: var(--cream);
+  font: 700 1.15rem 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all .15s;
+  box-shadow: 0 0 10px rgba(0, 229, 255, .25);
+}
+.tile:hover:not(:disabled) {
+  background: rgba(0, 229, 255, .14);
+  transform: translateY(-2px);
+  box-shadow: var(--glow-cy);
+}
+.tile.correct { background: rgba(0, 255, 136, .2); border-color: var(--ok); color: var(--ok); box-shadow: var(--glow-ok); }
+.tile.wrong { background: rgba(255, 51, 85, .2); border-color: var(--err); color: var(--err); box-shadow: var(--glow-err); animation: shakeHot .4s; }
+.tile:disabled { cursor: default; }
+
+/* ---------- Feedback banner ---------- */
+.feedback {
+  margin-top: 14px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  font: 500 .95rem 'Rajdhani', sans-serif;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: all .3s;
+}
+.feedback.show { opacity: 1; max-height: 200px; padding: 14px 18px; margin-top: 14px; }
+.feedback.correct { background: rgba(0, 255, 136, .12); border-color: var(--ok); color: var(--ok); }
+.feedback.wrong { background: rgba(255, 51, 85, .12); border-color: var(--err); color: var(--err); }
+.feedback strong { font-weight: 700; color: var(--cream); }
+.feedback code { font-family: 'JetBrains Mono', monospace; color: var(--sun); font-weight: 700; }
+
+.next-btn {
+  display: block;
+  margin: 14px auto 0;
+  padding: 11px 28px;
+  background: linear-gradient(90deg, var(--magenta), var(--hot));
+  color: var(--cream);
+  border: none;
+  border-radius: 7px;
+  font: 700 .95rem 'Orbitron', sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 0 18px rgba(255, 45, 149, .5);
+  opacity: 0;
+  visibility: hidden;
+}
+.next-btn.show { opacity: 1; visibility: visible; }
+.next-btn:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255, 45, 149, .8); }
+
+/* ---------- HUD bottom (stats) ---------- */
+.hud-bot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.hearts {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: var(--panel-bg);
+  border: 1.5px solid rgba(255, 68, 102, .4);
+  border-radius: 6px;
+}
+.heart {
+  width: 18px; height: 18px;
+  color: var(--heart);
+  filter: drop-shadow(0 0 5px var(--heart));
+  transition: all .3s;
+}
+.heart.lost {
+  opacity: .2;
+  filter: none;
+  transform: scale(.8);
+}
+.stat-box {
+  padding: 8px 14px;
+  background: var(--panel-bg);
+  border: 1.5px solid var(--panel-brd);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+}
+.stat-label {
+  font: 600 .6rem 'Rajdhani', sans-serif;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  opacity: .75;
+}
+.stat-value {
+  font: 700 1.1rem 'Orbitron', sans-serif;
+  color: var(--cream);
+  font-feature-settings: 'tnum' 1;
+  line-height: 1;
+  margin-top: 3px;
+}
+.stat-box.streak .stat-value { color: var(--sun); text-shadow: 0 0 8px var(--sun); }
+.stat-box.streak.fire { animation: fireFlash .4s ease-out; }
+@keyframes fireFlash {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.15); box-shadow: 0 0 30px var(--sun); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Floater ---------- */
+.floater {
+  position: absolute;
+  font: 800 1.4rem 'Orbitron', sans-serif;
+  color: var(--ok);
+  text-shadow: 0 0 10px var(--ok);
+  pointer-events: none;
+  animation: floatUp 1.1s ease-out forwards;
+  z-index: 20;
+}
+.floater.penalty { color: var(--err); text-shadow: 0 0 10px var(--err); }
+@keyframes floatUp {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(.7); }
+  20%  { opacity: 1; transform: translate(-50%, -8px) scale(1.05); }
+  100% { opacity: 0; transform: translate(-50%, -60px) scale(1); }
+}
+
+/* ---------- Modals ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, .78);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-backdrop.show { display: flex; }
+.modal {
+  max-width: 560px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: linear-gradient(135deg, rgba(20, 7, 58, .97), rgba(10, 4, 32, .97));
+  border: 2px solid var(--panel-brd);
+  border-radius: 14px;
+  padding: 32px 28px;
+  box-shadow: var(--glow-cy), 0 0 100px rgba(255, 45, 149, .3);
+  animation: modalIn .4s ease-out;
+}
+@keyframes modalIn {
+  0%   { transform: scale(.9) translateY(20px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal h1 {
+  font: 900 2.2rem/1 'Orbitron', sans-serif;
+  letter-spacing: .05em;
+  text-align: center;
+  color: var(--cream);
+  text-shadow: 0 0 24px var(--magenta), 0 0 48px var(--hot);
+  margin-bottom: 6px;
+}
+.modal h1.small { font-size: 1.6rem; }
+.modal .subtitle {
+  text-align: center;
+  color: var(--cyan);
+  font: 600 .82rem 'Rajdhani', sans-serif;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.modal p { color: var(--cream); line-height: 1.55; margin-bottom: 12px; opacity: .9; }
+.modal ul { margin: 8px 0 14px 20px; color: var(--cream); line-height: 1.7; opacity: .92; }
+.modal ul li::marker { color: var(--cyan); }
+.modal ul li strong { color: var(--cream); }
+
+.primary-btn {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 24px;
+  background: linear-gradient(90deg, var(--magenta), var(--hot));
+  color: var(--cream);
+  border: none;
+  border-radius: 8px;
+  font: 700 1rem 'Orbitron', sans-serif;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .2s;
+  box-shadow: 0 0 20px rgba(255, 45, 149, .5);
+}
+.primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 36px rgba(255, 45, 149, .8);
+}
+.secondary-btn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--cyan);
+  border: 1.5px solid var(--cyan);
+  border-radius: 6px;
+  font: 600 .85rem 'Rajdhani', sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: all .15s;
+}
+.secondary-btn:hover { background: rgba(0, 229, 255, .14); box-shadow: var(--glow-cy); }
+
+/* Archive tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--panel-brd);
+}
+.tab {
+  flex: 1;
+  padding: 10px 6px;
+  background: transparent;
+  color: var(--cream);
+  opacity: .55;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font: 700 .72rem 'Rajdhani', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all .15s;
+}
+.tab.active { opacity: 1; color: var(--cyan); border-bottom-color: var(--cyan); text-shadow: 0 0 8px var(--cyan); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.rule-card {
+  padding: 10px 14px;
+  margin: 8px 0;
+  background: rgba(0, 229, 255, .08);
+  border-left: 3px solid var(--cyan);
+  border-radius: 4px;
+  font-size: .92rem;
+  line-height: 1.5;
+}
+.rule-card strong { color: var(--cyan); }
+.rule-card code { font-family: 'JetBrains Mono', monospace; color: var(--sun); font-weight: 700; }
+.rule-card.magenta { border-left-color: var(--magenta); background: rgba(255, 45, 149, .08); }
+.rule-card.magenta strong { color: var(--magenta); }
+.rule-card.sun { border-left-color: var(--sun); background: rgba(255, 178, 45, .08); }
+.rule-card.sun strong { color: var(--sun); }
+
+/* Mastery Report */
+.final-score-label { text-align: center; font: 600 .82rem 'Rajdhani', sans-serif; letter-spacing: .3em; text-transform: uppercase; color: var(--cyan); }
+.final-score {
+  text-align: center;
+  font: 900 3.2rem 'Orbitron', sans-serif;
+  color: var(--cream);
+  text-shadow: 0 0 24px var(--magenta);
+  margin: 8px 0 10px;
+  line-height: 1;
+}
+.final-pct { text-align: center; font: 700 1rem 'Rajdhani', sans-serif; color: var(--sun); letter-spacing: .1em; margin-bottom: 16px; }
+.report-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(0, 229, 255, .15);
+}
+.report-row:last-child { border-bottom: none; }
+.report-row .r-label { font: 600 .82rem 'Rajdhani', sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); flex: 0 0 120px; }
+.report-row .r-bar-wrap { flex: 1; height: 12px; background: rgba(10, 4, 32, .6); border: 1px solid var(--panel-brd); border-radius: 3px; margin: 0 12px; overflow: hidden; }
+.report-row .r-bar { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--ok)); transition: width 1s ease-out; }
+.report-row .r-bar.low { background: linear-gradient(90deg, var(--hot), var(--err)); }
+.report-row .r-pct { font: 700 .95rem 'Orbitron', sans-serif; color: var(--cream); min-width: 52px; text-align: right; }
+
+/* Responsive */
+@media (max-width: 640px) {
+  .title-main { font-size: 1.3rem; }
+  .prompt { font-size: 1rem; }
+  .panel { padding: 16px; }
+  .modal { padding: 24px 20px; }
+  .modal h1 { font-size: 1.8rem; }
+  .tile { font-size: 1rem; padding: 14px 6px; }
+  .stat-box { min-width: 64px; padding: 6px 10px; }
+  .stat-value { font-size: .95rem; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HUD top -->
+  <div class="hud-top">
+    <a class="back-link" href="unit4.html">← Unit 4</a>
+    <div class="title-block">
+      <div class="title-main">ANGLE <span class="accent">PULSE</span></div>
+      <div class="title-sub">Parallel Lines &amp; Triangles · Unit 4</div>
+    </div>
+    <div class="hud-right">
+      <button class="icon-btn" id="audio-toggle">🔊</button>
+      <button class="icon-btn" id="archive-btn">📖</button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <!-- Main panel -->
+  <div class="panel" id="panel">
+    <div class="panel-header">
+      <span class="cat-label" id="cat-label">ANGLE RELATIONSHIP</span>
+      <span class="q-counter" id="q-counter">1 / 12</span>
+    </div>
+    <div class="prompt" id="prompt">Press Start to begin</div>
+    <div class="sub-prompt" id="sub-prompt"></div>
+    <div class="stage" id="stage"></div>
+    <div class="tiles" id="tiles" style="display:none"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="next-btn">Next Problem →</button>
+  </div>
+
+  <!-- HUD bottom -->
+  <div class="hud-bot">
+    <div class="hearts" id="hearts"></div>
+    <div class="stat-box">
+      <div class="stat-label">Score</div>
+      <div class="stat-value" id="score">0</div>
+    </div>
+    <div class="stat-box streak" id="streak-box">
+      <div class="stat-label">Streak</div>
+      <div class="stat-value" id="streak">×1</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     START MODAL
+     ============================================================ -->
+<div class="modal-backdrop show" id="start-modal">
+  <div class="modal">
+    <h1>ANGLE PULSE</h1>
+<div style="max-width:600px;margin:12px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:12px 16px;font-family:'Inter',system-ui,sans-serif;text-align:left">
+<div style="font-weight:800;color:#1E2D4F;font-size:.98rem;margin-bottom:5px">📋 How to Play</div>
+<div style="color:#333;font-size:.9rem;line-height:1.5">Each round shows a diagram with a missing angle. Use angle relationships — vertical, linear pairs, parallel lines, and triangles — to find the value. Press <b>Start</b>, read the problem, type or select your answer, and build your <b>streak</b> by getting them right in a row.</div>
+</div>
+    <div class="subtitle">Geometry · Unit 4</div>
+    <p>Twelve problems, rising difficulty. <strong>Click the correct angle on the diagram</strong> to score. Miss and you lose a heart.</p>
+    <p><strong style="color:var(--cyan)">What you'll practice:</strong></p>
+    <ul>
+      <li><strong>Vertical angles &amp; linear pairs</strong></li>
+      <li><strong>Parallel lines cut by a transversal</strong> (corresponding, alternate interior/exterior, same-side interior)</li>
+      <li><strong>Triangle angle sum</strong> (interior angles = 180°)</li>
+      <li><strong>Exterior angle theorem</strong> (exterior = sum of remote interiors)</li>
+      <li><strong>Algebraic angle problems</strong> in the final rounds</li>
+    </ul>
+    <p style="margin-top:10px">Three hearts. Correct answers build a streak multiplier up to ×5.</p>
+    <button class="primary-btn" id="start-btn">Start Run</button>
+    <button class="secondary-btn" id="start-archive-btn">📖 Open Formula Archive</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     ARCHIVE MODAL
+     ============================================================ -->
+<div class="modal-backdrop" id="archive-modal">
+  <div class="modal">
+    <h1 class="small">ARCHIVE</h1>
+    <div class="subtitle">Angle Rules · Unit 4</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="t-vert">Vertical / Linear</button>
+      <button class="tab" data-tab="t-par">Parallel Lines</button>
+      <button class="tab" data-tab="t-tri">Triangles</button>
+    </div>
+    <div class="tab-panel active" id="t-vert">
+      <div class="rule-card"><strong>VERTICAL ANGLES</strong> — formed by two intersecting lines, across from each other. <strong style="color:var(--sun)">They are always EQUAL.</strong></div>
+      <div class="rule-card magenta"><strong>LINEAR PAIR</strong> — two angles that share a side and form a straight line. <strong style="color:var(--sun)">They are SUPPLEMENTARY (sum to 180°).</strong></div>
+      <div class="rule-card"><strong>COMPLEMENTARY</strong> — two angles that sum to <code>90°</code>.</div>
+      <div class="rule-card"><strong>SUPPLEMENTARY</strong> — two angles that sum to <code>180°</code>.</div>
+    </div>
+    <div class="tab-panel" id="t-par">
+      <p style="font-size:.88rem;opacity:.85;margin-bottom:10px">When two parallel lines are cut by a transversal:</p>
+      <div class="rule-card"><strong>CORRESPONDING ANGLES</strong> — same position at each intersection. <strong style="color:var(--sun)">EQUAL.</strong></div>
+      <div class="rule-card"><strong>ALTERNATE INTERIOR</strong> — between the lines, opposite sides of the transversal. <strong style="color:var(--sun)">EQUAL.</strong></div>
+      <div class="rule-card"><strong>ALTERNATE EXTERIOR</strong> — outside the lines, opposite sides of the transversal. <strong style="color:var(--sun)">EQUAL.</strong></div>
+      <div class="rule-card magenta"><strong>SAME-SIDE INTERIOR (CO-INTERIOR)</strong> — between the lines, same side of the transversal. <strong style="color:var(--sun)">SUPPLEMENTARY (sum to 180°).</strong></div>
+    </div>
+    <div class="tab-panel" id="t-tri">
+      <div class="rule-card sun"><strong>TRIANGLE ANGLE SUM</strong> — the three interior angles of ANY triangle sum to <code>180°</code>.</div>
+      <div class="rule-card sun"><strong>EXTERIOR ANGLE THEOREM</strong> — an exterior angle of a triangle equals the <strong>sum of the two REMOTE (non-adjacent) interior angles</strong>.</div>
+      <div class="rule-card"><strong>Common setup:</strong> exterior <code>=</code> remote₁ <code>+</code> remote₂. &nbsp;If exterior = 120° and one remote = 50°, the other is 70°.</div>
+    </div>
+    <button class="primary-btn" id="archive-close">Resume</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     REPORT MODAL
+     ============================================================ -->
+<div class="modal-backdrop" id="report-modal">
+  <div class="modal">
+    <h1 id="report-title">COMPLETE</h1>
+    <div class="subtitle" id="report-subtitle">Mastery Report</div>
+    <div class="final-score-label">Final Score</div>
+    <div class="final-score" id="final-score">0</div>
+    <div class="final-pct" id="final-pct"></div>
+    <div class="report-row">
+      <div class="r-label">Vertical / Linear</div>
+      <div class="r-bar-wrap"><div class="r-bar" id="bar-vert" style="width:0"></div></div>
+      <div class="r-pct" id="pct-vert">—</div>
+    </div>
+    <div class="report-row">
+      <div class="r-label">Parallel Lines</div>
+      <div class="r-bar-wrap"><div class="r-bar" id="bar-par" style="width:0"></div></div>
+      <div class="r-pct" id="pct-par">—</div>
+    </div>
+    <div class="report-row">
+      <div class="r-label">Triangles</div>
+      <div class="r-bar-wrap"><div class="r-bar" id="bar-tri" style="width:0"></div></div>
+      <div class="r-pct" id="pct-tri">—</div>
+    </div>
+    <div class="report-row">
+      <div class="r-label">Max Streak</div>
+      <div class="r-bar-wrap"><div class="r-bar" id="bar-streak" style="width:0; background:var(--sun)"></div></div>
+      <div class="r-pct" id="pct-streak">×0</div>
+    </div>
+    <button class="primary-btn" id="play-again">Run Again</button>
+    <button class="secondary-btn" id="report-archive">📖 Review Archive</button>
+    <a class="secondary-btn" href="unit4.html">← Back to Unit 4</a>
+  </div>
+</div>
+
+<script>
+/* ============================================================================
+   ANGLE PULSE — game script
+   ============================================================================ */
+
+const PROBLEM_COUNT = 12;
+const MAX_HEARTS = 3;
+const STREAK_BREAKS = [0, 3, 5, 8, 11];
+const STREAK_MULTS  = [1, 2, 3, 4, 5];
+
+/* ---------- State ---------- */
+const state = {
+  idx: 0,
+  hearts: MAX_HEARTS,
+  score: 0,
+  streak: 0,
+  maxStreak: 0,
+  locked: false,
+  answered: false,
+  audioOn: true,
+  current: null,
+  stats: {
+    vert: { correct: 0, total: 0 },
+    par:  { correct: 0, total: 0 },
+    tri:  { correct: 0, total: 0 }
+  }
+};
+
+/* ---------- DOM ---------- */
+const $ = id => document.getElementById(id);
+const panel       = $('panel');
+const catLabel    = $('cat-label');
+const qCounter    = $('q-counter');
+const promptEl    = $('prompt');
+const subPromptEl = $('sub-prompt');
+const stageEl     = $('stage');
+const tilesEl     = $('tiles');
+const feedbackEl  = $('feedback');
+const nextBtn     = $('next-btn');
+const heartsEl    = $('hearts');
+const scoreEl     = $('score');
+const streakEl    = $('streak');
+const streakBox   = $('streak-box');
+const progressFill= $('progress-fill');
+const startModal  = $('start-modal');
+const archiveModal= $('archive-modal');
+const reportModal = $('report-modal');
+const audioToggle = $('audio-toggle');
+
+/* ---------- Util ---------- */
+const ri = (lo, hi) => Math.floor(Math.random() * (hi - lo + 1)) + lo;
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = arr => {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+/* ============================================================================
+   AUDIO — procedural synthwave + SFX (reused from geometric-pulse)
+   ============================================================================ */
+const Audio = (() => {
+  let ctx, master, music, sfxG;
+  let on = false;
+  let timer = null;
+  let nextTime = 0;
+  let beat = 0;
+  const BPM = 90;
+  const S16 = 60 / BPM / 4;
+  const BASS = ['A1', null, 'A1', null, 'A1', 'C2', null, null, 'E2', null, 'E2', null, 'G2', null, 'A2', null];
+  const ARP  = ['A3', null, 'C4', null, 'E4', null, 'G4', null, 'A4', null, 'G4', null, 'E4', null, 'C4', null];
+  const KICK = [0, 4, 8, 12], SNARE = [4, 12], HAT = [2, 6, 10, 14];
+  const nf = n => {
+    if (!n) return 0;
+    const names = { C:0,'C#':1,D:2,'D#':3,E:4,F:5,'F#':6,G:7,'G#':8,A:9,'A#':10,B:11 };
+    const m = n.match(/^([A-G]#?)(\d)$/);
+    const midi = (parseInt(m[2], 10) + 1) * 12 + names[m[1]];
+    return 440 * Math.pow(2, (midi - 69) / 12);
+  };
+  const ensure = () => {
+    if (ctx) return;
+    ctx = new (window.AudioContext || window.webkitAudioContext)();
+    master = ctx.createGain(); master.gain.value = 0.55; master.connect(ctx.destination);
+    music = ctx.createGain(); music.gain.value = 0.2; music.connect(master);
+    sfxG = ctx.createGain(); sfxG.gain.value = 0.5; sfxG.connect(master);
+  };
+  const bass = (f, t) => { if (!f) return;
+    const o = ctx.createOscillator(), g = ctx.createGain(), fi = ctx.createBiquadFilter();
+    o.type = 'sawtooth'; o.frequency.value = f;
+    fi.type = 'lowpass'; fi.frequency.value = 380; fi.Q.value = 7;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.32, t + 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+    o.connect(fi).connect(g).connect(music); o.start(t); o.stop(t + 0.3);
+  };
+  const arp = (f, t) => { if (!f) return;
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'square'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + 0.005); g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o.connect(g).connect(music); o.start(t); o.stop(t + 0.2);
+  };
+  const kick = t => {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.setValueAtTime(120, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.12);
+    g.gain.setValueAtTime(0.42, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    o.connect(g).connect(music); o.start(t); o.stop(t + 0.18);
+  };
+  const snare = t => {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.2, ctx.sampleRate);
+    const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ctx.createBufferSource(); s.buffer = buf;
+    const fi = ctx.createBiquadFilter(); fi.type = 'highpass'; fi.frequency.value = 1200;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.22, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+    s.connect(fi).connect(g).connect(music); s.start(t);
+  };
+  const hat = t => {
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+    const d = buf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    const s = ctx.createBufferSource(); s.buffer = buf;
+    const fi = ctx.createBiquadFilter(); fi.type = 'highpass'; fi.frequency.value = 6000;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.08, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    s.connect(fi).connect(g).connect(music); s.start(t);
+  };
+  const tick = () => {
+    if (!on) return;
+    while (nextTime < ctx.currentTime + 0.1) {
+      const b = beat % 16;
+      bass(nf(BASS[b]), nextTime); arp(nf(ARP[b]), nextTime);
+      if (KICK.includes(b))  kick(nextTime);
+      if (SNARE.includes(b)) snare(nextTime);
+      if (HAT.includes(b))   hat(nextTime);
+      nextTime += S16; beat++;
+    }
+    timer = setTimeout(tick, 25);
+  };
+  const start = () => { ensure(); if (ctx.state === 'suspended') ctx.resume(); if (on) return; on = true; nextTime = ctx.currentTime + 0.05; beat = 0; tick(); };
+  const stop  = () => { on = false; if (timer) { clearTimeout(timer); timer = null; } };
+  const sfx = type => {
+    if (!ctx) return;
+    const t = ctx.currentTime;
+    if (type === 'correct') {
+      [523.25, 659.25, 783.99].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sine'; o.frequency.value = f;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.18, t + 0.01 + i * 0.01); g.gain.exponentialRampToValueAtTime(0.001, t + 0.45);
+        o.connect(g).connect(sfxG); o.start(t); o.stop(t + 0.5);
+      });
+    } else if (type === 'wrong') {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(55, t + 0.4);
+      g.gain.setValueAtTime(0.28, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+      o.connect(g).connect(sfxG); o.start(t); o.stop(t + 0.45);
+    } else if (type === 'victory') {
+      [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'triangle'; o.frequency.value = f;
+        const st = t + i * 0.12;
+        g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(0.18, st + 0.015); g.gain.exponentialRampToValueAtTime(0.001, st + 0.5);
+        o.connect(g).connect(sfxG); o.start(st); o.stop(st + 0.6);
+      });
+    } else if (type === 'gameOver') {
+      [392, 293.66, 246.94, 196].forEach((f, i) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = 'sawtooth'; o.frequency.value = f;
+        const st = t + i * 0.13;
+        g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(0.2, st + 0.02); g.gain.exponentialRampToValueAtTime(0.001, st + 0.35);
+        o.connect(g).connect(sfxG); o.start(st); o.stop(st + 0.4);
+      });
+    }
+  };
+  return { start, stop, sfx, ensure };
+})();
+
+/* ============================================================================
+   SVG DIAGRAM BUILDERS
+   ============================================================================ */
+
+const SVG_W = 560, SVG_H = 380;
+
+/* Helper: polar to screen (screen-CW angle, radius) → (x, y) at vertex (vx, vy) */
+function polar(vx, vy, angleDeg, r) {
+  const a = angleDeg * Math.PI / 180;
+  return { x: vx + r * Math.cos(a), y: vy + r * Math.sin(a) };
+}
+
+/* Build a wedge path (vertex + two radii + arc) */
+function wedgePath(vx, vy, a1, a2, r) {
+  // a2 > a1 (we'll ensure this); arc from a1 to a2 going CW (which is the direction of increasing screen-CW angle)
+  const sweep = a2 - a1;
+  const largeArc = sweep > 180 ? 1 : 0;
+  const p1 = polar(vx, vy, a1, r);
+  const p2 = polar(vx, vy, a2, r);
+  return `M ${vx} ${vy} L ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} A ${r} ${r} 0 ${largeArc} 1 ${p2.x.toFixed(1)} ${p2.y.toFixed(1)} Z`;
+}
+
+/* Build an arc stroke path only (no closing lines) */
+function arcPath(vx, vy, a1, a2, r) {
+  const sweep = a2 - a1;
+  const largeArc = sweep > 180 ? 1 : 0;
+  const p1 = polar(vx, vy, a1, r);
+  const p2 = polar(vx, vy, a2, r);
+  return `M ${p1.x.toFixed(1)} ${p1.y.toFixed(1)} A ${r} ${r} 0 ${largeArc} 1 ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+}
+
+/* ---------- Diagram 1: Intersecting Lines (vertical / linear pair) ---------- */
+// Returns SVG string + metadata.
+// Positions:
+//   0: between east (0°) and trans-down (θ)       — LR wedge, measure θ
+//   1: between trans-down (θ) and west (180°)     — LL wedge, measure 180-θ
+//   2: between west (180°) and trans-up (180°+θ)  — UL wedge, measure θ
+//   3: between trans-up (180°+θ) and east (360°)  — UR wedge, measure 180-θ
+// (Here "θ" is the acute angle between the diagonal line and the horizontal, rendered at the LR position.)
+function diagramIntersecting(θ, marks) {
+  // marks: [{pos: 0..3, kind: 'given'|'expr'|'target'|'hot', text?: string}]
+  const cx = 280, cy = 180;
+  const R = 220;       // line length
+  const arcR = 42;     // angle arc radius
+  const labelR = 58;   // label radius
+  const hotR = 110;    // click hotspot radius
+  // Lines
+  const p_east = polar(cx, cy, 0, R);
+  const p_west = polar(cx, cy, 180, R);
+  const p_td   = polar(cx, cy, θ, R);
+  const p_tu   = polar(cx, cy, θ + 180, R);
+  const lines = `
+    <line x1="${p_west.x.toFixed(1)}" y1="${p_west.y.toFixed(1)}" x2="${p_east.x.toFixed(1)}" y2="${p_east.y.toFixed(1)}" class="sw-line"/>
+    <line x1="${p_tu.x.toFixed(1)}" y1="${p_tu.y.toFixed(1)}" x2="${p_td.x.toFixed(1)}" y2="${p_td.y.toFixed(1)}" class="sw-line-2"/>
+    <circle cx="${cx}" cy="${cy}" r="3" class="vertex-dot"/>
+  `;
+  // Four angles, in order around the intersection (CW starting from east)
+  const positions = [
+    { idx: 0, a1: 0,         a2: θ,           measure: θ },
+    { idx: 1, a1: θ,         a2: 180,         measure: 180 - θ },
+    { idx: 2, a1: 180,       a2: 180 + θ,     measure: θ },
+    { idx: 3, a1: 180 + θ,   a2: 360,         measure: 180 - θ }
+  ];
+  // Build arc marks and labels
+  let arcs = '', labels = '', hotspots = '';
+  positions.forEach(p => {
+    // Arc stroke
+    arcs += `<path d="${arcPath(cx, cy, p.a1, p.a2, arcR)}" class="arc-mark"/>`;
+    // Label (we don't label by default; marks array controls what's shown)
+    const mark = marks.find(m => m.pos === p.idx);
+    const mid = (p.a1 + p.a2) / 2;
+    const labelPos = polar(cx, cy, mid, labelR);
+    let labelHtml = '';
+    if (mark) {
+      if (mark.kind === 'given') {
+        arcs += `<path d="${arcPath(cx, cy, p.a1, p.a2, arcR)}" class="arc-given"/>`;
+        labelHtml = `<text x="${labelPos.x.toFixed(1)}" y="${(labelPos.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${mark.text || p.measure + '°'}</text>`;
+      } else if (mark.kind === 'expr') {
+        labelHtml = `<text x="${labelPos.x.toFixed(1)}" y="${(labelPos.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${mark.text}</text>`;
+      } else if (mark.kind === 'target') {
+        arcs += `<path d="${arcPath(cx, cy, p.a1, p.a2, arcR)}" class="arc-target"/>`;
+        labelHtml = `<text x="${labelPos.x.toFixed(1)}" y="${(labelPos.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+      }
+    }
+    labels += labelHtml;
+    // Hotspot
+    hotspots += `<path d="${wedgePath(cx, cy, p.a1, p.a2, hotR)}" class="hot" data-pos="${p.idx}"/>`;
+  });
+  return `
+    <svg viewBox="0 0 ${SVG_W} ${SVG_H}">
+      ${lines}
+      ${arcs}
+      ${hotspots}
+      ${labels}
+    </svg>
+  `;
+}
+
+/* ---------- Diagram 2: Parallel lines + transversal ---------- */
+// θ = acute angle transversal makes with horizontal (35-75 range for visual clarity)
+// Positions (as described in commentary):
+//   top intersection: 1(UR)=180-θ, 2(UL)=θ, 3(LL)=180-θ, 4(LR)=θ
+//   bot intersection: 5(UR)=180-θ, 6(UL)=θ, 7(LL)=180-θ, 8(LR)=θ
+// All numeric IDs stored as 0-7 internally but displayed as 1-8.
+function diagramParallel(θ, marks) {
+  const y_top = 100, y_bot = 300;
+  const top_x = 190;
+  const dy = y_bot - y_top;
+  const dx = dy / Math.tan(θ * Math.PI / 180);
+  const bot_x = top_x + dx;
+  // Extend horizontal lines across full width
+  const lineL = 40, lineR = 520;
+  // Extend transversal beyond both intersections
+  const ext = 55;
+  const extUp = polar(top_x, y_top, θ + 180, ext);
+  const extDown = polar(bot_x, y_bot, θ, ext);
+  const lines = `
+    <line x1="${lineL}" y1="${y_top}" x2="${lineR}" y2="${y_top}" class="sw-line"/>
+    <line x1="${lineL}" y1="${y_bot}" x2="${lineR}" y2="${y_bot}" class="sw-line"/>
+    <line x1="${extUp.x.toFixed(1)}" y1="${extUp.y.toFixed(1)}" x2="${extDown.x.toFixed(1)}" y2="${extDown.y.toFixed(1)}" class="sw-line-2"/>
+    <circle cx="${top_x}" cy="${y_top}" r="3" class="vertex-dot"/>
+    <circle cx="${bot_x.toFixed(1)}" cy="${y_bot}" r="3" class="vertex-dot"/>
+    <text x="${lineL - 12}" y="${y_top + 5}" class="line-label">ℓ₁</text>
+    <text x="${lineL - 12}" y="${y_bot + 5}" class="line-label">ℓ₂</text>
+    <text x="${(extDown.x + 18).toFixed(1)}" y="${(extDown.y + 5).toFixed(1)}" class="line-label">t</text>
+  `;
+  const arcR = 34, hotR = 70, labelR = 50;
+  // Positions at each intersection: same CW order as intersecting (east, trans-down, west, trans-up)
+  // but interpretation differs:
+  //   top  CW: east→down = θ → this is LR wedge of top intersection
+  //   top  CW: down→west → LL wedge
+  //   top  CW: west→up → UL wedge (the acute one)
+  //   top  CW: up→east → UR wedge (obtuse)
+  // Mapping to canonical 1-8:
+  //   TOP: 4(LR), 3(LL), 2(UL), 1(UR)  in CW order from east
+  //   BOT: 8(LR), 7(LL), 6(UL), 5(UR)
+  const buildAtVertex = (vx, vy, baseId) => {
+    // baseId is 0 for top (so indices become 3,2,1,0 = LR,LL,UL,UR which we want as 4,3,2,1)
+    // Simpler: just name them explicitly.
+    const positions = [
+      // CW order from east
+      { pos: baseId + 3, a1: 0,       a2: θ,        measure: θ,       region: 'LR' },
+      { pos: baseId + 2, a1: θ,       a2: 180,      measure: 180 - θ, region: 'LL' },
+      { pos: baseId + 1, a1: 180,     a2: 180 + θ,  measure: θ,       region: 'UL' },
+      { pos: baseId + 0, a1: 180 + θ, a2: 360,      measure: 180 - θ, region: 'UR' }
+    ];
+    return positions;
+  };
+  const topPositions = buildAtVertex(top_x, y_top, 0);   // gives positions 0,1,2,3 => display as 1,2,3,4
+  const botPositions = buildAtVertex(bot_x, y_bot, 4);   // gives 4,5,6,7 => display as 5,6,7,8
+
+  let arcs = '', labels = '', hotspots = '';
+  const renderAt = (positions, vx, vy) => {
+    positions.forEach(p => {
+      arcs += `<path d="${arcPath(vx, vy, p.a1, p.a2, arcR)}" class="arc-mark"/>`;
+      const mark = marks.find(m => m.pos === p.pos);
+      const mid = (p.a1 + p.a2) / 2;
+      const lp = polar(vx, vy, mid, labelR);
+      if (mark) {
+        if (mark.kind === 'given') {
+          arcs += `<path d="${arcPath(vx, vy, p.a1, p.a2, arcR)}" class="arc-given"/>`;
+          labels += `<text x="${lp.x.toFixed(1)}" y="${(lp.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${mark.text || p.measure + '°'}</text>`;
+        } else if (mark.kind === 'expr') {
+          labels += `<text x="${lp.x.toFixed(1)}" y="${(lp.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${mark.text}</text>`;
+        } else if (mark.kind === 'target') {
+          arcs += `<path d="${arcPath(vx, vy, p.a1, p.a2, arcR)}" class="arc-target"/>`;
+          labels += `<text x="${lp.x.toFixed(1)}" y="${(lp.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+        }
+      }
+      hotspots += `<path d="${wedgePath(vx, vy, p.a1, p.a2, hotR)}" class="hot" data-pos="${p.pos}"/>`;
+    });
+  };
+  renderAt(topPositions, top_x, y_top);
+  renderAt(botPositions, bot_x, y_bot);
+
+  return `
+    <svg viewBox="0 0 ${SVG_W} ${SVG_H}">
+      ${lines}
+      ${arcs}
+      ${hotspots}
+      ${labels}
+    </svg>
+  `;
+}
+
+/* Helper: angle measures for all 8 positions */
+function parallelMeasures(θ) {
+  return [180 - θ, θ, 180 - θ, θ, 180 - θ, θ, 180 - θ, θ];
+}
+
+/* ---------- Diagram 3: Triangle (interior sum / exterior angle) ---------- */
+// Three vertices A, B, C with specified interior angles a, b, c (sum = 180).
+// Positions: 0 = angle at A, 1 = angle at B, 2 = angle at C, 3 = exterior at C (right side)
+function diagramTriangle(a, b, c, marks, options = {}) {
+  // Lay out triangle so it's reasonably sized
+  // A bottom-left, C bottom-right, B top
+  const Ax = 120, Ay = 290;
+  const Cx = 440, Cy = 290;
+  // Determine B: we'll place B on a line where its x is determined by angle a at A
+  // tan(a) = By distance from A / horizontal distance along AC
+  // Actually simpler: place B such that angle A = `a` and angle C = `c`.
+  // Use the law of sines. Let AC length = 320 (Cx - Ax).
+  const AC = Cx - Ax;
+  // By law of sines: AB / sin(C) = AC / sin(B) => AB = AC * sin(c) / sin(b)
+  const rad = d => d * Math.PI / 180;
+  const AB = AC * Math.sin(rad(c)) / Math.sin(rad(b));
+  // B is at angle `a` above AC from A
+  const Bx = Ax + AB * Math.cos(rad(a));
+  const By = Ay - AB * Math.sin(rad(a));
+  // Triangle polygon
+  const triangle = `<polygon points="${Ax.toFixed(1)},${Ay.toFixed(1)} ${Bx.toFixed(1)},${By.toFixed(1)} ${Cx.toFixed(1)},${Cy.toFixed(1)}" class="sw-line-tri"/>`;
+  // Vertex labels
+  const vLabels = `
+    <text x="${(Ax - 18).toFixed(1)}" y="${(Ay + 6).toFixed(1)}" class="vertex-label">A</text>
+    <text x="${Bx.toFixed(1)}" y="${(By - 12).toFixed(1)}" class="vertex-label" text-anchor="middle">B</text>
+    <text x="${(Cx + 12).toFixed(1)}" y="${(Cy + 6).toFixed(1)}" class="vertex-label">C</text>
+  `;
+
+  // Compute screen-CW angles of rays out of each vertex:
+  // At A: ray toward B, ray toward C.
+  // At B: ray toward A, ray toward C.
+  // At C: ray toward A, ray toward B. (Plus extension if needed.)
+  const screenAngle = (fromX, fromY, toX, toY) => {
+    const dx = toX - fromX, dy = toY - fromY;
+    let a = Math.atan2(dy, dx) * 180 / Math.PI;
+    if (a < 0) a += 360;
+    return a;
+  };
+  // For the arc to represent the interior angle at each vertex,
+  // we sweep between the two adjacent sides (rays) going the "interior" way.
+  // Helper: returns {a1, a2} such that a2 > a1 and the sweep a2-a1 equals the interior angle.
+  const interiorArcAngles = (fromAngle, toAngle, interiorDeg) => {
+    // normalize both to 0-360
+    let low = fromAngle, high = toAngle;
+    if (low > high) [low, high] = [high, low];
+    // Two possible sweeps: high - low, or 360 - (high - low)
+    const sweep1 = high - low;
+    if (Math.abs(sweep1 - interiorDeg) < 1) return { a1: low, a2: high };
+    // else interior is on the other side → go from high to low+360
+    return { a1: high, a2: low + 360 };
+  };
+
+  const arcRA = 34, arcRB = 34, arcRC = 34;
+  const labelROff = 24;
+  let arcs = '', labels = '', hotspots = '';
+
+  // --- Angle at A ---
+  const aAB = screenAngle(Ax, Ay, Bx, By);  // ray from A toward B
+  const aAC = screenAngle(Ax, Ay, Cx, Cy);  // ray from A toward C
+  const A_arc = interiorArcAngles(aAB, aAC, a);
+  arcs += `<path d="${arcPath(Ax, Ay, A_arc.a1, A_arc.a2, arcRA)}" class="arc-mark"/>`;
+  // Hotspot
+  const A_hot_r = 64;
+  hotspots += `<path d="${wedgePath(Ax, Ay, A_arc.a1, A_arc.a2, A_hot_r)}" class="hot" data-pos="0"/>`;
+  // Marks
+  const markA = marks.find(m => m.pos === 0);
+  const A_mid = (A_arc.a1 + A_arc.a2) / 2;
+  const A_lp = polar(Ax, Ay, A_mid, arcRA + labelROff);
+  if (markA) {
+    if (markA.kind === 'given') {
+      arcs += `<path d="${arcPath(Ax, Ay, A_arc.a1, A_arc.a2, arcRA)}" class="arc-given"/>`;
+      labels += `<text x="${A_lp.x.toFixed(1)}" y="${(A_lp.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${markA.text || a + '°'}</text>`;
+    } else if (markA.kind === 'expr') {
+      labels += `<text x="${A_lp.x.toFixed(1)}" y="${(A_lp.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${markA.text}</text>`;
+    } else if (markA.kind === 'target') {
+      arcs += `<path d="${arcPath(Ax, Ay, A_arc.a1, A_arc.a2, arcRA)}" class="arc-target"/>`;
+      labels += `<text x="${A_lp.x.toFixed(1)}" y="${(A_lp.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+    }
+  }
+
+  // --- Angle at B ---
+  const bBA = screenAngle(Bx, By, Ax, Ay);
+  const bBC = screenAngle(Bx, By, Cx, Cy);
+  const B_arc = interiorArcAngles(bBA, bBC, b);
+  arcs += `<path d="${arcPath(Bx, By, B_arc.a1, B_arc.a2, arcRB)}" class="arc-mark"/>`;
+  const B_hot_r = 58;
+  hotspots += `<path d="${wedgePath(Bx, By, B_arc.a1, B_arc.a2, B_hot_r)}" class="hot" data-pos="1"/>`;
+  const markB = marks.find(m => m.pos === 1);
+  const B_mid = (B_arc.a1 + B_arc.a2) / 2;
+  const B_lp = polar(Bx, By, B_mid, arcRB + labelROff);
+  if (markB) {
+    if (markB.kind === 'given') {
+      arcs += `<path d="${arcPath(Bx, By, B_arc.a1, B_arc.a2, arcRB)}" class="arc-given"/>`;
+      labels += `<text x="${B_lp.x.toFixed(1)}" y="${(B_lp.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${markB.text || b + '°'}</text>`;
+    } else if (markB.kind === 'expr') {
+      labels += `<text x="${B_lp.x.toFixed(1)}" y="${(B_lp.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${markB.text}</text>`;
+    } else if (markB.kind === 'target') {
+      arcs += `<path d="${arcPath(Bx, By, B_arc.a1, B_arc.a2, arcRB)}" class="arc-target"/>`;
+      labels += `<text x="${B_lp.x.toFixed(1)}" y="${(B_lp.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+    }
+  }
+
+  // --- Angle at C ---
+  const cCA = screenAngle(Cx, Cy, Ax, Ay);
+  const cCB = screenAngle(Cx, Cy, Bx, By);
+  const C_arc = interiorArcAngles(cCA, cCB, c);
+  arcs += `<path d="${arcPath(Cx, Cy, C_arc.a1, C_arc.a2, arcRC)}" class="arc-mark"/>`;
+  const C_hot_r = 64;
+  hotspots += `<path d="${wedgePath(Cx, Cy, C_arc.a1, C_arc.a2, C_hot_r)}" class="hot" data-pos="2"/>`;
+  const markC = marks.find(m => m.pos === 2);
+  const C_mid = (C_arc.a1 + C_arc.a2) / 2;
+  const C_lp = polar(Cx, Cy, C_mid, arcRC + labelROff);
+  if (markC) {
+    if (markC.kind === 'given') {
+      arcs += `<path d="${arcPath(Cx, Cy, C_arc.a1, C_arc.a2, arcRC)}" class="arc-given"/>`;
+      labels += `<text x="${C_lp.x.toFixed(1)}" y="${(C_lp.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${markC.text || c + '°'}</text>`;
+    } else if (markC.kind === 'expr') {
+      labels += `<text x="${C_lp.x.toFixed(1)}" y="${(C_lp.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${markC.text}</text>`;
+    } else if (markC.kind === 'target') {
+      arcs += `<path d="${arcPath(Cx, Cy, C_arc.a1, C_arc.a2, arcRC)}" class="arc-target"/>`;
+      labels += `<text x="${C_lp.x.toFixed(1)}" y="${(C_lp.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+    }
+  }
+
+  // --- Optional exterior angle at C (position 3) ---
+  let extensionLine = '';
+  if (options.extendC) {
+    // Extend AC beyond C (to the right)
+    const extLen = 110;
+    const extEnd = polar(Cx, Cy, cCA + 180, extLen);   // opposite direction of CA
+    extensionLine = `<line x1="${Cx}" y1="${Cy}" x2="${extEnd.x.toFixed(1)}" y2="${extEnd.y.toFixed(1)}" class="sw-line-ext"/>`;
+    // Exterior angle at C: between ray CB (going from C toward B) and extension ray (cCA + 180)
+    const extAngle = (cCA + 180) % 360;
+    const extInterior = 180 - c;  // exterior = 180 - interior
+    const ext_arc = interiorArcAngles(cCB, extAngle, extInterior);
+    arcs += `<path d="${arcPath(Cx, Cy, ext_arc.a1, ext_arc.a2, arcRC)}" class="arc-mark"/>`;
+    hotspots += `<path d="${wedgePath(Cx, Cy, ext_arc.a1, ext_arc.a2, C_hot_r)}" class="hot" data-pos="3"/>`;
+    const markE = marks.find(m => m.pos === 3);
+    const ext_mid = (ext_arc.a1 + ext_arc.a2) / 2;
+    const ext_lp = polar(Cx, Cy, ext_mid, arcRC + labelROff);
+    if (markE) {
+      if (markE.kind === 'given') {
+        arcs += `<path d="${arcPath(Cx, Cy, ext_arc.a1, ext_arc.a2, arcRC)}" class="arc-given"/>`;
+        labels += `<text x="${ext_lp.x.toFixed(1)}" y="${(ext_lp.y + 5).toFixed(1)}" class="angle-label given" text-anchor="middle">${markE.text || (180 - c) + '°'}</text>`;
+      } else if (markE.kind === 'expr') {
+        labels += `<text x="${ext_lp.x.toFixed(1)}" y="${(ext_lp.y + 5).toFixed(1)}" class="angle-label expr" text-anchor="middle">${markE.text}</text>`;
+      } else if (markE.kind === 'target') {
+        arcs += `<path d="${arcPath(Cx, Cy, ext_arc.a1, ext_arc.a2, arcRC)}" class="arc-target"/>`;
+        labels += `<text x="${ext_lp.x.toFixed(1)}" y="${(ext_lp.y + 5).toFixed(1)}" class="angle-label target-mark" text-anchor="middle">?</text>`;
+      }
+    }
+  }
+
+  return `
+    <svg viewBox="0 0 ${SVG_W} ${SVG_H}">
+      ${extensionLine}
+      ${triangle}
+      ${arcs}
+      ${hotspots}
+      ${vLabels}
+      ${labels}
+    </svg>
+  `;
+}
+
+/* ============================================================================
+   PROBLEM GENERATORS
+   ============================================================================ */
+
+/* ---------- Vertical angles / linear pairs ---------- */
+function makeVerticalProblem() {
+  // θ is acute angle between the two lines (20..75, avoiding special cases)
+  const θ = ri(25, 70);
+  const givenPos = ri(0, 3);                      // which of the 4 is the given
+  const givenMeasure = (givenPos % 2 === 0) ? θ : 180 - θ;
+  const verticalPos = (givenPos + 2) % 4;         // opposite angle
+  // The prompt: "The marked angle is X°. Click the angle ALSO equal to X°." (vertical)
+  const marks = [{ pos: givenPos, kind: 'given' }];
+  return {
+    category: 'vert',
+    diagram: 'intersecting',
+    diagramArgs: { θ },
+    marks,
+    prompt: 'Click the angle VERTICAL to the marked angle.',
+    subHTML: `The marked angle measures <code>${givenMeasure}°</code>. Its vertical angle is equal.`,
+    correctPos: verticalPos,
+    mode: 'click-angle',
+    explain: `Vertical angles are ALWAYS equal. The angle opposite the <code>${givenMeasure}°</code> angle (across the intersection) is also <code>${givenMeasure}°</code>.`
+  };
+}
+
+function makeLinearPairProblem() {
+  const θ = ri(30, 70);
+  const givenPos = ri(0, 3);
+  const givenMeasure = (givenPos % 2 === 0) ? θ : 180 - θ;
+  // Linear pair positions = (givenPos + 1) mod 4 or (givenPos + 3) mod 4
+  // We'll pick one randomly for the correct answer, but note that BOTH adjacent angles are linear pairs.
+  // For clarity, we'll mark the given and ask for a specific target (choose side).
+  const correctPos = (givenPos + (Math.random() < 0.5 ? 1 : 3)) % 4;
+  const supplementary = 180 - givenMeasure;
+  const marks = [{ pos: givenPos, kind: 'given' }];
+  return {
+    category: 'vert',
+    diagram: 'intersecting',
+    diagramArgs: { θ },
+    marks,
+    prompt: `Click an angle that forms a LINEAR PAIR with the marked angle.`,
+    subHTML: `The marked angle is <code>${givenMeasure}°</code>. Its linear-pair neighbor will measure <code>${supplementary}°</code>.`,
+    correctPos,
+    acceptPositions: [(givenPos + 1) % 4, (givenPos + 3) % 4],   // either adjacent angle is correct
+    mode: 'click-angle',
+    explain: `A linear pair sits next to the given angle on the straight line. Since they sum to 180°, the linear-pair angle is <code>180° − ${givenMeasure}° = ${supplementary}°</code>.`
+  };
+}
+
+/* ---------- Parallel lines + transversal ---------- */
+// relationship: 'corresponding' | 'altInt' | 'altExt' | 'sameInt'
+function makeParallelProblem(relationship) {
+  const θ = ri(38, 72);
+  const measures = parallelMeasures(θ);   // 8-element array
+  // Pick a "given" position (1-8 as displayed, 0-7 internally)
+  const givenPos = ri(0, 7);
+  const givenMeasure = measures[givenPos];
+  // Find target position based on relationship
+  let targetPos;
+  const REL_MAP = {
+    corresponding: [[0,4],[1,5],[2,6],[3,7]],
+    altInt:        [[2,4],[3,5]],            // pos 3 & 5 (display), pos 2 & 4 (internal); wait let me verify
+    altExt:        [[0,6],[1,7]],
+    sameInt:       [[2,5],[3,4]]
+  };
+  // Internal indices: 0=pos1, 1=pos2, 2=pos3, 3=pos4, 4=pos5, 5=pos6, 6=pos7, 7=pos8
+  // Corresponding: 1-5, 2-6, 3-7, 4-8 → [0,4], [1,5], [2,6], [3,7] ✓
+  // Alt interior: 3-5, 4-6 → [2,4], [3,5] ✓
+  // Alt exterior: 1-7, 2-8 → [0,6], [1,7] ✓
+  // Same-side interior: 3+6, 4+5 → [2,5], [3,4] ✓
+  const pairs = REL_MAP[relationship];
+  const pair = pairs.find(p => p[0] === givenPos || p[1] === givenPos);
+  if (pair) {
+    targetPos = pair[0] === givenPos ? pair[1] : pair[0];
+  } else {
+    // Shouldn't happen with valid givenPos, but fallback: pick a pair, use its first element
+    const randomPair = pick(pairs);
+    return makeParallelProblem(relationship);   // retry
+  }
+  const targetMeasure = measures[targetPos];
+  const relNames = {
+    corresponding: 'CORRESPONDING',
+    altInt:        'ALTERNATE INTERIOR',
+    altExt:        'ALTERNATE EXTERIOR',
+    sameInt:       'SAME-SIDE INTERIOR (CO-INTERIOR)'
+  };
+  const relEq = {
+    corresponding: 'equal to',
+    altInt:        'equal to',
+    altExt:        'equal to',
+    sameInt:       'supplementary to (sums to 180° with)'
+  };
+  const explainRel = {
+    corresponding: `Corresponding angles are congruent (equal). So the target is <code>${targetMeasure}°</code>.`,
+    altInt:        `Alternate interior angles are congruent (equal). So the target is <code>${targetMeasure}°</code>.`,
+    altExt:        `Alternate exterior angles are congruent (equal). So the target is <code>${targetMeasure}°</code>.`,
+    sameInt:       `Same-side (co-interior) angles are supplementary. <code>180° − ${givenMeasure}° = ${targetMeasure}°</code>.`
+  };
+  const marks = [{ pos: givenPos, kind: 'given' }];
+  return {
+    category: 'par',
+    diagram: 'parallel',
+    diagramArgs: { θ },
+    marks,
+    prompt: `Click the ${relNames[relationship]} angle.`,
+    subHTML: `The marked angle is <code>${givenMeasure}°</code>. Find the angle that is ${relEq[relationship]} it.`,
+    correctPos: targetPos,
+    mode: 'click-angle',
+    explain: explainRel[relationship]
+  };
+}
+
+/* ---------- Triangle interior sum ---------- */
+function makeTriangleInteriorProblem() {
+  // Pick two angles; third = 180 - sum. All positive, reasonable.
+  let a, b, c;
+  do {
+    a = ri(25, 85);
+    b = ri(25, 85);
+    c = 180 - a - b;
+  } while (c < 20 || c > 130);
+  // Which vertex is the target?
+  const targetVertex = ri(0, 2);   // 0=A, 1=B, 2=C
+  const angles = [a, b, c];
+  const vertexNames = ['A', 'B', 'C'];
+  const marks = [];
+  for (let i = 0; i < 3; i++) {
+    if (i === targetVertex) marks.push({ pos: i, kind: 'target' });
+    else marks.push({ pos: i, kind: 'given' });
+  }
+  const otherTwo = angles.filter((_, i) => i !== targetVertex);
+  const targetMeasure = angles[targetVertex];
+  return {
+    category: 'tri',
+    diagram: 'triangle',
+    diagramArgs: { a, b, c, options: {} },
+    marks,
+    prompt: `Click the angle labeled <em style="color:var(--magenta)">?</em>`,
+    subHTML: `All three angles in a triangle sum to <code>180°</code>. Find the missing one.`,
+    correctPos: targetVertex,
+    mode: 'click-angle',
+    explain: `<code>${otherTwo[0]}° + ${otherTwo[1]}° + ? = 180°</code> → <code>? = 180° − ${otherTwo[0] + otherTwo[1]}° = ${targetMeasure}°</code>`
+  };
+}
+
+/* ---------- Triangle exterior angle ---------- */
+function makeTriangleExteriorProblem() {
+  let a, b, c;
+  do {
+    a = ri(30, 80);
+    b = ri(30, 80);
+    c = 180 - a - b;
+  } while (c < 25 || c > 110);
+  // Extension at C, exterior angle = 180 - c = a + b
+  const exteriorMeasure = a + b;
+  // Mark both A and B as given, exterior at C (pos 3) as target, interior C not marked
+  const marks = [
+    { pos: 0, kind: 'given' },
+    { pos: 1, kind: 'given' },
+    { pos: 3, kind: 'target' }
+  ];
+  return {
+    category: 'tri',
+    diagram: 'triangle',
+    diagramArgs: { a, b, c, options: { extendC: true } },
+    marks,
+    prompt: `Click the EXTERIOR angle (marked <em style="color:var(--magenta)">?</em>)`,
+    subHTML: `Side AC has been extended past C. The exterior angle equals the sum of the two remote interior angles.`,
+    correctPos: 3,
+    mode: 'click-angle',
+    explain: `Exterior angle = remote₁ + remote₂ = <code>${a}° + ${b}° = ${exteriorMeasure}°</code>`
+  };
+}
+
+/* ---------- Algebraic problems (final rounds) ---------- */
+function makeAlgebraicLinearPair() {
+  // Two angles form a linear pair. One labeled "(2x + c)°", other as "d°". Solve for x.
+  const θ = ri(35, 65);
+  const givenPos = ri(0, 3);
+  const givenMeasure = (givenPos % 2 === 0) ? θ : 180 - θ;
+  // Linear pair with givenPos: (givenPos + 1) % 4 or (givenPos + 3) % 4. Pick one.
+  const exprPos = (givenPos + (Math.random() < 0.5 ? 1 : 3)) % 4;
+  const exprMeasure = 180 - givenMeasure;    // they sum to 180
+  // Pick coefficient and solve for x. aX + c = exprMeasure
+  // Choose a (2-5) and x (5-15), derive c
+  const aCoef = ri(2, 5);
+  const xVal = ri(5, 18);
+  const cConst = exprMeasure - aCoef * xVal;
+  if (cConst < -30 || cConst > 30) return makeAlgebraicLinearPair();   // retry if constants are weird
+  const exprText = cConst === 0 ? `${aCoef}x°` : (cConst > 0 ? `(${aCoef}x + ${cConst})°` : `(${aCoef}x − ${-cConst})°`);
+  const marks = [
+    { pos: givenPos, kind: 'given' },
+    { pos: exprPos, kind: 'expr', text: exprText }
+  ];
+  // Distractors for x
+  const distractors = [xVal + 1, xVal - 1, xVal + 5, Math.round(exprMeasure / aCoef)].filter(v => v !== xVal && v > 0);
+  const options = shuffle([xVal, distractors[0], distractors[1]]).map(v => ({ display: 'x = ' + v, value: v, isCorrect: v === xVal }));
+  return {
+    category: 'vert',
+    diagram: 'intersecting',
+    diagramArgs: { θ },
+    marks,
+    prompt: `Solve for <code>x</code>`,
+    subHTML: `These angles form a <strong>linear pair</strong> — they must sum to <code>180°</code>.`,
+    mode: 'click-tile',
+    options,
+    correctX: xVal,
+    explain: `Linear pair: <code>${exprText.replace(/°/g, '')} + ${givenMeasure} = 180</code> → <code>${aCoef}x ${cConst >= 0 ? '+ ' + cConst : '− ' + (-cConst)} = ${exprMeasure}</code> → <code>x = ${xVal}</code>`
+  };
+}
+
+function makeAlgebraicParallel() {
+  // Two angles formed by parallel lines. They're equal (corresponding/alt) OR supplementary (same-side).
+  const θ = ri(38, 68);
+  const useEqual = Math.random() < 0.6;
+  const measures = parallelMeasures(θ);
+  const givenPos = ri(0, 7);
+  const givenMeasure = measures[givenPos];
+  // Pick a target position based on relationship
+  let targetPos;
+  let relName, relationDesc;
+  if (useEqual) {
+    // Pick a corresponding / alt interior / alt exterior angle (equal)
+    const equalMap = [
+      [0, 4], [1, 5], [2, 6], [3, 7],   // corresponding
+      [2, 4], [3, 5],                   // alt interior
+      [0, 6], [1, 7]                    // alt exterior
+    ];
+    // Also verticals at each intersection
+    const verticalMap = [[0, 2], [1, 3], [4, 6], [5, 7]];
+    const allEqual = [...equalMap, ...verticalMap];
+    const pair = pick(allEqual.filter(p => p[0] === givenPos || p[1] === givenPos));
+    if (!pair) return makeAlgebraicParallel();
+    targetPos = pair[0] === givenPos ? pair[1] : pair[0];
+    // Name the relationship
+    if (equalMap.slice(0, 4).some(p => (p[0] === givenPos && p[1] === targetPos) || (p[1] === givenPos && p[0] === targetPos))) {
+      relName = 'CORRESPONDING'; relationDesc = 'equal';
+    } else if (equalMap.slice(4, 6).some(p => (p[0] === givenPos && p[1] === targetPos) || (p[1] === givenPos && p[0] === targetPos))) {
+      relName = 'ALTERNATE INTERIOR'; relationDesc = 'equal';
+    } else if (equalMap.slice(6, 8).some(p => (p[0] === givenPos && p[1] === targetPos) || (p[1] === givenPos && p[0] === targetPos))) {
+      relName = 'ALTERNATE EXTERIOR'; relationDesc = 'equal';
+    } else {
+      relName = 'VERTICAL'; relationDesc = 'equal';
+    }
+  } else {
+    // Same-side interior or linear pair — supplementary
+    const suppMap = [[2, 5], [3, 4]];   // same-side interior
+    const linPairTop = [[0, 1], [1, 2], [2, 3], [3, 0]];
+    const linPairBot = [[4, 5], [5, 6], [6, 7], [7, 4]];
+    const allSupp = [...suppMap, ...linPairTop, ...linPairBot];
+    const pair = pick(allSupp.filter(p => p[0] === givenPos || p[1] === givenPos));
+    if (!pair) return makeAlgebraicParallel();
+    targetPos = pair[0] === givenPos ? pair[1] : pair[0];
+    if (suppMap.some(p => (p[0] === givenPos && p[1] === targetPos) || (p[1] === givenPos && p[0] === targetPos))) {
+      relName = 'SAME-SIDE INTERIOR'; relationDesc = 'supplementary (sum to 180°)';
+    } else {
+      relName = 'LINEAR PAIR'; relationDesc = 'supplementary (sum to 180°)';
+    }
+  }
+  const targetMeasure = measures[targetPos];
+  // Build the algebraic expression for the target
+  const aCoef = ri(2, 5);
+  const xVal = ri(4, 18);
+  const cConst = targetMeasure - aCoef * xVal;
+  if (cConst < -25 || cConst > 35) return makeAlgebraicParallel();
+  const exprText = cConst === 0 ? `${aCoef}x°` : (cConst > 0 ? `(${aCoef}x + ${cConst})°` : `(${aCoef}x − ${-cConst})°`);
+  const marks = [
+    { pos: givenPos, kind: 'given' },
+    { pos: targetPos, kind: 'expr', text: exprText }
+  ];
+  const distractors = [xVal + 2, xVal - 2, xVal + 4, Math.round(targetMeasure / aCoef)].filter(v => v !== xVal && v > 0);
+  const options = shuffle([xVal, distractors[0], distractors[1] || xVal + 3]).map(v => ({ display: 'x = ' + v, value: v, isCorrect: v === xVal }));
+  const equation = useEqual
+    ? `${exprText.replace(/°/g, '')} = ${givenMeasure}`
+    : `${exprText.replace(/°/g, '')} + ${givenMeasure} = 180`;
+  return {
+    category: 'par',
+    diagram: 'parallel',
+    diagramArgs: { θ },
+    marks,
+    prompt: `Solve for <code>x</code>`,
+    subHTML: `These angles are <strong>${relName}</strong> — they are ${relationDesc}.`,
+    mode: 'click-tile',
+    options,
+    correctX: xVal,
+    explain: `<code>${equation}</code> → <code>${aCoef}x = ${useEqual ? givenMeasure - cConst : (180 - givenMeasure) - cConst}</code> → <code>x = ${xVal}</code>`
+  };
+}
+
+/* ============================================================================
+   PROBLEM SEQUENCE (rising difficulty)
+   ============================================================================ */
+function buildProblemSequence() {
+  return [
+    makeVerticalProblem,              // 1
+    makeLinearPairProblem,            // 2
+    () => makeParallelProblem('corresponding'),   // 3
+    () => makeParallelProblem('altInt'),          // 4
+    () => makeParallelProblem('altExt'),          // 5
+    () => makeParallelProblem('sameInt'),         // 6
+    makeTriangleInteriorProblem,      // 7
+    makeTriangleInteriorProblem,      // 8
+    makeTriangleExteriorProblem,      // 9
+    makeTriangleExteriorProblem,      // 10
+    makeAlgebraicLinearPair,          // 11
+    makeAlgebraicParallel             // 12
+  ];
+}
+
+/* ============================================================================
+   RENDERING
+   ============================================================================ */
+function renderHearts() {
+  heartsEl.innerHTML = '';
+  for (let i = 0; i < MAX_HEARTS; i++) {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('class', 'heart' + (i >= state.hearts ? ' lost' : ''));
+    svg.innerHTML = '<path fill="currentColor" d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6C19 16.5 12 21 12 21Z"/>';
+    heartsEl.appendChild(svg);
+  }
+}
+function streakMult() {
+  let m = 1;
+  for (let i = 0; i < STREAK_BREAKS.length; i++) {
+    if (state.streak >= STREAK_BREAKS[i]) m = STREAK_MULTS[i];
+  }
+  return m;
+}
+function renderStreak() {
+  streakEl.textContent = '×' + streakMult();
+  if (state.streak >= 3) streakBox.classList.add('fire');
+  else                   streakBox.classList.remove('fire');
+}
+function updateProgress() {
+  progressFill.style.width = ((state.idx) / PROBLEM_COUNT * 100) + '%';
+}
+
+const CAT_DISPLAY = {
+  vert: { label: 'VERTICAL / LINEAR', class: '' },
+  par:  { label: 'PARALLEL LINES',    class: 'parallel' },
+  tri:  { label: 'TRIANGLE',          class: 'triangle' }
+};
+
+function renderProblem(problem) {
+  state.current = problem;
+  state.answered = false;
+  state.locked = false;
+  // Category label
+  const cd = CAT_DISPLAY[problem.category];
+  catLabel.textContent = cd.label;
+  catLabel.className = 'cat-label ' + cd.class;
+  qCounter.textContent = `${state.idx + 1} / ${PROBLEM_COUNT}`;
+  // Prompt
+  promptEl.innerHTML = problem.prompt;
+  subPromptEl.innerHTML = problem.subHTML || '';
+  // Diagram
+  let svg;
+  if (problem.diagram === 'intersecting') {
+    svg = diagramIntersecting(problem.diagramArgs.θ, problem.marks);
+  } else if (problem.diagram === 'parallel') {
+    svg = diagramParallel(problem.diagramArgs.θ, problem.marks);
+  } else if (problem.diagram === 'triangle') {
+    svg = diagramTriangle(problem.diagramArgs.a, problem.diagramArgs.b, problem.diagramArgs.c, problem.marks, problem.diagramArgs.options || {});
+  }
+  stageEl.innerHTML = svg;
+  // Tiles vs hotspots
+  if (problem.mode === 'click-tile') {
+    tilesEl.style.display = 'grid';
+    tilesEl.innerHTML = '';
+    problem.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tile';
+      btn.textContent = opt.display;
+      btn.addEventListener('click', () => handleTile(i, btn));
+      tilesEl.appendChild(btn);
+    });
+    // Remove click handlers from SVG hotspots (they're not active in tile mode)
+    stageEl.querySelectorAll('.hot').forEach(h => h.classList.add('locked'));
+  } else {
+    tilesEl.style.display = 'none';
+    tilesEl.innerHTML = '';
+    stageEl.querySelectorAll('.hot').forEach(h => {
+      h.addEventListener('click', () => handleHotspot(parseInt(h.dataset.pos, 10), h));
+    });
+  }
+  // Clear feedback / next button
+  feedbackEl.classList.remove('show', 'correct', 'wrong');
+  feedbackEl.innerHTML = '';
+  nextBtn.classList.remove('show');
+}
+
+/* ============================================================================
+   INTERACTION
+   ============================================================================ */
+function handleHotspot(pos, el) {
+  if (state.locked || state.answered) return;
+  const p = state.current;
+  const accepts = p.acceptPositions || [p.correctPos];
+  const correct = accepts.includes(pos);
+  answerResult(correct, el, p);
+}
+
+function handleTile(idx, el) {
+  if (state.locked || state.answered) return;
+  const p = state.current;
+  const opt = p.options[idx];
+  answerResult(opt.isCorrect, el, p);
+}
+
+function answerResult(correct, el, problem) {
+  state.answered = true;
+  state.locked = true;
+  const stat = state.stats[problem.category];
+  stat.total++;
+  // Lock all hotspots/tiles
+  stageEl.querySelectorAll('.hot').forEach(h => h.classList.add('locked'));
+  tilesEl.querySelectorAll('.tile').forEach(t => t.disabled = true);
+  if (correct) {
+    stat.correct++;
+    state.streak++;
+    if (state.streak > state.maxStreak) state.maxStreak = state.streak;
+    const mult = streakMult();
+    const pts = 100 * mult;
+    state.score += pts;
+    el.classList.add('correct');
+    floater(el, `+${pts}`, false);
+    Audio.sfx('correct');
+    feedbackEl.innerHTML = `<strong>✓ Correct!</strong> ${problem.explain}`;
+    feedbackEl.classList.add('show', 'correct');
+  } else {
+    state.streak = 0;
+    state.hearts--;
+    el.classList.add('wrong');
+    floater(el, `−♥`, true);
+    Audio.sfx('wrong');
+    // Reveal correct hotspot/tile
+    if (problem.mode === 'click-angle') {
+      const accepts = problem.acceptPositions || [problem.correctPos];
+      stageEl.querySelectorAll('.hot').forEach(h => {
+        if (accepts.includes(parseInt(h.dataset.pos, 10))) h.classList.add('reveal');
+      });
+    } else {
+      tilesEl.querySelectorAll('.tile').forEach((t, i) => {
+        if (problem.options[i].isCorrect) t.classList.add('correct');
+      });
+    }
+    feedbackEl.innerHTML = `<strong>✗ Not quite.</strong> ${problem.explain}`;
+    feedbackEl.classList.add('show', 'wrong');
+  }
+  renderHearts();
+  renderStreak();
+  scoreEl.textContent = state.score;
+  // Show next button (or end run)
+  if (state.hearts <= 0) {
+    setTimeout(() => endRun(false), 1400);
+  } else if (state.idx + 1 >= PROBLEM_COUNT) {
+    setTimeout(() => endRun(true), 1400);
+  } else {
+    nextBtn.classList.add('show');
+  }
+}
+
+function floater(el, text, penalty) {
+  const f = document.createElement('div');
+  f.className = 'floater' + (penalty ? ' penalty' : '');
+  f.textContent = text;
+  const rect = el.getBoundingClientRect();
+  f.style.left = (rect.left + rect.width / 2) + 'px';
+  f.style.top = (rect.top - 5) + 'px';
+  f.style.position = 'fixed';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 1100);
+}
+
+/* ============================================================================
+   GAME FLOW
+   ============================================================================ */
+let problemGenerators = [];
+
+function startRun() {
+  Object.assign(state, { idx: 0, hearts: MAX_HEARTS, score: 0, streak: 0, maxStreak: 0, locked: false, answered: false });
+  state.stats.vert = { correct: 0, total: 0 };
+  state.stats.par  = { correct: 0, total: 0 };
+  state.stats.tri  = { correct: 0, total: 0 };
+  problemGenerators = buildProblemSequence();
+  renderHearts();
+  renderStreak();
+  scoreEl.textContent = '0';
+  updateProgress();
+  startModal.classList.remove('show');
+  reportModal.classList.remove('show');
+  Audio.ensure();
+  if (state.audioOn) Audio.start();
+  nextProblem();
+}
+
+function nextProblem() {
+  if (state.idx >= PROBLEM_COUNT) {
+    endRun(true);
+    return;
+  }
+  const gen = problemGenerators[state.idx];
+  let p;
+  let tries = 0;
+  do { p = gen(); tries++; } while (!p && tries < 10);
+  renderProblem(p);
+  updateProgress();
+}
+
+function endRun(victorious) {
+  Audio.stop();
+  Audio.sfx(victorious ? 'victory' : 'gameOver');
+  $('report-title').textContent = victorious ? 'RUN COMPLETE' : 'RUN ENDED';
+  $('report-subtitle').textContent = victorious ? 'All 12 problems cleared' : 'Hearts depleted · Mastery Report';
+  $('final-score').textContent = state.score;
+  const totalAnswered = state.stats.vert.total + state.stats.par.total + state.stats.tri.total;
+  const totalCorrect  = state.stats.vert.correct + state.stats.par.correct + state.stats.tri.correct;
+  const overallPct = totalAnswered ? Math.round(totalCorrect / totalAnswered * 100) : 0;
+  $('final-pct').textContent = `${totalCorrect} / ${totalAnswered} correct · ${overallPct}%`;
+  const bar = (barId, pctId, stat) => {
+    const pct = stat.total ? Math.round(stat.correct / stat.total * 100) : 0;
+    $(pctId).textContent = stat.total ? `${pct}%` : '—';
+    const barEl = $(barId);
+    barEl.style.width = pct + '%';
+    barEl.classList.toggle('low', pct < 60);
+  };
+  bar('bar-vert', 'pct-vert', state.stats.vert);
+  bar('bar-par',  'pct-par',  state.stats.par);
+  bar('bar-tri',  'pct-tri',  state.stats.tri);
+  const streakMax = state.maxStreak;
+  $('bar-streak').style.width = Math.min(100, streakMax / PROBLEM_COUNT * 100) + '%';
+  $('pct-streak').textContent = '×' + streakMax;
+  setTimeout(() => reportModal.classList.add('show'), 900);
+}
+
+/* ============================================================================
+   UI EVENTS
+   ============================================================================ */
+$('start-btn').addEventListener('click', startRun);
+$('play-again').addEventListener('click', startRun);
+$('report-archive').addEventListener('click', () => archiveModal.classList.add('show'));
+$('start-archive-btn').addEventListener('click', () => archiveModal.classList.add('show'));
+$('archive-btn').addEventListener('click', () => archiveModal.classList.add('show'));
+$('archive-close').addEventListener('click', () => archiveModal.classList.remove('show'));
+
+nextBtn.addEventListener('click', () => {
+  state.idx++;
+  nextProblem();
+});
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+audioToggle.addEventListener('click', () => {
+  state.audioOn = !state.audioOn;
+  audioToggle.textContent = state.audioOn ? '🔊' : '🔇';
+  if (state.audioOn && state.idx > 0 && state.hearts > 0) Audio.start();
+  else Audio.stop();
+});
+
+document.addEventListener('keydown', e => {
+  if (archiveModal.classList.contains('show')) {
+    if (e.key === 'Escape') archiveModal.classList.remove('show');
+    return;
+  }
+  if (startModal.classList.contains('show') || reportModal.classList.contains('show')) return;
+  if (e.key === 'Enter' && nextBtn.classList.contains('show')) {
+    nextBtn.click();
+  } else if (e.key === 'm' || e.key === 'M') {
+    audioToggle.click();
+  } else if (e.key === '1' || e.key === '2' || e.key === '3') {
+    if (state.current && state.current.mode === 'click-tile' && !state.answered) {
+      const idx = parseInt(e.key, 10) - 1;
+      const t = tilesEl.children[idx];
+      if (t) t.click();
+    }
+  }
+});
+
+/* ---------- init ---------- */
+renderHearts();
+renderStreak();
+</script>
+
+<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
+</body>
+</html>
