@@ -586,6 +586,43 @@ h3.sub{
 
 
 <body>
+<style>
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.02;margin:0 .12em;font-size:.9em}
+.frac>.n{border-bottom:1.6px solid currentColor;padding:0 .32em}
+.frac>.d{padding:0 .32em}
+.wex{background:#f6f8fb;border:1px solid #CDD5E0;border-left:4px solid #24507C;border-radius:8px;padding:9px 12px;margin:8px 0;font-size:12.5px;line-height:1.7}
+
+/* ===== step-through animated models ===== */
+.amod{border:1px solid #CDD5E0;border-radius:8px;padding:10px 14px;margin:9px 0;cursor:pointer;user-select:none;transition:border-color .2s,box-shadow .2s}
+.amod:hover{border-color:#FEC007;box-shadow:0 1px 4px rgba(30,45,79,.08)}
+.amod-title{font-family:'DejaVu Serif','Arvo',serif;color:#24507C;font-weight:bold;font-size:13px;margin-bottom:9px}
+.amod-stage{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:36px}
+.atile{display:inline-flex;width:22px;height:22px;border-radius:4px;background:#2f6fb0;color:#fff;font-family:'DejaVu Sans Mono',monospace;font-weight:bold;font-size:12px;align-items:center;justify-content:center;position:relative;transition:opacity .3s,transform .3s}
+.atile.g{background:#3a9b3a}
+.tgrp{display:inline-flex;gap:3px;padding:2px;border-radius:6px;transition:outline .25s,background .25s}
+.mdot{font-weight:bold;color:#5a6472}
+.aop,.aarrow{font-weight:bold;color:#1E2D4F;font-size:17px}
+.achip{display:inline-flex;align-items:center;background:#eaf1fb;border:1px solid #b9d0ee;border-radius:6px;padding:3px 10px;font-family:'DejaVu Sans Mono',monospace;font-weight:bold;color:#24507C;font-size:13px}
+.tfrac{display:inline-flex;flex-direction:column;align-items:center;gap:2px}
+.tfrac .num,.tfrac .den{display:flex;gap:3px;padding:3px 6px;border-radius:6px;transition:outline .25s}
+.tfrac .num{border-bottom:2px solid #1E2D4F}
+.amod-cap{margin-top:10px;font-size:11.5px;color:#4a5568;font-style:italic;min-height:1.4em;line-height:1.45}
+.amod .aarrow,.amod .gr,.amod .achip{opacity:0;transition:opacity .4s .05s}
+.amod[data-step="3"] .aarrow,.amod[data-step="3"] .gr,.amod[data-step="3"] .achip{opacity:1}
+.amod[data-step="0"] .g1,.amod[data-step="0"] .g2,.amod[data-step="0"] .num,.amod[data-step="0"] .den{opacity:.4}
+.amod[data-step="1"] .g1,.amod[data-step="1"] .num{outline:2px solid #FEC007;outline-offset:1px;background:#fff8e6}
+.amod[data-step="2"] .g2,.amod[data-step="2"] .den{outline:2px solid #3a9b3a;outline-offset:1px;background:#eef8ec}
+.atile.cx::after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:2px;background:#CC2222;transform:rotate(-16deg);opacity:0;transition:opacity .3s}
+.amod[data-step="3"] .atile.cx{opacity:.4}
+.amod[data-step="3"] .atile.cx::after{opacity:1}
+.amod[data-step="3"] .gr .atile{animation:tpop .32s ease both}
+.amod[data-step="3"] .gr .atile:nth-child(2){animation-delay:.06s}
+.amod[data-step="3"] .gr .atile:nth-child(3){animation-delay:.12s}
+.amod[data-step="3"] .gr .atile:nth-child(4){animation-delay:.18s}
+.amod[data-step="3"] .gr .atile:nth-child(5){animation-delay:.24s}
+.amod[data-step="3"] .gr .atile:nth-child(6){animation-delay:.30s}
+@keyframes tpop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+</style>
 <!-- ═══════ TOP NAV ═══════ -->
 <nav class="top-nav">
   <div class="nav-container">
@@ -605,9 +642,10 @@ h3.sub{
 <div style="background:#fff8e1;border:1px solid #FFC107;border-left:5px solid #FFC107;border-radius:8px;padding:12px 16px;margin:0 0 16px"><div style="font-family:Arvo,serif;font-weight:bold;color:#1E2D4F;margin-bottom:4px">🎯 By the end of this unit, I can…</div><ul style="margin:4px 0 0;padding-left:20px;color:#333;font-size:.92em"><li style="margin:2px 0">Apply the product, quotient, and power rules of exponents</li><li style="margin:2px 0">Simplify expressions with negative and zero exponents</li><li style="margin:2px 0">Write and compute with numbers in scientific notation</li></ul></div><p class="stds">Standards: NC.8.EE.1 · NC.8.EE.3 · NC.8.EE.4</p>
 </div>
 <div class="topic-nav">
-  <a href="#t1">1. Exponent Rules</a>
-  <a href="#t2">2. Scientific Notation</a>
-  <a href="#pA">✏ Practice</a>
+  <a href="#t1">1. Product &amp; Quotient</a>
+  <a href="#t1b">2. Power Rules</a>
+  <a href="#t1c">3. Zero &amp; Negative</a>
+  <a href="#t2">4. Scientific Notation</a>
   <a href="#review">★ Review</a>
 </div>
 
@@ -618,76 +656,34 @@ h3.sub{
   <a href="Unit_2_Exponents_EC_Notes.pdf" target="_blank" style="font-family:'Arvo',serif;font-size:.8em;font-weight:700;padding:7px 14px;background:#fff;color:#1a7000;border:2px solid var(--green);border-radius:6px;text-decoration:none">♿ EC/Modified Notes (PDF)</a>
 </div>
 <div class="intro"><p>This page weaves the practice right into the lesson: learn each skill, then try the <strong>practice that follows it</strong>. A <strong>Cumulative Review</strong> at the end ties it all together. Fill in the blanks on your printed copy first, then click any blank, step, or check button on screen to reveal the answer.</p></div>
+<div class="note" style="border-left:5px solid #CC2222"><strong>⚠️ Parentheses come first!</strong> A power attaches only to what it touches. <b>−3² = −(3·3) = −9</b>, but <b>(−3)² = (−3)(−3) = 9</b>. And a power written outside parentheses hits <em>everything</em> inside: <b>(3x²)³ = 27x⁶</b> — the 3 is cubed too. Keep an eye on parentheses all unit long.</div>
 
 <!-- TOPIC 2.1 -->
 <section class="topic" id="t1">
-  <h2><span class="num">1</span> Exponent Rules</h2>
+  <h2><span class="num">1</span> Product &amp; Quotient Rules</h2>
   <div class="key"><strong>📌 KEY RULE:</strong> Exponent rules only apply when the BASES are the SAME!</div>
 
-  <h3 class="sub">Product Rule — Count the Factors</h3>
-  <div class="diagram">
-    <svg width="420" height="180" viewBox="0 0 420 180" xmlns="http://www.w3.org/2000/svg">
-      <text x="60" y="30" text-anchor="middle" font-family="Arvo" font-size="14" font-weight="bold" fill="#1E2D4F">x³</text>
-      <rect x="10" y="40" width="34" height="34" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="27" y="63" text-anchor="middle" font-size="16" fill="#1E2D4F">x</text>
-      <rect x="48" y="40" width="34" height="34" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="65" y="63" text-anchor="middle" font-size="16" fill="#1E2D4F">x</text>
-      <rect x="86" y="40" width="34" height="34" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="103" y="63" text-anchor="middle" font-size="16" fill="#1E2D4F">x</text>
-      <text x="150" y="63" text-anchor="middle" font-size="22" font-weight="bold" fill="#b08800">×</text>
-      <text x="205" y="30" text-anchor="middle" font-family="Arvo" font-size="14" font-weight="bold" fill="#0056B3">x²</text>
-      <rect x="180" y="40" width="34" height="34" rx="4" fill="#e8f0ff" stroke="#0056B3" stroke-width="2"/><text x="197" y="63" text-anchor="middle" font-size="16" fill="#0056B3">x</text>
-      <rect x="218" y="40" width="34" height="34" rx="4" fill="#e8f0ff" stroke="#0056B3" stroke-width="2"/><text x="235" y="63" text-anchor="middle" font-size="16" fill="#0056B3">x</text>
-      <text x="270" y="63" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">=</text>
-      <rect x="290" y="40" width="30" height="30" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="305" y="61" text-anchor="middle" font-size="14" fill="#1E2D4F">x</text>
-      <rect x="322" y="40" width="30" height="30" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="337" y="61" text-anchor="middle" font-size="14" fill="#1E2D4F">x</text>
-      <rect x="354" y="40" width="30" height="30" rx="4" fill="#e8edf5" stroke="#1E2D4F" stroke-width="2"/><text x="369" y="61" text-anchor="middle" font-size="14" fill="#1E2D4F">x</text>
-      <rect x="290" y="72" width="30" height="30" rx="4" fill="#e8f0ff" stroke="#0056B3" stroke-width="2"/><text x="305" y="93" text-anchor="middle" font-size="14" fill="#0056B3">x</text>
-      <rect x="322" y="72" width="30" height="30" rx="4" fill="#e8f0ff" stroke="#0056B3" stroke-width="2"/><text x="337" y="93" text-anchor="middle" font-size="14" fill="#0056B3">x</text>
-      <text x="337" y="120" text-anchor="middle" font-family="Arvo" font-size="14" font-weight="bold" fill="#22AC00">= x⁵</text>
-      <text x="210" y="150" text-anchor="middle" font-size="13" fill="#4a4a5a">x³ × x² = x³⁺² = x⁵ → count the factors: 3 + 2 = 5 → ADD the exponents</text>
-    </svg>
-  </div>
+  <h3 class="sub">See the Rules in Action</h3>
+  <p class="blank-tip">Click each model to step through the reasoning — one stage per click.</p>
+  <div class="amod" data-step="0" data-caps='["▸ Click to step through the reasoning","x³ is three x tiles multiplied together.","Then × x² brings in two more x tiles.","Count them all: 3 + 2 = 5 tiles → x⁵.  Same base? ADD the exponents."]' onclick="stepMod(this)">
+  <div class="amod-title">Product Rule · x³ × x² = x⁵</div>
+  <div class="amod-stage"><span class="tgrp g1"><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span><span class="aop">×</span><span class="tgrp g2"><span class="atile g">x</span><span class="atile g">x</span></span><span class="aarrow">→</span><span class="tgrp gr"><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span><span class="achip">x⁵</span></div>
+  <div class="amod-cap"></div>
+</div>
+  <div class="amod frac" data-step="0" data-caps='["▸ Click to step through the reasoning","x⁵ on top — five x tiles.","x² on the bottom — two x tiles.","Cancel 2 matching pairs → 3 tiles left → x³.  Same base? SUBTRACT (5 − 2 = 3)."]' onclick="stepMod(this)">
+  <div class="amod-title">Quotient Rule · x⁵ ÷ x² = x³</div>
+  <div class="amod-stage"><span class="tfrac"><span class="num"><span class="atile cx">x</span><span class="atile cx">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span><span class="den"><span class="atile cx">x</span><span class="atile cx">x</span></span></span><span class="aarrow">→</span><span class="tgrp gr"><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span><span class="achip">x³</span></div>
+  <div class="amod-cap"></div>
+</div>
 
-  <h3 class="sub">The Five Core Rules</h3>
+  <h3 class="sub">The Rules</h3>
   <p class="blank-tip">Fill the examples and key phrase on your printed copy, then click to check.</p>
   <table class="rules-table">
     <tr><th>Rule</th><th>Formula</th><th>Simple Example</th><th>Monomial Example</th><th>Key Phrase</th></tr>
     <tr><td>Product Rule</td><td>xᵃ × xᵇ = xᵃ⁺ᵇ</td><td><span class="blank" data-ans="x³·x⁴=x⁷" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(2x³)(3x²)=6x⁵" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Same base? ADD" onclick="rb(this)">?</span></td></tr>
     <tr><td>Quotient Rule</td><td>xᵃ ÷ xᵇ = xᵃ⁻ᵇ</td><td><span class="blank" data-ans="x⁶÷x²=x⁴" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(12x⁷)÷(3x²)=4x⁵" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Same base? SUBTRACT" onclick="rb(this)">?</span></td></tr>
-    <tr><td>Power Rule</td><td>(xᵃ)ᵇ = xᵃˣᵇ</td><td><span class="blank" data-ans="(x²)³=x⁶" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(2x³)²=4x⁶" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Power to power? MULTIPLY" onclick="rb(this)">?</span></td></tr>
-    <tr><td>Zero Exponent</td><td>x⁰ = 1</td><td><span class="blank" data-ans="5⁰=1" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(3x⁵)⁰=1" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="ANY base⁰=1" onclick="rb(this)">?</span></td></tr>
-    <tr><td>Negative Exponent</td><td>x⁻ⁿ = 1/xⁿ</td><td><span class="blank" data-ans="2⁻³=1/8" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="4x⁻³=4/x³" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Flip to fraction" onclick="rb(this)">?</span></td></tr>
   </table>
   <button class="reveal-all" onclick="rbAll('t1')">Reveal all answers</button>
-
-  <div class="note"><strong>⚠️ PARENTHESES MATTER!</strong> −3² = <span class="blank" data-ans="−9" onclick="rb(this)">?</span> vs. (−3)² = <span class="blank" data-ans="9" onclick="rb(this)">?</span>. Without ( ), ONLY the base gets the exponent — not the negative sign!</div>
-
-  <h3 class="sub">Modeling the Rules — See WHY</h3>
-  <p class="blank-tip">Each rule comes from writing out the repeated multiplication. Click each card to reveal the reasoning.</p>
-
-  <div class="sa">
-    <div class="chk-q"><strong>Product Rule · x³ × x² = x⁵</strong></div>
-    <button class="sa-btn" onclick="sa(this)">See why →</button>
-    <div class="sa-ans">x·x·x × x·x = x·x·x·x·x = x⁵. Count the factors: 3 + 2 = 5. Same base → ADD the exponents.</div>
-  </div>
-  <div class="sa">
-    <div class="chk-q"><strong>Quotient Rule · x⁵ ÷ x² = x³</strong></div>
-    <button class="sa-btn" onclick="sa(this)">See why →</button>
-    <div class="sa-ans">x·x·x·x·x ÷ x·x → cancel 2 matching pairs → x·x·x = x³. Cancel matching factors: 5 − 2 = 3. Same base → SUBTRACT the exponents.</div>
-  </div>
-  <div class="sa">
-    <div class="chk-q"><strong>Power Rule · (x²)³ = x⁶</strong></div>
-    <button class="sa-btn" onclick="sa(this)">See why →</button>
-    <div class="sa-ans">Three copies of x²: (x·x)(x·x)(x·x) = x⁶. 2 × 3 = 6. Power to a power → MULTIPLY.</div>
-  </div>
-  <div class="sa">
-    <div class="chk-q"><strong>Zero Exponent · x⁰ = 1</strong></div>
-    <button class="sa-btn" onclick="sa(this)">See why →</button>
-    <div class="sa-ans">x·x·x ÷ x·x·x = 1 (anything divided by itself is 1) — but by the quotient rule this also equals x³⁻³ = x⁰. So x⁰ = 1.</div>
-  </div>
-  <div class="sa">
-    <div class="chk-q"><strong>Negative Exponent · x⁻³ = 1/x³</strong></div>
-    <button class="sa-btn" onclick="sa(this)">See why →</button>
-    <div class="sa-ans">x·x ÷ x·x·x·x·x = x²⁻⁵ = x⁻³ — but cancelling factors leaves 1/x³. So a negative exponent means "flip it": x⁻ⁿ = 1/xⁿ.</div>
-  </div>
 
   <h3 class="sub">Quick Check</h3>
   <div class="chk" id="chk21a">
@@ -699,6 +695,202 @@ h3.sub{
     </div>
     <div class="chk-fb c" id="fb-chk21a">✓ Same base, multiplication → Product Rule: ADD the exponents. x⁵·x³ = x⁸.</div>
   </div>
+
+  
+
+  <h3 class="sub" id="p1">✏ Practice 1 — Product &amp; Quotient</h3>
+  <p class="blank-tip">Multiply → ADD exponents. Divide → SUBTRACT. Write every quotient as a reduced fraction.</p>
+  <div class="two-col">
+<div class="chk" id="u2p1_1" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">1) Simplify x⁴ · x⁷</div>
+  <div class="val-chk"><input type="text" id="u2p1_1-in" placeholder="answer"><button onclick="chkVal('u2p1_1',['x¹¹','x^11'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_1"></div>
+</div>
+<div class="chk" id="u2p1_2" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">2) Simplify (3x²)(5x⁶)</div>
+  <div class="val-chk"><input type="text" id="u2p1_2-in" placeholder="answer"><button onclick="chkVal('u2p1_2',['15x⁸','15x^8'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_2"></div>
+</div>
+<div class="chk" id="u2p1_3" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">3) Simplify (2a³b²)(4a²b⁵)</div>
+  <div class="val-chk"><input type="text" id="u2p1_3-in" placeholder="answer"><button onclick="chkVal('u2p1_3',['8a⁵b⁷','8a^5b^7'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_3"></div>
+</div>
+<div class="chk" id="u2p1_4" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">4) Simplify (−3x⁴y)(6xy³)</div>
+  <div class="val-chk"><input type="text" id="u2p1_4-in" placeholder="answer"><button onclick="chkVal('u2p1_4',['−18x⁵y⁴','-18x^5y^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_4"></div>
+</div>
+<div class="chk" id="u2p1_5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) Simplify (5m²n)(2mn³)(3n²)</div>
+  <div class="val-chk"><input type="text" id="u2p1_5-in" placeholder="answer"><button onclick="chkVal('u2p1_5',['30m³n⁶','30m^3n^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_5"></div>
+</div>
+<div class="chk" id="u2p1_6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) Simplify <span class="frac"><span class="n">x⁹</span><span class="d">x⁴</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_6-in" placeholder="answer"><button onclick="chkVal('u2p1_6',['x⁵','x^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_6"></div>
+</div>
+<div class="chk" id="u2p1_7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) Simplify <span class="frac"><span class="n">15a⁷</span><span class="d">3a²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_7-in" placeholder="answer"><button onclick="chkVal('u2p1_7',['5a⁵','5a^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_7"></div>
+</div>
+<div class="chk" id="u2p1_8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) Simplify <span class="frac"><span class="n">24x⁵y⁶</span><span class="d">6x²y²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_8-in" placeholder="answer"><button onclick="chkVal('u2p1_8',['4x³y⁴','4x^3y^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_8"></div>
+</div>
+<div class="chk" id="u2p1_9" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">9) Simplify <span class="frac"><span class="n">20m⁸n³</span><span class="d">5m³n</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_9-in" placeholder="answer"><button onclick="chkVal('u2p1_9',['4m⁵n²','4m^5n^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_9"></div>
+</div>
+<div class="chk" id="u2p1_10" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">10) Simplify <span class="frac"><span class="n">−18p⁶q⁵</span><span class="d">3p²q²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_10-in" placeholder="answer"><button onclick="chkVal('u2p1_10',['−6p⁴q³','-6p^4q^3'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_10"></div>
+</div>
+<div class="chk" id="u2p1_11" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">11) Simplify <span class="frac"><span class="n">(2x³)(6x⁴)</span><span class="d">4x²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_11-in" placeholder="answer"><button onclick="chkVal('u2p1_11',['3x⁵','3x^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_11"></div>
+</div>
+<div class="chk" id="u2p1_12" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">12) Simplify <span class="frac"><span class="n">(3a²b)(4a³b²)</span><span class="d">6ab</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p1_12-in" placeholder="answer"><button onclick="chkVal('u2p1_12',['2a⁴b²','2a^4b^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p1_12"></div>
+</div>
+</div>
+</section>
+
+<!-- TOPIC POWER -->
+<section class="topic" id="t1b">
+  <h2><span class="num">2</span> Power Rules</h2>
+  <h3 class="sub">The Rules</h3>
+  <p class="blank-tip">A power outside parentheses hits everything inside. Fill in, then click to check.</p>
+  <table class="rules-table">
+    <tr><th>Rule</th><th>Formula</th><th>Simple Example</th><th>Monomial Example</th><th>Key Phrase</th></tr>
+    <tr><td>Power Rule</td><td>(xᵃ)ᵇ = xᵃˣᵇ</td><td><span class="blank" data-ans="(x²)³=x⁶" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(2x³)²=4x⁶" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Power to power? MULTIPLY" onclick="rb(this)">?</span></td></tr>
+    <tr><td>Power of a Product</td><td>(xy)ⁿ = xⁿyⁿ</td><td><span class="blank" data-ans="(2x)³=8x³" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(3ab)²=9a²b²" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Give EACH factor the power" onclick="rb(this)">?</span></td></tr>
+    <tr><td>Power of a Quotient</td><td>(<span class="frac"><span class="n">x</span><span class="d">y</span></span>)ⁿ = <span class="frac"><span class="n">xⁿ</span><span class="d">yⁿ</span></span></td><td><span class="blank" data-ans="(<span class='frac'><span class='n'>2</span><span class='d'>3</span></span>)² = <span class='frac'><span class='n'>4</span><span class='d'>9</span></span>" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(<span class='frac'><span class='n'>a</span><span class='d'>b</span></span>)³ = <span class='frac'><span class='n'>a³</span><span class='d'>b³</span></span>" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Power to top AND bottom" onclick="rb(this)">?</span></td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t1b')">Reveal all answers</button>
+
+  <div class="note"><strong>⚠️ PARENTHESES MATTER!</strong> −3² = <span class="blank" data-ans="−9" onclick="rb(this)">?</span> vs. (−3)² = <span class="blank" data-ans="9" onclick="rb(this)">?</span>. Without ( ), ONLY the base gets the exponent — not the negative sign!</div>
+
+  <h3 class="sub">See the Power Rule in Action</h3>
+  <div class="amod" data-step="0" data-caps='["▸ Click to step through the reasoning","(x²)³ means three copies of x².","Each copy is x·x — that is 2 tiles.","3 copies × 2 = 6 tiles → x⁶.  Power to a power? MULTIPLY."]' onclick="stepMod(this)">
+  <div class="amod-title">Power Rule · (x²)³ = x⁶</div>
+  <div class="amod-stage"><span class="tgrp g1"><span class="atile g">x</span><span class="atile g">x</span></span><span class="mdot">·</span><span class="tgrp g1"><span class="atile g">x</span><span class="atile g">x</span></span><span class="mdot">·</span><span class="tgrp g1"><span class="atile g">x</span><span class="atile g">x</span></span><span class="aarrow">→</span><span class="tgrp gr"><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span><span class="achip">x⁶</span></div>
+  <div class="amod-cap"></div>
+</div>
+
+  <div class="sa">
+    <div class="chk-q"><span class="badge">ERROR ANALYSIS</span> Simplify (3x²)³. A student wrote <span class="err-bad">3x⁶</span>. What went wrong?</div>
+    <button class="sa-btn" onclick="sa(this)">Reveal the fix</button>
+    <div class="sa-ans">The coefficient 3 must ALSO be cubed: 3³ = 27. Correct: 27x⁶. The power rule applies to EVERYTHING inside the parentheses.</div>
+  </div>
+
+  <h3 class="sub">Worked Example — Simplify (2a³b)⁴</h3>
+<div class="steps" data-example="ex2b">
+  <div class="step" onclick="reveal(this)"><strong>Step 1 — Power to the coefficient:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2⁴ = 16</span></div>
+  <div class="step" onclick="reveal(this)"><strong>Step 2 — Multiply the a exponent:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> a³ˣ⁴ = a¹²</span></div>
+  <div class="step" onclick="reveal(this)"><strong>Step 3 — Multiply the b exponent:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> b¹ˣ⁴ = b⁴</span></div>
+  <div class="step final" onclick="reveal(this)"><strong>✓ Step 4 — Combine:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 16a¹²b⁴</span></div>
+</div>
+<button class="reveal-all" onclick="revealAll('ex2b')">Reveal all steps</button>
+
+  <h3 class="sub" id="p2">✏ Practice 2 — Power Rules</h3>
+  <p class="blank-tip">Power to a power → MULTIPLY. Apply the power to EVERY factor, top and bottom.</p>
+  <div class="two-col">
+<div class="chk" id="u2p2_1" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">1) Simplify (x⁴)⁵</div>
+  <div class="val-chk"><input type="text" id="u2p2_1-in" placeholder="answer"><button onclick="chkVal('u2p2_1',['x²⁰','x^20'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_1"></div>
+</div>
+<div class="chk" id="u2p2_2" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">2) Simplify (2x³)⁴</div>
+  <div class="val-chk"><input type="text" id="u2p2_2-in" placeholder="answer"><button onclick="chkVal('u2p2_2',['16x¹²','16x^12'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_2"></div>
+</div>
+<div class="chk" id="u2p2_3" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">3) Simplify (−3a²)³</div>
+  <div class="val-chk"><input type="text" id="u2p2_3-in" placeholder="answer"><button onclick="chkVal('u2p2_3',['−27a⁶','-27a^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_3"></div>
+</div>
+<div class="chk" id="u2p2_4" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">4) Simplify (x²y⁵)³</div>
+  <div class="val-chk"><input type="text" id="u2p2_4-in" placeholder="answer"><button onclick="chkVal('u2p2_4',['x⁶y¹⁵','x^6y^15'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_4"></div>
+</div>
+<div class="chk" id="u2p2_5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) Simplify (4m³n²)²</div>
+  <div class="val-chk"><input type="text" id="u2p2_5-in" placeholder="answer"><button onclick="chkVal('u2p2_5',['16m⁶n⁴','16m^6n^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_5"></div>
+</div>
+<div class="chk" id="u2p2_6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) Simplify (2x³y⁴)⁵</div>
+  <div class="val-chk"><input type="text" id="u2p2_6-in" placeholder="answer"><button onclick="chkVal('u2p2_6',['32x¹⁵y²⁰','32x^15y^20'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_6"></div>
+</div>
+<div class="chk" id="u2p2_7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) Simplify (<span class="frac"><span class="n">x²</span><span class="d">y³</span></span>)⁴</div>
+  <div class="val-chk"><input type="text" id="u2p2_7-in" placeholder="answer"><button onclick="chkVal('u2p2_7',['x⁸/y¹²','x^8/y^12'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_7"></div>
+</div>
+<div class="chk" id="u2p2_8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) Simplify (<span class="frac"><span class="n">2a</span><span class="d">b²</span></span>)³</div>
+  <div class="val-chk"><input type="text" id="u2p2_8-in" placeholder="answer"><button onclick="chkVal('u2p2_8',['8a³/b⁶','8a^3/b^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_8"></div>
+</div>
+<div class="chk" id="u2p2_9" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">9) Simplify (<span class="frac"><span class="n">3x⁴</span><span class="d">2y</span></span>)²</div>
+  <div class="val-chk"><input type="text" id="u2p2_9-in" placeholder="answer"><button onclick="chkVal('u2p2_9',['9x⁸/4y²','9x^8/4y^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_9"></div>
+</div>
+<div class="chk" id="u2p2_10" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">10) Simplify ((x³)²)⁴</div>
+  <div class="val-chk"><input type="text" id="u2p2_10-in" placeholder="answer"><button onclick="chkVal('u2p2_10',['x²⁴','x^24'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_10"></div>
+</div>
+<div class="chk" id="u2p2_11" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">11) Simplify (2x²y)³(3xy²)²</div>
+  <div class="val-chk"><input type="text" id="u2p2_11-in" placeholder="answer"><button onclick="chkVal('u2p2_11',['72x⁸y⁷','72x^8y^7'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_11"></div>
+</div>
+<div class="chk" id="u2p2_12" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">12) Simplify (−2a³b²)⁴</div>
+  <div class="val-chk"><input type="text" id="u2p2_12-in" placeholder="answer"><button onclick="chkVal('u2p2_12',['16a¹²b⁸','16a^12b^8'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p2_12"></div>
+</div>
+</div>
+</section>
+
+<!-- TOPIC ZERO/NEG -->
+<section class="topic" id="t1c">
+  <h2><span class="num">3</span> Zero &amp; Negative Exponents</h2>
+  <h3 class="sub">The Rules</h3>
+  <p class="blank-tip">Anything to the 0 power is 1; a negative exponent means flip to a fraction. Click to check.</p>
+  <table class="rules-table">
+    <tr><th>Rule</th><th>Formula</th><th>Simple Example</th><th>Monomial Example</th><th>Key Phrase</th></tr>
+    <tr><td>Zero Exponent</td><td>x⁰ = 1</td><td><span class="blank" data-ans="5⁰=1" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="(3x⁵)⁰=1" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="ANY base⁰=1" onclick="rb(this)">?</span></td></tr>
+    <tr><td>Negative Exponent</td><td>x⁻ⁿ = <span class="frac"><span class="n">1</span><span class="d">xⁿ</span></span></td><td><span class="blank" data-ans="2⁻³ = <span class='frac'><span class='n'>1</span><span class='d'>8</span></span>" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="4x⁻³ = <span class='frac'><span class='n'>4</span><span class='d'>x³</span></span>" onclick="rb(this)">?</span></td><td><span class="blank" data-ans="Flip to a fraction" onclick="rb(this)">?</span></td></tr>
+  </table>
+  <button class="reveal-all" onclick="rbAll('t1c')">Reveal all answers</button>
+
+  <h3 class="sub">See the Rules in Action</h3>
+  <p class="blank-tip">Click each model to step through the reasoning.</p>
+  <div class="amod frac" data-step="0" data-caps='["▸ Click to step through the reasoning","x³ over x³ — the top and bottom are the same.","Cancel all three matching pairs.","Nothing is left = 1.  So x⁰ = 1  (3 − 3 = 0)."]' onclick="stepMod(this)">
+  <div class="amod-title">Zero Exponent · x⁰ = 1</div>
+  <div class="amod-stage"><span class="tfrac"><span class="num"><span class="atile cx">x</span><span class="atile cx">x</span><span class="atile cx">x</span></span><span class="den"><span class="atile cx">x</span><span class="atile cx">x</span><span class="atile cx">x</span></span></span><span class="aarrow">→</span><span class="tgrp gr"></span><span class="achip">1</span></div>
+  <div class="amod-cap"></div>
+</div>
+  <div class="amod frac" data-step="0" data-caps='["▸ Click to step through the reasoning","x² on top, x⁵ on the bottom.","Cancel 2 matching pairs from top and bottom.","3 x tiles remain on the bottom → 1 over x³.  So x⁻³ is the reciprocal of x³."]' onclick="stepMod(this)">
+  <div class="amod-title">Negative Exponent · x⁻³ = <span class="frac"><span class="n">1</span><span class="d">x³</span></span></div>
+  <div class="amod-stage"><span class="tfrac"><span class="num"><span class="atile cx">x</span><span class="atile cx">x</span></span><span class="den"><span class="atile cx">x</span><span class="atile cx">x</span><span class="atile">x</span><span class="atile">x</span><span class="atile">x</span></span></span><span class="aarrow">→</span><span class="tgrp gr"></span><span class="achip"><span class="frac"><span class="n">1</span><span class="d">x³</span></span></span></div>
+  <div class="amod-cap"></div>
+</div>
 
   <h3 class="sub">Match the Rule to its Key Phrase</h3>
   <div class="chk">
@@ -720,89 +912,79 @@ h3.sub{
     <div class="match-status" id="st-m1">0 of 4 matched</div>
   </div>
 
-  <h3 class="sub">Worked Example — Simplify (4x³y²)(3x⁵y)</h3>
-  <div class="steps" data-example="ex2-1">
-    <div class="step" onclick="reveal(this)"><strong>Step 1 — Multiply coefficients:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 4 × 3 = 12</span></div>
-    <div class="step" onclick="reveal(this)"><strong>Step 2 — Add x exponents:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> x³ · x⁵ = x⁸</span></div>
-    <div class="step" onclick="reveal(this)"><strong>Step 3 — Add y exponents:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y² · y¹ = y³</span></div>
-    <div class="step final" onclick="reveal(this)"><strong>✓ Step 4 — Combine:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 12x⁸y³</span></div>
-  </div>
-  <button class="reveal-all" onclick="revealAll('ex2-1')">Reveal all steps</button>
-
-  <div class="sa">
-    <div class="chk-q"><span class="badge">ERROR ANALYSIS</span> Simplify (3x²)³. A student wrote <span class="err-bad">3x⁶</span>. What went wrong?</div>
-    <button class="sa-btn" onclick="sa(this)">Reveal the fix</button>
-    <div class="sa-ans">The coefficient 3 must ALSO be cubed: 3³ = 27. Correct: 27x⁶. The power rule applies to EVERYTHING inside the parentheses.</div>
-  </div>
-
-<h3 class="sub" id="pA">✏ Practice A — Exponent Rules with Monomials</h3>
+  <h3 class="sub">Negative Exponents Across the Fraction Bar</h3>
+  <p class="blank-tip">A negative exponent moves its factor to the OTHER side of the fraction bar and turns positive.</p>
+  <div class="wex"><b>Move across the bar:</b> &nbsp; x⁻³ = <span class="frac"><span class="n">1</span><span class="d">x³</span></span> &nbsp;·&nbsp; <span class="frac"><span class="n">1</span><span class="d">x⁻³</span></span> = x³ &nbsp;·&nbsp; <span class="frac"><span class="n">x⁻²</span><span class="d">y⁻⁴</span></span> = <span class="frac"><span class="n">y⁴</span><span class="d">x²</span></span></div>
+  <div class="wex"><b>In parentheses — flip to the reciprocal:</b> &nbsp; (<span class="frac"><span class="n">a</span><span class="d">b</span></span>)⁻ⁿ = (<span class="frac"><span class="n">b</span><span class="d">a</span></span>)ⁿ. &nbsp; Example: &nbsp; (<span class="frac"><span class="n">2</span><span class="d">3</span></span>)⁻² = (<span class="frac"><span class="n">3</span><span class="d">2</span></span>)² = <span class="frac"><span class="n">9</span><span class="d">4</span></span> &nbsp;·&nbsp; (<span class="frac"><span class="n">x²</span><span class="d">y</span></span>)⁻³ = (<span class="frac"><span class="n">y</span><span class="d">x²</span></span>)³ = <span class="frac"><span class="n">y³</span><span class="d">x⁶</span></span></div>
+  <h3 class="sub" id="p3">✏ Practice 3 — Zero &amp; Negative Exponents</h3>
+  <p class="blank-tip">Write every answer with POSITIVE exponents only, as a reduced fraction.</p>
   <div class="two-col">
-<div class="chk" id="u2pA1" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">1) Simplify x³ · x⁵</div>
-  <div class="val-chk"><input type="text" id="u2pA1-in" placeholder="answer"><button onclick="chkVal('u2pA1',['x⁸', 'x^8'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA1"></div>
+<div class="chk" id="u2p3_1" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">1) Simplify (7x⁴y²)⁰</div>
+  <div class="val-chk"><input type="text" id="u2p3_1-in" placeholder="answer"><button onclick="chkVal('u2p3_1',['1'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_1"></div>
 </div>
-<div class="chk" id="u2pA2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) Simplify (y⁴)³</div>
-  <div class="val-chk"><input type="text" id="u2pA2-in" placeholder="answer"><button onclick="chkVal('u2pA2',['y¹²', 'y^12'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA2"></div>
+<div class="chk" id="u2p3_2" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">2) Simplify (3a²b)⁰</div>
+  <div class="val-chk"><input type="text" id="u2p3_2-in" placeholder="answer"><button onclick="chkVal('u2p3_2',['1'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_2"></div>
 </div>
-<div class="chk" id="u2pA3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) Simplify a⁸ ÷ a³</div>
-  <div class="val-chk"><input type="text" id="u2pA3-in" placeholder="answer"><button onclick="chkVal('u2pA3',['a⁵', 'a^5'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA3"></div>
+<div class="chk" id="u2p3_3" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">3) Evaluate 4⁻³</div>
+  <div class="val-chk"><input type="text" id="u2p3_3-in" placeholder="answer"><button onclick="chkVal('u2p3_3',['1/64','0.015625'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_3"></div>
 </div>
-<div class="chk" id="u2pA4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) Simplify (2x³)(5x²)</div>
-  <div class="val-chk"><input type="text" id="u2pA4-in" placeholder="answer"><button onclick="chkVal('u2pA4',['10x⁵', '10x^5'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA4"></div>
+<div class="chk" id="u2p3_4" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">4) Write with positive exponents: 2x⁻⁵</div>
+  <div class="val-chk"><input type="text" id="u2p3_4-in" placeholder="answer"><button onclick="chkVal('u2p3_4',['2/x⁵','2/x^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_4"></div>
 </div>
-<div class="chk" id="u2pA5" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">5) Simplify (3m²)³</div>
-  <div class="val-chk"><input type="text" id="u2pA5-in" placeholder="answer"><button onclick="chkVal('u2pA5',['27m⁶', '27m^6'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA5"></div>
+<div class="chk" id="u2p3_5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) Simplify <span class="frac"><span class="n">x⁻³</span><span class="d">y⁻²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p3_5-in" placeholder="answer"><button onclick="chkVal('u2p3_5',['y²/x³','y^2/x^3'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_5"></div>
 </div>
-<div class="chk" id="u2pA6" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">6) Simplify 12y⁷ ÷ 4y²</div>
-  <div class="val-chk"><input type="text" id="u2pA6-in" placeholder="answer"><button onclick="chkVal('u2pA6',['3y⁵', '3y^5'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA6"></div>
+<div class="chk" id="u2p3_6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) Simplify <span class="frac"><span class="n">a⁻²b³</span><span class="d">c⁻¹</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p3_6-in" placeholder="answer"><button onclick="chkVal('u2p3_6',['b³c/a²','b^3c/a^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_6"></div>
 </div>
-<div class="chk" id="u2pA7" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">7) Simplify (−2a⁴)²</div>
-  <div class="val-chk"><input type="text" id="u2pA7-in" placeholder="answer"><button onclick="chkVal('u2pA7',['4a⁸', '4a^8'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA7"></div>
+<div class="chk" id="u2p3_7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) Simplify <span class="frac"><span class="n">12m⁻²n⁴</span><span class="d">3m⁴n⁻¹</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p3_7-in" placeholder="answer"><button onclick="chkVal('u2p3_7',['4n⁵/m⁶','4n^5/m^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_7"></div>
 </div>
-<div class="chk" id="u2pA8" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">8) Simplify (5x²y)(3xy³)</div>
-  <div class="val-chk"><input type="text" id="u2pA8-in" placeholder="answer"><button onclick="chkVal('u2pA8',['15x³y⁴', '15x^3y^4'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA8"></div>
+<div class="chk" id="u2p3_8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) Simplify <span class="frac"><span class="n">8x⁻³y²</span><span class="d">2xy⁻¹</span></span></div>
+  <div class="val-chk"><input type="text" id="u2p3_8-in" placeholder="answer"><button onclick="chkVal('u2p3_8',['4y³/x⁴','4y^3/x^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_8"></div>
 </div>
-<div class="chk" id="u2pA9" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">9) Simplify 18n⁶ ÷ 6n⁶</div>
-  <div class="val-chk"><input type="text" id="u2pA9-in" placeholder="answer"><button onclick="chkVal('u2pA9',['3'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA9"></div>
+<div class="chk" id="u2p3_9" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">9) Simplify (<span class="frac"><span class="n">x</span><span class="d">y</span></span>)⁻²</div>
+  <div class="val-chk"><input type="text" id="u2p3_9-in" placeholder="answer"><button onclick="chkVal('u2p3_9',['y²/x²','y^2/x^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_9"></div>
 </div>
-<div class="chk" id="u2pA10" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">10) Simplify (4b³)² ÷ 2b</div>
-  <div class="val-chk"><input type="text" id="u2pA10-in" placeholder="answer"><button onclick="chkVal('u2pA10',['8b⁵', '8b^5'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA10"></div>
+<div class="chk" id="u2p3_10" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">10) Evaluate (<span class="frac"><span class="n">2</span><span class="d">3</span></span>)⁻³</div>
+  <div class="val-chk"><input type="text" id="u2p3_10-in" placeholder="answer"><button onclick="chkVal('u2p3_10',['27/8','3.375'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_10"></div>
 </div>
-<div class="chk" id="u2pA11" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">11) Simplify (−3x²)(−4x³)</div>
-  <div class="val-chk"><input type="text" id="u2pA11-in" placeholder="answer"><button onclick="chkVal('u2pA11',['12x⁵', '12x^5'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA11"></div>
+<div class="chk" id="u2p3_11" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">11) Simplify (<span class="frac"><span class="n">a²</span><span class="d">b</span></span>)⁻³</div>
+  <div class="val-chk"><input type="text" id="u2p3_11-in" placeholder="answer"><button onclick="chkVal('u2p3_11',['b³/a⁶','b^3/a^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_11"></div>
 </div>
-<div class="chk" id="u2pA12" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">12) Simplify (x⁵y²)³</div>
-  <div class="val-chk"><input type="text" id="u2pA12-in" placeholder="answer"><button onclick="chkVal('u2pA12',['x¹⁵y⁶', 'x^15y^6'])">Check</button></div>
-  <div class="chk-fb" id="fb-u2pA12"></div>
+<div class="chk" id="u2p3_12" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">12) Simplify (<span class="frac"><span class="n">3x</span><span class="d">y²</span></span>)⁻²</div>
+  <div class="val-chk"><input type="text" id="u2p3_12-in" placeholder="answer"><button onclick="chkVal('u2p3_12',['y⁴/9x²','y^4/9x^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2p3_12"></div>
 </div>
 </div>
 </section>
 
 <!-- TOPIC 2.2 -->
 <section class="topic" id="t2">
-  <h2><span class="num">2</span> Scientific Notation</h2>
+  <h2><span class="num">4</span> Scientific Notation</h2>
   <div class="key"><strong>📌 THE FORMAT:</strong> a × 10ⁿ, where 1 ≤ a &lt; 10 &mdash; example: 4.5 × 10⁷ = coefficient · base (always 10) · exponent.</div>
 
   <h3 class="sub">Move the Decimal</h3>
@@ -833,59 +1015,79 @@ h3.sub{
   <button class="reveal-all" onclick="rbAll('t2')">Reveal all answers</button>
 
 <h3 class="sub">✏ Practice B — Scientific Notation Conversions</h3>
+  <p class="blank-tip">Remember: 1 ≤ a &lt; 10. Positive exp = BIG number · Negative exp = SMALL number.</p>
   <div class="two-col">
 <div class="chk" id="u2pB1" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">1) 45,000,000 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2pB1-in" placeholder="answer"><button onclick="chkVal('u2pB1',['4.5×10⁷', '4.5x10^7', '4.5*10^7'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">1) <span class="mono">45,000,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB1-in" placeholder="answer"><button onclick="chkVal('u2pB1',['4.5×10⁷','4.5x10^7','4.5*10^7'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB1"></div>
 </div>
 <div class="chk" id="u2pB2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) 0.00032 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2pB2-in" placeholder="answer"><button onclick="chkVal('u2pB2',['3.2×10⁻⁴', '3.2x10^-4', '3.2*10^-4'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">2) <span class="mono">0.00032</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB2-in" placeholder="answer"><button onclick="chkVal('u2pB2',['3.2×10⁻⁴','3.2x10^-4','3.2*10^-4'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB2"></div>
 </div>
 <div class="chk" id="u2pB3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) 6.02 × 10⁸ → standard form</div>
-  <div class="val-chk"><input type="text" id="u2pB3-in" placeholder="answer"><button onclick="chkVal('u2pB3',['602,000,000', '602000000'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">3) <span class="mono">6.02 × 10⁸</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2pB3-in" placeholder="answer"><button onclick="chkVal('u2pB3',['602,000,000','602000000'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB3"></div>
 </div>
 <div class="chk" id="u2pB4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) 9.1 × 10⁻⁵ → standard form</div>
+  <div class="chk-q" style="font-size:0.92em">4) <span class="mono">9.1 × 10⁻⁵</span> → standard form</div>
   <div class="val-chk"><input type="text" id="u2pB4-in" placeholder="answer"><button onclick="chkVal('u2pB4',['0.000091'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB4"></div>
 </div>
 <div class="chk" id="u2pB5" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">5) 780,000 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2pB5-in" placeholder="answer"><button onclick="chkVal('u2pB5',['7.8×10⁵', '7.8x10^5', '7.8*10^5'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">5) <span class="mono">780,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB5-in" placeholder="answer"><button onclick="chkVal('u2pB5',['7.8×10⁵','7.8x10^5','7.8*10^5'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB5"></div>
 </div>
 <div class="chk" id="u2pB6" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">6) 0.0000067 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2pB6-in" placeholder="answer"><button onclick="chkVal('u2pB6',['6.7×10⁻⁶', '6.7x10^-6', '6.7*10^-6'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">6) <span class="mono">0.0000067</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB6-in" placeholder="answer"><button onclick="chkVal('u2pB6',['6.7×10⁻⁶','6.7x10^-6','6.7*10^-6'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB6"></div>
 </div>
 <div class="chk" id="u2pB7" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">7) 3.45 × 10⁴ → standard form</div>
-  <div class="val-chk"><input type="text" id="u2pB7-in" placeholder="answer"><button onclick="chkVal('u2pB7',['34,500', '34500'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">7) <span class="mono">3.45 × 10⁴</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2pB7-in" placeholder="answer"><button onclick="chkVal('u2pB7',['34,500','34500'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB7"></div>
 </div>
 <div class="chk" id="u2pB8" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">8) 1.2 × 10⁻³ → standard form</div>
+  <div class="chk-q" style="font-size:0.92em">8) <span class="mono">1.2 × 10⁻³</span> → standard form</div>
   <div class="val-chk"><input type="text" id="u2pB8-in" placeholder="answer"><button onclick="chkVal('u2pB8',['0.0012'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB8"></div>
 </div>
 <div class="chk" id="u2pB9" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">9) 5,280,000,000 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2pB9-in" placeholder="answer"><button onclick="chkVal('u2pB9',['5.28×10⁹', '5.28x10^9', '5.28*10^9'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">9) <span class="mono">5,280,000,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB9-in" placeholder="answer"><button onclick="chkVal('u2pB9',['5.28×10⁹','5.28x10^9','5.28*10^9'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB9"></div>
 </div>
 <div class="chk" id="u2pB10" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">10) 2.5 × 10⁻² → standard form</div>
+  <div class="chk-q" style="font-size:0.92em">10) <span class="mono">2.5 × 10⁻²</span> → standard form</div>
   <div class="val-chk"><input type="text" id="u2pB10-in" placeholder="answer"><button onclick="chkVal('u2pB10',['0.025'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pB10"></div>
 </div>
+<div class="chk" id="u2pB11" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">11) <span class="mono">0.000000904</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB11-in" placeholder="answer"><button onclick="chkVal('u2pB11',['9.04×10⁻⁷','9.04x10^-7','9.04*10^-7'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pB11"></div>
 </div>
-
+<div class="chk" id="u2pB12" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">12) <span class="mono">7.15 × 10⁶</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2pB12-in" placeholder="answer"><button onclick="chkVal('u2pB12',['7,150,000','7150000'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pB12"></div>
+</div>
+<div class="chk" id="u2pB13" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">13) <span class="mono">63,400,000,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2pB13-in" placeholder="answer"><button onclick="chkVal('u2pB13',['6.34×10¹⁰','6.34x10^10','6.34*10^10'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pB13"></div>
+</div>
+<div class="chk" id="u2pB14" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">14) <span class="mono">8.8 × 10⁻⁶</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2pB14-in" placeholder="answer"><button onclick="chkVal('u2pB14',['0.0000088'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pB14"></div>
+</div>
+</div>
 
   <h3 class="sub">Multiplying — 3-Step Process</h3>
   <ol style="margin:8px 0 8px 22px;line-height:1.9">
@@ -935,32 +1137,53 @@ h3.sub{
   </div>
 
   <h3 class="sub">✏ Practice C — Operations with Scientific Notation</h3>
+  <p class="blank-tip">Multiply/divide the coefficients · add/subtract the exponents · adjust so 1 ≤ a &lt; 10.</p>
   <div class="two-col">
 <div class="chk" id="u2pC1" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">1) (3 × 10⁴)(2 × 10⁵)</div>
-  <div class="val-chk"><input type="text" id="u2pC1-in" placeholder="answer"><button onclick="chkVal('u2pC1',['6×10⁹', '6x10^9', '6*10^9'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">1) <span class="mono">(3 × 10⁴)(2 × 10⁵)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC1-in" placeholder="answer"><button onclick="chkVal('u2pC1',['6×10⁹','6x10^9','6*10^9'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pC1"></div>
 </div>
 <div class="chk" id="u2pC2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) (8 × 10⁷) ÷ (4 × 10³)</div>
-  <div class="val-chk"><input type="text" id="u2pC2-in" placeholder="answer"><button onclick="chkVal('u2pC2',['2×10⁴', '2x10^4', '2*10^4'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">2) <span class="mono">(8 × 10⁷) ÷ (4 × 10³)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC2-in" placeholder="answer"><button onclick="chkVal('u2pC2',['2×10⁴','2x10^4','2*10^4'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pC2"></div>
 </div>
 <div class="chk" id="u2pC3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) (5 × 10³)(7 × 10⁶)</div>
-  <div class="val-chk"><input type="text" id="u2pC3-in" placeholder="answer"><button onclick="chkVal('u2pC3',['3.5×10¹⁰', '3.5x10^10', '3.5*10^10'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">3) <span class="mono">(5 × 10³)(7 × 10⁶)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC3-in" placeholder="answer"><button onclick="chkVal('u2pC3',['3.5×10¹⁰','3.5x10^10','3.5*10^10'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pC3"></div>
 </div>
 <div class="chk" id="u2pC4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) (9.6 × 10⁸) ÷ (3.2 × 10⁵)</div>
-  <div class="val-chk"><input type="text" id="u2pC4-in" placeholder="answer"><button onclick="chkVal('u2pC4',['3×10³', '3x10^3', '3*10^3'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">4) <span class="mono">(9.6 × 10⁸) ÷ (3.2 × 10⁵)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC4-in" placeholder="answer"><button onclick="chkVal('u2pC4',['3×10³','3x10^3','3*10^3'])">Check</button></div>
   <div class="chk-fb" id="fb-u2pC4"></div>
+</div>
+<div class="chk" id="u2pC5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) <span class="mono">(6 × 10⁵)(5 × 10⁴)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC5-in" placeholder="answer"><button onclick="chkVal('u2pC5',['3×10¹⁰','3x10^10','3*10^10','3.0×10¹⁰','3.0x10^10','3.0*10^10'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pC5"></div>
+</div>
+<div class="chk" id="u2pC6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) <span class="mono">(1.5 × 10⁻³)(4 × 10⁷)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC6-in" placeholder="answer"><button onclick="chkVal('u2pC6',['6×10⁴','6x10^4','6*10^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pC6"></div>
+</div>
+<div class="chk" id="u2pC7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) <span class="mono">(7.2 × 10⁹) ÷ (1.8 × 10⁻²)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC7-in" placeholder="answer"><button onclick="chkVal('u2pC7',['4×10¹¹','4x10^11','4*10^11'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pC7"></div>
+</div>
+<div class="chk" id="u2pC8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) <span class="mono">(2.5 × 10⁶)(8 × 10⁻³)</span></div>
+  <div class="val-chk"><input type="text" id="u2pC8-in" placeholder="answer"><button onclick="chkVal('u2pC8',['2×10⁴','2x10^4','2*10^4','2.0×10⁴','2.0x10^4','2.0*10^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2pC8"></div>
 </div>
 </div>
 
-<h3 class="sub">✏ Practice D — Word Problems</h3>
-  
-<div class="sa">
+  <h3 class="sub">✏ Practice D — Word Problems</h3>
+  <p class="blank-tip">Identify the operation, write your setup, then adjust so 1 ≤ a &lt; 10.</p>
+  <div class="sa">
   <div class="chk-q"><strong>1.</strong> The Sun is about 9.3 × 10⁷ miles from Earth. Light travels 1.86 × 10⁵ miles per second. How many seconds does it take light to reach Earth?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
   <div class="sa-ans">(9.3 × 10⁷) ÷ (1.86 × 10⁵) = 5 × 10² seconds (500 seconds).</div>
@@ -968,29 +1191,38 @@ h3.sub{
 <div class="sa">
   <div class="chk-q"><strong>2.</strong> A bacteria cell is about 2 × 10⁻⁶ m long. A virus is about 5 × 10⁻⁸ m long. How many times longer is the bacteria?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
-  <div class="sa-ans">(2 × 10⁻⁶) ÷ (5 × 10⁻⁸) = 0.4 × 10² = 40 times longer.</div>
+  <div class="sa-ans">(2 × 10⁻⁶) ÷ (5 × 10⁻⁸) = 40 times longer.</div>
 </div>
 <div class="sa">
-  <div class="chk-q"><strong>3.</strong> The US national debt is about 3.4 × 10¹³ dollars. The US population is about 3.4 × 10⁸ people. What is the debt per person?</div>
+  <div class="chk-q"><strong>3.</strong> The US national debt is about 3.4 × 10¹³ dollars. The population is about 3.4 × 10⁸ people. What is the debt per person?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
   <div class="sa-ans">(3.4 × 10¹³) ÷ (3.4 × 10⁸) = 1 × 10⁵ = $100,000 per person.</div>
 </div>
 <div class="sa">
-  <div class="chk-q"><strong>4.</strong> A grain of sand has mass 6.5 × 10⁻⁴ grams. A beach has about 8 × 10¹⁸ grains of sand. What is the total mass in grams?</div>
+  <div class="chk-q"><strong>4.</strong> A grain of sand has mass 6.5 × 10⁻⁴ grams. A beach has about 8 × 10¹⁸ grains. What is the total mass in grams?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
-  <div class="sa-ans">(6.5 × 10⁻⁴)(8 × 10¹⁸) = 52 × 10¹⁴ = 5.2 × 10¹⁵ grams.</div>
+  <div class="sa-ans">(6.5 × 10⁻⁴)(8 × 10¹⁸) = 5.2 × 10¹⁵ grams.</div>
 </div>
 <div class="sa">
-  <div class="chk-q"><strong>5.</strong> There are about 3.7 × 10¹³ cells in a human body. Each cell is about 1 × 10⁻⁵ m wide. If all cells were lined up, how long in meters?</div>
+  <div class="chk-q"><strong>5.</strong> There are about 3.7 × 10¹³ cells in a human body. Each cell is about 1 × 10⁻⁵ m wide. Lined up, how long in meters?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
   <div class="sa-ans">(3.7 × 10¹³)(1 × 10⁻⁵) = 3.7 × 10⁸ meters.</div>
 </div>
 <div class="sa">
   <div class="chk-q"><strong>6.</strong> A computer does 4.8 × 10⁹ calculations per second. A task needs 1.44 × 10¹² calculations. How many seconds to finish?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
-  <div class="sa-ans">(1.44 × 10¹²) ÷ (4.8 × 10⁹) = 0.3 × 10³ = 3 × 10² seconds (300 seconds).</div>
+  <div class="sa-ans">(1.44 × 10¹²) ÷ (4.8 × 10⁹) = 3 × 10² seconds (300 seconds).</div>
 </div>
-
+<div class="sa">
+  <div class="chk-q"><strong>7.</strong> A hard drive holds 2 × 10¹² bytes. Each photo is 4 × 10⁶ bytes. How many photos fit?</div>
+  <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
+  <div class="sa-ans">(2 × 10¹²) ÷ (4 × 10⁶) = 5 × 10⁵ photos (500,000).</div>
+</div>
+<div class="sa">
+  <div class="chk-q"><strong>8.</strong> Light travels 3 × 10⁸ meters per second. How far does it travel in 6 × 10³ seconds?</div>
+  <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
+  <div class="sa-ans">(3 × 10⁸)(6 × 10³) = 1.8 × 10¹² meters.</div>
+</div>
 </section>
 
 <!-- CUMULATIVE REVIEW -->
@@ -999,112 +1231,182 @@ h3.sub{
   <div class="key"><strong>📌 Mixed practice over everything above.</strong> Show all work on your printed copy, then check on screen.</div>
 
   <h3 class="sub">A. Exponent Rules</h3>
-<div class="two-col">
+  <div class="two-col">
 <div class="chk" id="u2rA1" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">1) Simplify x⁴ · x⁶</div>
   <div class="val-chk"><input type="text" id="u2rA1-in" placeholder="answer"><button onclick="chkVal('u2rA1',['x¹⁰','x^10'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA1"></div>
 </div>
 <div class="chk" id="u2rA2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) Simplify (m³)⁴</div>
-  <div class="val-chk"><input type="text" id="u2rA2-in" placeholder="answer"><button onclick="chkVal('u2rA2',['m¹²','m^12'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">2) Simplify (3x²)(4x⁵)</div>
+  <div class="val-chk"><input type="text" id="u2rA2-in" placeholder="answer"><button onclick="chkVal('u2rA2',['12x⁷','12x^7'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA2"></div>
 </div>
 <div class="chk" id="u2rA3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) Simplify p⁹ ÷ p⁴</div>
-  <div class="val-chk"><input type="text" id="u2rA3-in" placeholder="answer"><button onclick="chkVal('u2rA3',['p⁵','p^5'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">3) Simplify (2a³b²)(5ab⁴)</div>
+  <div class="val-chk"><input type="text" id="u2rA3-in" placeholder="answer"><button onclick="chkVal('u2rA3',['10a⁴b⁶','10a^4b^6'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA3"></div>
 </div>
 <div class="chk" id="u2rA4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) Simplify (3a²)(4a⁵)</div>
-  <div class="val-chk"><input type="text" id="u2rA4-in" placeholder="answer"><button onclick="chkVal('u2rA4',['12a⁷','12a^7'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">4) Simplify <span class="frac"><span class="n">24x⁷</span><span class="d">6x³</span></span></div>
+  <div class="val-chk"><input type="text" id="u2rA4-in" placeholder="answer"><button onclick="chkVal('u2rA4',['4x⁴','4x^4'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA4"></div>
 </div>
 <div class="chk" id="u2rA5" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">5) Simplify (−2c⁴)³</div>
-  <div class="val-chk"><input type="text" id="u2rA5-in" placeholder="answer"><button onclick="chkVal('u2rA5',['−8c¹²','-8c^12'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">5) Simplify (m³)⁵</div>
+  <div class="val-chk"><input type="text" id="u2rA5-in" placeholder="answer"><button onclick="chkVal('u2rA5',['m¹⁵','m^15'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA5"></div>
 </div>
 <div class="chk" id="u2rA6" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">6) Simplify (6x⁵y³) ÷ (2x²y)</div>
-  <div class="val-chk"><input type="text" id="u2rA6-in" placeholder="answer"><button onclick="chkVal('u2rA6',['3x³y²','3x^3y^2'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">6) Simplify (2x²y³)⁴</div>
+  <div class="val-chk"><input type="text" id="u2rA6-in" placeholder="answer"><button onclick="chkVal('u2rA6',['16x⁸y¹²','16x^8y^12'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rA6"></div>
+</div>
+<div class="chk" id="u2rA7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) Simplify <span class="frac"><span class="n">18a⁵b⁶</span><span class="d">3a²b²</span></span></div>
+  <div class="val-chk"><input type="text" id="u2rA7-in" placeholder="answer"><button onclick="chkVal('u2rA7',['6a³b⁴','6a^3b^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rA7"></div>
+</div>
+<div class="chk" id="u2rA8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) Simplify (<span class="frac"><span class="n">x⁴</span><span class="d">y²</span></span>)³</div>
+  <div class="val-chk"><input type="text" id="u2rA8-in" placeholder="answer"><button onclick="chkVal('u2rA8',['x¹²/y⁶','x^12/y^6'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rA8"></div>
 </div>
 </div>
 
   <h3 class="sub">B. Scientific Notation Conversions</h3>
-<div class="two-col">
+  <div class="two-col">
 <div class="chk" id="u2rB1" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">1) 6,300,000 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2rB1-in" placeholder="answer"><button onclick="chkVal('u2rB1',['6.3×10⁶','6.3x10^6','6.3*10^6'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">1) <span class="mono">7,200,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2rB1-in" placeholder="answer"><button onclick="chkVal('u2rB1',['7.2×10⁶','7.2x10^6','7.2*10^6'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB1"></div>
 </div>
 <div class="chk" id="u2rB2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) 0.00071 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2rB2-in" placeholder="answer"><button onclick="chkVal('u2rB2',['7.1×10⁻⁴','7.1x10^-4','7.1*10^-4'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">2) <span class="mono">0.00045</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2rB2-in" placeholder="answer"><button onclick="chkVal('u2rB2',['4.5×10⁻⁴','4.5x10^-4','4.5*10^-4'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB2"></div>
 </div>
 <div class="chk" id="u2rB3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) 2.08 × 10⁵ → standard form</div>
-  <div class="val-chk"><input type="text" id="u2rB3-in" placeholder="answer"><button onclick="chkVal('u2rB3',['208,000','208000'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">3) <span class="mono">3.05 × 10⁷</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2rB3-in" placeholder="answer"><button onclick="chkVal('u2rB3',['30,500,000','30500000'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB3"></div>
 </div>
 <div class="chk" id="u2rB4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) 4.5 × 10⁻⁶ → standard form</div>
-  <div class="val-chk"><input type="text" id="u2rB4-in" placeholder="answer"><button onclick="chkVal('u2rB4',['0.0000045'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">4) <span class="mono">6.1 × 10⁻⁵</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2rB4-in" placeholder="answer"><button onclick="chkVal('u2rB4',['0.000061'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB4"></div>
 </div>
 <div class="chk" id="u2rB5" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">5) 91,000,000 → scientific notation</div>
-  <div class="val-chk"><input type="text" id="u2rB5-in" placeholder="answer"><button onclick="chkVal('u2rB5',['9.1×10⁷','9.1x10^7','9.1*10^7'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">5) <span class="mono">91,000</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2rB5-in" placeholder="answer"><button onclick="chkVal('u2rB5',['9.1×10⁴','9.1x10^4','9.1*10^4'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB5"></div>
 </div>
 <div class="chk" id="u2rB6" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">6) 3.6 × 10⁻² → standard form</div>
-  <div class="val-chk"><input type="text" id="u2rB6-in" placeholder="answer"><button onclick="chkVal('u2rB6',['0.036'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">6) <span class="mono">0.0000008</span> → sci. notation</div>
+  <div class="val-chk"><input type="text" id="u2rB6-in" placeholder="answer"><button onclick="chkVal('u2rB6',['8×10⁻⁷','8x10^-7','8*10^-7'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rB6"></div>
+</div>
+<div class="chk" id="u2rB7" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">7) <span class="mono">4.44 × 10⁶</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2rB7-in" placeholder="answer"><button onclick="chkVal('u2rB7',['4,440,000','4440000'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rB7"></div>
+</div>
+<div class="chk" id="u2rB8" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">8) <span class="mono">2.7 × 10⁻³</span> → standard form</div>
+  <div class="val-chk"><input type="text" id="u2rB8-in" placeholder="answer"><button onclick="chkVal('u2rB8',['0.0027'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rB8"></div>
 </div>
 </div>
 
   <h3 class="sub">C. Operations</h3>
-<div class="two-col">
+  <div class="two-col">
 <div class="chk" id="u2rC1" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">1) (2 × 10³)(4 × 10⁶)</div>
-  <div class="val-chk"><input type="text" id="u2rC1-in" placeholder="answer"><button onclick="chkVal('u2rC1',['8×10⁹','8x10^9','8*10^9'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">1) <span class="mono">(3 × 10⁴)(3 × 10⁵)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC1-in" placeholder="answer"><button onclick="chkVal('u2rC1',['9×10⁹','9x10^9','9*10^9'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rC1"></div>
 </div>
 <div class="chk" id="u2rC2" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">2) (9 × 10⁸) ÷ (3 × 10²)</div>
-  <div class="val-chk"><input type="text" id="u2rC2-in" placeholder="answer"><button onclick="chkVal('u2rC2',['3×10⁶','3x10^6','3*10^6'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">2) <span class="mono">(8 × 10⁹) ÷ (2 × 10³)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC2-in" placeholder="answer"><button onclick="chkVal('u2rC2',['4×10⁶','4x10^6','4*10^6'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rC2"></div>
 </div>
 <div class="chk" id="u2rC3" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">3) (6 × 10⁵)(5 × 10⁴)</div>
-  <div class="val-chk"><input type="text" id="u2rC3-in" placeholder="answer"><button onclick="chkVal('u2rC3',['3×10¹⁰','3.0×10¹⁰','3x10^10','3*10^10','3.0x10^10'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">3) <span class="mono">(5 × 10⁶)(4 × 10³)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC3-in" placeholder="answer"><button onclick="chkVal('u2rC3',['2×10¹⁰','2x10^10','2*10^10'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rC3"></div>
 </div>
 <div class="chk" id="u2rC4" style="margin-bottom:10px">
-  <div class="chk-q" style="font-size:0.92em">4) (7.2 × 10⁷) ÷ (1.8 × 10³)</div>
-  <div class="val-chk"><input type="text" id="u2rC4-in" placeholder="answer"><button onclick="chkVal('u2rC4',['4×10⁴','4x10^4','4*10^4'])">Check</button></div>
+  <div class="chk-q" style="font-size:0.92em">4) <span class="mono">(9.6 × 10⁸) ÷ (1.6 × 10²)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC4-in" placeholder="answer"><button onclick="chkVal('u2rC4',['6×10⁶','6x10^6','6*10^6'])">Check</button></div>
   <div class="chk-fb" id="fb-u2rC4"></div>
+</div>
+<div class="chk" id="u2rC5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) <span class="mono">(7 × 10⁵)(8 × 10²)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC5-in" placeholder="answer"><button onclick="chkVal('u2rC5',['5.6×10⁸','5.6x10^8','5.6*10^8'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rC5"></div>
+</div>
+<div class="chk" id="u2rC6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) <span class="mono">(1.2 × 10⁻³)(4 × 10⁵)</span></div>
+  <div class="val-chk"><input type="text" id="u2rC6-in" placeholder="answer"><button onclick="chkVal('u2rC6',['4.8×10²','4.8x10^2','4.8*10^2'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rC6"></div>
 </div>
 </div>
 
   <h3 class="sub">D. Word Problems</h3>
-<div class="sa">
+  <div class="sa">
   <div class="chk-q"><strong>1.</strong> A red blood cell is about 8 × 10⁻⁶ m wide. A platelet is about 2 × 10⁻⁶ m wide. How many times wider is the red blood cell?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
   <div class="sa-ans">(8 × 10⁻⁶) ÷ (2 × 10⁻⁶) = 4 times wider.</div>
 </div>
 <div class="sa">
-  <div class="chk-q"><strong>2.</strong> Earth is about 1.5 × 10⁸ km from the Sun. A spacecraft travels 3 × 10⁴ km per hour. How many hours would the trip take?</div>
+  <div class="chk-q"><strong>2.</strong> Earth is about 1.5 × 10⁸ km from the Sun. A spacecraft travels 3 × 10⁴ km/h. How many hours would the trip take?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
-  <div class="sa-ans">(1.5 × 10⁸) ÷ (3 × 10⁴) = 0.5 × 10⁴ = 5 × 10³ hours (5,000 hours).</div>
+  <div class="sa-ans">(1.5 × 10⁸) ÷ (3 × 10⁴) = 5 × 10³ hours (5,000 hours).</div>
 </div>
 <div class="sa">
-  <div class="chk-q"><strong>3.</strong> A factory makes 5 × 10³ widgets per day. How many widgets does it make in 2 × 10² days?</div>
+  <div class="chk-q"><strong>3.</strong> A factory makes 5 × 10³ widgets per day. How many widgets in 2 × 10² days?</div>
   <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
-  <div class="sa-ans">(5 × 10³)(2 × 10²) = 10 × 10⁵ = 1 × 10⁶ widgets (1,000,000).</div>
+  <div class="sa-ans">(5 × 10³)(2 × 10²) = 1 × 10⁶ widgets (1,000,000).</div>
+</div>
+<div class="sa">
+  <div class="chk-q"><strong>4.</strong> A virus is about 3 × 10⁻⁷ m and a cell is about 6 × 10⁻⁵ m. How many times larger is the cell?</div>
+  <button class="sa-btn" onclick="sa(this)">Reveal solution</button>
+  <div class="sa-ans">(6 × 10⁻⁵) ÷ (3 × 10⁻⁷) = 2 × 10² = 200 times larger.</div>
+</div>
+
+  <h3 class="sub">E. Negative Exponents &amp; Rational Expressions</h3>
+  <p class="blank-tip">Write every answer with positive exponents only, as a reduced fraction.</p>
+  <div class="two-col">
+<div class="chk" id="u2rE1" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">1) Evaluate 5⁻²</div>
+  <div class="val-chk"><input type="text" id="u2rE1-in" placeholder="answer"><button onclick="chkVal('u2rE1',['1/25','0.04'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE1"></div>
+</div>
+<div class="chk" id="u2rE2" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">2) Write with positive exponents: 3x⁻⁴</div>
+  <div class="val-chk"><input type="text" id="u2rE2-in" placeholder="answer"><button onclick="chkVal('u2rE2',['3/x⁴','3/x^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE2"></div>
+</div>
+<div class="chk" id="u2rE3" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">3) Simplify <span class="frac"><span class="n">x⁻⁵</span><span class="d">y⁻³</span></span></div>
+  <div class="val-chk"><input type="text" id="u2rE3-in" placeholder="answer"><button onclick="chkVal('u2rE3',['y³/x⁵','y^3/x^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE3"></div>
+</div>
+<div class="chk" id="u2rE4" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">4) Simplify (<span class="frac"><span class="n">a</span><span class="d">b</span></span>)⁻³</div>
+  <div class="val-chk"><input type="text" id="u2rE4-in" placeholder="answer"><button onclick="chkVal('u2rE4',['b³/a³','b^3/a^3'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE4"></div>
+</div>
+<div class="chk" id="u2rE5" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">5) Simplify <span class="frac"><span class="n">10a⁻²b⁵</span><span class="d">2a³b⁻¹</span></span></div>
+  <div class="val-chk"><input type="text" id="u2rE5-in" placeholder="answer"><button onclick="chkVal('u2rE5',['5b⁶/a⁵','5b^6/a^5'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE5"></div>
+</div>
+<div class="chk" id="u2rE6" style="margin-bottom:10px">
+  <div class="chk-q" style="font-size:0.92em">6) Simplify (<span class="frac"><span class="n">2x²</span><span class="d">y</span></span>)⁻²</div>
+  <div class="val-chk"><input type="text" id="u2rE6-in" placeholder="answer"><button onclick="chkVal('u2rE6',['y²/4x⁴','y^2/4x^4'])">Check</button></div>
+  <div class="chk-fb" id="fb-u2rE6"></div>
+</div>
 </div>
 </section>
 
@@ -1178,12 +1480,12 @@ function formatNum(n){
 // ── Inline fill-in-the-blank ──────────────────────
 function rb(el){
   el.classList.add('revealed');
-  if(el.dataset.ans!==undefined) el.textContent=el.dataset.ans;
+  if(el.dataset.ans!==undefined) el.innerHTML=el.dataset.ans;
 }
 function rbAll(id){
   document.querySelectorAll('#'+id+' .blank').forEach(b=>{
     b.classList.add('revealed');
-    if(b.dataset.ans!==undefined) b.textContent=b.dataset.ans;
+    if(b.dataset.ans!==undefined) b.innerHTML=b.dataset.ans;
   });
 }
 // ── Short-answer / error-analysis reveal ──────────
@@ -1192,6 +1494,8 @@ function sa(btn){
   a.classList.add('show');
   btn.style.display='none';
 }
+function fracHTML(t){var m=String(t).match(/^(.+?)\/(.+)$/);
+  return m?'<span class="frac"><span class="n">'+m[1]+'</span><span class="d">'+m[2]+'</span></span>':t;}
 // ── Single-value typed check ──────────────────────
 function chkVal(qid,answers){
   const inp=document.getElementById(qid+'-in');
@@ -1203,10 +1507,10 @@ function chkVal(qid,answers){
   const list=Array.isArray(answers)?answers:[answers];
   if(v===''){fb.classList.add('w');fb.innerHTML='Type your answer first.';return;}
   if(list.some(a=>norm(a)===norm(v))){
-    fb.classList.add('c'); fb.innerHTML='✓ Correct! '+list[0];
+    fb.classList.add('c'); fb.innerHTML='✓ Correct! '+fracHTML(list[0]);
   }else{
     fb.classList.add('w');
-    fb.innerHTML='✗ Not quite — the answer is '+list[0]+'.';
+    fb.innerHTML='✗ Not quite — the answer is '+fracHTML(list[0])+'.';
   }
 }
 // ── Matching game ─────────────────────────────────
@@ -1249,7 +1553,7 @@ if(location.search.indexOf("key=1") !== -1){
   for(var _i=0; _i<_blanksArr.length; _i++){
     var _b = _blanksArr[_i];
     _b.className = _b.className + " revealed";
-    if(_b.getAttribute("data-ans")!==null){ _b.textContent = _b.getAttribute("data-ans"); }
+    if(_b.getAttribute("data-ans")!==null){ _b.innerHTML = _b.getAttribute("data-ans"); }
   }
   var _stepsArr = document.querySelectorAll(".step");
   for(var _j=0; _j<_stepsArr.length; _j++){
@@ -1257,6 +1561,11 @@ if(location.search.indexOf("key=1") !== -1){
   }
 }
 
+
+function stepMod(el){var s=(+el.getAttribute("data-step")+1);if(s>3)s=0;el.setAttribute("data-step",s);
+  try{var c=JSON.parse(el.getAttribute("data-caps"));el.querySelector(".amod-cap").textContent=c[s]||"";}catch(e){}}
+function initMods(){document.querySelectorAll(".amod").forEach(function(m){try{var c=JSON.parse(m.getAttribute("data-caps"));m.querySelector(".amod-cap").textContent=c[0]||"";}catch(e){}});}
+initMods();
 </script>
 </body>
 </html>
