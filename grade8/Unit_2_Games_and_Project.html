@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 2 — Games &amp; Scientific Notation Project</title>
+<style>
+:root{
+  --navy:#1E2D4F; --navy2:#24507C; --gold:#FBD259; --gold2:#FEC007;
+  --green:#2F7C18; --greenbg:#E8F5E2; --red:#CC2222; --muted:#5a6472;
+  --border:#CDD5E0; --tileb:#2f6fb0; --tileg:#3a9b3a; --bg:#f4f6fb; --card:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--navy);line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 60px}
+header.top{background:linear-gradient(135deg,#1E2D4F,#24507C);color:#fff;padding:26px 16px 22px;text-align:center;position:relative}
+header.top h1{margin:0 0 4px;font-family:'Georgia',serif;font-size:1.7rem}
+header.top p{margin:0;opacity:.85;font-size:.95rem}
+.backlink{position:absolute;left:14px;top:14px;color:#fff;text-decoration:none;background:rgba(255,255,255,.14);padding:6px 12px;border-radius:8px;font-size:.85rem;font-weight:600}
+.backlink:hover{background:rgba(255,255,255,.26)}
+.audio-ctrl{position:absolute;right:14px;top:14px;display:flex;gap:8px}
+.audio-ctrl button{background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:8px;padding:7px 11px;font-size:.9rem;cursor:pointer;font-weight:600}
+.audio-ctrl button:hover{background:rgba(255,255,255,.3)}
+.audio-ctrl button.on{background:var(--gold2);color:var(--navy)}
+.subnav{position:sticky;top:0;z-index:50;background:var(--navy);display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:9px 8px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.subnav a{color:#fff;text-decoration:none;font-size:.82rem;font-weight:600;padding:5px 10px;border-radius:7px;opacity:.9}
+.subnav a:hover{background:rgba(255,255,255,.16);opacity:1}
+section.block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 22px 26px;margin:24px 0;box-shadow:0 2px 10px rgba(30,45,79,.05)}
+h2.game-h{font-family:'Georgia',serif;color:var(--navy);margin:0 0 4px;font-size:1.35rem;display:flex;align-items:center;gap:10px}
+h2.game-h .ico{font-size:1.5rem}
+.game-sub{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.scorebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.score{background:var(--greenbg);color:var(--green);font-weight:700;padding:6px 14px;border-radius:20px;font-size:.9rem}
+.btn{background:var(--navy2);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-weight:600;cursor:pointer;font-size:.9rem}
+.btn:hover{background:var(--navy)}
+.btn.gold{background:var(--gold2);color:var(--navy)} .btn.gold:hover{background:var(--gold)}
+.win-msg{color:var(--green);font-weight:700;font-size:.95rem;display:none}
+.win-msg.show{display:inline}
+
+/* ---------- draggable + zones ---------- */
+.tray{display:flex;flex-wrap:wrap;gap:10px;min-height:52px;padding:10px;border:2px dashed var(--border);border-radius:12px;background:#fbfcfe;margin-bottom:16px}
+.drag{touch-action:none;cursor:grab;user-select:none;background:#fff;border:2px solid var(--tileb);color:var(--navy);border-radius:10px;padding:9px 14px;font-size:1.05rem;font-weight:700;box-shadow:0 2px 4px rgba(30,45,79,.1);transition:box-shadow .15s}
+.drag:active{cursor:grabbing}
+.drag.dragging{box-shadow:0 8px 20px rgba(30,45,79,.28);opacity:.96}
+.drag.locked{border-color:var(--tileg);background:var(--greenbg);cursor:default;opacity:.9}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.dropzone{border:2px solid var(--border);border-radius:12px;padding:12px 10px;min-height:110px;background:#fafbfe;transition:background .15s,border-color .15s}
+.dropzone .zt{font-weight:700;font-size:.9rem;text-align:center;color:var(--navy2);margin-bottom:8px;line-height:1.25}
+.dropzone .zt small{display:block;font-weight:500;color:var(--muted);font-size:.78rem}
+.dropzone.hot{background:#fff6da;border-color:var(--gold2)}
+.dropzone .drops{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.dropzone.correct-flash{animation:flashg .4s}
+@keyframes flashg{0%{background:#d6f2cc}100%{background:#fafbfe}}
+.shake{animation:shk .35s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* match game */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.match-col{display:flex;flex-direction:column;gap:10px}
+.match-col h4{margin:0 0 2px;text-align:center;color:var(--navy2);font-size:.85rem;text-transform:uppercase;letter-spacing:.04em}
+.mslot{border:2px dashed var(--border);border-radius:10px;min-height:48px;display:flex;align-items:center;justify-content:center;background:#fafbfe;padding:4px}
+.mslot.filled{border-style:solid;border-color:var(--tileg);background:var(--greenbg)}
+.mslot.hot{background:#fff6da;border-color:var(--gold2)}
+
+/* build the answer */
+.builder{border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px;background:#fafbfe}
+.builder .prob{font-size:1.3rem;font-weight:700;text-align:center;margin-bottom:10px}
+.ans-slots{display:flex;gap:8px;justify-content:center;align-items:center;font-size:1.3rem;font-weight:700;margin-bottom:6px}
+.slot{min-width:56px;height:46px;border:2px dashed var(--tileb);border-radius:9px;display:flex;align-items:center;justify-content:center;background:#fff}
+.slot.filled{border-style:solid;border-color:var(--tileg);background:var(--greenbg)}
+.slot.hot{background:#fff6da;border-color:var(--gold2)}
+#g3tray{position:sticky;bottom:8px;z-index:30;background:linear-gradient(#ffffff,#eef2fa);box-shadow:0 -6px 16px rgba(30,45,79,.14);border-color:var(--navy2)}
+#g3tray::before{content:'🧱 Chip rack — drag up into the slots';display:block;width:100%;font-size:.75rem;color:var(--muted);font-weight:600;margin-bottom:2px}
+
+/* ---------- powers of ten ---------- */
+.pot{display:grid;grid-template-columns:1fr;gap:10px;text-align:center}
+.pot-stage{background:linear-gradient(#0a1330,#152449);border-radius:16px;padding:26px 16px;color:#fff;position:relative;overflow:hidden}
+.pot-obj{font-size:5rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));transition:transform .3s}
+.pot-name{font-size:1.35rem;font-weight:700;margin-top:8px}
+.pot-sn{font-size:2rem;font-weight:800;color:var(--gold);margin:6px 0;font-family:'Georgia',serif}
+.pot-std{font-size:.9rem;opacity:.8}
+.pot-blurb{font-size:.9rem;opacity:.9;max-width:560px;margin:8px auto 0}
+.pot-controls{display:flex;align-items:center;gap:12px;justify-content:center;margin-top:6px}
+.pot-controls input[type=range]{flex:1;max-width:520px;accent-color:var(--gold2)}
+.pot-rng{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);max-width:520px;margin:0 auto;width:100%}
+.zoombtn{background:var(--navy2);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;font-weight:700}
+.zoombtn:hover{background:var(--navy)}
+
+/* converter */
+.conv{display:grid;grid-template-columns:1fr;gap:14px;max-width:560px;margin:0 auto}
+.conv label{font-weight:600;font-size:.9rem;display:block;margin-bottom:5px}
+.conv input{width:100%;padding:11px 12px;border:2px solid var(--border);border-radius:10px;font-size:1.05rem;font-family:'Consolas',monospace}
+.conv input:focus{outline:none;border-color:var(--navy2)}
+.conv .out{background:var(--greenbg);border:1px solid #bfe3b0;border-radius:10px;padding:12px 14px;font-size:1.15rem;font-weight:700;text-align:center;min-height:48px;color:var(--green)}
+.conv .out.err{background:#fdeaea;border-color:#f0bcbc;color:var(--red);font-weight:600;font-size:.95rem}
+
+/* maps */
+.mapwrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);background:#eef}
+.mapwrap iframe{width:100%;height:360px;border:0;display:block}
+.mapnote{font-size:.82rem;color:var(--muted);margin-top:8px}
+.factchips{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.factchip{background:#eef3fb;border:1px solid #cddcf0;border-radius:10px;padding:8px 12px;font-size:.88rem}
+.factchip b{color:var(--navy2)}
+
+/* project */
+.proj-card{border-left:5px solid var(--gold2);background:#fffdf4;border-radius:0 10px 10px 0;padding:14px 16px;margin:12px 0}
+.proj-card h4{margin:0 0 6px;color:var(--navy)}
+.proj-steps{counter-reset:s;list-style:none;padding:0;margin:0}
+.proj-steps li{position:relative;padding:8px 8px 8px 42px;margin-bottom:8px;background:#fafbfe;border:1px solid var(--border);border-radius:10px}
+.proj-steps li::before{counter-increment:s;content:counter(s);position:absolute;left:10px;top:9px;width:24px;height:24px;background:var(--navy2);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem}
+table.rubric{width:100%;border-collapse:collapse;font-size:.82rem;margin-top:10px}
+table.rubric th,table.rubric td{border:1px solid var(--border);padding:7px 8px;vertical-align:top}
+table.rubric th{background:var(--navy);color:#fff;font-size:.8rem}
+table.rubric td:first-child{font-weight:700;color:var(--navy2);background:#f6f8fc;white-space:nowrap}
+table.rubric .lv5{background:var(--greenbg)}
+.exemplar{background:#eef3fb;border:1px solid #cddcf0;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:.9rem}
+.exemplar code{background:#fff;padding:1px 5px;border-radius:4px;border:1px solid var(--border)}
+
+/* confetti */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
+.footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px}
+@media(max-width:640px){.match-grid{gap:14px}.pot-obj{font-size:3.6rem}.pot-sn{font-size:1.5rem}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="backlink" href="Unit_2_Exponents_Guided_Notes.html">← Back to Notes</a>
+  <div class="audio-ctrl">
+    <button id="sndBtn" onclick="toggleSound()" title="Sound effects">🔊 Sound</button>
+    <button id="musBtn" onclick="toggleMusic()" title="Background music">🎵 Music</button>
+  </div>
+  <h1>Games &amp; Scientific Notation Project</h1>
+  <p>Unit 2 · Practice the exponent rules, then explore the numbers of our world</p>
+</header>
+
+<nav class="subnav">
+  <a href="#g1">🗂️ Rule Sorter</a>
+  <a href="#g2">🔗 Match &amp; Simplify</a>
+  <a href="#g3">🧱 Build the Answer</a>
+  <a href="#pot">🔭 Powers of Ten</a>
+  <a href="#conv">🔢 Converter</a>
+  <a href="#earth">🌍 Earth from Space</a>
+  <a href="#project">📋 The Project</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ GAME 1: RULE SORTER ============ -->
+<section class="block" id="g1">
+  <h2 class="game-h"><span class="ico">🗂️</span> Game 1 · Rule Sorter</h2>
+  <p class="game-sub">Drag each expression into the bin for the rule that applies. You don't have to simplify — just pick the right rule!</p>
+  <div class="scorebar">
+    <span class="score" id="g1score">0 of 10 sorted</span>
+    <button class="btn gold" onclick="G1.reset()">↻ New Round</button>
+    <span class="win-msg" id="g1win">🎉 All sorted — nice work!</span>
+  </div>
+  <div class="tray" id="g1tray"></div>
+  <div class="bins" id="g1bins"></div>
+</section>
+
+<!-- ============ GAME 2: MATCH & SIMPLIFY ============ -->
+<section class="block" id="g2">
+  <h2 class="game-h"><span class="ico">🔗</span> Game 2 · Match &amp; Simplify</h2>
+  <p class="game-sub">Drag each expression from the left onto its simplified answer on the right.</p>
+  <div class="scorebar">
+    <span class="score" id="g2score">0 of 6 matched</span>
+    <button class="btn gold" onclick="G2.reset()">↻ New Round</button>
+    <span class="win-msg" id="g2win">🎉 Perfect match!</span>
+  </div>
+  <div class="match-grid">
+    <div class="match-col"><h4>Expressions</h4><div id="g2left"></div></div>
+    <div class="match-col"><h4>Simplified</h4><div id="g2right"></div></div>
+  </div>
+</section>
+
+<!-- ============ GAME 3: BUILD THE ANSWER ============ -->
+<section class="block" id="g3">
+  <h2 class="game-h"><span class="ico">🧱</span> Game 3 · Build the Answer</h2>
+  <p class="game-sub">Drag the correct chips into the answer slots. Watch the coefficient — the power hits it too!</p>
+  <div class="scorebar">
+    <span class="score" id="g3score">0 of 5 built</span>
+    <button class="btn gold" onclick="G3.reset()">↻ New Round</button>
+    <span class="win-msg" id="g3win">🎉 All built correctly!</span>
+  </div>
+  <div id="g3area"></div>
+  <div class="tray" id="g3tray"></div>
+</section>
+
+<!-- ============ POWERS OF TEN ============ -->
+<section class="block" id="pot">
+  <h2 class="game-h"><span class="ico">🔭</span> Powers of Ten — Explore the Scale of Everything</h2>
+  <p class="game-sub">Slide from the tiniest particle to the whole universe. Every size is shown in scientific notation — perfect inspiration for your project.</p>
+  <div class="pot">
+    <div class="pot-stage">
+      <div class="pot-obj" id="potObj">🧍</div>
+      <div class="pot-name" id="potName">Human</div>
+      <div class="pot-sn" id="potSN">1.7 × 10⁰ m</div>
+      <div class="pot-std" id="potStd">≈ 1.7 meters</div>
+      <div class="pot-blurb" id="potBlurb">A person is our everyday reference point — right in the middle of the cosmic scale.</div>
+    </div>
+    <div class="pot-controls">
+      <button class="zoombtn" onclick="POT.step(-1)" title="Zoom in / smaller">−</button>
+      <input type="range" id="potRange" min="0" max="15" value="7" step="1" oninput="POT.set(+this.value)">
+      <button class="zoombtn" onclick="POT.step(1)" title="Zoom out / bigger">+</button>
+    </div>
+    <div class="pot-rng"><span>🔬 smallest</span><span>biggest 🌌</span></div>
+  </div>
+</section>
+
+<!-- ============ CONVERTER ============ -->
+<section class="block" id="conv">
+  <h2 class="game-h"><span class="ico">🔢</span> Scientific Notation Converter</h2>
+  <p class="game-sub">A handy tool for your project. Type a standard number to get scientific notation, or type scientific notation to get the standard number.</p>
+  <div class="conv">
+    <div>
+      <label for="cIn1">Standard form → Scientific notation</label>
+      <input id="cIn1" placeholder="e.g. 380000000 or 0.00007" oninput="Conv.toSci()">
+      <div class="out" id="cOut1" style="margin-top:8px">Type a number above…</div>
+    </div>
+    <div>
+      <label for="cIn2">Scientific notation → Standard form</label>
+      <input id="cIn2" placeholder="e.g. 3.8e26 or 2.0 x 10^-9" oninput="Conv.toStd()">
+      <div class="out" id="cOut2" style="margin-top:8px">Type a value above…</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EARTH FROM SPACE ============ -->
+<section class="block" id="earth">
+  <h2 class="game-h"><span class="ico">🌍</span> Earth from Space (Google Maps)</h2>
+  <p class="game-sub">Zoom and pan the satellite view — then see our planet's measurements written in scientific notation.</p>
+  <div class="mapwrap">
+    <iframe title="Satellite map" loading="lazy" allowfullscreen
+      src="https://maps.google.com/maps?q=25,10&t=k&z=2&ie=UTF8&output=embed"></iframe>
+  </div>
+  <p class="mapnote">The map loads on the live website (it needs an internet connection). Drag to explore, scroll to zoom.</p>
+  <div class="factchips">
+    <div class="factchip">🌍 Earth's diameter: <b>1.27 × 10⁷ m</b> (12,700 km)</div>
+    <div class="factchip">📏 Around the equator: <b>4.0 × 10⁷ m</b></div>
+    <div class="factchip">☀️ Distance to the Sun: <b>1.5 × 10¹¹ m</b></div>
+    <div class="factchip">🌙 Distance to the Moon: <b>3.84 × 10⁸ m</b></div>
+    <div class="factchip">⚖️ Earth's mass: <b>5.97 × 10²⁴ kg</b></div>
+    <div class="factchip">👥 People on Earth: <b>8.0 × 10⁹</b></div>
+  </div>
+</section>
+
+<!-- ============ THE PROJECT ============ -->
+<section class="block" id="project">
+  <h2 class="game-h"><span class="ico">📋</span> Numbers of Our World — Scientific Notation Project</h2>
+  <p class="game-sub">Your project assignment and rubric. Use the tools above to research, convert, and compare your numbers.</p>
+
+  <ol class="proj-steps">
+    <li><b>Choose 5 facts</b> that interest you. Each must use a number greater than 1,000 or less than 0.001 (so it needs a positive or negative exponent). Try space, technology, population, environment, or microscopic science.</li>
+    <li><b>Convert each number</b> into scientific notation. (The converter above can check your work.)</li>
+    <li><b>Compile your data creatively</b> into a visual project with a cover titled "Numbers of Our World in Scientific Notation." Write each fact <em>twice</em> — standard form and scientific notation — with a colorful image beside it.</li>
+    <li><b>List your references</b> — the title and URL of each credible science/education source.</li>
+  </ol>
+
+  <div class="proj-card">
+    <h4>⭐ To earn a Level 5</h4>
+    <p style="margin:0">Compare and contrast your data with other data points using phrases like "greater than" or "times greater than." These require operations with scientific notation — so <b>show your work!</b></p>
+  </div>
+
+  <div class="exemplar">
+    <b>Worked comparison (from the exemplar):</b><br>
+    Sirius A produces <code>2.5 × 10²⁷</code> W; the Sun produces <code>3.8 × 10²⁶</code> W.<br>
+    (2.5 × 10²⁷) ÷ (3.8 × 10²⁶) = (2.5 ÷ 3.8) × 10¹ ≈ 0.66 × 10¹ = <b>6.6</b><br>
+    → Sirius A gives off about <b>6.6 times</b> more energy than our Sun.
+  </div>
+
+  <h3 style="margin-top:22px;color:var(--navy)">Project Rubric</h3>
+  <div style="overflow-x:auto">
+  <table class="rubric">
+    <tr><th>Criteria</th><th>5 — Exceeds</th><th>4 — Proficient</th><th>3 — Developing</th><th>2 — Beginning</th><th>1 — Missing</th></tr>
+    <tr><td>Accuracy of Conversions</td><td class="lv5">All 5 numbers correctly converted; precise notation &amp; symbols (×, powers, units).</td><td>Most correct (4/5); minor symbol/rounding issues.</td><td>About half (2–3/5); partial understanding of exponent placement.</td><td>One or two correct; limited understanding.</td><td>No accurate conversions or work missing.</td></tr>
+    <tr><td>Selection of Facts</td><td class="lv5">All 5 facts relevant, original, and use large or meaningful numbers.</td><td>4–5 relevant facts; appropriate and clear.</td><td>3–4 facts; one or more weak/unclear.</td><td>Fewer than 3 valid facts.</td><td>Facts missing or copied without meaning.</td></tr>
+    <tr><td>Presentation &amp; Creativity</td><td class="lv5">Visually engaging, organized, colorful graphics, consistent formatting.</td><td>Neat and organized; some graphics and color.</td><td>Partially organized; minimal visuals.</td><td>Disorganized/incomplete layout.</td><td>Little or no effort.</td></tr>
+    <tr><td>Mathematical Communication</td><td class="lv5">Precise vocabulary (standard form, exponent, base); 2+ examples compared/contrasted.</td><td>Clear explanations; minor wording issues.</td><td>Some vocabulary; inconsistent clarity.</td><td>Limited vocabulary/incomplete.</td><td>No meaningful explanations.</td></tr>
+    <tr><td>Completion &amp; Effort</td><td class="lv5">All components present (cover, 5 facts, conversions, visuals); above expectations.</td><td>All major components complete and on time.</td><td>Missing minor elements or late.</td><td>Several missing sections.</td><td>Little or no evidence of effort.</td></tr>
+  </table>
+  </div>
+</section>
+
+<div class="footer">Mr. Allen's Math Class · 8th Grade · Unit 2 — Exponents &amp; Scientific Notation</div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<script>
+/* ================= AUDIO (original, generated) ================= */
+var actx=null, soundOn=true, musicOn=false, musicTimer=null;
+function ac(){ if(!actx){ try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){} } if(actx&&actx.state==='suspended') actx.resume(); return actx; }
+function beep(freq,dur,type,vol,when){ if(!soundOn) return; var c=ac(); if(!c) return;
+  type=type||'sine'; vol=vol==null?0.14:vol; when=when||0;
+  var o=c.createOscillator(), g=c.createGain(); o.type=type; o.frequency.value=freq;
+  o.connect(g); g.connect(c.destination); var t=c.currentTime+when;
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(vol,t+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,t+dur); o.start(t); o.stop(t+dur+0.02); }
+function sCorrect(){ beep(660,0.12,'sine',0.15,0); beep(880,0.16,'sine',0.15,0.08); }
+function sWrong(){ beep(200,0.2,'sawtooth',0.1,0); }
+function sWin(){ [523,659,784,1047].forEach(function(f,i){ beep(f,0.2,'triangle',0.16,i*0.1); }); }
+function sPick(){ beep(420,0.05,'sine',0.08,0); }
+function toggleSound(){ soundOn=!soundOn; var b=document.getElementById('sndBtn');
+  b.textContent=soundOn?'🔊 Sound':'🔇 Sound'; b.classList.toggle('on',soundOn); if(soundOn){ac();sPick();} }
+/* gentle original background loop */
+var scale=[261.63,293.66,329.63,392.0,440.0,523.25,587.33,659.25];
+var chords=[[0,2,4],[3,5,7],[5,0,2],[4,2,0]]; var ci=0;
+function musicTick(){ if(!musicOn) return; var c=ac(); if(!c) return;
+  var ch=chords[ci%chords.length]; ci++;
+  ch.forEach(function(idx,k){ var o=c.createOscillator(), g=c.createGain();
+    o.type='sine'; o.frequency.value=scale[idx]/2; o.connect(g); g.connect(c.destination);
+    var t=c.currentTime+k*0.02; g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.05,t+0.4); g.gain.exponentialRampToValueAtTime(0.0001,t+2.6);
+    o.start(t); o.stop(t+2.7); });
+  // sparkle melody note
+  var mo=c.createOscillator(), mg=c.createGain(); mo.type='triangle';
+  mo.frequency.value=scale[(ci*3)%scale.length]; mo.connect(mg); mg.connect(c.destination);
+  var mt=c.currentTime+0.1; mg.gain.setValueAtTime(0.0001,mt);
+  mg.gain.linearRampToValueAtTime(0.04,mt+0.05); mg.gain.exponentialRampToValueAtTime(0.0001,mt+0.9);
+  mo.start(mt); mo.stop(mt+1); }
+function toggleMusic(){ musicOn=!musicOn; var b=document.getElementById('musBtn');
+  b.classList.toggle('on',musicOn);
+  if(musicOn){ ac(); musicTick(); musicTimer=setInterval(musicTick,2600); }
+  else { clearInterval(musicTimer); } }
+
+/* ================= CONFETTI ================= */
+function confetti(){ var cv=document.getElementById('confetti'); var ctx=cv.getContext('2d');
+  cv.width=innerWidth; cv.height=innerHeight; var P=[]; var cols=['#FBD259','#2f6fb0','#3a9b3a','#CC2222','#24507C','#FEC007'];
+  for(var i=0;i<140;i++){P.push({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.4,
+    r:4+Math.random()*6,c:cols[i%cols.length],vy:2+Math.random()*4,vx:-2+Math.random()*4,a:Math.random()*6});}
+  var start=Date.now();
+  (function run(){ ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(function(p){p.y+=p.vy;p.x+=p.vx;p.a+=0.1;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);ctx.fillStyle=p.c;
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);ctx.restore();});
+    if(Date.now()-start<2200) requestAnimationFrame(run); else ctx.clearRect(0,0,cv.width,cv.height);
+  })(); }
+
+/* ================= DRAG ENGINE (pointer-based, touch friendly) ================= */
+function makeDraggable(el,getZones,onDrop){
+  var dragging=false, ox=0, oy=0, ph=null, curHot=null;
+  el.addEventListener('pointerdown',function(e){
+    if(el.classList.contains('locked')) return; e.preventDefault();
+    dragging=true; try{el.setPointerCapture(e.pointerId);}catch(_){}
+    ac(); sPick();
+    var r=el.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top;
+    ph=document.createElement('span'); ph.style.display='inline-block';
+    ph.style.width=r.width+'px'; ph.style.height=r.height+'px'; ph.className='drag-ph';
+    el.parentNode.insertBefore(ph,el);
+    el.classList.add('dragging');
+    el.style.position='fixed'; el.style.margin='0'; el.style.zIndex=1000;
+    el.style.width=r.width+'px';
+    move(e);
+  });
+  function move(e){ el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px';
+    el.style.visibility='hidden'; var t=document.elementFromPoint(e.clientX,e.clientY); el.style.visibility='';
+    var z=t?t.closest('.dropzone,.mslot,.slot'):null;
+    if(z!==curHot){ if(curHot) curHot.classList.remove('hot'); curHot=z; if(curHot) curHot.classList.add('hot'); } }
+  el.addEventListener('pointermove',function(e){ if(dragging){ e.preventDefault(); move(e);} });
+  function end(e){ if(!dragging) return; dragging=false;
+    el.classList.remove('dragging');
+    el.style.visibility='hidden'; var t=document.elementFromPoint(e.clientX,e.clientY); el.style.visibility='';
+    var z=t?t.closest('.dropzone,.mslot,.slot'):null;
+    if(curHot){curHot.classList.remove('hot');curHot=null;}
+    el.style.position=''; el.style.left=''; el.style.top=''; el.style.zIndex=''; el.style.width=''; el.style.margin='';
+    if(ph&&ph.parentNode){ ph.parentNode.insertBefore(el,ph); ph.parentNode.removeChild(ph); } ph=null;
+    onDrop(el,z); }
+  el.addEventListener('pointerup',end);
+  el.addEventListener('pointercancel',end);
+}
+
+/* ================= GAME 1: RULE SORTER ================= */
+var G1=(function(){
+  var bins=[
+    {id:'add',t:'ADD',s:'same base ×'},
+    {id:'sub',t:'SUBTRACT',s:'same base ÷'},
+    {id:'mul',t:'MULTIPLY',s:'power of a power'},
+    {id:'one',t:'BECOMES 1',s:'zero exponent'},
+    {id:'flip',t:'FLIP TO FRACTION',s:'negative exponent'}
+  ];
+  var cards=[
+    {x:'x⁵ · x²',r:'add'},{x:'a³ · a⁴',r:'add'},
+    {x:'x⁷ ÷ x²',r:'sub'},{x:'12y⁶ ÷ 3y²',r:'sub'},
+    {x:'(x³)⁴',r:'mul'},{x:'(2m²)³',r:'mul'},
+    {x:'(7x)⁰',r:'one'},{x:'(3ab)⁰',r:'one'},
+    {x:'2x⁻³',r:'flip'},{x:'4⁻²',r:'flip'}
+  ];
+  var placed=0;
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function reset(){
+    placed=0;
+    var binHtml=bins.map(function(b){return '<div class="dropzone" data-rule="'+b.id+'"><div class="zt">'+b.t+'<small>'+b.s+'</small></div><div class="drops"></div></div>';}).join('');
+    document.getElementById('g1bins').innerHTML=binHtml;
+    var tray=document.getElementById('g1tray'); tray.innerHTML='';
+    shuffle(cards.slice()).forEach(function(c){
+      var el=document.createElement('div'); el.className='drag'; el.textContent=c.x; el.dataset.rule=c.r;
+      tray.appendChild(el);
+      makeDraggable(el,null,function(node,zone){
+        if(zone&&zone.classList.contains('dropzone')){
+          if(zone.dataset.rule===node.dataset.rule){
+            node.classList.add('locked'); zone.querySelector('.drops').appendChild(node);
+            zone.classList.add('correct-flash'); setTimeout(function(){zone.classList.remove('correct-flash');},400);
+            sCorrect(); placed++; upd();
+            if(placed===cards.length){ document.getElementById('g1win').classList.add('show'); sWin(); confetti(); }
+          } else { sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350); }
+        }
+      });
+    });
+    document.getElementById('g1win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('g1score').textContent=placed+' of '+cards.length+' sorted'; }
+  return {reset:reset};
+})();
+
+/* ================= GAME 2: MATCH & SIMPLIFY ================= */
+var G2=(function(){
+  var pairs=[
+    {e:'x⁴ · x³',a:'x⁷'},{e:'(x²)⁵',a:'x¹⁰'},{e:'x⁹ ÷ x⁴',a:'x⁵'},
+    {e:'(2x³)²',a:'4x⁶'},{e:'(3x²)(4x⁵)',a:'12x⁷'},{e:'5⁻²',a:'1/25'}
+  ];
+  var done=0;
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function reset(){
+    done=0; var L=document.getElementById('g2left'), R=document.getElementById('g2right');
+    L.innerHTML=''; R.innerHTML='';
+    var ids=pairs.map(function(p,i){return i;});
+    shuffle(ids.slice()).forEach(function(i){
+      var el=document.createElement('div'); el.className='drag'; el.style.textAlign='center';
+      el.textContent=pairs[i].e; el.dataset.pair=i; L.appendChild(el);
+    });
+    shuffle(ids.slice()).forEach(function(i){
+      var slot=document.createElement('div'); slot.className='mslot dropzone'; slot.dataset.pair=i;
+      slot.innerHTML='<span style="color:var(--muted);font-size:.85rem">'+pairs[i].a+'</span>'; R.appendChild(slot);
+    });
+    L.querySelectorAll('.drag').forEach(function(el){
+      makeDraggable(el,null,function(node,zone){
+        var slot=zone&&zone.closest('.mslot');
+        if(slot&&!slot.classList.contains('filled')&&slot.dataset.pair===node.dataset.pair){
+          node.classList.add('locked'); slot.classList.add('filled'); slot.innerHTML=''; slot.appendChild(node);
+          sCorrect(); done++; upd();
+          if(done===pairs.length){ document.getElementById('g2win').classList.add('show'); sWin(); confetti(); }
+        } else if(slot){ sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350); }
+      });
+    });
+    document.getElementById('g2win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('g2score').textContent=done+' of '+pairs.length+' matched'; }
+  return {reset:reset};
+})();
+
+/* ================= GAME 3: BUILD THE ANSWER ================= */
+var G3=(function(){
+  var probs=[
+    {p:'(2x³)⁴',slots:['16','x¹²']},
+    {p:'(3x²)³',slots:['27','x⁶']},
+    {p:'(5x)²',slots:['25','x²']},
+    {p:'(2a⁴)³',slots:['8','a¹²']},
+    {p:'(4x³)²',slots:['16','x⁶']}
+  ];
+  var distract=['2','3','5','9','x⁷','x⁵','a⁷','x⁸','32','x¹⁶'];
+  var done=0, total=0;
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function reset(){
+    done=0; var area=document.getElementById('g3area'); area.innerHTML='';
+    var needed={}; total=0;
+    probs.forEach(function(pr,pi){
+      pr.slots.forEach(function(s){needed[s]=true;});
+      total+=pr.slots.length;
+      var b=document.createElement('div'); b.className='builder';
+      var slotHtml=pr.slots.map(function(s,si){return '<span class="slot dropzone" data-p="'+pi+'" data-s="'+s+'"></span>';}).join('');
+      b.innerHTML='<div class="prob">'+pr.p+' = </div><div class="ans-slots">'+slotHtml+'</div>';
+      area.appendChild(b);
+    });
+    // chip tray: all needed chips + distractors
+    var chips=Object.keys(needed).concat(distract);
+    var tray=document.getElementById('g3tray'); tray.innerHTML='';
+    shuffle(chips).forEach(function(v){
+      var el=document.createElement('div'); el.className='drag'; el.textContent=v; el.dataset.val=v; tray.appendChild(el);
+      makeDraggable(el,null,function(node,zone){
+        var slot=zone&&zone.closest('.slot');
+        if(slot&&!slot.classList.contains('filled')){
+          if(slot.dataset.s===node.dataset.val){
+            var clone=node.cloneNode(true); clone.classList.add('locked'); clone.style.cursor='default';
+            slot.classList.add('filled'); slot.appendChild(clone);
+            sCorrect(); done++; upd();
+            if(done===total){ document.getElementById('g3win').classList.add('show'); sWin(); confetti(); }
+          } else { sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350); }
+        }
+      });
+    });
+    document.getElementById('g3win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('g3score').textContent=done+' of '+total+' built'; }
+  return {reset:reset};
+})();
+
+/* ================= POWERS OF TEN ================= */
+var POT=(function(){
+  var L=[
+    {o:'⚛️',n:'Proton',sn:'1 × 10⁻¹⁵ m',std:'0.000000000000001 m',b:'A proton inside an atom&#39;s nucleus — about the smallest thing we measure.'},
+    {o:'⚛️',n:'Atom',sn:'1 × 10⁻¹⁰ m',std:'0.0000000001 m',b:'A single atom. About a million would span the width of a human hair.'},
+    {o:'🧬',n:'DNA (width)',sn:'2 × 10⁻⁹ m',std:'0.000000002 m',b:'The double helix that carries your genetic code.'},
+    {o:'🦠',n:'Virus',sn:'1 × 10⁻⁷ m',std:'0.0000001 m',b:'Far too small to see with a normal microscope.'},
+    {o:'🩸',n:'Red blood cell',sn:'8 × 10⁻⁶ m',std:'0.000008 m',b:'Millions of these are in a single drop of blood.'},
+    {o:'💇',n:'Human hair (width)',sn:'7 × 10⁻⁵ m',std:'0.00007 m',b:'About 35,000 times wider than a DNA strand.'},
+    {o:'⏳',n:'Grain of sand',sn:'5 × 10⁻⁴ m',std:'0.0005 m',b:'Just big enough to see clearly.'},
+    {o:'🧍',n:'Human',sn:'1.7 × 10⁰ m',std:'≈ 1.7 m',b:'Our everyday reference point — the middle of the cosmic scale.'},
+    {o:'🏈',n:'Football field',sn:'1 × 10² m',std:'100 m',b:'A hundred meters, goal line to goal line.'},
+    {o:'🏔️',n:'Mount Everest',sn:'8.8 × 10³ m',std:'8,800 m',b:'The tallest mountain above sea level.'},
+    {o:'🌍',n:'Earth (diameter)',sn:'1.3 × 10⁷ m',std:'12,700,000 m',b:'Our home planet, about 12,700 km across.'},
+    {o:'☀️',n:'Sun (diameter)',sn:'1.4 × 10⁹ m',std:'1,400,000,000 m',b:'About 109 Earths would fit across the Sun.'},
+    {o:'🛰️',n:'Earth → Sun distance',sn:'1.5 × 10¹¹ m',std:'150,000,000,000 m',b:'Light takes about 8 minutes to cross this gap.'},
+    {o:'✨',n:'One light-year',sn:'9.5 × 10¹⁵ m',std:'9,500,000,000,000,000 m',b:'How far light travels in a single year.'},
+    {o:'🌌',n:'Milky Way galaxy',sn:'9.5 × 10²⁰ m',std:'950,000,000,000,000,000,000 m',b:'Our galaxy — home to 100+ billion stars.'},
+    {o:'🌠',n:'Observable universe',sn:'8.8 × 10²⁶ m',std:'880,000,000,000,000,000,000,000,000 m',b:'Everything we can possibly see. The largest scale of all.'}
+  ];
+  function set(i){ i=Math.max(0,Math.min(L.length-1,i)); var d=L[i];
+    document.getElementById('potRange').value=i;
+    var obj=document.getElementById('potObj'); obj.textContent=d.o;
+    obj.style.transform='scale(1.15)'; setTimeout(function(){obj.style.transform='scale(1)';},180);
+    document.getElementById('potName').textContent=d.n;
+    document.getElementById('potSN').innerHTML=d.sn;
+    document.getElementById('potStd').textContent=d.std;
+    document.getElementById('potBlurb').innerHTML=d.b;
+    beep(300+i*45,0.08,'sine',0.06,0);
+  }
+  function step(dir){ set((+document.getElementById('potRange').value)+dir); }
+  return {set:set,step:step};
+})();
+
+/* ================= CONVERTER ================= */
+var Conv=(function(){
+  function toSci(){ var raw=document.getElementById('cIn1').value.trim().replace(/,/g,'');
+    var out=document.getElementById('cOut1');
+    if(raw===''){ out.className='out'; out.textContent='Type a number above…'; return; }
+    var n=Number(raw);
+    if(!isFinite(n)||raw.match(/[^0-9.\-]/)){ out.className='out err'; out.textContent='Please enter a plain number (digits only).'; return; }
+    if(n===0){ out.className='out'; out.textContent='0 = 0 × 10⁰'; return; }
+    var exp=Math.floor(Math.log10(Math.abs(n)));
+    var coef=n/Math.pow(10,exp);
+    coef=Math.round(coef*1e6)/1e6;
+    out.className='out'; out.innerHTML=trim(coef)+' × 10'+sup(exp);
+  }
+  function toStd(){ var raw=document.getElementById('cIn2').value.trim().toLowerCase().replace(/,/g,'');
+    var out=document.getElementById('cOut2');
+    if(raw===''){ out.className='out'; out.textContent='Type a value above…'; return; }
+    // accept forms: 3.8e26, 3.8 x 10^26, 3.8*10^-9, 3.8×10²⁶
+    raw=raw.replace(/×/g,'x').replace(/\s+/g,'').replace(/·/g,'x');
+    raw=raw.replace(/[\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]/g,function(ch){
+      var map={'\u2070':'0','\u00b9':'1','\u00b2':'2','\u00b3':'3','\u2074':'4','\u2075':'5','\u2076':'6','\u2077':'7','\u2078':'8','\u2079':'9','\u207b':'-'};return map[ch]||ch; });
+    var m=raw.match(/^(-?\d*\.?\d+)(e|x10\^?)(-?\d+)$/);
+    if(!m){ out.className='out err'; out.textContent='Try a form like 3.8e26 or 3.8 x 10^-9'; return; }
+    var exp=parseInt(m[3],10);
+    out.className='out'; out.textContent=expand(m[1],exp);
+  }
+  function expand(coefStr,exp){
+    var neg=coefStr.charAt(0)==='-'; if(neg) coefStr=coefStr.slice(1);
+    var parts=coefStr.split('.'), intp=parts[0]||'0', frac=parts[1]||'';
+    var digits=intp+frac, pointPos=intp.length, newPoint=pointPos+exp, res;
+    digits=digits.replace(/^0+(?=\d)/,''); newPoint-=(intp.length-((intp.replace(/^0+(?=\d)/,''))||'0').length);
+    if(newPoint<=0){ res='0.'+new Array(-newPoint+1).join('0')+digits; }
+    else if(newPoint>=digits.length){ res=digits+new Array(newPoint-digits.length+1).join('0'); }
+    else { res=digits.slice(0,newPoint)+'.'+digits.slice(newPoint); }
+    if(res.indexOf('.')>=0) res=res.replace(/0+$/,'').replace(/\.$/,'');
+    var p2=res.split('.'); p2[0]=p2[0].replace(/\B(?=(\d{3})+(?!\d))/g,',');
+    return (neg?'-':'')+p2.join('.');
+  }
+  function sup(e){ var m={'-':'\u207b','0':'\u2070','1':'\u00b9','2':'\u00b2','3':'\u00b3','4':'\u2074','5':'\u2075','6':'\u2076','7':'\u2077','8':'\u2078','9':'\u2079'};
+    return (''+e).split('').map(function(c){return m[c]||c;}).join(''); }
+  function trim(x){ return (''+x).replace(/\.?0+$/,''); }
+  return {toSci:toSci,toStd:toStd};
+})();
+
+/* ================= INIT ================= */
+G1.reset(); G2.reset(); G3.reset(); POT.set(7);
+window.addEventListener('resize',function(){var c=document.getElementById('confetti');c.width=innerWidth;c.height=innerHeight;});
+</script>
+</body>
+</html>
