@@ -32,6 +32,17 @@ header.top p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
 .rrpad{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px 0 0}
 .rrbtn{background:#1a2647;color:#fff;border:1px solid var(--border);border-radius:12px;padding:16px 0;font-size:1.5rem;font-weight:800;cursor:pointer;touch-action:manipulation}
 .rrbtn:active{background:#26375f}
+.cm-board{position:relative;background:#0b1020;border-left:1px solid var(--border);border-right:1px solid var(--border);min-height:500px;padding:22px;display:flex;align-items:center;justify-content:center}
+.cm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;max-width:700px}
+.cm-card{aspect-ratio:4/3;perspective:700px;cursor:pointer}
+.cm-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .4s}
+.cm-card.flipped .cm-inner{transform:rotateY(180deg)}
+.cm-face{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;border:2px solid var(--border)}
+.cm-back{background:linear-gradient(135deg,#1a2647,#26386a);color:var(--gold);font-size:1.9rem}
+.cm-front{background:#12203e;color:#fff;font-size:1.7rem;transform:rotateY(180deg)}
+.cm-card.matched .cm-front{background:#173a24;border-color:#4ade80;color:#c4f5cb}
+.cm-card.matched{cursor:default}
+@media(max-width:560px){.cm-front{font-size:1.25rem}.cm-back{font-size:1.4rem}.cm-grid{gap:8px}.cm-board{padding:12px;min-height:420px}}
 /* game */
 .arena{position:relative;margin:16px auto 0;max-width:840px}
 .hud{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:10px 16px;font-weight:700;font-size:.95rem}
@@ -76,7 +87,7 @@ canvas{display:block;width:100%;height:auto;background:#060a16;border-left:1px s
     <button class="rm active" data-g="sf" onclick="switchGame('sf')">★ Star Fighter <span class="tag">×tables</span></button>
     <button class="rm" data-g="pol" onclick="switchGame('pol')">⚡ Polarity <span class="tag">integers</span></button>
     <button class="rm" data-g="rr" onclick="switchGame('rr')">🏃 Root Rush <span class="tag">squares</span></button>
-    <button class="rm dis" disabled><span class="tag">soon</span> 🎲 Cube Match</button>
+    <button class="rm" data-g="cm" onclick="switchGame('cm')">🎲 Cube Match <span class="tag">cubes</span></button>
   </div>
 
   <div id="panel-sf" class="gpanel">
@@ -182,6 +193,35 @@ canvas{display:block;width:100%;height:auto;background:#060a16;border-left:1px s
   </div>
   <p class="note">Steer with <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd>/<kbd>D</kbd> · tap a lane · <kbd>P</kbd> to pause.</p>
   </div><!-- /panel-rr -->
+
+  <div id="panel-cm" class="gpanel hidden">
+  <div class="arena">
+    <div class="hud">
+      <div class="h"><span class="lbl">Score</span> <span class="val" id="cScore">0</span></div>
+      <div class="h"><span class="lbl">Best</span> <span class="val" id="cBest">0</span></div>
+      <div class="h"><span class="lbl">Time</span> <span class="val" id="cTime">0s</span></div>
+      <div class="h"><span class="lbl">Pairs</span> <span class="combo" id="cPairs">0/8</span></div>
+      <div class="spacer"></div>
+      <div class="h"><span class="lbl">Misses</span> <span id="cMiss">0</span></div>
+    </div>
+    <div class="cm-board"><div class="cm-grid" id="cmGrid"></div></div>
+    <div class="overlay" id="cmovReady">
+      <h2>🎲 Cube Match</h2>
+      <p class="big">Match cubes with their values!</p>
+      <p class="how">Flip two tiles to find a matching pair — a cube like <b>4³</b> with its value <b>64</b>, or a cube root like <b>∛27</b> with <b>3</b>. Remember where they are! Fewer misses and a faster time earn a higher score.</p>
+      <button class="play-btn" onclick="CM.start()">▶ Deal</button>
+    </div>
+    <div class="overlay hidden" id="cmovPause"><h2>Paused</h2><button class="play-btn" onclick="CM.resume()">▶ Resume</button></div>
+    <div class="overlay hidden" id="cmovOver">
+      <h2>Solved! 🎉</h2>
+      <p class="big">Score: <span id="cOvScore">0</span></p>
+      <p id="cOvNew" class="hidden" style="color:var(--gold);font-weight:700">🏆 New high score!</p>
+      <p class="how" id="cOvStats"></p>
+      <button class="play-btn" onclick="CM.start()">↻ New Board</button>
+    </div>
+  </div>
+  <p class="note">Flip two tiles to find a cube and its value — <b>4³ ↔ 64</b>, <b>∛27 ↔ 3</b>. Fewer misses &amp; faster time = higher score!</p>
+  </div><!-- /panel-cm -->
 </div>
 
 <script>
@@ -332,7 +372,8 @@ var activeGame='sf';
 var GAMEMETA={
   sf:{panel:'panel-sf',get:function(){return window.SF;},n:'— ★ Star Fighter',t:'Blast the invaders by typing the answer to each multiplication fact'},
   pol:{panel:'panel-pol',get:function(){return window.POL;},n:'— ⚡ Polarity',t:'Catch the orb with the correct answer — mind the sign!'},
-  rr:{panel:'panel-rr',get:function(){return window.RR;},n:'— 🏃 Root Rush',t:'Steer into the gate with the correct square or square root'}
+  rr:{panel:'panel-rr',get:function(){return window.RR;},n:'— 🏃 Root Rush',t:'Steer into the gate with the correct square or square root'},
+  cm:{panel:'panel-cm',get:function(){return window.CM;},n:'— 🎲 Cube Match',t:'Flip tiles to pair each cube or cube root with its value'}
 };
 function switchGame(id){ if(!GAMEMETA[id])return; activeGame=id;
   for(var g in GAMEMETA){ document.getElementById(GAMEMETA[g].panel).classList.toggle('hidden',g!==id);
@@ -444,6 +485,155 @@ var POL=(function(){
   return {start:start,resume:resume,pause:pause,_gencheck:_gencheck,
     _score:function(){return score;},_state:function(){return state;},_lives:function(){return lives;},_level:function(){return level;},
     _orbs:function(){return orbs.map(function(o){return {v:o.val,c:o.correct,x:o.x,y:o.y};});},_setx:function(x){col.tx=x;col.x=x;},_prob:function(){return prob;}};
+})();
+/* ============ ROOT RUSH (squares & square roots) ============ */
+function bestGetR(){try{return +(localStorage.getItem('rr_best')||0);}catch(e){return 0;}}
+function bestSetR(v){try{localStorage.setItem('rr_best',v);}catch(e){}}
+var RR=(function(){
+  var cv=document.getElementById('cvr'), ctx=cv.getContext('2d'), W=840,H=560;
+  var state='ready', wall=null, cooldown=0, parts=[], score=0, level=1, lives=3, streak=0, best=bestGetR(), solved=0, last=0, scroll=0, flash=0, corr='', corrT=0, shake=0, speed=3.0;
+  var horizonY=150, planeY=470, cx=W/2, dFar=13, dNear=1.3, dPass=0.5;
+  var player={lane:1,x:cx};
+  function ri(a,b){return (Math.random()*(b-a+1)|0)+a;}
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=(Math.random()*(i+1))|0,t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function mult(){return Math.min(5,1+Math.floor(streak/4));}
+  function spread(p){return 55+300*p;}
+  function laneX(l,p){return cx+(l-1)*spread(p);}
+  function roadX(side,p){return cx+side*(95+340*p);}
+  function proj(d){ var p=(dFar-d)/(dFar-dNear); if(p<0)p=0; if(p>1.15)p=1.15; return {p:p,y:horizonY+(planeY-horizonY)*Math.pow(p,1.75),sc:0.15+1.05*Math.pow(p,1.5)}; }
+  function challenge(){ var maxN=Math.min(15,8+level), n=ri(2,maxN), type=Math.random()<0.5?'root':'square', ans,text;
+    if(type==='root'){ans=n;text='\u221a'+(n*n);} else {ans=n*n;text=n+'\u00b2';}
+    var c=[]; if(type==='root'){[n-1,n+1,n-2,n+2,n+3].forEach(function(v){if(v>=1&&v!==n)c.push(v);});}
+    else {[(n-1)*(n-1),(n+1)*(n+1),n*2,n*n+n,(n-2)*(n-2)].forEach(function(v){if(v>0&&v!==n*n)c.push(v);});}
+    c=c.filter(function(v,i){return c.indexOf(v)===i;}); shuffle(c);
+    var seen={}; seen[ans]=1; var vals=[ans]; for(var i=0;i<c.length&&vals.length<3;i++){ if(!seen[c[i]]){seen[c[i]]=1;vals.push(c[i]);} }
+    var k=0; while(vals.length<3){ var e=ans+(++k)*(type==='root'?1:5); if(!seen[e]){seen[e]=1;vals.push(e);} }
+    var lanes=[0,1,2]; shuffle(lanes); var gates=[]; for(var i=0;i<3;i++)gates.push({lane:lanes[i],val:vals[i],correct:vals[i]===ans});
+    return {text:text,ans:ans,type:type,gates:gates}; }
+  function newWall(){ var c=challenge(); wall={d:dFar,resolved:false,text:c.text,ans:c.ans,gates:c.gates}; }
+  function updHud(){ document.getElementById('rScore').textContent=score; document.getElementById('rBest').textContent=Math.max(best,score);
+    document.getElementById('rLevel').textContent=level; document.getElementById('rCombo').textContent='x'+mult();
+    document.getElementById('rLives').textContent=(lives>0?'\u2764'.repeat(lives)+'\ud83d\udda4'.repeat(Math.max(0,3-lives)):'\ud83d\udda4\ud83d\udda4\ud83d\udda4'); }
+  function hideO(){ ['rovReady','rovPause','rovOver'].forEach(function(id){document.getElementById(id).classList.add('hidden');}); }
+  function show(id){ hideO(); document.getElementById(id).classList.remove('hidden'); }
+  function start(){ state='playing'; score=0;level=1;lives=3;streak=0;solved=0;parts=[];flash=0;corrT=0;corr='';speed=3.0;scroll=0;player.lane=1;player.x=cx;wall=null;cooldown=0.3; hideO(); ac(); updHud(); }
+  function resume(){ if(state==='paused'){state='playing';hideO();last=performance.now();} }
+  function pause(){ if(state==='playing'){state='paused';show('rovPause');} }
+  function gameOver(){ state='over'; sOver(); var nw=score>best; if(nw){best=score;bestSetR(best);}
+    document.getElementById('rOvScore').textContent=score; document.getElementById('rOvNew').classList.toggle('hidden',!nw);
+    document.getElementById('rOvStats').textContent='Cleared '+solved+' gates \u00b7 reached level '+level; show('rovOver'); updHud(); }
+  function burst(x,y,c){ for(var i=0;i<15;i++){var an=Math.random()*6.28,sp=40+Math.random()*150; parts.push({x:x,y:y,vx:Math.cos(an)*sp,vy:Math.sin(an)*sp,life:0.5+Math.random()*0.3,col:c});} }
+  function evalWall(){ wall.resolved=true; var cg=null; for(var i=0;i<wall.gates.length;i++)if(wall.gates[i].correct)cg=wall.gates[i];
+    if(player.lane===cg.lane){ streak++;solved++; score+=100*mult(); flash=0.3; burst(player.x,planeY,'#8ef08e'); beep(680,0.1,'sine',0.14,0);beep(920,0.13,'sine',0.14,0.07);
+      speed=Math.min(6.5,speed+0.12); if(solved%6===0){level++; corr='SPEED UP!';corrT=1.2; sWave();} }
+    else { lives--; streak=0; shake=16; flash=0.45; burst(laneX(cg.lane,1),planeY,'#ff8a7a'); boom(); corr=wall.text+' = '+wall.ans; corrT=1.5; if(lives<=0)setTimeout(gameOver,320); }
+    updHud();
+  }
+  function move(dir){ if(state!=='playing')return; player.lane=Math.max(0,Math.min(2,player.lane+dir)); beep(500,0.04,'sine',0.06,0); }
+  function setLane(l){ if(state!=='playing')return; player.lane=Math.max(0,Math.min(2,l)); }
+  function update(dt){ scroll+=speed*dt*0.5;
+    player.x+=(laneX(player.lane,1)-player.x)*Math.min(1,dt*14);
+    if(wall){ wall.d-=speed*dt; if(!wall.resolved&&wall.d<=dNear)evalWall(); if(wall.d<=dPass){wall=null;cooldown=0.4;} }
+    else { cooldown-=dt; if(cooldown<=0&&state==='playing'&&lives>0)newWall(); }
+    for(var i=parts.length-1;i>=0;i--){var p=parts[i];p.life-=dt;if(p.life<=0){parts.splice(i,1);continue;}p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=120*dt;}
+    if(flash>0)flash-=dt; if(corrT>0)corrT-=dt; if(shake>0)shake-=dt*40; updHud();
+  }
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function render(){ ctx.save(); if(shake>0)ctx.translate((Math.random()-0.5)*shake,(Math.random()-0.5)*shake);
+    var sky=ctx.createLinearGradient(0,0,0,horizonY); sky.addColorStop(0,'#0b1226'); sky.addColorStop(1,'#20305a'); ctx.fillStyle=sky; ctx.fillRect(-20,-20,W+40,horizonY+20);
+    ctx.fillStyle='#0a0f1e'; ctx.fillRect(-20,horizonY,W+40,H-horizonY+20);
+    // stars in sky
+    ctx.fillStyle='rgba(200,215,255,.5)'; for(var i=0;i<26;i++){ctx.fillRect((i*97+40)%W,(i*53)%(horizonY-20)+6,1.5,1.5);}
+    // road
+    ctx.beginPath(); ctx.moveTo(roadX(-1,0),horizonY); ctx.lineTo(roadX(1,0),horizonY); ctx.lineTo(roadX(1,1),planeY+34); ctx.lineTo(roadX(-1,1),planeY+34); ctx.closePath();
+    ctx.fillStyle='#141c34'; ctx.fill();
+    ctx.strokeStyle='#3a4a72'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(roadX(-1,0),horizonY); ctx.lineTo(roadX(-1,1),planeY+34); ctx.moveTo(roadX(1,0),horizonY); ctx.lineTo(roadX(1,1),planeY+34); ctx.stroke();
+    // dividers (scrolling dashes)
+    ctx.strokeStyle='rgba(251,210,89,.55)'; ctx.lineWidth=3; ctx.setLineDash([16,16]); ctx.lineDashOffset=-scroll*130;
+    [0.5,1.5].forEach(function(bnd){ ctx.beginPath(); ctx.moveTo(cx+(bnd-1)*spread(0),horizonY); ctx.lineTo(cx+(bnd-1)*spread(1),planeY+34); ctx.stroke(); });
+    ctx.setLineDash([]);
+    // prompt
+    ctx.textAlign='center';ctx.textBaseline='middle'; ctx.fillStyle='#fff'; ctx.font='bold 34px Segoe UI,sans-serif';
+    ctx.fillText(wall?(wall.text+'  =  ?'):'', W/2, 44);
+    // gates
+    if(wall){ var pr=proj(wall.d); for(var i=0;i<wall.gates.length;i++){ var g=wall.gates[i], x=laneX(g.lane,pr.p), w=Math.max(34,150*pr.sc), h=Math.max(40,150*pr.sc);
+      ctx.save(); ctx.globalAlpha=Math.min(1,0.3+pr.p); ctx.fillStyle='rgba(18,28,58,0.78)'; rr(x-w/2,pr.y-h,w,h,8); ctx.fill();
+      ctx.lineWidth=Math.max(2,5*pr.sc); ctx.strokeStyle='#FBD259'; ctx.shadowColor='#FBD259'; ctx.shadowBlur=14*pr.sc; ctx.stroke(); ctx.shadowBlur=0;
+      ctx.fillStyle='#fff'; ctx.font='bold '+Math.max(14,34*pr.sc)+'px Segoe UI,sans-serif'; ctx.fillText(''+g.val,x,pr.y-h/2); ctx.restore(); } }
+    // particles
+    for(var i=0;i<parts.length;i++){var p=parts[i];ctx.globalAlpha=Math.max(0,p.life*2);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,2.6,0,6.28);ctx.fill();} ctx.globalAlpha=1;
+    // runner
+    ctx.save(); ctx.globalAlpha=.35; ctx.fillStyle='#000'; ctx.beginPath(); ctx.ellipse(player.x,planeY+22,22,7,0,0,6.28); ctx.fill(); ctx.restore();
+    ctx.font='44px serif'; ctx.textAlign='center'; ctx.textBaseline='alphabetic'; ctx.fillText('\ud83c\udfc3',player.x,planeY+18);
+    if(flash>0){ctx.globalAlpha=Math.min(0.5,flash);ctx.fillStyle=(corr.indexOf('=')>=0?'#5c1c16':'#1f5d16');ctx.fillRect(-20,-20,W+40,H+40);ctx.globalAlpha=1;}
+    if(corrT>0){ctx.globalAlpha=Math.min(1,corrT*1.6);ctx.textBaseline='middle';ctx.fillStyle='#FBD259';ctx.font='bold 30px Georgia,serif';ctx.fillText(corr,W/2,H/2);ctx.globalAlpha=1;}
+    ctx.restore();
+  }
+  function loop(ts){ requestAnimationFrame(loop); if(!last)last=ts; var dt=(ts-last)/1000; last=ts; if(dt>0.05)dt=0.05; if(state==='playing')update(dt); render(); }
+  requestAnimationFrame(loop);
+  window.addEventListener('keydown',function(e){ if(activeGame!=='rr')return;
+    if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){move(-1);e.preventDefault();}
+    else if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){move(1);e.preventDefault();}
+    else if(e.key==='p'||e.key==='P'||e.key==='Escape'){ if(state==='playing')pause(); else resume(); } });
+  cv.addEventListener('pointerdown',function(e){ if(state!=='playing'||activeGame!=='rr')return; var r=cv.getBoundingClientRect(); var x=(e.clientX-r.left)/r.width*W; setLane(x<W/3?0:x<2*W/3?1:2); });
+  document.getElementById('rBest').textContent=best;
+  return {start:start,resume:resume,pause:pause,move:move,setLane:setLane,
+    _score:function(){return score;},_state:function(){return state;},_lives:function(){return lives;},_level:function(){return level;},
+    _wall:function(){return wall?{text:wall.text,ans:wall.ans,d:wall.d,resolved:wall.resolved,gates:wall.gates.map(function(g){return {lane:g.lane,val:g.val,correct:g.correct};})}:null;},
+    _setlane:function(l){player.lane=l;player.x=laneX(l,1);}, _lane:function(){return player.lane;},
+    _gencheck:function(n){var bad=0; for(var i=0;i<n;i++){var c=challenge(); var exp=(c.type==='root'?Math.round(Math.sqrt(parseInt(c.text.slice(1),10))):parseInt(c.text,10)*parseInt(c.text,10));
+      if(c.ans!==exp)bad++; var nc=0,u={}; c.gates.forEach(function(g){if(g.correct)nc++;u[g.val]=1;}); if(nc!==1)bad++; if(Object.keys(u).length!==3)bad++; } return bad;}};
+})();
+/* ============ CUBE MATCH (cubes & cube roots) ============ */
+function bestGetC(){try{return +(localStorage.getItem('cm_best')||0);}catch(e){return 0;}}
+function bestSetC(v){try{localStorage.setItem('cm_best',v);}catch(e){}}
+var CM=(function(){
+  var grid=document.getElementById('cmGrid');
+  var state='ready', pairsN=8, matched=0, mismatches=0, flipped=[], lock=false, t0=0, timer=null, elapsed=0, score=0, best=bestGetC();
+  function shuffle(a){for(var i=a.length-1;i>0;i--){var j=(Math.random()*(i+1))|0,t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function sFlip(){beep(480,0.05,'sine',0.07,0);}
+  function sMatch(){beep(660,0.1,'sine',0.14,0);beep(900,0.14,'sine',0.14,0.07);}
+  function sWinCM(){[523,659,784,1047,1319].forEach(function(f,i){beep(f,0.18,'triangle',0.15,i*0.09);});}
+  function genPairs(){ for(var att=0;att<80;att++){ var ns=shuffle([1,2,3,4,5,6,7,8,9,10]).slice(0,pairsN), pairs=[], faces=[];
+      for(var i=0;i<ns.length;i++){ var n=ns[i], type=Math.random()<0.5?'cube':'root', expr,val;
+        if(type==='cube'){expr=n+'\u00b3';val=''+(n*n*n);} else {expr='\u221b'+(n*n*n);val=''+n;}
+        pairs.push({id:i,expr:expr,val:val}); faces.push(expr,val); }
+      var set={},dup=false; for(var f=0;f<faces.length;f++){ if(set[faces[f]]){dup=true;break;} set[faces[f]]=1; }
+      if(!dup) return pairs; }
+    return null; }
+  function build(){ var pairs=genPairs()||[]; var cards=[]; for(var i=0;i<pairs.length;i++){ cards.push({pair:pairs[i].id,face:pairs[i].expr}); cards.push({pair:pairs[i].id,face:pairs[i].val}); }
+    shuffle(cards); grid.innerHTML='';
+    for(var i=0;i<cards.length;i++){ (function(c){ var el=document.createElement('div'); el.className='cm-card'; el.dataset.pair=c.pair;
+      el.innerHTML='<div class="cm-inner"><div class="cm-face cm-back">🎲</div><div class="cm-face cm-front">'+c.face+'</div></div>';
+      el.addEventListener('click',function(){onCard(el);}); grid.appendChild(el); })(cards[i]); } }
+  function updHud(){ document.getElementById('cScore').textContent=score; document.getElementById('cBest').textContent=Math.max(best,score);
+    document.getElementById('cTime').textContent=elapsed.toFixed(0)+'s'; document.getElementById('cPairs').textContent=matched+'/'+pairsN; document.getElementById('cMiss').textContent=mismatches; }
+  function hideO(){ ['cmovReady','cmovPause','cmovOver'].forEach(function(id){document.getElementById(id).classList.add('hidden');}); }
+  function show(id){ hideO(); document.getElementById(id).classList.remove('hidden'); }
+  function tick(){ if(state==='playing'){ elapsed=(Date.now()-t0)/1000; updHud(); } }
+  function start(){ state='playing'; matched=0;mismatches=0;flipped=[];lock=false;elapsed=0;score=0; build(); hideO(); t0=Date.now(); clearInterval(timer); timer=setInterval(tick,200); ac(); updHud(); }
+  function resume(){ if(state==='paused'){ state='playing'; t0=Date.now()-elapsed*1000; hideO(); } }
+  function pause(){ if(state==='playing'){ state='paused'; show('cmovPause'); } }
+  function onCard(card){ if(state!=='playing'||lock)return; if(card.classList.contains('matched')||card.classList.contains('flipped'))return;
+    card.classList.add('flipped'); sFlip(); flipped.push(card); if(flipped.length===2){ lock=true; setTimeout(check,720); } }
+  function check(){ var a=flipped[0],b=flipped[1];
+    if(a.dataset.pair===b.dataset.pair){ a.classList.add('matched'); b.classList.add('matched'); sMatch(); matched++; if(matched===pairsN) win(); }
+    else { a.classList.remove('flipped'); b.classList.remove('flipped'); sMiss(); mismatches++; }
+    flipped=[]; lock=false; updHud(); }
+  function win(){ state='over'; clearInterval(timer); var secs=Math.round(elapsed);
+    score=Math.max(100, 1500 - secs*6 - mismatches*45); var nw=score>best; if(nw){best=score;bestSetC(best);}
+    document.getElementById('cOvScore').textContent=score; document.getElementById('cOvNew').classList.toggle('hidden',!nw);
+    document.getElementById('cOvStats').textContent='Solved in '+secs+'s with '+mismatches+' mismatch'+(mismatches===1?'':'es'); show('cmovOver'); sWinCM(); updHud(); }
+  document.getElementById('cBest').textContent=best;
+  return {start:start,resume:resume,pause:pause,
+    _state:function(){return state;},_matched:function(){return matched;},_pairs:function(){return pairsN;},_mism:function(){return mismatches;},
+    _cards:function(){return [].slice.call(grid.children).map(function(el){return {pair:el.dataset.pair,face:el.querySelector('.cm-front').textContent,matched:el.classList.contains('matched'),flipped:el.classList.contains('flipped')};});},
+    _click:function(i){ onCard(grid.children[i]); },
+    _gencheck:function(n){ var bad=0; for(var i=0;i<n;i++){ var pr=genPairs(); if(!pr){bad++;continue;} if(pr.length!==pairsN)bad++;
+      var fset={}; for(var k=0;k<pr.length;k++){ var pcur=pr[k];
+        if(pcur.expr.indexOf('\u00b3')>=0){ var base=parseInt(pcur.expr,10); if(base*base*base!==parseInt(pcur.val,10))bad++; }
+        else { var cube=parseInt(pcur.expr.replace('\u221b',''),10); if(Math.round(Math.cbrt(cube))!==parseInt(pcur.val,10))bad++; }
+        if(fset[pcur.expr]||fset[pcur.val])bad++; fset[pcur.expr]=1; fset[pcur.val]=1; } } return bad; } };
 })();
 </script>
 </body>
