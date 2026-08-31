@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 1 — Real Numbers: The Square-Root Hunt &amp; Games</title>
+<style>
+:root{
+  --navy:#1B2D4E; --red:#A33329; --gold:#C9A14E; --gold2:#d8b25a; --cream:#F1ECDB;
+  --green:#2F7C18; --greenbg:#E8F5E2; --cold:#2f6fb0; --hot:#A33329; --muted:#5a6472;
+  --border:#ddd3bb; --bg:#faf7ef; --card:#ffffff;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--navy);line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 60px}
+header.top{background:linear-gradient(135deg,#1B2D4E,#33507c);color:#fff;padding:26px 16px 22px;text-align:center;position:relative}
+header.top h1{margin:0 0 4px;font-family:'Georgia',serif;font-size:1.65rem}
+header.top p{margin:0;opacity:.85;font-size:.95rem}
+.audio-ctrl{position:absolute;right:14px;top:14px;display:flex;gap:8px}
+.audio-ctrl button{background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:8px;padding:7px 11px;font-size:.9rem;cursor:pointer;font-weight:600}
+.audio-ctrl button:hover{background:rgba(255,255,255,.3)}
+.audio-ctrl button.on{background:var(--gold);color:var(--navy)}
+.subnav{position:sticky;top:0;z-index:50;background:var(--navy);display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:9px 8px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.subnav a{color:#fff;text-decoration:none;font-size:.82rem;font-weight:600;padding:5px 10px;border-radius:7px;opacity:.9}
+.subnav a:hover{background:rgba(255,255,255,.16);opacity:1}
+section.block{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 22px 26px;margin:24px 0;box-shadow:0 2px 10px rgba(27,45,78,.05)}
+h2.game-h{font-family:'Georgia',serif;color:var(--navy);margin:0 0 4px;font-size:1.35rem;display:flex;align-items:center;gap:10px}
+h2.game-h .ico{font-size:1.5rem}
+.game-sub{color:var(--muted);margin:0 0 16px;font-size:.92rem}
+.scorebar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.score{background:var(--greenbg);color:var(--green);font-weight:700;padding:6px 14px;border-radius:20px;font-size:.9rem}
+.btn{background:var(--navy);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-weight:600;cursor:pointer;font-size:.9rem}
+.btn:hover{opacity:.9}
+.btn.gold{background:var(--gold);color:var(--navy)}
+.btn.red{background:var(--red)}
+.win-msg{color:var(--green);font-weight:700;font-size:.95rem;display:none}
+.win-msg.show{display:inline}
+
+/* metaphor explainer */
+.metaphor{background:linear-gradient(135deg,#fbf7ec,#f3ecd7);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:16px}
+.metaphor h3{margin:0 0 6px;color:var(--red);font-size:1.05rem}
+.metaphor .rules{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.chiprule{background:#fff;border:1px solid var(--border);border-radius:20px;padding:6px 13px;font-size:.9rem;font-weight:600}
+.cold{color:var(--cold)} .hot{color:var(--hot)} .found{color:var(--green)}
+
+/* square root estimator */
+.nl-wrap{background:#fbfaf5;border:1px solid var(--border);border-radius:12px;padding:12px 10px 6px;margin:10px 0}
+.nl-wrap svg{width:100%;height:auto;display:block}
+.est-cap{min-height:44px;background:#fff;border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:9px 13px;margin:8px 0;font-size:.98rem}
+.est-badge{display:inline-block;font-weight:700;border-radius:8px;padding:4px 12px;font-size:1rem}
+.badge-cold{background:#e5eefa;color:var(--cold)} .badge-hot{background:#f7e6e3;color:var(--hot)} .badge-found{background:var(--greenbg);color:var(--green)}
+.est-ctrls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.pick-row{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.pick{background:#fff;border:2px solid var(--navy);color:var(--navy);border-radius:9px;padding:7px 12px;font-weight:700;cursor:pointer;font-size:1rem}
+.pick:hover{background:var(--cream)} .pick.sel{background:var(--navy);color:#fff}
+.slider-row{display:flex;align-items:center;gap:12px;margin-top:6px}
+.slider-row input[type=range]{flex:1;accent-color:var(--gold)}
+.psq{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.psq span{background:var(--cream);border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:.82rem;font-weight:600}
+
+/* draggable + zones (shared) */
+.tray{display:flex;flex-wrap:wrap;gap:10px;min-height:52px;padding:10px;border:2px dashed var(--border);border-radius:12px;background:#fbfaf5;margin-bottom:16px}
+.drag{touch-action:none;cursor:grab;user-select:none;background:#fff;border:2px solid var(--navy);color:var(--navy);border-radius:10px;padding:9px 14px;font-size:1.05rem;font-weight:700;box-shadow:0 2px 4px rgba(27,45,78,.1)}
+.drag:active{cursor:grabbing}
+.drag.dragging{box-shadow:0 8px 20px rgba(27,45,78,.28);opacity:.96}
+.drag.locked{border-color:var(--green);background:var(--greenbg);cursor:default;opacity:.9}
+.drag .ovl{text-decoration:overline}
+.bins{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.bins.two{grid-template-columns:1fr 1fr}
+.dropzone{border:2px solid var(--border);border-radius:12px;padding:12px 10px;min-height:104px;background:#fbfaf5}
+.dropzone .zt{font-weight:700;font-size:.95rem;text-align:center;color:var(--navy);margin-bottom:8px;line-height:1.25}
+.dropzone .zt small{display:block;font-weight:500;color:var(--muted);font-size:.78rem}
+.dropzone.hot{background:#fff4dc;border-color:var(--gold)}
+.dropzone .drops{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+.dropzone.correct-flash{animation:flashg .4s}
+@keyframes flashg{0%{background:#d6f2cc}100%{background:#fbfaf5}}
+.shake{animation:shk .35s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.rules-box{background:#fbf7ec;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:.9rem}
+.rules-box b{color:var(--red)}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
+.footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px}
+@media(max-width:640px){.bins.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="audio-ctrl">
+    <button id="sndBtn" onclick="toggleSound()">🔊 Sound</button>
+    <button id="musBtn" onclick="toggleMusic()">🎵 Music</button>
+  </div>
+  <h1>Unit 1 · Real Numbers</h1>
+  <p>The Square-Root Hunt &amp; classification games</p>
+</header>
+
+<nav class="subnav">
+  <a href="#hunt">🎯 Square-Root Hunt</a>
+  <a href="#sorter">🔢 Rational vs Irrational</a>
+  <a href="#ops">➕ Operations Predictor</a>
+  <a href="#trap">📍 Trap the Root</a>
+</nav>
+
+<div class="wrap">
+
+<!-- ============ SQUARE ROOT HUNT ============ -->
+<section class="block" id="hunt">
+  <h2 class="game-h"><span class="ico">🎯</span> Estimating Square Roots — the "Warmer / Colder" Hunt</h2>
+  <p class="game-sub">A non-perfect square root is hiding on the number line. Your only tool is <b>squaring</b> your guess.</p>
+
+  <div class="metaphor">
+    <h3>🔍 How the hunt works</h3>
+    Square your guess and compare it to the target:
+    <div class="rules">
+      <span class="chiprule"><span class="cold">❄️ guess² too small</span> → colder (guess too <b>low</b>)</span>
+      <span class="chiprule"><span class="hot">🔥 guess² too big</span> → hotter (guess too <b>high</b>)</span>
+      <span class="chiprule"><span class="found">🎯 closest</span> → found it!</span>
+    </div>
+    <div style="margin-top:10px;font-size:.9rem">
+      <b>The algorithm:</b> ① <b>Trap</b> it between the two perfect squares just below &amp; above → gives the whole number.
+      ② <b>Zoom</b> into the tenths and test by squaring — warmer or colder?
+      ③ <b>Land</b> on the tenth whose square is closest (round to the nearest tenth).
+    </div>
+  </div>
+
+  <h3 class="game-h" style="font-size:1.05rem"><span class="ico">▶️</span> Watch it: estimate √40</h3>
+  <div class="nl-wrap" id="wLine"></div>
+  <div class="est-cap" id="wCap"></div>
+  <div class="est-ctrls">
+    <button class="btn gold" id="wNext" onclick="Hunt.next()">Next step ▸</button>
+    <button class="btn" onclick="Hunt.restart()">↺ Restart</button>
+    <span id="wBadge"></span>
+  </div>
+
+  <h3 class="game-h" style="font-size:1.05rem;margin-top:24px"><span class="ico">🕹️</span> Your turn: hunt a root</h3>
+  <p class="game-sub" style="margin-bottom:8px">Pick a number, then slide the marker. Watch it turn <span class="cold">❄️ cold</span> or <span class="hot">🔥 hot</span> as you square each guess — land on the closest tenth!</p>
+  <div class="pick-row" id="pickRow"></div>
+  <div class="nl-wrap" id="iLine"></div>
+  <div class="slider-row">
+    <span style="font-weight:700">guess</span>
+    <input type="range" id="iSlider" min="0" max="1" step="0.1" value="0" oninput="Try.move(+this.value)">
+  </div>
+  <div class="est-cap" id="iCap">Pick a number above to start hunting.</div>
+  <div class="psq"><b style="font-size:.82rem;color:var(--muted)">Perfect squares:</b><span id="psqStrip"></span></div>
+</section>
+
+<!-- ============ RATIONAL VS IRRATIONAL SORTER ============ -->
+<section class="block" id="sorter">
+  <h2 class="game-h"><span class="ico">🔢</span> Game · Rational vs Irrational Sorter</h2>
+  <p class="game-sub">Drag each number into the right bin. Watch out — a perfect-square root like √16 is <em>rational</em>, and 22/7 is a fraction (not π)!</p>
+  <div class="scorebar">
+    <span class="score" id="s1score">0 of 12 sorted</span>
+    <button class="btn gold" onclick="Sort.reset()">↻ New Round</button>
+    <span class="win-msg" id="s1win">🎉 All sorted correctly!</span>
+  </div>
+  <div class="tray" id="s1tray"></div>
+  <div class="bins two" id="s1bins"></div>
+</section>
+
+<!-- ============ OPERATIONS PREDICTOR ============ -->
+<section class="block" id="ops">
+  <h2 class="game-h"><span class="ico">➕</span> Game · Operations Predictor</h2>
+  <p class="game-sub">Is the <b>result</b> rational or irrational? Some irrational combinations surprise you.</p>
+  <div class="rules-box">
+    <b>Rules:</b> Rational ± Rational = Rational · Rational × Rational = Rational ·
+    Rational + Irrational = <b>always Irrational</b> · nonzero Rational × Irrational = <b>always Irrational</b> ·
+    Irrational ± Irrational and Irrational × Irrational = <b>could be either — check it!</b>
+  </div>
+  <div class="scorebar">
+    <span class="score" id="s2score">0 of 12 sorted</span>
+    <button class="btn gold" onclick="Ops.reset()">↻ New Round</button>
+    <span class="win-msg" id="s2win">🎉 You nailed every one!</span>
+  </div>
+  <div class="tray" id="s2tray"></div>
+  <div class="bins two" id="s2bins"></div>
+</section>
+
+<!-- ============ TRAP THE ROOT ============ -->
+<section class="block" id="trap">
+  <h2 class="game-h"><span class="ico">📍</span> Game · Trap the Root</h2>
+  <p class="game-sub">Drag each square root onto the two whole numbers it lives between.</p>
+  <div class="scorebar">
+    <span class="score" id="s3score">0 of 8 trapped</span>
+    <button class="btn gold" onclick="Trap.reset()">↻ New Round</button>
+    <span class="win-msg" id="s3win">🎉 Every root trapped!</span>
+  </div>
+  <div class="tray" id="s3tray"></div>
+  <div class="bins" id="s3bins"></div>
+</section>
+
+<div class="footer">Mr. Allen's Math Class · 8th Grade · Unit 1 — The Real Number System</div>
+</div>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ============ AUDIO (original, generated) ============ */
+var actx=null, soundOn=true, musicOn=false, musicTimer=null;
+function ac(){ if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}} if(actx&&actx.state==='suspended')actx.resume(); return actx; }
+function beep(f,d,t,v,w){ if(!soundOn)return; var c=ac(); if(!c)return; t=t||'sine'; v=v==null?0.14:v; w=w||0;
+  var o=c.createOscillator(),g=c.createGain(); o.type=t; o.frequency.value=f; o.connect(g); g.connect(c.destination);
+  var s=c.currentTime+w; g.gain.setValueAtTime(0.0001,s); g.gain.linearRampToValueAtTime(v,s+0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001,s+d); o.start(s); o.stop(s+d+0.02); }
+function sCorrect(){ beep(660,0.12,'sine',0.15,0); beep(880,0.16,'sine',0.15,0.08); }
+function sWrong(){ beep(200,0.2,'sawtooth',0.1,0); }
+function sWin(){ [523,659,784,1047].forEach(function(f,i){beep(f,0.2,'triangle',0.16,i*0.1);}); }
+function sPick(){ beep(420,0.05,'sine',0.08,0); }
+function sCold(){ beep(300,0.09,'sine',0.09,0); }
+function sHot(){ beep(560,0.09,'sine',0.09,0); }
+function toggleSound(){ soundOn=!soundOn; var b=document.getElementById('sndBtn');
+  b.textContent=soundOn?'🔊 Sound':'🔇 Sound'; b.classList.toggle('on',soundOn); if(soundOn){ac();sPick();} }
+var scale=[261.63,293.66,329.63,392.0,440.0,523.25,587.33,659.25], chords=[[0,2,4],[3,5,7],[5,0,2],[4,2,0]], ci=0;
+function musicTick(){ if(!musicOn)return; var c=ac(); if(!c)return; var ch=chords[ci%chords.length]; ci++;
+  ch.forEach(function(idx,k){ var o=c.createOscillator(),g=c.createGain(); o.type='sine'; o.frequency.value=scale[idx]/2;
+    o.connect(g); g.connect(c.destination); var t=c.currentTime+k*0.02; g.gain.setValueAtTime(0.0001,t);
+    g.gain.linearRampToValueAtTime(0.05,t+0.4); g.gain.exponentialRampToValueAtTime(0.0001,t+2.6); o.start(t); o.stop(t+2.7); });
+  var mo=c.createOscillator(),mg=c.createGain(); mo.type='triangle'; mo.frequency.value=scale[(ci*3)%scale.length];
+  mo.connect(mg); mg.connect(c.destination); var mt=c.currentTime+0.1; mg.gain.setValueAtTime(0.0001,mt);
+  mg.gain.linearRampToValueAtTime(0.04,mt+0.05); mg.gain.exponentialRampToValueAtTime(0.0001,mt+0.9); mo.start(mt); mo.stop(mt+1); }
+function toggleMusic(){ musicOn=!musicOn; document.getElementById('musBtn').classList.toggle('on',musicOn);
+  if(musicOn){ac();musicTick();musicTimer=setInterval(musicTick,2600);} else {clearInterval(musicTimer);} }
+
+/* ============ CONFETTI ============ */
+function confetti(){ var cv=document.getElementById('confetti'),ctx=cv.getContext('2d');
+  cv.width=innerWidth; cv.height=innerHeight; var P=[],cols=['#C9A14E','#1B2D4E','#2F7C18','#A33329','#33507c','#d8b25a'];
+  for(var i=0;i<140;i++)P.push({x:Math.random()*cv.width,y:-20-Math.random()*cv.height*0.4,r:4+Math.random()*6,
+    c:cols[i%cols.length],vy:2+Math.random()*4,vx:-2+Math.random()*4,a:Math.random()*6});
+  var st=Date.now();
+  (function run(){ ctx.clearRect(0,0,cv.width,cv.height);
+    P.forEach(function(p){p.y+=p.vy;p.x+=p.vx;p.a+=0.1;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.a);
+      ctx.fillStyle=p.c;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);ctx.restore();});
+    if(Date.now()-st<2200)requestAnimationFrame(run); else ctx.clearRect(0,0,cv.width,cv.height); })(); }
+
+/* ============ DRAG ENGINE ============ */
+function makeDraggable(el,onDrop){
+  var dragging=false,ox=0,oy=0,ph=null,curHot=null;
+  el.addEventListener('pointerdown',function(e){ if(el.classList.contains('locked'))return; e.preventDefault();
+    dragging=true; try{el.setPointerCapture(e.pointerId);}catch(_){} ac(); sPick();
+    var r=el.getBoundingClientRect(); ox=e.clientX-r.left; oy=e.clientY-r.top;
+    ph=document.createElement('span'); ph.style.display='inline-block'; ph.style.width=r.width+'px'; ph.style.height=r.height+'px';
+    el.parentNode.insertBefore(ph,el); el.classList.add('dragging');
+    el.style.position='fixed'; el.style.margin='0'; el.style.zIndex=1000; el.style.width=r.width+'px'; move(e); });
+  function move(e){ el.style.left=(e.clientX-ox)+'px'; el.style.top=(e.clientY-oy)+'px';
+    el.style.visibility='hidden'; var t=document.elementFromPoint(e.clientX,e.clientY); el.style.visibility='';
+    var z=t?t.closest('.dropzone'):null; if(z!==curHot){ if(curHot)curHot.classList.remove('hot'); curHot=z; if(curHot)curHot.classList.add('hot'); } }
+  el.addEventListener('pointermove',function(e){ if(dragging){e.preventDefault();move(e);} });
+  function end(e){ if(!dragging)return; dragging=false; el.classList.remove('dragging');
+    el.style.visibility='hidden'; var t=document.elementFromPoint(e.clientX,e.clientY); el.style.visibility='';
+    var z=t?t.closest('.dropzone'):null; if(curHot){curHot.classList.remove('hot');curHot=null;}
+    el.style.position=''; el.style.left=''; el.style.top=''; el.style.zIndex=''; el.style.width=''; el.style.margin='';
+    if(ph&&ph.parentNode){ph.parentNode.insertBefore(el,ph);ph.parentNode.removeChild(ph);} ph=null; onDrop(el,z); }
+  el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end);
+}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ============ NUMBER LINE RENDERER ============ */
+function numberLine(lo,hi,guess,state,opts){
+  opts=opts||{}; var W=700,H=140,x0=50,x1=650,y=88,span=x1-x0;
+  function X(v){return x0+(v-lo)/(hi-lo)*span;}
+  var p=['<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI,sans-serif">'];
+  p.push('<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="#1B2D4E" stroke-width="2.5"/>');
+  var wide=(hi-lo)>1.5;
+  if(wide){ for(var v=Math.ceil(lo);v<=hi;v++){ var x=X(v);
+      p.push('<line x1="'+x+'" y1="'+(y-8)+'" x2="'+x+'" y2="'+(y+8)+'" stroke="#889" stroke-width="1.5"/>');
+      p.push('<text x="'+x+'" y="'+(y+27)+'" text-anchor="middle" font-size="14" font-weight="600" fill="#1B2D4E">'+v+'</text>'); } }
+  else { for(var k=0;k<=10;k++){ var vv=lo+k/10, xx=X(vv), maj=(k===0||k===10);
+      p.push('<line x1="'+xx+'" y1="'+(y-(maj?10:5))+'" x2="'+xx+'" y2="'+(y+(maj?10:5))+'" stroke="'+(maj?'#1B2D4E':'#aab')+'" stroke-width="'+(maj?2:1)+'"/>');
+      if(maj) p.push('<text x="'+xx+'" y="'+(y+28)+'" text-anchor="middle" font-size="15" font-weight="700" fill="#1B2D4E">'+vv+'</text>');
+      else if(k===5) p.push('<text x="'+xx+'" y="'+(y+25)+'" text-anchor="middle" font-size="12" fill="#889">'+vv.toFixed(1)+'</text>'); }
+  }
+  if(opts.anchors&&!wide){
+    p.push('<text x="'+X(lo)+'" y="'+(y+48)+'" text-anchor="middle" font-size="13" fill="#2f6fb0" font-weight="700">'+lo+'² = '+(lo*lo)+'</text>');
+    p.push('<text x="'+X(hi)+'" y="'+(y+48)+'" text-anchor="middle" font-size="13" fill="#A33329" font-weight="700">'+hi+'² = '+(hi*hi)+'</text>');
+  }
+  if(opts.neighbor!=null){ var xn=X(opts.neighbor);
+    p.push('<line x1="'+xn+'" y1="'+(y-20)+'" x2="'+xn+'" y2="'+(y+6)+'" stroke="#b9b4a3" stroke-width="2" stroke-dasharray="3,3"/>');
+    p.push('<text x="'+xn+'" y="'+(y-24)+'" text-anchor="middle" font-size="12" fill="#8a8674">'+opts.neighbor+'</text>'); }
+  if(guess!=null){ var xg=X(guess);
+    var col=state==='cold'?'#2f6fb0':state==='hot'?'#A33329':state==='found'?'#2F7C18':'#5a6472';
+    var lbl=opts.label!=null?opts.label:(''+guess);
+    p.push('<line x1="'+xg+'" y1="'+(y-36)+'" x2="'+xg+'" y2="'+(y+10)+'" stroke="'+col+'" stroke-width="3"/>');
+    p.push('<polygon points="'+(xg-9)+','+(y-36)+' '+(xg+9)+','+(y-36)+' '+xg+','+(y-24)+'" fill="'+col+'"/>');
+    p.push('<circle cx="'+xg+'" cy="'+y+'" r="6" fill="'+col+'"/>');
+    p.push('<text x="'+xg+'" y="'+(y-42)+'" text-anchor="middle" font-size="18" font-weight="800" fill="'+col+'">'+lbl+'</text>');
+  }
+  p.push('</svg>'); return p.join('');
+}
+
+/* ============ WORKED HUNT: √40 ============ */
+var Hunt=(function(){
+  var steps=[
+    {lo:0,hi:10,guess:6.3,state:'neutral',label:'?',anchors:false,
+     cap:'<b>√40 = ?</b> &nbsp;🔍 Time to hunt! Our only tool is <b>squaring</b> a guess.',badge:''},
+    {lo:6,hi:7,guess:null,anchors:true,
+     cap:'<b>① Trap it.</b> 6² = 36 (❄️ too low) and 7² = 49 (🔥 too high) → √40 is between <b>6 and 7</b>.',badge:''},
+    {lo:6,hi:7,guess:6.3,state:'cold',anchors:true,
+     cap:'<b>② Test a tenth.</b> 6.3² = <b>39.69</b> — just under 40.',badge:'<span class="est-badge badge-cold">❄️ 39.69 &lt; 40 (a little low)</span>'},
+    {lo:6,hi:7,guess:6.4,state:'hot',neighbor:6.3,anchors:true,
+     cap:'<b>Check the neighbor.</b> 6.4² = <b>40.96</b> — over 40.',badge:'<span class="est-badge badge-hot">🔥 40.96 &gt; 40 (too high)</span>'},
+    {lo:6,hi:7,guess:6.3,state:'found',neighbor:6.4,anchors:true,
+     cap:'<b>③ Land it.</b> 40 is much closer to 39.69 than to 40.96, so <b>√40 ≈ 6.3</b> 🎯',badge:'<span class="est-badge badge-found">🎯 √40 ≈ 6.3</span>'}
+  ];
+  var i=0;
+  function render(){ var s=steps[i];
+    document.getElementById('wLine').innerHTML=numberLine(s.lo,s.hi,s.guess,s.state,{anchors:s.anchors,neighbor:s.neighbor,label:s.label});
+    document.getElementById('wCap').innerHTML=s.cap;
+    document.getElementById('wBadge').innerHTML=s.badge;
+    document.getElementById('wNext').textContent=(i>=steps.length-1)?'✓ Done — Restart':'Next step ▸';
+    if(s.state==='cold')sCold(); else if(s.state==='hot')sHot(); else if(s.state==='found'){sWin();confetti();}
+  }
+  function next(){ if(i>=steps.length-1){ i=0; } else { i++; } render(); }
+  function restart(){ i=0; render(); }
+  return {next:next,restart:restart,render:render};
+})();
+
+/* ============ INTERACTIVE HUNT ============ */
+var Try=(function(){
+  var nums=[2,3,5,8,10,20,40,50,72,90], n=null,lo=0,hi=1,ans=0;
+  function pickRow(){ var r=document.getElementById('pickRow'); r.innerHTML='';
+    nums.forEach(function(v){ var b=document.createElement('button'); b.className='pick'; b.textContent='√'+v;
+      b.onclick=function(){ select(v,b); }; r.appendChild(b); }); }
+  function select(v,btn){ n=v; lo=Math.floor(Math.sqrt(v)); hi=lo+1; ans=Math.round(Math.sqrt(v)*10)/10;
+    document.querySelectorAll('.pick').forEach(function(x){x.classList.remove('sel');}); if(btn)btn.classList.add('sel');
+    var sl=document.getElementById('iSlider'); sl.min=lo; sl.max=hi; sl.step=0.1; sl.value=lo; sPick();
+    move(lo,true);
+  }
+  function move(g,silent){ if(n==null)return; g=Math.round(g*10)/10; var g2=Math.round(g*g*100)/100;
+    var found=Math.abs(g-ans)<0.001, state=found?'found':(g2<n?'cold':'hot');
+    document.getElementById('iLine').innerHTML=numberLine(lo,hi,g,state,{anchors:true,label:''+g});
+    var cap=document.getElementById('iCap'), badge;
+    if(found){ badge='<span class="est-badge badge-found">🎯 Nailed it! √'+n+' ≈ '+ans+'</span>'; }
+    else if(g2<n){ badge='<span class="est-badge badge-cold">❄️ '+g2+' &lt; '+n+' — colder (go higher)</span>'; }
+    else { badge='<span class="est-badge badge-hot">🔥 '+g2+' &gt; '+n+' — hotter (go lower)</span>'; }
+    cap.innerHTML='Target: <b>√'+n+'</b> &nbsp; · &nbsp; your guess <b>'+g+'</b>, and '+g+'² = <b>'+g2+'</b> &nbsp; '+badge;
+    if(!silent){ if(found){sWin();confetti();} else if(g2<n)sCold(); else sHot(); }
+  }
+  function psq(){ var s=''; for(var k=1;k<=12;k++) s+='<span>'+k+'²='+(k*k)+'</span>'; document.getElementById('psqStrip').innerHTML=s; }
+  return {pickRow:pickRow,move:move,psq:psq,select:select};
+})();
+
+/* ============ GAME: RATIONAL VS IRRATIONAL ============ */
+function ovl(d){return '<span class="ovl">'+d+'</span>';}
+var Sort=(function(){
+  var cards=[
+    {h:'3/4',c:'R'},{h:'√16',c:'R'},{h:'π',c:'I'},{h:'√7',c:'I'},
+    {h:'0.'+ovl('6'),c:'R'},{h:'√25',c:'R'},{h:'√2',c:'I'},{h:'0.1010010001…',c:'I'},
+    {h:'22/7',c:'R'},{h:'√50',c:'I'},{h:'2.5',c:'R'},{h:'√3',c:'I'}
+  ];
+  var placed=0;
+  function reset(){ placed=0;
+    document.getElementById('s1bins').innerHTML=
+      '<div class="dropzone" data-c="R"><div class="zt">Rational<small>fraction · terminating/repeating decimal · perfect-square root</small></div><div class="drops"></div></div>'+
+      '<div class="dropzone" data-c="I"><div class="zt">Irrational<small>non-terminating, non-repeating · non-perfect root · π</small></div><div class="drops"></div></div>';
+    var tray=document.getElementById('s1tray'); tray.innerHTML='';
+    shuffle(cards.slice()).forEach(function(cd){ var el=document.createElement('div'); el.className='drag'; el.innerHTML=cd.h; el.dataset.c=cd.c;
+      tray.appendChild(el); makeDraggable(el,function(node,zone){
+        if(zone&&zone.dataset.c){ if(zone.dataset.c===node.dataset.c){ node.classList.add('locked'); zone.querySelector('.drops').appendChild(node);
+            zone.classList.add('correct-flash'); setTimeout(function(){zone.classList.remove('correct-flash');},400); sCorrect(); placed++; upd();
+            if(placed===cards.length){document.getElementById('s1win').classList.add('show');sWin();confetti();} }
+          else { sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350);} } }); });
+    document.getElementById('s1win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('s1score').textContent=placed+' of '+cards.length+' sorted'; }
+  return {reset:reset};
+})();
+
+/* ============ GAME: OPERATIONS PREDICTOR ============ */
+var Ops=(function(){
+  var cards=[
+    {h:'1/2 + 1/3',c:'R'},{h:'3 × 2/5',c:'R'},{h:'2 + √3',c:'I'},{h:'5 · √2',c:'I'},
+    {h:'√2 · √2',c:'R'},{h:'√2 + √3',c:'I'},{h:'√2 + (−√2)',c:'R'},{h:'π − π',c:'R'},
+    {h:'√3 · √3',c:'R'},{h:'4 + π',c:'I'},{h:'√2 · √8',c:'R'},{h:'√5 · √3',c:'I'}
+  ];
+  var placed=0;
+  function reset(){ placed=0;
+    document.getElementById('s2bins').innerHTML=
+      '<div class="dropzone" data-c="R"><div class="zt">Rational result</div><div class="drops"></div></div>'+
+      '<div class="dropzone" data-c="I"><div class="zt">Irrational result</div><div class="drops"></div></div>';
+    var tray=document.getElementById('s2tray'); tray.innerHTML='';
+    shuffle(cards.slice()).forEach(function(cd){ var el=document.createElement('div'); el.className='drag'; el.innerHTML=cd.h; el.dataset.c=cd.c;
+      tray.appendChild(el); makeDraggable(el,function(node,zone){
+        if(zone&&zone.dataset.c){ if(zone.dataset.c===node.dataset.c){ node.classList.add('locked'); zone.querySelector('.drops').appendChild(node);
+            zone.classList.add('correct-flash'); setTimeout(function(){zone.classList.remove('correct-flash');},400); sCorrect(); placed++; upd();
+            if(placed===cards.length){document.getElementById('s2win').classList.add('show');sWin();confetti();} }
+          else { sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350);} } }); });
+    document.getElementById('s2win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('s2score').textContent=placed+' of '+cards.length+' sorted'; }
+  return {reset:reset};
+})();
+
+/* ============ GAME: TRAP THE ROOT ============ */
+var Trap=(function(){
+  var items=[5,10,20,30,40,55,72,90];
+  var placed=0,total=8;
+  function reset(){ placed=0;
+    var bins=''; for(var b=2;b<=9;b++){ bins+='<div class="dropzone" data-lo="'+b+'"><div class="zt">'+b+' – '+(b+1)+'</div><div class="drops"></div></div>'; }
+    document.getElementById('s3bins').innerHTML=bins;
+    var tray=document.getElementById('s3tray'); tray.innerHTML='';
+    shuffle(items.slice()).forEach(function(v){ var el=document.createElement('div'); el.className='drag'; el.innerHTML='√'+v;
+      el.dataset.lo=Math.floor(Math.sqrt(v)); tray.appendChild(el);
+      makeDraggable(el,function(node,zone){
+        if(zone&&zone.dataset.lo){ if(zone.dataset.lo===node.dataset.lo){ node.classList.add('locked'); zone.querySelector('.drops').appendChild(node);
+            zone.classList.add('correct-flash'); setTimeout(function(){zone.classList.remove('correct-flash');},400); sCorrect(); placed++; upd();
+            if(placed===total){document.getElementById('s3win').classList.add('show');sWin();confetti();} }
+          else { sWrong(); node.classList.add('shake'); setTimeout(function(){node.classList.remove('shake');},350);} } }); });
+    document.getElementById('s3win').classList.remove('show'); upd();
+  }
+  function upd(){ document.getElementById('s3score').textContent=placed+' of '+total+' trapped'; }
+  return {reset:reset};
+})();
+
+/* ============ INIT ============ */
+Hunt.render(); Try.pickRow(); Try.psq(); Try.select(40,document.querySelectorAll('.pick')[6]);
+Sort.reset(); Ops.reset(); Trap.reset();
+window.addEventListener('resize',function(){var c=document.getElementById('confetti');c.width=innerWidth;c.height=innerHeight;});
+</script>
+</body>
+</html>
