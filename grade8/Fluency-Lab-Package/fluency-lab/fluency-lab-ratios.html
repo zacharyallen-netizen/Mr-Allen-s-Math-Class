@@ -1,0 +1,183 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fluency Lab — Ratios</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .flame{font-size:14px;filter:grayscale(.15)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  .fexpr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
+    font-family:var(--mono);font-size:46px;font-weight:600;margin:16px 0 6px;gap:2px}
+  .fexpr .op{color:var(--muted);margin:0 12px}
+  .fexpr .lbl{color:var(--muted);font-size:26px;margin-right:12px;font-family:var(--sans);font-weight:600}
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 2px}
+  .frac .n{padding:0 10px 2px;border-bottom:3px solid var(--ink);line-height:1.15}
+  .frac .d{padding:2px 10px 0;line-height:1.15}
+  .frac.res{color:var(--mint)} .frac.res .n{border-bottom-color:var(--mint)}
+  .whole{padding:0 4px} .fexpr .res{color:var(--mint)}
+  @media(max-width:430px){.fexpr{font-size:34px}}
+
+  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+  #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
+    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
+    border-radius:14px;padding:12px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
+  #answer::placeholder{color:#5b6190;font-size:21px;font-weight:500}
+  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
+  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
+  .hint{margin-top:8px;color:var(--muted);font-size:12.5px;min-height:16px}
+  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
+    transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.sky{background:var(--sky);color:#0a1226}
+  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
+  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
+  .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
+    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
+  .tip.show{display:block} .tip b{color:var(--sky)}
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
+  .how{text-align:left;max-width:400px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .how b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  .hide{display:none!important}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  .pop{animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  #prob{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);
+    font-size:50px;font-weight:600;margin:18px 0 6px;gap:2px;min-height:72px}
+  #prob .op{color:var(--muted);margin:0 12px}
+  #prob .res{color:var(--mint)}
+  #prob sup{font-size:.5em;vertical-align:super;margin-left:1px}
+  #prob .lbl{font-family:var(--sans);font-size:24px;color:var(--muted);font-weight:600}
+  @media(max-width:430px){#prob{font-size:38px}}
+</style></head><body>
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1><div class="sub">Ratios & Proportions · Module 7</div>
+    <div class="how">Simplify ratios, build equivalents, find <b>unit rates</b>, and solve <b>proportions</b> — the reasoning way, not a bare cross-multiply trick. Ratios are typed like <b>3:2</b>. Racing your own best.</div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE · :</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div id="prob"></div>
+      <div class="answer-wrap">
+        <input id="answer" inputmode="text" autocomplete="off" aria-label="Your answer" />
+        <div class="hint" id="hint"></div>
+        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div class="tip" id="tip"></div>
+    </section>
+  </div>
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1><div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+  </section>
+<script>
+const SET_LEN=10;
+let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+const $=id=>document.getElementById(id);
+function fmt(x){return (Math.round(x*1e6)/1e6).toString();}
+function numProb(display,ansVal,tip,opt){opt=opt||{};
+  return {display:display, placeholder:opt.placeholder||'answer', hint:opt.hint||'', ans:fmt(ansVal),
+    check:function(s){s=String(s).replace(/[^0-9.\-\/]/g,'');if(s==='')return false;var v;
+      if(s.indexOf('/')>-1){var p=s.split('/');v=parseFloat(p[0])/parseFloat(p[1]);}else v=parseFloat(s);
+      return isFinite(v)&&Math.abs(v-ansVal)<1e-4;},
+    worked:{display:display+' <span class="op">=</span> <span class="res">'+fmt(ansVal)+'</span>', tip:tip}};
+}
+function ratioProb(display,an,ad,tip){
+  return {display:display, placeholder:'e.g. 3:2', hint:'write it as a:b', ans:an+':'+ad,
+    check:function(s){var m=String(s).trim().match(/^(\d+)\s*:\s*(\d+)$/);if(!m)return false;var x=+m[1],y=+m[2];return y!==0&&x*ad===an*y;},
+    worked:{display:display+' <span class="op">=</span> <span class="res">'+an+':'+ad+'</span>', tip:tip}};
+}
+
+const MOD={gen:function(L){
+ var sp=function(t){return '<span class="op">'+t+'</span>';};
+ if(L===1){var bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);var k=rnd(2,6);
+   return ratioProb('Simplify  '+(bn*k)+' : '+(bd*k),bn,bd,'<b>Divide both sides by their greatest common factor.</b> '+(bn*k)+':'+(bd*k)+' = '+bn+':'+bd+'.');}
+ if(L===2){var bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);var k=rnd(2,6);
+   return numProb(bn+' : '+bd+'  =  ? : '+(bd*k),bn*k,'<b>'+bd+' × '+k+' = '+(bd*k)+', so do the same to the top:</b> '+bn+' × '+k+' = '+(bn*k)+'.',{placeholder:'a number'});}
+ if(L===3){var rate=rnd(10,60),time=rnd(2,9),total=rate*time;
+   return numProb(total+' miles in '+time+' hours = ? miles per hour',rate,'<b>Divide to find one unit.</b> '+total+' ÷ '+time+' = '+rate+' miles per hour.',{placeholder:'a number'});}
+ if(L===4){var x=rnd(2,9),b=rnd(2,9),m=rnd(2,4),c=x*m,d=b*m;
+   return numProb('? / '+b+'  =  '+c+' / '+d,x,'<b>'+d+' ÷ '+b+' = '+m+', so divide the top the same way:</b> '+c+' ÷ '+m+' = '+x+'.',{placeholder:'a number'});}
+ if(L===5){var bn,bd;do{bn=rnd(1,5);bd=rnd(1,5);}while(bn===bd);var u=rnd(2,6),total=(bn+bd)*u,first=bn*u;
+   return numProb('Split '+total+' in the ratio '+bn+':'+bd+' — the first part is ?',first,'<b>'+bn+'+'+bd+' = '+(bn+bd)+' shares; each share = '+total+' ÷ '+(bn+bd)+' = '+u+'.</b> First part = '+bn+' × '+u+' = '+first+'.',{placeholder:'a number'});}
+ var unit=rnd(2,9),q=rnd(2,6),p=unit*q,n=rnd(2,9),ans=unit*n;
+ return numProb('If '+q+' items cost $'+p+', then '+n+' items cost $?',ans,'<b>Find the price of one:</b> '+p+' ÷ '+q+' = $'+unit+'. Then × '+n+' = $'+ans+'.',{placeholder:'a number'});
+}};
+
+function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=MOD.gen(L);answered=false;renderProblem();}
+function renderProblem(){$('prob').innerHTML=current.display;var inp=$('answer');inp.value='';inp.className='';inp.disabled=false;
+  inp.placeholder=current.placeholder||'';$('hint').textContent=current.hint||'';inp.focus();
+  $('verdict').textContent='';$('verdict').className='verdict';$('tip').className='tip';$('tip').innerHTML='';
+  var b=$('submit');b.textContent='Check';b.className='btn';b.onclick=submitAnswer;paintDots();}
+function paintDots(){var h='';for(var i=0;i<SET_LEN;i++){var c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+='<span class="'+c+'"></span>';}$('dots').innerHTML=h;}
+function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');updateHUD();nextProblem();}
+function submitAnswer(){if(answered)return;var s=$('answer').value.trim();if(s==='')return;
+  answered=true;$('answer').disabled=true;var right=current.check(s);results[index]=right;
+  if(right){correctCount++;streak++;bestStreak=Math.max(bestStreak,streak);recentMisses=0;$('answer').classList.add('correct');
+    var v=$('verdict');v.textContent=praise();v.className='verdict good pop';if(streak%3===0&&level<6){level++;recentMisses=0;}}
+  else{streak=0;recentMisses++;$('answer').classList.add('wrong');var v=$('verdict');v.textContent='Not yet — here’s the work:';v.className='verdict help';
+    $('prob').innerHTML=current.worked.display;$('tip').innerHTML=current.worked.tip;$('tip').classList.add('show');
+    if(recentMisses>=2&&level>1){level--;recentMisses=0;}}
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);updateHUD();paintDots();
+  var b=$('submit');b.textContent=(index===SET_LEN-1)?'See results':'Next';b.className='btn '+(right?'':'sky');b.onclick=advance;}
+function advance(){index++;if(index>=SET_LEN){endSet();return;}nextProblem();}
+function praise(){return pick(['Nice.','Locked in.','Clean.','Sharp.','Yes — keep going.','That’s it.']);}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
+  $('s-note').textContent=correctCount>=9?'Excellent control. Strings of wins pushed your level up.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. Watch the method on the hard ones.':'Every miss showed the work. Run it again.';}
+document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();if(!answered)submitAnswer();else $('submit').click();});
+</script></body></html>

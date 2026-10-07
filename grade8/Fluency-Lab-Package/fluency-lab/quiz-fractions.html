@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Skill Check — Fractions</title>
+<style>
+:root{--bg:#15172b;--bg2:#1b1e38;--panel:#222749;--edge:#33396b;--ink:#f1f3ff;--muted:#9aa0cf;
+--mint:#39d99a;--amber:#ffbb4d;--sky:#63a8ef;--coral:#ff7a70;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+--mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);min-height:100dvh;
+background:radial-gradient(1200px 620px at 50% -12%,#23285180,transparent 60%),var(--bg);
+padding:38px 16px 70px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto}
+a.back{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+h1{font-size:26px;margin:10px 0 4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:8px}
+.score{position:sticky;top:10px;z-index:5;margin:16px 0;padding:14px 18px;border-radius:14px;
+background:var(--panel);border:1px solid var(--edge);font-weight:700;font-size:18px;display:none;text-align:center}
+.score.show{display:block}
+.q{background:linear-gradient(180deg,var(--panel),#20244a);border:1px solid var(--edge);
+border-radius:16px;padding:18px 18px 16px;margin:14px 0}
+.qnum{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.05em;margin-bottom:6px}
+.prompt{font-size:21px;font-weight:600;margin-bottom:14px;font-family:var(--mono)}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:11px;cursor:pointer;
+background:var(--bg2);border:2px solid var(--edge);font-family:var(--mono);font-size:17px;
+transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--sky)}
+.opt.sel{border-color:var(--sky);background:#1f2a4a}
+.opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex:0 0 auto}
+.opt.sel .mk{border-color:var(--sky);background:var(--sky)}
+.opt.correct{border-color:var(--mint);background:#16302486}
+.opt.correct .mk{border-color:var(--mint);background:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:#3a1f1f86}
+.opt.wrong .mk{border-color:var(--coral);background:var(--coral)}
+.fb{display:none;margin-top:10px;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
+border-radius:10px;padding:10px 13px;font-size:14px;line-height:1.5;color:var(--ink)}
+.fb.show{display:block}
+.btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:pointer;display:block;min-width:200px}
+.btn:hover{filter:brightness(1.06)} .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--edge)}
+.locked .opt{cursor:default}
+@media(max-width:430px){.prompt{font-size:19px}h1{font-size:22px}}
+</style></head><body><div class="wrap">
+<a class="back" href="index.html">← All skills</a>
+<h1>Skill Check — Fractions</h1>
+<div class="sub">12 questions. Pick an answer for each, then check your score. Missed ones show the worked steps.</div>
+<div class="score" id="score"></div>
+<div id="quiz"></div>
+<button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
+<button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
+</div><script>
+const Q=[["Simplify  6/8", ["3/4", "6/8", "3/8", "4/6"], 0, "Divide top and bottom by their greatest common factor (2): 6÷2=3, 8÷2=4 → 3/4."], ["Simplify  10/15", ["2/3", "5/7", "10/15", "3/5"], 0, "Greatest common factor of 10 and 15 is 5: 10÷5=2, 15÷5=3 → 2/3."], ["2/3  =  ?/12   (what is the missing top number?)", ["8", "6", "4", "9"], 0, "To turn 3 into 12 you multiply by 4, so multiply the top too: 2×4 = 8."], ["3/8 + 2/8", ["5/8", "5/16", "6/8", "1/4"], 0, "Same denominator: add the tops, keep the bottom. 3+2 = 5 → 5/8 (already simplest)."], ["5/6 − 1/6", ["2/3", "4/6", "4/12", "1/3"], 0, "Same denominator: 5−1 = 4 → 4/6, which simplifies to 2/3."], ["3/4 + 1/4", ["1", "4/8", "1/2", "4/4"], 0, "3+1 = 4 → 4/4 = 1 whole."], ["1/2 + 1/3", ["5/6", "2/5", "2/6", "3/5"], 0, "Common denominator 6: 1/2 = 3/6, 1/3 = 2/6. Add the tops: 3+2 = 5 → 5/6. (Never add the bottoms.)"], ["5/6 − 1/4", ["7/12", "4/2", "1/3", "6/10"], 0, "Common denominator 12: 5/6 = 10/12, 1/4 = 3/12. 10−3 = 7 → 7/12."], ["2/3 × 4/5", ["8/15", "6/8", "8/8", "2/15"], 0, "Multiply straight across: 2×4 = 8 over 3×5 = 15 → 8/15. No common denominator for multiplying."], ["3/4 × 2/9", ["1/6", "6/13", "5/13", "6/36"], 0, "3×2 = 6 over 4×9 = 36 → 6/36, which simplifies to 1/6."], ["1/2 ÷ 1/4", ["2", "1/8", "1/2", "8"], 0, "Flip the second and multiply: 1/2 × 4/1 = 4/2 = 2. Dividing by 1/4 asks how many quarters are in a half — two."], ["2/3 ÷ 4/9", ["3/2", "8/27", "6/12", "2/3"], 0, "Flip the second and multiply: 2/3 × 9/4 = 18/12 = 3/2."]];
+const box=document.getElementById('quiz');
+let locked=false;
+const sel={};
+function render(){
+  box.innerHTML='';
+  Q.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='q';d.id='q'+i;
+    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
+    box.appendChild(d);
+  });
+  box.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
+    if(locked)return;const qi=o.dataset.q;
+    box.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));
+    o.classList.add('sel');sel[qi]=+o.dataset.o;
+  });
+}
+function check(){
+  let score=0;
+  Q.forEach((q,i)=>{
+    const correct=q[2];
+    box.querySelectorAll('.opt[data-q="'+i+'"]').forEach(o=>{
+      const oi=+o.dataset.o;
+      if(oi===correct)o.classList.add('correct');
+      if(sel[i]===oi && oi!==correct)o.classList.add('wrong');
+    });
+    if(sel[i]===correct){score++;}
+    else{const fb=document.getElementById('fb'+i);fb.innerHTML='<b>'+q[1][correct]+'</b> — '+q[3];fb.classList.add('show');}
+  });
+  locked=true;box.classList.add('locked');
+  const pct=Math.round(score/Q.length*100);
+  const s=document.getElementById('score');
+  let msg = score===Q.length?'Perfect! 🎉':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good — review the blue notes below.':'Keep going — read the worked steps, then try again.';
+  s.innerHTML='You scored '+score+' / '+Q.length+'  ('+pct+'%) — '+msg;
+  s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('checkbtn').style.display='none';
+  document.getElementById('againbtn').style.display='block';
+}
+function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
+  document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  render();window.scrollTo({top:0,behavior:'smooth'});}
+render();
+</script></body></html>

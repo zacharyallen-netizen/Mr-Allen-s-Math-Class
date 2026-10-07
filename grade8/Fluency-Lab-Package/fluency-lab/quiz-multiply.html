@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Skill Check — Multiply</title>
+<style>
+:root{--bg:#15172b;--bg2:#1b1e38;--panel:#222749;--edge:#33396b;--ink:#f1f3ff;--muted:#9aa0cf;
+--mint:#39d99a;--amber:#ffbb4d;--sky:#63a8ef;--coral:#ff7a70;
+--sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+--mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);color:var(--ink);min-height:100dvh;
+background:radial-gradient(1200px 620px at 50% -12%,#23285180,transparent 60%),var(--bg);
+padding:38px 16px 70px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:640px;margin:0 auto}
+a.back{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+h1{font-size:26px;margin:10px 0 4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:8px}
+.score{position:sticky;top:10px;z-index:5;margin:16px 0;padding:14px 18px;border-radius:14px;
+background:var(--panel);border:1px solid var(--edge);font-weight:700;font-size:18px;display:none;text-align:center}
+.score.show{display:block}
+.q{background:linear-gradient(180deg,var(--panel),#20244a);border:1px solid var(--edge);
+border-radius:16px;padding:18px 18px 16px;margin:14px 0}
+.qnum{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.05em;margin-bottom:6px}
+.prompt{font-size:21px;font-weight:600;margin-bottom:14px;font-family:var(--mono)}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:11px;cursor:pointer;
+background:var(--bg2);border:2px solid var(--edge);font-family:var(--mono);font-size:17px;
+transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--sky)}
+.opt.sel{border-color:var(--sky);background:#1f2a4a}
+.opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);flex:0 0 auto}
+.opt.sel .mk{border-color:var(--sky);background:var(--sky)}
+.opt.correct{border-color:var(--mint);background:#16302486}
+.opt.correct .mk{border-color:var(--mint);background:var(--mint)}
+.opt.wrong{border-color:var(--coral);background:#3a1f1f86}
+.opt.wrong .mk{border-color:var(--coral);background:var(--coral)}
+.fb{display:none;margin-top:10px;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
+border-radius:10px;padding:10px 13px;font-size:14px;line-height:1.5;color:var(--ink)}
+.fb.show{display:block}
+.btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:pointer;display:block;min-width:200px}
+.btn:hover{filter:brightness(1.06)} .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--edge)}
+.locked .opt{cursor:default}
+@media(max-width:430px){.prompt{font-size:19px}h1{font-size:22px}}
+</style></head><body><div class="wrap">
+<a class="back" href="index.html">← All skills</a>
+<h1>Skill Check — Multiply</h1>
+<div class="sub">12 questions. Pick an answer for each, then check your score. Missed ones show the worked steps.</div>
+<div class="score" id="score"></div>
+<div id="quiz"></div>
+<button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
+<button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
+</div><script>
+const Q=[["7 × 8 =", ["56", "54", "63", "48"], 0, "7 × 8 = 56. Tip: double 7 three times — 7 → 14 → 28 → 56. Lock it in."], ["9 × 6 =", ["54", "56", "45", "63"], 0, "9 × 6 = 54. ×9 trick: 10 × 6 = 60, minus 6 = 54."], ["8 × 8 =", ["64", "56", "72", "48"], 0, "8 × 8 = 64. One of the squares worth memorizing cold."], ["12 × 7 =", ["84", "72", "96", "77"], 0, "12 × 7 = 84. Think (10 × 7) + (2 × 7) = 70 + 14 = 84."], ["34 × 6 =", ["204", "184", "244", "210"], 0, "Ones: 6 × 4 = 24 → write 4, carry 2. Tens: 6 × 3 = 18, + 2 = 20  →  204. Don’t drop the carry."], ["47 × 8 =", ["376", "326", "356", "386"], 0, "Ones: 8 × 7 = 56 → write 6, carry 5. Tens: 8 × 4 = 32, + 5 = 37  →  376."], ["128 × 4 =", ["512", "488", "502", "412"], 0, "4 × 8 = 32 (write 2, carry 3); 4 × 2 = 8, + 3 = 11 (write 1, carry 1); 4 × 1 = 4, + 1 = 5  →  512."], ["23 × 14 =", ["322", "115", "312", "422"], 0, "Two partial products: 23 × 4 = 92, then 23 × 10 = 230 (the tens — the shift). Add: 92 + 230 = 322."], ["47 × 38 =", ["1786", "517", "1416", "1886"], 0, "Two partials: 47 × 8 = 376, then 47 × 30 = 1410 (NOT 141 — that’s the place-value shift). 376 + 1410 = 1786."], ["56 × 24 =", ["1344", "336", "1244", "1444"], 0, "56 × 4 = 224, then 56 × 20 = 1120 (the shift). 224 + 1120 = 1344."], ["63 × 45 =", ["2835", "567", "2735", "2935"], 0, "63 × 5 = 315, then 63 × 40 = 2520 (the shift, not 252). 315 + 2520 = 2835."], ["A theater has 36 rows of 24 seats. How many seats in all?", ["864", "216", "764", "964"], 0, "36 × 24: 36 × 4 = 144, then 36 × 20 = 720 (the shift). 144 + 720 = 864 seats."]];
+const box=document.getElementById('quiz');
+let locked=false;
+const sel={};
+function render(){
+  box.innerHTML='';
+  Q.forEach((q,i)=>{
+    const d=document.createElement('div');d.className='q';d.id='q'+i;
+    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
+    box.appendChild(d);
+  });
+  box.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
+    if(locked)return;const qi=o.dataset.q;
+    box.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));
+    o.classList.add('sel');sel[qi]=+o.dataset.o;
+  });
+}
+function check(){
+  let score=0;
+  Q.forEach((q,i)=>{
+    const correct=q[2];
+    box.querySelectorAll('.opt[data-q="'+i+'"]').forEach(o=>{
+      const oi=+o.dataset.o;
+      if(oi===correct)o.classList.add('correct');
+      if(sel[i]===oi && oi!==correct)o.classList.add('wrong');
+    });
+    if(sel[i]===correct){score++;}
+    else{const fb=document.getElementById('fb'+i);fb.innerHTML='<b>'+q[1][correct]+'</b> — '+q[3];fb.classList.add('show');}
+  });
+  locked=true;box.classList.add('locked');
+  const pct=Math.round(score/Q.length*100);
+  const s=document.getElementById('score');
+  let msg = score===Q.length?'Perfect! 🎉':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good — review the blue notes below.':'Keep going — read the worked steps, then try again.';
+  s.innerHTML='You scored '+score+' / '+Q.length+'  ('+pct+'%) — '+msg;
+  s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('checkbtn').style.display='none';
+  document.getElementById('againbtn').style.display='block';
+}
+function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
+  document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  render();window.scrollTo({top:0,behavior:'smooth'});}
+render();
+</script></body></html>

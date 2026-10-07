@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Multiply</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .flame{font-size:14px;filter:grayscale(.15)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  /* vertical algorithm — flex so place-value columns line up exactly */
+  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;
+    display:flex;flex-direction:column;align-items:center;margin:6px 0 4px;line-height:1}
+  .algo .row{display:flex;justify-content:flex-end}
+  .algo .cell{width:46px;height:52px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600}
+  .algo .op{width:46px;height:52px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
+  .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:8px 0 6px;opacity:.9}
+  .partial .cell{font-size:34px;color:var(--sky)}
+  .ans .cell{color:var(--mint)}
+  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.partial .cell{font-size:28px}}
+
+  /* facts: big horizontal equation */
+  .factline{font-family:var(--mono);font-variant-numeric:tabular-nums;
+    text-align:center;font-size:62px;font-weight:700;letter-spacing:2px;margin:18px 0 4px}
+  .factline .x{color:var(--muted);margin:0 10px}
+  .factline .eq{color:var(--muted);margin:0 10px}
+  .factline .res{color:var(--mint)}
+  @media (max-width:430px){.factline{font-size:48px}}
+
+  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+  #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:210px;text-align:center;
+    font-size:34px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
+    border-radius:14px;padding:12px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
+  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
+  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
+  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 22px;margin-top:16px;cursor:pointer;
+    transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.sky{background:var(--sky);color:#0a1226}
+  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
+  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
+  .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
+    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
+  .tip.show{display:block} .tip b{color:var(--sky)}
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
+  .how{text-align:left;max-width:390px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .how b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  .hide{display:none!important}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  .pop{animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Multiply · Module 2</div>
+    <div class="how">
+      First you build your <b>facts</b> to automatic. Then you multiply <b>big numbers</b> with the standard algorithm.
+      Every miss shows you the real work — for big ones, the <b>partial products</b>, never a box.
+      It gets harder as you get sharper, and you're only ever racing <b>your own best</b>.
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE · ×</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="algo" id="algo"></div>
+      <div class="answer-wrap">
+        <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
+        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div class="tip" id="tip"></div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+  </section>
+
+<script>
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, answered=false;
+let results=[];
+
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+function mk(a,b){return {a,b,answer:a*b,fact:(a<=12&&b<=12)};}
+function maybeSwap(p){ if(Math.random()<0.5){const t=p.a;p.a=p.b;p.b=t;} return p; }
+
+function genEasy(){ return maybeSwap(mk(rnd(2,12),pick([0,1,2,5,10]))); }        // L1
+function genMed(){  return maybeSwap(mk(rnd(2,12),pick([3,4,6]))); }             // L2
+function genHard(){ return maybeSwap(mk(rnd(2,12),pick([7,8,9,11,12]))); }       // L3
+function gen2x1(){  return mk(rnd(13,99),rnd(2,9)); }                            // L4
+function gen3x1(){  return mk(rnd(105,899),rnd(2,9)); }                          // L5
+function gen2x2(){  return mk(rnd(12,89),rnd(12,89)); }                          // L6
+const GEN={1:genEasy,2:genMed,3:genHard,4:gen2x1,5:gen3x1,6:gen2x2};
+
+function nextProblem(){
+  let useLevel=level;
+  if(level>1 && Math.random()<0.25) useLevel=level-1;
+  current=GEN[useLevel]();
+  answered=false; renderProblem();
+}
+
+const $=id=>document.getElementById(id);
+function digitsOf(n,w){return String(n).padStart(w,' ').split('');}
+function cellHTML(d){return `<span class="cell">${d===' '?'':d}</span>`;}
+const EMPTYOP='<span class="op"></span>';
+
+function renderProblem(){
+  const {a,b}=current;
+  if(current.fact && a<=12 && b<=12){
+    $('algo').innerHTML=`<div class="factline">${a}<span class="x">×</span>${b}</div>`;
+  } else {
+    const w=Math.max(String(a).length,String(b).length,String(current.answer).length);
+    let h='';
+    h+=`<div class="row">${EMPTYOP}${digitsOf(a,w).map(cellHTML).join('')}</div>`;
+    h+=`<div class="row"><span class="op">×</span>${digitsOf(b,w).map(cellHTML).join('')}</div>`;
+    h+=`<div class="ruleline"></div>`;
+    $('algo').innerHTML=h;
+  }
+  const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false; inp.focus();
+  $('verdict').textContent=''; $('verdict').className='verdict';
+  $('tip').className='tip'; $('tip').innerHTML='';
+  const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
+  paintDots();
+}
+function paintDots(){
+  let h='';
+  for(let i=0;i<SET_LEN;i++){
+    let cls='dot';
+    if(i<index) cls+= results[i]?' good':' miss';
+    if(i===index) cls+=' cur';
+    h+=`<span class="${cls}"></span>`;
+  }
+  $('dots').innerHTML=h;
+}
+
+function startSet(){
+  correctCount=0; index=0; streak=0; bestStreak=0; recentMisses=0;
+  levelReachedThisSet=level; results=[];
+  $('start').classList.add('hide'); $('summary').classList.add('hide'); $('play').classList.remove('hide');
+  updateHUD(); nextProblem();
+}
+function submitAnswer(){
+  if(answered) return;
+  const inp=$('answer'); const raw=inp.value.trim();
+  if(raw===''||isNaN(+raw)){inp.focus();return;}
+  answered=true; inp.disabled=true;
+  const right=(+raw)===current.answer; results[index]=right;
+  if(right){
+    correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    inp.classList.add('correct');
+    const v=$('verdict'); v.textContent=praise(); v.className='verdict good pop';
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;}
+  } else {
+    streak=0; recentMisses++;
+    inp.classList.add('wrong');
+    const v=$('verdict'); v.textContent='Not yet — here’s the work:'; v.className='verdict help';
+    showWorked();
+    if(recentMisses>=2 && level>1){level--; recentMisses=0;}
+  }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  const btn=$('submit');
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
+  btn.className='btn '+(right?'':'sky');
+  btn.onclick=advance;
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function praise(){
+  const p=['Nice.','Locked in.','Fast.','That’s the fact.','Sharp.','Yes — keep going.','Clean.'];
+  return p[Math.floor(Math.random()*p.length)];
+}
+
+function showWorked(){
+  const {a,b,answer,fact}=current;
+  if(fact && a<=12 && b<=12){
+    $('algo').innerHTML=`<div class="factline">${a}<span class="x">×</span>${b}<span class="eq">=</span><span class="res">${answer}</span></div>`;
+    $('tip').innerHTML=factTip(a,b,answer); $('tip').classList.add('show'); return;
+  }
+  const w=String(answer).length;
+  let h='';
+  h+=`<div class="row">${EMPTYOP}${digitsOf(a,w).map(cellHTML).join('')}</div>`;
+  h+=`<div class="row"><span class="op">×</span>${digitsOf(b,w).map(cellHTML).join('')}</div>`;
+  h+=`<div class="ruleline"></div>`;
+  if(b<10){
+    h+=`<div class="row ans">${EMPTYOP}${digitsOf(answer,w).map(cellHTML).join('')}</div>`;
+    $('tip').innerHTML=`<b>Multiply each digit of ${a} by ${b}</b>, carrying as you go. ${a} × ${b} = ${answer}.`;
+  } else {
+    const ob=b%10, tb=b-ob, p1=a*ob, p2=a*tb;
+    h+=`<div class="row partial">${EMPTYOP}${digitsOf(p1,w).map(cellHTML).join('')}</div>`;
+    h+=`<div class="row partial">${EMPTYOP}${digitsOf(p2,w).map(cellHTML).join('')}</div>`;
+    h+=`<div class="ruleline"></div>`;
+    h+=`<div class="row ans">${EMPTYOP}${digitsOf(answer,w).map(cellHTML).join('')}</div>`;
+    $('tip').innerHTML=`<b>Two partial products.</b> ${a} × ${ob} = ${p1}. Then ${a} × ${tb} = ${p2} `
+      +`(the tens — that’s the shift, not a box). Add them: ${p1} + ${p2} = ${answer}.`;
+  }
+  $('algo').innerHTML=h;
+  $('tip').classList.add('show');
+}
+function factTip(a,b,ans){
+  if(a===9||b===9){const o=(a===9)?b:a; return `<b>×9 trick:</b> 10 × ${o} = ${10*o}, minus ${o} = ${ans}.`;}
+  if((a===11||b===11)){const o=(a===11)?b:a; if(o<=9) return `<b>×11 trick:</b> for a single digit, write it twice — 11 × ${o} = ${ans}.`;}
+  if(a===8||b===8){const o=(a===8)?b:a; return `<b>×8 tip:</b> double three times — ${o}→${2*o}→${4*o}→${8*o} = ${ans}.`;}
+  if(a===4||b===4){const o=(a===4)?b:a; return `<b>×4 tip:</b> double twice — ${o}→${2*o}→${4*o} = ${ans}.`;}
+  return `<b>${a} × ${b} = ${ans}.</b> Say it three times and lock it in.`;
+}
+
+function updateHUD(){ $('lvl').textContent=level; $('strk').textContent=streak; }
+function endSet(){
+  $('play').classList.add('hide'); const s=$('summary'); s.classList.remove('hide');
+  $('s-acc').textContent=correctCount; $('s-best').textContent=bestStreak; $('s-lvl').textContent=levelReachedThisSet;
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount; pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this session: ${sessionBest}/10`;
+  $('s-note').textContent=note(correctCount);
+}
+function note(c){
+  if(c>=9) return 'Excellent control. Strings of wins pushed your level up.';
+  if(c>=7) return 'Strong set. A few more clean streaks and you climb again.';
+  if(c>=5) return 'Solid. Watch the partial products on the big ones — that’s where points hide.';
+  return 'Every miss showed you the real work. Run it again — the facts come faster each time.';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter') return;
+  if($('play').classList.contains('hide')) return;
+  e.preventDefault();
+  if(!answered) submitAnswer(); else document.getElementById('submit').click();
+});
+</script>
+</body>
+</html>

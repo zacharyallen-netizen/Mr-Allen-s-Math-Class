@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Divide</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .flame{font-size:14px;filter:grayscale(.15)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  .divline{font-family:var(--mono);font-variant-numeric:tabular-nums;
+    text-align:center;font-size:58px;font-weight:700;letter-spacing:1px;margin:20px 0 6px}
+  .divline .op{color:var(--muted);margin:0 12px}
+  .divline .eq{color:var(--muted);margin:0 12px}
+  .divline .res{color:var(--mint)}
+  @media (max-width:430px){.divline{font-size:44px}}
+
+  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
+  #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
+    font-size:32px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
+    border-radius:14px;padding:12px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
+  #answer::placeholder{color:#5b6190;font-size:22px;font-weight:500}
+  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
+  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
+  .hint{margin-top:8px;color:var(--muted);font-size:12.5px;min-height:16px}
+  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
+    transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.sky{background:var(--sky);color:#0a1226}
+  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
+  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
+  .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
+    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
+  .tip.show{display:block} .tip b{color:var(--sky)}
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
+  .how{text-align:left;max-width:395px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .how b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  .hide{display:none!important}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  .pop{animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Divide · Module 3</div>
+    <div class="how">
+      Division is multiplication backwards. First your <b>division facts</b>, then <b>long division</b> \u2014
+      divide, multiply, subtract, bring down. Every miss shows the steps and a check by multiplying back.
+      It gets harder as you get sharper, and you're only ever racing <b>your own best</b>.
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE · ÷</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="divline" id="prob"></div>
+      <div class="answer-wrap">
+        <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
+        <div class="hint" id="hint"></div>
+        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <div class="tip" id="tip"></div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+  </section>
+
+<script>
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, answered=false, results=[];
+
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function mkD(N,d,q,r,fact){return {N,d,q,r,fact};}
+
+function genEasy(){const d=pick([2,5,10]),q=rnd(2,12);return mkD(d*q,d,q,0,true);}   // L1
+function genMed(){ const d=pick([3,4,6]),q=rnd(2,12); return mkD(d*q,d,q,0,true);}   // L2
+function genHard(){const d=pick([7,8,9,11,12]),q=rnd(2,12);return mkD(d*q,d,q,0,true);} // L3
+function gen2x1(){ const d=rnd(2,9); const qmin=Math.max(2,Math.ceil(10/d)),qmax=Math.floor(99/d);
+  const q=rnd(qmin,qmax); return mkD(d*q,d,q,0,false);}                              // L4
+function gen3x1(){ const d=rnd(2,9); const qmin=Math.ceil(100/d),qmax=Math.floor(999/d);
+  const q=rnd(qmin,qmax); return mkD(d*q,d,q,0,false);}                              // L5
+function gen3x1r(){ const d=rnd(3,9);
+  let q,r,N; do{ const qmin=Math.ceil(100/d),qmax=Math.floor(990/d); q=rnd(qmin,qmax);
+    r=rnd(1,d-1); N=d*q+r; }while(N>999); return mkD(N,d,q,r,false);}               // L6
+const GEN={1:genEasy,2:genMed,3:genHard,4:gen2x1,5:gen3x1,6:gen3x1r};
+
+function nextProblem(){
+  let useLevel=level;
+  if(level>1 && Math.random()<0.25) useLevel=level-1;
+  current=GEN[useLevel](); answered=false; renderProblem();
+}
+const $=id=>document.getElementById(id);
+
+function renderProblem(){
+  const {N,d}=current;
+  $('prob').innerHTML=`${N}<span class="op">÷</span>${d}`;
+  const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false;
+  const rem=(level===6);
+  inp.setAttribute('inputmode',rem?'text':'numeric');
+  inp.placeholder = rem?'e.g.  64 r 1':'';
+  $('hint').textContent = rem?'This one may have a remainder — type it as  q r r':'';
+  inp.focus();
+  $('verdict').textContent=''; $('verdict').className='verdict';
+  $('tip').className='tip'; $('tip').innerHTML='';
+  const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
+  paintDots();
+}
+function paintDots(){
+  let h='';
+  for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;}
+  $('dots').innerHTML=h;
+}
+function parseAns(s){
+  const m=String(s).trim().match(/^(\d+)(?:\s*[rR]?\s*(\d+))?$/);
+  if(!m) return null;
+  return {q:+m[1], r:m[2]!==undefined?+m[2]:0};
+}
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
+function submitAnswer(){
+  if(answered) return;
+  const inp=$('answer'); const p=parseAns(inp.value);
+  if(!p){inp.focus();return;}
+  answered=true; inp.disabled=true;
+  const right=(p.q===current.q && p.r===current.r); results[index]=right;
+  if(right){
+    correctCount++;streak++;bestStreak=Math.max(bestStreak,streak);recentMisses=0;
+    inp.classList.add('correct');
+    const v=$('verdict');v.textContent=praise();v.className='verdict good pop';
+    if(streak>0&&streak%3===0&&level<6){level++;recentMisses=0;}
+  } else {
+    streak=0;recentMisses++;
+    inp.classList.add('wrong');
+    const v=$('verdict');v.textContent='Not yet — here’s the work:';v.className='verdict help';
+    showWorked();
+    if(recentMisses>=2&&level>1){level--;recentMisses=0;}
+  }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD();paintDots();
+  const btn=$('submit');
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
+}
+function advance(){index++;if(index>=SET_LEN){endSet();return;}nextProblem();}
+function praise(){const p=['Nice.','Locked in.','That’s the inverse.','Sharp.','Yes — keep going.','Clean.','Fast.'];return p[Math.floor(Math.random()*p.length)];}
+
+function showWorked(){
+  const {N,d,q,r,fact}=current;
+  const res = r>0 ? `${q}<span style="color:var(--muted)"> r </span>${r}` : `${q}`;
+  $('prob').innerHTML=`${N}<span class="op">÷</span>${d}<span class="eq">=</span><span class="res">${res}</span>`;
+  let tip;
+  if(fact){
+    tip=`<b>${N} ÷ ${d} = ${q}</b> because ${d} × ${q} = ${N}. Division is multiplication backwards.`;
+  } else if(r===0){
+    tip=`<b>Divide, multiply, subtract, bring down.</b> ${N} ÷ ${d} = ${q}. Check: ${d} × ${q} = ${N}.`;
+  } else {
+    tip=`<b>Divide, multiply, subtract, bring down.</b> ${N} ÷ ${d} = ${q} remainder ${r}. Check: ${d} × ${q} + ${r} = ${N}.`;
+  }
+  $('tip').innerHTML=tip; $('tip').classList.add('show');
+}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){
+  $('play').classList.add('hide');const s=$('summary');s.classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this session: ${sessionBest}/10`;
+  $('s-note').textContent=note(correctCount);
+}
+function note(c){
+  if(c>=9)return 'Excellent control. Strings of wins pushed your level up.';
+  if(c>=7)return 'Strong set. A few more clean streaks and you climb again.';
+  if(c>=5)return 'Solid. On the long ones, check by multiplying back — it catches mistakes.';
+  return 'Every miss showed the steps. Your facts make division faster — keep at it.';
+}
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  if($('play').classList.contains('hide'))return;
+  e.preventDefault();
+  if(!answered)submitAnswer();else document.getElementById('submit').click();
+});
+</script>
+</body>
+</html>
