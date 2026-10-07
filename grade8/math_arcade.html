@@ -12,8 +12,8 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:'Segoe UI',system-ui,sans-serif;background:#0a0e1f;color:#eaf0ff;line-height:1.5}
 .wrap{max-width:920px;margin:0 auto;padding:0 14px 50px}
-header.top{background:linear-gradient(135deg,#0a0e1f,#1a2547);border-bottom:1px solid var(--border);color:#fff;padding:20px 16px 16px;text-align:center;position:relative}
-header.top h1{margin:0;font-family:'Georgia',serif;font-size:1.6rem;letter-spacing:.5px}
+header.top{background:linear-gradient(135deg,#0a0e1f,#1a2547);border-bottom:1px solid var(--border);color:#fff;padding:12px 16px 10px;text-align:center;position:relative}
+header.top h1{margin:0;font-family:'Georgia',serif;font-size:1.4rem;letter-spacing:.5px}
 header.top h1 .star{color:var(--gold)}
 header.top p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
 .audio-ctrl{position:absolute;right:12px;top:14px;display:flex;gap:8px}
@@ -44,7 +44,11 @@ header.top p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
 .cm-card.matched{cursor:default}
 @media(max-width:560px){.cm-front{font-size:1.25rem}.cm-back{font-size:1.4rem}.cm-grid{gap:8px}.cm-board{padding:12px;min-height:420px}}
 /* game */
-.arena{position:relative;margin:16px auto 0;max-width:840px}
+.arena{position:relative;margin:16px auto 0;max-width:min(840px, max(300px, calc((100vh - 300px) * 1.5)))}
+/* keep the whole game (header, canvas, controls) within the viewport so nothing is cut off */
+#panel-sf .arena{max-width:min(840px, max(280px, calc((100vh - 468px) * 1.5)))}
+#panel-rr .arena{max-width:min(840px, max(300px, calc((100vh - 360px) * 1.5)))}
+@media(max-height:780px){.cm-board{min-height:360px}}
 .hud{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;background:var(--panel);border:1px solid var(--border);border-radius:12px 12px 0 0;padding:10px 16px;font-weight:700;font-size:.95rem}
 .hud .h{display:flex;align-items:center;gap:6px}
 .hud .lbl{color:var(--muted);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em}
@@ -62,12 +66,12 @@ canvas{display:block;width:100%;height:auto;background:#060a16;border-left:1px s
 .play-btn:active{transform:translateY(3px);box-shadow:0 3px 0 #c99a17}
 .hidden{display:none!important}
 /* keypad */
-.keypad{display:grid;grid-template-columns:repeat(3,1fr) 1.4fr;gap:8px;background:var(--panel);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:12px}
-.keypad button{background:#1a2647;color:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 0;font-size:1.2rem;font-weight:700;cursor:pointer;touch-action:manipulation}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr) 1.4fr;gap:6px;background:var(--panel);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:9px}
+.keypad button{background:#1a2647;color:#fff;border:1px solid var(--border);border-radius:10px;padding:9px 0;font-size:1.05rem;font-weight:700;cursor:pointer;touch-action:manipulation}
 .keypad button:active{background:#26375f}
 .keypad .fire{background:var(--gold);color:var(--navy);grid-row:span 2;font-size:1rem}
 .keypad .del{background:#3a2740}
-.note{color:var(--muted);font-size:.85rem;text-align:center;margin-top:14px}
+.note{color:var(--muted);font-size:.85rem;text-align:center;margin-top:8px}
 .note kbd{background:#1a2647;border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-family:inherit;color:#fff}
 @media(max-width:560px){.hud{font-size:.82rem;gap:8px 12px}.overlay h2{font-size:1.5rem}}
 </style>
