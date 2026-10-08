@@ -6,142 +6,77 @@
 <title>Fluency Lab — Add &amp; Subtract</title>
 <style>
   :root{
-    --bg:#15172b;         /* deep focus indigo */
-    --bg2:#1b1e38;
-    --panel:#222749;      /* problem surface */
-    --panel-edge:#33396b;
-    --ink:#f1f3ff;        /* near-white text */
-    --muted:#9aa0cf;      /* lavender-grey secondary */
-    --mint:#39d99a;       /* correct / progress */
-    --amber:#ffbb4d;      /* streak / reward */
-    --sky:#63a8ef;        /* guidance (never alarming) */
-    --coral:#ff7a70;      /* brief 'not yet' only */
-    --line:#454c86;
-    --radius:18px;
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
     --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%}
-  body{
-    font-family:var(--sans);
-    background:
-      radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),
-      var(--bg);
-    color:var(--ink);
-    min-height:100dvh;
-    display:flex;flex-direction:column;align-items:center;
-    padding:20px 16px 40px;
-    -webkit-font-smoothing:antialiased;
-  }
-
-  /* ---------- top status bar ---------- */
-  .bar{
-    width:100%;max-width:520px;
-    display:flex;align-items:center;gap:14px;
-    margin-bottom:20px;
-  }
-  .badge{
-    display:flex;align-items:baseline;gap:7px;
-    background:var(--bg2);border:1px solid var(--panel-edge);
-    padding:8px 13px;border-radius:12px;
-  }
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
   .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
   .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
-  .badge.level .v{color:var(--sky)}
-  .badge.streak .v{color:var(--amber)}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
   .flame{font-size:14px;filter:grayscale(.15)}
   .brandmark{margin-left:auto;text-align:right;line-height:1.1}
   .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
   .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
-
-  /* ---------- progress dots ---------- */
   .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
   .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
-  .dot.good{background:var(--mint)}
-  .dot.miss{background:var(--sky)}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
   .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
 
-  /* ---------- main card ---------- */
-  .stage{
-    width:100%;max-width:520px;
-    background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);
-    border-radius:var(--radius);
-    padding:30px 26px 26px;
-    box-shadow:0 22px 50px -28px #000a;
-    position:relative;
-  }
-
-  /* vertical algorithm — flex so place-value columns line up exactly */
-  .algo{
-    font-family:var(--mono);
-    font-variant-numeric:tabular-nums;
-    display:flex;flex-direction:column;align-items:center;
-    margin:6px 0 4px;line-height:1;
-  }
+  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;
+    display:flex;flex-direction:column;align-items:center;margin:6px 0 4px;line-height:1}
   .algo .row{display:flex;justify-content:flex-end}
-  .algo .cell{
-    width:46px;height:52px;display:flex;align-items:center;justify-content:center;
-    font-size:44px;font-weight:600;
-  }
-  .algo .op{
-    width:46px;height:52px;display:flex;align-items:center;justify-content:flex-start;
-    color:var(--muted);font-size:38px;padding-left:4px;
-  }
-  .carryrow .cell{height:22px;font-size:17px;color:var(--amber);font-weight:700}
-  .borrowrow .cell{height:22px;font-size:17px;color:var(--sky);font-weight:700}
+  .algo .cell{width:46px;height:52px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600}
+  .algo .op{width:46px;height:52px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
+  .carryrow .cell{height:26px;font-size:20px;color:var(--amber);font-weight:700}
   .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:8px 0 6px;opacity:.9}
   .ans .cell{color:var(--mint)}
+  .cell.ghost{color:#3b4178}
+  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.carryrow .cell{font-size:17px}}
 
-  @media (max-width:430px){
-    .algo .cell,.algo .op{width:38px}
-    .algo .cell{font-size:36px}
-  }
-
-  /* input */
-  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
-  #answer{
-    font-family:var(--mono);font-variant-numeric:tabular-nums;
-    width:210px;text-align:center;
-    font-size:34px;font-weight:700;color:var(--ink);
-    background:var(--bg2);border:2px solid var(--line);
-    border-radius:14px;padding:12px 10px;outline:none;
-    transition:border-color .15s,box-shadow .15s;
-  }
-  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
-  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
-  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
-
-  .btn{
-    font-family:var(--sans);font-size:17px;font-weight:650;
-    color:#12132a;background:var(--mint);
-    border:none;border-radius:13px;padding:13px 22px;margin-top:16px;
-    cursor:pointer;transition:transform .12s,filter .15s;min-width:150px;
-  }
-  .btn:hover{filter:brightness(1.06)}
-  .btn:active{transform:translateY(1px)}
-  .btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--panel-edge);}
+  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 22px;margin-top:16px;cursor:pointer;
+    transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
   .btn.sky{background:var(--sky);color:#0a1226}
-
-  /* feedback line */
   .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
-  .verdict.good{color:var(--mint)}
-  .verdict.help{color:var(--sky)}
-  .tip{
-    margin-top:14px;color:var(--ink);background:#1b2145;
-    border:1px solid #2f386f;border-left:3px solid var(--sky);
-    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;
-    display:none;text-align:left;
-  }
-  .tip.show{display:block}
-  .tip b{color:var(--sky)}
+  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
 
-  /* start + summary screens */
-  .screen{width:100%;max-width:520px;text-align:center;
-    background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);
-    padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+  /* guided step-by-step scaffold */
+  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 2px;letter-spacing:.02em}
+  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:15px 16px 16px;margin-top:16px;text-align:left}
+  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
+  .stepcard .q{font-family:var(--mono);font-size:18px;font-weight:600;line-height:1.45;margin-bottom:13px}
+  .stepcard .q b{color:var(--amber)}
+  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+  .bx{display:flex;flex-direction:column;gap:5px}
+  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
+  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:80px;text-align:center;
+    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
+    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
+  .bx input.wide{width:120px}
+  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
+    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
+  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
   .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
   .how{text-align:left;max-width:380px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
@@ -152,52 +87,45 @@
   .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
   .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
   .hide{display:none!important}
-
-  @media (prefers-reduced-motion: reduce){
-    *{transition:none!important;animation:none!important}
-  }
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
 </style>
 </head>
 <body>
 
-  <!-- START -->
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
     <div class="sub">Add &amp; Subtract · Module 1</div>
     <div class="how">
-      One problem at a time. Stack the numbers, work <b>right to left</b>, and carry or borrow when you need to.
-      Every miss shows you the line-up — no tricks, just the algorithm.
-      It gets harder as you get sharper, and you're only ever racing <b>your own best</b>.
+      Stack the numbers and work <b>right to left</b>, <b>one column at a time</b> — fill in each box, carrying or
+      borrowing when you need to. Each step has a quick why, and the next column unlocks only when your work is right.
+      No tricks, just the algorithm. You're only ever racing <b>your own best</b>.
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
 
-  <!-- PLAY -->
   <div id="play" class="hide">
     <div class="bar">
       <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
       <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
       <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE</div></div>
     </div>
-
     <div class="dots" id="dots"></div>
-
     <section class="stage">
       <div class="algo" id="algo"></div>
-
-      <div class="answer-wrap">
-        <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
-        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      <div class="steplead" id="steplead"></div>
+      <div class="stepcard">
+        <div class="lab" id="steplab"></div>
+        <div class="q" id="stepq"></div>
+        <div class="boxrow" id="boxrow"></div>
+        <div class="ginfo" id="ginfo"></div>
+        <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
+        <div class="verdict" id="gverdict"></div>
       </div>
-
-      <div class="verdict" id="verdict"></div>
-      <div class="tip" id="tip"></div>
     </section>
   </div>
 
-  <!-- SUMMARY -->
   <section id="summary" class="screen hide">
     <h1>Set complete</h1>
     <div class="pb" id="pb">&nbsp;</div>
@@ -211,241 +139,189 @@
   </section>
 
 <script>
-/* ---------------- state ---------------- */
-const SET_LEN = 10;
-let level = 1;                 // 1..6, persists across sets in a session
-let streak = 0, bestStreak = 0;
-let correctCount = 0, index = 0;
-let recentMisses = 0;         // misses at current level -> triggers level down
-let levelReachedThisSet = 1;
-let sessionBest = 0;          // personal best correct/10 this session
-let current = null;           // active problem
-let answered = false;
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, answered=false, results=[];
 
-/* ---------------- problem generation ---------------- */
-const rnd = (lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const $=id=>document.getElementById(id);
 
-function genAddNoCarry(){          // L1
-  let t1=rnd(1,8), t2=rnd(1,9-t1);
-  let o1=rnd(0,8), o2=rnd(0,9-o1);
-  return mk(10*t1+o1, 10*t2+o2, '+');
-}
-function genAddCarry2(){           // L2  (forces a ones carry)
-  let o1=rnd(2,9), o2=rnd(10-o1,9);
-  let a=10*rnd(1,8)+o1, b=10*rnd(1,8)+o2;
-  return mk(a,b,'+');
-}
-function genAdd3(){                // L3
-  return mk(rnd(105,899), rnd(105,899), '+');
-}
-function genSubNoBorrow(){         // L4
-  let t=rnd(2,9), o=rnd(1,9);
-  let a=10*t+o;
-  let b=10*rnd(1,t-1<1?1:t-1)+rnd(0,o);
-  if(b>=a||b<10) b=10*rnd(1,Math.max(1,t-1))+rnd(0,o);
-  return mk(a,b,'-');
-}
-function genSubBorrow(){           // L5 (guaranteed borrow)
-  let a,b;
-  do{ a=rnd(32,899); b=rnd(15,a-1); }
-  while(!forcesBorrow(a,b));
-  return mk(a,b,'-');
-}
-function genSubZero(){             // L6 (borrow across a zero)
-  let h=rnd(2,9);
-  let a=h*100;                     // e.g. 300, 700
-  let b=rnd(101,a-1);
-  if(b%10===0) b+=rnd(1,8);
-  return mk(a,b,'-');
-}
-function forcesBorrow(a,b){
-  const A=String(a).padStart(3,'0'), B=String(b).padStart(3,'0');
-  for(let i=2;i>=0;i--){ if(+B[i] > +A[i]) return true; }
-  return false;
-}
-function mk(a,b,op){
-  const answer = op==='+' ? a+b : a-b;
-  return {a,b,op,answer};
-}
-const GENERATORS = {1:genAddNoCarry,2:genAddCarry2,3:genAdd3,4:genSubNoBorrow,5:genSubBorrow,6:genSubZero};
+function genAddNoCarry(){ let t1=rnd(1,8),t2=rnd(1,9-t1); let o1=rnd(0,8),o2=rnd(0,9-o1); return mk(10*t1+o1,10*t2+o2,'+'); }
+function genAddCarry2(){ let o1=rnd(2,9),o2=rnd(10-o1,9); let a=10*rnd(1,8)+o1,b=10*rnd(1,8)+o2; return mk(a,b,'+'); }
+function genAdd3(){ return mk(rnd(105,899),rnd(105,899),'+'); }
+function genSubNoBorrow(){ let t=rnd(2,9),o=rnd(1,9); let a=10*t+o; let b=10*rnd(1,Math.max(1,t-1))+rnd(0,o); if(b>=a||b<10)b=10*rnd(1,Math.max(1,t-1))+rnd(0,o); return mk(a,b,'-'); }
+function genSubBorrow(){ let a,b; do{a=rnd(32,899);b=rnd(15,a-1);}while(!forcesBorrow(a,b)); return mk(a,b,'-'); }
+function genSubZero(){ let h=rnd(2,9); let a=h*100; let b=rnd(101,a-1); if(b%10===0)b+=rnd(1,8); return mk(a,b,'-'); }
+function forcesBorrow(a,b){ const A=String(a).padStart(3,'0'),B=String(b).padStart(3,'0'); for(let i=2;i>=0;i--){if(+B[i]>+A[i])return true;} return false; }
+function mk(a,b,op){ return {a,b,op,answer:op==='+'?a+b:a-b}; }
+const GEN={1:genAddNoCarry,2:genAddCarry2,3:genAdd3,4:genSubNoBorrow,5:genSubBorrow,6:genSubZero};
 
 function nextProblem(){
-  // interleave: 1 in 4 problems pulls a slightly lower tier to keep old skills warm
-  let useLevel = level;
-  if(level>1 && Math.random()<0.25) useLevel = level-1;
-  current = GENERATORS[useLevel]();
-  answered = false;
-  renderProblem();
+  let useLevel=level; if(level>1 && Math.random()<0.25) useLevel=level-1;
+  current=GEN[useLevel](); answered=false; renderProblem();
 }
 
-/* ---------------- rendering ---------------- */
-const $ = id=>document.getElementById(id);
+function digitsOf(n,w){return String(n).padStart(w,' ').split('');}
+function cellHTML(d,cls){return `<span class="cell${cls?' '+cls:''}">${d===' '?'':d}</span>`;}
+const EMPTYOP='<span class="op"></span>';
+const NAMES=['ones','tens','hundreds','thousands'];
 
-function digitsOf(n,width){ return String(n).padStart(width,' ').split(''); }
+/* ---------- guided steps ---------- */
+let G=null;
+function WDof(p){ return Math.max(String(p.a).length,String(p.b).length,String(p.answer).length); }
+function buildSteps(p){ return p.op==='+'?stepsAdd(p):stepsSub(p); }
 
-function renderProblem(){
-  const {a,b,op} = current;
-  const width = Math.max(String(a).length, String(b).length, String(current.answer).length);
-  const A=digitsOf(a,width), B=digitsOf(b,width);
-  const emptyOp = '<span class="op"></span>';
-  let html = '';
-  html += `<div class="row">${emptyOp}${A.map(cellHTML).join('')}</div>`;      // top number
-  html += `<div class="row"><span class="op">${op}</span>${B.map(cellHTML).join('')}</div>`;
-  html += `<div class="ruleline"></div>`;
-  $('algo').innerHTML = html;
-  const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false; inp.focus();
-  $('verdict').textContent=''; $('verdict').className='verdict';
-  $('tip').className='tip'; $('tip').innerHTML='';
-  const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
-  paintDots();
-}
-function cellHTML(d){ return `<span class="cell">${d===' '?'':d}</span>`; }
-
-function paintDots(){
-  let h='';
-  for(let i=0;i<SET_LEN;i++){
-    let cls='dot';
-    if(i<index) cls += results[i] ? ' good' : ' miss';
-    if(i===index) cls += ' cur';
-    h+=`<span class="${cls}"></span>`;
+function stepsAdd(p){
+  const WD=WDof(p), numCols=Math.max(String(p.a).length,String(p.b).length);
+  const aPad=String(p.a).padStart(WD,'0'), bPad=String(p.b).padStart(WD,'0');
+  const steps=[]; let carry=0;
+  for(let c=0;c<numCols;c++){
+    const gi=WD-1-c, da=+aPad[gi], db=+bPad[gi];
+    const val=da+db+carry, write=val%10, carryOut=Math.floor(val/10);
+    steps.push({
+      lab:`Step ${c+1} · ${NAMES[c]} column`,
+      q:`Add the <b>${NAMES[c]}</b> column: <b>${da} + ${db}${carry?` + ${carry} carried`:''}</b>. Write the ones digit, carry the rest.`,
+      info:`${da} + ${db}${carry?` + ${carry}`:''} = ${val}; write ${write}${carryOut?`, carry ${carryOut}`:' (nothing to carry)'}.`,
+      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},{bl:'write',expect:write,connector:'→'},{bl:'carry',expect:carryOut,connector:'·'}],
+      grid:gi, write, carryOut
+    });
+    carry=carryOut;
   }
-  $('dots').innerHTML=h;
-}
-
-/* ---------------- answer handling ---------------- */
-let results = [];
-
-function startSet(){
-  correctCount=0; index=0; streak=0; bestStreak=0; recentMisses=0;
-  levelReachedThisSet=level; results=[];
-  $('start').classList.add('hide');
-  $('summary').classList.add('hide');
-  $('play').classList.remove('hide');
-  updateHUD();
-  nextProblem();
-}
-
-function submitAnswer(){
-  if(answered) return;
-  const inp=$('answer');
-  const raw=inp.value.trim();
-  if(raw===''||isNaN(+raw)){ inp.focus(); return; }
-  answered=true; inp.disabled=true;
-  const right = (+raw)===current.answer;
-  results[index]=right;
-
-  if(right){
-    correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
-    inp.classList.add('correct');
-    const v=$('verdict'); v.textContent=praise(); v.className='verdict good pop';
-    if(streak>0 && streak%3===0 && level<6){ level++; recentMisses=0; }
-  } else {
-    streak=0; recentMisses++;
-    inp.classList.add('wrong');
-    const v=$('verdict'); v.textContent='Not yet — here’s the line-up:'; v.className='verdict help';
-    showWorked();
-    if(recentMisses>=2 && level>1){ level--; recentMisses=0; }
+  if(carry>0){ const gi=WD-1-numCols;
+    steps.push({lab:`Step ${numCols+1} · final carry`,
+      q:`One carry is left over. Bring the carried <b>${carry}</b> down as the new leading digit.`,
+      info:`The leftover carry becomes the leftmost digit of the answer: ${carry}.`,
+      boxes:[{bl:'leading digit',expect:carry}], grid:gi, write:carry, carryOut:0});
   }
-  levelReachedThisSet=Math.max(levelReachedThisSet, level);
-  updateHUD();
-  paintDots();
-
-  const btn=$('submit');
-  btn.textContent = (index===SET_LEN-1) ? 'See results' : 'Next';
-  btn.className = 'btn ' + (right?'':'sky');
-  btn.onclick = advance;
+  return steps;
 }
-
-function advance(){
-  index++;
-  if(index>=SET_LEN){ endSet(); return; }
-  nextProblem();
-}
-
-function praise(){
-  const p=['Nice.','Locked in.','Clean.','That’s the algorithm.','Sharp.','Yes — keep going.','Smooth.'];
-  return p[Math.floor(Math.random()*p.length)];
-}
-
-/* worked solution: aligned answer + carry/borrow marks + one concise tip */
-function showWorked(){
-  const {a,b,op,answer}=current;
-  const width=Math.max(String(a).length,String(b).length,String(answer).length);
-  const A=digitsOf(a,width), B=digitsOf(b,width), R=digitsOf(answer,width);
-  let html='';
-
-  const emptyOp = '<span class="op"></span>';
-  if(op==='+'){
-    // compute carries into marks (mark sits above the column that receives the carry)
-    const ad=String(a).padStart(width,'0'), bd=String(b).padStart(width,'0');
-    let carry=0; const marks=Array(width).fill('');
-    for(let i=width-1;i>=0;i--){
-      const s=+ad[i]+ +bd[i]+carry;
-      carry=s>=10?1:0;
-      if(carry && i>0) marks[i-1]='1';
+function stepsSub(p){
+  const WD=WDof(p), numCols=Math.max(String(p.a).length,String(p.b).length);
+  const aPad=String(p.a).padStart(WD,'0'), bPad=String(p.b).padStart(WD,'0');
+  const steps=[]; let borrowIn=0;
+  for(let c=0;c<numCols;c++){
+    const gi=WD-1-c, top=+aPad[gi], bot=+bPad[gi];
+    const avail=top-borrowIn;
+    let diff,outgoing,boxes,q,info;
+    if(avail<bot){
+      const bt=avail+10; diff=bt-bot; outgoing=1;
+      boxes=[{bl:'this top becomes',expect:bt},{bl:`− ${bot} =`,expect:diff,connector:'→'}];
+      q=`Top is <b>${top}</b>${borrowIn?` (it lent 1 to the right)`:''}, bottom is <b>${bot}</b> — too small, so <b>borrow 10</b> from the next column left, then subtract.`;
+      info=`After borrowing, the top is ${bt}; ${bt} − ${bot} = ${diff}. The next column left loses 1.`;
+    } else {
+      diff=avail-bot; outgoing=0;
+      boxes=[{bl:`${avail} − ${bot} =`,expect:diff}];
+      q=borrowIn?`This top lent 1 to the right, so it's now <b>${avail}</b>. Subtract: <b>${avail} − ${bot}</b>.`
+               :`Subtract the <b>${NAMES[c]}</b> column: <b>${top} − ${bot}</b>.`;
+      info=`${avail} − ${bot} = ${diff}.`;
     }
-    html+=`<div class="row carryrow">${emptyOp}${marks.map(m=>`<span class="cell">${m}</span>`).join('')}</div>`;
-    html+=`<div class="row">${emptyOp}${A.map(cellHTML).join('')}</div>`;
-    html+=`<div class="row"><span class="op">+</span>${B.map(cellHTML).join('')}</div>`;
-    html+=`<div class="ruleline"></div>`;
-    html+=`<div class="row ans">${emptyOp}${R.map(cellHTML).join('')}</div>`;
-    $('tip').innerHTML = tipAdd();
-  } else {
-    html+=`<div class="row">${emptyOp}${A.map(cellHTML).join('')}</div>`;
-    html+=`<div class="row"><span class="op">−</span>${B.map(cellHTML).join('')}</div>`;
-    html+=`<div class="ruleline"></div>`;
-    html+=`<div class="row ans">${emptyOp}${R.map(cellHTML).join('')}</div>`;
-    $('tip').innerHTML = tipSub();
+    steps.push({lab:`Step ${c+1} · ${NAMES[c]} column`, q, info, boxes, grid:gi, write:diff});
+    borrowIn=outgoing;
   }
-  $('algo').innerHTML=html;
-  $('tip').classList.add('show');
+  return steps;
 }
 
-function tipAdd(){
-  return `<b>Add right to left.</b> When a column makes 10 or more, write the ones digit and carry the 1 to the next column.`;
+/* ---------- render ---------- */
+function renderProblem(){
+  G={steps:buildSteps(current), si:0, tries:0};
+  renderWork(); renderStep(); paintDots();
 }
-function tipSub(){
-  const {a}=current;
-  if(String(a).includes('0')){
-    return `<b>Borrow through the zero.</b> A 0 can’t give — take from the next column to the left first, then borrow into the smaller column.`;
+function renderWork(){
+  const p=current, WD=WDof(p), done=G.si;
+  const ansArr=Array(WD).fill(' '), carryArr=Array(WD).fill(' ');
+  for(let s=0;s<done;s++){ const st=G.steps[s]; ansArr[st.grid]=st.write;
+    if(p.op==='+' && st.carryOut>0 && st.grid-1>=0) carryArr[st.grid-1]=st.carryOut; }
+  let h='';
+  if(p.op==='+') h+=`<div class="row carryrow">${carryArr.map(d=>cellHTML(d)).join('')}</div>`;
+  h+=`<div class="row">${EMPTYOP}${digitsOf(p.a,WD).map(d=>cellHTML(d)).join('')}</div>`;
+  h+=`<div class="row"><span class="op">${p.op==='+'?'+':'−'}</span>${digitsOf(p.b,WD).map(d=>cellHTML(d)).join('')}</div>`;
+  h+=`<div class="ruleline"></div>`;
+  h+=`<div class="row ans">${EMPTYOP}${ansArr.map(d=>cellHTML(d,d===' '?'ghost':'')).join('')}</div>`;
+  $('algo').innerHTML=h;
+}
+function renderStep(){
+  const st=G.steps[G.si]; G.tries=0;
+  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — work right to left`;
+  $('steplab').textContent=st.lab;
+  $('stepq').innerHTML=st.q;
+  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
+    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
+      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+  }).join('');
+  $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
+  $('gverdict').textContent=''; $('gverdict').className='verdict';
+  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
+  const f=$('bx0'); if(f) f.focus();
+}
+function checkStep(){
+  const st=G.steps[G.si]; let allOk=true;
+  st.boxes.forEach((bx,i)=>{
+    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
+    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    if(!ok) allOk=false;
+  });
+  const gv=$('gverdict');
+  if(!allOk){
+    G.tries++; answered=true; current._hadError=true;
+    gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
+    gv.className='verdict help';
+    if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
+      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect) el.placeholder=String(bx.expect);}); }
+    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
+    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+    return;
   }
-  return `<b>Subtract right to left.</b> If the top digit is smaller, borrow 1 from the next column left (that digit becomes 10 more).`;
+  gv.textContent=''; gv.className='verdict';
+  G.si++; renderWork();
+  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
+}
+function finishGuided(){
+  const right=!current._hadError;
+  const gv=$('gverdict');
+  gv.textContent = right ? '✓ Solved it — every column correct!' : `✓ Done — ${current.a} ${current.op==='+'?'+':'−'} ${current.b} = ${current.answer}.`;
+  gv.className='verdict good pop';
+  concludeProblem(right, $('stepbtn'));
 }
 
-/* ---------------- HUD + summary ---------------- */
-function updateHUD(){
-  $('lvl').textContent=level;
-  $('strk').textContent=streak;
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
 }
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
 function endSet(){
-  $('play').classList.add('hide');
-  const s=$('summary'); s.classList.remove('hide');
-  $('s-acc').textContent=correctCount;
-  $('s-best').textContent=bestStreak;
-  $('s-lvl').textContent=levelReachedThisSet;
+  $('play').classList.add('hide');const s=$('summary');s.classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   const pb=$('pb');
-  if(correctCount>sessionBest){
-    sessionBest=correctCount;
-    pb.textContent=`★ New personal best: ${correctCount}/10`;
-  } else {
-    pb.textContent=`Personal best this session: ${sessionBest}/10`;
-  }
-  $('s-note').textContent = note(correctCount);
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this session: ${sessionBest}/10`;
+  $('s-note').textContent=note(correctCount);
 }
 function note(c){
-  if(c>=9) return 'Excellent control. The tool nudged your level up when you strung wins together.';
-  if(c>=7) return 'Strong set. Keep the streak going and you’ll climb another level.';
-  if(c>=5) return 'Solid work. Watch the carry/borrow line-ups — that’s where the points are.';
-  return 'Every miss showed you the algorithm. Run it again — you’ll feel it get easier.';
+  if(c>=9)return 'Excellent control — clean columns, step by step.';
+  if(c>=7)return 'Strong set. A few more first-try solves and you climb again.';
+  if(c>=5)return 'Solid. Watch the carry/borrow line-ups — that’s where the points are.';
+  return 'Every column showed you the algorithm. Run it again — it gets easier.';
 }
-
-/* keyboard: Enter checks, then Enter advances */
 document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter') return;
-  if($('play').classList.contains('hide')) return;
+  if(e.key!=='Enter')return;
+  if($('play').classList.contains('hide'))return;
   e.preventDefault();
-  if(!answered) submitAnswer();
-  else document.getElementById('submit').click();
+  $('stepbtn').click();
 });
 </script>
 </body>
