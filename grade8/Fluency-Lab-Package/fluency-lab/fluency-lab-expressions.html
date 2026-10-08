@@ -96,7 +96,7 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Expressions &amp; Order of Operations · Module 8</div>
     <div class="how">
-      Powers, then order of operations (<b>GEMS</b>: Groups, Exponents, Multiply/Divide, Add/Subtract), then evaluating
+      Powers, then order of operations (<b>PEMDAS</b>: Parentheses, Exponents, Multiply/Divide, Add/Subtract), then evaluating
       with variables — now <b>one step at a time</b>. Fill each box in the right order, with a quick why, and the next
       step unlocks only when yours is right. You're only ever racing <b>your own best</b>.
     </div>
@@ -177,7 +177,7 @@ function buildSteps(p){
   }
   if(p.kind==='md'){ const prod=p.b*p.c;
     return [
-      {lab:'Step 1 · multiply first', q:`In <b>GEMS</b>, multiply before you add or subtract: <b>${p.b} × ${p.c}</b>.`,
+      {lab:'Step 1 · multiply first', q:`In <b>PEMDAS</b>, multiply before you add or subtract: <b>${p.b} × ${p.c}</b>.`,
        boxes:[{bl:`${p.b} × ${p.c}`,expect:prod}], info:`${p.b}×${p.c}=${prod}.`, line:`= ${p.a} ${p.o} ${prod}`},
       {lab:`Step 2 · ${p.o==='+'?'add':'subtract'}`, q:`Now ${p.o==='+'?'add':'subtract'}: <b>${p.a} ${p.o} ${prod}</b>.`,
        boxes:[{bl:`${p.a} ${p.o} ${prod}`,expect:p.ans}], info:`${p.a} ${p.o} ${prod} = ${p.ans}.`, line:`= ${p.ans}`, last:true}
@@ -185,7 +185,7 @@ function buildSteps(p){
   }
   if(p.kind==='paren'){
     return [
-      {lab:'Step 1 · groups first', q:`<b>GEMS</b> — groups first. Do what's in the parentheses: <b>${p.a} ${p.o} ${p.b}</b>.`,
+      {lab:'Step 1 · parentheses first', q:`<b>PEMDAS</b> — parentheses first. Do what's inside: <b>${p.a} ${p.o} ${p.b}</b>.`,
        boxes:[{bl:`${p.a} ${p.o} ${p.b}`,expect:p.inner}], info:`(${p.a} ${p.o} ${p.b}) = ${p.inner}.`, line:`= ${p.inner} × ${p.c}`},
       {lab:'Step 2 · then multiply', q:`Now multiply by ${p.c}: <b>${p.inner} × ${p.c}</b>.`,
        boxes:[{bl:`${p.inner} × ${p.c}`,expect:p.ans}], info:`${p.inner}×${p.c}=${p.ans}.`, line:`= ${p.ans}`, last:true}
@@ -193,7 +193,7 @@ function buildSteps(p){
   }
   if(p.kind==='powadd'){ const sq=p.b*p.b;
     return [
-      {lab:'Step 1 · exponent first', q:`<b>GEMS</b> — exponents before adding: <b>${p.b}² = ${p.b} × ${p.b}</b>.`,
+      {lab:'Step 1 · exponent first', q:`<b>PEMDAS</b> — exponents before adding: <b>${p.b}² = ${p.b} × ${p.b}</b>.`,
        boxes:[{bl:`${p.b} × ${p.b}`,expect:sq}], info:`${p.b}²=${sq}.`, line:`= ${p.a} + ${sq}`},
       {lab:'Step 2 · then add', q:`Now add: <b>${p.a} + ${sq}</b>.`,
        boxes:[{bl:`${p.a} + ${sq}`,expect:p.ans}], info:`${p.a}+${sq}=${p.ans}.`, line:`= ${p.ans}`, last:true}
@@ -294,7 +294,7 @@ function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
 function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
-  $('s-note').textContent=correctCount>=9?'Excellent control — the order of operations, every time.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. GEMS: Groups, Exponents, ×/÷, then +/−.':'Every step showed the order. Run it again.';}
+  $('s-note').textContent=correctCount>=9?'Excellent control — the order of operations, every time.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. PEMDAS: Parentheses, Exponents, ×/÷, then +/−.':'Every step showed the order. Run it again.';}
 document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();$('stepbtn').click();});
 </script>
 </body>
