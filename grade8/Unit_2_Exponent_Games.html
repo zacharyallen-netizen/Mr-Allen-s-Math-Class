@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 2 — Games &amp; Scientific Notation Project</title>
+<title>Unit 2 — Exponent Games</title>
 <style>
 :root{
   --navy:#1E2D4F; --navy2:#24507C; --gold:#FBD259; --gold2:#FEC007;
@@ -130,116 +130,62 @@ table.rubric .lv5{background:var(--greenbg)}
     <button id="sndBtn" onclick="toggleSound()" title="Sound effects">🔊 Sound</button>
     <button id="musBtn" onclick="toggleMusic()" title="Background music">🎵 Music</button>
   </div>
-  <h1>Games &amp; Scientific Notation Project</h1>
-  <p>Unit 2 · Practice the exponent rules, then explore the numbers of our world</p>
+  <h1>Exponent Games</h1>
+  <p>Unit 2 · Practice the exponent rules with three drag-and-drop games</p>
 </header>
 
 <nav class="subnav">
-  <a href="#pot">🔭 Powers of Ten</a>
-  <a href="#conv">🔢 Converter</a>
-  <a href="#earth">🌍 Earth from Space</a>
-  <a href="#project">📋 The Project</a>
+  <a href="#g1">🗂️ Rule Sorter</a>
+  <a href="#g2">🔗 Match &amp; Simplify</a>
+  <a href="#g3">🧱 Build the Answer</a>
 </nav>
 
 <div class="wrap">
 
+<!-- ============ GAME 1: RULE SORTER ============ -->
+<section class="block" id="g1">
+  <h2 class="game-h"><span class="ico">🗂️</span> Game 1 · Rule Sorter</h2>
+  <p class="game-sub">Drag each expression into the bin for the rule that applies. You don't have to simplify — just pick the right rule!</p>
+  <div class="scorebar">
+    <span class="score" id="g1score">0 of 10 sorted</span>
+    <button class="btn gold" onclick="G1.reset()">↻ New Round</button>
+    <span class="win-msg" id="g1win">🎉 All sorted — nice work!</span>
+  </div>
+  <div class="tray" id="g1tray"></div>
+  <div class="bins" id="g1bins"></div>
+</section>
 
-
-
-<!-- ============ POWERS OF TEN ============ -->
-<section class="block" id="pot">
-  <h2 class="game-h"><span class="ico">🔭</span> Powers of Ten — Explore the Scale of Everything</h2>
-  <p class="game-sub">Slide from the tiniest particle to the whole universe. Every size is shown in scientific notation — perfect inspiration for your project.</p>
-  <div class="pot">
-    <div class="pot-stage">
-      <div class="pot-obj" id="potObj">🧍</div>
-      <div class="pot-name" id="potName">Human</div>
-      <div class="pot-sn" id="potSN">1.7 × 10⁰ m</div>
-      <div class="pot-std" id="potStd">≈ 1.7 meters</div>
-      <div class="pot-blurb" id="potBlurb">A person is our everyday reference point — right in the middle of the cosmic scale.</div>
-    </div>
-    <div class="pot-controls">
-      <button class="zoombtn" onclick="POT.step(-1)" title="Zoom in / smaller">−</button>
-      <input type="range" id="potRange" min="0" max="15" value="7" step="1" oninput="POT.set(+this.value)">
-      <button class="zoombtn" onclick="POT.step(1)" title="Zoom out / bigger">+</button>
-    </div>
-    <div class="pot-rng"><span>🔬 smallest</span><span>biggest 🌌</span></div>
+<!-- ============ GAME 2: MATCH & SIMPLIFY ============ -->
+<section class="block" id="g2">
+  <h2 class="game-h"><span class="ico">🔗</span> Game 2 · Match &amp; Simplify</h2>
+  <p class="game-sub">Drag each expression from the left onto its simplified answer on the right.</p>
+  <div class="scorebar">
+    <span class="score" id="g2score">0 of 6 matched</span>
+    <button class="btn gold" onclick="G2.reset()">↻ New Round</button>
+    <span class="win-msg" id="g2win">🎉 Perfect match!</span>
+  </div>
+  <div class="match-grid">
+    <div class="match-col"><h4>Expressions</h4><div id="g2left"></div></div>
+    <div class="match-col"><h4>Simplified</h4><div id="g2right"></div></div>
   </div>
 </section>
 
-<!-- ============ CONVERTER ============ -->
-<section class="block" id="conv">
-  <h2 class="game-h"><span class="ico">🔢</span> Scientific Notation Converter</h2>
-  <p class="game-sub">A handy tool for your project. Type a standard number to get scientific notation, or type scientific notation to get the standard number.</p>
-  <div class="conv">
-    <div>
-      <label for="cIn1">Standard form → Scientific notation</label>
-      <input id="cIn1" placeholder="e.g. 380000000 or 0.00007" oninput="Conv.toSci()">
-      <div class="out" id="cOut1" style="margin-top:8px">Type a number above…</div>
-    </div>
-    <div>
-      <label for="cIn2">Scientific notation → Standard form</label>
-      <input id="cIn2" placeholder="e.g. 3.8e26 or 2.0 x 10^-9" oninput="Conv.toStd()">
-      <div class="out" id="cOut2" style="margin-top:8px">Type a value above…</div>
-    </div>
+<!-- ============ GAME 3: BUILD THE ANSWER ============ -->
+<section class="block" id="g3">
+  <h2 class="game-h"><span class="ico">🧱</span> Game 3 · Build the Answer</h2>
+  <p class="game-sub">Drag the correct chips into the answer slots. Watch the coefficient — the power hits it too!</p>
+  <div class="scorebar">
+    <span class="score" id="g3score">0 of 5 built</span>
+    <button class="btn gold" onclick="G3.reset()">↻ New Round</button>
+    <span class="win-msg" id="g3win">🎉 All built correctly!</span>
   </div>
+  <div id="g3area"></div>
+  <div class="tray" id="g3tray"></div>
 </section>
 
-<!-- ============ EARTH FROM SPACE ============ -->
-<section class="block" id="earth">
-  <h2 class="game-h"><span class="ico">🌍</span> Earth from Space (Google Maps)</h2>
-  <p class="game-sub">Zoom and pan the satellite view — then see our planet's measurements written in scientific notation.</p>
-  <div class="mapwrap">
-    <iframe title="Satellite map" loading="lazy" allowfullscreen
-      src="https://maps.google.com/maps?q=25,10&t=k&z=2&ie=UTF8&output=embed"></iframe>
-  </div>
-  <p class="mapnote">The map loads on the live website (it needs an internet connection). Drag to explore, scroll to zoom.</p>
-  <div class="factchips">
-    <div class="factchip">🌍 Earth's diameter: <b>1.27 × 10⁷ m</b> (12,700 km)</div>
-    <div class="factchip">📏 Around the equator: <b>4.0 × 10⁷ m</b></div>
-    <div class="factchip">☀️ Distance to the Sun: <b>1.5 × 10¹¹ m</b></div>
-    <div class="factchip">🌙 Distance to the Moon: <b>3.84 × 10⁸ m</b></div>
-    <div class="factchip">⚖️ Earth's mass: <b>5.97 × 10²⁴ kg</b></div>
-    <div class="factchip">👥 People on Earth: <b>8.0 × 10⁹</b></div>
-  </div>
-</section>
 
-<!-- ============ THE PROJECT ============ -->
-<section class="block" id="project">
-  <h2 class="game-h"><span class="ico">📋</span> Numbers of Our World — Scientific Notation Project</h2>
-  <p class="game-sub">Your project assignment and rubric. Use the tools above to research, convert, and compare your numbers.</p>
 
-  <ol class="proj-steps">
-    <li><b>Choose 5 facts</b> that interest you. Each must use a number greater than 1,000 or less than 0.001 (so it needs a positive or negative exponent). Try space, technology, population, environment, or microscopic science.</li>
-    <li><b>Convert each number</b> into scientific notation. (The converter above can check your work.)</li>
-    <li><b>Compile your data creatively</b> into a visual project with a cover titled "Numbers of Our World in Scientific Notation." Write each fact <em>twice</em> — standard form and scientific notation — with a colorful image beside it.</li>
-    <li><b>List your references</b> — the title and URL of each credible science/education source.</li>
-  </ol>
 
-  <div class="proj-card">
-    <h4>⭐ To earn a Level 5</h4>
-    <p style="margin:0">Compare and contrast your data with other data points using phrases like "greater than" or "times greater than." These require operations with scientific notation — so <b>show your work!</b></p>
-  </div>
-
-  <div class="exemplar">
-    <b>Worked comparison (from the exemplar):</b><br>
-    Sirius A produces <code>2.5 × 10²⁷</code> W; the Sun produces <code>3.8 × 10²⁶</code> W.<br>
-    (2.5 × 10²⁷) ÷ (3.8 × 10²⁶) = (2.5 ÷ 3.8) × 10¹ ≈ 0.66 × 10¹ = <b>6.6</b><br>
-    → Sirius A gives off about <b>6.6 times</b> more energy than our Sun.
-  </div>
-
-  <h3 style="margin-top:22px;color:var(--navy)">Project Rubric</h3>
-  <div style="overflow-x:auto">
-  <table class="rubric">
-    <tr><th>Criteria</th><th>5 — Exceeds</th><th>4 — Proficient</th><th>3 — Developing</th><th>2 — Beginning</th><th>1 — Missing</th></tr>
-    <tr><td>Accuracy of Conversions</td><td class="lv5">All 5 numbers correctly converted; precise notation &amp; symbols (×, powers, units).</td><td>Most correct (4/5); minor symbol/rounding issues.</td><td>About half (2–3/5); partial understanding of exponent placement.</td><td>One or two correct; limited understanding.</td><td>No accurate conversions or work missing.</td></tr>
-    <tr><td>Selection of Facts</td><td class="lv5">All 5 facts relevant, original, and use large or meaningful numbers.</td><td>4–5 relevant facts; appropriate and clear.</td><td>3–4 facts; one or more weak/unclear.</td><td>Fewer than 3 valid facts.</td><td>Facts missing or copied without meaning.</td></tr>
-    <tr><td>Presentation &amp; Creativity</td><td class="lv5">Visually engaging, organized, colorful graphics, consistent formatting.</td><td>Neat and organized; some graphics and color.</td><td>Partially organized; minimal visuals.</td><td>Disorganized/incomplete layout.</td><td>Little or no effort.</td></tr>
-    <tr><td>Mathematical Communication</td><td class="lv5">Precise vocabulary (standard form, exponent, base); 2+ examples compared/contrasted.</td><td>Clear explanations; minor wording issues.</td><td>Some vocabulary; inconsistent clarity.</td><td>Limited vocabulary/incomplete.</td><td>No meaningful explanations.</td></tr>
-    <tr><td>Completion &amp; Effort</td><td class="lv5">All components present (cover, 5 facts, conversions, visuals); above expectations.</td><td>All major components complete and on time.</td><td>Missing minor elements or late.</td><td>Several missing sections.</td><td>Little or no evidence of effort.</td></tr>
-  </table>
-  </div>
-</section>
 
 <div class="footer">Mr. Allen's Math Class · 8th Grade · Unit 2 — Exponents &amp; Scientific Notation</div>
 </div>
@@ -532,7 +478,7 @@ var Conv=(function(){
 })();
 
 /* ================= INIT ================= */
-POT.set(7);
+G1.reset(); G2.reset(); G3.reset();
 window.addEventListener('resize',function(){var c=document.getElementById('confetti');c.width=innerWidth;c.height=innerHeight;});
 </script>
 </body>
