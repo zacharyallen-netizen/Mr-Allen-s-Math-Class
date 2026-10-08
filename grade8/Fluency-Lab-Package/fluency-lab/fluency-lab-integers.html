@@ -1,5 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fluency Lab — Integers</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Integers</title>
 <style>
   :root{
     --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
@@ -31,26 +35,15 @@
     border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
     box-shadow:0 22px 50px -28px #000a;position:relative}
 
-  .fexpr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
-    font-family:var(--mono);font-size:46px;font-weight:600;margin:16px 0 6px;gap:2px}
-  .fexpr .op{color:var(--muted);margin:0 12px}
-  .fexpr .lbl{color:var(--muted);font-size:26px;margin-right:12px;font-family:var(--sans);font-weight:600}
-  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 2px}
-  .frac .n{padding:0 10px 2px;border-bottom:3px solid var(--ink);line-height:1.15}
-  .frac .d{padding:2px 10px 0;line-height:1.15}
-  .frac.res{color:var(--mint)} .frac.res .n{border-bottom-color:var(--mint)}
-  .whole{padding:0 4px} .fexpr .res{color:var(--mint)}
-  @media(max-width:430px){.fexpr{font-size:34px}}
+  .exprline{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;
+    font-size:54px;font-weight:700;letter-spacing:1px;margin:10px 0 6px}
+  .exprline .op{color:var(--muted);margin:0 10px}
+  @media(max-width:430px){.exprline{font-size:40px}}
+  .fwork{font-family:var(--mono);text-align:center;margin:2px 0}
+  .fline{font-size:24px;color:var(--muted);margin:6px 0}
+  .fline:last-child{color:var(--ink)}
+  @media(max-width:430px){.fline{font-size:19px}}
 
-  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
-  #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
-    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
-    border-radius:14px;padding:12px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
-  #answer::placeholder{color:#5b6190;font-size:21px;font-weight:500}
-  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
-  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
-  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
-  .hint{margin-top:8px;color:var(--muted);font-size:12.5px;min-height:16px}
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
     transition:transform .12s,filter .15s;min-width:150px}
@@ -58,9 +51,26 @@
   .btn.sky{background:var(--sky);color:#0a1226}
   .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
   .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
-  .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
-    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
-  .tip.show{display:block} .tip b{color:var(--sky)}
+
+  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 2px;letter-spacing:.02em}
+  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:15px 16px 16px;margin-top:12px;text-align:left}
+  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
+  .stepcard .q{font-family:var(--mono);font-size:18px;font-weight:600;line-height:1.45;margin-bottom:13px}
+  .stepcard .q b{color:var(--amber)}
+  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+  .bx{display:flex;flex-direction:column;gap:5px}
+  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
+  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:92px;text-align:center;
+    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
+    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
+  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
+    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
+  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
     border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
@@ -76,20 +86,21 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+</style>
+</head>
+<body>
 
-  #prob{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);
-    font-size:50px;font-weight:600;margin:18px 0 6px;gap:2px;min-height:72px}
-  #prob .op{color:var(--muted);margin:0 12px}
-  #prob .res{color:var(--mint)}
-  #prob sup{font-size:.5em;vertical-align:super;margin-left:1px}
-  #prob .lbl{font-family:var(--sans);font-size:24px;color:var(--muted);font-weight:600}
-  @media(max-width:430px){#prob{font-size:38px}}
-</style></head><body>
   <section id="start" class="screen">
-    <h1>Fluency Lab</h1><div class="sub">Integers · Module 6</div>
-    <div class="how">Add, subtract, multiply, and divide positive and negative numbers. <b>Subtracting is adding the opposite</b>; for × and ÷, same signs give positive, different give negative. Type answers like <b>-12</b>. Racing your own best.</div>
+    <h1>Fluency Lab</h1>
+    <div class="sub">Integers · Module 6</div>
+    <div class="how">
+      Add, subtract, multiply, and divide positive and negative numbers — now <b>one step at a time</b>.
+      First handle the <b>values</b>, then the <b>sign</b>, filling in each box with a quick why. The next step
+      unlocks only when your box is right. You're only ever racing <b>your own best</b>.
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
+
   <div id="play" class="hide">
     <div class="bar">
       <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
@@ -98,18 +109,23 @@
     </div>
     <div class="dots" id="dots"></div>
     <section class="stage">
-      <div id="prob"></div>
-      <div class="answer-wrap">
-        <input id="answer" inputmode="text" autocomplete="off" aria-label="Your answer" />
-        <div class="hint" id="hint"></div>
-        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      <div class="exprline" id="prob"></div>
+      <div class="fwork" id="fwork"></div>
+      <div class="steplead" id="steplead"></div>
+      <div class="stepcard">
+        <div class="lab" id="steplab"></div>
+        <div class="q" id="stepq"></div>
+        <div class="boxrow" id="boxrow"></div>
+        <div class="ginfo" id="ginfo"></div>
+        <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
+        <div class="verdict" id="gverdict"></div>
       </div>
-      <div class="verdict" id="verdict"></div>
-      <div class="tip" id="tip"></div>
     </section>
   </div>
+
   <section id="summary" class="screen hide">
-    <h1>Set complete</h1><div class="pb" id="pb">&nbsp;</div>
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
     <div class="statgrid">
       <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
       <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
@@ -118,71 +134,158 @@
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
   </section>
+
 <script>
 const SET_LEN=10;
 let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
 const $=id=>document.getElementById(id);
-function fmt(x){return (Math.round(x*1e6)/1e6).toString();}
-function numProb(display,ansVal,tip,opt){opt=opt||{};
-  return {display:display, placeholder:opt.placeholder||'answer', hint:opt.hint||'', ans:fmt(ansVal),
-    check:function(s){s=String(s).replace(/[^0-9.\-\/]/g,'');if(s==='')return false;var v;
-      if(s.indexOf('/')>-1){var p=s.split('/');v=parseFloat(p[0])/parseFloat(p[1]);}else v=parseFloat(s);
-      return isFinite(v)&&Math.abs(v-ansVal)<1e-4;},
-    worked:{display:display+' <span class="op">=</span> <span class="res">'+fmt(ansVal)+'</span>', tip:tip}};
-}
-function ratioProb(display,an,ad,tip){
-  return {display:display, placeholder:'e.g. 3:2', hint:'write it as a:b', ans:an+':'+ad,
-    check:function(s){var m=String(s).trim().match(/^(\d+)\s*:\s*(\d+)$/);if(!m)return false;var x=+m[1],y=+m[2];return y!==0&&x*ad===an*y;},
-    worked:{display:display+' <span class="op">=</span> <span class="res">'+an+':'+ad+'</span>', tip:tip}};
+const sgn=()=>pick([1,-1]);
+const S=n=>(n<0?'−':'')+Math.abs(n);           // signed display with minus glyph
+function sp(t){return `<span class="op">${t}</span>`;}
+function P(n){return n<0?`(−${Math.abs(n)})`:`${n}`;}
+function A(n){return n<0?`−${Math.abs(n)}`:`${n}`;}
+function disp(a,op,b){
+  const first=(op==='×'||op==='÷')?P(a):A(a);
+  const second=(op==='×'||op==='÷'||op==='−')?P(b):(b<0?P(b):`${b}`);
+  return first+sp(op)+second;
 }
 
-const MOD={gen:function(L){
- var sp=function(t){return '<span class="op">'+t+'</span>';};
- var A=function(n){return n<0?'−'+Math.abs(n):''+n;};
- var P=function(n){return n<0?'(−'+Math.abs(n)+')':''+n;};
- var disp=function(a,op,b){return A(a)+sp(op)+((op==='×'||op==='÷')?P(b):(b<0?P(b):''+b));};
- if(L===1){var s=pick([1,-1]),a=s*rnd(2,12),b=s*rnd(2,12),ans=a+b;
-   return numProb(disp(a,'+',b),ans,'<b>Same sign:</b> add the values, keep the sign. = '+ans+'.',{placeholder:'e.g. -12'});}
- if(L===2){var a=rnd(2,12)*pick([1,-1]),b;do{b=rnd(2,12)*pick([1,-1]);}while((a<0)===(b<0));var ans=a+b;
-   return numProb(disp(a,'+',b),ans,'<b>Different signs:</b> subtract the smaller value from the larger; keep the sign of the bigger. = '+ans+'.',{placeholder:'a number'});}
- if(L===3){var a=rnd(-12,12),b=rnd(-12,12);if(a===0)a=3;if(b===0)b=4;var ans=a-b;
-   return numProb(A(a)+sp('−')+P(b),ans,'<b>Subtracting is adding the opposite.</b> '+A(a)+' − ('+A(b)+') = '+A(a)+' + '+A(-b)+' = '+ans+'.',{placeholder:'a number'});}
- if(L===4){var a=rnd(2,12)*pick([1,-1]),b=rnd(2,12)*pick([1,-1]),ans=a*b;
-   return numProb(P(a)+sp('×')+P(b),ans,'<b>Signs:</b> same → positive, different → negative. = '+ans+'.',{placeholder:'a number'});}
- if(L===5){var q=rnd(2,12)*pick([1,-1]),b=rnd(2,9)*pick([1,-1]),a=q*b,ans=a/b;
-   return numProb(P(a)+sp('÷')+P(b),ans,'<b>Signs work the same for ÷.</b> = '+ans+'.',{placeholder:'a number'});}
- var o=pick(['+','−','×','÷']),a,b,ans;
- if(o==='÷'){var q=rnd(2,12)*pick([1,-1]);b=rnd(2,9)*pick([1,-1]);a=q*b;ans=a/b;}
- else{a=rnd(2,15)*pick([1,-1]);b=rnd(2,15)*pick([1,-1]);ans=(o==='+')?a+b:(o==='−')?a-b:a*b;}
- return numProb(P(a)+sp(o)+P(b),ans,'<b>Mind the signs.</b> = '+ans+'.',{placeholder:'a number'});
-}};
+function gen(L){
+  if(L===1){const s=sgn(); const a=s*rnd(2,12), b=s*rnd(2,12); return mk(a,'+',b);}
+  if(L===2){const a=sgn()*rnd(2,12); let b; do{b=sgn()*rnd(2,12);}while((a<0)===(b<0)); return mk(a,'+',b);}
+  if(L===3){let a=rnd(-12,12),b=rnd(-12,12); if(a===0)a=3; if(b===0)b=4; return mk(a,'−',b);}
+  if(L===4){return mk(sgn()*rnd(2,12),'×',sgn()*rnd(2,12));}
+  if(L===5){const q=sgn()*rnd(2,12), b=sgn()*rnd(2,9); return mk(q*b,'÷',b);}
+  const o=pick(['+','−','×','÷']);
+  if(o==='÷'){const q=sgn()*rnd(2,12),b=sgn()*rnd(2,9); return mk(q*b,'÷',b);}
+  const a=sgn()*rnd(2,15),b=sgn()*rnd(2,15); return mk(a,o,b);
+}
+function mk(a,op,b){
+  const ans = op==='+'?a+b : op==='−'?a-b : op==='×'?a*b : a/b;
+  return {a,op,b,ans,display:disp(a,op,b)};
+}
+function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=gen(L);answered=false;renderProblem();}
 
-function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=MOD.gen(L);answered=false;renderProblem();}
-function renderProblem(){$('prob').innerHTML=current.display;var inp=$('answer');inp.value='';inp.className='';inp.disabled=false;
-  inp.placeholder=current.placeholder||'';$('hint').textContent=current.hint||'';inp.focus();
-  $('verdict').textContent='';$('verdict').className='verdict';$('tip').className='tip';$('tip').innerHTML='';
-  var b=$('submit');b.textContent='Check';b.className='btn';b.onclick=submitAnswer;paintDots();}
+/* ---------- guided steps ---------- */
+let G=null;
+function buildSteps(p){
+  const {a,op,b,ans}=p; const aa=Math.abs(a), ab=Math.abs(b);
+  if(op==='+'){
+    if((a<0)===(b<0)){ // same sign
+      return [
+        {lab:'Step 1 · add the values', q:`Both numbers have the <b>same sign</b>, so add their values: <b>${aa} + ${ab}</b>.`,
+         boxes:[{bl:`${aa} + ${ab}`,expect:aa+ab}], info:`Same signs → add the values: ${aa}+${ab}=${aa+ab}.`, line:`values: ${aa} + ${ab} = ${aa+ab}`},
+        {lab:'Step 2 · keep the sign', q:`Keep the common sign (<b>${a<0?'negative':'positive'}</b>). Write the signed answer.`,
+         boxes:[{bl:'answer',expect:ans}], info:`Same sign → keep it: ${S(ans)}.`, line:`= ${S(ans)}`, last:true}
+      ];
+    }
+    const big=aa>=ab?aa:ab, small=aa>=ab?ab:aa; const bigNeg=(aa>=ab?a:b)<0;
+    return [
+      {lab:'Step 1 · subtract the values', q:`<b>Different signs</b> — subtract the smaller value from the larger: <b>${big} − ${small}</b>.`,
+       boxes:[{bl:`${big} − ${small}`,expect:big-small}], info:`Different signs → subtract values: ${big}−${small}=${big-small}.`, line:`values: ${big} − ${small} = ${big-small}`},
+      {lab:'Step 2 · take the bigger sign', q:`Keep the sign of the number with the <b>larger value</b> (that's <b>${bigNeg?'negative':'positive'}</b>). Write the signed answer.`,
+       boxes:[{bl:'answer',expect:ans}], info:`The bigger value is ${bigNeg?'negative':'positive'}, so the answer is ${S(ans)}.`, line:`= ${S(ans)}`, last:true}
+    ];
+  }
+  if(op==='−'){ const opp=-b;
+    return [
+      {lab:'Step 1 · add the opposite', q:`Subtracting means <b>adding the opposite</b>. The opposite of <b>${S(b)}</b> is ___.`,
+       boxes:[{bl:`opposite of ${S(b)}`,expect:opp}], info:`Flip the sign of ${S(b)} → ${S(opp)}. So ${A(a)} − ${P(b)} becomes ${A(a)} + ${P(opp)}.`, line:`= ${A(a)} + ${P(opp)}`},
+      {lab:'Step 2 · now add', q:`Now add using the sign rules: <b>${A(a)} + ${P(opp)}</b>. Write the answer.`,
+       boxes:[{bl:'answer',expect:ans}], info:`${A(a)} + ${P(opp)} = ${S(ans)}.`, line:`= ${S(ans)}`, last:true}
+    ];
+  }
+  // × and ÷
+  const same=(a<0)===(b<0);
+  const val = op==='×'? aa*ab : aa/ab;
+  return [
+    {lab:`Step 1 · ${op==='×'?'multiply':'divide'} the values`, q:`Ignore the signs for a moment: <b>${aa} ${op} ${ab}</b>.`,
+     boxes:[{bl:`${aa} ${op} ${ab}`,expect:val}], info:`${aa} ${op} ${ab} = ${val}.`, line:`values: ${aa} ${op} ${ab} = ${val}`},
+    {lab:'Step 2 · decide the sign', q:`Signs: <b>same → positive, different → negative</b>. These are <b>${same?'the same':'different'}</b>, so the answer is <b>${same?'positive':'negative'}</b>. Write it.`,
+     boxes:[{bl:'answer',expect:ans}], info:`${same?'Same signs → positive':'Different signs → negative'}: ${S(ans)}.`, line:`= ${S(ans)}`, last:true}
+  ];
+}
+
+/* ---------- render ---------- */
+function renderProblem(){
+  $('prob').innerHTML=current.display;
+  $('fwork').innerHTML='';
+  G={steps:buildSteps(current), si:0, tries:0};
+  renderWork(); renderStep(); paintDots();
+}
+function renderWork(){
+  const done=G.steps.slice(0,G.si).filter(s=>s.line);
+  $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+}
+function renderStep(){
+  const st=G.steps[G.si]; G.tries=0;
+  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill the box, then Check`;
+  $('steplab').textContent=st.lab;
+  $('stepq').innerHTML=st.q;
+  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
+    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    const mode=(bx.expect<0)?'text':'numeric';
+    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
+      +`<input id="bx${i}" inputmode="${mode}" autocomplete="off" aria-label="${bx.bl}"></div>`;
+  }).join('');
+  $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
+  $('gverdict').textContent=''; $('gverdict').className='verdict';
+  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
+  const f=$('bx0'); if(f) f.focus();
+}
+function checkStep(){
+  const st=G.steps[G.si]; let allOk=true;
+  st.boxes.forEach((bx,i)=>{
+    const el=$('bx'+i); const raw=(el.value||'').trim().replace('−','-');
+    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
+    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    if(!ok) allOk=false;
+  });
+  const gv=$('gverdict');
+  if(!allOk){
+    G.tries++; answered=true; current._hadError=true;
+    gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
+    gv.className='verdict help';
+    if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
+      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); const raw=(el.value||'').trim().replace('−','-'); if((+raw)!==bx.expect) el.placeholder=S(bx.expect);}); }
+    const bad=st.boxes.findIndex((bx,i)=>{const raw=($('bx'+i).value||'').trim().replace('−','-'); return (+raw)!==bx.expect;});
+    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+    return;
+  }
+  gv.textContent=''; gv.className='verdict';
+  G.si++; renderWork();
+  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
+}
+function finishGuided(){
+  const right=!current._hadError;
+  const gv=$('gverdict');
+  gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — the answer is ${S(current.ans)}.`;
+  gv.className='verdict good pop';
+  concludeProblem(right, $('stepbtn'));
+}
+
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
 function paintDots(){var h='';for(var i=0;i<SET_LEN;i++){var c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+='<span class="'+c+'"></span>';}$('dots').innerHTML=h;}
 function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
   $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');updateHUD();nextProblem();}
-function submitAnswer(){if(answered)return;var s=$('answer').value.trim();if(s==='')return;
-  answered=true;$('answer').disabled=true;var right=current.check(s);results[index]=right;
-  if(right){correctCount++;streak++;bestStreak=Math.max(bestStreak,streak);recentMisses=0;$('answer').classList.add('correct');
-    var v=$('verdict');v.textContent=praise();v.className='verdict good pop';if(streak%3===0&&level<6){level++;recentMisses=0;}}
-  else{streak=0;recentMisses++;$('answer').classList.add('wrong');var v=$('verdict');v.textContent='Not yet — here’s the work:';v.className='verdict help';
-    $('prob').innerHTML=current.worked.display;$('tip').innerHTML=current.worked.tip;$('tip').classList.add('show');
-    if(recentMisses>=2&&level>1){level--;recentMisses=0;}}
-  levelReachedThisSet=Math.max(levelReachedThisSet,level);updateHUD();paintDots();
-  var b=$('submit');b.textContent=(index===SET_LEN-1)?'See results':'Next';b.className='btn '+(right?'':'sky');b.onclick=advance;}
-function advance(){index++;if(index>=SET_LEN){endSet();return;}nextProblem();}
-function praise(){return pick(['Nice.','Locked in.','Clean.','Sharp.','Yes — keep going.','That’s it.']);}
 function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
 function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
-  $('s-note').textContent=correctCount>=9?'Excellent control. Strings of wins pushed your level up.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. Watch the method on the hard ones.':'Every miss showed the work. Run it again.';}
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();if(!answered)submitAnswer();else $('submit').click();});
-</script></body></html>
+  $('s-note').textContent=correctCount>=9?'Excellent control — values then signs, clean.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. The sign rule is where points hide — slow down there.':'Every step showed the method. Run it again.';}
+document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();$('stepbtn').click();});
+</script>
+</body>
+</html>
