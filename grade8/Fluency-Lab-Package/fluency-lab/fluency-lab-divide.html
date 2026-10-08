@@ -42,6 +42,18 @@
   .divline .res{color:var(--mint)}
   @media (max-width:430px){.divline{font-size:44px}}
 
+  /* long-division ladder (monospace, column-aligned) */
+  .ddwrap{text-align:center;margin:8px 0 2px}
+  .ddinner{display:inline-block;text-align:left;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:32px;font-weight:700;line-height:1.28;white-space:pre}
+  .ddq{color:var(--mint);min-height:1.28em}
+  .ddrow{display:flex}
+  .ddrow .dvs{color:var(--ink)}
+  .ddrow .dvd{color:var(--ink);border-top:4px solid var(--ink);padding-top:1px}
+  .ddlad{color:var(--muted)}
+  .ddlad.rem{color:var(--ink)}
+  @media (max-width:430px){.ddinner{font-size:25px}}
+
   .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
   #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
     font-size:32px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
@@ -61,6 +73,28 @@
   .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
     border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
   .tip.show{display:block} .tip b{color:var(--sky)}
+
+  /* guided step-by-step scaffold */
+  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 2px;letter-spacing:.02em}
+  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:15px 16px 16px;margin-top:16px;text-align:left}
+  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
+  .stepcard .q{font-family:var(--mono);font-size:19px;font-weight:600;line-height:1.4;margin-bottom:13px}
+  .stepcard .q b{color:var(--amber)}
+  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+  .bx{display:flex;flex-direction:column;gap:5px}
+  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
+  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:82px;text-align:center;
+    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
+    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
+  .bx input.wide{width:124px}
+  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
+    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
+  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
     border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
@@ -84,9 +118,9 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Divide · Module 3</div>
     <div class="how">
-      Division is multiplication backwards. First your <b>division facts</b>, then <b>long division</b> \u2014
-      divide, multiply, subtract, bring down. Every miss shows the steps and a check by multiplying back.
-      It gets harder as you get sharper, and you're only ever racing <b>your own best</b>.
+      Division is multiplication backwards. First your <b>division facts</b>, then <b>long division</b>
+      — now <b>one step at a time</b>: divide, multiply, subtract, bring down. Fill in each box; the next step
+      unlocks only when your work is right. You're only ever racing <b>your own best</b>.
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -99,14 +133,33 @@
     </div>
     <div class="dots" id="dots"></div>
     <section class="stage">
-      <div class="divline" id="prob"></div>
-      <div class="answer-wrap">
-        <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
-        <div class="hint" id="hint"></div>
-        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+
+      <!-- FACT MODE -->
+      <div id="factwrap">
+        <div class="divline" id="prob"></div>
+        <div class="answer-wrap">
+          <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
+          <div class="hint" id="hint"></div>
+          <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+          <div class="verdict" id="verdict"></div>
+          <div class="tip" id="tip"></div>
+        </div>
       </div>
-      <div class="verdict" id="verdict"></div>
-      <div class="tip" id="tip"></div>
+
+      <!-- GUIDED MODE -->
+      <div id="guided" class="hide">
+        <div class="ddwrap"><div class="ddinner" id="ladder"></div></div>
+        <div class="steplead" id="steplead"></div>
+        <div class="stepcard">
+          <div class="lab" id="steplab"></div>
+          <div class="q" id="stepq"></div>
+          <div class="boxrow" id="boxrow"></div>
+          <div class="ginfo" id="ginfo"></div>
+          <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
+          <div class="verdict" id="gverdict"></div>
+        </div>
+      </div>
+
     </section>
   </div>
 
@@ -134,91 +187,187 @@ function mkD(N,d,q,r,fact){return {N,d,q,r,fact};}
 function genEasy(){const d=pick([2,5,10]),q=rnd(2,12);return mkD(d*q,d,q,0,true);}   // L1
 function genMed(){ const d=pick([3,4,6]),q=rnd(2,12); return mkD(d*q,d,q,0,true);}   // L2
 function genHard(){const d=pick([7,8,9,11,12]),q=rnd(2,12);return mkD(d*q,d,q,0,true);} // L3
-function gen2x1(){ const d=rnd(2,9); const qmin=Math.max(2,Math.ceil(10/d)),qmax=Math.floor(99/d);
+function gen2x1(){ const d=rnd(3,9); const qmin=Math.max(2,Math.ceil(10/d)),qmax=Math.floor(99/d);
   const q=rnd(qmin,qmax); return mkD(d*q,d,q,0,false);}                              // L4
-function gen3x1(){ const d=rnd(2,9); const qmin=Math.ceil(100/d),qmax=Math.floor(999/d);
+function gen3x1(){ const d=rnd(3,9); const qmin=Math.ceil(100/d),qmax=Math.floor(999/d);
   const q=rnd(qmin,qmax); return mkD(d*q,d,q,0,false);}                              // L5
 function gen3x1r(){ const d=rnd(3,9);
   let q,r,N; do{ const qmin=Math.ceil(100/d),qmax=Math.floor(990/d); q=rnd(qmin,qmax);
     r=rnd(1,d-1); N=d*q+r; }while(N>999); return mkD(N,d,q,r,false);}               // L6
 const GEN={1:genEasy,2:genMed,3:genHard,4:gen2x1,5:gen3x1,6:gen3x1r};
 
+const $=id=>document.getElementById(id);
+const isFact=p=>p.fact;
+
 function nextProblem(){
   let useLevel=level;
   if(level>1 && Math.random()<0.25) useLevel=level-1;
   current=GEN[useLevel](); answered=false; renderProblem();
 }
-const $=id=>document.getElementById(id);
 
+/* ---------- long-division trace ---------- */
+function trace(N,d){
+  const s=String(N); let working=0, started=false; const cyc=[];
+  for(let i=0;i<s.length;i++){
+    working=working*10+(+s[i]);
+    if(!started && working<d) continue;
+    const qd=Math.floor(working/d), prod=qd*d, rem=working-prod;
+    cyc.push({i, workingBefore:working, qd, prod, rem, nextDigit:(i+1<s.length)?s[i+1]:null});
+    started=true; working=rem;
+  }
+  return {cyc, remainder:working, q:cyc.map(c=>c.qd).join('')};
+}
+
+/* ---------- guided steps ---------- */
+let G=null;
+function buildSteps(p){
+  const t=trace(p.N,p.d); p._trace=t;
+  const d=p.d;
+  return t.cyc.map((c,idx)=>({
+    lab:`Step ${idx+1} · ${idx===0?`divide into ${c.workingBefore}`:`bring down → ${c.workingBefore}`}`,
+    q:`How many whole times does <b>${d}</b> go into <b>${c.workingBefore}</b>? Then multiply and subtract.`,
+    boxes:[
+      {bl:`${d} goes into ${c.workingBefore}`, expect:c.qd},
+      {bl:`that × ${d} =`, expect:c.prod, connector:'→'},
+      {bl:`${c.workingBefore} − that =`, expect:c.rem, connector:'→'}
+    ],
+    info:`<b>Divide:</b> ${d} × ${c.qd} = ${c.prod} is the biggest multiple of ${d} that fits in ${c.workingBefore}. `
+        +`<b>Subtract:</b> ${c.workingBefore} − ${c.prod} = ${c.rem}.`+(c.nextDigit!==null?` Then bring down the ${c.nextDigit}.`:``),
+    cyc:c
+  }));
+}
+
+/* ---------- render ---------- */
 function renderProblem(){
-  const {N,d}=current;
-  $('prob').innerHTML=`${N}<span class="op">÷</span>${d}`;
-  const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false;
-  const rem=(level===6);
-  inp.setAttribute('inputmode',rem?'text':'numeric');
-  inp.placeholder = rem?'e.g.  64 r 1':'';
-  $('hint').textContent = rem?'This one may have a remainder — type it as  q r r':'';
-  inp.focus();
-  $('verdict').textContent=''; $('verdict').className='verdict';
-  $('tip').className='tip'; $('tip').innerHTML='';
-  const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
+  const fact=isFact(current);
+  $('factwrap').classList.toggle('hide',!fact);
+  $('guided').classList.toggle('hide',fact);
+  if(fact){
+    const {N,d}=current;
+    $('prob').innerHTML=`${N}<span class="op">÷</span>${d}`;
+    const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false;
+    inp.setAttribute('inputmode','numeric'); inp.placeholder=''; $('hint').textContent='';
+    inp.focus();
+    $('verdict').textContent=''; $('verdict').className='verdict';
+    $('tip').className='tip'; $('tip').innerHTML='';
+    const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
+  } else {
+    G={steps:buildSteps(current), si:0, tries:0};
+    renderLadder(); renderStep();
+  }
   paintDots();
 }
-function paintDots(){
+
+function place(s,endCol){ s=String(s); const start=endCol-s.length+1; return ' '.repeat(Math.max(0,start))+s; }
+function renderLadder(){
+  const {N,d}=current; const t=current._trace; const s=String(N); const W=s.length;
+  const left=`${d} )`; const L=left.length; const done=G.si;
+  // quotient digits for completed cycles
+  const qarr=Array(L+W).fill(' ');
+  for(let c=0;c<done;c++){ const cc=t.cyc[c]; qarr[L+cc.i]=cc.qd; }
+  let qline=qarr.join(''); qline=qline.replace(/\s+$/,''); if(qline==='') qline=' ';
   let h='';
-  for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;}
-  $('dots').innerHTML=h;
+  h+=`<div class="ddq">${qline.replace(/ /g,'&nbsp;')}</div>`;
+  h+=`<div class="ddrow"><span class="dvs">${left.replace(/ /g,'&nbsp;')}</span><span class="dvd">${s}</span></div>`;
+  for(let c=0;c<done;c++){
+    const cc=t.cyc[c]; const endCol=L+cc.i;
+    h+=`<div class="ddlad">${place('-'+cc.prod,endCol).replace(/ /g,'&nbsp;')}</div>`;
+    h+=`<div class="ddlad">${place('—'.repeat(String(cc.prod).length),endCol).replace(/ /g,'&nbsp;')}</div>`;
+    let rs=String(cc.rem), endR=endCol;
+    if(cc.nextDigit!==null){ rs=String(cc.rem)+cc.nextDigit; endR=endCol+1; }
+    h+=`<div class="ddlad rem">${place(rs,endR).replace(/ /g,'&nbsp;')}</div>`;
+  }
+  $('ladder').innerHTML=h;
 }
-function parseAns(s){
-  const m=String(s).trim().match(/^(\d+)(?:\s*[rR]?\s*(\d+))?$/);
-  if(!m) return null;
-  return {q:+m[1], r:m[2]!==undefined?+m[2]:0};
+function renderStep(){
+  const st=G.steps[G.si]; G.tries=0;
+  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — divide · multiply · subtract`;
+  $('steplab').textContent=st.lab;
+  $('stepq').innerHTML=st.q;
+  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
+    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
+      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+  }).join('');
+  $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
+  $('gverdict').textContent=''; $('gverdict').className='verdict';
+  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
+  const f=$('bx0'); if(f) f.focus();
 }
-function startSet(){
-  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
-  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
-  updateHUD();nextProblem();
+function checkStep(){
+  const st=G.steps[G.si];
+  let allOk=true;
+  st.boxes.forEach((bx,i)=>{
+    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
+    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    if(!ok) allOk=false;
+  });
+  const gv=$('gverdict');
+  if(!allOk){
+    G.tries++; answered=true; current._hadError=true;
+    gv.textContent = G.tries>=2 ? 'Check the highlighted box — the hint below shows the work.' : 'Not quite — fix the red box and check again.';
+    gv.className='verdict help';
+    if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
+      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect) el.placeholder=String(bx.expect);}); }
+    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
+    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+    return;
+  }
+  gv.textContent=''; gv.className='verdict';
+  G.si++;
+  renderLadder();
+  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
 }
+function finishGuided(){
+  const right=!current._hadError;
+  const {N,d,q,r}=current;
+  const ansTxt = r>0?`${q} r ${r}`:`${q}`;
+  const gv=$('gverdict');
+  gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — ${N} ÷ ${d} = ${ansTxt}.`;
+  gv.className='verdict good pop';
+  concludeProblem(right, $('stepbtn'));
+}
+
+/* ---------- fact mode ---------- */
+function parseAns(s){ const m=String(s).trim().match(/^(\d+)(?:\s*[rR]?\s*(\d+))?$/); if(!m) return null; return {q:+m[1], r:m[2]!==undefined?+m[2]:0}; }
 function submitAnswer(){
   if(answered) return;
   const inp=$('answer'); const p=parseAns(inp.value);
   if(!p){inp.focus();return;}
   answered=true; inp.disabled=true;
-  const right=(p.q===current.q && p.r===current.r); results[index]=right;
-  if(right){
-    correctCount++;streak++;bestStreak=Math.max(bestStreak,streak);recentMisses=0;
-    inp.classList.add('correct');
-    const v=$('verdict');v.textContent=praise();v.className='verdict good pop';
-    if(streak>0&&streak%3===0&&level<6){level++;recentMisses=0;}
-  } else {
-    streak=0;recentMisses++;
-    inp.classList.add('wrong');
-    const v=$('verdict');v.textContent='Not yet — here’s the work:';v.className='verdict help';
-    showWorked();
-    if(recentMisses>=2&&level>1){level--;recentMisses=0;}
-  }
-  levelReachedThisSet=Math.max(levelReachedThisSet,level);
-  updateHUD();paintDots();
-  const btn=$('submit');
-  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
-  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
+  const right=(p.q===current.q && p.r===current.r);
+  if(right){ inp.classList.add('correct'); const v=$('verdict'); v.textContent=praise(); v.className='verdict good pop'; }
+  else { inp.classList.add('wrong'); const v=$('verdict'); v.textContent='Not yet:'; v.className='verdict help';
+    $('tip').innerHTML=`<b>${current.N} ÷ ${current.d} = ${current.q}</b> because ${current.d} × ${current.q} = ${current.d*current.q}. Division is multiplication backwards.`;
+    $('tip').classList.add('show'); }
+  concludeProblem(right, $('submit'));
 }
-function advance(){index++;if(index>=SET_LEN){endSet();return;}nextProblem();}
+
+/* ---------- shared conclusion ---------- */
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
+  btn.className='btn '+(right?'':'sky');
+  btn.onclick=advance;
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
 function praise(){const p=['Nice.','Locked in.','That’s the inverse.','Sharp.','Yes — keep going.','Clean.','Fast.'];return p[Math.floor(Math.random()*p.length)];}
 
-function showWorked(){
-  const {N,d,q,r,fact}=current;
-  const res = r>0 ? `${q}<span style="color:var(--muted)"> r </span>${r}` : `${q}`;
-  $('prob').innerHTML=`${N}<span class="op">÷</span>${d}<span class="eq">=</span><span class="res">${res}</span>`;
-  let tip;
-  if(fact){
-    tip=`<b>${N} ÷ ${d} = ${q}</b> because ${d} × ${q} = ${N}. Division is multiplication backwards.`;
-  } else if(r===0){
-    tip=`<b>Divide, multiply, subtract, bring down.</b> ${N} ÷ ${d} = ${q}. Check: ${d} × ${q} = ${N}.`;
-  } else {
-    tip=`<b>Divide, multiply, subtract, bring down.</b> ${N} ÷ ${d} = ${q} remainder ${r}. Check: ${d} × ${q} + ${r} = ${N}.`;
-  }
-  $('tip').innerHTML=tip; $('tip').classList.add('show');
+function paintDots(){
+  let h='';
+  for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;}
+  $('dots').innerHTML=h;
+}
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
 }
 function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
 function endSet(){
@@ -230,16 +379,17 @@ function endSet(){
   $('s-note').textContent=note(correctCount);
 }
 function note(c){
-  if(c>=9)return 'Excellent control. Strings of wins pushed your level up.';
-  if(c>=7)return 'Strong set. A few more clean streaks and you climb again.';
-  if(c>=5)return 'Solid. On the long ones, check by multiplying back — it catches mistakes.';
-  return 'Every miss showed the steps. Your facts make division faster — keep at it.';
+  if(c>=9)return 'Excellent control — clean work, step by step.';
+  if(c>=7)return 'Strong set. A few more first-try solves and you climb again.';
+  if(c>=5)return 'Solid. On the long ones, the subtract step is where points hide — slow down there.';
+  return 'Every step showed the method. Your facts make division faster — keep at it.';
 }
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if($('play').classList.contains('hide'))return;
   e.preventDefault();
-  if(!answered)submitAnswer();else document.getElementById('submit').click();
+  if(!$('guided').classList.contains('hide')){ $('stepbtn').click(); return; }
+  if(!answered)submitAnswer();else $('submit').click();
 });
 </script>
 </body>

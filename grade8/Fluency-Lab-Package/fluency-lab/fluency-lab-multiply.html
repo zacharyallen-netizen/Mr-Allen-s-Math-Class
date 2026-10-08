@@ -44,7 +44,11 @@
   .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:8px 0 6px;opacity:.9}
   .partial .cell{font-size:34px;color:var(--sky)}
   .ans .cell{color:var(--mint)}
-  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.partial .cell{font-size:28px}}
+  /* carries + progressive fill */
+  .carry .cell{height:26px;font-size:20px;color:var(--amber);font-weight:700}
+  .cell.ghost{color:#3b4178}
+  .cell.just{color:var(--mint)}
+  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.partial .cell{font-size:28px}.carry .cell{font-size:17px}}
 
   /* facts: big horizontal equation */
   .factline{font-family:var(--mono);font-variant-numeric:tabular-nums;
@@ -71,6 +75,28 @@
   .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
     border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
   .tip.show{display:block} .tip b{color:var(--sky)}
+
+  /* guided step-by-step scaffold */
+  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 2px;letter-spacing:.02em}
+  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
+    padding:15px 16px 16px;margin-top:16px;text-align:left}
+  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
+  .stepcard .q{font-family:var(--mono);font-size:19px;font-weight:600;line-height:1.4;margin-bottom:13px}
+  .stepcard .q b{color:var(--amber)}
+  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
+  .bx{display:flex;flex-direction:column;gap:5px}
+  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
+  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:78px;text-align:center;
+    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
+    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
+  .bx input.wide{width:124px}
+  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
+  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
+    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
+  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
     border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
@@ -94,9 +120,9 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Multiply · Module 2</div>
     <div class="how">
-      First you build your <b>facts</b> to automatic. Then you multiply <b>big numbers</b> with the standard algorithm.
-      Every miss shows you the real work — for big ones, the <b>partial products</b>, never a box.
-      It gets harder as you get sharper, and you're only ever racing <b>your own best</b>.
+      First you build your <b>facts</b> to automatic. Then you multiply <b>big numbers</b> with the standard algorithm —
+      now <b>one step at a time</b>, filling in each box and carrying as you go. Every step has to be right before the next unlocks,
+      so you practice the real method, never a box trick. You're only ever racing <b>your own best</b>.
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -110,12 +136,27 @@
     <div class="dots" id="dots"></div>
     <section class="stage">
       <div class="algo" id="algo"></div>
-      <div class="answer-wrap">
+
+      <!-- FACT MODE: single answer -->
+      <div id="factwrap" class="answer-wrap">
         <input id="answer" inputmode="numeric" autocomplete="off" aria-label="Your answer" />
         <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+        <div class="verdict" id="verdict"></div>
+        <div class="tip" id="tip"></div>
       </div>
-      <div class="verdict" id="verdict"></div>
-      <div class="tip" id="tip"></div>
+
+      <!-- GUIDED MODE: step-by-step boxes -->
+      <div id="guided" class="hide">
+        <div class="steplead" id="steplead"></div>
+        <div class="stepcard">
+          <div class="lab" id="steplab"></div>
+          <div class="q" id="stepq"></div>
+          <div class="boxrow" id="boxrow"></div>
+          <div class="ginfo" id="ginfo"></div>
+          <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
+          <div class="verdict" id="gverdict"></div>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -145,10 +186,13 @@ function maybeSwap(p){ if(Math.random()<0.5){const t=p.a;p.a=p.b;p.b=t;} return 
 function genEasy(){ return maybeSwap(mk(rnd(2,12),pick([0,1,2,5,10]))); }        // L1
 function genMed(){  return maybeSwap(mk(rnd(2,12),pick([3,4,6]))); }             // L2
 function genHard(){ return maybeSwap(mk(rnd(2,12),pick([7,8,9,11,12]))); }       // L3
-function gen2x1(){  return mk(rnd(13,99),rnd(2,9)); }                            // L4
-function gen3x1(){  return mk(rnd(105,899),rnd(2,9)); }                          // L5
-function gen2x2(){  return mk(rnd(12,89),rnd(12,89)); }                          // L6
+function gen2x1(){  return mk(rnd(13,99),rnd(3,9)); }                            // L4
+function gen3x1(){  return mk(rnd(105,899),rnd(3,9)); }                          // L5
+function gen2x2(){  return mk(rnd(13,89),rnd(13,89)); }                          // L6
 const GEN={1:genEasy,2:genMed,3:genHard,4:gen2x1,5:gen3x1,6:gen2x2};
+
+const $=id=>document.getElementById(id);
+const isFact=p=>p.fact && p.a<=12 && p.b<=12;
 
 function nextProblem(){
   let useLevel=level;
@@ -157,102 +201,208 @@ function nextProblem(){
   answered=false; renderProblem();
 }
 
-const $=id=>document.getElementById(id);
 function digitsOf(n,w){return String(n).padStart(w,' ').split('');}
-function cellHTML(d){return `<span class="cell">${d===' '?'':d}</span>`;}
+function cellHTML(d,cls){return `<span class="cell${cls?' '+cls:''}">${d===' '?'':d}</span>`;}
 const EMPTYOP='<span class="op"></span>';
 
-function renderProblem(){
-  const {a,b}=current;
-  if(current.fact && a<=12 && b<=12){
-    $('algo').innerHTML=`<div class="factline">${a}<span class="x">×</span>${b}</div>`;
-  } else {
-    const w=Math.max(String(a).length,String(b).length,String(current.answer).length);
-    let h='';
-    h+=`<div class="row">${EMPTYOP}${digitsOf(a,w).map(cellHTML).join('')}</div>`;
-    h+=`<div class="row"><span class="op">×</span>${digitsOf(b,w).map(cellHTML).join('')}</div>`;
-    h+=`<div class="ruleline"></div>`;
-    $('algo').innerHTML=h;
-  }
-  const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false; inp.focus();
-  $('verdict').textContent=''; $('verdict').className='verdict';
-  $('tip').className='tip'; $('tip').innerHTML='';
-  const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
-  paintDots();
+/* ---------- build guided steps ---------- */
+let G=null; // {steps, si, tries}
+function buildSteps(p){
+  const {a,b}=p;
+  if(b<10) return stepsN1(a,b);
+  return steps2x2(a,b);
 }
-function paintDots(){
-  let h='';
-  for(let i=0;i<SET_LEN;i++){
-    let cls='dot';
-    if(i<index) cls+= results[i]?' good':' miss';
-    if(i===index) cls+=' cur';
-    h+=`<span class="${cls}"></span>`;
+// n-digit × 1-digit, column by column (right to left)
+function stepsN1(a,b){
+  const ad=String(a).split('');           // left→right
+  const W=String(a*b).length;
+  const steps=[]; let carry=0;
+  for(let k=ad.length-1;k>=0;k--){
+    const digit=+ad[k];
+    const carryIn=carry;
+    const val=digit*b+carryIn;
+    const isLast=(k===0);
+    const write=isLast?val:val%10;
+    const carryOut=isLast?0:Math.floor(val/10);
+    const colName=['ones','tens','hundreds','thousands'][ad.length-1-k]||'next';
+    const prodTxt=`${b} × ${digit}`+(carryIn?` + ${carryIn} (carried)`:'');
+    const boxes=[{bl:prodTxt+' =', expect:val, wide:(val>=100)}];
+    if(isLast){ boxes.push({bl:'write (last column)', expect:write, wide:(write>=10), connector:'→'}); }
+    else { boxes.push({bl:'write', expect:write, connector:'→'}); boxes.push({bl:'carry', expect:carryOut, connector:'·'}); }
+    steps.push({
+      lab:`Step ${steps.length+1} · ${colName} column`,
+      q:`Multiply the <b>${colName}</b> digit: <b>${prodTxt}</b>.`+(isLast?` It's the last column, so write the whole thing.`:` Write the ones digit, carry the tens.`),
+      boxes, gi:ad.length-1-k, carryOut, write, isLast
+    });
+    carry=carryOut;
   }
-  $('dots').innerHTML=h;
+  return steps;
+}
+// 2-digit × 2-digit: partial products + addition
+function steps2x2(a,b){
+  const ob=b%10, tb=Math.floor(b/10);
+  const p1=a*ob, p2=a*tb, p2s=p2*10, sum=a*b;
+  return [
+    {lab:'Step 1 · first partial product', q:`Multiply <b>${a} × ${ob}</b> (the <b>ones</b> digit of ${b}).`,
+     boxes:[{bl:`${a} × ${ob} =`, expect:p1, wide:true}], info:colHint(a,ob), kind:'p1'},
+    {lab:'Step 2 · second partial product', q:`Multiply <b>${a} × ${tb}</b> (the <b>tens</b> digit of ${b}), then shift one place left — write a <b>0</b> in the ones place.`,
+     boxes:[{bl:`${a} × ${tb} =`, expect:p2}, {bl:'shift ×10 →', expect:p2s, wide:true, connector:'→'}], info:colHint(a,tb), kind:'p2'},
+    {lab:'Step 3 · add the partials', q:`Add the two partial products: <b>${p1} + ${p2s}</b>.`,
+     boxes:[{bl:`${p1} + ${p2s} =`, expect:sum, wide:true}], kind:'sum'}
+  ];
+}
+function colHint(a,d){ // short column trace for a×d (d single digit)
+  const ad=String(a).split(''); let carry=0, parts=[];
+  for(let k=ad.length-1;k>=0;k--){const v=(+ad[k])*d+carry; const isL=(k===0);
+    parts.unshift(`${d}×${ad[k]}${carry?`+${carry}`:''}=${v}${isL?'':` → write ${v%10}, carry ${Math.floor(v/10)}`}`);
+    carry=isL?0:Math.floor(v/10);}
+  return `<b>How:</b> `+parts.join('; ')+`.`;
 }
 
-function startSet(){
-  correctCount=0; index=0; streak=0; bestStreak=0; recentMisses=0;
-  levelReachedThisSet=level; results=[];
-  $('start').classList.add('hide'); $('summary').classList.add('hide'); $('play').classList.remove('hide');
-  updateHUD(); nextProblem();
+/* ---------- render ---------- */
+function renderProblem(){
+  const fact=isFact(current);
+  $('factwrap').classList.toggle('hide',!fact);
+  $('guided').classList.toggle('hide',fact);
+  $('verdict').textContent=''; $('verdict').className='verdict';
+  $('tip').className='tip'; $('tip').innerHTML='';
+  if(fact){
+    const {a,b}=current;
+    $('algo').innerHTML=`<div class="factline">${a}<span class="x">×</span>${b}</div>`;
+    const inp=$('answer'); inp.value=''; inp.className=''; inp.disabled=false; inp.focus();
+    const btn=$('submit'); btn.textContent='Check'; btn.className='btn'; btn.onclick=submitAnswer;
+  } else {
+    G={steps:buildSteps(current), si:0, tries:0};
+    renderWork(); renderStep();
+  }
+  paintDots();
 }
+
+// worktable reflecting steps completed so far (G.si = next step index)
+function renderWork(){
+  const {a,b}=current;
+  if(b<10){ renderWorkN1(); } else { renderWork2(); }
+}
+function renderWorkN1(){
+  const {a,b}=current; const ansStr=String(a*b); const W=ansStr.length;
+  const steps=G.steps; const done=G.si;
+  // carries row: show carryOut of each completed non-last step at gi+1
+  const carryArr=Array(W).fill(' ');
+  for(let s=0;s<done;s++){ const st=steps[s]; if(!st.isLast && st.carryOut>0){ carryArr[st.gi+1]=st.carryOut; } }
+  // product row: reveal answer digits from the right for completed columns
+  const completedNonLast=steps.slice(0,done).filter(s=>!s.isLast).length;
+  const lastDone=steps.slice(0,done).some(s=>s.isLast);
+  let shown = lastDone ? ansStr : ansStr.slice(ansStr.length-completedNonLast);
+  const prodArr=Array(W).fill(' ');
+  for(let i=0;i<shown.length;i++){ prodArr[W-1-i]=shown[shown.length-1-i]; }
+  let h='';
+  h+=`<div class="row carry">${carryArr.map(d=>cellHTML(d,'')).join('')}</div>`;
+  h+=`<div class="row">${EMPTYOP}${digitsOf(a,W).map(d=>cellHTML(d)).join('')}</div>`;
+  h+=`<div class="row"><span class="op">×</span>${digitsOf(b,W).map(d=>cellHTML(d)).join('')}</div>`;
+  h+=`<div class="ruleline"></div>`;
+  h+=`<div class="row ans">${EMPTYOP}${prodArr.map((d,i)=>cellHTML(d, d===' '?'ghost':'')).join('')}</div>`;
+  $('algo').innerHTML=h;
+}
+function renderWork2(){
+  const {a,b}=current; const ob=b%10, tb=Math.floor(b/10);
+  const p1=a*ob, p2s=a*tb*10, sum=a*b; const done=G.si;
+  const W=String(sum).length; const o=d=>digitsOf(d,W).map(x=>cellHTML(x)).join('');
+  const blank=`${EMPTYOP}${digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}`;
+  let h='';
+  h+=`<div class="row">${EMPTYOP}${o(a)}</div>`;
+  h+=`<div class="row"><span class="op">×</span>${o(b)}</div>`;
+  h+=`<div class="ruleline"></div>`;
+  h+=`<div class="row partial">${EMPTYOP}${done>=1?o(p1):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
+  h+=`<div class="row partial">${EMPTYOP}${done>=2?o(p2s):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
+  h+=`<div class="ruleline"></div>`;
+  h+=`<div class="row ans">${EMPTYOP}${done>=3?o(sum):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
+  $('algo').innerHTML=h;
+}
+function renderStep(){
+  const st=G.steps[G.si]; G.tries=0;
+  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
+  $('steplab').textContent=st.lab;
+  $('stepq').innerHTML=st.q;
+  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
+    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
+      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+  }).join('');
+  const gi=$('ginfo'); if(st.info){gi.innerHTML=st.info; gi.classList.remove('show');} else {gi.innerHTML=''; gi.classList.remove('show');}
+  $('gverdict').textContent=''; $('gverdict').className='verdict';
+  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
+  const f=$('bx0'); if(f) f.focus();
+}
+
+function checkStep(){
+  const st=G.steps[G.si];
+  let allOk=true;
+  st.boxes.forEach((bx,i)=>{
+    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const ok = raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
+    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    if(!ok) allOk=false;
+  });
+  const gv=$('gverdict');
+  if(!allOk){
+    G.tries++; answered=true; // any error on the problem = needed help
+    current._hadError=true;
+    gv.textContent = G.tries>=2 ? 'Check the highlighted box — the right value is shown below.' : 'Not quite — fix the red box and check again.';
+    gv.className='verdict help';
+    if(G.tries>=2 && st.info){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show'); }
+    if(G.tries>=2){ // reveal expected values as placeholders to unstick
+      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect){el.placeholder=String(bx.expect);}});
+    }
+    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
+    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+    return;
+  }
+  // step complete
+  gv.textContent=''; gv.className='verdict';
+  G.si++;
+  renderWork();
+  if(G.si>=G.steps.length){ finishGuided(); }
+  else { renderStep(); }
+}
+
+function finishGuided(){
+  const right = !current._hadError;
+  const gv=$('gverdict');
+  gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — ${current.a} × ${current.b} = ${current.answer}.`;
+  gv.className='verdict good pop';
+  concludeProblem(right, $('stepbtn'));
+}
+
+/* ---------- fact mode ---------- */
 function submitAnswer(){
   if(answered) return;
   const inp=$('answer'); const raw=inp.value.trim();
   if(raw===''||isNaN(+raw)){inp.focus();return;}
   answered=true; inp.disabled=true;
-  const right=(+raw)===current.answer; results[index]=right;
-  if(right){
-    correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
-    inp.classList.add('correct');
-    const v=$('verdict'); v.textContent=praise(); v.className='verdict good pop';
-    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;}
-  } else {
-    streak=0; recentMisses++;
-    inp.classList.add('wrong');
-    const v=$('verdict'); v.textContent='Not yet — here’s the work:'; v.className='verdict help';
-    showWorked();
-    if(recentMisses>=2 && level>1){level--; recentMisses=0;}
-  }
+  const right=(+raw)===current.answer;
+  if(right){ inp.classList.add('correct'); const v=$('verdict'); v.textContent=praise(); v.className='verdict good pop'; }
+  else { inp.classList.add('wrong'); const v=$('verdict'); v.textContent='Not yet:'; v.className='verdict help';
+         $('tip').innerHTML=factTip(current.a,current.b,current.answer); $('tip').classList.add('show'); }
+  concludeProblem(right, $('submit'));
+}
+
+/* ---------- shared conclusion ---------- */
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
   levelReachedThisSet=Math.max(levelReachedThisSet,level);
   updateHUD(); paintDots();
-  const btn=$('submit');
   btn.textContent=(index===SET_LEN-1)?'See results':'Next';
   btn.className='btn '+(right?'':'sky');
   btn.onclick=advance;
 }
 function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+
 function praise(){
   const p=['Nice.','Locked in.','Fast.','That’s the fact.','Sharp.','Yes — keep going.','Clean.'];
   return p[Math.floor(Math.random()*p.length)];
-}
-
-function showWorked(){
-  const {a,b,answer,fact}=current;
-  if(fact && a<=12 && b<=12){
-    $('algo').innerHTML=`<div class="factline">${a}<span class="x">×</span>${b}<span class="eq">=</span><span class="res">${answer}</span></div>`;
-    $('tip').innerHTML=factTip(a,b,answer); $('tip').classList.add('show'); return;
-  }
-  const w=String(answer).length;
-  let h='';
-  h+=`<div class="row">${EMPTYOP}${digitsOf(a,w).map(cellHTML).join('')}</div>`;
-  h+=`<div class="row"><span class="op">×</span>${digitsOf(b,w).map(cellHTML).join('')}</div>`;
-  h+=`<div class="ruleline"></div>`;
-  if(b<10){
-    h+=`<div class="row ans">${EMPTYOP}${digitsOf(answer,w).map(cellHTML).join('')}</div>`;
-    $('tip').innerHTML=`<b>Multiply each digit of ${a} by ${b}</b>, carrying as you go. ${a} × ${b} = ${answer}.`;
-  } else {
-    const ob=b%10, tb=b-ob, p1=a*ob, p2=a*tb;
-    h+=`<div class="row partial">${EMPTYOP}${digitsOf(p1,w).map(cellHTML).join('')}</div>`;
-    h+=`<div class="row partial">${EMPTYOP}${digitsOf(p2,w).map(cellHTML).join('')}</div>`;
-    h+=`<div class="ruleline"></div>`;
-    h+=`<div class="row ans">${EMPTYOP}${digitsOf(answer,w).map(cellHTML).join('')}</div>`;
-    $('tip').innerHTML=`<b>Two partial products.</b> ${a} × ${ob} = ${p1}. Then ${a} × ${tb} = ${p2} `
-      +`(the tens — that’s the shift, not a box). Add them: ${p1} + ${p2} = ${answer}.`;
-  }
-  $('algo').innerHTML=h;
-  $('tip').classList.add('show');
 }
 function factTip(a,b,ans){
   if(a===9||b===9){const o=(a===9)?b:a; return `<b>×9 trick:</b> 10 × ${o} = ${10*o}, minus ${o} = ${ans}.`;}
@@ -262,6 +412,17 @@ function factTip(a,b,ans){
   return `<b>${a} × ${b} = ${ans}.</b> Say it three times and lock it in.`;
 }
 
+function paintDots(){
+  let h='';
+  for(let i=0;i<SET_LEN;i++){ let cls='dot'; if(i<index) cls+= results[i]?' good':' miss'; if(i===index) cls+=' cur'; h+=`<span class="${cls}"></span>`; }
+  $('dots').innerHTML=h;
+}
+function startSet(){
+  correctCount=0; index=0; streak=0; bestStreak=0; recentMisses=0;
+  levelReachedThisSet=level; results=[];
+  $('start').classList.add('hide'); $('summary').classList.add('hide'); $('play').classList.remove('hide');
+  updateHUD(); nextProblem();
+}
 function updateHUD(){ $('lvl').textContent=level; $('strk').textContent=streak; }
 function endSet(){
   $('play').classList.add('hide'); const s=$('summary'); s.classList.remove('hide');
@@ -272,16 +433,17 @@ function endSet(){
   $('s-note').textContent=note(correctCount);
 }
 function note(c){
-  if(c>=9) return 'Excellent control. Strings of wins pushed your level up.';
-  if(c>=7) return 'Strong set. A few more clean streaks and you climb again.';
-  if(c>=5) return 'Solid. Watch the partial products on the big ones — that’s where points hide.';
-  return 'Every miss showed you the real work. Run it again — the facts come faster each time.';
+  if(c>=9) return 'Excellent control — clean work, step by step.';
+  if(c>=7) return 'Strong set. A few more first-try solves and you climb again.';
+  if(c>=5) return 'Solid. Watch the carries on the big ones — that’s where points hide.';
+  return 'Every step showed you the real method. Run it again — it gets faster each time.';
 }
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   if($('play').classList.contains('hide')) return;
   e.preventDefault();
-  if(!answered) submitAnswer(); else document.getElementById('submit').click();
+  if(!$('guided').classList.contains('hide')){ $('stepbtn').click(); return; }
+  if(!answered) submitAnswer(); else $('submit').click();
 });
 </script>
 </body>
