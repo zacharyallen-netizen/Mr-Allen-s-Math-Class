@@ -112,6 +112,20 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  /* worked example on the start screen — same frames as the live steps */
+  .example{max-width:390px;margin:0 auto 24px;text-align:left}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--amber);font-weight:700;margin-bottom:2px;text-align:center}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:10px;text-align:center}
+  .example .stepcard{margin-top:10px;padding:13px 14px 14px}
+  .example .q{font-size:15px;line-height:1.45;margin-bottom:11px}
+  .bxv{font-family:var(--mono);font-variant-numeric:tabular-nums;min-width:66px;
+    text-align:center;font-size:23px;font-weight:700;color:var(--mint);
+    background:#15172b;border:1px solid var(--panel-edge);border-radius:10px;
+    padding:5px 9px;display:block}
+  .example .ansline{margin-top:12px;text-align:center;font-size:15px;color:#cfd3f5}
+  .example .ansline b{color:var(--mint);font-family:var(--mono);font-size:18px}
 </style>
 </head>
 <body>
@@ -120,9 +134,16 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Multiply · Module 2</div>
     <div class="how">
-      First you build your <b>facts</b> to automatic. Then you multiply <b>big numbers</b> with the standard algorithm —
-      now <b>one step at a time</b>, filling in each box and carrying as you go. Every step has to be right before the next unlocks,
-      so you practice the real method, never a box trick. You're only ever racing <b>your own best</b>.
+      First you get your <b>times tables</b> fast. Then you multiply <b>big numbers</b>, one column at a time.
+      Fill in each box. You have to get a step right before the next one opens, so you learn the real way to do it.
+      You are only racing <b>your own best score</b>.
+    </div>
+    <div class="example">
+      <div class="ttl">Here is one worked out</div>
+      <div class="ttl2">47 &times; 3 &mdash; the boxes say the same thing every time</div>
+      <div class="stepcard"><div class="lab">Step 1 &middot; ones column</div><div class="q">Multiply the <b>ones</b> digit: <b>3 &times; 7</b>. Write the last digit below. Carry the rest above.</div><div class="boxrow"><div class="bx"><span class="bl">3 &times; 7 =</span><span class="bxv">21</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">write below</span><span class="bxv">1</span></div><span class="conn">&middot;</span><div class="bx"><span class="bl">carry above</span><span class="bxv">2</span></div></div></div>
+      <div class="stepcard"><div class="lab">Step 2 &middot; tens column</div><div class="q">Multiply the <b>tens</b> digit: <b>3 &times; 4 + 2</b>. The <b>2</b> is what you carried. Last column: write the whole answer below.</div><div class="boxrow"><div class="bx"><span class="bl">3 &times; 4 + 2 =</span><span class="bxv">14</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">write below</span><span class="bxv">14</span></div></div></div>
+      <div class="ansline">47 &times; 3 = <b>141</b></div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -225,13 +246,18 @@ function stepsN1(a,b){
     const write=isLast?val:val%10;
     const carryOut=isLast?0:Math.floor(val/10);
     const colName=['ones','tens','hundreds','thousands'][ad.length-1-k]||'next';
-    const prodTxt=`${b} × ${digit}`+(carryIn?` + ${carryIn} (carried)`:'');
+    const prodTxt=`${b} × ${digit}`+(carryIn?` + ${carryIn}`:'');
     const boxes=[{bl:prodTxt+' =', expect:val, wide:(val>=100)}];
-    if(isLast){ boxes.push({bl:'write (last column)', expect:write, wide:(write>=10), connector:'→'}); }
-    else { boxes.push({bl:'write', expect:write, connector:'→'}); boxes.push({bl:'carry', expect:carryOut, connector:'·'}); }
+    if(isLast){ boxes.push({bl:'write below', expect:write, wide:(write>=10), connector:'→'}); }
+    else { boxes.push({bl:'write below', expect:write, connector:'→'}); boxes.push({bl:'carry above', expect:carryOut, connector:'·'}); }
     steps.push({
       lab:`Step ${steps.length+1} · ${colName} column`,
-      q:`Multiply the <b>${colName}</b> digit: <b>${prodTxt}</b>.`+(isLast?` It's the last column, so write the whole thing.`:` Write the ones digit, carry the tens.`),
+      q:`Multiply the <b>${colName}</b> digit: <b>${prodTxt}</b>.`
+        +(carryIn?` The <b>${carryIn}</b> is what you carried.`:``)
+        +(isLast?` Last column: write the whole answer below.`:` Write the last digit below. Carry the rest above.`),
+      info:`<b>${prodTxt} = ${val}.</b> `+(isLast
+        ? `This is the last column, so the whole number ${val} goes below the line.`
+        : `Write the last digit, ${write}, below the line. Carry the ${carryOut} above the next column.`),
       boxes, gi:ad.length-1-k, carryOut, write, isLast
     });
     carry=carryOut;
@@ -243,20 +269,24 @@ function steps2x2(a,b){
   const ob=b%10, tb=Math.floor(b/10);
   const p1=a*ob, p2=a*tb, p2s=p2*10, sum=a*b;
   return [
-    {lab:'Step 1 · first partial product', q:`Multiply <b>${a} × ${ob}</b> (the <b>ones</b> digit of ${b}).`,
+    {lab:'Step 1 · multiply by the ones digit',
+     q:`The <b>ones</b> digit of ${b} is <b>${ob}</b>. Multiply <b>${a} × ${ob}</b>.`,
      boxes:[{bl:`${a} × ${ob} =`, expect:p1, wide:true}], info:colHint(a,ob), kind:'p1'},
-    {lab:'Step 2 · second partial product', q:`Multiply <b>${a} × ${tb}</b> (the <b>tens</b> digit of ${b}), then shift one place left — write a <b>0</b> in the ones place.`,
-     boxes:[{bl:`${a} × ${tb} =`, expect:p2}, {bl:'shift ×10 →', expect:p2s, wide:true, connector:'→'}], info:colHint(a,tb), kind:'p2'},
-    {lab:'Step 3 · add the partials', q:`Add the two partial products: <b>${p1} + ${p2s}</b>.`,
-     boxes:[{bl:`${p1} + ${p2s} =`, expect:sum, wide:true}], kind:'sum'}
+    {lab:'Step 2 · multiply by the tens digit',
+     q:`The <b>tens</b> digit of ${b} is <b>${tb}</b>. Multiply <b>${a} × ${tb}</b>. Then put a <b>0</b> on the end, because that digit is really worth ${tb*10}.`,
+     boxes:[{bl:`${a} × ${tb} =`, expect:p2}, {bl:'put a 0 on the end', expect:p2s, wide:true, connector:'→'}], info:colHint(a,tb), kind:'p2'},
+    {lab:'Step 3 · add your two answers',
+     q:`Add your two answers: <b>${p1} + ${p2s}</b>.`,
+     boxes:[{bl:`${p1} + ${p2s} =`, expect:sum, wide:true}],
+     info:`<b>Add them up:</b> ${p1} + ${p2s} = ${sum}. That is ${a} × ${b}.`, kind:'sum'}
   ];
 }
 function colHint(a,d){ // short column trace for a×d (d single digit)
   const ad=String(a).split(''); let carry=0, parts=[];
   for(let k=ad.length-1;k>=0;k--){const v=(+ad[k])*d+carry; const isL=(k===0);
-    parts.unshift(`${d}×${ad[k]}${carry?`+${carry}`:''}=${v}${isL?'':` → write ${v%10}, carry ${Math.floor(v/10)}`}`);
+    parts.unshift(`${d} × ${ad[k]}${carry?` + ${carry}`:''} = ${v}${isL?'':`, so write ${v%10} and carry ${Math.floor(v/10)}`}`);
     carry=isL?0:Math.floor(v/10);}
-  return `<b>How:</b> `+parts.join('; ')+`.`;
+  return `<b>Column by column:</b> `+parts.join('. Then ')+`.`;
 }
 
 /* ---------- render ---------- */

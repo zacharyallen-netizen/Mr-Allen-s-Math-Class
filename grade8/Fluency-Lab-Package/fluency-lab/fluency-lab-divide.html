@@ -110,6 +110,20 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  /* worked example on the start screen — same frames as the live steps */
+  .example{max-width:390px;margin:0 auto 24px;text-align:left}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--amber);font-weight:700;margin-bottom:2px;text-align:center}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:10px;text-align:center}
+  .example .stepcard{margin-top:10px;padding:13px 14px 14px}
+  .example .q{font-size:15px;line-height:1.45;margin-bottom:11px}
+  .bxv{font-family:var(--mono);font-variant-numeric:tabular-nums;min-width:66px;
+    text-align:center;font-size:23px;font-weight:700;color:var(--mint);
+    background:#15172b;border:1px solid var(--panel-edge);border-radius:10px;
+    padding:5px 9px;display:block}
+  .example .ansline{margin-top:12px;text-align:center;font-size:15px;color:#cfd3f5}
+  .example .ansline b{color:var(--mint);font-family:var(--mono);font-size:18px}
 </style>
 </head>
 <body>
@@ -118,9 +132,16 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Divide · Module 3</div>
     <div class="how">
-      Division is multiplication backwards. First your <b>division facts</b>, then <b>long division</b>
-      — now <b>one step at a time</b>: divide, multiply, subtract, bring down. Fill in each box; the next step
-      unlocks only when your work is right. You're only ever racing <b>your own best</b>.
+      Dividing is multiplying backwards. First your <b>division facts</b>, then <b>long division</b>,
+      one step at a time. Every step is the same three moves: <b>divide, multiply, subtract</b>. Then bring down
+      the next digit and do it again. You are only racing <b>your own best score</b>.
+    </div>
+    <div class="example">
+      <div class="ttl">Here is one worked out</div>
+      <div class="ttl2">128 &divide; 4 &mdash; every step is the same three boxes</div>
+      <div class="stepcard"><div class="lab">Step 1 &middot; divide 12 by 4</div><div class="q">How many times does <b>4</b> fit into <b>12</b>? Then multiply, then subtract.</div><div class="boxrow"><div class="bx"><span class="bl">how many times</span><span class="bxv">3</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">multiply by 4</span><span class="bxv">12</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">subtract from 12</span><span class="bxv">0</span></div></div></div>
+      <div class="stepcard"><div class="lab">Step 2 &middot; bring down, then divide 8</div><div class="q">How many times does <b>4</b> fit into <b>8</b>? Then multiply, then subtract.</div><div class="boxrow"><div class="bx"><span class="bl">how many times</span><span class="bxv">2</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">multiply by 4</span><span class="bxv">8</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">subtract from 8</span><span class="bxv">0</span></div></div></div>
+      <div class="ansline">128 &divide; 4 = <b>32</b></div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -224,15 +245,18 @@ function buildSteps(p){
   const t=trace(p.N,p.d); p._trace=t;
   const d=p.d;
   return t.cyc.map((c,idx)=>({
-    lab:`Step ${idx+1} · ${idx===0?`divide into ${c.workingBefore}`:`bring down → ${c.workingBefore}`}`,
-    q:`How many whole times does <b>${d}</b> go into <b>${c.workingBefore}</b>? Then multiply and subtract.`,
+    lab:`Step ${idx+1} · ${idx===0?`divide ${c.workingBefore} by ${d}`:`bring down, then divide ${c.workingBefore}`}`,
+    q:`How many times does <b>${d}</b> fit into <b>${c.workingBefore}</b>? Then multiply, then subtract.`,
     boxes:[
-      {bl:`${d} goes into ${c.workingBefore}`, expect:c.qd},
-      {bl:`that × ${d} =`, expect:c.prod, connector:'→'},
-      {bl:`${c.workingBefore} − that =`, expect:c.rem, connector:'→'}
+      {bl:`how many times`, expect:c.qd},
+      {bl:`multiply by ${d}`, expect:c.prod, connector:'→'},
+      {bl:`subtract from ${c.workingBefore}`, expect:c.rem, connector:'→'}
     ],
-    info:`<b>Divide:</b> ${d} × ${c.qd} = ${c.prod} is the biggest multiple of ${d} that fits in ${c.workingBefore}. `
-        +`<b>Subtract:</b> ${c.workingBefore} − ${c.prod} = ${c.rem}.`+(c.nextDigit!==null?` Then bring down the ${c.nextDigit}.`:``),
+    info:`<b>Divide:</b> ${d} fits into ${c.workingBefore} <b>${c.qd}</b> times, because ${d} × ${c.qd} = ${c.prod}, `
+        +`and that is as close to ${c.workingBefore} as you can get without going over. `
+        +`<b>Multiply:</b> ${c.qd} × ${d} = ${c.prod}. `
+        +`<b>Subtract:</b> ${c.workingBefore} − ${c.prod} = ${c.rem}.`
+        +(c.nextDigit!==null?` Now bring down the ${c.nextDigit} and do the same three moves again.`:``),
     cyc:c
   }));
 }
@@ -281,7 +305,7 @@ function renderLadder(){
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
-  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — divide · multiply · subtract`;
+  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — divide, multiply, subtract`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{

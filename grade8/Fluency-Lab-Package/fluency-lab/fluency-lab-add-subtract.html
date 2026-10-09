@@ -98,9 +98,9 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Add &amp; Subtract · Module 1</div>
     <div class="how">
-      Stack the numbers and work <b>right to left</b>, <b>one column at a time</b> — fill in each box, carrying or
-      borrowing when you need to. Each step has a quick why, and the next column unlocks only when your work is right.
-      No tricks, just the algorithm. You're only ever racing <b>your own best</b>.
+      Stack the numbers and work <b>right to left</b>, <b>one column at a time</b>. Fill in each box, carrying or
+      borrowing when you need to. You have to get a column right before the next one opens, so you
+      learn the real way to do it. You are only racing <b>your own best score</b>.
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -180,18 +180,20 @@ function stepsAdd(p){
     const val=da+db+carry, write=val%10, carryOut=Math.floor(val/10);
     steps.push({
       lab:`Step ${c+1} · ${NAMES[c]} column`,
-      q:`Add the <b>${NAMES[c]}</b> column: <b>${da} + ${db}${carry?` + ${carry} carried`:''}</b>. Write the ones digit, carry the rest.`,
+      q:`Add the <b>${NAMES[c]}</b> column: <b>${da} + ${db}${carry?` + ${carry}`:''}</b>.`
+        +`${carry?` The <b>${carry}</b> is what you carried.`:``}`
+        +` Write the last digit below. Carry the rest above.`,
       info:`${da} + ${db}${carry?` + ${carry}`:''} = ${val}; write ${write}${carryOut?`, carry ${carryOut}`:' (nothing to carry)'}.`,
-      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},{bl:'write',expect:write,connector:'→'},{bl:'carry',expect:carryOut,connector:'·'}],
+      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},{bl:'write below',expect:write,connector:'→'},{bl:'carry above',expect:carryOut,connector:'·'}],
       grid:gi, write, carryOut
     });
     carry=carryOut;
   }
   if(carry>0){ const gi=WD-1-numCols;
     steps.push({lab:`Step ${numCols+1} · final carry`,
-      q:`One carry is left over. Bring the carried <b>${carry}</b> down as the new leading digit.`,
-      info:`The leftover carry becomes the leftmost digit of the answer: ${carry}.`,
-      boxes:[{bl:'leading digit',expect:carry}], grid:gi, write:carry, carryOut:0});
+      q:`There is still a <b>${carry}</b> carried. Write it at the front of the answer.`,
+      info:`Nothing is left to add it to, so the carried ${carry} becomes the first digit of the answer.`,
+      boxes:[{bl:'front digit',expect:carry}], grid:gi, write:carry, carryOut:0});
   }
   return steps;
 }
@@ -205,7 +207,7 @@ function stepsSub(p){
     let diff,outgoing,boxes,q,info;
     if(avail<bot){
       const bt=avail+10; diff=bt-bot; outgoing=1;
-      boxes=[{bl:'this top becomes',expect:bt},{bl:`− ${bot} =`,expect:diff,connector:'→'}];
+      boxes=[{bl:'the top is now',expect:bt},{bl:`− ${bot} =`,expect:diff,connector:'→'}];
       q=`Top is <b>${top}</b>${borrowIn?` (it lent 1 to the right)`:''}, bottom is <b>${bot}</b> — too small, so <b>borrow 10</b> from the next column left, then subtract.`;
       info=`After borrowing, the top is ${bt}; ${bt} − ${bot} = ${diff}. The next column left loses 1.`;
     } else {
