@@ -48,7 +48,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
 <button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
-</div><script>
+</div>
+<script src="fluency-config.js"></script>
+<script src="fluency-submit.js"></script>
+<script>
 const Q=[["Evaluate  4^2", ["16", "8", "12", "42"], 0, "4² = 4×4 = 16 (not 4×2)."], ["Evaluate  2^3", ["8", "6", "9", "23"], 0, "2³ = 2×2×2 = 8."], ["3 + 4 × 2", ["11", "14", "10", "24"], 0, "Multiply first: 4×2=8, then 3+8 = 11."], ["20 − 3 × 4", ["8", "68", "48", "12"], 0, "Multiply first: 3×4=12, then 20−12 = 8."], ["(3 + 4) × 2", ["14", "11", "9", "24"], 0, "Parentheses first: (3+4)=7, then ×2 = 14."], ["(10 − 4) ÷ 3", ["2", "6", "1", "9"], 0, "Parentheses first: (10−4)=6, then ÷3 = 2."], ["2 + 3^2", ["11", "25", "10", "8"], 0, "Exponent first: 3²=9, then 2+9 = 11."], ["5^2 − 10", ["15", "0", "40", "20"], 0, "5²=25, then 25−10 = 15."], ["Evaluate  2x + 1  when  x = 3", ["7", "8", "6", "9"], 0, "2×3 + 1 = 6 + 1 = 7."], ["Evaluate  5x − 4  when  x = 2", ["6", "14", "9", "11"], 0, "5×2 − 4 = 10 − 4 = 6."], ["Evaluate  3a + b  when  a = 4, b = 5", ["17", "27", "12", "21"], 0, "3×4 + 5 = 12 + 5 = 17."], ["Evaluate  2a − b  when  a = 6, b = 3", ["9", "15", "3", "12"], 0, "2×6 − 3 = 12 − 3 = 9."]];
 const box=document.getElementById('quiz');
 let locked=false;
@@ -87,9 +90,12 @@ function check(){
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';
+  if(window.FLSubmit)FLSubmit.show(score,Q.length);
 }
 function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
   document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  if(window.FLSubmit)FLSubmit.hide();
   render();window.scrollTo({top:0,behavior:'smooth'});}
 render();
+if(window.FLSubmit)FLSubmit.init();
 </script></body></html>

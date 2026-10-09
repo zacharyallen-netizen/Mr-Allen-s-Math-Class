@@ -48,7 +48,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
 <button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
-</div><script>
+</div>
+<script src="fluency-config.js"></script>
+<script src="fluency-submit.js"></script>
+<script>
 const Q=[["-7 + -5", ["-12", "12", "-2", "2"], 0, "Same sign: add the values (7+5=12), keep the sign → -12."], ["-8 + 3", ["-5", "5", "-11", "11"], 0, "Different signs: 8-3=5, keep the sign of the bigger (negative) → -5."], ["6 + (-9)", ["-3", "3", "-15", "15"], 0, "Different signs: 9-6=3, bigger is negative → -3."], ["5 - (-3)", ["8", "2", "-8", "-2"], 0, "Subtracting a negative is adding: 5 + 3 = 8."], ["-4 - 6", ["-10", "2", "10", "-2"], 0, "-4 - 6 = -4 + (-6) = -10."], ["-2 - (-9)", ["7", "-11", "-7", "11"], 0, "-2 - (-9) = -2 + 9 = 7."], ["(-4) × 6", ["-24", "24", "-10", "10"], 0, "Different signs → negative: -24."], ["(-3) × (-7)", ["21", "-21", "10", "-10"], 0, "Same signs → positive: 21."], ["(-40) ÷ 8", ["-5", "5", "-32", "32"], 0, "Different signs → negative: -5."], ["(-56) ÷ (-7)", ["8", "-8", "49", "-49"], 0, "Same signs → positive: 8."], ["-3 × 4 + 5", ["-7", "-17", "7", "17"], 0, "Multiply first: -3×4=-12, then +5 = -7."], ["The temperature was 4° and dropped 11°. What is it now?", ["-7°", "7°", "15°", "-15°"], 0, "4 - 11 = 4 + (-11) = -7°."]];
 const box=document.getElementById('quiz');
 let locked=false;
@@ -87,9 +90,12 @@ function check(){
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';
+  if(window.FLSubmit)FLSubmit.show(score,Q.length);
 }
 function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
   document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  if(window.FLSubmit)FLSubmit.hide();
   render();window.scrollTo({top:0,behavior:'smooth'});}
 render();
+if(window.FLSubmit)FLSubmit.init();
 </script></body></html>

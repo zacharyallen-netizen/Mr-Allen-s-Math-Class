@@ -48,7 +48,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
 <button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
-</div><script>
+</div>
+<script src="fluency-config.js"></script>
+<script src="fluency-submit.js"></script>
+<script>
 const Q=[["56 ÷ 7 =", ["8", "7", "9", "6"], 0, "56 ÷ 7 = 8 because 7 × 8 = 56. Reach for the multiplication twin."], ["72 ÷ 8 =", ["9", "8", "7", "6"], 0, "72 ÷ 8 = 9 because 8 × 9 = 72."], ["63 ÷ 9 =", ["7", "6", "8", "9"], 0, "63 ÷ 9 = 7 because 9 × 7 = 63."], ["84 ÷ 6 =", ["14", "13", "16", "12"], 0, "6 into 8 = 1 (6, leaves 2). Bring down 4 → 24. 6 into 24 = 4. Answer 14. Check: 6 × 14 = 84."], ["96 ÷ 4 =", ["24", "22", "28", "26"], 0, "4 into 9 = 2 (8, leaves 1). Bring down 6 → 16. 4 into 16 = 4. Answer 24. Check: 4 × 24 = 96."], ["252 ÷ 7 =", ["36", "34", "38", "42"], 0, "7 into 25 = 3 (21, leaves 4). Bring down 2 → 42. 7 into 42 = 6. Answer 36. Check: 7 × 36 = 252."], ["256 ÷ 4 =", ["64", "62", "66", "16"], 0, "4 into 25 = 6 (24, leaves 1). Bring down 6 → 16. 4 into 16 = 4. Answer 64. Check: 4 × 64 = 256."], ["824 ÷ 4 =", ["206", "26", "216", "260"], 0, "4 into 8 = 2; 4 into 2 = 0 — write the 0! Bring down 4 → 24, 4 into 24 = 6. Answer 206, not 26. Don’t drop the zero."], ["98 ÷ 4 =", ["24 r 2", "24 r 1", "23 r 2", "24"], 0, "4 into 9 = 2 (8, leaves 1). Bring down 8 → 18. 4 into 18 = 4 (16, leaves 2). Answer 24 r 2. Check: 4 × 24 + 2 = 98."], ["139 ÷ 4 =", ["34 r 3", "34 r 1", "33 r 3", "35 r 1"], 0, "4 into 13 = 3 (12, leaves 1). Bring down 9 → 19. 4 into 19 = 4 (16, leaves 3). Answer 34 r 3. Check: 4 × 34 + 3 = 139."], ["253 ÷ 6 =", ["42 r 1", "42 r 2", "41 r 1", "43 r 1"], 0, "6 into 25 = 4 (24, leaves 1). Bring down 3 → 13. 6 into 13 = 2 (12, leaves 1). Answer 42 r 1. Check: 6 × 42 + 1 = 253."], ["A teacher shares 196 pencils equally among 7 tables. How many per table?", ["28", "27", "29", "26"], 0, "196 ÷ 7: 7 into 19 = 2 (14, leaves 5). Bring down 6 → 56. 7 into 56 = 8. Answer 28. Check: 7 × 28 = 196."]];
 const box=document.getElementById('quiz');
 let locked=false;
@@ -87,9 +90,12 @@ function check(){
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';
+  if(window.FLSubmit)FLSubmit.show(score,Q.length);
 }
 function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
   document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  if(window.FLSubmit)FLSubmit.hide();
   render();window.scrollTo({top:0,behavior:'smooth'});}
 render();
+if(window.FLSubmit)FLSubmit.init();
 </script></body></html>

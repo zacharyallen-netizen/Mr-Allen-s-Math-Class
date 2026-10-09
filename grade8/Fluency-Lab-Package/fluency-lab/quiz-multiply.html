@@ -48,7 +48,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
 <button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
-</div><script>
+</div>
+<script src="fluency-config.js"></script>
+<script src="fluency-submit.js"></script>
+<script>
 const Q=[["7 × 8 =", ["56", "54", "63", "48"], 0, "7 × 8 = 56. Tip: double 7 three times — 7 → 14 → 28 → 56. Lock it in."], ["9 × 6 =", ["54", "56", "45", "63"], 0, "9 × 6 = 54. ×9 trick: 10 × 6 = 60, minus 6 = 54."], ["8 × 8 =", ["64", "56", "72", "48"], 0, "8 × 8 = 64. One of the squares worth memorizing cold."], ["12 × 7 =", ["84", "72", "96", "77"], 0, "12 × 7 = 84. Think (10 × 7) + (2 × 7) = 70 + 14 = 84."], ["34 × 6 =", ["204", "184", "244", "210"], 0, "Ones: 6 × 4 = 24 → write 4, carry 2. Tens: 6 × 3 = 18, + 2 = 20  →  204. Don’t drop the carry."], ["47 × 8 =", ["376", "326", "356", "386"], 0, "Ones: 8 × 7 = 56 → write 6, carry 5. Tens: 8 × 4 = 32, + 5 = 37  →  376."], ["128 × 4 =", ["512", "488", "502", "412"], 0, "4 × 8 = 32 (write 2, carry 3); 4 × 2 = 8, + 3 = 11 (write 1, carry 1); 4 × 1 = 4, + 1 = 5  →  512."], ["23 × 14 =", ["322", "115", "312", "422"], 0, "Two partial products: 23 × 4 = 92, then 23 × 10 = 230 (the tens — the shift). Add: 92 + 230 = 322."], ["47 × 38 =", ["1786", "517", "1416", "1886"], 0, "Two partials: 47 × 8 = 376, then 47 × 30 = 1410 (NOT 141 — that’s the place-value shift). 376 + 1410 = 1786."], ["56 × 24 =", ["1344", "336", "1244", "1444"], 0, "56 × 4 = 224, then 56 × 20 = 1120 (the shift). 224 + 1120 = 1344."], ["63 × 45 =", ["2835", "567", "2735", "2935"], 0, "63 × 5 = 315, then 63 × 40 = 2520 (the shift, not 252). 315 + 2520 = 2835."], ["A theater has 36 rows of 24 seats. How many seats in all?", ["864", "216", "764", "964"], 0, "36 × 24: 36 × 4 = 144, then 36 × 20 = 720 (the shift). 144 + 720 = 864 seats."]];
 const box=document.getElementById('quiz');
 let locked=false;
@@ -87,9 +90,12 @@ function check(){
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';
+  if(window.FLSubmit)FLSubmit.show(score,Q.length);
 }
 function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
   document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  if(window.FLSubmit)FLSubmit.hide();
   render();window.scrollTo({top:0,behavior:'smooth'});}
 render();
+if(window.FLSubmit)FLSubmit.init();
 </script></body></html>

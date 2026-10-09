@@ -48,7 +48,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
 <button class="btn ghost" id="againbtn" style="display:none" onclick="again()">Start over</button>
-</div><script>
+</div>
+<script src="fluency-config.js"></script>
+<script src="fluency-submit.js"></script>
+<script>
 const Q=[["34 + 52 =", ["86", "76", "96", "85"], 0, "Line up ones under ones and tens under tens, then add each column: 4 + 2 = 6, 3 + 5 = 8  →  86."], ["47 + 38 =", ["75", "85", "715", "815"], 1, "Ones: 7 + 8 = 15 → write 5 and CARRY the 1. Tens: 1 + 4 + 3 = 8  →  85."], ["56 + 27 =", ["83", "73", "713", "93"], 0, "Ones: 6 + 7 = 13 → write 3, carry 1. Tens: 1 + 5 + 2 = 8  →  83. Don’t forget the carry."], ["256 + 187 =", ["443", "333", "433", "4313"], 0, "Carry twice: 6 + 7 = 13 (write 3, carry 1); 1 + 5 + 8 = 14 (write 4, carry 1); 1 + 2 + 1 = 4  →  443."], ["368 + 254 =", ["622", "512", "632", "5112"], 0, "Ones: 8 + 4 = 12 (carry 1); tens: 1 + 6 + 5 = 12 (carry 1); hundreds: 1 + 3 + 2 = 6  →  622."], ["58 − 23 =", ["35", "81", "25", "45"], 0, "Subtract each column, top minus bottom: 8 − 3 = 5, 5 − 2 = 3  →  35. (This one is subtraction, not addition.)"], ["72 − 48 =", ["24", "36", "34", "26"], 0, "2 − 8 won’t go, so borrow: 12 − 8 = 4; the tens drop to 6; 6 − 4 = 2  →  24. Always top minus bottom."], ["431 − 176 =", ["255", "345", "265", "355"], 0, "Borrow where needed: 11 − 6 = 5; then 2 − 7 borrow → 12 − 7 = 5; 3 − 1 = 2  →  255. Never “subtract up.”"], ["402 − 167 =", ["235", "365", "245", "335"], 0, "Borrow THROUGH the 0: hundreds 4 → 3, tens 0 → 10, then 10 → 9 and ones 2 → 12. Now 12 − 7 = 5; 9 − 6 = 3; 3 − 1 = 2  →  235."], ["500 − 146 =", ["354", "446", "364", "344"], 0, "Borrow through both zeros: ones 10 − 6 = 4; tens 9 − 4 = 5; hundreds 4 − 1 = 3  →  354."], ["604 − 238 =", ["366", "434", "376", "356"], 0, "0 tens can’t give — borrow through: ones 14 − 8 = 6; tens 9 − 3 = 6; hundreds 5 − 2 = 3  →  366."], ["A class library had 503 books. 167 were checked out. How many remain?", ["336", "464", "346", "326"], 0, "503 − 167: borrow through the 0 → ones 13 − 7 = 6; tens 9 − 6 = 3; hundreds 4 − 1 = 3  →  336 books."]];
 const box=document.getElementById('quiz');
 let locked=false;
@@ -87,9 +90,12 @@ function check(){
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';
+  if(window.FLSubmit)FLSubmit.show(score,Q.length);
 }
 function again(){locked=false;for(const k in sel)delete sel[k];document.getElementById('score').className='score';
   document.getElementById('checkbtn').style.display='block';document.getElementById('againbtn').style.display='none';
+  if(window.FLSubmit)FLSubmit.hide();
   render();window.scrollTo({top:0,behavior:'smooth'});}
 render();
+if(window.FLSubmit)FLSubmit.init();
 </script></body></html>
