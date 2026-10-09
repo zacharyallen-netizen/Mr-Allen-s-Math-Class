@@ -9,6 +9,6 @@
    The CLASS_CODE must match the one at the top of the Apps Script.
    ─────────────────────────────────────────────────────────────── */
 window.FLUENCY_CONFIG = {
-  ENDPOINT:   '',
+  ENDPOINT:   'https://script.google.com/macros/s/AKfycbzggKEOOvFji1bPdDEkLrD4ZZSXqXCEQh4bmyrvMW9vROyK3znFwarJKffiNp3avoz5pw/exec',
   CLASS_CODE: 'allen-8th'
 };
