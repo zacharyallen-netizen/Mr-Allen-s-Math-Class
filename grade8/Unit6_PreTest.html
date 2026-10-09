@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 6 Pre-Test — Functions &amp; Slope</title>
+<style>
+  :root{
+    --navy:#22314f;
+    --navy-deep:#1b2740;
+    --gold:#c6972e;
+    --gold-soft:#e9d9ad;
+    --ink:#1b2333;
+    --paper:#fbfaf6;
+    --line:#d9d3c4;
+    --ok:#1f7a4d;
+    --ok-bg:#e7f3ec;
+    --no:#b4402f;
+    --no-bg:#fbe9e5;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:"SFMono-Regular",Consolas,"DejaVu Sans Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:#efece3;color:var(--ink);
+    font-family:var(--serif);font-size:17px;line-height:1.5;
+  }
+  .sheet{
+    max-width:860px;margin:24px auto;background:var(--paper);
+    padding:38px 46px 60px;border:1px solid var(--line);
+    box-shadow:0 2px 18px rgba(20,25,40,.10);
+  }
+
+  /* ---- masthead ---- */
+  .masthead h1{
+    font-size:38px;line-height:1.02;letter-spacing:.5px;margin:0;
+    font-weight:700;color:var(--ink);
+  }
+  .masthead .sub{font-size:20px;margin:.15em 0 0;font-weight:400}
+  .masthead .std{font-style:italic;font-size:13px;color:#6b6754;margin:.35em 0 0}
+  .rule-gold{height:2px;background:var(--gold);border:0;margin:14px 0 18px}
+
+  .idline{display:flex;flex-wrap:wrap;gap:8px 30px;margin:0 0 6px;font-size:15px}
+  .idline .fld{display:flex;align-items:flex-end;gap:8px;flex:1 1 180px}
+  .idline .fld b{font-weight:700}
+  .idline .fld .blank{flex:1;border-bottom:1px solid #8a8676;min-width:70px;height:1.1em}
+
+  /* ---- score band ---- */
+  .band{
+    background:var(--navy);color:#fff;margin:26px 0 0;
+    padding:9px 16px;display:flex;align-items:baseline;gap:12px;
+  }
+  .band .lvl{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--gold-soft)}
+  .band .num{color:var(--gold);font-size:22px;font-weight:700;font-style:italic}
+  .band .name{font-size:18px;font-weight:700}
+  .stripe{border-left:1px solid var(--line);border-right:1px solid var(--line);
+          border-bottom:1px solid var(--line);padding:16px 18px 20px}
+  .objline{font-size:13px;color:#4a4636;margin:0 0 2px}
+  .objline .code{font-weight:700;color:var(--navy)}
+  .can{font-style:italic;font-size:13.5px;color:#514c3b;margin:.15em 0 14px}
+  .prompt{font-weight:700;margin:0 0 12px}
+
+  /* ---- vocab ---- */
+  table.vocab{width:100%;border-collapse:collapse;margin:2px 0 8px}
+  table.vocab td{border:1px solid var(--line);padding:9px 11px;vertical-align:middle}
+  table.vocab td.term{width:42%;background:#f4f1e8}
+  .term .word{font-family:var(--mono);font-size:14px;letter-spacing:.5px}
+  .term select{
+    font-family:var(--mono);font-size:14px;margin-right:10px;padding:3px 4px;
+    border:1px solid #b7ae97;background:#fff;color:var(--ink);border-radius:3px;
+  }
+  table.vocab td.def b{color:var(--navy)}
+  .fb{font-family:var(--mono);font-size:12px;margin-left:8px}
+  .fb.ok{color:var(--ok)} .fb.no{color:var(--no)}
+
+  /* ---- monomial reference ---- */
+  .refbox{border:1.5px solid var(--gold);background:#fdfbf4;border-radius:6px;
+          padding:14px 16px 16px;margin:16px 0 6px}
+  .refbox .rl{font-size:12px;letter-spacing:1px;color:#8a7328;font-weight:700;
+              text-transform:none;margin:0 0 6px}
+  .mono5x{font-size:44px;font-style:italic;font-weight:700;text-align:center;
+          margin:8px 0 4px;font-family:Georgia,serif}
+  .mono5x sup{font-size:.5em}
+  .parts{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+         font-size:12px;color:#4a4636;text-align:center}
+  .parts .p b{color:var(--navy);font-size:13px;display:block}
+  .refbox .tag{font-size:13.5px;font-style:italic;text-align:center;margin:10px 0 0;color:#3f3b2d}
+  .refbox .tag b{font-style:normal}
+
+  /* ---- questions ---- */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 34px;margin-top:6px}
+  @media(max-width:620px){.qgrid{grid-template-columns:1fr}}
+  .q{padding:12px 2px 14px;border-bottom:1px dotted #ccc5b2}
+  .q .n{font-weight:700;color:var(--gold);font-size:16px}
+  .q .op{font-size:13px;color:#6b6754;font-style:italic;margin-left:2px}
+  .q .expr{font-size:20px;margin:10px 0 12px;min-height:1.4em}
+  .ans{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .ans label{font-size:14px;color:#514c3b}
+  .ans input{
+    font-family:var(--mono);font-size:15px;padding:5px 8px;width:150px;
+    border:1px solid #b7ae97;border-radius:4px;background:#fff;color:var(--ink);
+  }
+  .ans input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+  .q.correct input{border-color:var(--ok);background:var(--ok-bg)}
+  .q.wrong input{border-color:var(--no);background:var(--no-bg)}
+  .qfb{font-family:var(--mono);font-size:13px;min-height:1.1em}
+  .qfb.ok{color:var(--ok)} .qfb.no{color:var(--no)}
+  .qfb .key{font-family:var(--serif);font-size:16px}
+
+  /* fraction component */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;
+        vertical-align:middle;margin:0 .12em;line-height:1.05}
+  .frac .num{border-bottom:1.6px solid currentColor;padding:0 .4em 1px}
+  .frac .den{padding:1px .4em 0}
+  sup{font-size:.62em;vertical-align:super;line-height:0}
+
+  /* ---- controls ---- */
+  .controls{position:sticky;bottom:0;margin:30px -46px -60px;
+    background:linear-gradient(#fbfaf6cc,#fbfaf6);backdrop-filter:blur(3px);
+    padding:16px 46px;border-top:1px solid var(--line);
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  button{
+    font-family:var(--serif);font-size:15px;cursor:pointer;border-radius:5px;
+    padding:9px 18px;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--navy);color:#fff}
+  .btn-primary:hover{background:var(--navy-deep)}
+  .btn-ghost{background:#fff;color:var(--navy);border-color:#b7ae97}
+  .btn-ghost:hover{background:#f4f1e8}
+  .scorebox{margin-left:auto;font-size:15px;font-weight:700;color:var(--navy)}
+  .scorebox .lvls{font-weight:400;font-size:13px;color:#6b6754;display:block;margin-top:2px}
+
+  @media print{
+    body{background:#fff}
+    .sheet{box-shadow:none;border:0;margin:0;max-width:none;padding:0 12px}
+    .controls{display:none}
+    .ans input{border:0;border-bottom:1px solid #333;border-radius:0}
+  }
+</style>
+<style>@media print{.sitenav{display:none!important}}</style>
+</head>
+<body>
+<nav class="sitenav" style="background:#1E2D4F;color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:4px 18px;padding:10px 18px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+  <span style="font-weight:700;margin-right:auto">🧭 Mr. Allen · 8th Grade Math</span>
+  <a href="index.html" style="color:#fff;text-decoration:none;font-size:.92rem">🧮 8th Grade Home</a>
+  <a href="unit6.html" style="color:#fff;text-decoration:none;font-size:.92rem">← Back to Unit 6</a>
+</nav>
+<div class="sheet">
+  <div class="masthead">
+    <h1>Unit 6 Pre-Test</h1>
+    <p class="sub">Functions & Linear Relationships</p>
+    <p class="std">Standards assessed: NC.8.F.1–F.5, NC.8.EE.5–EE.6</p>
+  </div>
+  <hr class="rule-gold">
+  <div class="idline">
+    <span class="fld"><b>Name:</b><span class="blank"></span></span>
+    <span class="fld"><b>Date:</b><span class="blank"></span></span>
+    <span class="fld"><b>Period:</b><span class="blank"></span></span>
+  </div>
+<div class="band"><span class="lvl">SCORE</span><span class="num">3.0</span><span class="name">Basic Understanding</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.8.F.1</span> Identify functions and read slope and y-intercept from an equation.</p>
+  <p class="can">• I can decide whether a relation is a function and read slope and y-intercept from y = mx + b.</p>
+  <p class="prompt">Match each vocabulary term to its definition, then answer each question.</p>
+    <table class="vocab" id="vocab">
+      <tr><td class="term"><select data-term="function"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">function</span><span class="fb"></span></td>
+          <td class="def"><b>A.</b> Where a graph crosses the y-axis (the value of y when x = 0).</td></tr>
+      <tr><td class="term"><select data-term="slope"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">slope</span><span class="fb"></span></td>
+          <td class="def"><b>B.</b> A relation in which each input has exactly one output.</td></tr>
+      <tr><td class="term"><select data-term="y-intercept"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">y-intercept</span><span class="fb"></span></td>
+          <td class="def"><b>C.</b> A point written (x, y) that gives a location on the graph.</td></tr>
+      <tr><td class="term"><select data-term="ordered pair"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">ordered pair</span><span class="fb"></span></td>
+          <td class="def"><b>D.</b> The steepness of a line, found as rise over run.</td></tr>
+      <tr><td class="term"><select data-term="linear function"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">linear function</span><span class="fb"></span></td>
+          <td class="def"><b>E.</b> A function whose graph is a straight line.</td></tr>
+      <tr><td class="term"><select data-term="input"><option value="">–</option><option>A</option><option>B</option><option>C</option><option>D</option><option>E</option><option>F</option></select><span class="word">input</span><span class="fb"></span></td>
+          <td class="def"><b>F.</b> The x-value that is put into a function.</td></tr>
+    </table>
+    <div class="refbox"><p class="rl">Slope-intercept form — reference</p><p style="text-align:center;font-size:20px;margin:6px 0"><b>y = mx + b</b></p><p class="tag"><b>m</b> = slope (rise over run)  ·  <b>b</b> = y-intercept (where x = 0)</p></div>
+  <div class="qgrid" data-level="basic"></div>
+</div>
+
+<div class="band"><span class="lvl">SCORE</span><span class="num">4.0</span><span class="name">Target Content</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.8.F.4</span> Find slope and y-intercept from two points and from a table.</p>
+  <p class="can">• I can find the slope and y-intercept from two points or a table of values.</p>
+  <p class="prompt">Find each slope or y-intercept.</p>
+  <div class="qgrid" data-level="target"></div>
+</div>
+
+<div class="band"><span class="lvl">SCORE</span><span class="num">5.0</span><span class="name">Advanced Content</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.8.F.2</span> Write equations, compare functions, and interpret slope.</p>
+  <p class="can">• I can write a linear equation, compare two functions, and interpret slope as a rate of change.</p>
+  <p class="prompt">Answer each question.</p>
+  <div class="qgrid" data-level="advanced"></div>
+</div>
+
+  <div class="controls">
+    <button class="btn-primary" id="check">Check answers</button>
+    <button class="btn-ghost" id="reveal">Show answers</button>
+    <button class="btn-ghost" id="reset">Reset</button>
+    <span class="scorebox" id="scorebox">Not checked yet
+      <span class="lvls" id="lvls"></span></span>
+  </div>
+</div>
+<script>
+const VOCAB={"function": "B", "slope": "D", "y-intercept": "A", "ordered pair": "C", "linear function": "E", "input": "F"};
+const QS=[{"id": 1, "lvl": "basic", "op": "Function?", "expr": "Is this a function?  (1, 2), (2, 4), (3, 6)", "disp": "yes", "chk": ["text", ["yes", "y", "yes it is"]], "lab": "Answer:"}, {"id": 2, "lvl": "basic", "op": "Function?", "expr": "Is this a function?  (1, 2), (1, 3), (2, 5)", "disp": "no", "chk": ["text", ["no", "n", "no it is not"]], "lab": "Answer:"}, {"id": 3, "lvl": "basic", "op": "Slope", "expr": "In y = 3x + 5, what is the slope?", "disp": "3", "chk": ["val", 3], "lab": "m ="}, {"id": 4, "lvl": "basic", "op": "y-intercept", "expr": "In y = 3x + 5, what is the y-intercept?", "disp": "5", "chk": ["val", 5], "lab": "b ="}, {"id": 5, "lvl": "basic", "op": "Slope", "expr": "In y = −2x + 7, what is the slope?", "disp": "−2", "chk": ["val", -2], "lab": "m ="}, {"id": 6, "lvl": "basic", "op": "y-intercept", "expr": "In y = ½x − 4, what is the y-intercept?", "disp": "−4", "chk": ["val", -4], "lab": "b ="}, {"id": 7, "lvl": "target", "op": "Slope", "expr": "Find the slope through (0, 1) and (2, 5).", "disp": "2", "chk": ["val", 2], "lab": "m ="}, {"id": 8, "lvl": "target", "op": "Slope", "expr": "Find the slope through (1, 3) and (4, 12).", "disp": "3", "chk": ["val", 3], "lab": "m ="}, {"id": 9, "lvl": "target", "op": "Slope", "expr": "Find the slope through (2, 7) and (5, 1).", "disp": "−2", "chk": ["val", -2], "lab": "m ="}, {"id": 10, "lvl": "target", "op": "y-intercept", "expr": "A line has slope 4 and passes through (0, −3). Find the y-intercept.", "disp": "−3", "chk": ["val", -3], "lab": "b ="}, {"id": 11, "lvl": "target", "op": "From a table", "expr": "x: 0, 1, 2 and y: 5, 8, 11. Find the slope.", "disp": "3", "chk": ["val", 3], "lab": "m ="}, {"id": 12, "lvl": "target", "op": "From a table", "expr": "x: 0, 1, 2 and y: 5, 8, 11. Find the y-intercept.", "disp": "5", "chk": ["val", 5], "lab": "b ="}, {"id": 13, "lvl": "advanced", "op": "Write equation", "expr": "A line has slope 3 and passes through (0, 2). Write y = mx + b.", "disp": "y = 3x + 2", "chk": ["linear", 3, 2], "lab": "y ="}, {"id": 14, "lvl": "advanced", "op": "Write equation", "expr": "A line has slope −4 and passes through (0, −1). Write y = mx + b.", "disp": "y = −4x − 1", "chk": ["linear", -4, -1], "lab": "y ="}, {"id": 15, "lvl": "advanced", "op": "Compare", "expr": "Function A: y = 2x + 3.  Function B: slope 5. Which has the greater slope? (A or B)", "disp": "B", "chk": ["text", ["b", "function b", "b)"]], "lab": "Answer:"}, {"id": 16, "lvl": "advanced", "op": "Rate", "expr": "In y = 0.5x + 10, how much does y increase when x goes up by 1?", "disp": "0.5", "chk": ["val", 0.5], "lab": "="}, {"id": 17, "lvl": "advanced", "op": "Slope", "expr": "Find the slope through (1, 5) and (3, 11).", "disp": "3", "chk": ["val", 3], "lab": "m ="}, {"id": 18, "lvl": "advanced", "op": "y-intercept", "expr": "A line has slope 2 and passes through (3, 11). Find the y-intercept.", "disp": "5", "chk": ["val", 5], "lab": "b ="}];
+
+/* ===== parsers ===== */
+const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
+function deSup(s){return s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]/g,c=>SUP[c]);}
+function cleanNum(raw){
+  let s=String(raw==null?'':raw).toLowerCase().trim();
+  s=deSup(s);
+  s=s.replace(/−/g,'-');
+  s=s.replace(/,/g,'').replace(/\$/g,'').replace(/≈|=/g,'');
+  s=s.replace(/\b(square|cubic)\b/g,'');
+  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|times|hours?|hr|miles?|mi|g)\b/g,'');
+  s=s.replace(/°/g,'');
+  s=s.replace(/\s+/g,'');
+  return s;
+}
+function parseNumber(raw){
+  let s=cleanNum(raw);
+  if(s==='')return NaN;
+  s=s.replace(/[×·∙•⋅]/g,'x').replace(/\*\*/g,'^').replace(/\*/g,'x');
+  let m=s.match(/^(-?\d*\.?\d+)x?10\^?(-?\d+)$/); if(m)return parseFloat(m[1])*Math.pow(10,parseInt(m[2],10));
+  m=s.match(/^(-?\d*\.?\d+)e(-?\d+)$/); if(m)return parseFloat(m[1])*Math.pow(10,parseInt(m[2],10));
+  m=s.match(/^(-?\d+)\/(-?\d+)$/); if(m)return parseInt(m[1],10)/parseInt(m[2],10);
+  m=s.match(/^(?:√|sqrt|root)\(?(-?\d*\.?\d+)\)?$/); if(m)return Math.sqrt(parseFloat(m[1]));
+  m=s.match(/^-?\d*\.?\d+$/); if(m)return parseFloat(s);
+  return NaN;
+}
+function parseSciParts(raw){
+  let s=cleanNum(raw).replace(/[×·∙•⋅]/g,'x').replace(/\*\*/g,'^').replace(/\*/g,'x');
+  let m=s.match(/^(-?\d*\.?\d+)x?10\^?(-?\d+)$/)||s.match(/^(-?\d*\.?\d+)e(-?\d+)$/);
+  if(!m)return null;
+  return {coeff:parseFloat(m[1]),exp:parseInt(m[2],10)};
+}
+function normText(raw){return String(raw==null?'':raw).toLowerCase().replace(/\s+/g,' ').trim().replace(/[.;,!]+$/,'');}
+function near(a,b){ if(!isFinite(a))return false; if(b===0)return Math.abs(a)<1e-9; return Math.abs(a-b)<=Math.abs(b)*1e-4+1e-9; }
+function runCheck(chk,raw){
+  if(!chk)return false;
+  const t=chk[0];
+  if(t==='val'){const v=parseNumber(raw);return isFinite(v)&&near(v,chk[1]);}
+  if(t==='num'){const v=parseNumber(raw);const tol=(chk[2]==null?0.01:chk[2]);return isFinite(v)&&Math.abs(v-chk[1])<=tol;}
+  if(t==='sci'){const p=parseSciParts(raw);if(!p)return false;const okform=Math.abs(p.coeff)>=1&&Math.abs(p.coeff)<10;return okform&&near(p.coeff*Math.pow(10,p.exp),chk[1]);}
+  if(t==='frac'){const v=parseNumber(raw);return isFinite(v)&&near(v,chk[1]/chk[2]);}
+  if(t==='coord'){let s=String(raw==null?'':raw).replace(/−/g,'-').replace(/\s/g,'');const m=s.match(/^\(?(-?\d*\.?\d+),(-?\d*\.?\d+)\)?$/);return !!m&&near(parseFloat(m[1]),chk[1])&&near(parseFloat(m[2]),chk[2]);}
+  if(t==='text'){const n=normText(raw);return chk[1].some(a=>normText(a)===n);}
+  if(t==='contains'){const n=normText(raw);return chk[1].some(a=>n.includes(normText(a)));}
+  if(t==='pi'){const s=cleanNum(raw);let m=s.match(/^(-?\d*\.?\d+)(?:pi|π)$/);if(m)return near(parseFloat(m[1]),chk[1]);if(/^(?:pi|π)$/.test(s))return near(1,chk[1]);const v=parseNumber(raw);return isFinite(v)&&Math.abs(v-chk[1]*Math.PI)<=Math.max(0.15,Math.abs(chk[1]*Math.PI)*0.01);}
+  if(t==='linear'){let s=String(raw==null?'':raw).toLowerCase().replace(/−/g,'-').replace(/\s/g,'').replace(/·|\*/g,'').replace(/^y=/,'');const xm=s.match(/([+-]?\d*\.?\d*)x/);if(!xm)return false;let mc=xm[1];if(mc===''||mc==='+')mc='1';if(mc==='-')mc='-1';mc=parseFloat(mc);let rest=s.replace(/([+-]?\d*\.?\d*)x/,'');let bc=(rest===''?0:parseFloat(rest));if(isNaN(bc))bc=0;return near(mc,chk[1])&&near(bc,chk[2]);}
+  return false;
+}
+/* ===== render ===== */
+QS.forEach(q=>{
+  const grid=document.querySelector('.qgrid[data-level="'+q.lvl+'"]'); if(!grid)return;
+  const div=document.createElement('div'); div.className='q'; div.id='q'+q.id;
+  div.innerHTML='<div><span class="n">'+q.id+'.</span>'+(q.op?' <span class="op">'+q.op+'</span>':'')+'</div>'
+    +'<div class="expr">'+q.expr+'</div>'
+    +'<div class="ans"><label>'+(q.lab||'Answer:')+'</label><input id="i'+q.id+'" autocomplete="off" spellcheck="false"'+(q.ph?' placeholder="'+q.ph+'"':'')+'></div>'
+    +'<div class="qfb" id="fb'+q.id+'"></div>';
+  grid.appendChild(div);
+});
+/* ===== check / reveal / reset ===== */
+function check(){
+  let levels={basic:[0,0],target:[0,0],advanced:[0,0]};
+  if(typeof VOCAB==='object'&&VOCAB){
+    document.querySelectorAll('#vocab select').forEach(sel=>{
+      const term=sel.dataset.term, fb=sel.parentElement.querySelector('.fb');
+      const good=sel.value===VOCAB[term];
+      fb.textContent=sel.value?(good?'✓':'✗'):''; fb.className='fb '+(good?'ok':'no');
+      levels.basic[1]++; if(good)levels.basic[0]++;
+    });
+  }
+  QS.forEach(q=>{
+    const inp=document.getElementById('i'+q.id), fb=document.getElementById('fb'+q.id), div=document.getElementById('q'+q.id);
+    levels[q.lvl][1]++; div.classList.remove('correct','wrong');
+    if(inp.value.trim()===''){fb.textContent='';fb.className='qfb';return;}
+    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';}
+    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';}
+  });
+  const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
+  const den=levels.basic[1]+levels.target[1]+levels.advanced[1];
+  document.getElementById('scorebox').firstChild.textContent=tot+' / '+den+' correct ';
+  document.getElementById('lvls').textContent='3.0 Basic '+levels.basic[0]+'/'+levels.basic[1]+'  ·  4.0 Target '+levels.target[0]+'/'+levels.target[1]+'  ·  5.0 Advanced '+levels.advanced[0]+'/'+levels.advanced[1];
+}
+function reveal(){
+  if(typeof VOCAB==='object'&&VOCAB){
+    document.querySelectorAll('#vocab select').forEach(sel=>{sel.value=VOCAB[sel.dataset.term];const fb=sel.parentElement.querySelector('.fb');fb.textContent='✓';fb.className='fb ok';});
+  }
+  QS.forEach(q=>{const fb=document.getElementById('fb'+q.id),div=document.getElementById('q'+q.id);div.classList.remove('wrong');div.classList.add('correct');fb.innerHTML='answer: <span class="key">'+q.disp+'</span>';fb.className='qfb ok';});
+  document.getElementById('scorebox').firstChild.textContent='Answers shown '; document.getElementById('lvls').textContent='';
+}
+function reset(){
+  if(typeof VOCAB==='object'&&VOCAB){document.querySelectorAll('#vocab select').forEach(s=>{s.value='';const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});}
+  QS.forEach(q=>{document.getElementById('i'+q.id).value='';const fb=document.getElementById('fb'+q.id);fb.textContent='';fb.className='qfb';document.getElementById('q'+q.id).classList.remove('correct','wrong');});
+  document.getElementById('scorebox').firstChild.textContent='Not checked yet '; document.getElementById('lvls').textContent='';
+}
+document.getElementById('check').addEventListener('click',check);
+document.getElementById('reveal').addEventListener('click',reveal);
+document.getElementById('reset').addEventListener('click',reset);
+document.querySelectorAll('.ans input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check();}));
+
+</script>
+</body>
+</html>
