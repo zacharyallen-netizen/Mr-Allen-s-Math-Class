@@ -219,6 +219,9 @@ const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','�
 function deSup(s){return s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]/g,c=>SUP[c]);}
 function cleanNum(raw){
   let s=String(raw==null?'':raw).toLowerCase().trim();
+  s=s.replace(/^[a-z]\s*=\s*/,'');                       // "x = 5" -> "5" (the box is labelled x =)
+  s=s.replace(/(cm|mm|km|m|ft|in|yd)\s*(\^\s*[23]|[\u00b2\u00b3]|[23](?![0-9]))/g,'$1'); // cm³ / ft^2 -> unit only, before superscripts are expanded
+  s=s.replace(/[%\u00b0]/g,'');                          // 60% -> 60, 55° -> 55
   s=deSup(s);
   s=s.replace(/−/g,'-');
   s=s.replace(/,/g,'').replace(/\$/g,'').replace(/≈|=/g,'');

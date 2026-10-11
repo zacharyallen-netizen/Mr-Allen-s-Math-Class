@@ -974,6 +974,9 @@ function parseEquation(raw) {
   s = s.replace(/[−–—]/g, '-');
   if (!s) return { error: "Equation can't be empty." };
 
+  // Fraction slopes written the textbook way: "1/2x", "(1/2)x", "-3/4x" -> decimal slope
+  s = s.replace(/\(?([+-]?\d+)\/(\d+)\)?x/g, (_, a, b) => `${parseInt(a) / parseInt(b)}x`);
+
   // Handle fractions like x/2 -> convert "Nx/M" or "x/M" to decimal
   // Only support /integer format
   s = s.replace(/([+-]?\d*)x\/(\d+)/g, (_, num, den) => {

@@ -638,7 +638,7 @@
         <select id="questionCount">
           <option value="10">10 quick hits</option>
           <option value="20">20 review round</option>
-          <option value="45">All 45</option>
+          <option value="45">All available</option>
         </select>
       </div>
       <div class="field">
@@ -723,7 +723,11 @@
   </div>
 
   <script>
-    const PDF = "https://raw.githubusercontent.com/zacharyallen-netizen/IC-Imagine-8th-Grade-Math/main/Released%20Questions%202.pdf";
+    // The Form 3 released PDF is not in this site. The link used to point at a retired repo
+    // (and at Form R, the wrong form). Until "Released Questions 3.pdf" is added to grade8/,
+    // items whose diagram lives only in that PDF are left out of play so no student gets an
+    // unanswerable question. To restore them: add the file and set PDF = "Released Questions 3.pdf".
+    const PDF = "";
 
     // ============================================================
     // QUESTION BANK — each item has prompt, answer, hint, and a
@@ -1997,7 +2001,7 @@
 
     function startGame() {
       const filter = els.topic.value;
-      let pool = questions.filter(q => filter === "all" || q.standard.startsWith(filter));
+      let pool = questions.filter(q => (PDF || !q.source) && (filter === "all" || q.standard.startsWith(filter)));
       const count = Math.min(Number(els.count.value), pool.length);
       state.active = shuffle(pool).slice(0, count);
       state.index = 0; state.score = 0; state.streak = 0; state.xp = 0;
@@ -2206,7 +2210,7 @@
     $("submitFree").addEventListener("click", answerFree);
     $("freeInput").addEventListener("keydown", e => { if (e.key === "Enter") answerFree(); });
     $("sourceBtn").addEventListener("click", () => openSource());
-    $("sourceAll").addEventListener("click", () => openSource(1));
+    if (PDF) { $("sourceAll").addEventListener("click", () => openSource(1)); } else { $("sourceAll").style.display = "none"; }
     $("closeModal").addEventListener("click", () => els.modal.classList.remove("show"));
     $("modal").addEventListener("click", e => { if (e.target === els.modal) els.modal.classList.remove("show"); });
     $("soundToggle").addEventListener("click", () => {

@@ -195,7 +195,8 @@ function drawCP() {
   var gs = (s-2*pad)/(2*range);
   var cx = pad + range*gs, cy = pad + range*gs;
   
-  function gx(v){return cx+v*gs} function gy(v){return cy-v*gs}
+  function gx(v){return cx+v*gs} function sq(n){return n<0?'(\u2212'+(-n)+')²':n+'²';}
+function gy(v){return cy-v*gs}
   
   // Grid
   ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=1;
@@ -238,8 +239,8 @@ function drawCP() {
   var dx=x2-x1, dy=y2-y1;
   var d = Math.sqrt(dx*dx+dy*dy);
   document.getElementById('cp-out').innerHTML = 
-    'Δx = '+dx+', Δy = '+dy+'<br>'+
-    'd = √('+dx+'² + '+dy+'²)<br>'+
+    'Δx = '+String(dx).replace('-','\u2212')+', Δy = '+String(dy).replace('-','\u2212')+'<br>'+
+    'd = √('+sq(dx)+' + '+sq(dy)+')<br>'+
     'd = √('+(dx*dx)+' + '+(dy*dy)+') = √'+(dx*dx+dy*dy)+'<br>'+
     '<span class="tool-result">d ≈ '+d.toFixed(2)+'</span>';
 }

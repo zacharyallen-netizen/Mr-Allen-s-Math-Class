@@ -179,7 +179,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
   <div class="q-text">Two-way table: 30 out of 80 total. Joint relative frequency?</div>
   <div class="opts">    <button class="opt-btn" onclick="eogAnswer(this,'q4','37.5%','U7')">30%</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q4','37.5%','U7')">37.5%</button>
-    <button class="opt-btn" onclick="eogAnswer(this,'q4','37.5%','U7')">0.375</button>
+    <button class="opt-btn" onclick="eogAnswer(this,'q4','37.5%','U7')">0.30</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q4','37.5%','U7')">62.5%</button>
 </div>
   <div class="feedback" id="q4-fb">30÷80 = 0.375 = 37.5%</div>
@@ -384,14 +384,16 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
     <span class="q-tag">U4 · NC.8.G.5</span>
   </div>
 
-<div class="q-text">Parallel lines: corresponding angle = 72°. Find alternate interior.</div>
+<div class="q-text">The two lines are parallel. The blue angle is 72°. Find the angle marked ?, its alternate interior angle.</div>
 <div class="diagram">
-<svg viewBox="0 0 260 180" width="260">
+<svg viewBox="0 0 260 180" width="260" role="img" aria-label="Two parallel lines cut by a transversal. A 72 degree angle below the top line on the right; the unknown angle above the bottom line on the left.">
 <line x1="30" y1="50" x2="230" y2="50" stroke="#1E2D4F" stroke-width="4"/>
 <line x1="30" y1="130" x2="230" y2="130" stroke="#1E2D4F" stroke-width="4"/>
-<line x1="80" y1="20" x2="170" y2="160" stroke="#FFC107" stroke-width="5"/>
-<text x="120" y="42">72°</text>
-<text x="110" y="115">?</text>
+<line x1="100.3" y1="20" x2="145.8" y2="160" stroke="#8a93a6" stroke-width="4"/>
+<path d="M110,50 L132,50 A22,22 0 0 1 116.8,70.9 Z" fill="#cfe0f7" stroke="#0056B3" stroke-width="2"/>
+<text x="141" y="77" font-size="15" font-weight="bold" fill="#0056B3">72°</text>
+<path d="M136,130 L114,130 A22,22 0 0 1 129.2,109.1 Z" fill="#FFC107" fill-opacity="0.55" stroke="#b08800" stroke-width="2"/>
+<text x="96" y="114" font-size="17" font-weight="bold" fill="#b08800">?</text>
 </svg>
 </div>
 
@@ -400,7 +402,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
     <button class="opt-btn" onclick="eogAnswer(this,'q18','72°','U4')">18°</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q18','72°','U4')">108°</button>
 </div>
-  <div class="feedback" id="q18-fb">Alt interior = corresponding = 72° (both equal)</div>
+  <div class="feedback" id="q18-fb">Alternate interior angles are equal when the lines are parallel, so ? = 72°.</div>
 </div>
 <div class="q-card" id="q19" data-unit="u5" style="display:none">
   <div class="q-header">
@@ -624,7 +626,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
 </svg>
 </div>
 
-  <div class="opts">    <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">⁸⁄₄=2</button>
+  <div class="opts">    <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">8</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">−2</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">2</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">¹⁄₂</button>
@@ -648,14 +650,20 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
 </div>
 <script>
 var current = 0;
-var total = 28;
+// walk the cards in page order: the ids skip q13, q16, q23, which froze the quiz at Question 12
+var cards = Array.prototype.slice.call(document.querySelectorAll('.q-card'));
+var total = cards.length;
+cards.forEach(function(c, i){
+  var n = c.querySelector('.q-num'); if(n) n.textContent = 'Question ' + (i+1) + ' of ' + total;
+});
+document.getElementById('prog-q').textContent = 'Question 1 of ' + total;
 var score = 0;
 var unitScores = {};
 var unitTotals = {};
 var answered = false;
 
 // Show first question
-document.getElementById('q1').style.display = 'block';
+cards[0].style.display = 'block';
 
 function eogAnswer(btn, qid, correct, unit) {
   if(answered) return;
@@ -693,9 +701,9 @@ function eogAnswer(btn, qid, correct, unit) {
 }
 
 function showNext() {
-  document.getElementById('q' + (current+1)).style.display = 'none';
+  cards[current].style.display = 'none';
   current++;
-  document.getElementById('q' + (current+1)).style.display = 'block';
+  cards[current].style.display = 'block';
   document.getElementById('prog-q').textContent = 'Question ' + (current+1) + ' of ' + total;
   document.getElementById('prog-fill').style.width = ((current+1)/total*100) + '%';
   document.getElementById('next-btn').style.display = 'none';
@@ -704,7 +712,7 @@ function showNext() {
 }
 
 function showResults() {
-  document.getElementById('q' + (current+1)).style.display = 'none';
+  cards[current].style.display = 'none';
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('prog-fill').style.width = '100%';
   
