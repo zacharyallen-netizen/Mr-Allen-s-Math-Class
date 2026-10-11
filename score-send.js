@@ -65,14 +65,14 @@
     },
 
     reset: function () {
-      S.items = {}; S.order = []; S.session = newSession(); S.wasRevealed = false; S.refresh();
+      S.items = {}; S.order = []; S.session = newSession(); S.wasRevealed = false; S.sentSig = ''; S.sentOnce = false; S.refresh();
     },
     revealed: function () { S.wasRevealed = true; },
 
     count: function () {
       var n = S.order.length, first = 0, fin = 0;
       S.order.forEach(function (k) { first += S.items[k].first; fin += S.items[k].final; });
-      return { n: n, first: first, fin: fin };
+      return { n: n, first: first, fin: fin, sig: S.session + ':' + n + ':' + first + ':' + fin };
     },
 
     mount: function () {
@@ -116,12 +116,20 @@
       if (S.sending) return;
       if (!c.n) {
         msg('Answer some questions first. Then type your first and last name and tap Send.', 'muted');
-        btn.disabled = true; btn.style.opacity = '.5';
+        btn.disabled = true; btn.style.opacity = '.5'; btn.textContent = 'Send my work';
         return;
       }
       btn.disabled = false; btn.style.opacity = '1';
-      if (S.sentCount === c.n && S.sentFirst === c.first) { btn.textContent = 'Sent ✓'; return; }
-      btn.textContent = S.sentCount ? 'Send again' : 'Send my work';
+      if (S.sentSig === c.sig) {                     // nothing new since the last send
+        btn.textContent = 'Sent ✓';
+        msg('Sent ✓ Mr. Allen has this work: ' + c.first + ' of ' + c.n + ' right on the first try.', 'ok');
+        return;
+      }
+      btn.textContent = S.sentOnce ? 'Send again' : 'Send my work';
+      if (S.sentOnce) {
+        msg('You have new work since you sent. Tap Send again so Mr. Allen sees it.', 'muted');
+        return;
+      }
       msg('You checked ' + c.n + (c.n === 1 ? ' question' : ' questions') + '. ' + c.first +
           ' right on the first try. Type your first and last name, then tap Send.', 'muted');
     },
@@ -153,7 +161,7 @@
       .then(function (res) {
         S.sending = false;
         if (res && res.ok) {
-          S.sentCount = c.n; S.sentFirst = c.first;
+          S.sentSig = c.sig; S.sentOnce = true;
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Sent ✓';
           msg('Got it, ' + res.name + '. Mr. Allen has your work: ' + c.first + ' of ' + c.n +
               ' right on the first try. If you keep working, you can send again.', 'ok');

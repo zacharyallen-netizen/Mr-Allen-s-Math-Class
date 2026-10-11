@@ -583,18 +583,22 @@ Labeler.prototype.place=function(px,py,label,o){
   o=o||{};const fs=o.fs||13,plain=label.replace(/<[^>]+>/g,''),w=plain.length*fs*0.62+4;
   const dirs=o.dirs||[[1,-1],[-1,-1],[1,1],[-1,1],[0,-1],[0,1],[1,0],[-1,0]];
   const dists=o.dists||[12,18,26,36,48];
-  let first=null;
+  // try every spot; take the first free one, otherwise the one that overlaps least
+  let best=null,bestCost=Infinity;
   for(const d of dists)for(const v of dirs){
     const ax=px+v[0]*d,ay=py+v[1]*d,an=v[0]>0.3?'start':v[0]<-0.3?'end':'middle';
     const y=v[1]>0.3?ay+fs*0.8:v[1]<-0.3?ay:ay+fs*0.35;
     const x0=an==='start'?ax:an==='end'?ax-w:ax-w/2,b={x0,y0:y-fs*0.82,x1:x0+w,y1:y+fs*0.22};
     const cand={x:ax,y,an,b};
-    if(!first)first=cand;
     if(b.x0<2||b.x1>this.W-2||b.y0<2||b.y1>this.H-2)continue;
-    if(this.boxes.some(q=>!(b.x1<q.x0||b.x0>q.x1||b.y1<q.y0||b.y0>q.y1)))continue;
-    this.boxes.push(b);return cand;
+    let cost=0;
+    for(const q of this.boxes){const ox=Math.min(b.x1,q.x1)-Math.max(b.x0,q.x0),oy=Math.min(b.y1,q.y1)-Math.max(b.y0,q.y0);if(ox>0&&oy>0)cost+=ox*oy;}
+    if(cost===0){this.boxes.push(b);return cand;}
+    cost+=d*0.5;                                             // among crowded spots, prefer nearer ones
+    if(cost<bestCost){bestCost=cost;best=cand;}
   }
-  this.boxes.push(first.b);return first;
+  if(!best){const ax=px,ay=py-dists[0];best={x:ax,y:ay,an:'middle',b:{x0:ax-w/2,y0:ay-fs*0.82,x1:ax+w/2,y1:ay+fs*0.22}};}
+  this.boxes.push(best.b);return best;
 };
 Labeler.prototype.text=function(px,py,label,o){
   o=o||{};const L=this.place(px,py,label,o);
@@ -621,6 +625,11 @@ function drawMap(o){
   s+=txt(padL+gw+8,padT+gh+4,'x',{fs:13,anchor:'start',fill:C.muted,italic:true,halo:false});
   s+=txt(padL+5,padT-7,'y',{fs:13,anchor:'start',fill:C.muted,italic:true,halo:false});
   const lab=new Labeler(Wd,Ht);
+  // keep labels off the axis numbers and off the x- and y-axis lines
+  lab.boxes.push({x0:padL-14,y0:padT+gh+4,x1:padL+gw+14,y1:Ht});
+  lab.boxes.push({x0:0,y0:padT-8,x1:padL-3,y1:padT+gh+8});
+  if(y0<=0&&0<=y1)lab.boxes.push({x0:padL,y0:Y(0)-3,x1:padL+gw,y1:Y(0)+3});
+  if(x0<=0&&0<=x1)lab.boxes.push({x0:X(0)-3,y0:padT,x1:X(0)+3,y1:padT+gh});
   const A=o.A,B=o.chosen,dp=o.dronePos||A;
   [A].concat(o.offers||[]).forEach(p=>lab.pt(X(p.x),Y(p.y),15));
   let top='';   // labels drawn last
@@ -894,7 +903,7 @@ function renderStage(){
         cLabel:all?('c '+(P.exact?'= '+P.c:'≈ '+t1(P.c))):'c = ?'};
       if(ph==='fly'){o.flightP=0;}
       if(ph==='result'||ph==='toofar'){o.flightP=ph==='result'?1:null;o.dronePos=ph==='result'?G.chosen:P.A;}
-      if(ph==='result'){o.labelAll=true;o.reveal=G.offers.filter(x=>x!==G.chosen).map(x=>({x:x.x,y:x.y,label:x.name+' '+(isSq(x.c2)?'= '+x.c:'≈ '+t1(x.c))}));}
+      if(ph==='result'){o.labelAll=true;o.reveal=G.offers.filter(x=>x!==G.chosen).map(x=>({x:x.x,y:x.y,label:'to '+x.name+': '+(isSq(x.c2)?x.c:'≈ '+t1(x.c))}));}
       svg=drawMap(o).svg;
       cap='Flight from A '+pt(P.A.x,P.A.y)+' to '+G.chosen.name+' '+pt(G.chosen.x,G.chosen.y)+'. The dashed blue legs follow the streets. The gold line is the straight flight.';
     }
