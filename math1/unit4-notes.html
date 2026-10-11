@@ -15,9 +15,59 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unit 4 Guided Notes — Sequences & Exponential Functions | NC Math 1</title>
+<title>Unit 4 Guided Notes — Sequences &amp; Exponential Functions | NC Math 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
+<style>
+/* ---- Unit 3/4 add-ons: visuals, steps, find-the-mistake, checks ---- */
+.viz{text-align:center;margin:12px 0}
+.viz svg{max-width:100%;height:auto;display:inline-block}
+.diagram .viz{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin:0 0 16px}
+.legend b{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.words{background:#f6f8fc;border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:8px;padding:9px 14px;margin:0 0 12px;font-size:.92rem}
+.words h5{margin:0 0 4px;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--navy)}
+.words dl{margin:0}.words dt{font-weight:700;color:var(--navy);display:inline}.words dd{display:inline;margin:0}
+.words dd::after{content:"";display:block;margin-bottom:4px}
+.stepbox{background:#fffdf5;border:1px solid #f1e3b0;border-radius:8px;padding:10px 14px 6px;margin:12px 0}
+.stepbox h5,.fix h5,.turn h5{margin:0 0 6px;font-family:var(--font-head);color:var(--navy);font-size:.98rem}
+.stepbox ol{margin:0;padding-left:22px}.stepbox li{margin:0 0 5px;font-size:.93rem}
+.fix{border:1px solid #f3c6c6;background:#fffafa;border-radius:8px;padding:12px 14px;margin:14px 0}
+.fix .who{font-size:.92rem;margin:0 0 8px}
+.fix-step{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #cdd5e0;border-radius:8px;padding:8px 12px;margin:6px 0;cursor:pointer;font-size:.93rem;font-family:inherit;color:var(--ink)}
+.fix-step:hover{border-color:var(--red)}
+.fix-step .sn{display:inline-block;min-width:54px;font-weight:700;color:var(--muted)}
+.fix-step.found{border-color:var(--red);background:#fdeaea;font-weight:600}
+.fix-step.found::after{content:"  \2190  the mistake";color:#a01b1b;font-weight:700}
+.fix-step.okstep{border-color:#cfe9c6;background:#f3fbef}
+.fix-step[disabled]{cursor:default}
+.turn{border:1px solid #cfe0f5;background:#f7faff;border-radius:8px;padding:12px 14px;margin:14px 0}
+.turn .q{margin:10px 0 4px;font-size:.95rem}
+.turn .q:first-of-type{margin-top:2px}
+.hide{display:none}
+.chk-fb{overflow-wrap:anywhere}
+.chk-btn.wrong{border-color:var(--red);background:#fdeaea}
+.ctrl{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:10px 0;max-width:420px;margin-left:auto;margin-right:auto}
+.ctrl label{display:flex;align-items:center;gap:10px;font-size:.88rem;margin:4px 0;font-family:var(--font-mono)}
+.ctrl label span{min-width:96px}
+.ctrl input[type=range]{flex:1;min-width:0;height:30px;accent-color:#1E2D4F}
+.ctrl .out{font-weight:700;color:var(--navy);margin-top:6px;font-size:.92rem;font-family:var(--font-body)}
+.ctrl .seg{display:flex;gap:6px;margin:4px 0 6px}
+.ctrl .seg button{flex:1;border:1.5px solid #cdd5e0;background:#fff;border-radius:7px;padding:6px;font-weight:600;cursor:pointer;font-family:inherit}
+.ctrl .seg button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.drag svg{touch-action:none;cursor:grab}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.mono{font-family:var(--font-mono)}
+.topic>.chk,.topic>.sa{border-top:1px solid var(--border);padding-top:12px;margin-top:14px}
+.sa-ans sup,.chk-q sup,.step sup,.key sup,.note sup,.stepbox sup,.fix sup,.turn sup,td sup{font-size:.72em;line-height:0}
+@media (max-width:600px){
+  .topic{padding:14px 12px}
+  .example,.fix,.turn,.sa{padding:10px 10px}
+  .stepbox{padding:10px 10px 6px}
+}
+@media print{ .ctrl{display:none} }
+</style>
 </head>
 <body>
 <script src="../site-bar.js"></script>
@@ -25,93 +75,1324 @@
 <div class="page-wrap">
 <a href="unit4.html" class="back-link">← Back to Unit 4</a>
 <div class="page-hdr">
-  <h1>📝 Unit 4 Guided Notes — Sequences & Exponential Functions</h1>
+  <h1>📝 Unit 4 Guided Notes — Sequences &amp; Exponential Functions</h1>
   <p>Add for arithmetic, multiply for geometric. Lines climb steadily; exponentials take off.</p>
   <p class="stds">Standards: F-IF.3/7/8b · F-BF.1a/2 · F-LE.1/3/5</p>
 </div>
 <div class="intro"><p>Fill the blanks on your printed copy first, then click any blank, step, or button to check. <strong>Print → Save as PDF</strong> for a blank student worksheet; click <em>Reveal all</em> first to print the answer key.</p></div>
+<div class="legend" aria-label="Color key for the pictures"><span><b style="background:#1E2D4F"></b>given</span><span><b style="background:#E0A800"></b>what we want (?)</span><span><b style="background:#15803D"></b>answer (shows after you check)</span><span><b style="background:#7C3AED"></b>second function</span></div>
 <div class="topic-nav">
   <a href="#t1">① Sequences</a>
   <a href="#t2">② Arithmetic</a>
   <a href="#t3">③ Geometric</a>
   <a href="#t4">④ Linear vs Exp</a>
-  <a href="#t5">⑤ Growth & Decay</a>
+  <a href="#t5">⑤ Growth &amp; Decay</a>
   <a href="#t6">⑥ Features</a>
 </div>
 <p style="text-align:right"><button class="reveal-all" onclick="revealPage()">👁 Reveal all answers (for printing an answer key)</button></p>
+
+<!-- ============ TOPIC 1 ============ -->
 <section class="topic" id="t1">
   <h2><span class="num">1</span> Sequences Are Functions</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Sequence</dt> <dd>— a list of numbers in order.</dd>
+    <dt>Term</dt> <dd>— one number in the list.</dd>
+    <dt>Term number n</dt> <dd>— the place of a term: 1st, 2nd, 3rd, …</dd>
+    <dt>a<sub>n</sub></dt> <dd>— say "a sub n." It means the nth term. a<sub>1</sub> is the first term. a<sub>4</sub> is the fourth term.</dd>
+    <dt>Arithmetic</dt> <dd>— you ADD the same number each time.</dd>
+    <dt>Geometric</dt> <dd>— you MULTIPLY by the same number each time.</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> A sequence is a function whose inputs are the term numbers 1, 2, 3, … <strong>Add → arithmetic → linear.</strong> <strong>Multiply → geometric → exponential.</strong></div>
 <table class="rules-table"><tr><th>Type</th><th>Pattern</th><th>Becomes a…</th></tr><tr><td>Arithmetic</td><td class="rule">2, 5, 8, 11  (+3 each)</td><td>Linear function</td></tr><tr><td>Geometric</td><td class="rule">2, 6, 18, 54  (×3 each)</td><td>Exponential function</td></tr></table>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t1map" data-static></div><div class="diagram-cap">Each term number n goes to one term a<sub>n</sub>. That makes it a function.</div></div>
+    <div class="diagram"><div class="viz" data-v="t1dots" data-static></div><div class="diagram-cap">Graph (n, a<sub>n</sub>): arithmetic dots make a line; geometric dots curve up.</div></div>
+  </div>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t1a" data-static></div><div class="diagram-cap">Arithmetic: +3 each time</div></div>
+    <div class="diagram"><div class="viz" data-v="t1g" data-static></div><div class="diagram-cap">Geometric: ×3 each time</div></div>
+  </div>
+  <div class="note"><strong>🎚 Try it:</strong> Pick Add or Multiply. Move the sliders. Watch the bars and the rule change.</div>
+  <div class="ctrl" id="sm-ctrl">
+    <div class="seg"><button id="sm-add" class="on" onclick="smMode('add')">Add (arithmetic)</button><button id="sm-mul" onclick="smMode('mul')">Multiply (geometric)</button></div>
+    <label><span>a₁ = <b id="sm-ao">2</b></span><input type="range" id="sm-a" min="1" max="10" step="1" value="2" aria-label="first term"></label>
+    <label><span id="sm-sl">d = <b id="sm-so">3</b></span><input type="range" id="sm-s" min="-4" max="5" step="1" value="3" aria-label="step"></label>
+    <div class="out" id="sm-out" role="status"></div>
+  </div>
+  <div class="viz" id="sm-viz"></div>
+  <div class="example">
+    <h4>Is 4, 9, 14, 19, … arithmetic, geometric, or neither?</h4>
+    <div class="steps" data-example="e41">
+      <div class="step" onclick="reveal(this)"><strong>Subtract next − this:</strong> 9 − 4, 14 − 9, 19 − 14 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 5, 5, 5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ All the same?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Yes → arithmetic, d = 5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e41')">Reveal all steps</button>
+    <div class="viz" data-v="e41" data-ex="e41"></div>
+  </div>
+  <div class="example">
+    <h4>Is 3, 6, 12, 24, … arithmetic, geometric, or neither?</h4>
+    <div class="steps" data-example="e41b">
+      <div class="step" onclick="reveal(this)"><strong>Differences:</strong> 3, 6, 12 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> not the same, so not arithmetic</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Divide next ÷ this:</strong> 6 ÷ 3, 12 ÷ 6, 24 ÷ 12 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2, 2, 2</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ So:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> geometric, r = 2</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e41b')">Reveal all steps</button>
+    <div class="viz" data-v="e41b" data-ex="e41b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: name the sequence</h5><ol>
+    <li>Subtract each term from the next one.</li>
+    <li>All the differences the same? It is arithmetic. That number is d.</li>
+    <li>Not the same? Divide each term by the one before it.</li>
+    <li>All the ratios the same? It is geometric. That number is r.</li>
+    <li>Neither one stays the same? It is neither.</li>
+  </ol></div>
+  <div class="fix" id="f41"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ray looks at 1, 2, 4, 8, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f41',this,1)"><span class="sn">Step 1</span> 2 − 1 = 1</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f41',this,2)"><span class="sn">Step 2</span> So the common difference is d = 1.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f41',this,3)"><span class="sn">Step 3</span> It is arithmetic. The next term is 9.</button>
+    <div class="chk-fb" id="fb-f41" role="status"></div>
+    <div class="viz" data-v="f41"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn — arithmetic, geometric, or neither?</h5>
+    <div class="chk" id="q41"><div class="q">1. 10, 7, 4, 1, …</div><div class="viz" data-v="q41"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41" role="status"></div></div>
+    <div class="chk" id="q41b"><div class="q">2. 5, 10, 20, 40, …</div><div class="viz" data-v="q41b"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41b',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41b',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41b',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41b" role="status"></div></div>
+    <div class="chk" id="q41c"><div class="q">3. 1, 4, 9, 16, …</div><div class="viz" data-v="q41c"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41c',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41c',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41c',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41c" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 2 ============ -->
 <section class="topic" id="t2">
   <h2><span class="num">2</span> Arithmetic Sequences</h2>
-<div class="key"><strong>📌</strong> Add the common difference d. Explicit: <span class='coord'>aₙ = a₁ + (n − 1)d</span>. Recursive: <span class='coord'>aₙ = aₙ₋₁ + d</span>.</div>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Common difference d</dt> <dd>— the number you add each time. It can be negative.</dd>
+    <dt>Explicit formula</dt> <dd>— finds ANY term right away from n.</dd>
+    <dt>Recursive formula</dt> <dd>— finds the NEXT term from the one before it. a<sub>n−1</sub> means "the term before."</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Add the common difference d. Explicit: <span class='coord'>a<sub>n</sub> = a<sub>1</sub> + (n − 1)d</span>. Recursive: <span class='coord'>a<sub>n</sub> = a<sub>n−1</sub> + d</span>.</div>
+  <div class="diagram"><div class="viz" data-v="t2bars" data-static></div><div class="diagram-cap">3, 7, 11, 15: each bar is 4 taller than the one before</div></div>
   <div class="example">
-    <h4>Sequence 3, 7, 11, 15, …  Find a₁₀.</h4>
+    <h4>Sequence 3, 7, 11, 15, …  Find a<sub>10</sub>.</h4>
     <div class="steps" data-example="e42">
-      <div class="step" onclick="reveal(this)"><strong>d = 4, a₁ = 3 → explicit:</strong> aₙ =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 + (n − 1)·4 = 4n − 1</span></div>
-      <div class="step final" onclick="reveal(this)"><strong>✓ a₁₀ = 4(10) − 1 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 39</span></div>
+      <div class="step" onclick="reveal(this)"><strong>d = 4, a<sub>1</sub> = 3 → explicit:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 + (n − 1)·4 = 4n − 1</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>10</sub> = 4(10) − 1 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 39</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e42')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e42" data-ex="e42"></div><div class="diagram-cap">From a<sub>1</sub> to a<sub>10</sub> is 9 jumps (10 − 1), not 10.</div></div>
   </div>
   <div class="example">
-    <h4>Translate forms: recursive a₁ = 2, aₙ = aₙ₋₁ + 5 → explicit</h4>
+    <h4>Translate forms: recursive a<sub>1</sub> = 2, a<sub>n</sub> = a<sub>n−1</sub> + 5 → explicit</h4>
     <div class="steps" data-example="e42b">
-      <div class="step" onclick="reveal(this)"><strong>a₁ = 2, d = 5 → aₙ = a₁ + (n−1)d:</strong> aₙ =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 + (n − 1)·5</span></div>
-      <div class="step final" onclick="reveal(this)"><strong>✓ Simplify:</strong> aₙ =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 5n − 3</span></div>
+      <div class="step" onclick="reveal(this)"><strong>a<sub>1</sub> = 2, d = 5 → a<sub>n</sub> = a<sub>1</sub> + (n − 1)d:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 + (n − 1)·5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Simplify:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 5n − 3</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e42b')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e42b" data-ex="e42b"></div><div class="diagram-cap">The terms are points on a line with slope d = 5</div></div>
   </div>
-<p class="blank-tip">Now go the other way: explicit <span class="coord">aₙ = 3n + 1</span> → recursive.</p><p>a₁ = <span class="blank" data-ans="4" onclick="rb(this)">?</span> &nbsp;·&nbsp; aₙ = aₙ₋₁ + <span class="blank" data-ans="3" onclick="rb(this)">?</span></p>
+<p class="blank-tip">Now go the other way: explicit <span class="coord">a<sub>n</sub> = 3n + 1</span> → recursive.</p><p>a<sub>1</sub> = <span class="blank" data-ans="4" onclick="rb(this)">?</span> &nbsp;·&nbsp; a<sub>n</sub> = a<sub>n−1</sub> + <span class="blank" data-ans="3" onclick="rb(this)">?</span></p>
+  <div class="stepbox"><h5>🪜 Steps: arithmetic sequences</h5><ol>
+    <li>Find a<sub>1</sub>, the first term.</li>
+    <li>Find d. Subtract any term from the next one.</li>
+    <li>Explicit: a<sub>n</sub> = a<sub>1</sub> + (n − 1)d.</li>
+    <li>Put in the n you want. Do (n − 1) first. Then times d. Then add a<sub>1</sub>.</li>
+    <li>Recursive: write a<sub>1</sub> = first term and a<sub>n</sub> = a<sub>n−1</sub> + d.</li>
+  </ol></div>
+  <div class="fix" id="f42"><h5>🔍 Find the mistake</h5>
+    <p class="who">Zoe finds a<sub>20</sub> for 8, 11, 14, 17, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f42',this,1)"><span class="sn">Step 1</span> a<sub>1</sub> = 8 and d = 3</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f42',this,2)"><span class="sn">Step 2</span> a<sub>20</sub> = 8 + 20 · 3</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f42',this,3)"><span class="sn">Step 3</span> a<sub>20</sub> = 8 + 60 = 68</button>
+    <div class="chk-fb" id="fb-f42" role="status"></div>
+    <div class="viz" data-v="f42"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q42"><div class="q">1. 6, 10, 14, 18, …  Find a<sub>15</sub>.</div>
+      <div class="viz" data-v="q42"></div>
+      <div class="val-chk"><input id="q42-in" placeholder="a₁₅ = ?" aria-label="answer"><button onclick="M1.check('q42')">Check</button></div><div class="chk-fb" id="fb-q42" role="status"></div></div>
+    <div class="chk" id="q42b"><div class="q">2. Write an explicit formula for 20, 17, 14, 11, … (Type n for the term number.)</div>
+      <div class="viz" data-v="q42b"></div>
+      <div class="val-chk"><input id="q42b-in" placeholder="aₙ = …" aria-label="formula"><button onclick="M1.check('q42b')">Check</button></div><div class="chk-fb" id="fb-q42b" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 3 ============ -->
 <section class="topic" id="t3">
   <h2><span class="num">3</span> Geometric Sequences</h2>
-<div class="key"><strong>📌</strong> Multiply by the common ratio r. Explicit: <span class='coord'>aₙ = a₁ · r⁽ⁿ⁻¹⁾</span>. Recursive: <span class='coord'>aₙ = aₙ₋₁ · r</span>.</div>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Common ratio r</dt> <dd>— the number you multiply by each time.</dd>
+    <dt>Exponent</dt> <dd>— tells how many times to multiply. 3<sup>4</sup> = 3 · 3 · 3 · 3 = 81.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Multiply by the common ratio r. Explicit: <span class='coord'>a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup></span>. Recursive: <span class='coord'>a<sub>n</sub> = a<sub>n−1</sub> · r</span>.</div>
+  <div class="diagram"><div class="viz" data-v="t3bars" data-static></div><div class="diagram-cap">2, 6, 18, 54: each bar is 3 times as tall as the one before</div></div>
   <div class="example">
-    <h4>Sequence 2, 6, 18, 54, …  Find a₅.</h4>
+    <h4>Sequence 2, 6, 18, 54, …  Find a<sub>5</sub>.</h4>
     <div class="steps" data-example="e43">
-      <div class="step" onclick="reveal(this)"><strong>r = 3, a₁ = 2 → explicit:</strong> aₙ =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 · 3⁽ⁿ⁻¹⁾</span></div>
-      <div class="step final" onclick="reveal(this)"><strong>✓ a₅ = 2 · 3⁴ = 2 · 81 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 162</span></div>
+      <div class="step" onclick="reveal(this)"><strong>r = 3, a<sub>1</sub> = 2 → explicit:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 · 3<sup>n−1</sup></span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>5</sub> = 2 · 3<sup>4</sup> = 2 · 81 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 162</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e43')">Reveal all steps</button>
+    <div class="viz" data-v="e43" data-ex="e43"></div>
   </div>
-
+  <div class="example">
+    <h4>Sequence 80, 40, 20, 10, …  Find a<sub>6</sub>.</h4>
+    <div class="steps" data-example="e43b">
+      <div class="step" onclick="reveal(this)"><strong>r = 40 ÷ 80 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> <span class="frac"><span>1</span><span>2</span></span> (the terms shrink)</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>6</sub> = 80 · (<span class="frac"><span>1</span><span>2</span></span>)<sup>5</sup> = 80 · <span class="frac"><span>1</span><span>32</span></span> =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2.5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e43b')">Reveal all steps</button>
+    <div class="viz" data-v="e43b" data-ex="e43b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: geometric sequences</h5><ol>
+    <li>Find a<sub>1</sub>, the first term.</li>
+    <li>Find r. Divide any term by the one before it.</li>
+    <li>Explicit: a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup>.</li>
+    <li>Do the exponent first: (n − 1). Then the power r<sup>n−1</sup>. Then multiply by a<sub>1</sub>.</li>
+    <li>Recursive: a<sub>1</sub> = first term and a<sub>n</sub> = a<sub>n−1</sub> · r.</li>
+  </ol></div>
+  <div class="fix" id="f43"><h5>🔍 Find the mistake</h5>
+    <p class="who">Max finds a<sub>5</sub> for 4, 12, 36, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f43',this,1)"><span class="sn">Step 1</span> a<sub>1</sub> = 4 and r = 3</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f43',this,2)"><span class="sn">Step 2</span> a<sub>5</sub> = 4 · 3<sup>4</sup></button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f43',this,3)"><span class="sn">Step 3</span> a<sub>5</sub> = 12<sup>4</sup> = 20,736</button>
+    <div class="chk-fb" id="fb-f43" role="status"></div>
+    <div class="viz" data-v="f43"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q43"><div class="q">1. 5, 10, 20, …  Find a<sub>7</sub>.</div>
+      <div class="viz" data-v="q43"></div>
+      <div class="val-chk"><input id="q43-in" placeholder="a₇ = ?" aria-label="answer"><button onclick="M1.check('q43')">Check</button></div><div class="chk-fb" id="fb-q43" role="status"></div></div>
+    <div class="chk" id="q43b"><div class="q">2. a<sub>1</sub> = 81 and a<sub>n</sub> = a<sub>n−1</sub> · <span class="frac"><span>1</span><span>3</span></span>. Find a<sub>4</sub>.</div>
+      <div class="viz" data-v="q43b"></div>
+      <div class="val-chk"><input id="q43b-in" placeholder="a₄ = ?" aria-label="answer"><button onclick="M1.check('q43b')">Check</button></div><div class="chk-fb" id="fb-q43b" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 4 ============ -->
 <section class="topic" id="t4">
   <h2><span class="num">4</span> Linear vs. Exponential</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Linear function</dt> <dd>— adds the same amount each step. Its graph is a straight line.</dd>
+    <dt>Exponential function</dt> <dd>— multiplies by the same number each step: y = a · b<sup>x</sup>. Its graph curves.</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> Constant <strong>difference</strong> → linear. Constant <strong>ratio</strong> → exponential. Exponential growth starts slow, then rockets up.</div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="66.0" y1="24" x2="66.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="108.0" y1="24" x2="108.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="192.0" y1="24" x2="192.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="234.0" y1="24" x2="234.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="260.2" x2="276" y2="260.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="244.5" x2="276" y2="244.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="228.8" x2="276" y2="228.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="197.2" x2="276" y2="197.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="181.5" x2="276" y2="181.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="165.8" x2="276" y2="165.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="134.2" x2="276" y2="134.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="118.5" x2="276" y2="118.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="102.8" x2="276" y2="102.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="71.2" x2="276" y2="71.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="55.5" x2="276" y2="55.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="39.8" x2="276" y2="39.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#5a6680" stroke-width="1.8"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="108.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="192.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="276.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="19.0" y="247.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="19.0" y="216.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="19.0" y="184.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="19.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="19.0" y="121.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">10</text><text x="19.0" y="90.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">12</text><text x="19.0" y="58.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">14</text><text x="19.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">16</text><text x="278" y="279.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="28.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="260.2" x2="276.0" y2="71.2" stroke="#0056B3" stroke-width="2.6"/><text x="259.2" y="78.9" font-size="11" fill="#0056B3" font-weight="700" text-anchor="end" font-family="JetBrains Mono">y=2x+1</text><polyline points="24.0,260.2 25.8,259.8 27.6,259.3 29.4,258.8 31.2,258.3 33.0,257.7 34.8,257.2 36.6,256.6 38.4,256.0 40.2,255.4 42.0,254.8 43.8,254.2 45.6,253.5 47.4,252.8 49.2,252.1 51.0,251.4 52.8,250.7 54.6,249.9 56.4,249.1 58.2,248.3 60.0,247.5 61.8,246.6 63.6,245.7 65.4,244.8 67.2,243.9 69.0,242.9 70.8,241.9 72.6,240.9 74.4,239.8 76.2,238.7 78.0,237.6 79.8,236.4 81.6,235.3 83.4,234.0 85.2,232.8 87.0,231.5 88.8,230.1 90.6,228.7 92.4,227.3 94.2,225.8 96.0,224.3 97.8,222.8 99.6,221.2 101.4,219.5 103.2,217.8 105.0,216.0 106.8,214.2 108.6,212.4 110.4,210.5 112.2,208.5 114.0,206.4 115.8,204.3 117.6,202.2 119.4,200.0 121.2,197.7 123.0,195.3 124.8,192.9 126.6,190.4 128.4,187.8 130.2,185.1 132.0,182.4 133.8,179.6 135.6,176.7 137.4,173.7 139.2,170.6 141.0,167.4 142.8,164.1 144.6,160.7 146.4,157.3 148.2,153.7 150.0,150.0 151.8,146.2 153.6,142.3 155.4,138.3 157.2,134.1 159.0,129.8 160.8,125.4 162.6,120.9 164.4,116.2 166.2,111.4 168.0,106.4 169.8,101.3 171.6,96.0 173.4,90.6 175.2,85.0 177.0,79.3 178.8,73.3 180.6,67.2 182.4,60.9 184.2,54.4 186.0,47.8 187.8,40.9 189.6,33.8 191.4,26.5 193.2,19.0" fill="none" stroke="#22AC00" stroke-width="2.6"/><text x="154.2" y="135.0" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono">y=2ˣ</text></svg>
-  <div class="diagram-cap">y = 2x + 1 (line) vs. y = 2ˣ (curve) — the curve overtakes the line</div></div>
-
+<div class="diagram"><div class="viz" data-v="t4g" data-static></div>
+  <div class="diagram-cap">y = 2x + 1 (line) vs. y = 2<sup>x</sup> (curve) — the curve overtakes the line</div></div>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t4l" data-static></div><div class="diagram-cap">Linear: +2 each step</div></div>
+    <div class="diagram"><div class="viz" data-v="t4e" data-static></div><div class="diagram-cap">Exponential: ×2 each step</div></div>
+  </div>
+  <div class="example">
+    <h4>x: 0, 1, 2, 3 and y: 3, 6, 12, 24. Linear or exponential? Write the function.</h4>
+    <div class="steps" data-example="e44">
+      <div class="step" onclick="reveal(this)"><strong>Differences 3, 6, 12. Ratios:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2, 2, 2 → exponential, b = 2</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a = y when x = 0 = 3, so</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 3 · 2<sup>x</sup></span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e44')">Reveal all steps</button>
+    <div class="viz" data-v="e44" data-ex="e44"></div>
+  </div>
+  <div class="example">
+    <h4>x: 0, 1, 2, 3 and y: 5, 8, 11, 14. Linear or exponential? Write the function.</h4>
+    <div class="steps" data-example="e44b">
+      <div class="step" onclick="reveal(this)"><strong>Differences:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3, 3, 3 → linear, slope m = 3</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ b = y when x = 0 = 5, so</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 3x + 5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e44b')">Reveal all steps</button>
+    <div class="viz" data-v="e44b" data-ex="e44b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: linear or exponential?</h5><ol>
+    <li>Check that x goes up by 1 each time.</li>
+    <li>Find the differences in y. All the same? Linear: y = mx + b.</li>
+    <li>Not the same? Find the ratios in y. All the same? Exponential: y = a · b<sup>x</sup>.</li>
+    <li>The start value (y when x = 0) is b for a line, and a for an exponential.</li>
+  </ol></div>
+  <div class="fix" id="f44"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ivy looks at x: 0, 1, 2, 3 and y: 2, 6, 18, 54. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f44',this,1)"><span class="sn">Step 1</span> Differences 4, 12, 36 are not the same.</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f44',this,2)"><span class="sn">Step 2</span> Ratios 3, 3, 3 are the same: exponential.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f44',this,3)"><span class="sn">Step 3</span> Start value a = 2, factor b = 3.</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f44',this,4)"><span class="sn">Step 4</span> y = 3 · 2<sup>x</sup></button>
+    <div class="chk-fb" id="fb-f44" role="status"></div>
+    <div class="viz" data-v="f44"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q44"><div class="q">1. x: 0, 1, 2, 3 and y: 4, 12, 36, 108. Write the function. (Use ^ for a power, like 5(2)^x.)</div>
+      <div class="viz" data-v="q44"></div>
+      <div class="val-chk"><input id="q44-in" placeholder="y = …" aria-label="function"><button onclick="M1.check('q44')">Check</button></div><div class="chk-fb" id="fb-q44" role="status"></div></div>
+    <div class="chk" id="q44b"><div class="q">2. At x = 6, which is bigger: f(x) = 5x + 10 or g(x) = 2<sup>x</sup>?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="f" onclick="M1.pick('q44b',this,'f')">f(x) = 5x + 10</button><button class="chk-btn" data-o="g" onclick="M1.pick('q44b',this,'g')">g(x) = 2<sup>x</sup></button><button class="chk-btn" data-o="e" onclick="M1.pick('q44b',this,'e')">They are equal</button></div>
+      <div class="chk-fb" id="fb-q44b" role="status"></div><div class="viz" data-v="q44b"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 5 ============ -->
 <section class="topic" id="t5">
-  <h2><span class="num">5</span> Growth & Decay</h2>
-<div class="key"><strong>📌</strong> <span class='coord'>y = a · bˣ</span>. <strong>a</strong> = initial value. <strong>b</strong> = growth factor. b &gt; 1 → growth; 0 &lt; b &lt; 1 → decay. Rate: growth b = 1 + r, decay b = 1 − r.</div>
-<div class="two-col"><div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="66.0" y1="24" x2="66.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="108.0" y1="24" x2="108.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="192.0" y1="24" x2="192.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="234.0" y1="24" x2="234.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="255.0" x2="276" y2="255.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="234.0" x2="276" y2="234.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="192.0" x2="276" y2="192.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="171.0" x2="276" y2="171.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="129.0" x2="276" y2="129.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="108.0" x2="276" y2="108.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="66.0" x2="276" y2="66.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="45.0" x2="276" y2="45.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#5a6680" stroke-width="1.8"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="108.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="192.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="276.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="19.0" y="237.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="19.0" y="195.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="19.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="19.0" y="111.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="19.0" y="69.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">10</text><text x="19.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">12</text><text x="278" y="279.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="28.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><polyline points="24.0,255.0 25.8,254.6 27.6,254.3 29.4,253.9 31.2,253.5 33.0,253.1 34.8,252.7 36.6,252.3 38.4,251.9 40.2,251.4 42.0,251.0 43.8,250.6 45.6,250.1 47.4,249.7 49.2,249.2 51.0,248.7 52.8,248.3 54.6,247.8 56.4,247.3 58.2,246.8 60.0,246.3 61.8,245.8 63.6,245.2 65.4,244.7 67.2,244.1 69.0,243.6 70.8,243.0 72.6,242.4 74.4,241.8 76.2,241.2 78.0,240.6 79.8,240.0 81.6,239.4 83.4,238.7 85.2,238.1 87.0,237.4 88.8,236.7 90.6,236.1 92.4,235.4 94.2,234.6 96.0,233.9 97.8,233.2 99.6,232.4 101.4,231.7 103.2,230.9 105.0,230.1 106.8,229.3 108.6,228.5 110.4,227.6 112.2,226.8 114.0,225.9 115.8,225.1 117.6,224.2 119.4,223.3 121.2,222.3 123.0,221.4 124.8,220.4 126.6,219.5 128.4,218.5 130.2,217.5 132.0,216.4 133.8,215.4 135.6,214.3 137.4,213.2 139.2,212.1 141.0,211.0 142.8,209.9 144.6,208.7 146.4,207.5 148.2,206.3 150.0,205.1 151.8,203.9 153.6,202.6 155.4,201.3 157.2,200.0 159.0,198.7 160.8,197.3 162.6,196.0 164.4,194.6 166.2,193.1 168.0,191.7 169.8,190.2 171.6,188.7 173.4,187.2 175.2,185.6 177.0,184.0 178.8,182.4 180.6,180.8 182.4,179.1 184.2,177.4 186.0,175.7 187.8,173.9 189.6,172.1 191.4,170.3 193.2,168.4 195.0,166.6 196.8,164.6 198.6,162.7 200.4,160.7 202.2,158.7 204.0,156.6 205.8,154.5 207.6,152.4 209.4,150.2 211.2,148.0 213.0,145.8 214.8,143.5 216.6,141.2 218.4,138.8 220.2,136.4 222.0,134.0 223.8,131.5 225.6,129.0 227.4,126.4 229.2,123.8 231.0,121.1 232.8,118.4 234.6,115.6 236.4,112.8 238.2,109.9 240.0,107.0 241.8,104.1 243.6,101.0 245.4,98.0 247.2,94.9 249.0,91.7 250.8,88.5 252.6,85.2 254.4,81.8 256.2,78.4 258.0,75.0 259.8,71.4 261.6,67.8 263.4,64.2 265.2,60.5 267.0,56.7 268.8,52.9 270.6,48.9 272.4,45.0 274.2,40.9 276.0,36.8" fill="none" stroke="#22AC00" stroke-width="2.6"/><text x="192.0" y="163.7" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono">b&gt;1 growth</text></svg>
-  <div class="diagram-cap">Growth: y = 1.5ˣ</div></div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="66.0" y1="24" x2="66.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="108.0" y1="24" x2="108.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="192.0" y1="24" x2="192.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="234.0" y1="24" x2="234.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="255.0" x2="276" y2="255.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="234.0" x2="276" y2="234.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="192.0" x2="276" y2="192.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="171.0" x2="276" y2="171.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="129.0" x2="276" y2="129.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="108.0" x2="276" y2="108.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="66.0" x2="276" y2="66.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="45.0" x2="276" y2="45.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#5a6680" stroke-width="1.8"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="108.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="192.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="276.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="19.0" y="237.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="19.0" y="195.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="19.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="19.0" y="111.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="19.0" y="69.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">10</text><text x="19.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">12</text><text x="278" y="279.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="28.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><polyline points="24.0,66.0 25.8,70.5 27.6,75.0 29.4,79.3 31.2,83.6 33.0,87.8 34.8,91.8 36.6,95.8 38.4,99.7 40.2,103.6 42.0,107.3 43.8,110.9 45.6,114.5 47.4,118.0 49.2,121.4 51.0,124.8 52.8,128.1 54.6,131.3 56.4,134.4 58.2,137.5 60.0,140.5 61.8,143.4 63.6,146.3 65.4,149.1 67.2,151.8 69.0,154.5 70.8,157.1 72.6,159.7 74.4,162.2 76.2,164.7 78.0,167.1 79.8,169.5 81.6,171.8 83.4,174.0 85.2,176.2 87.0,178.4 88.8,180.5 90.6,182.6 92.4,184.6 94.2,186.6 96.0,188.5 97.8,190.4 99.6,192.3 101.4,194.1 103.2,195.9 105.0,197.6 106.8,199.3 108.6,200.9 110.4,202.6 112.2,204.2 114.0,205.7 115.8,207.2 117.6,208.7 119.4,210.2 121.2,211.6 123.0,213.0 124.8,214.4 126.6,215.7 128.4,217.0 130.2,218.3 132.0,219.5 133.8,220.8 135.6,222.0 137.4,223.1 139.2,224.3 141.0,225.4 142.8,226.5 144.6,227.6 146.4,228.6 148.2,229.6 150.0,230.6 151.8,231.6 153.6,232.6 155.4,233.5 157.2,234.4 159.0,235.3 160.8,236.2 162.6,237.1 164.4,237.9 166.2,238.8 168.0,239.6 169.8,240.3 171.6,241.1 173.4,241.9 175.2,242.6 177.0,243.3 178.8,244.0 180.6,244.7 182.4,245.4 184.2,246.1 186.0,246.7 187.8,247.4 189.6,248.0 191.4,248.6 193.2,249.2 195.0,249.8 196.8,250.3 198.6,250.9 200.4,251.4 202.2,252.0 204.0,252.5 205.8,253.0 207.6,253.5 209.4,254.0 211.2,254.5 213.0,254.9 214.8,255.4 216.6,255.8 218.4,256.3 220.2,256.7 222.0,257.1 223.8,257.5 225.6,257.9 227.4,258.3 229.2,258.7 231.0,259.1 232.8,259.4 234.6,259.8 236.4,260.1 238.2,260.5 240.0,260.8 241.8,261.1 243.6,261.5 245.4,261.8 247.2,262.1 249.0,262.4 250.8,262.7 252.6,263.0 254.4,263.3 256.2,263.5 258.0,263.8 259.8,264.1 261.6,264.3 263.4,264.6 265.2,264.8 267.0,265.1 268.8,265.3 270.6,265.5 272.4,265.8 274.2,266.0 276.0,266.2" fill="none" stroke="#cc2222" stroke-width="2.6"/><text x="116.4" y="201.7" font-size="11" fill="#cc2222" font-weight="700" font-family="JetBrains Mono">0&lt;b&lt;1 decay</text></svg>
-  <div class="diagram-cap">Decay: y = 10·(0.6)ˣ</div></div>
-</div>  <div class="example">
+  <h2><span class="num">5</span> Growth &amp; Decay</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Initial value a</dt> <dd>— the starting amount. It is y when x = 0.</dd>
+    <dt>Growth factor b</dt> <dd>— the number you multiply by each time step.</dd>
+    <dt>Rate r</dt> <dd>— the percent change, written as a decimal. 4% → 0.04.</dd>
+    <dt>Decay</dt> <dd>— shrinking by the same percent each step.</dd>
+    <dt>Compound growth</dt> <dd>— each step grows from the NEW amount, so the growth itself grows.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> <span class='coord'>y = a · b<sup>x</sup></span>. <strong>a</strong> = initial value. <strong>b</strong> = growth factor. b &gt; 1 → growth; 0 &lt; b &lt; 1 → decay. Rate: growth b = 1 + r, decay b = 1 − r.</div>
+  <div class="warn"><strong>Heads up:</strong> In Topic 3, r was the common ratio. Here, r is the percent rate. The growth factor b plays the "ratio" job: b = 1 + r or b = 1 − r.</div>
+<div class="two-col">
+  <div class="diagram"><div class="viz" data-v="t5g" data-static></div><div class="diagram-cap">Growth: y = 1.5<sup>x</sup></div></div>
+  <div class="diagram"><div class="viz" data-v="t5d" data-static></div><div class="diagram-cap">Decay: y = 10·(0.6)<sup>x</sup></div></div>
+</div>
+  <div class="note"><strong>🎚 Try it:</strong> Move a and b. When is it growth? When is it decay? Watch the ×b arrows in the table.</div>
+  <div class="ctrl">
+    <label><span>a = <b id="gs-ao">2</b></span><input type="range" id="gs-a" min="1" max="10" step="1" value="2" aria-label="initial value a"></label>
+    <label><span>b = <b id="gs-bo">1.5</b></span><input type="range" id="gs-b" min="0.2" max="2.5" step="0.1" value="1.5" aria-label="growth factor b"></label>
+    <div class="out" id="gs-out" role="status"></div>
+  </div>
+  <div class="viz" id="gs-viz"></div>
+  <div class="viz" id="gs-tbl"></div>
+  <div class="example">
     <h4>$500 grows 4% per year. Write the model.</h4>
     <div class="steps" data-example="e45">
       <div class="step" onclick="reveal(this)"><strong>a = 500, r = 0.04 → b = 1 + 0.04:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> b = 1.04</span></div>
-      <div class="step final" onclick="reveal(this)"><strong>✓ Model:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 500(1.04)ˣ</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Model:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 500(1.04)<sup>x</sup></span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e45')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e45" data-ex="e45"></div><div class="diagram-cap">Year by year (rounded to the nearest dollar). Each bar is the one before times the same factor.</div></div>
   </div>
-
+  <div class="example">
+    <h4>A car worth $18,000 loses 10% of its value each year. Write the model. Find the value after 3 years.</h4>
+    <div class="steps" data-example="e45b">
+      <div class="step" onclick="reveal(this)"><strong>a = 18,000, r = 0.10, decay → b = 1 − 0.10:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> b = 0.9, so y = 18000(0.9)<sup>x</sup></span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ x = 3:</strong> 18000(0.9)<sup>3</sup> = 18000(0.729) =<span class="placeholder"> click to reveal</span><span class="hidden-content"> $13,122</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e45b')">Reveal all steps</button>
+    <div class="viz" data-v="e45b" data-ex="e45b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: write a growth or decay model</h5><ol>
+    <li>Find a, the starting amount.</li>
+    <li>Change the percent to a decimal r. (4% → 0.04)</li>
+    <li>Growth? b = 1 + r. Decay? b = 1 − r.</li>
+    <li>Write y = a · b<sup>x</sup>.</li>
+    <li>To find a value, put in x. Do the power first. Then multiply by a.</li>
+  </ol></div>
+  <div class="fix" id="f45"><h5>🔍 Find the mistake</h5>
+    <p class="who">A town of 2,000 people shrinks 5% per year. Leo writes a model. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f45',this,1)"><span class="sn">Step 1</span> a = 2000</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f45',this,2)"><span class="sn">Step 2</span> r = 0.05</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f45',this,3)"><span class="sn">Step 3</span> b = 1 + 0.05 = 1.05</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f45',this,4)"><span class="sn">Step 4</span> y = 2000(1.05)<sup>x</sup></button>
+    <div class="chk-fb" id="fb-f45" role="status"></div>
+    <div class="viz" data-v="f45"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q45"><div class="q">1. $300 grows 6% per year. Write the model. (Use ^ for the power, like 100(1.02)^x.)</div>
+      <div class="viz" data-v="q45"></div>
+      <div class="val-chk"><input id="q45-in" placeholder="y = …" aria-label="model"><button onclick="M1.check('q45')">Check</button></div><div class="chk-fb" id="fb-q45" role="status"></div></div>
+    <div class="chk" id="q45b"><div class="q">2. Use your model. How much money is there after 2 years? Round to the nearest cent.</div>
+      <div class="viz" data-v="q45b"></div>
+      <div class="val-chk"><input id="q45b-in" placeholder="$" aria-label="amount"><button onclick="M1.check('q45b')">Check</button></div><div class="chk-fb" id="fb-q45b" role="status"></div></div>
+    <div class="chk" id="q45c"><div class="q">3. Describe y = 50(0.8)<sup>x</sup>.</div><div class="chk-opts">
+      <button class="chk-btn" data-o="d20" onclick="M1.pick('q45c',this,'d20')">Decay, 20% each step</button>
+      <button class="chk-btn" data-o="g80" onclick="M1.pick('q45c',this,'g80')">Growth, 80% each step</button>
+      <button class="chk-btn" data-o="d80" onclick="M1.pick('q45c',this,'d80')">Decay, 80% each step</button>
+      <button class="chk-btn" data-o="g20" onclick="M1.pick('q45c',this,'g20')">Growth, 20% each step</button></div>
+      <div class="chk-fb" id="fb-q45c" role="status"></div><div class="viz" data-v="q45c"></div></div>
+  </div>
 </section>
-<section class="topic" id="t6">
-  <h2><span class="num">6</span> Key Features & End Behavior</h2>
-<div class="key"><strong>📌</strong> Exponentials have a <strong>horizontal asymptote</strong> (usually y = 0), domain all real numbers, and range y &gt; 0 (when a &gt; 0). Exponential growth <strong>eventually exceeds</strong> any linear or quadratic.</div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="66.0" y1="24" x2="66.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="108.0" y1="24" x2="108.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="192.0" y1="24" x2="192.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="234.0" y1="24" x2="234.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="244.5" x2="276" y2="244.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="181.5" x2="276" y2="181.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="118.5" x2="276" y2="118.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="55.5" x2="276" y2="55.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#5a6680" stroke-width="1.8"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="24.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-3</text><text x="66.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-2</text><text x="108.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-1</text><text x="192.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">1</text><text x="234.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="276.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">3</text><text x="145.0" y="216.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="145.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="145.0" y="90.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="145.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="278" y="279.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="154.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="276.0" x2="133.2" y2="276.0" stroke="#b08800" stroke-width="2.4" stroke-dasharray="5 4"/><text x="80.7" y="257.1" font-size="10" fill="#b08800" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">asymptote y=0</text><polyline points="24.0,272.1 28.2,271.8 32.4,271.5 36.6,271.2 40.8,270.8 45.0,270.4 49.2,270.0 53.4,269.6 57.6,269.1 61.8,268.7 66.0,268.1 70.2,267.6 74.4,267.0 78.6,266.3 82.8,265.6 87.0,264.9 91.2,264.1 95.4,263.2 99.6,262.3 103.8,261.3 108.0,260.2 112.2,259.1 116.4,257.9 120.6,256.6 124.8,255.2 129.0,253.7 133.2,252.1 137.4,250.4 141.6,248.6 145.8,246.6 150.0,244.5 154.2,242.2 158.4,239.8 162.6,237.2 166.8,234.4 171.0,231.5 175.2,228.3 179.4,224.8 183.6,221.2 187.8,217.2 192.0,213.0 196.2,208.5 200.4,203.6 204.6,198.4 208.8,192.9 213.0,186.9 217.2,180.5 221.4,173.7 225.6,166.3 229.8,158.4 234.0,150.0 238.2,141.0 242.4,131.3 246.6,120.9 250.8,109.7 255.0,97.8 259.2,85.0 263.4,71.3 267.6,56.6 271.8,40.9 276.0,24.0" fill="none" stroke="#0056B3" stroke-width="2.6"/><text x="221.4" y="105.9" font-size="11" fill="#0056B3" font-weight="700" text-anchor="middle" font-family="JetBrains Mono">y = 2&#739;</text><circle cx="150.0" cy="244.5" r="4.5" fill="#22AC00" stroke="#22AC00" stroke-width="2"/><text x="157.0" y="238.5" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono" text-anchor="start">(0,1)</text></svg>
-  <div class="diagram-cap">y = 2ˣ : y-intercept (0,1), range y &gt; 0, never touches the asymptote y = 0</div></div>
-<p class="blank-tip">For y = 2ˣ:</p><p>y-intercept (0, <span class="blank" data-ans="1" onclick="rb(this)">?</span>) &nbsp;·&nbsp; range y <span class="blank" data-ans="&gt;" onclick="rb(this)">?</span> 0 &nbsp;·&nbsp; asymptote y = <span class="blank" data-ans="0" onclick="rb(this)">?</span></p>
 
+<!-- ============ TOPIC 6 ============ -->
+<section class="topic" id="t6">
+  <h2><span class="num">6</span> Key Features &amp; End Behavior</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Horizontal asymptote</dt> <dd>— a flat line the graph gets closer and closer to, but never touches.</dd>
+    <dt>Domain</dt> <dd>— all the x-values you can put in.</dd>
+    <dt>Range</dt> <dd>— all the y-values that come out.</dd>
+    <dt>End behavior</dt> <dd>— what the graph does far to the left and far to the right.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Exponentials have a <strong>horizontal asymptote</strong> (usually y = 0), domain all real numbers, and range y &gt; 0 (when a &gt; 0). Exponential growth <strong>eventually exceeds</strong> any linear or quadratic.</div>
+<div class="diagram"><div class="viz" data-v="t6a" data-static></div>
+  <div class="diagram-cap">y = 2<sup>x</sup> : y-intercept (0, 1), range y &gt; 0, never touches the asymptote y = 0</div></div>
+<p class="blank-tip">For y = 2<sup>x</sup>:</p><p>y-intercept (0, <span class="blank" data-ans="1" onclick="rb(this)">?</span>) &nbsp;·&nbsp; range y <span class="blank" data-ans="&gt;" onclick="rb(this)">?</span> 0 &nbsp;·&nbsp; asymptote y = <span class="blank" data-ans="0" onclick="rb(this)">?</span></p>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t6b" data-static></div><div class="diagram-cap">Decay y = 8(0.5)<sup>x</sup>: falls toward 0 on the right</div></div>
+    <div class="diagram"><div class="viz" data-v="t6c" data-static></div><div class="diagram-cap">2<sup>x</sup> passes x<sup>2</sup> at x = 4 and stays ahead</div></div>
+  </div>
+  <div class="example">
+    <h4>Find the key features of y = 3(2)<sup>x</sup>.</h4>
+    <div class="steps" data-example="e46">
+      <div class="step" onclick="reveal(this)"><strong>y-intercept: x = 0 → 3(2)<sup>0</sup> = 3(1) =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3, so (0, 3)</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Asymptote:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 0</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Domain and range:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> domain: all real numbers; range: y &gt; 0</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e46')">Reveal all steps</button>
+    <div class="viz" data-v="e46" data-ex="e46"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: key features of y = a · b<sup>x</sup></h5><ol>
+    <li>y-intercept: put in x = 0. Anything to the 0 power is 1, so you get a. The point is (0, a).</li>
+    <li>Asymptote: y = 0.</li>
+    <li>Domain: all real numbers.</li>
+    <li>Range: y &gt; 0 when a &gt; 0.</li>
+    <li>End behavior: b &gt; 1 rises to the right. 0 &lt; b &lt; 1 falls toward 0 on the right.</li>
+  </ol></div>
+  <div class="fix" id="f46"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ana lists the features of y = 5(0.5)<sup>x</sup>. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f46',this,1)"><span class="sn">Step 1</span> y-intercept: (0, 0.5)</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f46',this,2)"><span class="sn">Step 2</span> Asymptote: y = 0</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f46',this,3)"><span class="sn">Step 3</span> Range: y &gt; 0</button>
+    <div class="chk-fb" id="fb-f46" role="status"></div>
+    <div class="viz" data-v="f46"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q46"><div class="q">1. The y-intercept of y = 7(1.2)<sup>x</sup> is (0, ___). Type the missing number.</div>
+      <div class="viz" data-v="q46"></div>
+      <div class="val-chk"><input id="q46-in" placeholder="?" aria-label="y-intercept"><button onclick="M1.check('q46')">Check</button></div><div class="chk-fb" id="fb-q46" role="status"></div></div>
+    <div class="chk" id="q46b"><div class="q">2. What is the range of y = 4(3)<sup>x</sup>? Type it like y &gt; 2.</div>
+      <div class="val-chk"><input id="q46b-in" placeholder="y …" aria-label="range"><button onclick="M1.check('q46b')">Check</button></div><div class="chk-fb" id="fb-q46b" role="status"></div><div class="viz" data-v="q46b"></div></div>
+    <div class="chk" id="q46c"><div class="q">3. As x gets very large, what does y = 6(0.5)<sup>x</sup> get close to?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="0" onclick="M1.pick('q46c',this,'0')">0</button><button class="chk-btn" data-o="6" onclick="M1.pick('q46c',this,'6')">6</button>
+      <button class="chk-btn" data-o="up" onclick="M1.pick('q46c',this,'up')">It grows forever</button><button class="chk-btn" data-o="h" onclick="M1.pick('q46c',this,'h')">0.5</button></div>
+      <div class="chk-fb" id="fb-q46c" role="status"></div><div class="viz" data-v="q46c"></div></div>
+  </div>
 </section>
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script>
+/* ==== Unit 3/4 visuals + answer checker (page-local; drawn from each problem's own numbers) ==== */
+var M1 = (function () {
+  'use strict';
+  var C = { navy: '#1E2D4F', gold: '#E0A800', goldTx: '#7a5a00', green: '#15803D', grid: '#E3E7EE',
+    axis: '#5a6680', red: '#B42318', purple: '#7C3AED', muted: '#6b7488', bg: '#fafcff', ink: '#1a1a24' };
+  var MONO = "'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace";
+  var uid = 0;
+
+  /* ---------- small helpers ---------- */
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function fmt(n, dp) {
+    if (typeof n === 'string') return n;
+    if (Math.abs(n) < 1e-9) n = 0;
+    var p = Math.pow(10, dp == null ? 3 : dp);
+    var s = String(Math.round(n * p) / p);
+    return s.replace('-', '−');
+  }
+  function money(n, dp) {
+    var v = Math.round(n * Math.pow(10, dp || 0)) / Math.pow(10, dp || 0);
+    var s = v.toFixed(dp || 0).split('.');
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + s.join('.');
+  }
+  function commas(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  /* rich text: a^b or a^{..} superscript, a_{..} subscript */
+  function rich(s) {
+    s = String(s); var out = [], cur = '', i = 0;
+    function push(t, k) { if (t) out.push({ t: t, k: k }); }
+    while (i < s.length) {
+      var ch = s[i];
+      if ((ch === '^' || ch === '_') && i + 1 < s.length) {
+        push(cur, 'n'); cur = '';
+        var k = ch === '^' ? 'sup' : 'sub', t = '';
+        if (s[i + 1] === '{') { var j = s.indexOf('}', i + 2); t = s.slice(i + 2, j); i = j + 1; }
+        else { var m = /^[A-Za-z0-9.−\-]+/.exec(s.slice(i + 1)); t = m ? m[0] : ''; i += 1 + t.length; }
+        push(t, k);
+      } else { cur += ch; i++; }
+    }
+    push(cur, 'n');
+    return out;
+  }
+  function tw(s, fs) { var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
+  function text(x, y, s, o) {
+    o = o || {}; var fs = o.fs || 11, parts = rich(s), h = '', base = 0;
+    parts.forEach(function (p) {
+      var dy = 0, size = '';
+      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      else { dy = -base; base = 0; }
+      h += '<tspan' + (dy ? ' dy="' + r1(dy) + '"' : '') + size + '>' + esc(p.t) + '</tspan>';
+    });
+    var halo = o.halo === false ? '' : ' stroke="' + (o.haloC || '#fff') + '" stroke-width="3.2" stroke-linejoin="round" paint-order="stroke"';
+    return '<text x="' + r1(x) + '" y="' + r1(y) + '" font-size="' + fs + '" fill="' + (o.c || C.navy) + '" text-anchor="' + (o.a || 'middle') +
+      '" font-family="' + (o.fam || MONO) + '"' + (o.b ? ' font-weight="700"' : '') + (o.it ? ' font-style="italic"' : '') + halo +
+      (o.cls ? ' class="' + o.cls + '"' : '') + '>' + h + '</text>';
+  }
+  function pill(cx, cy, s, o) {
+    o = o || {}; var fs = o.fs || 11, w = tw(s, fs) + 10, h = fs + 6;
+    return '<rect x="' + r1(cx - w / 2) + '" y="' + r1(cy - h / 2) + '" width="' + r1(w) + '" height="' + r1(h) + '" rx="' + r1(h / 2) +
+      '" fill="' + (o.bg || C.gold) + '" stroke="' + (o.st || '#b38600') + '" stroke-width="1"/>' +
+      text(cx, cy + fs * 0.36, s, { fs: fs, c: o.c || C.ink, b: true, halo: false });
+  }
+  function svgOpen(W, H, label) {
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' +
+      esc(label || 'diagram') + '" style="max-width:100%;height:auto">';
+  }
+  function arrowDef(id, c) {
+    return '<marker id="' + id + '" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="' + c + '"/></marker>';
+  }
+
+  /* ---------- label placement ---------- */
+  function Placer(bounds) { this.b = bounds; this.r = []; this.segs = []; }
+  function segHit(s, q) {
+    var x1 = s[0], y1 = s[1], dx = s[2] - x1, dy = s[3] - y1, t0 = 0, t1 = 1, p = [-dx, dx, -dy, dy], qq = [x1 - q.x + 1, q.x + q.w + 1 - x1, y1 - q.y + 1, q.y + q.h + 1 - y1];
+    for (var i = 0; i < 4; i++) {
+      if (p[i] === 0) { if (qq[i] < 0) return false; continue; }
+      var t = qq[i] / p[i];
+      if (p[i] < 0) { if (t > t1) return false; if (t > t0) t0 = t; } else { if (t < t0) return false; if (t < t1) t1 = t; }
+    }
+    return true;
+  }
+  Placer.prototype.ok = function (q, strict) {
+    var b = this.b;
+    if (strict) for (var j = 0; j < this.segs.length; j++) if (segHit(this.segs[j], q)) return false;
+    if (q.x < b.x || q.y < b.y || q.x + q.w > b.x + b.w || q.y + q.h > b.y + b.h) return false;
+    for (var i = 0; i < this.r.length; i++) { var p = this.r[i];
+      if (q.x < p.x + p.w && q.x + q.w > p.x && q.y < p.y + p.h && q.y + q.h > p.y) return false; }
+    return true;
+  };
+  Placer.prototype.add = function (q) { this.r.push(q); };
+  Placer.prototype.pick = function (cands, w, h) {
+    for (var pass = 0; pass < 2; pass++) for (var i = 0; i < cands.length; i++) {
+      var q = { x: cands[i][0] - w / 2, y: cands[i][1] - h / 2, w: w, h: h };
+      if (this.ok(q, pass === 0)) { this.add(q); return [cands[i][0], cands[i][1]]; }
+    }
+    var b = this.b, c = cands[0] || [b.x + b.w / 2, b.y + b.h / 2];
+    var x = Math.min(Math.max(c[0], b.x + w / 2), b.x + b.w - w / 2), y = Math.min(Math.max(c[1], b.y + h / 2), b.y + b.h - h / 2);
+    this.add({ x: x - w / 2, y: y - h / 2, w: w, h: h });
+    return [x, y];
+  };
+
+  /* ---------- line / half-plane math ---------- */
+  function toLine(it) {
+    if (it.vx != null) return { vx: it.vx };
+    if (it.A != null) { if (it.B === 0) return { vx: it.C / it.A }; return { m: -it.A / it.B, b: it.C / it.B }; }
+    return { m: it.m, b: it.b };
+  }
+  function hpVal(h, x, y) {
+    var L = toLine(h);
+    if (L.vx != null) return h.s === '>' || h.s === '>=' ? x - L.vx : L.vx - x;
+    var d = y - (L.m * x + L.b);
+    return (h.s === '>' || h.s === '>=') ? d : -d;
+  }
+  function clipPoly(poly, h) {
+    var out = [];
+    for (var i = 0; i < poly.length; i++) {
+      var P = poly[i], Q = poly[(i + 1) % poly.length], gp = hpVal(h, P[0], P[1]), gq = hpVal(h, Q[0], Q[1]);
+      if (gp >= 0) out.push(P);
+      if ((gp >= 0) !== (gq >= 0)) { var t = gp / (gp - gq); out.push([P[0] + t * (Q[0] - P[0]), P[1] + t * (Q[1] - P[1])]); }
+    }
+    return out;
+  }
+  function solve2(a1, b1, c1, a2, b2, c2) {
+    var D = a1 * b2 - a2 * b1;
+    if (Math.abs(D) < 1e-12) {
+      var same = Math.abs(a1 * c2 - a2 * c1) < 1e-9 && Math.abs(b1 * c2 - b2 * c1) < 1e-9;
+      return { type: same ? 'inf' : 'none' };
+    }
+    return { type: 'one', x: (c1 * b2 - c2 * b1) / D, y: (a1 * c2 - a2 * c1) / D };
+  }
+
+  /* ---------- coordinate plane ---------- */
+  function plane(o) {
+    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, fs = o.fs || 11;
+    var x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var xs = o.xs || 1, ys = o.ys || 1, xl = o.xl || xs, yl = o.yl || ys;
+    var tick = o.tick || function (v) { return fmt(v); };
+    var ylabs = [], v;
+    for (v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) ylabs.push(+v.toFixed(6));
+    var maxYW = 0; ylabs.forEach(function (q) { maxYW = Math.max(maxYW, tw(tick(q), tfs)); });
+    var yEdge = x0 >= 0, xEdge = y0 >= 0;
+    var L = (yEdge ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0);
+    var B = H - ((xEdge ? 17 : 10) + (o.xtitle ? 15 : 0));
+    var T = 10, R = W - 10;
+    function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
+    function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
+    var id = 'cp' + (++uid), mk = 'mk' + uid;
+    var s = svgOpen(W, H, o.label);
+    s += '<defs><clipPath id="' + id + '"><rect x="' + r1(L) + '" y="' + r1(T) + '" width="' + r1(R - L) + '" height="' + r1(B - T) + '"/></clipPath>' +
+      arrowDef(mk + 'n', C.navy) + arrowDef(mk + 'g', C.gold) + arrowDef(mk + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    // grid
+    for (v = Math.ceil(x0 / xs - 1e-9) * xs; v <= x1 + 1e-9; v += xs) s += '<line x1="' + r1(sx(v)) + '" y1="' + T + '" x2="' + r1(sx(v)) + '" y2="' + r1(B) + '" stroke="' + C.grid + '" stroke-width="1"/>';
+    for (v = Math.ceil(y0 / ys - 1e-9) * ys; v <= y1 + 1e-9; v += ys) s += '<line x1="' + r1(L) + '" y1="' + r1(sy(v)) + '" x2="' + r1(R) + '" y2="' + r1(sy(v)) + '" stroke="' + C.grid + '" stroke-width="1"/>';
+    var bounds = { x: L + 1, y: T + 1, w: R - L - 2, h: B - T - 2 };
+    var P = new Placer(bounds), PV = new Placer({ x: 1, y: 1, w: W - 2, h: H - 2 });
+    PV.segs = P.segs;
+    function both(q) { P.add(q); PV.add(q); }
+    var items = o.items || [];
+    // shaded regions
+    var g = '';
+    items.forEach(function (it) {
+      if (it.t !== 'region') return;
+      var poly = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+      it.hp.forEach(function (h) { if (poly.length) poly = clipPoly(poly, h); });
+      if (poly.length > 2) g += '<polygon points="' + poly.map(function (p) { return r1(sx(p[0])) + ',' + r1(sy(p[1])); }).join(' ') + '" fill="' + (it.c || C.navy) + '" fill-opacity="' + (it.op || 0.16) + '" stroke="none"/>';
+    });
+    s += '<g clip-path="url(#' + id + ')">' + g + '</g>';
+    // axes
+    var ax = (y0 <= 0 && y1 >= 0) ? 0 : y0, ay = (x0 <= 0 && x1 >= 0) ? 0 : x0;
+    s += '<line x1="' + r1(L) + '" y1="' + r1(sy(ax)) + '" x2="' + r1(R) + '" y2="' + r1(sy(ax)) + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    s += '<line x1="' + r1(sx(ay)) + '" y1="' + T + '" x2="' + r1(sx(ay)) + '" y2="' + r1(B) + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    P.segs.push([L, sy(ax), R, sy(ax)], [sx(ay), T, sx(ay), B]);
+    var inside = (x0 < 0 && x1 > 0 && y0 < 0 && y1 > 0);
+    var tl = '';
+    for (v = Math.ceil(x0 / xl - 1e-9) * xl; v <= x1 + 1e-9; v += xl) {
+      v = +v.toFixed(6); if (inside && v === 0) continue; if (!inside && v === x0 && yEdge && xEdge && v === 0) { /* shared corner 0 */ }
+      var lab = tick(v), w = tw(lab, tfs), X = sx(v), Y = sy(ax) + tfs + 3, an = 'middle';
+      if (X + w / 2 > W - 2) { an = 'end'; X = W - 2; } else if (X - w / 2 < 2) { an = 'start'; X = 2; }
+      var bx = an === 'middle' ? X - w / 2 : an === 'end' ? X - w : X;
+      both({ x: bx, y: Y - tfs, w: w, h: tfs + 2 });
+      tl += text(X, Y, lab, { fs: tfs, c: C.axis, a: an });
+    }
+    for (var k = 0; k < ylabs.length; k++) {
+      v = ylabs[k]; if (inside && v === 0) continue; if (xEdge && yEdge && v === y0 && ax === y0) continue;
+      var labY = tick(v), wy = tw(labY, tfs), Yy = sy(v) + tfs * 0.35;
+      if (Yy - tfs < 1) Yy = tfs + 1;
+      both({ x: sx(ay) - 4 - wy, y: Yy - tfs, w: wy, h: tfs + 2 });
+      tl += text(sx(ay) - 4, Yy, labY, { fs: tfs, c: C.axis, a: 'end' });
+    }
+    if (inside) { tl += text(sx(0) - 4, sy(0) + tfs + 2, '0', { fs: tfs, c: C.axis, a: 'end' }); both({ x: sx(0) - 12, y: sy(0) + 2, w: 9, h: tfs + 2 }); }
+    s += tl;
+    var xn = o.xname == null ? 'x' : o.xname, yn = o.yname == null ? 'y' : o.yname;
+    if (xn) { s += text(R - 2, sy(ax) - 5, xn, { fs: 11, c: C.axis, a: 'end', it: true }); both({ x: R - 2 - tw(xn, 11), y: sy(ax) - 16, w: tw(xn, 11), h: 12 }); }
+    if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
+    if (o.xtitle) s += text((L + R) / 2, H - 4, o.xtitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' });
+    if (o.ytitle) s += '<g transform="rotate(-90 11 ' + r1((T + B) / 2) + ')">' + text(11, (T + B) / 2 + 4, o.ytitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' }) + '</g>';
+    // lines, curves, segments (clipped)
+    var cl = '', labels = [];
+    items.forEach(function (it) {
+      if (it.t === 'line') {
+        var Ln = toLine(it), col = it.c || C.navy, dash = it.dash ? ' stroke-dasharray="' + (it.dash === true ? '7 5' : it.dash) + '"' : '';
+        var p1, p2;
+        if (Ln.vx != null) { p1 = [Ln.vx, y0 - 1]; p2 = [Ln.vx, y1 + 1]; }
+        else { var ex = (x1 - x0); p1 = [x0 - ex, Ln.m * (x0 - ex) + Ln.b]; p2 = [x1 + ex, Ln.m * (x1 + ex) + Ln.b]; }
+        cl += '<line x1="' + r1(sx(p1[0])) + '" y1="' + r1(sy(p1[1])) + '" x2="' + r1(sx(p2[0])) + '" y2="' + r1(sy(p2[1])) + '" stroke="' + col + '" stroke-width="' + (it.w || 2.6) + '"' + dash + ' stroke-linecap="round"/>';
+        var seg = visSeg(Ln);
+        if (seg) { P.segs.push([seg[0][0], seg[0][1], seg[1][0], seg[1][1]]); }
+        if (it.label && seg) labels.push({ s: it.label, c: it.lc || col, seg: seg, fr: it.at, pill: it.pill });
+      } else if (it.t === 'fn') {
+        var dom = it.dom || [x0, x1], N = 260, d = '', pen = false, pts = [], span = y1 - y0;
+        for (var i = 0; i <= N; i++) {
+          var xx = dom[0] + (dom[1] - dom[0]) * i / N, yy = it.f(xx);
+          if (!isFinite(yy) || yy > y1 + 3 * span || yy < y0 - 3 * span) { pen = false; continue; }
+          d += (pen ? 'L' : 'M') + r1(sx(xx)) + ',' + r1(sy(yy)); pen = true;
+          if (yy >= y0 && yy <= y1 && xx >= x0 && xx <= x1) pts.push([sx(xx), sy(yy)]);
+        }
+        cl += '<path d="' + d + '" fill="none" stroke="' + (it.c || C.navy) + '" stroke-width="' + (it.w || 2.6) + '"' + (it.dash ? ' stroke-dasharray="7 5"' : '') + ' stroke-linejoin="round"/>';
+        for (var pi = 0; pi + 3 < pts.length; pi += 3) P.segs.push([pts[pi][0], pts[pi][1], pts[pi + 3][0], pts[pi + 3][1]]);
+        if (it.label && pts.length > 2) labels.push({ s: it.label, c: it.lc || it.c || C.navy, pts: pts, fr: it.at, pill: it.pill });
+      } else if (it.t === 'seg') {
+        var cc = it.c || C.navy, mkr = it.arrow ? ' marker-end="url(#' + mk + (cc === C.gold ? 'g' : cc === C.green ? 'G' : 'n') + ')"' : '';
+        cl += '<line x1="' + r1(sx(it.x1)) + '" y1="' + r1(sy(it.y1)) + '" x2="' + r1(sx(it.x2)) + '" y2="' + r1(sy(it.y2)) + '" stroke="' + cc + '" stroke-width="' + (it.w || 2) + '"' + (it.dash ? ' stroke-dasharray="4 4"' : '') + mkr + '/>';
+      }
+    });
+    s += '<g clip-path="url(#' + id + ')">' + cl + '</g>';
+    function visSeg(Ln) {
+      if (Ln.vx != null) { if (Ln.vx < x0 || Ln.vx > x1) return null; return [[sx(Ln.vx), sy(y1)], [sx(Ln.vx), sy(y0)]]; }
+      var a = x0, b = x1;
+      if (Math.abs(Ln.m) > 1e-12) {
+        var xa = (y0 - Ln.b) / Ln.m, xb = (y1 - Ln.b) / Ln.m, lo = Math.min(xa, xb), hi = Math.max(xa, xb);
+        a = Math.max(a, lo); b = Math.min(b, hi);
+      } else if (Ln.b < y0 || Ln.b > y1) return null;
+      if (a >= b) return null;
+      return [[sx(a), sy(Ln.m * a + Ln.b)], [sx(b), sy(Ln.m * b + Ln.b)]];
+    }
+    // points (draw), register rects
+    var pt = '';
+    items.forEach(function (it) {
+      if (it.t !== 'pt') return;
+      var X = sx(it.x), Y = sy(it.y), col = it.c || C.navy, r = it.r || 4.5;
+      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
+      both({ x: X - r - 1, y: Y - r - 1, w: 2 * r + 2, h: 2 * r + 2 });
+      if (it.label) labels.unshift({ s: it.label, c: it.lc || col, at: [X, Y], pill: it.pill, pt: true, id: it.lid });
+    });
+    items.forEach(function (it) { if (it.t === 'txt') labels.push({ s: it.s, c: it.c || C.navy, fixed: [sx(it.x), sy(it.y)], pill: it.pill, fs: it.fs, a: it.a }); });
+    // labels
+    var lt = '';
+    labels.forEach(function (lb) {
+      var lfs = lb.fs || fs, w = tw(lb.s, lfs) + (lb.pill ? 10 : 2), h = lfs + (lb.pill ? 6 : 3), cands = [], pos;
+      if (lb.pt) {
+        var X = lb.at[0], Y = lb.at[1], ox = w / 2 + 8, oy = h / 2 + 6;
+        cands = [[X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]];
+        pos = PV.pick(cands, w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      } else if (lb.fixed) {
+        pos = PV.pick([lb.fixed], w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      } else {
+        var fr = lb.fr != null ? [lb.fr] : [], base = [0.86, 0.14, 0.7, 0.3, 0.5, 0.94, 0.06, 0.6, 0.4];
+        fr = fr.concat(base);
+        fr.forEach(function (f) {
+          var A, Bp, ux, uy;
+          if (lb.seg) { A = lb.seg[0]; Bp = lb.seg[1]; ux = Bp[0] - A[0]; uy = Bp[1] - A[1]; var px = A[0] + ux * f, py = A[1] + uy * f; }
+          else { var n = lb.pts.length, ii = Math.min(n - 2, Math.max(1, Math.round(f * (n - 1)))); px = lb.pts[ii][0]; py = lb.pts[ii][1]; ux = lb.pts[ii + 1][0] - lb.pts[ii - 1][0]; uy = lb.pts[ii + 1][1] - lb.pts[ii - 1][1]; }
+          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5;
+          cands.push([px + nx * dd, py + ny * dd]); cands.push([px - nx * dd, py - ny * dd]);
+        });
+        pos = P.pick(cands, w, h); PV.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      }
+      if (lb.pill) lt += pill(pos[0], pos[1], lb.s, { fs: lfs });
+      else lt += text(pos[0], pos[1] + lfs * 0.36, lb.s, { fs: lfs, c: lb.c, b: true });
+    });
+    s += pt + lt + '</svg>';
+    return s;
+  }
+
+  /* ---------- system graph: lines (navy, purple), crossing point ? -> green ---------- */
+  function sys(o) {
+    var cols = [C.navy, C.purple], items = (o.regions || []).slice();
+    o.lines.forEach(function (L, i) {
+      var it = { t: 'line', c: L.c || cols[i % 2], label: L.label, dash: L.dash, at: L.at, w: L.w };
+      ['m', 'b', 'A', 'B', 'C', 'vx'].forEach(function (k) { if (L[k] != null) it[k] = L[k]; });
+      items.push(it);
+    });
+    (o.pts || []).forEach(function (p) { items.push(p); });
+    if (o.sol) {
+      if (o.done) items.push({ t: 'pt', x: o.sol[0], y: o.sol[1], c: C.green, label: o.solLabel || '(' + fmt(o.sol[0]) + ', ' + fmt(o.sol[1]) + ')' });
+      else items.push({ t: 'pt', x: o.sol[0], y: o.sol[1], c: C.gold, label: o.qLabel || '?', pill: true });
+    }
+    var q = {}; for (var k in o) q[k] = o[k]; q.items = items;
+    return plane(q);
+  }
+
+  /* ---------- equation rows (substitution / elimination) ---------- */
+  // rows: [{y, items:[{s, st, x?, a?}], cx?}]   st: n|box|tgt|gold|q|ans|x|mut|tag
+  function eqrows(o) {
+    var W = o.w || 300, H = o.h || 160, fs = o.fs || 15, s = svgOpen(W, H, o.label), id = 'ea' + (++uid), pos = {};
+    s += '<defs>' + arrowDef(id + 'g', C.gold) + arrowDef(id + 'n', C.navy) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    var body = '';
+    (o.rows || []).forEach(function (row, ri) {
+      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st && /box|tgt|gold|q/.test(it.st) ? 8 : 0); });
+      var total = ws.reduce(function (a, b) { return a + b; }, 0), x = row.x != null ? row.x : (W - total) / 2;
+      row.items.forEach(function (it, ii) {
+        var w = ws[ii], f2 = it.fs || f, cx, left;
+        if (it.x != null) { left = it.a === 'end' ? it.x - w : it.a === 'middle' ? it.x - w / 2 : it.x; } else left = x;
+        cx = left + w / 2; x = left + w;
+        pos[ri + ':' + ii] = { x: left, w: w, cx: cx, y: row.y, h: f2 + 8 };
+        var y = row.y, st = it.st || 'n', top = y - f2 * 0.8 - 3, hh = f2 + 7;
+        if (st === 'box') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#fff" stroke="' + C.navy + '" stroke-width="1.6"/>';
+        if (st === 'tgt') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#fff8e1" stroke="' + C.gold + '" stroke-width="2" stroke-dasharray="4 3"/>';
+        if (st === 'gold') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#ffe9a8" stroke="' + C.gold + '" stroke-width="1.6"/>';
+        if (st === 'q') { body += pill(cx, y - f2 * 0.3, it.s, { fs: f2 - 1 }); return; }
+        var col = st === 'ans' ? C.green : st === 'mut' ? '#8a93a6' : st === 'x' ? '#6b7488' : st === 'tag' ? C.goldTx : st === 'red' ? C.red : C.navy;
+        body += text(cx, y, it.s, { fs: f2, c: col, b: st === 'ans' || st === 'tag' || st === 'gold', halo: false });
+        if (st === 'x') body += '<line x1="' + r1(left - 1) + '" y1="' + r1(y + 2) + '" x2="' + r1(left + w + 1) + '" y2="' + r1(y - f2 * 0.75) + '" stroke="' + C.red + '" stroke-width="1.6" stroke-opacity="0.85"/>';
+      });
+    });
+    (o.rules || []).forEach(function (r) { body += '<line x1="' + r.x1 + '" y1="' + r.y + '" x2="' + r.x2 + '" y2="' + r.y + '" stroke="' + C.navy + '" stroke-width="1.6"/>'; });
+    (o.arrows || []).forEach(function (a) {
+      var A = pos[a.from], Bq = pos[a.to]; if (!A || !Bq) return;
+      var x1 = A.cx, y1 = A.y + 6, x2 = Bq.cx, y2 = Bq.y - Bq.h + 4, my = (y1 + y2) / 2;
+      body += '<path d="M' + r1(x1) + ',' + r1(y1) + ' C' + r1(x1) + ',' + r1(my + 6) + ' ' + r1(x2) + ',' + r1(my - 6) + ' ' + r1(x2) + ',' + r1(y2) + '" fill="none" stroke="' + (a.c || C.gold) + '" stroke-width="2" marker-end="url(#' + id + 'g)"/>';
+      if (a.s) body += text((x1 + x2) / 2 + (a.dx || 0), my + 4, a.s, { fs: 11, c: C.goldTx, b: true });
+    });
+    (o.notes || []).forEach(function (n) { body += text(n.x, n.y, n.s, { fs: n.fs || 11, c: n.c || C.muted, a: n.a || 'middle', fam: n.fam || 'Inter,system-ui,sans-serif', halo: false }); });
+    return s + body + '</svg>';
+  }
+  function term(c, v, lead) {
+    var a = Math.abs(c), core = (a === 1 && v ? '' : fmt(a)) + v;
+    if (lead) return (c < 0 ? '−' : '') + core;
+    return core;
+  }
+  function eqStd(A, B, Cc) {
+    var s = '';
+    if (A) s += term(A, 'x', true);
+    if (B) s += (s ? (B < 0 ? ' − ' : ' + ') + term(B, 'y', false) : term(B, 'y', true));
+    return s + ' = ' + fmt(Cc);
+  }
+  function eqSI(m, b, v) {
+    v = v || 'y'; var s = v + ' = ';
+    if (m) s += (m === 1 ? '' : m === -1 ? '−' : fmt(m)) + 'x';
+    if (b || !m) s += m ? (b < 0 ? ' − ' + fmt(-b) : ' + ' + fmt(b)) : fmt(b);
+    return s;
+  }
+  /* elimination diagram: e=[[A,B,C],[D,E,F]], k=[k1,k2] multipliers */
+  function elim(o) {
+    var e = o.e, k = o.k || [1, 1], done = o.done, fs = 15, W = 300;
+    var cA = 92, cS = 110, cB = 160, cE = 184, cC = 246, rows = [], y = 26, rules = [], notes = [];
+    function row(A, B, Cc, extra, st) {
+      st = st || {};
+      var it = [];
+      it.push({ s: A ? term(A, 'x', true) : '', x: cA, a: 'end', st: st.a || 'n' });
+      if (B) { it.push({ s: B < 0 ? '−' : '+', x: cS, a: 'middle', st: 'n' }); it.push({ s: term(B, 'y', false), x: cB, a: 'end', st: st.b || 'n' }); }
+      it.push({ s: '=', x: cE, a: 'middle' }); it.push({ s: fmt(Cc), x: cC, a: 'end' });
+      if (extra) it.push(extra);
+      return { y: y, items: it };
+    }
+    var mult = (k[0] !== 1 || k[1] !== 1);
+    var S = [k[0] * e[0][0] + k[1] * e[1][0], k[0] * e[0][1] + k[1] * e[1][1], k[0] * e[0][2] + k[1] * e[1][2]];
+    var gone = Math.abs(S[1]) < 1e-12 ? 'y' : Math.abs(S[0]) < 1e-12 ? 'x' : null;
+    var stc = gone === 'y' ? { b: 'x' } : gone === 'x' ? { a: 'x' } : {};
+    if (mult) {
+      rows.push(row(e[0][0], e[0][1], e[0][2], k[0] !== 1 ? { s: '×(' + fmt(k[0]) + ')', x: 254, a: 'start', st: 'tag', fs: 12 } : null)); y += 28;
+      rows.push(row(e[1][0], e[1][1], e[1][2], k[1] !== 1 ? { s: '×(' + fmt(k[1]) + ')', x: 254, a: 'start', st: 'tag', fs: 12 } : null)); y += 24;
+      notes.push({ x: 150, y: y + 2, s: 'multiply every term ↓', c: C.goldTx, fs: 11 }); y += 26;
+    }
+    rows.push(row(k[0] * e[0][0], k[0] * e[0][1], k[0] * e[0][2], null, stc)); y += 28;
+    var r2 = row(k[1] * e[1][0], k[1] * e[1][1], k[1] * e[1][2], { s: '+', x: 18, a: 'middle', st: 'n' }, stc); rows.push(r2); y += 12;
+    rules.push({ x1: 24, x2: 254, y: y }); y += 24;
+    var q = function (v, st) { return done ? { s: v, st: 'ans' } : { s: '?', st: 'q' }; };
+    var sum = [];
+    if (gone === 'y') {
+      sum.push(done ? { s: term(S[0], 'x', true), x: cA, a: 'end', st: 'ans' } : { s: '?x', x: cA, a: 'end', st: 'q' });
+      sum.push({ s: '0', x: cB, a: 'end', st: 'mut' });
+    } else if (gone === 'x') {
+      sum.push({ s: '0', x: cA, a: 'end', st: 'mut' });
+      sum.push(done ? { s: term(S[1], 'y', true), x: cB, a: 'end', st: 'ans' } : { s: '?y', x: cB, a: 'end', st: 'q' });
+    }
+    sum.push({ s: '=', x: cE, a: 'middle' });
+    sum.push(done ? { s: fmt(S[2]), x: cC, a: 'end', st: 'ans' } : { s: '?', x: cC, a: 'end', st: 'q' });
+    rows.push({ y: y, items: sum }); y += 20;
+    if (gone) { notes.push({ x: 150, y: y, s: (gone === 'y' ? 'The y-terms' : 'The x-terms') + ' add to 0, so they cancel.', c: C.red, fs: 10.5 }); y += 4; }
+    y += 22;
+    var sol = solve2(e[0][0], e[0][1], e[0][2], e[1][0], e[1][1], e[1][2]);
+    var v1 = gone === 'x' ? 'y' : 'x';
+    if (done) rows.push({ y: y, items: [{ s: v1 + ' = ' + fmt(sol[v1]) + '   →   (x, y) = (' + fmt(sol.x) + ', ' + fmt(sol.y) + ')', st: 'ans', fs: 13 }] });
+    else rows.push({ y: y, items: [{ s: v1 + ' = ', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: '   →   (x, y) = (', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: ', ', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: ')', fs: 13 }] });
+    y += 14;
+    return eqrows({ w: W, h: y, rows: rows, rules: rules, notes: notes, label: o.label || 'elimination diagram' });
+  }
+  /* substitution diagram */
+  function subst(o) {
+    // o: eq1 [pieces], k1 index of expression, eq2 [pieces], k2 index of variable to replace, res: [pieces rows before], resDone
+    var done = o.done, rows = [], y = 28, arrows = [];
+    rows.push({ y: y, items: o.eq1.map(function (p, i) { return { s: p, st: i === o.k1 ? 'box' : 'n' }; }) }); y += 52;
+    rows.push({ y: y, items: o.eq2.map(function (p, i) { return { s: p, st: i === o.k2 ? 'tgt' : 'n' }; }) });
+    arrows.push({ from: '0:' + o.k1, to: '1:' + o.k2, s: 'swap in', dx: 34 });
+    y += 40;
+    rows.push({ y: y, items: o.eq2.map(function (p, i) { return { s: i === o.k2 ? '(' + o.eq1[o.k1] + ')' : p, st: i === o.k2 ? 'gold' : 'n' }; }) });
+    y += 34;
+    (done ? o.resDone : o.res).forEach(function (r) {
+      rows.push({ y: y, items: r.map(function (p) { return typeof p === 'string' ? (p === '?' ? { s: '?', st: 'q', fs: 13 } : { s: p, fs: 13, st: done ? 'ans' : 'n' }) : p; }) }); y += 26;
+    });
+    return eqrows({ w: 300, h: y - 8, rows: rows, arrows: arrows, label: o.label || 'substitution diagram' });
+  }
+
+  /* ---------- tables with arrows ---------- */
+  // o: {heads:['x','y'], rows:[[...],[...]], ops:[...], opsQ:bool, hide:[[r,c]..], done, opC}
+  function tbl(o) {
+    var n = o.rows[0].length, hw = o.hw || 44, cw = o.cw || Math.min(56, Math.floor((296 - hw) / n)), rh = 30, fs = o.fs || 12.5;
+    var W = Math.max(hw + n * cw + 8, o.w || 0), top = 6, H = top + o.rows.length * rh + (o.ops ? 40 : 6), id = 'tb' + (++uid);
+    var s = svgOpen(W, H, o.label || 'table') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + arrowDef(id + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+    var x0 = (W - (hw + n * cw)) / 2;
+    o.rows.forEach(function (row, ri) {
+      var y = top + ri * rh;
+      s += '<rect x="' + r1(x0) + '" y="' + y + '" width="' + hw + '" height="' + rh + '" fill="' + C.navy + '" stroke="#fff"/>';
+      s += text(x0 + hw / 2, y + rh / 2 + 4.5, o.heads[ri], { fs: 12.5, c: '#fff', b: true, halo: false });
+      row.forEach(function (v, ci) {
+        var cx = x0 + hw + ci * cw, hidden = (o.hide || []).some(function (h) { return h[0] === ri && h[1] === ci; });
+        s += '<rect x="' + r1(cx) + '" y="' + y + '" width="' + cw + '" height="' + rh + '" fill="' + (ri % 2 ? '#f8faff' : '#fff') + '" stroke="#cdd5e0"/>';
+        if (hidden && !o.done) s += pill(cx + cw / 2, y + rh / 2, '?', { fs: 12 });
+        else s += text(cx + cw / 2, y + rh / 2 + fs * 0.36, typeof v === 'number' ? fmt(v) : v, { fs: v && String(v).length > 5 ? fs - 2 : fs, c: hidden ? C.green : C.navy, b: hidden, halo: false });
+      });
+    });
+    if (o.ops) {
+      var yb = top + o.rows.length * rh + 2;
+      o.ops.forEach(function (op, i) {
+        var xa = x0 + hw + i * cw + cw / 2 + 4, xb = x0 + hw + (i + 1) * cw + cw / 2 - 4, my = yb + 16;
+        var q = o.opsQ && !o.done, col = q ? '#8a6500' : (o.opsQ ? C.green : (o.opC || C.navy));
+        s += '<path d="M' + r1(xa) + ',' + yb + ' Q' + r1((xa + xb) / 2) + ',' + r1(my + 8) + ' ' + r1(xb) + ',' + yb + '" fill="none" stroke="' + col + '" stroke-width="1.6" marker-end="url(#' + id + (q ? 'g' : o.opsQ ? 'G' : '') + ')"/>';
+        if (q) s += pill((xa + xb) / 2, my + 14, '?', { fs: 11 });
+        else s += text((xa + xb) / 2, my + 18, op, { fs: 11, c: col, b: true });
+      });
+    }
+    return s + '</svg>';
+  }
+
+  /* ---------- bar model of a sequence, with +d / ×r arrows ---------- */
+  function bars(o) {
+    var v = o.vals, n = v.length, W = o.w || 300, H = o.h || 220, L = 10, R = W - 8, base, top = 62, bot = 24, id = 'br' + (++uid);
+    var vmax = Math.max.apply(null, v.concat([0])), vmin = Math.min.apply(null, v.concat([0]));
+    if (o.max) vmax = Math.max(vmax, o.max);
+    if (vmin < 0) bot += 20;
+    var span = vmax - vmin || 1, ph = H - top - bot, slot = (R - L) / n, bw = Math.min(46, slot * 0.62);
+    function Y(val) { return top + (vmax - val) / span * ph; }
+    base = Y(0);
+    var s = svgOpen(W, H, o.label || 'bar model') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + arrowDef(id + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<line x1="' + L + '" y1="' + r1(base) + '" x2="' + R + '" y2="' + r1(base) + '" stroke="' + C.axis + '" stroke-width="1.4"/>';
+    v.forEach(function (val, i) {
+      var cx = L + slot * (i + 0.5), hid = (o.hide || []).indexOf(i) >= 0, y1 = Y(Math.max(val, 0)), y2 = Y(Math.min(val, 0));
+      var col = hid ? (o.done ? C.green : C.gold) : (o.c || C.navy);
+      s += '<rect x="' + r1(cx - bw / 2) + '" y="' + r1(y1) + '" width="' + r1(bw) + '" height="' + r1(Math.max(1.5, y2 - y1)) + '" fill="' + col + '" fill-opacity="' + (hid && !o.done ? 0.35 : 0.85) + '"' + (hid && !o.done ? ' stroke="#8a6500" stroke-dasharray="4 3"' : '') + '/>';
+      var lab = o.fmt ? o.fmt(val) : fmt(val), ly = val >= 0 ? y1 - 6 : y2 + 14;
+      if (hid && !o.done) s += pill(cx, val >= 0 ? y1 - 12 : y2 + 12, '?', { fs: 11 });
+      else s += text(cx, ly, lab, { fs: tw(lab, 11) > slot - 2 ? 9.5 : 11, c: hid ? C.green : C.navy, b: true });
+      s += text(cx, H - 7, o.labs ? o.labs[i] : 'a_{' + (i + 1) + '}', { fs: 11, c: C.axis });
+    });
+    if (o.ops) o.ops.forEach(function (op, i) {
+      var xa = L + slot * (i + 0.5) + 6, xb = L + slot * (i + 1.5) - 6, y = 32, q = op === '?';
+      var col = q ? '#8a6500' : o.opC || C.navy;
+      s += '<path d="M' + r1(xa) + ',' + (y + 8) + ' Q' + r1((xa + xb) / 2) + ',' + (y - 8) + ' ' + r1(xb) + ',' + (y + 8) + '" fill="none" stroke="' + col + '" stroke-width="1.6" marker-end="url(#' + id + (q ? 'g' : col === C.green ? 'G' : '') + ')"/>';
+      if (q) s += pill((xa + xb) / 2, y - 12, '?', { fs: 11 }); else s += text((xa + xb) / 2, y - 7, op, { fs: 11, c: col, b: true });
+    });
+    return s + '</svg>';
+  }
+
+  /* ---------- number-line hops ---------- */
+  function hops(o) {
+    var W = o.w || 300, H = o.h || (o.note ? 134 : 116), L = 16, R = W - 16, y = H - (o.note ? 44 : 30), id = 'hp' + (++uid);
+    function X(v) { return L + (v - o.min) / (o.max - o.min) * (R - L); }
+    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<line x1="' + L + '" y1="' + y + '" x2="' + R + '" y2="' + y + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    for (var v = o.min; v <= o.max + 1e-9; v += o.tick) {
+      var big = Math.abs(v / o.lab - Math.round(v / o.lab)) < 1e-9;
+      s += '<line x1="' + r1(X(v)) + '" y1="' + (y - (big ? 6 : 3)) + '" x2="' + r1(X(v)) + '" y2="' + (y + (big ? 6 : 3)) + '" stroke="' + C.axis + '" stroke-width="1.2"/>';
+      if (big) s += text(X(v), y + 19, fmt(v), { fs: 10, c: C.axis });
+    }
+    var cur = o.start, hopC = o.c || C.navy;
+    for (var i = 0; i < o.count; i++) {
+      var a = X(cur), b = X(cur + o.step), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
+      s += '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
+      if (o.every || i === 0) s += text((a + b) / 2, y - h / 2 - 8, (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step)), { fs: 10, c: hopC, b: true });
+      cur += o.step;
+    }
+    s += '<circle cx="' + r1(X(o.start)) + '" cy="' + y + '" r="5" fill="' + C.navy + '"/>';
+    var sl = o.startLab || fmt(o.start), sw = tw(sl, 11) / 2 + 2;
+    s += text(Math.min(Math.max(X(o.start), sw), W - sw), 14, sl, { fs: 11, c: C.navy, b: true });
+    var end = o.start + o.step * o.count;
+    s += '<circle cx="' + r1(X(end)) + '" cy="' + y + '" r="5" fill="' + (o.done ? C.green : C.gold) + '" stroke="#8a6500" stroke-width="1"/>';
+    var ex = Math.min(Math.max(X(end), 30), W - 30);
+    if (o.done) s += text(ex, 14, o.endLab || fmt(end), { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, o.endQ || '?', { fs: 11 });
+    if (o.note) s += text(W / 2, H - 6, o.note, { fs: 10.5, c: C.muted, fam: 'Inter,system-ui,sans-serif', halo: false });
+    return s + '</svg>';
+  }
+
+  /* ---------- mapping diagram (sequence = function) ---------- */
+  function mapping(o) {
+    var n = o.inp.length, W = 300, H = 40 + n * 30 + 10, id = 'mp' + (++uid);
+    var s = svgOpen(W, H, o.label || 'mapping diagram') + '<defs>' + arrowDef(id, C.navy) + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<rect x="30" y="30" width="70" height="' + (n * 30 + 6) + '" rx="30" fill="#eef3fb" stroke="' + C.navy + '"/>';
+    s += '<rect x="200" y="30" width="70" height="' + (n * 30 + 6) + '" rx="30" fill="#fff8e1" stroke="' + C.gold + '"/>';
+    s += text(65, 18, o.h1 || 'n (term #)', { fs: 11, c: C.navy, b: true }); s += text(235, 18, o.h2 || 'a_n (term)', { fs: 11, c: C.goldTx, b: true });
+    o.inp.forEach(function (v, i) {
+      var y = 52 + i * 30;
+      s += text(65, y, fmt(v), { fs: 13, c: C.navy, b: true, halo: false }); s += text(235, y, fmt(o.out[i]), { fs: 13, c: C.navy, b: true, halo: false });
+      s += '<line x1="80" y1="' + (y - 4) + '" x2="214" y2="' + (y - 4) + '" stroke="' + C.navy + '" stroke-width="1.4" marker-end="url(#' + id + ')"/>';
+    });
+    return s + '</svg>';
+  }
+
+  /* ---------- balance scale ---------- */
+  function balance(cx, cy, l, r, w) {
+    w = w || 120; var s = '';
+    s += '<polygon points="' + cx + ',' + (cy + 4) + ' ' + (cx - 10) + ',' + (cy + 26) + ' ' + (cx + 10) + ',' + (cy + 26) + '" fill="' + C.navy + '"/>';
+    s += '<line x1="' + (cx - w / 2) + '" y1="' + cy + '" x2="' + (cx + w / 2) + '" y2="' + cy + '" stroke="' + C.navy + '" stroke-width="3" stroke-linecap="round"/>';
+    [[-1, l], [1, r]].forEach(function (p) {
+      var px = cx + p[0] * (w / 2 - 20);
+      s += '<line x1="' + px + '" y1="' + cy + '" x2="' + px + '" y2="' + (cy - 8) + '" stroke="' + C.navy + '" stroke-width="1.5"/>';
+      s += '<rect x="' + (px - 23) + '" y="' + (cy - 30) + '" width="46" height="22" rx="4" fill="#fff" stroke="' + C.navy + '" stroke-width="1.4"/>';
+      s += text(px, cy - 14.5, p[1], { fs: 12, c: C.navy, b: true, halo: false });
+    });
+    return s;
+  }
+
+  /* ================= checker ================= */
+  var SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-', '⁺': '+', '⁽': '(', '⁾': ')', 'ⁿ': 'n', 'ˣ': 'x', 'ᵗ': 't' };
+  var SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9', 'ₙ': 'n', '₋': '-', '₊': '+' };
+  function norm(s) {
+    s = String(s == null ? '' : s).trim(); var out = '', run = '';
+    for (var i = 0; i < s.length; i++) { var ch = s[i];
+      if (SUP[ch] !== undefined) { run += SUP[ch]; continue; }
+      if (run) { out += '^(' + run + ')'; run = ''; }
+      out += SUB[ch] !== undefined ? SUB[ch] : ch; }
+    if (run) out += '^(' + run + ')';
+    return out.toLowerCase().replace(/[−–—‒‐]/g, '-').replace(/[×✕⋅·∙]/g, '*').replace(/÷/g, '/')
+      .replace(/√/g, 'sqrt').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/=</g, '<=').replace(/=>/g, '>=').replace(/\*\*/g, '^')
+      .replace(/∞/g, 'inf').replace(/≈/g, '').replace(/\s+/g, '');
+  }
+  function parseExpr(str, vars) {
+    var s = str, i = 0; vars = vars || [];
+    function isVar(c) { return c && vars.indexOf(c) >= 0; }
+    function atom() {
+      var c = s[i];
+      if (c === '(' || c === '[') { i++; var e = expr(); if (s[i] !== ')' && s[i] !== ']') throw 'paren'; i++; return e; }
+      var m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
+      if (m) { i += m[0].length; var v = parseFloat(m[0]); return function () { return v; }; }
+      if (s.substr(i, 4) === 'sqrt') { i += 4; var a = power(); return function (en) { return Math.sqrt(a(en)); }; }
+      if (isVar(c)) { i++; return function (en) { return en[c]; }; }
+      throw 'bad';
+    }
+    function power() { var a = atom(); if (s[i] === '^') { i++; var b = unary(); return function (en) { return Math.pow(a(en), b(en)); }; } return a; }
+    function unary() { if (s[i] === '-') { i++; var a = unary(); return function (en) { return -a(en); }; } if (s[i] === '+') { i++; return unary(); } return power(); }
+    function termP() {
+      var a = unary();
+      for (;;) {
+        var c = s[i];
+        if (c === '*' || c === '/') { i++; var b = unary(); a = (function (a, b, c) { return c === '*' ? function (e) { return a(e) * b(e); } : function (e) { return a(e) / b(e); }; })(a, b, c); }
+        else if (c && (/[\d.(\[]/.test(c) || isVar(c) || s.substr(i, 4) === 'sqrt')) { var b2 = power(); a = (function (a, b) { return function (e) { return a(e) * b(e); }; })(a, b2); }
+        else break;
+      }
+      return a;
+    }
+    function expr() { var a = termP(); while (s[i] === '+' || s[i] === '-') { var c = s[i++], b = termP(); a = (function (a, b, c) { return c === '+' ? function (e) { return a(e) + b(e); } : function (e) { return a(e) - b(e); }; })(a, b, c); } return a; }
+    var f = expr(); if (i !== s.length) throw 'trail'; return f;
+  }
+  var PREFIX = /^([a-z]{1,2}(_?\(?[a-z0-9]{1,3}\)?)?)=/;
+  function stripPrefix(s) { return s.replace(PREFIX, ''); }
+  function parseNum(raw) {
+    var s = norm(raw).replace(/\$/g, '').replace(/^(about|approximately|approx\.?)/, '');
+    s = stripPrefix(s);
+    if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+    s = s.replace(/%$/, '');
+    var t = s.replace(/[a-z]+$/, '');
+    try { var v = parseExpr(s, [])({}); if (isFinite(v)) return v; } catch (e) {}
+    try { if (t && t !== s) { if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) t = t.replace(/,/g, ''); var w = parseExpr(t, [])({}); if (isFinite(w)) return w; } } catch (e2) {}
+    return null;
+  }
+  function parsePt(raw) {
+    var s = norm(raw), mx = /x=([-+]?[\d.\/]+)/.exec(s), my = /y=([-+]?[\d.\/]+)/.exec(s), a, b;
+    try {
+      if (mx && my) { a = parseExpr(mx[1], [])({}); b = parseExpr(my[1], [])({}); return [a, b]; }
+      s = s.replace(/^[(\[{]/, '').replace(/[)\]}]$/, '');
+      var parts = s.split(/,|;|and/);
+      if (parts.length !== 2 || !parts[0] || !parts[1]) return parts.length === 1 && parts[0] ? 'one' : null;
+      a = parseExpr(parts[0], [])({}); b = parseExpr(parts[1], [])({});
+      if (isFinite(a) && isFinite(b)) return [a, b];
+    } catch (e) {}
+    return null;
+  }
+  function parseIneq(raw, v) {
+    var s = norm(raw), m = /^(.+?)(<=|>=|<|>)(.+)$/.exec(s), FL = { '<': '>', '>': '<', '<=': '>=', '>=': '<=' };
+    if (m) {
+      try {
+        if (m[1] === v) return { op: m[2], n: parseExpr(m[3], [])({}) };
+        if (m[3] === v) return { op: FL[m[2]], n: parseExpr(m[1], [])({}) };
+      } catch (e) {}
+      return null;
+    }
+    var iv = /^([(\[])(-?[\d.\/]+),(\+?inf(inity)?)\)$/.exec(s);
+    if (iv) return { op: iv[1] === '(' ? '>' : '>=', n: parseFloat(iv[2]) };
+    return null;
+  }
+  function near(a, b, tol) { return Math.abs(a - b) <= (tol != null ? tol : 1e-6 * Math.max(1, Math.abs(b))); }
+  function exprEq(f, g, vars) {
+    var samples = [0, 1, 2, 3, 0.5, 4, 1.7], ok = true;
+    for (var i = 0; i < samples.length; i++) {
+      var en = {}; vars.forEach(function (v) { en[v] = samples[i]; });
+      var a = f(en), b = g(en);
+      if (!isFinite(a) || !isFinite(b) || Math.abs(a - b) > 1e-6 * Math.max(1, Math.abs(b))) { ok = false; break; }
+    }
+    return ok;
+  }
+
+  var S = { items: {}, tried: {}, solved: {}, first: 0, V: {} };
+  function reg(id, sp) { S.items[id] = sp; }
+  function fbSay(id, cls, html) { var fb = document.getElementById('fb-' + id); if (fb) { fb.innerHTML = html; fb.className = 'chk-fb ' + cls + ' show'; } }
+  function score() {
+    var b = document.getElementById('score'); if (!b) return;
+    var t = Object.keys(S.tried).length, d = Object.keys(S.solved).length;
+    b.innerHTML = 'Score: <b>' + d + '</b> / ' + t + ' &nbsp;·&nbsp; right on the first try: <b>' + S.first + '</b>';
+  }
+  function judge(sp, raw) {
+    var k = sp.kind, i, m;
+    if (k === 'pt') {
+      var p = parsePt(raw), a = sp.ans;
+      if (p === 'one') return 'Type both numbers, like (2, 3): x first, then a comma, then y.';
+      if (!p) return 'Type a point like (2, 3): the x-value, a comma, then the y-value.';
+      if (near(p[0], a[0]) && near(p[1], a[1])) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (near(p[0], m.v[0]) && near(p[1], m.v[1])) return m.m; }
+      if (!near(a[0], a[1]) && near(p[0], a[1]) && near(p[1], a[0])) return 'So close! You switched x and y. The x-value always comes first: (x, y).';
+      if (near(p[0], a[0])) return near(Math.abs(p[1]), Math.abs(a[1])) ? 'Your x-value is right. Your y-value has the wrong sign (+ or \u2212).' : 'Your x-value is right! Now put it back into one of the equations to find y.';
+      if (near(p[1], a[1])) return near(Math.abs(p[0]), Math.abs(a[0])) ? 'Your y-value is right. Your x-value has the wrong sign (+ or \u2212).' : 'Your y-value is right. Check the step where you found x.';
+      if (near(Math.abs(p[0]), Math.abs(a[0])) && near(Math.abs(p[1]), Math.abs(a[1]))) return 'The numbers are right, but a sign (+ or −) is off. Check your negatives.';
+      return sp.hint || 'Not quite. Put your point into BOTH equations. Both must come out true.';
+    }
+    if (k === 'num') {
+      var v = parseNum(raw);
+      if (v === null) return 'Type a number, like 12, −3, 2.5 or 1/2.';
+      if (near(v, sp.ans, sp.tol)) return true;
+      for (i = 0; sp.alts && i < sp.alts.length; i++) if (near(v, sp.alts[i], sp.tol)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (near(v, m.v, m.tol != null ? m.tol : sp.tol)) return m.m; }
+      if (sp.ans !== 0 && near(v, -sp.ans, sp.tol)) return 'Check the sign. Your number should be ' + (sp.ans > 0 ? 'positive' : 'negative') + '.';
+      return sp.hint || 'Not quite. Go back through the steps one at a time.';
+    }
+    if (k === 'expr') {
+      var vars = sp.vars || ['x'], f;
+      var s = stripPrefix(norm(raw).replace(/^a_?n=|^a\(n\)=/, '')).replace(/(\d),(?=\d{3}(?!\d))/g, '$1');
+      try { f = parseExpr(s, vars); } catch (e) { return 'I could not read that. Type it like ' + (sp.eg || '3(2)^x') + '. Use ^ for a power.'; }
+      var g = parseExpr(norm(sp.ans), vars);
+      if (exprEq(f, g, vars)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (exprEq(f, parseExpr(norm(m.v), vars), vars)) return m.m; }
+      return sp.hint || 'Not quite. Check your starting value and what you add or multiply by each time.';
+    }
+    if (k === 'ineq') {
+      var q = parseIneq(raw, sp.v);
+      if (!q) return 'Type it like ' + sp.v + ' > 0 (use <, >, <= or >=).';
+      if (q.op === sp.op && near(q.n, sp.n)) return true;
+      if (near(q.n, sp.n) && q.op.charAt(0) === sp.op.charAt(0)) return sp.eqMsg || 'Close! Check if the end number itself is included. Use > or <, not ≥ or ≤, when it is not.';
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (q.op === m.op && near(q.n, m.n)) return m.m; }
+      return sp.hint || 'Not quite. Think about which y-values the graph reaches.';
+    }
+    if (k === 'text') {
+      var t = norm(raw).replace(/[^a-z0-9()]/g, '');
+      for (i = 0; i < sp.ans.length; i++) if (new RegExp('^(' + sp.ans[i] + ')$').test(t)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (new RegExp('^(' + m.v + ')$').test(t)) return m.m; }
+      return sp.hint || 'Not quite. Try again.';
+    }
+    return 'Not quite.';
+  }
+  function solvedViz(sp) {
+    var ids = sp.viz ? [].concat(sp.viz) : [];
+    ids.forEach(function (v) { document.querySelectorAll('[data-v="' + v + '"]').forEach(function (el) { draw(el, true); }); });
+    if (sp.reveal) [].concat(sp.reveal).forEach(function (r) { var el = document.getElementById(r); if (el) el.classList.remove('hide'); });
+  }
+  function check(id) {
+    var sp = S.items[id], inp = document.getElementById(id + '-in');
+    if (!sp || !inp || S.solved[id]) return;
+    if (!inp.value.trim()) { fbSay(id, 'x', 'Type your answer in the box first.'); return; }
+    var r = judge(sp, inp.value);
+    if (!S.tried[id]) { S.tried[id] = 1; if (r === true) S.first++; }
+    if (r === true) { S.solved[id] = 1; inp.disabled = true; fbSay(id, 'c', '✓ ' + (sp.ok || 'Correct!')); solvedViz(sp); }
+    else fbSay(id, 'x', r);
+    score();
+  }
+  function pick(id, btn, val) {
+    var sp = S.items[id]; if (!sp || S.solved[id]) return;
+    var ok = String(val) === String(sp.ans);
+    if (!S.tried[id]) { S.tried[id] = 1; if (ok) S.first++; }
+    var card = document.getElementById(id);
+    if (ok) {
+      S.solved[id] = 1; btn.classList.add(sp.kind === 'fix' ? 'found' : 'correct');
+      if (card) card.querySelectorAll('.chk-btn,.fix-step').forEach(function (b) { b.disabled = true; b.style.pointerEvents = 'none'; });
+      fbSay(id, 'c', '✓ ' + (sp.ok || 'Correct!')); solvedViz(sp);
+    } else {
+      btn.classList.add(sp.kind === 'fix' ? 'okstep' : 'wrong');
+      fbSay(id, 'x', (sp.why && sp.why[val]) || sp.hint || 'Not quite. Try another choice.');
+    }
+    score();
+  }
+  function show(id) { var sp = S.items[id]; if (sp) solvedViz(sp); }
+  function revealAll() {
+    Object.keys(S.items).forEach(function (id) {
+      var sp = S.items[id]; if (S.solved[id]) return;
+      var card = document.getElementById(id), bt = card && card.querySelector('[data-o="' + sp.ans + '"]');
+      fbSay(id, 'c', 'Answer: ' + (sp.show || (sp.kind === 'pt' ? '(' + fmt(sp.ans[0]) + ', ' + fmt(sp.ans[1]) + ')' : bt ? bt.textContent : sp.ans)) + (sp.ok && sp.kind !== 'pt' ? '<br>' + sp.ok : ''));
+      if (card && (sp.kind === 'mc' || sp.kind === 'fix')) card.querySelectorAll('[data-o]').forEach(function (b) { if (b.getAttribute('data-o') === String(sp.ans)) b.classList.add(sp.kind === 'fix' ? 'found' : 'correct'); });
+      solvedViz(sp);
+    });
+    document.querySelectorAll('[data-v]').forEach(function (el) { draw(el, true); });
+  }
+  function draw(el, done) {
+    var f = S.V[el.getAttribute('data-v')]; if (!f) return;
+    try { el.innerHTML = f(!!done); } catch (e) { el.textContent = ''; if (window.console) console.error(e); }
+    el.setAttribute('data-done', done ? '1' : '0');
+  }
+  function syncEx() {
+    document.querySelectorAll('[data-ex]').forEach(function (el) {
+      var ex = el.getAttribute('data-ex'), fin = document.querySelector('.steps[data-example="' + ex + '"] .step.final');
+      if (fin && fin.classList.contains('revealed') && el.getAttribute('data-done') !== '1') draw(el, true);
+    });
+  }
+  function init() {
+    document.querySelectorAll('[data-v]').forEach(function (el) { draw(el, el.hasAttribute('data-static')); });
+    if (typeof window.reveal === 'function') { var r0 = window.reveal; window.reveal = function (s) { r0(s); syncEx(); }; }
+    if (typeof window.revealAll === 'function') { var r1_ = window.revealAll; window.revealAll = function (id) { r1_(id); syncEx(); }; }
+    if (typeof window.revealPage === 'function') { var r2 = window.revealPage; window.revealPage = function () { r2(); revealAll(); }; }
+    document.querySelectorAll('.val-chk input').forEach(function (inp) {
+      if (inp.dataset.m1) return; inp.dataset.m1 = '1';
+      inp.setAttribute('autocomplete', 'off'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('spellcheck', 'false');
+    });
+    score();
+  }
+
+  /* ---------- interactive: drag a point (mouse + touch) ---------- */
+  function dragPoint(el, o) {
+    // o: {render(x,y) -> svg string, x, y, x0,x1,y0,y1, onMove(x,y)}
+    var st = { x: o.x, y: o.y };
+    function paint() { el.innerHTML = o.render(st.x, st.y); if (o.onMove) o.onMove(st.x, st.y); }
+    paint();
+    var dragging = false;
+    function toData(evt) {
+      var svg = el.querySelector('svg'); if (!svg) return null;
+      var pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+      var m = svg.getScreenCTM(); if (!m) return null; var p = pt.matrixTransform(m.inverse());
+      return o.fromPx(p.x, p.y);
+    }
+    function move(evt) {
+      var d = toData(evt); if (!d) return;
+      var nx = Math.max(o.x0, Math.min(o.x1, Math.round(d[0]))), ny = Math.max(o.y0, Math.min(o.y1, Math.round(d[1])));
+      if (nx !== st.x || ny !== st.y) { st.x = nx; st.y = ny; paint(); }
+    }
+    el.addEventListener('pointerdown', function (e) { dragging = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} move(e); e.preventDefault(); });
+    el.addEventListener('pointermove', function (e) { if (dragging) { move(e); e.preventDefault(); } });
+    el.addEventListener('pointerup', function () { dragging = false; });
+    el.addEventListener('pointercancel', function () { dragging = false; });
+    el.setAttribute('tabindex', '0');
+    el.addEventListener('keydown', function (e) {
+      var k = e.key, dx = k === 'ArrowRight' ? 1 : k === 'ArrowLeft' ? -1 : 0, dy = k === 'ArrowUp' ? 1 : k === 'ArrowDown' ? -1 : 0;
+      if (!dx && !dy) return; e.preventDefault();
+      st.x = Math.max(o.x0, Math.min(o.x1, st.x + dx)); st.y = Math.max(o.y0, Math.min(o.y1, st.y + dy)); paint();
+    });
+    return st;
+  }
+  // pixel <-> data for a plane with default padding (mirror of plane())
+  function planeMap(o) {
+    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var yl = o.yl || o.ys || 1, maxYW = 0, tick = o.tick || function (v) { return fmt(v); };
+    for (var v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) maxYW = Math.max(maxYW, tw(tick(+v.toFixed(6)), tfs));
+    var L = (x0 >= 0 ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0), B = H - ((y0 >= 0 ? 17 : 10) + (o.xtitle ? 15 : 0)), T = 10, R = W - 10;
+    return function (px, py) { return [x0 + (px - L) / (R - L) * (x1 - x0), y0 + (B - py) / (B - T) * (y1 - y0)]; };
+  }
+
+  return { C: C, fmt: fmt, money: money, commas: commas, plane: plane, sys: sys, planeMap: planeMap, eqrows: eqrows, elim: elim, subst: subst, tbl: tbl, bars: bars,
+    hops: hops, mapping: mapping, balance: balance, svgOpen: svgOpen, text: text, pill: pill, tw: tw, solve2: solve2, eqStd: eqStd, eqSI: eqSI, term: term,
+    reg: reg, check: check, pick: pick, show: show, revealAll: revealAll, init: init, draw: draw, V: S.V, S: S, dragPoint: dragPoint,
+    parseNum: parseNum, parsePt: parsePt, parseExpr: parseExpr, norm: norm, judge: judge };
+})();
+</script>
+<script>
+var smMode;
+(function () {
+  var C = M1.C, V = M1.V, R = M1.reg, P = M1.plane, f = M1.fmt;
+  function seq(a1, step, n, geo) { var o = [], v = a1; for (var i = 0; i < n; i++) { o.push(+v.toFixed(10)); v = geo ? v * step : v + step; } return o; }
+  function ar(a1, d, n) { return a1 + (n - 1) * d; }
+  function gm(a1, r, n) { return a1 * Math.pow(r, n - 1); }
+  function nlab(n) { var o = []; for (var i = 1; i <= n; i++) o.push(i); return o; }
+  function ops(vals, geo) { var o = []; for (var i = 1; i < vals.length; i++) { var s = geo ? vals[i] / vals[i - 1] : vals[i] - vals[i - 1]; o.push(geo ? '×' + f(s) : (s >= 0 ? '+' : '−') + f(Math.abs(s))); } return o; }
+  function seqT(vals, o) { o = o || {}; return M1.tbl({ heads: ['n', 'a_n'], rows: [nlab(vals.length), vals], ops: o.ops || ops(vals, o.geo), opsQ: o.q, hide: o.hide, done: o.done, label: 'sequence table' }); }
+  function after(d, s) { return d ? s : ''; }
+  /* ---- Topic 1 ---- */
+  V.t1map = function () { return M1.mapping({ inp: [1, 2, 3, 4], out: seq(2, 3, 4) }); };
+  V.t1dots = function () { var A = seq(2, 3, 4), G = seq(2, 3, 4, true), it = [];
+    A.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: i === 3 ? 'arithmetic' : null }); }); G.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.purple, r: 4, label: i === 3 ? 'geometric' : null }); });
+    return P({ x: [0, 5], y: [0, 56], ys: 8, yl: 8, xname: 'n', yname: 'a_n', label: 'dot graphs of two sequences', items: it }); };
+  V.t1a = function () { return seqT(seq(2, 3, 4)); };
+  V.t1g = function () { return seqT(seq(2, 3, 4, true), { geo: true }); };
+  V.e41 = function (d) { return seqT([4, 9, 14, 19], { q: true, done: d }); };
+  V.e41b = function (d) { return seqT([3, 6, 12, 24], { geo: true, q: true, done: d }); };
+  V.f41 = function (d) { return after(d, seqT([1, 2, 4, 8], { geo: true, q: true, done: true })); };
+  R('f41', { kind: 'fix', ans: 2, viz: 'f41', ok: 'Step 2 is the mistake. Ray checked only ONE pair. 4 − 2 = 2 and 8 − 4 = 4, so the differences are not the same. The ratios are 2, 2, 2: it is geometric, and the next term is 16.',
+    why: { 1: 'Step 1 is right: 2 − 1 = 1. The problem is what Ray did next.', 3: 'Step 3 follows from step 2. Look earlier: did he check every pair?' } });
+  var Q41 = { q41: [[10, 7, 4, 1], 'a'], q41b: [[5, 10, 20, 40], 'g'], q41c: [[1, 4, 9, 16], 'n'] };
+  Object.keys(Q41).forEach(function (id) {
+    var v = Q41[id][0], dif = ops(v, false), rat = ops(v, true), isA = dif.every(function (x) { return x === dif[0]; }), isG = rat.every(function (x) { return x === rat[0]; });
+    var key = isA ? 'a' : isG ? 'g' : 'n';
+    V[id] = function (d) { return seqT(v, { ops: key === 'g' ? rat : dif, q: true, done: d }); };
+    R(id, { kind: 'mc', ans: key, viz: id, ok: key === 'a' ? 'The differences are all ' + dif[0] + '. Arithmetic!' : key === 'g' ? 'The ratios are all ' + rat[0] + '. Geometric!' : 'Differences ' + dif.join(', ') + ' change, and ratios change too. Neither.',
+      why: { a: 'Subtract each pair: ' + dif.join(', ') + '. Are they all the same?', g: 'Divide each pair: ' + rat.join(', ') + '. Are they all the same?', n: 'Check again. Subtract each pair, then divide each pair.' } });
+  });
+  /* seq maker */
+  var sm = 'add';
+  smMode = function (m) { sm = m; document.getElementById('sm-add').className = m === 'add' ? 'on' : ''; document.getElementById('sm-mul').className = m === 'mul' ? 'on' : '';
+    var s = document.getElementById('sm-s'); if (m === 'add') { s.min = -4; s.max = 5; s.step = 1; s.value = 3; } else { s.min = 0.5; s.max = 3; s.step = 0.5; s.value = 2; } smDraw(); };
+  function smDraw() {
+    var a = +document.getElementById('sm-a').value, s = +document.getElementById('sm-s').value, geo = sm === 'mul', v = seq(a, s, 5, geo);
+    document.getElementById('sm-ao').textContent = f(a);
+    document.getElementById('sm-sl').innerHTML = (geo ? 'r' : 'd') + ' = <b id="sm-so">' + f(s) + '</b>';
+    document.getElementById('sm-out').innerHTML = geo ? 'Geometric: a<sub>n</sub> = ' + f(a) + ' · ' + f(s) + '<sup>n−1</sup> &nbsp;→ exponential' : 'Arithmetic: a<sub>n</sub> = ' + f(a) + ' + (n − 1)(' + f(s) + ') &nbsp;→ linear';
+    document.getElementById('sm-viz').innerHTML = M1.bars({ vals: v, ops: ops(v, geo), c: geo ? C.purple : C.navy, fmt: function (x) { return f(x, 2); }, label: 'bars of your sequence' });
+  }
+  ['sm-a', 'sm-s'].forEach(function (id) { document.getElementById(id).addEventListener('input', smDraw); }); smDraw();
+  /* ---- Topic 2 ---- */
+  V.t2bars = function () { var v = seq(3, 4, 4); return M1.bars({ vals: v, ops: ops(v) }); };
+  V.e42 = function (d) { return M1.hops({ start: 3, step: 4, count: 9, min: 0, max: 40, tick: 1, lab: 10, done: d, startLab: 'a_1 = 3', endQ: 'a_{10} = ?', endLab: 'a_{10} = ' + ar(3, 4, 10), note: '9 jumps of +4' }); };
+  V.e42b = function (d) { var it = []; if (d) it.push({ t: 'fn', f: function (n) { return 5 * n - 3; }, c: C.green, dash: true, w: 2, label: 'a_n = 5n − 3', dom: [0.5, 5.5] });
+    seq(2, 5, 5).forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: f(v) }); });
+    return P({ x: [0, 6], y: [0, 26], ys: 2, yl: 4, xname: 'n', yname: 'a_n', label: 'terms of 2, 7, 12, 17, 22', items: it }); };
+  V.f42 = function (d) { return after(d, M1.hops({ start: 8, step: 3, count: 19, min: 0, max: 70, tick: 5, lab: 10, done: true, startLab: 'a_1 = 8', endLab: 'a_{20} = ' + ar(8, 3, 20), note: '19 jumps of +3, not 20' })); };
+  R('f42', { kind: 'fix', ans: 2, viz: 'f42', ok: 'Step 2 is the mistake. Use (n − 1): a<sub>20</sub> = 8 + 19 · 3 = 8 + 57 = 65. From the 1st term to the 20th term is only 19 jumps.',
+    why: { 1: 'Step 1 is right: 11 − 8 = 3.', 3: 'The math 8 + 60 = 68 is right, but step 2 used the wrong number of jumps.' } });
+  V.q42 = function (d) { return M1.hops({ start: 6, step: 4, count: 14, min: 0, max: 70, tick: 2, lab: 10, done: d, startLab: 'a_1 = 6', endQ: 'a_{15} = ?', endLab: 'a_{15} = ' + ar(6, 4, 15), note: '14 jumps of +4' }); };
+  R('q42', { kind: 'num', ans: ar(6, 4, 15), viz: 'q42', ok: 'a<sub>15</sub> = 6 + (15 − 1)(4) = 6 + 56 = 62.', miss: [{ v: 6 + 15 * 4, m: 'Close! Use (n − 1) = 14 jumps, not 15.' }, { v: 15 * 4, m: 'Remember to start at a<sub>1</sub> = 6, and use (n − 1).' }], hint: 'Use a<sub>n</sub> = a<sub>1</sub> + (n − 1)d with a<sub>1</sub> = 6, d = 4, n = 15.' });
+  V.q42b = function (d) { var v = seq(20, -3, 4); return M1.bars({ vals: v, ops: d ? ops(v) : ['?', '?', '?'], opC: d ? C.green : null }); };
+  R('q42b', { kind: 'expr', vars: ['n'], ans: '20+(n-1)(-3)', show: 'a<sub>n</sub> = 20 + (n − 1)(−3) = 23 − 3n', viz: 'q42b', eg: '20 − 3(n − 1)', ok: 'a<sub>n</sub> = 20 + (n − 1)(−3), which simplifies to 23 − 3n.',
+    miss: [{ v: '20-3n', m: 'Close! Use (n − 1): a<sub>n</sub> = 20 − 3(n − 1). Check n = 1: you should get 20.' }, { v: '20+3(n-1)', m: 'The terms go DOWN, so d = −3, not +3.' }, { v: '3n+17', m: 'The terms go DOWN, so d is negative.' }],
+    hint: 'a<sub>1</sub> = 20 and d = 17 − 20 = −3. Use a<sub>n</sub> = a<sub>1</sub> + (n − 1)d.' });
+  /* ---- Topic 3 ---- */
+  V.t3bars = function () { var v = seq(2, 3, 4, true); return M1.bars({ vals: v, ops: ops(v, true), c: C.purple }); };
+  V.e43 = function (d) { return seqT(seq(2, 3, 5, true), { geo: true, hide: [[1, 4]], done: d }); };
+  V.e43b = function (d) { var v = seq(80, 0.5, 6, true); return M1.bars({ vals: v, ops: v.slice(1).map(function () { return '×½'; }), hide: [5], done: d, c: C.purple, labs: nlab(6).map(function (i) { return 'a_' + i; }) }); };
+  V.f43 = function (d) { return after(d, seqT(seq(4, 3, 5, true), { geo: true, hide: [[1, 4]], done: true })); };
+  R('f43', { kind: 'fix', ans: 3, viz: 'f43', ok: 'Step 3 is the mistake. Do the power FIRST: 3<sup>4</sup> = 81. Then multiply: 4 · 81 = 324. (4 · 3 = 12 first is the wrong order.)',
+    why: { 1: 'Step 1 is right: 12 ÷ 4 = 3.', 2: 'Step 2 is right: a<sub>5</sub> = a<sub>1</sub> · r<sup>5−1</sup> = 4 · 3<sup>4</sup>.' } });
+  V.q43 = function (d) { var v = seq(5, 2, 7, true); return M1.bars({ vals: v, ops: ops(v, true), hide: [6], done: d, c: C.purple }); };
+  R('q43', { kind: 'num', ans: gm(5, 2, 7), viz: 'q43', ok: 'a<sub>7</sub> = 5 · 2<sup>6</sup> = 5 · 64 = 320.', miss: [{ v: 5 * Math.pow(2, 7), m: 'Use the exponent n − 1 = 6, not 7.' }, { v: Math.pow(10, 6), m: 'Do the power first: 2<sup>6</sup> = 64. Then times 5.' }, { v: ar(5, 5, 7), m: 'This sequence multiplies by 2. It does not add 5.' }], hint: 'r = 10 ÷ 5 = 2. Use a<sub>7</sub> = 5 · 2<sup>6</sup>.' });
+  V.q43b = function (d) { return seqT(seq(81, 1 / 3, 4, true), { ops: ['×⅓', '×⅓', '×⅓'], hide: [[1, 1], [1, 2], [1, 3]], done: d }); };
+  R('q43b', { kind: 'num', ans: gm(81, 1 / 3, 4), viz: 'q43b', ok: '81 → 27 → 9 → 3. So a<sub>4</sub> = 3.', miss: [{ v: 1, m: 'You went one step too far. a<sub>4</sub> is the 4th term: 81, 27, 9, …' }, { v: 9, m: 'That is a<sub>3</sub>. Go one more step.' }], hint: 'Multiply by 1/3 (divide by 3) each step: a<sub>2</sub> = 27, then keep going.' });
+  /* ---- Topic 4 ---- */
+  V.t4g = function () { return P({ x: [0, 6], y: [0, 16], ys: 2, yl: 2, label: 'line vs exponential', items: [
+    { t: 'line', m: 2, b: 1, label: 'y = 2x + 1' }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'y = 2^x', at: 0.75 }, { t: 'pt', x: 3, y: 7, c: C.navy, r: 3.5 }, { t: 'pt', x: 3, y: 8, c: C.purple, r: 3.5, label: 'at x = 3: 8 > 7' }] }); };
+  V.t4l = function () { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], [1, 3, 5, 7, 9]], ops: ['+2', '+2', '+2', '+2'] }); };
+  V.t4e = function () { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], [1, 2, 4, 8, 16]], ops: ['×2', '×2', '×2', '×2'], opC: C.purple }); };
+  V.e44 = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [3, 6, 12, 24]], ops: ['×2', '×2', '×2'], opsQ: true, done: d }); };
+  V.e44b = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [5, 8, 11, 14]], ops: ['+3', '+3', '+3'], opsQ: true, done: d }); };
+  V.f44 = function (d) { return after(d, P({ x: [0, 3.3], y: [0, 60], ys: 10, yl: 10, label: 'right model vs wrong model', items: [
+    { t: 'fn', f: function (x) { return 2 * Math.pow(3, x); }, c: C.green, label: 'y = 2·3^x ✓' }, { t: 'fn', f: function (x) { return 3 * Math.pow(2, x); }, c: C.red, dash: true, label: 'y = 3·2^x ✗', at: 0.95 },
+    { t: 'pt', x: 0, y: 2, c: C.navy, r: 3.5 }, { t: 'pt', x: 1, y: 6, c: C.navy, r: 3.5 }, { t: 'pt', x: 2, y: 18, c: C.navy, r: 3.5 }, { t: 'pt', x: 3, y: 54, c: C.navy, r: 3.5 }] })); };
+  R('f44', { kind: 'fix', ans: 4, viz: 'f44', ok: 'Step 4 is the mistake. a and b are switched. a = 2 goes in front, and b = 3 gets the exponent: y = 2 · 3<sup>x</sup>. The green curve hits every data point.',
+    why: { 1: 'Step 1 is right: 6 − 2 = 4, 18 − 6 = 12, 54 − 18 = 36.', 2: 'Step 2 is right: 6 ÷ 2 = 3, 18 ÷ 6 = 3, 54 ÷ 18 = 3.', 3: 'Step 3 is right: a is the y-value at x = 0, which is 2.' } });
+  V.q44 = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [4, 12, 36, 108]], ops: ['×3', '×3', '×3'], opsQ: true, done: d }); };
+  R('q44', { kind: 'expr', vars: ['x'], ans: '4*3^x', show: 'y = 4 · 3<sup>x</sup>', viz: 'q44', eg: '4(3)^x', ok: 'Ratios are all 3, and y = 4 when x = 0: y = 4 · 3<sup>x</sup>.',
+    miss: [{ v: '3*4^x', m: 'You switched a and b. The start value 4 goes in front. The ratio 3 gets the exponent.' }, { v: '8x+4', m: 'The differences 8, 24, 72 are not the same, so it is not linear. Check the ratios.' }, { v: '4*3^(x-1)', m: 'Close! In y = a · b<sup>x</sup>, x starts at 0, so no "− 1" is needed.' }], hint: 'Find the ratio (12 ÷ 4). The start value is y when x = 0.' });
+  var f6 = 5 * 6 + 10, g6 = Math.pow(2, 6), k44 = f6 > g6 ? 'f' : g6 > f6 ? 'g' : 'e';
+  V.q44b = function (d) { return after(d, P({ x: [0, 7], y: [0, 80], ys: 10, yl: 20, label: 'f and g', items: [
+    { t: 'line', m: 5, b: 10, label: 'f(x) = 5x + 10', at: 0.3 }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'g(x) = 2^x', at: 0.6 }, { t: 'pt', x: 6, y: f6, c: C.navy, label: f(f6) }, { t: 'pt', x: 6, y: g6, c: C.green, label: f(g6) }] })); };
+  R('q44b', { kind: 'mc', ans: k44, viz: 'q44b', ok: 'f(6) = 5(6) + 10 = 40. g(6) = 2<sup>6</sup> = 64. The exponential is bigger.', why: { f: 'Find both: f(6) = 40. g(6) = 2<sup>6</sup> = 2·2·2·2·2·2 = ?', e: 'Work out both values. f(6) = 40. What is 2<sup>6</sup>?' } });
+  /* ---- Topic 5 ---- */
+  function expPts(a, b, n) { var o = []; for (var x = 0; x <= n; x++) o.push({ t: 'pt', x: x, y: a * Math.pow(b, x), c: C.navy, r: 3 }); return o; }
+  V.t5g = function () { return P({ x: [0, 6], y: [0, 12], ys: 1, yl: 2, label: 'growth curve', items: [{ t: 'fn', f: function (x) { return Math.pow(1.5, x); }, c: C.green, label: 'b > 1: growth', at: 0.55 }].concat(expPts(1, 1.5, 6)) }); };
+  V.t5d = function () { return P({ x: [0, 6], y: [0, 12], ys: 1, yl: 2, label: 'decay curve', items: [{ t: 'fn', f: function (x) { return 10 * Math.pow(0.6, x); }, c: C.red, label: '0 < b < 1: decay', at: 0.25 }].concat(expPts(10, 0.6, 6)) }); };
+  function gsDraw() {
+    var a = +document.getElementById('gs-a').value, b = +(+document.getElementById('gs-b').value).toFixed(2);
+    document.getElementById('gs-ao').textContent = f(a); document.getElementById('gs-bo').textContent = f(b);
+    var kind = b > 1 ? 'Growth: grows ' + f((b - 1) * 100, 0) + '% each step' : b < 1 ? 'Decay: shrinks ' + f((1 - b) * 100, 0) + '% each step' : 'b = 1: no change — a flat line';
+    document.getElementById('gs-out').innerHTML = 'y = ' + f(a) + '(' + f(b) + ')<sup>x</sup> &nbsp;→ ' + kind;
+    document.getElementById('gs-viz').innerHTML = P({ x: [0, 5], y: [0, 40], ys: 5, yl: 10, label: 'your exponential', items: [{ t: 'fn', f: function (x) { return a * Math.pow(b, x); }, c: b >= 1 ? C.green : C.red, label: 'y = ' + f(a) + '(' + f(b) + ')^x' }, { t: 'pt', x: 0, y: a, c: C.navy, label: '(0, ' + f(a) + ')' }] });
+    var ys = [0, 1, 2, 3, 4].map(function (x) { return +(a * Math.pow(b, x)).toFixed(2); });
+    document.getElementById('gs-tbl').innerHTML = M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], ys.map(function (v) { return f(v, 2); })], ops: ['×' + f(b), '×' + f(b), '×' + f(b), '×' + f(b)], label: 'table of values' });
+  }
+  ['gs-a', 'gs-b'].forEach(function (id) { document.getElementById(id).addEventListener('input', gsDraw); }); gsDraw();
+  function money0(v) { return '$' + M1.commas(Math.round(v)); }
+  V.e45 = function (d) { var v = [0, 1, 2, 3, 4, 5].map(function (t) { return 500 * Math.pow(1.04, t); });
+    return M1.bars({ vals: v, labs: ['yr 0', 'yr 1', 'yr 2', 'yr 3', 'yr 4', 'yr 5'], ops: v.slice(1).map(function () { return d ? '×1.04' : '?'; }), opC: d ? C.green : null, fmt: money0, max: 650 }); };
+  V.e45b = function (d) { var it = [{ t: 'fn', f: function (x) { return 18000 * Math.pow(0.9, x); }, c: C.red, label: 'y = 18000(0.9)^x', at: 0.75 }];
+    [0, 1, 2].forEach(function (x) { it.push({ t: 'pt', x: x, y: 18000 * Math.pow(0.9, x), c: C.navy, r: 3.5 }); });
+    it.push(d ? { t: 'pt', x: 3, y: 18000 * Math.pow(0.9, 3), c: C.green, label: '(3, $13,122)' } : { t: 'pt', x: 3, y: 18000 * Math.pow(0.9, 3), c: C.gold, label: '(3, ?)', pill: true });
+    return P({ x: [0, 6], y: [0, 20000], ys: 2000, yl: 4000, tick: function (v) { return M1.commas(v); }, xtitle: 'years', ytitle: 'value ($)', xname: '', yname: '', label: 'car value decay', items: it }); };
+  V.f45 = function (d) { return after(d, P({ x: [0, 10], y: [0, 3500], ys: 500, yl: 500, tick: function (v) { return M1.commas(v); }, xtitle: 'years', ytitle: 'people', xname: '', yname: '', label: 'right and wrong town models', items: [
+    { t: 'fn', f: function (x) { return 2000 * Math.pow(0.95, x); }, c: C.green, label: '2000(0.95)^x ✓', at: 0.6 }, { t: 'fn', f: function (x) { return 2000 * Math.pow(1.05, x); }, c: C.red, dash: true, label: '2000(1.05)^x ✗', at: 0.55 }] })); };
+  R('f45', { kind: 'fix', ans: 3, viz: 'f45', ok: 'Step 3 is the mistake. The town SHRINKS, so it is decay: b = 1 − 0.05 = 0.95. The model is y = 2000(0.95)<sup>x</sup>. Leo\'s model grows instead (red).',
+    why: { 1: 'Step 1 is right. The town starts with 2,000 people.', 2: 'Step 2 is right: 5% = 0.05.', 4: 'Step 4 copies step 3 correctly. The mistake is in step 3.' } });
+  V.q45 = function (d) { var v = [0, 1, 2, 3].map(function (t) { return 300 * Math.pow(1.06, t); });
+    return M1.bars({ vals: v, labs: ['yr 0', 'yr 1', 'yr 2', 'yr 3'], ops: v.slice(1).map(function () { return d ? '×1.06' : '?'; }), opC: d ? C.green : null, hide: d ? [] : [1, 2, 3], done: d, fmt: function (x) { return M1.money(x, 2); } }); };
+  R('q45', { kind: 'expr', vars: ['x'], ans: '300*1.06^x', show: 'y = 300(1.06)<sup>x</sup>', viz: 'q45', eg: '300(1.06)^x', ok: 'a = 300, b = 1 + 0.06 = 1.06: y = 300(1.06)<sup>x</sup>.',
+    miss: [{ v: '300*0.06^x', m: 'b is not the rate. For growth, b = 1 + 0.06.' }, { v: '300*1.6^x', m: '6% = 0.06, not 0.6. So b = 1.06.' }, { v: '300*0.94^x', m: 'This money GROWS, so add: b = 1 + 0.06.' }, { v: '300*6^x', m: 'Change 6% to a decimal (0.06), then b = 1 + 0.06.' }, { v: '1.06*300^x', m: 'You switched a and b. The start amount 300 goes in front.' }], hint: 'Start: a = 300. Growth factor: b = 1 + 0.06.' });
+  var v2 = Math.round(300 * Math.pow(1.06, 2) * 100) / 100;
+  V.q45b = function (d) { return M1.tbl({ heads: ['year', '$'], hw: 52, cw: 70, rows: [[0, 1, 2], ['300', M1.money(300 * 1.06, 2).slice(1), d ? M1.money(v2, 2).slice(1) : '?']], ops: ['×1.06', '×1.06'], hide: [[1, 2]], done: d }); };
+  R('q45b', { kind: 'num', ans: v2, tol: 0.006, viz: 'q45b', ok: '300(1.06)<sup>2</sup> = 300(1.1236) = $337.08.', miss: [{ v: 336, m: 'That adds 6% of 300 twice. Compound growth multiplies: 300(1.06)<sup>2</sup>.' }, { v: 318, m: 'That is after 1 year. Use x = 2.' }, { v: 300 * 2.12, m: 'Do the power: 1.06<sup>2</sup> = 1.06 × 1.06, not 1.06 × 2.' }], hint: 'Put x = 2 into y = 300(1.06)<sup>x</sup>. Do the power first.' });
+  V.q45c = function (d) { return after(d, P({ x: [0, 6], y: [0, 60], ys: 10, yl: 10, label: 'decay 50(0.8)^x', items: [{ t: 'fn', f: function (x) { return 50 * Math.pow(0.8, x); }, c: C.red, label: 'y = 50(0.8)^x' }].concat(expPts(50, 0.8, 6)) })); };
+  R('q45c', { kind: 'mc', ans: 'd20', viz: 'q45c', ok: 'b = 0.8 is less than 1, so it is decay. 1 − 0.8 = 0.2 = 20% lost each step.', why: { g80: 'b = 0.8 is less than 1. Multiplying by 0.8 makes things smaller.', d80: 'Decay is right. But 0.8 is what is LEFT. The loss is 1 − 0.8 = 0.2.', g20: 'Multiplying by 0.8 makes things smaller, not bigger.' } });
+  /* ---- Topic 6 ---- */
+  V.t6a = function () { return P({ x: [-3, 3], y: [0, 8], ys: 1, yl: 2, label: 'y = 2^x with its asymptote', items: [
+    { t: 'seg', x1: -3, y1: 0.08, x2: 3, y2: 0.08, c: C.gold, w: 2.4, dash: true }, { t: 'txt', x: -1.6, y: 0.9, s: 'asymptote y = 0', c: C.goldTx },
+    { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.navy, label: 'y = 2^x', at: 0.82 }, { t: 'pt', x: 0, y: 1, c: C.green, label: '(0, 1)' }] }); };
+  V.t6b = function () { return P({ w: 260, x: [-1, 5], y: [0, 10], ys: 1, yl: 2, label: 'decay with asymptote', items: [
+    { t: 'seg', x1: -1, y1: 0.1, x2: 5, y2: 0.1, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 8 * Math.pow(0.5, x); }, c: C.red, label: 'y = 8(0.5)^x', at: 0.35 },
+    { t: 'pt', x: 0, y: 8, c: C.green, label: '(0, 8)' }, { t: 'txt', x: 3.6, y: 2, s: '→ near 0', c: C.goldTx }] }); };
+  V.t6c = function () { return P({ w: 260, x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: '2^x vs x squared', items: [
+    { t: 'fn', f: function (x) { return x * x; }, c: C.navy, label: 'y = x^2', at: 0.62 }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'y = 2^x', at: 0.9 }, { t: 'pt', x: 4, y: 16, c: C.green, label: '(4, 16)' }] }); };
+  V.e46 = function (d) { return P({ x: [-3, 3], y: [0, 14], ys: 1, yl: 2, label: 'y = 3(2)^x', items: [
+    { t: 'seg', x1: -3, y1: 0.12, x2: 3, y2: 0.12, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 3 * Math.pow(2, x); }, c: C.navy, label: 'y = 3(2)^x', at: 0.8 },
+    d ? { t: 'pt', x: 0, y: 3, c: C.green, label: '(0, 3)' } : { t: 'pt', x: 0, y: 3, c: C.gold, label: '(0, ?)', pill: true }] }); };
+  V.f46 = function (d) { return after(d, P({ x: [-2, 4], y: [0, 22], ys: 2, yl: 4, label: 'y = 5(0.5)^x', items: [
+    { t: 'fn', f: function (x) { return 5 * Math.pow(0.5, x); }, c: C.red, label: 'y = 5(0.5)^x', at: 0.2 }, { t: 'pt', x: 0, y: 5, c: C.green, label: '(0, 5) ✓' }, { t: 'pt', x: 0, y: 0.5, c: C.red, r: 3.5, label: '(0, 0.5) ✗' }] })); };
+  R('f46', { kind: 'fix', ans: 1, viz: 'f46', ok: 'Step 1 is the mistake. At x = 0: 5(0.5)<sup>0</sup> = 5(1) = 5. The y-intercept is (0, 5) — always (0, a).',
+    why: { 2: 'Step 2 is right. y = a · b<sup>x</sup> has the asymptote y = 0.', 3: 'Step 3 is right: a = 5 is positive, so y &gt; 0.' } });
+  V.q46 = function (d) { return P({ x: [-3, 4], y: [0, 16], ys: 2, yl: 4, label: 'y = 7(1.2)^x', items: [
+    { t: 'fn', f: function (x) { return 7 * Math.pow(1.2, x); }, c: C.navy, label: 'y = 7(1.2)^x', at: 0.8 }, d ? { t: 'pt', x: 0, y: 7, c: C.green, label: '(0, 7)' } : { t: 'pt', x: 0, y: 7, c: C.gold, label: '(0, ?)', pill: true }] }); };
+  R('q46', { kind: 'num', ans: 7 * Math.pow(1.2, 0), viz: 'q46', ok: 'At x = 0: 7(1.2)<sup>0</sup> = 7(1) = 7. The y-intercept is (0, 7).', miss: [{ v: 1.2, m: 'That is b. Put x = 0: anything to the 0 power is 1. So y = 7 · 1.' }, { v: 8.4, m: 'That is x = 1. The y-intercept uses x = 0.' }, { v: 0, m: 'The graph never touches 0. Put x = 0 into 7(1.2)<sup>x</sup>.' }] });
+  V.q46b = function (d) { return after(d, P({ x: [-3, 2], y: [-2, 30], ys: 2, yl: 4, label: 'range of 4(3)^x', items: [
+    { t: 'region', hp: [{ m: 0, b: 0, s: '>' }], c: C.green, op: 0.1 }, { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy, label: 'y = 4(3)^x', at: 0.85 }, { t: 'txt', x: -1.8, y: 14, s: 'y > 0', c: C.green }] })); };
+  R('q46b', { kind: 'ineq', v: 'y', op: '>', n: 0, viz: 'q46b', show: 'y &gt; 0', ok: 'The graph is always above the asymptote y = 0, so the range is y &gt; 0.', eqMsg: 'Close! The graph never touches 0, so 0 is not included. Use &gt;, not ≥.',
+    miss: [{ op: '>', n: 4, m: '4 is the y-intercept. Far to the left the graph gets lower than 4, close to 0.' }, { op: '<', n: 0, m: 'a = 4 is positive, so every y-value is positive.' }], hint: 'Look at the asymptote. The graph is always above it.' });
+  V.q46c = function (d) { return after(d, P({ x: [0, 8], y: [0, 7], ys: 1, yl: 1, label: '6(0.5)^x', items: [
+    { t: 'seg', x1: 0, y1: 0.06, x2: 8, y2: 0.06, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 6 * Math.pow(0.5, x); }, c: C.red, label: 'y = 6(0.5)^x', at: 0.15 }, { t: 'txt', x: 6.4, y: 1.2, s: '→ 0', c: C.green }] })); };
+  R('q46c', { kind: 'mc', ans: '0', viz: 'q46c', ok: 'Halving again and again: 6, 3, 1.5, 0.75, … It gets closer and closer to 0 (the asymptote).', why: { '6': '6 is where it STARTS (x = 0). What happens as you keep halving?', up: 'b = 0.5 is less than 1, so it shrinks, not grows.', h: '0.5 is the factor b. Keep multiplying 6 by 0.5 and see where it heads.' } });
+  M1.init();
+})();
+</script>
 </body>
 </html>

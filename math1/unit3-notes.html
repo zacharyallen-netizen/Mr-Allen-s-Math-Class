@@ -18,6 +18,56 @@
 <title>Unit 3 Guided Notes — Linear Systems | NC Math 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
+<style>
+/* ---- Unit 3/4 add-ons: visuals, steps, find-the-mistake, checks ---- */
+.viz{text-align:center;margin:12px 0}
+.viz svg{max-width:100%;height:auto;display:inline-block}
+.diagram .viz{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;margin:0 0 16px}
+.legend b{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+.words{background:#f6f8fc;border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:8px;padding:9px 14px;margin:0 0 12px;font-size:.92rem}
+.words h5{margin:0 0 4px;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--navy)}
+.words dl{margin:0}.words dt{font-weight:700;color:var(--navy);display:inline}.words dd{display:inline;margin:0}
+.words dd::after{content:"";display:block;margin-bottom:4px}
+.stepbox{background:#fffdf5;border:1px solid #f1e3b0;border-radius:8px;padding:10px 14px 6px;margin:12px 0}
+.stepbox h5,.fix h5,.turn h5{margin:0 0 6px;font-family:var(--font-head);color:var(--navy);font-size:.98rem}
+.stepbox ol{margin:0;padding-left:22px}.stepbox li{margin:0 0 5px;font-size:.93rem}
+.fix{border:1px solid #f3c6c6;background:#fffafa;border-radius:8px;padding:12px 14px;margin:14px 0}
+.fix .who{font-size:.92rem;margin:0 0 8px}
+.fix-step{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid #cdd5e0;border-radius:8px;padding:8px 12px;margin:6px 0;cursor:pointer;font-size:.93rem;font-family:inherit;color:var(--ink)}
+.fix-step:hover{border-color:var(--red)}
+.fix-step .sn{display:inline-block;min-width:54px;font-weight:700;color:var(--muted)}
+.fix-step.found{border-color:var(--red);background:#fdeaea;font-weight:600}
+.fix-step.found::after{content:"  \2190  the mistake";color:#a01b1b;font-weight:700}
+.fix-step.okstep{border-color:#cfe9c6;background:#f3fbef}
+.fix-step[disabled]{cursor:default}
+.turn{border:1px solid #cfe0f5;background:#f7faff;border-radius:8px;padding:12px 14px;margin:14px 0}
+.turn .q{margin:10px 0 4px;font-size:.95rem}
+.turn .q:first-of-type{margin-top:2px}
+.hide{display:none}
+.chk-fb{overflow-wrap:anywhere}
+.chk-btn.wrong{border-color:var(--red);background:#fdeaea}
+.ctrl{background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:10px 0;max-width:420px;margin-left:auto;margin-right:auto}
+.ctrl label{display:flex;align-items:center;gap:10px;font-size:.88rem;margin:4px 0;font-family:var(--font-mono)}
+.ctrl label span{min-width:96px}
+.ctrl input[type=range]{flex:1;min-width:0;height:30px;accent-color:#1E2D4F}
+.ctrl .out{font-weight:700;color:var(--navy);margin-top:6px;font-size:.92rem;font-family:var(--font-body)}
+.ctrl .seg{display:flex;gap:6px;margin:4px 0 6px}
+.ctrl .seg button{flex:1;border:1.5px solid #cdd5e0;background:#fff;border-radius:7px;padding:6px;font-weight:600;cursor:pointer;font-family:inherit}
+.ctrl .seg button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.drag svg{touch-action:none;cursor:grab}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.mono{font-family:var(--font-mono)}
+.topic>.chk,.topic>.sa{border-top:1px solid var(--border);padding-top:12px;margin-top:14px}
+.sa-ans sup,.chk-q sup,.step sup,.key sup,.note sup,.stepbox sup,.fix sup,.turn sup,td sup{font-size:.72em;line-height:0}
+@media (max-width:600px){
+  .topic{padding:14px 12px}
+  .example,.fix,.turn,.sa{padding:10px 10px}
+  .stepbox{padding:10px 10px 6px}
+}
+@media print{ .ctrl{display:none} }
+</style>
 </head>
 <body>
 <script src="../site-bar.js"></script>
@@ -30,6 +80,7 @@
   <p class="stds">Standards: A-CED.3 · A-REI.5/6/10/11/12</p>
 </div>
 <div class="intro"><p>Fill the blanks on your printed copy first, then click any blank, step, or button to check. <strong>Print → Save as PDF</strong> for a blank student worksheet; click <em>Reveal all</em> first to print the answer key.</p></div>
+<div class="legend" aria-label="Color key for the pictures"><span><b style="background:#1E2D4F"></b>given</span><span><b style="background:#E0A800"></b>what we want (?)</span><span><b style="background:#15803D"></b>answer (shows after you check)</span><span><b style="background:#7C3AED"></b>second line</span></div>
 <div class="topic-nav">
   <a href="#t1">① Solutions</a>
   <a href="#t2">② Graphing</a>
@@ -39,22 +90,95 @@
   <a href="#t6">⑥ Inequalities</a>
 </div>
 <p style="text-align:right"><button class="reveal-all" onclick="revealPage()">👁 Reveal all answers (for printing an answer key)</button></p>
-<section class="topic" id="t1">
-  <h2><span class="num">1</span> Solutions & the Graph</h2>
-<div class="key"><strong>📌</strong> A point is a <strong>solution</strong> if it makes the equation true — that is, if it lies <strong>on the line</strong>. The graph shows <em>every</em> solution.</div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="49.2" y1="24" x2="49.2" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="74.4" y1="24" x2="74.4" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="99.6" y1="24" x2="99.6" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="124.8" y1="24" x2="124.8" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="175.2" y1="24" x2="175.2" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="200.4" y1="24" x2="200.4" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="225.6" y1="24" x2="225.6" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="250.8" y1="24" x2="250.8" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="250.8" x2="276" y2="250.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="225.6" x2="276" y2="225.6" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="200.4" x2="276" y2="200.4" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="175.2" x2="276" y2="175.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="124.8" x2="276" y2="124.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="99.6" x2="276" y2="99.6" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="74.4" x2="276" y2="74.4" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="49.2" x2="276" y2="49.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="175.2" x2="276" y2="175.2" stroke="#5a6680" stroke-width="1.8"/><line x1="124.8" y1="24" x2="124.8" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="24.0" y="187.2" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-4</text><text x="74.4" y="187.2" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-2</text><text x="175.2" y="187.2" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="225.6" y="187.2" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="276.0" y="187.2" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="119.8" y="279.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-4</text><text x="119.8" y="228.6" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="119.8" y="127.8" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="119.8" y="77.4" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="119.8" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="278" y="178.2" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="128.8" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="250.8" x2="276.0" y2="-1.2" stroke="#0056B3" stroke-width="2.6"/><text x="230.6" y="39.2" font-size="11" fill="#0056B3" font-weight="700" text-anchor="end" font-family="JetBrains Mono">y=x+1</text><circle cx="175.2" cy="99.6" r="4.5" fill="#22AC00" stroke="#22AC00" stroke-width="2"/><text x="182.2" y="93.6" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono">(2,3) ✓</text><circle cx="124.8" cy="175.2" r="4.5" fill="#cc2222" stroke="#cc2222" stroke-width="2"/><text x="131.8" y="169.2" font-size="11" fill="#cc2222" font-weight="700" font-family="JetBrains Mono">(0,0) ✗</text></svg>
-  <div class="diagram-cap">(2,3) is on y = x+1 (solution); (0,0) is not</div></div>
 
+<!-- ============ TOPIC 1 ============ -->
+<section class="topic" id="t1">
+  <h2><span class="num">1</span> Solutions &amp; the Graph</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Ordered pair</dt> <dd>— a point written (x, y). The x-value is always first.</dd>
+    <dt>Solution</dt> <dd>— an ordered pair that makes the equation true.</dd>
+    <dt>System of equations</dt> <dd>— two (or more) equations that use the same x and y. We solve them together.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> A point is a <strong>solution</strong> if it makes the equation true — that is, if it lies <strong>on the line</strong>. The graph shows <em>every</em> solution.</div>
+<div class="diagram"><div class="viz" data-v="t1a"></div>
+  <div class="diagram-cap">(2, 3) is on y = x + 1 (solution); (0, 0) is not</div></div>
+
+  <div class="example">
+    <h4>Is (4, 1) a solution of x + 2y = 6?</h4>
+    <div class="steps" data-example="e31">
+      <div class="step" onclick="reveal(this)"><strong>Put in x = 4 and y = 1:</strong> 4 + 2(1) =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 4 + 2 = 6</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Is 6 = 6 true?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Yes. (4, 1) is a solution. It sits on the line.</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e31')">Reveal all steps</button>
+    <div class="viz" data-v="e31" data-ex="e31"></div>
+  </div>
+  <div class="example">
+    <h4>Is (2, 3) a solution of the system y = x + 1 and y = −x + 5?</h4>
+    <div class="steps" data-example="e31b">
+      <div class="step" onclick="reveal(this)"><strong>Equation 1:</strong> 3 = 2 + 1 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 = 3 ✓ true</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Equation 2:</strong> 3 = −2 + 5 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 = 3 ✓ true</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ True in BOTH?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Yes. (2, 3) solves the system. It is where the lines cross.</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e31b')">Reveal all steps</button>
+    <div class="viz" data-v="e31b" data-ex="e31b"></div>
+  </div>
+
+  <div class="stepbox"><h5>🪜 Steps: check a point</h5><ol>
+    <li>Write the equation.</li>
+    <li>Put the x-value in for x.</li>
+    <li>Put the y-value in for y.</li>
+    <li>Do the math on each side.</li>
+    <li>Same number on both sides? It is a solution. Different? It is not.</li>
+    <li>For a system, check BOTH equations. It must work in both.</li>
+  </ol></div>
+
+  <div class="fix" id="f31"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ana checks if (3, 1) is a solution of y = 2x − 5. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f31',this,1)"><span class="sn">Step 1</span> y = 2x − 5</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f31',this,2)"><span class="sn">Step 2</span> 3 = 2(1) − 5</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f31',this,3)"><span class="sn">Step 3</span> 3 = −3</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f31',this,4)"><span class="sn">Step 4</span> Not true, so (3, 1) is not a solution.</button>
+    <div class="chk-fb" id="fb-f31" role="status"></div>
+    <div class="viz" data-v="f31"></div>
+    <div id="f31-next" class="hide"><div class="chk" id="f31b"><div class="chk-q">Now you fix it. Put x = 3 into y = 2x − 5. What is y?</div>
+      <div class="val-chk"><input id="f31b-in" placeholder="y = ?" aria-label="y"><button onclick="M1.check('f31b')">Check</button></div><div class="chk-fb" id="fb-f31b" role="status"></div></div></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q31"><div class="q">1. Is (1, 4) a solution of y = 3x + 1?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="yes" onclick="M1.pick('q31',this,'yes')">Yes</button>
+      <button class="chk-btn" data-o="no" onclick="M1.pick('q31',this,'no')">No</button></div>
+      <div class="chk-fb" id="fb-q31" role="status"></div><div class="viz" data-v="q31"></div></div>
+    <div class="chk" id="q31b"><div class="q">2. Is (2, 5) a solution of the system y = 2x + 1 and y = −x + 6?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="yes" onclick="M1.pick('q31b',this,'yes')">Yes</button>
+      <button class="chk-btn" data-o="no" onclick="M1.pick('q31b',this,'no')">No</button></div>
+      <div class="chk-fb" id="fb-q31b" role="status"></div><div class="viz" data-v="q31b"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 2 ============ -->
 <section class="topic" id="t2">
   <h2><span class="num">2</span> Solving by Graphing</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Intersection</dt> <dd>— the point where two lines cross. Both lines go through it.</dd>
+    <dt>Slope-intercept form</dt> <dd>— y = mx + b. The slope is m (rise over run). The y-intercept is b (where the line crosses the y-axis).</dd>
+    <dt>Parallel</dt> <dd>— lines that never cross. They have the same slope.</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> The solution to a system is the <strong>intersection point</strong> — where the lines cross.</div>
-<div class="two-col"><div class="diagram"><svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" width="220" height="220"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="220" height="220" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="73.1" y1="24" x2="73.1" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="97.7" y1="24" x2="97.7" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="122.3" y1="24" x2="122.3" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="146.9" y1="24" x2="146.9" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="171.4" y1="24" x2="171.4" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="196.0" y1="24" x2="196.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="196.0" x2="196" y2="196.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="174.5" x2="196" y2="174.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="131.5" x2="196" y2="131.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="110.0" x2="196" y2="110.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="88.5" x2="196" y2="88.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="67.0" x2="196" y2="67.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="45.5" x2="196" y2="45.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="196" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#5a6680" stroke-width="1.8"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#5a6680" stroke-width="1.8"/><text x="97.7" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="146.9" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="196.0" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="43.6" y="199.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="43.6" y="113.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="43.6" y="70.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="43.6" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="198" y="156.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="52.6" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="217.5" x2="196.0" y2="-83.5" stroke="#0056B3" stroke-width="2.6"/><line x1="24.0" y1="24.0" x2="196.0" y2="174.5" stroke="#22AC00" stroke-width="2.6"/><circle cx="97.7" cy="88.5" r="4.5" fill="#cc2222" stroke="#cc2222" stroke-width="2"/><text x="104.7" y="82.5" font-size="11" fill="#cc2222" font-weight="700" font-family="JetBrains Mono">(2,3)</text></svg>
-  <div class="diagram-cap">One solution: lines cross</div></div>
-<div class="diagram"><svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" width="220" height="220"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="220" height="220" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="73.1" y1="24" x2="73.1" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="97.7" y1="24" x2="97.7" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="122.3" y1="24" x2="122.3" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="146.9" y1="24" x2="146.9" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="171.4" y1="24" x2="171.4" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="196.0" y1="24" x2="196.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="196.0" x2="196" y2="196.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="174.5" x2="196" y2="174.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="131.5" x2="196" y2="131.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="110.0" x2="196" y2="110.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="88.5" x2="196" y2="88.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="67.0" x2="196" y2="67.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="45.5" x2="196" y2="45.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="196" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#5a6680" stroke-width="1.8"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#5a6680" stroke-width="1.8"/><text x="97.7" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="146.9" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="196.0" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="43.6" y="199.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="43.6" y="113.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="43.6" y="70.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="43.6" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="198" y="156.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="52.6" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="153.0" x2="196.0" y2="2.5" stroke="#0056B3" stroke-width="2.6"/><line x1="24.0" y1="110.0" x2="196.0" y2="-40.5" stroke="#22AC00" stroke-width="2.6"/></svg>
-  <div class="diagram-cap">No solution: parallel</div></div>
-</div><div class="diagram"><svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" width="220" height="220"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="220" height="220" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="73.1" y1="24" x2="73.1" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="97.7" y1="24" x2="97.7" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="122.3" y1="24" x2="122.3" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="146.9" y1="24" x2="146.9" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="171.4" y1="24" x2="171.4" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="196.0" y1="24" x2="196.0" y2="196" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="196.0" x2="196" y2="196.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="174.5" x2="196" y2="174.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="131.5" x2="196" y2="131.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="110.0" x2="196" y2="110.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="88.5" x2="196" y2="88.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="67.0" x2="196" y2="67.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="45.5" x2="196" y2="45.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="196" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.0" x2="196" y2="153.0" stroke="#5a6680" stroke-width="1.8"/><line x1="48.6" y1="24" x2="48.6" y2="196" stroke="#5a6680" stroke-width="1.8"/><text x="97.7" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="146.9" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="196.0" y="165.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="43.6" y="199.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="43.6" y="113.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="43.6" y="70.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="43.6" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="198" y="156.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="52.6" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="153.0" x2="196.0" y2="2.5" stroke="#0056B3" stroke-width="2.6"/><line x1="24.0" y1="153.0" x2="196.0" y2="2.5" stroke="#22AC00" stroke-width="2.6" stroke-dasharray="6 4"/></svg>
-  <div class="diagram-cap">Infinitely many: same line</div></div>
+<div class="two-col">
+  <div class="diagram"><div class="viz" data-v="t2one"></div><div class="diagram-cap">One solution: lines cross</div></div>
+  <div class="diagram"><div class="viz" data-v="t2none"></div><div class="diagram-cap">No solution: parallel</div></div>
+  <div class="diagram"><div class="viz" data-v="t2inf"></div><div class="diagram-cap">Infinitely many: same line</div></div>
+</div>
+  <div class="note"><strong>🎚 Try it:</strong> Move the sliders. Watch where the lines cross. Can you make them parallel? Can you make them the same line?</div>
+  <div class="ctrl" id="sx-ctrl">
+    <label><span>line 1: m = <b id="sx-m1o">1</b></span><input type="range" id="sx-m1" min="-3" max="3" step="0.5" value="1" aria-label="slope of line 1"></label>
+    <label><span>line 1: b = <b id="sx-b1o">1</b></span><input type="range" id="sx-b1" min="-5" max="5" step="1" value="1" aria-label="y-intercept of line 1"></label>
+    <label><span>line 2: m = <b id="sx-m2o">−1</b></span><input type="range" id="sx-m2" min="-3" max="3" step="0.5" value="-1" aria-label="slope of line 2"></label>
+    <label><span>line 2: b = <b id="sx-b2o">5</b></span><input type="range" id="sx-b2" min="-5" max="5" step="1" value="5" aria-label="y-intercept of line 2"></label>
+    <div class="out" id="sx-out" role="status"></div>
+  </div>
+  <div class="viz" id="sx-viz"></div>
   <div class="example">
     <h4>Solve  y = 2x − 1  and  y = −x + 5  by graphing/setting equal</h4>
     <div class="steps" data-example="e32">
@@ -63,6 +187,7 @@
       <div class="step final" onclick="reveal(this)"><strong>✓ Solution:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> (2, 3)</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e32')">Reveal all steps</button>
+    <div class="viz" data-v="e32" data-ex="e32"></div>
   </div>
   <div class="example">
     <h4>Two gyms: A costs 2x + 4, B costs x + 7 (x = visits). When is the cost the same?</h4>
@@ -71,13 +196,49 @@
       <div class="step final" onclick="reveal(this)"><strong>✓ Cost at x = 3:</strong> 2(3) + 4 =<span class="placeholder"> click to reveal</span><span class="hidden-content"> $10 — they meet at (3, 10)</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e32b')">Reveal all steps</button>
+<div class="diagram"><div class="viz" data-v="e32b" data-ex="e32b"></div>
+  <div class="diagram-cap">Each line is one gym's cost. Where the lines cross, the costs are the same.</div></div>
   </div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="66.0" y1="24" x2="66.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="108.0" y1="24" x2="108.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="192.0" y1="24" x2="192.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="234.0" y1="24" x2="234.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="260.2" x2="276" y2="260.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="244.5" x2="276" y2="244.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="228.8" x2="276" y2="228.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="197.2" x2="276" y2="197.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="181.5" x2="276" y2="181.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="165.8" x2="276" y2="165.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="134.2" x2="276" y2="134.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="118.5" x2="276" y2="118.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="102.8" x2="276" y2="102.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="71.2" x2="276" y2="71.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="55.5" x2="276" y2="55.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="39.8" x2="276" y2="39.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#5a6680" stroke-width="1.8"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="66.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">1</text><text x="108.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="150.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">3</text><text x="192.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="234.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">5</text><text x="276.0" y="288.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="19.0" y="247.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="19.0" y="216.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="19.0" y="184.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="19.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="19.0" y="121.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">10</text><text x="19.0" y="90.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">12</text><text x="19.0" y="58.5" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">14</text><text x="19.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">16</text><text x="278" y="279.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="28.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="213.0" x2="276.0" y2="24.0" stroke="#0056B3" stroke-width="2.6"/><line x1="24.0" y1="165.8" x2="276.0" y2="71.2" stroke="#22AC00" stroke-width="2.6"/><text x="213.0" y="49.2" font-size="11" fill="#0056B3" font-weight="700" text-anchor="end" font-family="JetBrains Mono">A: 2x+4</text><text x="276.0" y="82.3" font-size="11" fill="#22AC00" font-weight="700" text-anchor="end" font-family="JetBrains Mono">B: x+7</text><circle cx="150.0" cy="118.5" r="4.5" fill="#cc2222" stroke="#cc2222" stroke-width="2"/><text x="157.0" y="112.5" font-size="11" fill="#cc2222" font-weight="700" font-family="JetBrains Mono" text-anchor="start">(3,10)</text></svg>
-  <div class="diagram-cap">The lines cross at (3, 10): 3 visits cost $10 at either gym</div></div>
+
+  <div class="stepbox"><h5>🪜 Steps: solve by graphing</h5><ol>
+    <li>Write both equations as y = mx + b.</li>
+    <li>Graph line 1. Start at b on the y-axis. Then use the slope: rise, then run.</li>
+    <li>Graph line 2 the same way.</li>
+    <li>Find the point where the lines cross.</li>
+    <li>Write it as (x, y). The x-value goes first.</li>
+    <li>Check the point in BOTH equations.</li>
+  </ol></div>
+
+  <div class="fix" id="f32"><h5>🔍 Find the mistake</h5>
+    <p class="who">Sam graphs y = x + 1 and y = −2x + 4. Click the step with the mistake.</p>
+    <div class="viz" data-v="f32"></div>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f32',this,1)"><span class="sn">Step 1</span> Line 1 starts at 1. It goes up 1, right 1.</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f32',this,2)"><span class="sn">Step 2</span> Line 2 starts at 4. It goes down 2, right 1.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f32',this,3)"><span class="sn">Step 3</span> The lines cross where x = 1 and y = 2.</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f32',this,4)"><span class="sn">Step 4</span> The solution is (2, 1).</button>
+    <div class="chk-fb" id="fb-f32" role="status"></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q32"><div class="q">1. Where do y = x − 2 and y = −x + 4 cross? Read the graph.</div>
+      <div class="viz" data-v="q32"></div>
+      <div class="val-chk"><input id="q32-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q32')">Check</button></div><div class="chk-fb" id="fb-q32" role="status"></div></div>
+    <div class="chk" id="q32b"><div class="q">2. Plan A costs y = 3x + 2. Plan B costs y = x + 8. For what number of months x do they cost the same? Type the point (x, y).</div>
+      <div class="viz" data-v="q32b"></div>
+      <div class="val-chk"><input id="q32b-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q32b')">Check</button></div><div class="chk-fb" id="fb-q32b" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 3 ============ -->
 <section class="topic" id="t3">
   <h2><span class="num">3</span> Substitution</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Substitute</dt> <dd>— swap in. Replace a letter with something that is equal to it.</dd>
+    <dt>Isolated</dt> <dd>— alone on one side, like y in y = 2x.</dd>
+    <dt>Back-substitute</dt> <dd>— put the number you found back in to get the other letter.</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> When one variable is alone, <strong>substitute</strong> its expression into the other equation.</div>
+  <div class="diagram"><div class="viz" data-v="e33bar" data-ex="e33"></div><div class="diagram-cap">Bar model: y = 2x means y is two x-bars. So x + y is three x-bars, and they make 9.</div></div>
   <div class="example">
     <h4>Solve  y = 2x  and  x + y = 9</h4>
     <div class="steps" data-example="e33">
@@ -86,12 +247,63 @@
       <div class="step final" onclick="reveal(this)"><strong>✓ Back-substitute:</strong> y = 2(3) →<span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 6  →  (3, 6)</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e33')">Reveal all steps</button>
+    <div class="two-col">
+      <div class="diagram"><div class="viz" data-v="e33" data-ex="e33"></div><div class="diagram-cap">Swap 2x in for y</div></div>
+      <div class="diagram"><div class="viz" data-v="e33g" data-ex="e33"></div><div class="diagram-cap">Check on the graph</div></div>
+    </div>
+  </div>
+  <div class="example">
+    <h4>Solve  y = x − 1  and  3x + y = 11</h4>
+    <div class="steps" data-example="e33b">
+      <div class="step" onclick="reveal(this)"><strong>Substitute (x − 1) for y:</strong> 3x + (x − 1) = 11 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 4x − 1 = 11</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Solve x:</strong> 4x = 12 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> x = 3</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Back-substitute:</strong> y = 3 − 1 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 2  →  (3, 2)</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e33b')">Reveal all steps</button>
+    <div class="viz" data-v="e33b" data-ex="e33b"></div>
   </div>
 
+  <div class="stepbox"><h5>🪜 Steps: substitution</h5><ol>
+    <li>Find a letter that is alone, like y = … or x = ….</li>
+    <li>Copy what it equals.</li>
+    <li>In the OTHER equation, cross out that letter. Write the copy in its place, inside ( ).</li>
+    <li>Solve the new equation. It has only one letter now.</li>
+    <li>Put that number back into the "alone" equation. Find the other letter.</li>
+    <li>Write (x, y). Check it in both equations.</li>
+  </ol></div>
+
+  <div class="fix" id="f33"><h5>🔍 Find the mistake</h5>
+    <p class="who">Kai solves y = 2x − 1 and 3x − y = 4. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f33',this,1)"><span class="sn">Step 1</span> 3x − (2x − 1) = 4</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f33',this,2)"><span class="sn">Step 2</span> 3x − 2x − 1 = 4</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f33',this,3)"><span class="sn">Step 3</span> x − 1 = 4, so x = 5</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f33',this,4)"><span class="sn">Step 4</span> y = 2(5) − 1 = 9. Answer (5, 9).</button>
+    <div class="chk-fb" id="fb-f33" role="status"></div>
+    <div class="viz" data-v="f33"></div>
+    <div id="f33-next" class="hide"><div class="chk" id="f33b"><div class="chk-q">Now solve it the right way. What is the solution?</div>
+      <div class="val-chk"><input id="f33b-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('f33b')">Check</button></div><div class="chk-fb" id="fb-f33b" role="status"></div></div></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q33"><div class="q">1. Solve y = x + 1 and x + y = 7.</div>
+      <div class="viz" data-v="q33"></div>
+      <div class="val-chk"><input id="q33-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q33')">Check</button></div><div class="chk-fb" id="fb-q33" role="status"></div></div>
+    <div class="chk" id="q33b"><div class="q">2. Solve x = 2y and x + y = 12. (This time x is alone.)</div>
+      <div class="viz" data-v="q33b"></div>
+      <div class="val-chk"><input id="q33b-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q33b')">Check</button></div><div class="chk-fb" id="fb-q33b" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 4 ============ -->
 <section class="topic" id="t4">
-  <h2><span class="num">4</span> Elimination & Why It Works</h2>
+  <h2><span class="num">4</span> Elimination &amp; Why It Works</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Coefficient</dt> <dd>— the number in front of a letter. In 3x, the coefficient is 3. In −y, it is −1.</dd>
+    <dt>Opposites</dt> <dd>— numbers that add to 0, like 2 and −2.</dd>
+    <dt>Eliminate</dt> <dd>— get rid of. Adding opposites makes a letter cancel (disappear).</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> Adding equal quantities to both sides keeps equality — that’s <em>why</em> elimination produces the same solution. Line up the system so one variable cancels.</div>
+  <div class="diagram"><div class="viz" data-v="t4bal" data-static></div><div class="diagram-cap">Two balanced scales. Put both left sides together and both right sides together. It still balances!</div></div>
   <div class="example">
     <h4>Solve  x + y = 10  and  x − y = 4</h4>
     <div class="steps" data-example="e34">
@@ -100,29 +312,1168 @@
       <div class="step final" onclick="reveal(this)"><strong>✓ Substitute back:</strong> 7 + y = 10 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 3  →  (7, 3)</span></div>
     </div>
     <button class="reveal-all" onclick="revealAll('e34')">Reveal all steps</button>
+    <div class="viz" data-v="e34" data-ex="e34"></div>
+  </div>
+  <div class="example">
+    <h4>Multiply first: solve  3x + 2y = 16  and  x + y = 6</h4>
+    <div class="steps" data-example="e34b">
+      <div class="step" onclick="reveal(this)"><strong>No opposites yet. Multiply x + y = 6 by −2:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> −2x − 2y = −12</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Add to 3x + 2y = 16 (y cancels):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> x = 4</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Substitute back:</strong> 4 + y = 6 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 2  →  (4, 2)</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e34b')">Reveal all steps</button>
+    <div class="viz" data-v="e34b" data-ex="e34b"></div>
   </div>
 
+  <div class="stepbox"><h5>🪜 Steps: elimination</h5><ol>
+    <li>Line up the equations: x-terms, y-terms, =, numbers.</li>
+    <li>Look for opposite coefficients, like +y and −y.</li>
+    <li>None? Multiply one equation by a number to make opposites. Multiply EVERY term, even the number after =.</li>
+    <li>Add the equations. One letter cancels.</li>
+    <li>Solve for the letter that is left.</li>
+    <li>Put it back into an original equation. Find the other letter.</li>
+    <li>Write (x, y). Check it in both equations.</li>
+  </ol></div>
+
+  <div class="fix" id="f34"><h5>🔍 Find the mistake</h5>
+    <p class="who">Jada solves x + 2y = 7 and 3x − y = 7. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f34',this,1)"><span class="sn">Step 1</span> Multiply 3x − y = 7 by 2: 6x − 2y = 7</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f34',this,2)"><span class="sn">Step 2</span> Add to x + 2y = 7: 7x = 14</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f34',this,3)"><span class="sn">Step 3</span> x = 2</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f34',this,4)"><span class="sn">Step 4</span> 2 + 2y = 7, so y = 2.5</button>
+    <div class="chk-fb" id="fb-f34" role="status"></div>
+    <div class="viz" data-v="f34"></div>
+    <div id="f34-next" class="hide"><div class="chk" id="f34b"><div class="chk-q">What is the correct solution?</div>
+      <div class="val-chk"><input id="f34b-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('f34b')">Check</button></div><div class="chk-fb" id="fb-f34b" role="status"></div></div></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q34"><div class="q">1. Solve x + y = 8 and x − y = 2.</div>
+      <div class="viz" data-v="q34"></div>
+      <div class="val-chk"><input id="q34-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q34')">Check</button></div><div class="chk-fb" id="fb-q34" role="status"></div></div>
+    <div class="chk" id="q34b"><div class="q">2. Solve 2x + y = 9 and x − y = 3.</div>
+      <div class="viz" data-v="q34b"></div>
+      <div class="val-chk"><input id="q34b-in" placeholder="(x, y)" aria-label="point"><button onclick="M1.check('q34b')">Check</button></div><div class="chk-fb" id="fb-q34b" role="status"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 5 ============ -->
 <section class="topic" id="t5">
   <h2><span class="num">5</span> Choosing a Method</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>No solution</dt> <dd>— the lines are parallel. They never meet.</dd>
+    <dt>Infinitely many solutions</dt> <dd>— both equations make the same line. Every point on it works. "Infinitely many" means too many to count; it never ends.</dd>
+  </dl></div>
 <div class="note"><strong>📌</strong> Pick the most efficient tool for the system in front of you.</div>
-<div class="diagram"><svg viewBox="0 0 600 438" xmlns="http://www.w3.org/2000/svg" width="600" height="438"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="40.0" y="14" width="520" height="50" rx="9" fill="#1E2D4F" stroke="#1E2D4F" stroke-width="2.5"/><text x="300.0" y="43.0" font-size="12.5" fill="#fff" text-anchor="middle" font-family="Inter" font-weight="700">System of two equations</text><line x1="300.0" y1="64" x2="300.0" y2="84" stroke="#1E2D4F" stroke-width="2.4" marker-end="url(#ah)"/><polygon points="300.0,86 560.0,111.0 300.0,136 40.0,111.0" fill="#fff8e1" stroke="#FFC107" stroke-width="2.5"/><text x="300.0" y="115.0" font-size="12.5" fill="#b08800" text-anchor="middle" font-family="Inter" font-weight="600">Is a variable already alone? (y = …)</text><line x1="300.0" y1="136" x2="300.0" y2="156" stroke="#1E2D4F" stroke-width="2.4" marker-end="url(#ah)"/><rect x="40.0" y="158" width="520" height="50" rx="9" fill="#f8faff" stroke="#cdd5e0" stroke-width="2.5"/><text x="300.0" y="187.0" font-size="12.5" fill="#1E2D4F" text-anchor="middle" font-family="Inter" font-weight="600">Yes → SUBSTITUTION</text><line x1="300.0" y1="208" x2="300.0" y2="228" stroke="#1E2D4F" stroke-width="2.4" marker-end="url(#ah)"/><polygon points="300.0,230 560.0,255.0 300.0,280 40.0,255.0" fill="#fff8e1" stroke="#FFC107" stroke-width="2.5"/><text x="300.0" y="259.0" font-size="12.5" fill="#b08800" text-anchor="middle" font-family="Inter" font-weight="600">No: are coefficients opposite or easy to match?</text><line x1="300.0" y1="280" x2="300.0" y2="300" stroke="#1E2D4F" stroke-width="2.4" marker-end="url(#ah)"/><rect x="40.0" y="302" width="520" height="50" rx="9" fill="#f8faff" stroke="#cdd5e0" stroke-width="2.5"/><text x="300.0" y="331.0" font-size="12.5" fill="#1E2D4F" text-anchor="middle" font-family="Inter" font-weight="600">Yes → ELIMINATION</text><line x1="300.0" y1="352" x2="300.0" y2="372" stroke="#1E2D4F" stroke-width="2.4" marker-end="url(#ah)"/><rect x="40.0" y="374" width="520" height="50" rx="9" fill="#e8f5e2" stroke="#22AC00" stroke-width="2.5"/><text x="300.0" y="403.0" font-size="12.5" fill="#1a7000" text-anchor="middle" font-family="Inter" font-weight="700">Otherwise → GRAPH to estimate the intersection</text></svg>
+<div class="diagram"><div class="viz" data-v="t5flow" data-static></div>
   <div class="diagram-cap">How to choose: substitution, elimination, or graphing</div></div>
+  <table class="rules-table"><tr><th>When you compare…</th><th>Picture</th><th>Number of solutions</th></tr>
+    <tr><td>Different slopes</td><td>lines cross</td><td><strong>One</strong></td></tr>
+    <tr><td>Same slope, different b</td><td>parallel lines</td><td><strong>None</strong> (the algebra ends with something false, like 3 = −1)</td></tr>
+    <tr><td>Same slope, same b</td><td>the same line</td><td><strong>Infinitely many</strong> (the algebra ends with something always true, like 8 = 8)</td></tr></table>
+  <div class="example">
+    <h4>How many solutions: y = 2x + 3 and y = 2x − 1?</h4>
+    <div class="steps" data-example="e35">
+      <div class="step" onclick="reveal(this)"><strong>Slopes:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 and 2 (the same)</span></div>
+      <div class="step" onclick="reveal(this)"><strong>y-intercepts:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 and −1 (different)</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Set equal:</strong> 2x + 3 = 2x − 1 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 = −1 is false → parallel → no solution</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e35')">Reveal all steps</button>
+    <div class="two-col">
+      <div class="diagram"><div class="viz" data-v="e35t" data-ex="e35"></div><div class="diagram-cap">Compare m and b</div></div>
+      <div class="diagram"><div class="viz" data-v="e35g" data-ex="e35"></div><div class="diagram-cap">The graph</div></div>
+    </div>
+  </div>
+  <div class="example">
+    <h4>How many solutions: y = −x + 4 and 2x + 2y = 8?</h4>
+    <div class="steps" data-example="e35b">
+      <div class="step" onclick="reveal(this)"><strong>Substitute:</strong> 2x + 2(−x + 4) = 8 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2x − 2x + 8 = 8</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Simplify:</strong> 8 = 8 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> always true → same line → infinitely many solutions</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e35b')">Reveal all steps</button>
+    <div class="two-col">
+      <div class="diagram"><div class="viz" data-v="e35b" data-ex="e35b"></div><div class="diagram-cap">The x-terms cancel</div></div>
+      <div class="diagram"><div class="viz" data-v="e35bg" data-ex="e35b"></div><div class="diagram-cap">The graph</div></div>
+    </div>
+  </div>
 
+  <div class="stepbox"><h5>🪜 Steps: how many solutions?</h5><ol>
+    <li>Write both equations as y = mx + b.</li>
+    <li>Compare the slopes (m). Different? One solution.</li>
+    <li>Same slope? Compare b. Different b means parallel: no solution.</li>
+    <li>Same slope AND same b means the same line: infinitely many solutions.</li>
+  </ol></div>
+
+  <div class="fix" id="f35"><h5>🔍 Find the mistake</h5>
+    <p class="who">Lee looks at y = 2x + 1 and y = 2x + 5. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f35',this,1)"><span class="sn">Step 1</span> The slopes are 2 and 2.</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f35',this,2)"><span class="sn">Step 2</span> The y-intercepts are 1 and 5.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f35',this,3)"><span class="sn">Step 3</span> The intercepts are different, so the lines cross once: one solution.</button>
+    <div class="chk-fb" id="fb-f35" role="status"></div>
+    <div class="viz" data-v="f35"></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn — how many solutions?</h5>
+    <div class="chk" id="q35"><div class="q">1. y = x + 4 and y = −x + 4</div><div class="chk-opts">
+      <button class="chk-btn" data-o="one" onclick="M1.pick('q35',this,'one')">One</button>
+      <button class="chk-btn" data-o="none" onclick="M1.pick('q35',this,'none')">None</button>
+      <button class="chk-btn" data-o="inf" onclick="M1.pick('q35',this,'inf')">Infinitely many</button></div>
+      <div class="chk-fb" id="fb-q35" role="status"></div><div class="viz" data-v="q35"></div></div>
+    <div class="chk" id="q35b"><div class="q">2. y = 3x − 2 and y = 3x + 1</div><div class="chk-opts">
+      <button class="chk-btn" data-o="one" onclick="M1.pick('q35b',this,'one')">One</button>
+      <button class="chk-btn" data-o="none" onclick="M1.pick('q35b',this,'none')">None</button>
+      <button class="chk-btn" data-o="inf" onclick="M1.pick('q35b',this,'inf')">Infinitely many</button></div>
+      <div class="chk-fb" id="fb-q35b" role="status"></div><div class="viz" data-v="q35b"></div></div>
+    <div class="chk" id="q35c"><div class="q">3. y = −2x + 1 and 4x + 2y = 2</div><div class="chk-opts">
+      <button class="chk-btn" data-o="one" onclick="M1.pick('q35c',this,'one')">One</button>
+      <button class="chk-btn" data-o="none" onclick="M1.pick('q35c',this,'none')">None</button>
+      <button class="chk-btn" data-o="inf" onclick="M1.pick('q35c',this,'inf')">Infinitely many</button></div>
+      <div class="chk-fb" id="fb-q35c" role="status"></div><div class="viz" data-v="q35c"></div></div>
+    <div class="chk" id="q35d"><div class="q">4. Which method is fastest for 2x + 5y = 1 and −2x + 3y = 7?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="sub" onclick="M1.pick('q35d',this,'sub')">Substitution</button>
+      <button class="chk-btn" data-o="elim" onclick="M1.pick('q35d',this,'elim')">Elimination</button>
+      <button class="chk-btn" data-o="graph" onclick="M1.pick('q35d',this,'graph')">Graphing</button></div>
+      <div class="chk-fb" id="fb-q35d" role="status"></div><div class="viz" data-v="q35d"></div></div>
+  </div>
 </section>
+
+<!-- ============ TOPIC 6 ============ -->
 <section class="topic" id="t6">
-  <h2><span class="num">6</span> Graphing Inequalities & Systems</h2>
+  <h2><span class="num">6</span> Graphing Inequalities &amp; Systems</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Inequality</dt> <dd>— a math sentence with &lt;, &gt;, ≤ or ≥ instead of =.</dd>
+    <dt>Boundary line</dt> <dd>— the line y = mx + b. It splits the graph into two sides.</dd>
+    <dt>Half-plane</dt> <dd>— one side of the boundary line. We shade the side that works.</dd>
+    <dt>Test point</dt> <dd>— a point you try, like (0, 0), to see which side to shade.</dd>
+  </dl></div>
 <div class="key"><strong>📌</strong> Boundary line: <strong>solid</strong> for ≤ or ≥, <strong>dashed</strong> for &lt; or &gt;. Shade the side that makes it true; for a system, the solution is the <strong>overlap</strong>.</div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="49.2" y1="24" x2="49.2" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="74.4" y1="24" x2="74.4" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="99.6" y1="24" x2="99.6" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="124.8" y1="24" x2="124.8" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="175.2" y1="24" x2="175.2" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="200.4" y1="24" x2="200.4" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="225.6" y1="24" x2="225.6" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="250.8" y1="24" x2="250.8" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="250.8" x2="276" y2="250.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="225.6" x2="276" y2="225.6" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="200.4" x2="276" y2="200.4" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="175.2" x2="276" y2="175.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="124.8" x2="276" y2="124.8" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="99.6" x2="276" y2="99.6" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="74.4" x2="276" y2="74.4" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="49.2" x2="276" y2="49.2" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><polygon points="24.0,24.0 276.0,276.0 276.0,276.0 24.0,276.0" fill="#0056B3" fill-opacity="0.18"/><line x1="24" y1="225.6" x2="276" y2="225.6" stroke="#5a6680" stroke-width="1.8"/><line x1="74.4" y1="24" x2="74.4" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="24.0" y="237.6" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-2</text><text x="124.8" y="237.6" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="175.2" y="237.6" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="225.6" y="237.6" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="276.0" y="237.6" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">8</text><text x="69.4" y="279.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="69.4" y="178.2" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="69.4" y="127.8" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="69.4" y="77.4" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="69.4" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">8</text><text x="278" y="228.6" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="78.4" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><line x1="24.0" y1="24.0" x2="276.0" y2="276.0" stroke="#0056B3" stroke-width="2.6"/><text x="238.2" y="233.2" font-size="11" fill="#0056B3" font-weight="700" text-anchor="end" font-family="JetBrains Mono">x+y=6</text><circle cx="99.6" cy="200.4" r="4.5" fill="#22AC00" stroke="#22AC00" stroke-width="2"/><text x="106.6" y="194.4" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono">(1,1) ✓</text></svg>
-  <div class="diagram-cap">x + y ≤ 6 : solid line, shade below; (1,1) is a solution</div></div>
+  <table class="rules-table"><tr><th>Symbol (y alone on the left)</th><th>Line</th><th>Shade</th></tr>
+    <tr><td class="rule">y &lt; mx + b</td><td>dashed - - -</td><td>below</td></tr>
+    <tr><td class="rule">y ≤ mx + b</td><td>solid ——</td><td>below</td></tr>
+    <tr><td class="rule">y &gt; mx + b</td><td>dashed - - -</td><td>above</td></tr>
+    <tr><td class="rule">y ≥ mx + b</td><td>solid ——</td><td>above</td></tr></table>
+<div class="diagram"><div class="viz" data-v="t6a" data-static></div>
+  <div class="diagram-cap">x + y ≤ 6 : solid line, shade below; (1, 1) is a solution</div></div>
+  <div class="example">
+    <h4>Graph  y &gt; 2x − 1</h4>
+    <div class="steps" data-example="e36">
+      <div class="step" onclick="reveal(this)"><strong>Boundary line y = 2x − 1. Solid or dashed?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> dashed, because &gt; does not include "equal"</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Test (0, 0):</strong> 0 &gt; 2(0) − 1 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 0 &gt; −1 is true</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Shade:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> the side with (0, 0) — above the line</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e36')">Reveal all steps</button>
+    <div class="viz" data-v="e36" data-ex="e36"></div>
+  </div>
 <div class="key"><strong>📌 SYSTEM of inequalities:</strong> graph both lines, then the answer is the <strong>overlap</strong> — where the two shadings cover the same spot.</div>
-<div class="diagram"><svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><marker id="ah" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker><marker id="ahg" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="#b08800"/></marker></defs><rect x="0" y="0" width="300" height="300" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="55.5" y1="24" x2="55.5" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="87.0" y1="24" x2="87.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="118.5" y1="24" x2="118.5" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="150.0" y1="24" x2="150.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="181.5" y1="24" x2="181.5" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="213.0" y1="24" x2="213.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="244.5" y1="24" x2="244.5" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="276.0" y1="24" x2="276.0" y2="276" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="276.0" x2="276" y2="276.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="244.5" x2="276" y2="244.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="181.5" x2="276" y2="181.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="150.0" x2="276" y2="150.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="118.5" x2="276" y2="118.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="87.0" x2="276" y2="87.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="55.5" x2="276" y2="55.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="276" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="213.0" x2="276" y2="213.0" stroke="#5a6680" stroke-width="1.8"/><line x1="87.0" y1="24" x2="87.0" y2="276" stroke="#5a6680" stroke-width="1.8"/><text x="24.0" y="225.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-2</text><text x="150.0" y="225.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="213.0" y="225.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">4</text><text x="276.0" y="225.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">6</text><text x="82.0" y="279.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="82.0" y="153.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="82.0" y="90.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="82.0" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="278" y="216.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="91.0" y="22" font-size="10" fill="#5a6680" font-style="italic">y</text><polygon points="150.0,181.5 24.0,55.5 24.0,276.0 55.5,276.0" fill="#0056B3" fill-opacity="0.18"/><line x1="24.0" y1="307.5" x2="276.0" y2="55.5" stroke="#0056B3" stroke-width="2.6"/><line x1="24.0" y1="55.5" x2="276.0" y2="307.5" stroke="#22AC00" stroke-width="2.6"/><text x="269.7" y="68.1" font-size="11" fill="#0056B3" font-weight="700" text-anchor="end" font-family="JetBrains Mono">y=x&#8722;1</text><text x="27.2" y="46.1" font-size="11" fill="#22AC00" font-weight="700" text-anchor="start" font-family="JetBrains Mono">y=&#8722;x+3</text><circle cx="87.0" cy="213.0" r="4.5" fill="#22AC00" stroke="#22AC00" stroke-width="2"/><text x="94.0" y="207.0" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono" text-anchor="start">(0,0) &#10003;</text></svg>
+<div class="diagram"><div class="viz" data-v="t6sys" data-static></div>
   <div class="diagram-cap">y ≥ x − 1 AND y ≤ −x + 3 — the solution is the shaded overlap</div></div>
 <p class="blank-tip">Check (0, 0) in the system above:</p><p>0 ≥ −1 is <span class="blank" data-ans="true" onclick="rb(this)">?</span> &nbsp;·&nbsp; 0 ≤ 3 is <span class="blank" data-ans="true" onclick="rb(this)">?</span> &nbsp;·&nbsp; so (0,0) <span class="blank" data-ans="is a solution" onclick="rb(this)">?</span></p>
+  <div class="note"><strong>👆 Try it:</strong> Drag the dot (or tap a spot, or use the arrow keys). The box tells you if the point is in the overlap.</div>
+  <div class="viz drag" id="dg-viz" aria-label="Drag the point on the graph"></div>
+  <div class="ctrl"><div class="out" id="dg-out" role="status"></div></div>
+  <div class="example">
+    <h4>Graph the system  y ≤ 2x + 1  and  y &gt; −x − 2</h4>
+    <div class="steps" data-example="e36b">
+      <div class="step" onclick="reveal(this)"><strong>Line 1:</strong> y = 2x + 1 is<span class="placeholder"> click to reveal</span><span class="hidden-content"> solid (≤); 0 ≤ 1 is true → shade the side with (0, 0), below</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Line 2:</strong> y = −x − 2 is<span class="placeholder"> click to reveal</span><span class="hidden-content"> dashed (&gt;); 0 &gt; −2 is true → shade the side with (0, 0), above</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Solution:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> the overlap — the region to the right of where the lines cross at (−1, −1)</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e36b')">Reveal all steps</button>
+    <div class="viz" data-v="e36b" data-ex="e36b"></div>
+  </div>
 
+  <div class="stepbox"><h5>🪜 Steps: graph an inequality</h5><ol>
+    <li>Get y alone.</li>
+    <li>Graph the boundary line y = mx + b.</li>
+    <li>Use a solid line for ≤ or ≥. Use a dashed line for &lt; or &gt;.</li>
+    <li>Pick a test point that is not on the line. (0, 0) is easiest.</li>
+    <li>Put it in. True? Shade its side. False? Shade the other side.</li>
+    <li>For a system, do this for each inequality. The answer is where the shadings overlap.</li>
+  </ol></div>
+
+  <div class="fix" id="f36"><h5>🔍 Find the mistake</h5>
+    <p class="who">Mia graphs y &lt; x + 2. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f36',this,1)"><span class="sn">Step 1</span> The boundary line is y = x + 2.</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f36',this,2)"><span class="sn">Step 2</span> Draw it as a solid line.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f36',this,3)"><span class="sn">Step 3</span> Test (0, 0): 0 &lt; 2 is true.</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f36',this,4)"><span class="sn">Step 4</span> Shade the side with (0, 0).</button>
+    <div class="chk-fb" id="fb-f36" role="status"></div>
+    <div class="viz" data-v="f36"></div>
+  </div>
+
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q36"><div class="q">1. Is (3, 1) a solution of the system y ≥ x − 1 and y ≤ −x + 3?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="yes" onclick="M1.pick('q36',this,'yes')">Yes</button>
+      <button class="chk-btn" data-o="no" onclick="M1.pick('q36',this,'no')">No</button></div>
+      <div class="chk-fb" id="fb-q36" role="status"></div><div class="viz" data-v="q36"></div></div>
+    <div class="chk" id="q36b"><div class="q">2. Which side do you shade for y ≤ −2x + 4?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="below" onclick="M1.pick('q36b',this,'below')">Below the line (the side with (0, 0))</button>
+      <button class="chk-btn" data-o="above" onclick="M1.pick('q36b',this,'above')">Above the line</button></div>
+      <div class="chk-fb" id="fb-q36b" role="status"></div><div class="viz" data-v="q36b"></div></div>
+    <div class="chk" id="q36c"><div class="q">3. For y &gt; 3x − 2, is the boundary line solid or dashed?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="solid" onclick="M1.pick('q36c',this,'solid')">Solid</button>
+      <button class="chk-btn" data-o="dashed" onclick="M1.pick('q36c',this,'dashed')">Dashed</button></div>
+      <div class="chk-fb" id="fb-q36c" role="status"></div><div class="viz" data-v="q36c"></div></div>
+  </div>
 </section>
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script>
+/* ==== Unit 3/4 visuals + answer checker (page-local; drawn from each problem's own numbers) ==== */
+var M1 = (function () {
+  'use strict';
+  var C = { navy: '#1E2D4F', gold: '#E0A800', goldTx: '#7a5a00', green: '#15803D', grid: '#E3E7EE',
+    axis: '#5a6680', red: '#B42318', purple: '#7C3AED', muted: '#6b7488', bg: '#fafcff', ink: '#1a1a24' };
+  var MONO = "'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace";
+  var uid = 0;
+
+  /* ---------- small helpers ---------- */
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function r1(v) { return Math.round(v * 10) / 10; }
+  function fmt(n, dp) {
+    if (typeof n === 'string') return n;
+    if (Math.abs(n) < 1e-9) n = 0;
+    var p = Math.pow(10, dp == null ? 3 : dp);
+    var s = String(Math.round(n * p) / p);
+    return s.replace('-', '−');
+  }
+  function money(n, dp) {
+    var v = Math.round(n * Math.pow(10, dp || 0)) / Math.pow(10, dp || 0);
+    var s = v.toFixed(dp || 0).split('.');
+    s[0] = s[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return '$' + s.join('.');
+  }
+  function commas(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  /* rich text: a^b or a^{..} superscript, a_{..} subscript */
+  function rich(s) {
+    s = String(s); var out = [], cur = '', i = 0;
+    function push(t, k) { if (t) out.push({ t: t, k: k }); }
+    while (i < s.length) {
+      var ch = s[i];
+      if ((ch === '^' || ch === '_') && i + 1 < s.length) {
+        push(cur, 'n'); cur = '';
+        var k = ch === '^' ? 'sup' : 'sub', t = '';
+        if (s[i + 1] === '{') { var j = s.indexOf('}', i + 2); t = s.slice(i + 2, j); i = j + 1; }
+        else { var m = /^[A-Za-z0-9.−\-]+/.exec(s.slice(i + 1)); t = m ? m[0] : ''; i += 1 + t.length; }
+        push(t, k);
+      } else { cur += ch; i++; }
+    }
+    push(cur, 'n');
+    return out;
+  }
+  function tw(s, fs) { var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
+  function text(x, y, s, o) {
+    o = o || {}; var fs = o.fs || 11, parts = rich(s), h = '', base = 0;
+    parts.forEach(function (p) {
+      var dy = 0, size = '';
+      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      else { dy = -base; base = 0; }
+      h += '<tspan' + (dy ? ' dy="' + r1(dy) + '"' : '') + size + '>' + esc(p.t) + '</tspan>';
+    });
+    var halo = o.halo === false ? '' : ' stroke="' + (o.haloC || '#fff') + '" stroke-width="3.2" stroke-linejoin="round" paint-order="stroke"';
+    return '<text x="' + r1(x) + '" y="' + r1(y) + '" font-size="' + fs + '" fill="' + (o.c || C.navy) + '" text-anchor="' + (o.a || 'middle') +
+      '" font-family="' + (o.fam || MONO) + '"' + (o.b ? ' font-weight="700"' : '') + (o.it ? ' font-style="italic"' : '') + halo +
+      (o.cls ? ' class="' + o.cls + '"' : '') + '>' + h + '</text>';
+  }
+  function pill(cx, cy, s, o) {
+    o = o || {}; var fs = o.fs || 11, w = tw(s, fs) + 10, h = fs + 6;
+    return '<rect x="' + r1(cx - w / 2) + '" y="' + r1(cy - h / 2) + '" width="' + r1(w) + '" height="' + r1(h) + '" rx="' + r1(h / 2) +
+      '" fill="' + (o.bg || C.gold) + '" stroke="' + (o.st || '#b38600') + '" stroke-width="1"/>' +
+      text(cx, cy + fs * 0.36, s, { fs: fs, c: o.c || C.ink, b: true, halo: false });
+  }
+  function svgOpen(W, H, label) {
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="' +
+      esc(label || 'diagram') + '" style="max-width:100%;height:auto">';
+  }
+  function arrowDef(id, c) {
+    return '<marker id="' + id + '" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L7,3 L0,6 Z" fill="' + c + '"/></marker>';
+  }
+
+  /* ---------- label placement ---------- */
+  function Placer(bounds) { this.b = bounds; this.r = []; this.segs = []; }
+  function segHit(s, q) {
+    var x1 = s[0], y1 = s[1], dx = s[2] - x1, dy = s[3] - y1, t0 = 0, t1 = 1, p = [-dx, dx, -dy, dy], qq = [x1 - q.x + 1, q.x + q.w + 1 - x1, y1 - q.y + 1, q.y + q.h + 1 - y1];
+    for (var i = 0; i < 4; i++) {
+      if (p[i] === 0) { if (qq[i] < 0) return false; continue; }
+      var t = qq[i] / p[i];
+      if (p[i] < 0) { if (t > t1) return false; if (t > t0) t0 = t; } else { if (t < t0) return false; if (t < t1) t1 = t; }
+    }
+    return true;
+  }
+  Placer.prototype.ok = function (q, strict) {
+    var b = this.b;
+    if (strict) for (var j = 0; j < this.segs.length; j++) if (segHit(this.segs[j], q)) return false;
+    if (q.x < b.x || q.y < b.y || q.x + q.w > b.x + b.w || q.y + q.h > b.y + b.h) return false;
+    for (var i = 0; i < this.r.length; i++) { var p = this.r[i];
+      if (q.x < p.x + p.w && q.x + q.w > p.x && q.y < p.y + p.h && q.y + q.h > p.y) return false; }
+    return true;
+  };
+  Placer.prototype.add = function (q) { this.r.push(q); };
+  Placer.prototype.pick = function (cands, w, h) {
+    for (var pass = 0; pass < 2; pass++) for (var i = 0; i < cands.length; i++) {
+      var q = { x: cands[i][0] - w / 2, y: cands[i][1] - h / 2, w: w, h: h };
+      if (this.ok(q, pass === 0)) { this.add(q); return [cands[i][0], cands[i][1]]; }
+    }
+    var b = this.b, c = cands[0] || [b.x + b.w / 2, b.y + b.h / 2];
+    var x = Math.min(Math.max(c[0], b.x + w / 2), b.x + b.w - w / 2), y = Math.min(Math.max(c[1], b.y + h / 2), b.y + b.h - h / 2);
+    this.add({ x: x - w / 2, y: y - h / 2, w: w, h: h });
+    return [x, y];
+  };
+
+  /* ---------- line / half-plane math ---------- */
+  function toLine(it) {
+    if (it.vx != null) return { vx: it.vx };
+    if (it.A != null) { if (it.B === 0) return { vx: it.C / it.A }; return { m: -it.A / it.B, b: it.C / it.B }; }
+    return { m: it.m, b: it.b };
+  }
+  function hpVal(h, x, y) {
+    var L = toLine(h);
+    if (L.vx != null) return h.s === '>' || h.s === '>=' ? x - L.vx : L.vx - x;
+    var d = y - (L.m * x + L.b);
+    return (h.s === '>' || h.s === '>=') ? d : -d;
+  }
+  function clipPoly(poly, h) {
+    var out = [];
+    for (var i = 0; i < poly.length; i++) {
+      var P = poly[i], Q = poly[(i + 1) % poly.length], gp = hpVal(h, P[0], P[1]), gq = hpVal(h, Q[0], Q[1]);
+      if (gp >= 0) out.push(P);
+      if ((gp >= 0) !== (gq >= 0)) { var t = gp / (gp - gq); out.push([P[0] + t * (Q[0] - P[0]), P[1] + t * (Q[1] - P[1])]); }
+    }
+    return out;
+  }
+  function solve2(a1, b1, c1, a2, b2, c2) {
+    var D = a1 * b2 - a2 * b1;
+    if (Math.abs(D) < 1e-12) {
+      var same = Math.abs(a1 * c2 - a2 * c1) < 1e-9 && Math.abs(b1 * c2 - b2 * c1) < 1e-9;
+      return { type: same ? 'inf' : 'none' };
+    }
+    return { type: 'one', x: (c1 * b2 - c2 * b1) / D, y: (a1 * c2 - a2 * c1) / D };
+  }
+
+  /* ---------- coordinate plane ---------- */
+  function plane(o) {
+    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, fs = o.fs || 11;
+    var x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var xs = o.xs || 1, ys = o.ys || 1, xl = o.xl || xs, yl = o.yl || ys;
+    var tick = o.tick || function (v) { return fmt(v); };
+    var ylabs = [], v;
+    for (v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) ylabs.push(+v.toFixed(6));
+    var maxYW = 0; ylabs.forEach(function (q) { maxYW = Math.max(maxYW, tw(tick(q), tfs)); });
+    var yEdge = x0 >= 0, xEdge = y0 >= 0;
+    var L = (yEdge ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0);
+    var B = H - ((xEdge ? 17 : 10) + (o.xtitle ? 15 : 0));
+    var T = 10, R = W - 10;
+    function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
+    function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
+    var id = 'cp' + (++uid), mk = 'mk' + uid;
+    var s = svgOpen(W, H, o.label);
+    s += '<defs><clipPath id="' + id + '"><rect x="' + r1(L) + '" y="' + r1(T) + '" width="' + r1(R - L) + '" height="' + r1(B - T) + '"/></clipPath>' +
+      arrowDef(mk + 'n', C.navy) + arrowDef(mk + 'g', C.gold) + arrowDef(mk + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    // grid
+    for (v = Math.ceil(x0 / xs - 1e-9) * xs; v <= x1 + 1e-9; v += xs) s += '<line x1="' + r1(sx(v)) + '" y1="' + T + '" x2="' + r1(sx(v)) + '" y2="' + r1(B) + '" stroke="' + C.grid + '" stroke-width="1"/>';
+    for (v = Math.ceil(y0 / ys - 1e-9) * ys; v <= y1 + 1e-9; v += ys) s += '<line x1="' + r1(L) + '" y1="' + r1(sy(v)) + '" x2="' + r1(R) + '" y2="' + r1(sy(v)) + '" stroke="' + C.grid + '" stroke-width="1"/>';
+    var bounds = { x: L + 1, y: T + 1, w: R - L - 2, h: B - T - 2 };
+    var P = new Placer(bounds), PV = new Placer({ x: 1, y: 1, w: W - 2, h: H - 2 });
+    PV.segs = P.segs;
+    function both(q) { P.add(q); PV.add(q); }
+    var items = o.items || [];
+    // shaded regions
+    var g = '';
+    items.forEach(function (it) {
+      if (it.t !== 'region') return;
+      var poly = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+      it.hp.forEach(function (h) { if (poly.length) poly = clipPoly(poly, h); });
+      if (poly.length > 2) g += '<polygon points="' + poly.map(function (p) { return r1(sx(p[0])) + ',' + r1(sy(p[1])); }).join(' ') + '" fill="' + (it.c || C.navy) + '" fill-opacity="' + (it.op || 0.16) + '" stroke="none"/>';
+    });
+    s += '<g clip-path="url(#' + id + ')">' + g + '</g>';
+    // axes
+    var ax = (y0 <= 0 && y1 >= 0) ? 0 : y0, ay = (x0 <= 0 && x1 >= 0) ? 0 : x0;
+    s += '<line x1="' + r1(L) + '" y1="' + r1(sy(ax)) + '" x2="' + r1(R) + '" y2="' + r1(sy(ax)) + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    s += '<line x1="' + r1(sx(ay)) + '" y1="' + T + '" x2="' + r1(sx(ay)) + '" y2="' + r1(B) + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    P.segs.push([L, sy(ax), R, sy(ax)], [sx(ay), T, sx(ay), B]);
+    var inside = (x0 < 0 && x1 > 0 && y0 < 0 && y1 > 0);
+    var tl = '';
+    for (v = Math.ceil(x0 / xl - 1e-9) * xl; v <= x1 + 1e-9; v += xl) {
+      v = +v.toFixed(6); if (inside && v === 0) continue; if (!inside && v === x0 && yEdge && xEdge && v === 0) { /* shared corner 0 */ }
+      var lab = tick(v), w = tw(lab, tfs), X = sx(v), Y = sy(ax) + tfs + 3, an = 'middle';
+      if (X + w / 2 > W - 2) { an = 'end'; X = W - 2; } else if (X - w / 2 < 2) { an = 'start'; X = 2; }
+      var bx = an === 'middle' ? X - w / 2 : an === 'end' ? X - w : X;
+      both({ x: bx, y: Y - tfs, w: w, h: tfs + 2 });
+      tl += text(X, Y, lab, { fs: tfs, c: C.axis, a: an });
+    }
+    for (var k = 0; k < ylabs.length; k++) {
+      v = ylabs[k]; if (inside && v === 0) continue; if (xEdge && yEdge && v === y0 && ax === y0) continue;
+      var labY = tick(v), wy = tw(labY, tfs), Yy = sy(v) + tfs * 0.35;
+      if (Yy - tfs < 1) Yy = tfs + 1;
+      both({ x: sx(ay) - 4 - wy, y: Yy - tfs, w: wy, h: tfs + 2 });
+      tl += text(sx(ay) - 4, Yy, labY, { fs: tfs, c: C.axis, a: 'end' });
+    }
+    if (inside) { tl += text(sx(0) - 4, sy(0) + tfs + 2, '0', { fs: tfs, c: C.axis, a: 'end' }); both({ x: sx(0) - 12, y: sy(0) + 2, w: 9, h: tfs + 2 }); }
+    s += tl;
+    var xn = o.xname == null ? 'x' : o.xname, yn = o.yname == null ? 'y' : o.yname;
+    if (xn) { s += text(R - 2, sy(ax) - 5, xn, { fs: 11, c: C.axis, a: 'end', it: true }); both({ x: R - 2 - tw(xn, 11), y: sy(ax) - 16, w: tw(xn, 11), h: 12 }); }
+    if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
+    if (o.xtitle) s += text((L + R) / 2, H - 4, o.xtitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' });
+    if (o.ytitle) s += '<g transform="rotate(-90 11 ' + r1((T + B) / 2) + ')">' + text(11, (T + B) / 2 + 4, o.ytitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' }) + '</g>';
+    // lines, curves, segments (clipped)
+    var cl = '', labels = [];
+    items.forEach(function (it) {
+      if (it.t === 'line') {
+        var Ln = toLine(it), col = it.c || C.navy, dash = it.dash ? ' stroke-dasharray="' + (it.dash === true ? '7 5' : it.dash) + '"' : '';
+        var p1, p2;
+        if (Ln.vx != null) { p1 = [Ln.vx, y0 - 1]; p2 = [Ln.vx, y1 + 1]; }
+        else { var ex = (x1 - x0); p1 = [x0 - ex, Ln.m * (x0 - ex) + Ln.b]; p2 = [x1 + ex, Ln.m * (x1 + ex) + Ln.b]; }
+        cl += '<line x1="' + r1(sx(p1[0])) + '" y1="' + r1(sy(p1[1])) + '" x2="' + r1(sx(p2[0])) + '" y2="' + r1(sy(p2[1])) + '" stroke="' + col + '" stroke-width="' + (it.w || 2.6) + '"' + dash + ' stroke-linecap="round"/>';
+        var seg = visSeg(Ln);
+        if (seg) { P.segs.push([seg[0][0], seg[0][1], seg[1][0], seg[1][1]]); }
+        if (it.label && seg) labels.push({ s: it.label, c: it.lc || col, seg: seg, fr: it.at, pill: it.pill });
+      } else if (it.t === 'fn') {
+        var dom = it.dom || [x0, x1], N = 260, d = '', pen = false, pts = [], span = y1 - y0;
+        for (var i = 0; i <= N; i++) {
+          var xx = dom[0] + (dom[1] - dom[0]) * i / N, yy = it.f(xx);
+          if (!isFinite(yy) || yy > y1 + 3 * span || yy < y0 - 3 * span) { pen = false; continue; }
+          d += (pen ? 'L' : 'M') + r1(sx(xx)) + ',' + r1(sy(yy)); pen = true;
+          if (yy >= y0 && yy <= y1 && xx >= x0 && xx <= x1) pts.push([sx(xx), sy(yy)]);
+        }
+        cl += '<path d="' + d + '" fill="none" stroke="' + (it.c || C.navy) + '" stroke-width="' + (it.w || 2.6) + '"' + (it.dash ? ' stroke-dasharray="7 5"' : '') + ' stroke-linejoin="round"/>';
+        for (var pi = 0; pi + 3 < pts.length; pi += 3) P.segs.push([pts[pi][0], pts[pi][1], pts[pi + 3][0], pts[pi + 3][1]]);
+        if (it.label && pts.length > 2) labels.push({ s: it.label, c: it.lc || it.c || C.navy, pts: pts, fr: it.at, pill: it.pill });
+      } else if (it.t === 'seg') {
+        var cc = it.c || C.navy, mkr = it.arrow ? ' marker-end="url(#' + mk + (cc === C.gold ? 'g' : cc === C.green ? 'G' : 'n') + ')"' : '';
+        cl += '<line x1="' + r1(sx(it.x1)) + '" y1="' + r1(sy(it.y1)) + '" x2="' + r1(sx(it.x2)) + '" y2="' + r1(sy(it.y2)) + '" stroke="' + cc + '" stroke-width="' + (it.w || 2) + '"' + (it.dash ? ' stroke-dasharray="4 4"' : '') + mkr + '/>';
+      }
+    });
+    s += '<g clip-path="url(#' + id + ')">' + cl + '</g>';
+    function visSeg(Ln) {
+      if (Ln.vx != null) { if (Ln.vx < x0 || Ln.vx > x1) return null; return [[sx(Ln.vx), sy(y1)], [sx(Ln.vx), sy(y0)]]; }
+      var a = x0, b = x1;
+      if (Math.abs(Ln.m) > 1e-12) {
+        var xa = (y0 - Ln.b) / Ln.m, xb = (y1 - Ln.b) / Ln.m, lo = Math.min(xa, xb), hi = Math.max(xa, xb);
+        a = Math.max(a, lo); b = Math.min(b, hi);
+      } else if (Ln.b < y0 || Ln.b > y1) return null;
+      if (a >= b) return null;
+      return [[sx(a), sy(Ln.m * a + Ln.b)], [sx(b), sy(Ln.m * b + Ln.b)]];
+    }
+    // points (draw), register rects
+    var pt = '';
+    items.forEach(function (it) {
+      if (it.t !== 'pt') return;
+      var X = sx(it.x), Y = sy(it.y), col = it.c || C.navy, r = it.r || 4.5;
+      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
+      both({ x: X - r - 1, y: Y - r - 1, w: 2 * r + 2, h: 2 * r + 2 });
+      if (it.label) labels.unshift({ s: it.label, c: it.lc || col, at: [X, Y], pill: it.pill, pt: true, id: it.lid });
+    });
+    items.forEach(function (it) { if (it.t === 'txt') labels.push({ s: it.s, c: it.c || C.navy, fixed: [sx(it.x), sy(it.y)], pill: it.pill, fs: it.fs, a: it.a }); });
+    // labels
+    var lt = '';
+    labels.forEach(function (lb) {
+      var lfs = lb.fs || fs, w = tw(lb.s, lfs) + (lb.pill ? 10 : 2), h = lfs + (lb.pill ? 6 : 3), cands = [], pos;
+      if (lb.pt) {
+        var X = lb.at[0], Y = lb.at[1], ox = w / 2 + 8, oy = h / 2 + 6;
+        cands = [[X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]];
+        pos = PV.pick(cands, w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      } else if (lb.fixed) {
+        pos = PV.pick([lb.fixed], w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      } else {
+        var fr = lb.fr != null ? [lb.fr] : [], base = [0.86, 0.14, 0.7, 0.3, 0.5, 0.94, 0.06, 0.6, 0.4];
+        fr = fr.concat(base);
+        fr.forEach(function (f) {
+          var A, Bp, ux, uy;
+          if (lb.seg) { A = lb.seg[0]; Bp = lb.seg[1]; ux = Bp[0] - A[0]; uy = Bp[1] - A[1]; var px = A[0] + ux * f, py = A[1] + uy * f; }
+          else { var n = lb.pts.length, ii = Math.min(n - 2, Math.max(1, Math.round(f * (n - 1)))); px = lb.pts[ii][0]; py = lb.pts[ii][1]; ux = lb.pts[ii + 1][0] - lb.pts[ii - 1][0]; uy = lb.pts[ii + 1][1] - lb.pts[ii - 1][1]; }
+          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5;
+          cands.push([px + nx * dd, py + ny * dd]); cands.push([px - nx * dd, py - ny * dd]);
+        });
+        pos = P.pick(cands, w, h); PV.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
+      }
+      if (lb.pill) lt += pill(pos[0], pos[1], lb.s, { fs: lfs });
+      else lt += text(pos[0], pos[1] + lfs * 0.36, lb.s, { fs: lfs, c: lb.c, b: true });
+    });
+    s += pt + lt + '</svg>';
+    return s;
+  }
+
+  /* ---------- system graph: lines (navy, purple), crossing point ? -> green ---------- */
+  function sys(o) {
+    var cols = [C.navy, C.purple], items = (o.regions || []).slice();
+    o.lines.forEach(function (L, i) {
+      var it = { t: 'line', c: L.c || cols[i % 2], label: L.label, dash: L.dash, at: L.at, w: L.w };
+      ['m', 'b', 'A', 'B', 'C', 'vx'].forEach(function (k) { if (L[k] != null) it[k] = L[k]; });
+      items.push(it);
+    });
+    (o.pts || []).forEach(function (p) { items.push(p); });
+    if (o.sol) {
+      if (o.done) items.push({ t: 'pt', x: o.sol[0], y: o.sol[1], c: C.green, label: o.solLabel || '(' + fmt(o.sol[0]) + ', ' + fmt(o.sol[1]) + ')' });
+      else items.push({ t: 'pt', x: o.sol[0], y: o.sol[1], c: C.gold, label: o.qLabel || '?', pill: true });
+    }
+    var q = {}; for (var k in o) q[k] = o[k]; q.items = items;
+    return plane(q);
+  }
+
+  /* ---------- equation rows (substitution / elimination) ---------- */
+  // rows: [{y, items:[{s, st, x?, a?}], cx?}]   st: n|box|tgt|gold|q|ans|x|mut|tag
+  function eqrows(o) {
+    var W = o.w || 300, H = o.h || 160, fs = o.fs || 15, s = svgOpen(W, H, o.label), id = 'ea' + (++uid), pos = {};
+    s += '<defs>' + arrowDef(id + 'g', C.gold) + arrowDef(id + 'n', C.navy) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    var body = '';
+    (o.rows || []).forEach(function (row, ri) {
+      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st && /box|tgt|gold|q/.test(it.st) ? 8 : 0); });
+      var total = ws.reduce(function (a, b) { return a + b; }, 0), x = row.x != null ? row.x : (W - total) / 2;
+      row.items.forEach(function (it, ii) {
+        var w = ws[ii], f2 = it.fs || f, cx, left;
+        if (it.x != null) { left = it.a === 'end' ? it.x - w : it.a === 'middle' ? it.x - w / 2 : it.x; } else left = x;
+        cx = left + w / 2; x = left + w;
+        pos[ri + ':' + ii] = { x: left, w: w, cx: cx, y: row.y, h: f2 + 8 };
+        var y = row.y, st = it.st || 'n', top = y - f2 * 0.8 - 3, hh = f2 + 7;
+        if (st === 'box') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#fff" stroke="' + C.navy + '" stroke-width="1.6"/>';
+        if (st === 'tgt') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#fff8e1" stroke="' + C.gold + '" stroke-width="2" stroke-dasharray="4 3"/>';
+        if (st === 'gold') body += '<rect x="' + r1(left) + '" y="' + r1(top) + '" width="' + r1(w) + '" height="' + r1(hh) + '" rx="5" fill="#ffe9a8" stroke="' + C.gold + '" stroke-width="1.6"/>';
+        if (st === 'q') { body += pill(cx, y - f2 * 0.3, it.s, { fs: f2 - 1 }); return; }
+        var col = st === 'ans' ? C.green : st === 'mut' ? '#8a93a6' : st === 'x' ? '#6b7488' : st === 'tag' ? C.goldTx : st === 'red' ? C.red : C.navy;
+        body += text(cx, y, it.s, { fs: f2, c: col, b: st === 'ans' || st === 'tag' || st === 'gold', halo: false });
+        if (st === 'x') body += '<line x1="' + r1(left - 1) + '" y1="' + r1(y + 2) + '" x2="' + r1(left + w + 1) + '" y2="' + r1(y - f2 * 0.75) + '" stroke="' + C.red + '" stroke-width="1.6" stroke-opacity="0.85"/>';
+      });
+    });
+    (o.rules || []).forEach(function (r) { body += '<line x1="' + r.x1 + '" y1="' + r.y + '" x2="' + r.x2 + '" y2="' + r.y + '" stroke="' + C.navy + '" stroke-width="1.6"/>'; });
+    (o.arrows || []).forEach(function (a) {
+      var A = pos[a.from], Bq = pos[a.to]; if (!A || !Bq) return;
+      var x1 = A.cx, y1 = A.y + 6, x2 = Bq.cx, y2 = Bq.y - Bq.h + 4, my = (y1 + y2) / 2;
+      body += '<path d="M' + r1(x1) + ',' + r1(y1) + ' C' + r1(x1) + ',' + r1(my + 6) + ' ' + r1(x2) + ',' + r1(my - 6) + ' ' + r1(x2) + ',' + r1(y2) + '" fill="none" stroke="' + (a.c || C.gold) + '" stroke-width="2" marker-end="url(#' + id + 'g)"/>';
+      if (a.s) body += text((x1 + x2) / 2 + (a.dx || 0), my + 4, a.s, { fs: 11, c: C.goldTx, b: true });
+    });
+    (o.notes || []).forEach(function (n) { body += text(n.x, n.y, n.s, { fs: n.fs || 11, c: n.c || C.muted, a: n.a || 'middle', fam: n.fam || 'Inter,system-ui,sans-serif', halo: false }); });
+    return s + body + '</svg>';
+  }
+  function term(c, v, lead) {
+    var a = Math.abs(c), core = (a === 1 && v ? '' : fmt(a)) + v;
+    if (lead) return (c < 0 ? '−' : '') + core;
+    return core;
+  }
+  function eqStd(A, B, Cc) {
+    var s = '';
+    if (A) s += term(A, 'x', true);
+    if (B) s += (s ? (B < 0 ? ' − ' : ' + ') + term(B, 'y', false) : term(B, 'y', true));
+    return s + ' = ' + fmt(Cc);
+  }
+  function eqSI(m, b, v) {
+    v = v || 'y'; var s = v + ' = ';
+    if (m) s += (m === 1 ? '' : m === -1 ? '−' : fmt(m)) + 'x';
+    if (b || !m) s += m ? (b < 0 ? ' − ' + fmt(-b) : ' + ' + fmt(b)) : fmt(b);
+    return s;
+  }
+  /* elimination diagram: e=[[A,B,C],[D,E,F]], k=[k1,k2] multipliers */
+  function elim(o) {
+    var e = o.e, k = o.k || [1, 1], done = o.done, fs = 15, W = 300;
+    var cA = 92, cS = 110, cB = 160, cE = 184, cC = 246, rows = [], y = 26, rules = [], notes = [];
+    function row(A, B, Cc, extra, st) {
+      st = st || {};
+      var it = [];
+      it.push({ s: A ? term(A, 'x', true) : '', x: cA, a: 'end', st: st.a || 'n' });
+      if (B) { it.push({ s: B < 0 ? '−' : '+', x: cS, a: 'middle', st: 'n' }); it.push({ s: term(B, 'y', false), x: cB, a: 'end', st: st.b || 'n' }); }
+      it.push({ s: '=', x: cE, a: 'middle' }); it.push({ s: fmt(Cc), x: cC, a: 'end' });
+      if (extra) it.push(extra);
+      return { y: y, items: it };
+    }
+    var mult = (k[0] !== 1 || k[1] !== 1);
+    var S = [k[0] * e[0][0] + k[1] * e[1][0], k[0] * e[0][1] + k[1] * e[1][1], k[0] * e[0][2] + k[1] * e[1][2]];
+    var gone = Math.abs(S[1]) < 1e-12 ? 'y' : Math.abs(S[0]) < 1e-12 ? 'x' : null;
+    var stc = gone === 'y' ? { b: 'x' } : gone === 'x' ? { a: 'x' } : {};
+    if (mult) {
+      rows.push(row(e[0][0], e[0][1], e[0][2], k[0] !== 1 ? { s: '×(' + fmt(k[0]) + ')', x: 254, a: 'start', st: 'tag', fs: 12 } : null)); y += 28;
+      rows.push(row(e[1][0], e[1][1], e[1][2], k[1] !== 1 ? { s: '×(' + fmt(k[1]) + ')', x: 254, a: 'start', st: 'tag', fs: 12 } : null)); y += 24;
+      notes.push({ x: 150, y: y + 2, s: 'multiply every term ↓', c: C.goldTx, fs: 11 }); y += 26;
+    }
+    rows.push(row(k[0] * e[0][0], k[0] * e[0][1], k[0] * e[0][2], null, stc)); y += 28;
+    var r2 = row(k[1] * e[1][0], k[1] * e[1][1], k[1] * e[1][2], { s: '+', x: 18, a: 'middle', st: 'n' }, stc); rows.push(r2); y += 12;
+    rules.push({ x1: 24, x2: 254, y: y }); y += 24;
+    var q = function (v, st) { return done ? { s: v, st: 'ans' } : { s: '?', st: 'q' }; };
+    var sum = [];
+    if (gone === 'y') {
+      sum.push(done ? { s: term(S[0], 'x', true), x: cA, a: 'end', st: 'ans' } : { s: '?x', x: cA, a: 'end', st: 'q' });
+      sum.push({ s: '0', x: cB, a: 'end', st: 'mut' });
+    } else if (gone === 'x') {
+      sum.push({ s: '0', x: cA, a: 'end', st: 'mut' });
+      sum.push(done ? { s: term(S[1], 'y', true), x: cB, a: 'end', st: 'ans' } : { s: '?y', x: cB, a: 'end', st: 'q' });
+    }
+    sum.push({ s: '=', x: cE, a: 'middle' });
+    sum.push(done ? { s: fmt(S[2]), x: cC, a: 'end', st: 'ans' } : { s: '?', x: cC, a: 'end', st: 'q' });
+    rows.push({ y: y, items: sum }); y += 20;
+    if (gone) { notes.push({ x: 150, y: y, s: (gone === 'y' ? 'The y-terms' : 'The x-terms') + ' add to 0, so they cancel.', c: C.red, fs: 10.5 }); y += 4; }
+    y += 22;
+    var sol = solve2(e[0][0], e[0][1], e[0][2], e[1][0], e[1][1], e[1][2]);
+    var v1 = gone === 'x' ? 'y' : 'x';
+    if (done) rows.push({ y: y, items: [{ s: v1 + ' = ' + fmt(sol[v1]) + '   →   (x, y) = (' + fmt(sol.x) + ', ' + fmt(sol.y) + ')', st: 'ans', fs: 13 }] });
+    else rows.push({ y: y, items: [{ s: v1 + ' = ', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: '   →   (x, y) = (', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: ', ', fs: 13 }, { s: '?', st: 'q', fs: 13 }, { s: ')', fs: 13 }] });
+    y += 14;
+    return eqrows({ w: W, h: y, rows: rows, rules: rules, notes: notes, label: o.label || 'elimination diagram' });
+  }
+  /* substitution diagram */
+  function subst(o) {
+    // o: eq1 [pieces], k1 index of expression, eq2 [pieces], k2 index of variable to replace, res: [pieces rows before], resDone
+    var done = o.done, rows = [], y = 28, arrows = [];
+    rows.push({ y: y, items: o.eq1.map(function (p, i) { return { s: p, st: i === o.k1 ? 'box' : 'n' }; }) }); y += 52;
+    rows.push({ y: y, items: o.eq2.map(function (p, i) { return { s: p, st: i === o.k2 ? 'tgt' : 'n' }; }) });
+    arrows.push({ from: '0:' + o.k1, to: '1:' + o.k2, s: 'swap in', dx: 34 });
+    y += 40;
+    rows.push({ y: y, items: o.eq2.map(function (p, i) { return { s: i === o.k2 ? '(' + o.eq1[o.k1] + ')' : p, st: i === o.k2 ? 'gold' : 'n' }; }) });
+    y += 34;
+    (done ? o.resDone : o.res).forEach(function (r) {
+      rows.push({ y: y, items: r.map(function (p) { return typeof p === 'string' ? (p === '?' ? { s: '?', st: 'q', fs: 13 } : { s: p, fs: 13, st: done ? 'ans' : 'n' }) : p; }) }); y += 26;
+    });
+    return eqrows({ w: 300, h: y - 8, rows: rows, arrows: arrows, label: o.label || 'substitution diagram' });
+  }
+
+  /* ---------- tables with arrows ---------- */
+  // o: {heads:['x','y'], rows:[[...],[...]], ops:[...], opsQ:bool, hide:[[r,c]..], done, opC}
+  function tbl(o) {
+    var n = o.rows[0].length, hw = o.hw || 44, cw = o.cw || Math.min(56, Math.floor((296 - hw) / n)), rh = 30, fs = o.fs || 12.5;
+    var W = Math.max(hw + n * cw + 8, o.w || 0), top = 6, H = top + o.rows.length * rh + (o.ops ? 40 : 6), id = 'tb' + (++uid);
+    var s = svgOpen(W, H, o.label || 'table') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + arrowDef(id + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+    var x0 = (W - (hw + n * cw)) / 2;
+    o.rows.forEach(function (row, ri) {
+      var y = top + ri * rh;
+      s += '<rect x="' + r1(x0) + '" y="' + y + '" width="' + hw + '" height="' + rh + '" fill="' + C.navy + '" stroke="#fff"/>';
+      s += text(x0 + hw / 2, y + rh / 2 + 4.5, o.heads[ri], { fs: 12.5, c: '#fff', b: true, halo: false });
+      row.forEach(function (v, ci) {
+        var cx = x0 + hw + ci * cw, hidden = (o.hide || []).some(function (h) { return h[0] === ri && h[1] === ci; });
+        s += '<rect x="' + r1(cx) + '" y="' + y + '" width="' + cw + '" height="' + rh + '" fill="' + (ri % 2 ? '#f8faff' : '#fff') + '" stroke="#cdd5e0"/>';
+        if (hidden && !o.done) s += pill(cx + cw / 2, y + rh / 2, '?', { fs: 12 });
+        else s += text(cx + cw / 2, y + rh / 2 + fs * 0.36, typeof v === 'number' ? fmt(v) : v, { fs: v && String(v).length > 5 ? fs - 2 : fs, c: hidden ? C.green : C.navy, b: hidden, halo: false });
+      });
+    });
+    if (o.ops) {
+      var yb = top + o.rows.length * rh + 2;
+      o.ops.forEach(function (op, i) {
+        var xa = x0 + hw + i * cw + cw / 2 + 4, xb = x0 + hw + (i + 1) * cw + cw / 2 - 4, my = yb + 16;
+        var q = o.opsQ && !o.done, col = q ? '#8a6500' : (o.opsQ ? C.green : (o.opC || C.navy));
+        s += '<path d="M' + r1(xa) + ',' + yb + ' Q' + r1((xa + xb) / 2) + ',' + r1(my + 8) + ' ' + r1(xb) + ',' + yb + '" fill="none" stroke="' + col + '" stroke-width="1.6" marker-end="url(#' + id + (q ? 'g' : o.opsQ ? 'G' : '') + ')"/>';
+        if (q) s += pill((xa + xb) / 2, my + 14, '?', { fs: 11 });
+        else s += text((xa + xb) / 2, my + 18, op, { fs: 11, c: col, b: true });
+      });
+    }
+    return s + '</svg>';
+  }
+
+  /* ---------- bar model of a sequence, with +d / ×r arrows ---------- */
+  function bars(o) {
+    var v = o.vals, n = v.length, W = o.w || 300, H = o.h || 220, L = 10, R = W - 8, base, top = 62, bot = 24, id = 'br' + (++uid);
+    var vmax = Math.max.apply(null, v.concat([0])), vmin = Math.min.apply(null, v.concat([0]));
+    if (o.max) vmax = Math.max(vmax, o.max);
+    if (vmin < 0) bot += 20;
+    var span = vmax - vmin || 1, ph = H - top - bot, slot = (R - L) / n, bw = Math.min(46, slot * 0.62);
+    function Y(val) { return top + (vmax - val) / span * ph; }
+    base = Y(0);
+    var s = svgOpen(W, H, o.label || 'bar model') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + arrowDef(id + 'G', C.green) + '</defs>';
+    s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<line x1="' + L + '" y1="' + r1(base) + '" x2="' + R + '" y2="' + r1(base) + '" stroke="' + C.axis + '" stroke-width="1.4"/>';
+    v.forEach(function (val, i) {
+      var cx = L + slot * (i + 0.5), hid = (o.hide || []).indexOf(i) >= 0, y1 = Y(Math.max(val, 0)), y2 = Y(Math.min(val, 0));
+      var col = hid ? (o.done ? C.green : C.gold) : (o.c || C.navy);
+      s += '<rect x="' + r1(cx - bw / 2) + '" y="' + r1(y1) + '" width="' + r1(bw) + '" height="' + r1(Math.max(1.5, y2 - y1)) + '" fill="' + col + '" fill-opacity="' + (hid && !o.done ? 0.35 : 0.85) + '"' + (hid && !o.done ? ' stroke="#8a6500" stroke-dasharray="4 3"' : '') + '/>';
+      var lab = o.fmt ? o.fmt(val) : fmt(val), ly = val >= 0 ? y1 - 6 : y2 + 14;
+      if (hid && !o.done) s += pill(cx, val >= 0 ? y1 - 12 : y2 + 12, '?', { fs: 11 });
+      else s += text(cx, ly, lab, { fs: tw(lab, 11) > slot - 2 ? 9.5 : 11, c: hid ? C.green : C.navy, b: true });
+      s += text(cx, H - 7, o.labs ? o.labs[i] : 'a_{' + (i + 1) + '}', { fs: 11, c: C.axis });
+    });
+    if (o.ops) o.ops.forEach(function (op, i) {
+      var xa = L + slot * (i + 0.5) + 6, xb = L + slot * (i + 1.5) - 6, y = 32, q = op === '?';
+      var col = q ? '#8a6500' : o.opC || C.navy;
+      s += '<path d="M' + r1(xa) + ',' + (y + 8) + ' Q' + r1((xa + xb) / 2) + ',' + (y - 8) + ' ' + r1(xb) + ',' + (y + 8) + '" fill="none" stroke="' + col + '" stroke-width="1.6" marker-end="url(#' + id + (q ? 'g' : col === C.green ? 'G' : '') + ')"/>';
+      if (q) s += pill((xa + xb) / 2, y - 12, '?', { fs: 11 }); else s += text((xa + xb) / 2, y - 7, op, { fs: 11, c: col, b: true });
+    });
+    return s + '</svg>';
+  }
+
+  /* ---------- number-line hops ---------- */
+  function hops(o) {
+    var W = o.w || 300, H = o.h || (o.note ? 134 : 116), L = 16, R = W - 16, y = H - (o.note ? 44 : 30), id = 'hp' + (++uid);
+    function X(v) { return L + (v - o.min) / (o.max - o.min) * (R - L); }
+    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<line x1="' + L + '" y1="' + y + '" x2="' + R + '" y2="' + y + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
+    for (var v = o.min; v <= o.max + 1e-9; v += o.tick) {
+      var big = Math.abs(v / o.lab - Math.round(v / o.lab)) < 1e-9;
+      s += '<line x1="' + r1(X(v)) + '" y1="' + (y - (big ? 6 : 3)) + '" x2="' + r1(X(v)) + '" y2="' + (y + (big ? 6 : 3)) + '" stroke="' + C.axis + '" stroke-width="1.2"/>';
+      if (big) s += text(X(v), y + 19, fmt(v), { fs: 10, c: C.axis });
+    }
+    var cur = o.start, hopC = o.c || C.navy;
+    for (var i = 0; i < o.count; i++) {
+      var a = X(cur), b = X(cur + o.step), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
+      s += '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
+      if (o.every || i === 0) s += text((a + b) / 2, y - h / 2 - 8, (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step)), { fs: 10, c: hopC, b: true });
+      cur += o.step;
+    }
+    s += '<circle cx="' + r1(X(o.start)) + '" cy="' + y + '" r="5" fill="' + C.navy + '"/>';
+    var sl = o.startLab || fmt(o.start), sw = tw(sl, 11) / 2 + 2;
+    s += text(Math.min(Math.max(X(o.start), sw), W - sw), 14, sl, { fs: 11, c: C.navy, b: true });
+    var end = o.start + o.step * o.count;
+    s += '<circle cx="' + r1(X(end)) + '" cy="' + y + '" r="5" fill="' + (o.done ? C.green : C.gold) + '" stroke="#8a6500" stroke-width="1"/>';
+    var ex = Math.min(Math.max(X(end), 30), W - 30);
+    if (o.done) s += text(ex, 14, o.endLab || fmt(end), { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, o.endQ || '?', { fs: 11 });
+    if (o.note) s += text(W / 2, H - 6, o.note, { fs: 10.5, c: C.muted, fam: 'Inter,system-ui,sans-serif', halo: false });
+    return s + '</svg>';
+  }
+
+  /* ---------- mapping diagram (sequence = function) ---------- */
+  function mapping(o) {
+    var n = o.inp.length, W = 300, H = 40 + n * 30 + 10, id = 'mp' + (++uid);
+    var s = svgOpen(W, H, o.label || 'mapping diagram') + '<defs>' + arrowDef(id, C.navy) + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    s += '<rect x="30" y="30" width="70" height="' + (n * 30 + 6) + '" rx="30" fill="#eef3fb" stroke="' + C.navy + '"/>';
+    s += '<rect x="200" y="30" width="70" height="' + (n * 30 + 6) + '" rx="30" fill="#fff8e1" stroke="' + C.gold + '"/>';
+    s += text(65, 18, o.h1 || 'n (term #)', { fs: 11, c: C.navy, b: true }); s += text(235, 18, o.h2 || 'a_n (term)', { fs: 11, c: C.goldTx, b: true });
+    o.inp.forEach(function (v, i) {
+      var y = 52 + i * 30;
+      s += text(65, y, fmt(v), { fs: 13, c: C.navy, b: true, halo: false }); s += text(235, y, fmt(o.out[i]), { fs: 13, c: C.navy, b: true, halo: false });
+      s += '<line x1="80" y1="' + (y - 4) + '" x2="214" y2="' + (y - 4) + '" stroke="' + C.navy + '" stroke-width="1.4" marker-end="url(#' + id + ')"/>';
+    });
+    return s + '</svg>';
+  }
+
+  /* ---------- balance scale ---------- */
+  function balance(cx, cy, l, r, w) {
+    w = w || 120; var s = '';
+    s += '<polygon points="' + cx + ',' + (cy + 4) + ' ' + (cx - 10) + ',' + (cy + 26) + ' ' + (cx + 10) + ',' + (cy + 26) + '" fill="' + C.navy + '"/>';
+    s += '<line x1="' + (cx - w / 2) + '" y1="' + cy + '" x2="' + (cx + w / 2) + '" y2="' + cy + '" stroke="' + C.navy + '" stroke-width="3" stroke-linecap="round"/>';
+    [[-1, l], [1, r]].forEach(function (p) {
+      var px = cx + p[0] * (w / 2 - 20);
+      s += '<line x1="' + px + '" y1="' + cy + '" x2="' + px + '" y2="' + (cy - 8) + '" stroke="' + C.navy + '" stroke-width="1.5"/>';
+      s += '<rect x="' + (px - 23) + '" y="' + (cy - 30) + '" width="46" height="22" rx="4" fill="#fff" stroke="' + C.navy + '" stroke-width="1.4"/>';
+      s += text(px, cy - 14.5, p[1], { fs: 12, c: C.navy, b: true, halo: false });
+    });
+    return s;
+  }
+
+  /* ================= checker ================= */
+  var SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-', '⁺': '+', '⁽': '(', '⁾': ')', 'ⁿ': 'n', 'ˣ': 'x', 'ᵗ': 't' };
+  var SUB = { '₀': '0', '₁': '1', '₂': '2', '₃': '3', '₄': '4', '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9', 'ₙ': 'n', '₋': '-', '₊': '+' };
+  function norm(s) {
+    s = String(s == null ? '' : s).trim(); var out = '', run = '';
+    for (var i = 0; i < s.length; i++) { var ch = s[i];
+      if (SUP[ch] !== undefined) { run += SUP[ch]; continue; }
+      if (run) { out += '^(' + run + ')'; run = ''; }
+      out += SUB[ch] !== undefined ? SUB[ch] : ch; }
+    if (run) out += '^(' + run + ')';
+    return out.toLowerCase().replace(/[−–—‒‐]/g, '-').replace(/[×✕⋅·∙]/g, '*').replace(/÷/g, '/')
+      .replace(/√/g, 'sqrt').replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/=</g, '<=').replace(/=>/g, '>=').replace(/\*\*/g, '^')
+      .replace(/∞/g, 'inf').replace(/≈/g, '').replace(/\s+/g, '');
+  }
+  function parseExpr(str, vars) {
+    var s = str, i = 0; vars = vars || [];
+    function isVar(c) { return c && vars.indexOf(c) >= 0; }
+    function atom() {
+      var c = s[i];
+      if (c === '(' || c === '[') { i++; var e = expr(); if (s[i] !== ')' && s[i] !== ']') throw 'paren'; i++; return e; }
+      var m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
+      if (m) { i += m[0].length; var v = parseFloat(m[0]); return function () { return v; }; }
+      if (s.substr(i, 4) === 'sqrt') { i += 4; var a = power(); return function (en) { return Math.sqrt(a(en)); }; }
+      if (isVar(c)) { i++; return function (en) { return en[c]; }; }
+      throw 'bad';
+    }
+    function power() { var a = atom(); if (s[i] === '^') { i++; var b = unary(); return function (en) { return Math.pow(a(en), b(en)); }; } return a; }
+    function unary() { if (s[i] === '-') { i++; var a = unary(); return function (en) { return -a(en); }; } if (s[i] === '+') { i++; return unary(); } return power(); }
+    function termP() {
+      var a = unary();
+      for (;;) {
+        var c = s[i];
+        if (c === '*' || c === '/') { i++; var b = unary(); a = (function (a, b, c) { return c === '*' ? function (e) { return a(e) * b(e); } : function (e) { return a(e) / b(e); }; })(a, b, c); }
+        else if (c && (/[\d.(\[]/.test(c) || isVar(c) || s.substr(i, 4) === 'sqrt')) { var b2 = power(); a = (function (a, b) { return function (e) { return a(e) * b(e); }; })(a, b2); }
+        else break;
+      }
+      return a;
+    }
+    function expr() { var a = termP(); while (s[i] === '+' || s[i] === '-') { var c = s[i++], b = termP(); a = (function (a, b, c) { return c === '+' ? function (e) { return a(e) + b(e); } : function (e) { return a(e) - b(e); }; })(a, b, c); } return a; }
+    var f = expr(); if (i !== s.length) throw 'trail'; return f;
+  }
+  var PREFIX = /^([a-z]{1,2}(_?\(?[a-z0-9]{1,3}\)?)?)=/;
+  function stripPrefix(s) { return s.replace(PREFIX, ''); }
+  function parseNum(raw) {
+    var s = norm(raw).replace(/\$/g, '').replace(/^(about|approximately|approx\.?)/, '');
+    s = stripPrefix(s);
+    if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s = s.replace(/,/g, '');
+    s = s.replace(/%$/, '');
+    var t = s.replace(/[a-z]+$/, '');
+    try { var v = parseExpr(s, [])({}); if (isFinite(v)) return v; } catch (e) {}
+    try { if (t && t !== s) { if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(t)) t = t.replace(/,/g, ''); var w = parseExpr(t, [])({}); if (isFinite(w)) return w; } } catch (e2) {}
+    return null;
+  }
+  function parsePt(raw) {
+    var s = norm(raw), mx = /x=([-+]?[\d.\/]+)/.exec(s), my = /y=([-+]?[\d.\/]+)/.exec(s), a, b;
+    try {
+      if (mx && my) { a = parseExpr(mx[1], [])({}); b = parseExpr(my[1], [])({}); return [a, b]; }
+      s = s.replace(/^[(\[{]/, '').replace(/[)\]}]$/, '');
+      var parts = s.split(/,|;|and/);
+      if (parts.length !== 2 || !parts[0] || !parts[1]) return parts.length === 1 && parts[0] ? 'one' : null;
+      a = parseExpr(parts[0], [])({}); b = parseExpr(parts[1], [])({});
+      if (isFinite(a) && isFinite(b)) return [a, b];
+    } catch (e) {}
+    return null;
+  }
+  function parseIneq(raw, v) {
+    var s = norm(raw), m = /^(.+?)(<=|>=|<|>)(.+)$/.exec(s), FL = { '<': '>', '>': '<', '<=': '>=', '>=': '<=' };
+    if (m) {
+      try {
+        if (m[1] === v) return { op: m[2], n: parseExpr(m[3], [])({}) };
+        if (m[3] === v) return { op: FL[m[2]], n: parseExpr(m[1], [])({}) };
+      } catch (e) {}
+      return null;
+    }
+    var iv = /^([(\[])(-?[\d.\/]+),(\+?inf(inity)?)\)$/.exec(s);
+    if (iv) return { op: iv[1] === '(' ? '>' : '>=', n: parseFloat(iv[2]) };
+    return null;
+  }
+  function near(a, b, tol) { return Math.abs(a - b) <= (tol != null ? tol : 1e-6 * Math.max(1, Math.abs(b))); }
+  function exprEq(f, g, vars) {
+    var samples = [0, 1, 2, 3, 0.5, 4, 1.7], ok = true;
+    for (var i = 0; i < samples.length; i++) {
+      var en = {}; vars.forEach(function (v) { en[v] = samples[i]; });
+      var a = f(en), b = g(en);
+      if (!isFinite(a) || !isFinite(b) || Math.abs(a - b) > 1e-6 * Math.max(1, Math.abs(b))) { ok = false; break; }
+    }
+    return ok;
+  }
+
+  var S = { items: {}, tried: {}, solved: {}, first: 0, V: {} };
+  function reg(id, sp) { S.items[id] = sp; }
+  function fbSay(id, cls, html) { var fb = document.getElementById('fb-' + id); if (fb) { fb.innerHTML = html; fb.className = 'chk-fb ' + cls + ' show'; } }
+  function score() {
+    var b = document.getElementById('score'); if (!b) return;
+    var t = Object.keys(S.tried).length, d = Object.keys(S.solved).length;
+    b.innerHTML = 'Score: <b>' + d + '</b> / ' + t + ' &nbsp;·&nbsp; right on the first try: <b>' + S.first + '</b>';
+  }
+  function judge(sp, raw) {
+    var k = sp.kind, i, m;
+    if (k === 'pt') {
+      var p = parsePt(raw), a = sp.ans;
+      if (p === 'one') return 'Type both numbers, like (2, 3): x first, then a comma, then y.';
+      if (!p) return 'Type a point like (2, 3): the x-value, a comma, then the y-value.';
+      if (near(p[0], a[0]) && near(p[1], a[1])) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (near(p[0], m.v[0]) && near(p[1], m.v[1])) return m.m; }
+      if (!near(a[0], a[1]) && near(p[0], a[1]) && near(p[1], a[0])) return 'So close! You switched x and y. The x-value always comes first: (x, y).';
+      if (near(p[0], a[0])) return near(Math.abs(p[1]), Math.abs(a[1])) ? 'Your x-value is right. Your y-value has the wrong sign (+ or \u2212).' : 'Your x-value is right! Now put it back into one of the equations to find y.';
+      if (near(p[1], a[1])) return near(Math.abs(p[0]), Math.abs(a[0])) ? 'Your y-value is right. Your x-value has the wrong sign (+ or \u2212).' : 'Your y-value is right. Check the step where you found x.';
+      if (near(Math.abs(p[0]), Math.abs(a[0])) && near(Math.abs(p[1]), Math.abs(a[1]))) return 'The numbers are right, but a sign (+ or −) is off. Check your negatives.';
+      return sp.hint || 'Not quite. Put your point into BOTH equations. Both must come out true.';
+    }
+    if (k === 'num') {
+      var v = parseNum(raw);
+      if (v === null) return 'Type a number, like 12, −3, 2.5 or 1/2.';
+      if (near(v, sp.ans, sp.tol)) return true;
+      for (i = 0; sp.alts && i < sp.alts.length; i++) if (near(v, sp.alts[i], sp.tol)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (near(v, m.v, m.tol != null ? m.tol : sp.tol)) return m.m; }
+      if (sp.ans !== 0 && near(v, -sp.ans, sp.tol)) return 'Check the sign. Your number should be ' + (sp.ans > 0 ? 'positive' : 'negative') + '.';
+      return sp.hint || 'Not quite. Go back through the steps one at a time.';
+    }
+    if (k === 'expr') {
+      var vars = sp.vars || ['x'], f;
+      var s = stripPrefix(norm(raw).replace(/^a_?n=|^a\(n\)=/, '')).replace(/(\d),(?=\d{3}(?!\d))/g, '$1');
+      try { f = parseExpr(s, vars); } catch (e) { return 'I could not read that. Type it like ' + (sp.eg || '3(2)^x') + '. Use ^ for a power.'; }
+      var g = parseExpr(norm(sp.ans), vars);
+      if (exprEq(f, g, vars)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (exprEq(f, parseExpr(norm(m.v), vars), vars)) return m.m; }
+      return sp.hint || 'Not quite. Check your starting value and what you add or multiply by each time.';
+    }
+    if (k === 'ineq') {
+      var q = parseIneq(raw, sp.v);
+      if (!q) return 'Type it like ' + sp.v + ' > 0 (use <, >, <= or >=).';
+      if (q.op === sp.op && near(q.n, sp.n)) return true;
+      if (near(q.n, sp.n) && q.op.charAt(0) === sp.op.charAt(0)) return sp.eqMsg || 'Close! Check if the end number itself is included. Use > or <, not ≥ or ≤, when it is not.';
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (q.op === m.op && near(q.n, m.n)) return m.m; }
+      return sp.hint || 'Not quite. Think about which y-values the graph reaches.';
+    }
+    if (k === 'text') {
+      var t = norm(raw).replace(/[^a-z0-9()]/g, '');
+      for (i = 0; i < sp.ans.length; i++) if (new RegExp('^(' + sp.ans[i] + ')$').test(t)) return true;
+      for (i = 0; sp.miss && i < sp.miss.length; i++) { m = sp.miss[i]; if (new RegExp('^(' + m.v + ')$').test(t)) return m.m; }
+      return sp.hint || 'Not quite. Try again.';
+    }
+    return 'Not quite.';
+  }
+  function solvedViz(sp) {
+    var ids = sp.viz ? [].concat(sp.viz) : [];
+    ids.forEach(function (v) { document.querySelectorAll('[data-v="' + v + '"]').forEach(function (el) { draw(el, true); }); });
+    if (sp.reveal) [].concat(sp.reveal).forEach(function (r) { var el = document.getElementById(r); if (el) el.classList.remove('hide'); });
+  }
+  function check(id) {
+    var sp = S.items[id], inp = document.getElementById(id + '-in');
+    if (!sp || !inp || S.solved[id]) return;
+    if (!inp.value.trim()) { fbSay(id, 'x', 'Type your answer in the box first.'); return; }
+    var r = judge(sp, inp.value);
+    if (!S.tried[id]) { S.tried[id] = 1; if (r === true) S.first++; }
+    if (r === true) { S.solved[id] = 1; inp.disabled = true; fbSay(id, 'c', '✓ ' + (sp.ok || 'Correct!')); solvedViz(sp); }
+    else fbSay(id, 'x', r);
+    score();
+  }
+  function pick(id, btn, val) {
+    var sp = S.items[id]; if (!sp || S.solved[id]) return;
+    var ok = String(val) === String(sp.ans);
+    if (!S.tried[id]) { S.tried[id] = 1; if (ok) S.first++; }
+    var card = document.getElementById(id);
+    if (ok) {
+      S.solved[id] = 1; btn.classList.add(sp.kind === 'fix' ? 'found' : 'correct');
+      if (card) card.querySelectorAll('.chk-btn,.fix-step').forEach(function (b) { b.disabled = true; b.style.pointerEvents = 'none'; });
+      fbSay(id, 'c', '✓ ' + (sp.ok || 'Correct!')); solvedViz(sp);
+    } else {
+      btn.classList.add(sp.kind === 'fix' ? 'okstep' : 'wrong');
+      fbSay(id, 'x', (sp.why && sp.why[val]) || sp.hint || 'Not quite. Try another choice.');
+    }
+    score();
+  }
+  function show(id) { var sp = S.items[id]; if (sp) solvedViz(sp); }
+  function revealAll() {
+    Object.keys(S.items).forEach(function (id) {
+      var sp = S.items[id]; if (S.solved[id]) return;
+      var card = document.getElementById(id), bt = card && card.querySelector('[data-o="' + sp.ans + '"]');
+      fbSay(id, 'c', 'Answer: ' + (sp.show || (sp.kind === 'pt' ? '(' + fmt(sp.ans[0]) + ', ' + fmt(sp.ans[1]) + ')' : bt ? bt.textContent : sp.ans)) + (sp.ok && sp.kind !== 'pt' ? '<br>' + sp.ok : ''));
+      if (card && (sp.kind === 'mc' || sp.kind === 'fix')) card.querySelectorAll('[data-o]').forEach(function (b) { if (b.getAttribute('data-o') === String(sp.ans)) b.classList.add(sp.kind === 'fix' ? 'found' : 'correct'); });
+      solvedViz(sp);
+    });
+    document.querySelectorAll('[data-v]').forEach(function (el) { draw(el, true); });
+  }
+  function draw(el, done) {
+    var f = S.V[el.getAttribute('data-v')]; if (!f) return;
+    try { el.innerHTML = f(!!done); } catch (e) { el.textContent = ''; if (window.console) console.error(e); }
+    el.setAttribute('data-done', done ? '1' : '0');
+  }
+  function syncEx() {
+    document.querySelectorAll('[data-ex]').forEach(function (el) {
+      var ex = el.getAttribute('data-ex'), fin = document.querySelector('.steps[data-example="' + ex + '"] .step.final');
+      if (fin && fin.classList.contains('revealed') && el.getAttribute('data-done') !== '1') draw(el, true);
+    });
+  }
+  function init() {
+    document.querySelectorAll('[data-v]').forEach(function (el) { draw(el, el.hasAttribute('data-static')); });
+    if (typeof window.reveal === 'function') { var r0 = window.reveal; window.reveal = function (s) { r0(s); syncEx(); }; }
+    if (typeof window.revealAll === 'function') { var r1_ = window.revealAll; window.revealAll = function (id) { r1_(id); syncEx(); }; }
+    if (typeof window.revealPage === 'function') { var r2 = window.revealPage; window.revealPage = function () { r2(); revealAll(); }; }
+    document.querySelectorAll('.val-chk input').forEach(function (inp) {
+      if (inp.dataset.m1) return; inp.dataset.m1 = '1';
+      inp.setAttribute('autocomplete', 'off'); inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('spellcheck', 'false');
+    });
+    score();
+  }
+
+  /* ---------- interactive: drag a point (mouse + touch) ---------- */
+  function dragPoint(el, o) {
+    // o: {render(x,y) -> svg string, x, y, x0,x1,y0,y1, onMove(x,y)}
+    var st = { x: o.x, y: o.y };
+    function paint() { el.innerHTML = o.render(st.x, st.y); if (o.onMove) o.onMove(st.x, st.y); }
+    paint();
+    var dragging = false;
+    function toData(evt) {
+      var svg = el.querySelector('svg'); if (!svg) return null;
+      var pt = svg.createSVGPoint(); pt.x = evt.clientX; pt.y = evt.clientY;
+      var m = svg.getScreenCTM(); if (!m) return null; var p = pt.matrixTransform(m.inverse());
+      return o.fromPx(p.x, p.y);
+    }
+    function move(evt) {
+      var d = toData(evt); if (!d) return;
+      var nx = Math.max(o.x0, Math.min(o.x1, Math.round(d[0]))), ny = Math.max(o.y0, Math.min(o.y1, Math.round(d[1])));
+      if (nx !== st.x || ny !== st.y) { st.x = nx; st.y = ny; paint(); }
+    }
+    el.addEventListener('pointerdown', function (e) { dragging = true; try { el.setPointerCapture(e.pointerId); } catch (x) {} move(e); e.preventDefault(); });
+    el.addEventListener('pointermove', function (e) { if (dragging) { move(e); e.preventDefault(); } });
+    el.addEventListener('pointerup', function () { dragging = false; });
+    el.addEventListener('pointercancel', function () { dragging = false; });
+    el.setAttribute('tabindex', '0');
+    el.addEventListener('keydown', function (e) {
+      var k = e.key, dx = k === 'ArrowRight' ? 1 : k === 'ArrowLeft' ? -1 : 0, dy = k === 'ArrowUp' ? 1 : k === 'ArrowDown' ? -1 : 0;
+      if (!dx && !dy) return; e.preventDefault();
+      st.x = Math.max(o.x0, Math.min(o.x1, st.x + dx)); st.y = Math.max(o.y0, Math.min(o.y1, st.y + dy)); paint();
+    });
+    return st;
+  }
+  // pixel <-> data for a plane with default padding (mirror of plane())
+  function planeMap(o) {
+    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var yl = o.yl || o.ys || 1, maxYW = 0, tick = o.tick || function (v) { return fmt(v); };
+    for (var v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) maxYW = Math.max(maxYW, tw(tick(+v.toFixed(6)), tfs));
+    var L = (x0 >= 0 ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0), B = H - ((y0 >= 0 ? 17 : 10) + (o.xtitle ? 15 : 0)), T = 10, R = W - 10;
+    return function (px, py) { return [x0 + (px - L) / (R - L) * (x1 - x0), y0 + (B - py) / (B - T) * (y1 - y0)]; };
+  }
+
+  return { C: C, fmt: fmt, money: money, commas: commas, plane: plane, sys: sys, planeMap: planeMap, eqrows: eqrows, elim: elim, subst: subst, tbl: tbl, bars: bars,
+    hops: hops, mapping: mapping, balance: balance, svgOpen: svgOpen, text: text, pill: pill, tw: tw, solve2: solve2, eqStd: eqStd, eqSI: eqSI, term: term,
+    reg: reg, check: check, pick: pick, show: show, revealAll: revealAll, init: init, draw: draw, V: S.V, S: S, dragPoint: dragPoint,
+    parseNum: parseNum, parsePt: parsePt, parseExpr: parseExpr, norm: norm, judge: judge };
+})();
+</script>
+<script>
+(function () {
+  var C = M1.C, V = M1.V, R = M1.reg, P = M1.plane, S = M1.sys, f = M1.fmt;
+  function L(m, b, label, o) { var q = { m: m, b: b, label: label }; for (var k in o || {}) q[k] = o[k]; return q; }
+  function waitG(o) { // empty grid until the steps are revealed
+    return P({ x: o.x, y: o.y, w: o.w, label: 'graph appears after the steps', items: [{ t: 'txt', x: (o.x[0] + o.x[1]) / 2, y: (o.y[0] + o.y[1]) / 2, s: 'reveal the steps', pill: true }] });
+  }
+  /* ---- Topic 1 ---- */
+  V.t1a = function () { return P({ x: [-4, 6], y: [-4, 6], label: 'y = x + 1 with two test points', items: [
+    { t: 'line', m: 1, b: 1, label: 'y = x + 1' }, { t: 'pt', x: 2, y: 3, c: C.green, label: '(2, 3) ✓' }, { t: 'pt', x: 0, y: 0, c: C.red, label: '(0, 0) ✗' }] }); };
+  V.e31 = function (d) { return P({ x: [-2, 8], y: [-3, 6], label: 'x + 2y = 6 and the point (4, 1)', items: [
+    { t: 'line', A: 1, B: 2, C: 6, label: 'x + 2y = 6' }, d ? { t: 'pt', x: 4, y: 1, c: C.green, label: '(4, 1) ✓ on the line' } : { t: 'pt', x: 4, y: 1, c: C.gold, label: '(4, 1) ?', pill: true }] }); };
+  V.e31b = function (d) { return S({ x: [-2, 6], y: [-2, 7], lines: [L(1, 1, 'y = x + 1'), L(-1, 5, 'y = −x + 5')], sol: [2, 3], done: d, qLabel: '(2, 3) ?', solLabel: '(2, 3) ✓ both', label: 'two lines and the point (2, 3)' }); };
+  V.f31 = function (d) { if (!d) return ''; return P({ x: [-1, 6], y: [-5, 5], label: 'y = 2x − 5 through (3, 1)', items: [
+    { t: 'line', m: 2, b: -5, label: 'y = 2x − 5' }, { t: 'pt', x: 3, y: 1, c: C.green, label: '(3, 1) ✓' }, { t: 'pt', x: 1, y: 3, c: C.red, label: '(1, 3) ✗ mixed up' }] }); };
+  R('f31', { kind: 'fix', ans: 2, viz: 'f31', reveal: 'f31-next', ok: 'Step 2 is the mistake. In (3, 1), x = 3 and y = 1. Ana put them in backwards. The right check is 1 = 2(3) − 5, which is 1 = 1. So (3, 1) IS a solution.',
+    why: { 1: 'Step 1 is fine. She copied the equation correctly. Look at what she put in for x and y.', 3: 'Step 3 is correct math for step 2: 2(1) − 5 = −3. The problem started earlier.', 4: 'Step 4 follows from step 3. Look earlier for the real mistake.' } });
+  R('f31b', { kind: 'num', ans: 1, ok: 'y = 2(3) − 5 = 6 − 5 = 1. It matches the point (3, 1).', miss: [{ v: 11, m: 'Subtract 5. Do not add it: 6 − 5.' }, { v: -1, m: 'Check: 2(3) = 6, and 6 − 5 = 1.' }, { v: 3, m: 'That is the x-value. Find y = 2(3) − 5.' }] });
+  V.q31 = function (d) { if (!d) return ''; return P({ x: [-3, 4], y: [-4, 8], label: 'y = 3x + 1 through (1, 4)', items: [{ t: 'line', m: 3, b: 1, label: 'y = 3x + 1' }, { t: 'pt', x: 1, y: 4, c: C.green, label: '(1, 4) ✓' }] }); };
+  R('q31', { kind: 'mc', ans: 'yes', viz: 'q31', ok: 'Put in x = 1: 3(1) + 1 = 4. And y = 4. So 4 = 4 is true. Yes!', why: { no: 'Check again. Put x = 1 into 3x + 1. You get 4. Is that the y-value?' } });
+  V.q31b = function (d) { if (!d) return ''; return S({ x: [-1, 7], y: [-1, 8], lines: [L(2, 1, 'y = 2x + 1'), L(-1, 6, 'y = −x + 6')], pts: [{ t: 'pt', x: 2, y: 5, c: C.red, label: '(2, 5) ✗' }], label: 'the point (2, 5) is on only one line' }); };
+  R('q31b', { kind: 'mc', ans: 'no', viz: 'q31b', ok: 'First: 5 = 2(2) + 1 = 5 ✓. Second: −2 + 6 = 4, not 5 ✗. It must work in BOTH, so it is not a solution. The picture shows it is on only one line.',
+    why: { yes: 'It works in the first equation (5 = 5). Now check the second: −2 + 6 = 4. Is 4 equal to 5? A system needs both.' } });
+  /* ---- Topic 2 ---- */
+  V.t2one = function () { return S({ w: 210, x: [-3, 4], y: [-2, 5], lines: [L(1, 1, 'y = x + 1'), L(-1, 3, 'y = −x + 3')], sol: [1, 2], done: true, solLabel: '(1, 2)', label: 'one solution' }); };
+  V.t2none = function () { return S({ w: 210, x: [-3, 4], y: [-3, 5], lines: [L(1, 2, 'y = x + 2'), L(1, -1, 'y = x − 1')], label: 'no solution, parallel lines' }); };
+  V.t2inf = function () { return S({ w: 210, x: [-3, 4], y: [-2, 5], lines: [L(-1, 2, 'y = −x + 2', { at: 0.2 }), { A: 2, B: 2, C: 4, label: '2x + 2y = 4', dash: '8 6', at: 0.8 }], label: 'infinitely many, same line' }); };
+  V.e32 = function (d) { return S({ x: [-2, 6], y: [-3, 7], lines: [L(2, -1, 'y = 2x − 1'), L(-1, 5, 'y = −x + 5')], sol: [2, 3], done: d, label: 'y = 2x − 1 and y = −x + 5' }); };
+  V.e32b = function (d) { return S({ x: [0, 6], y: [0, 16], ys: 2, yl: 2, xtitle: 'visits (x)', ytitle: 'cost in $ (y)', xname: '', yname: '', lines: [L(2, 4, 'A: y = 2x + 4'), L(1, 7, 'B: y = x + 7')], sol: [3, 10], done: d, label: 'gym costs' }); };
+  V.f32 = function (d) { return S({ x: [-2, 5], y: [-2, 6], lines: [L(1, 1, 'y = x + 1'), L(-2, 4, 'y = −2x + 4')], sol: [1, 2], done: d, label: 'two lines crossing' }); };
+  R('f32', { kind: 'fix', ans: 4, viz: 'f32', ok: 'Step 4 is the mistake. Step 3 says x = 1 and y = 2. The x-value goes first, so the solution is (1, 2), not (2, 1).',
+    why: { 1: 'Step 1 is right. y = x + 1 starts at 1 with slope 1.', 2: 'Step 2 is right. The slope −2 means down 2, right 1.', 3: 'Step 3 is right. Look at the graph: the lines cross at x = 1, y = 2.' } });
+  V.q32 = function (d) { return S({ x: [-2, 6], y: [-3, 6], lines: [L(1, -2, 'y = x − 2'), L(-1, 4, 'y = −x + 4')], sol: [3, 1], done: d, label: 'y = x − 2 and y = −x + 4' }); };
+  R('q32', { kind: 'pt', ans: [3, 1], viz: 'q32', ok: 'They cross at (3, 1). Check: 3 − 2 = 1 ✓ and −3 + 4 = 1 ✓.' });
+  V.q32b = function (d) { return S({ x: [0, 6], y: [0, 20], ys: 2, yl: 4, xtitle: 'months (x)', ytitle: 'cost in $ (y)', xname: '', yname: '', lines: [L(3, 2, 'A: y = 3x + 2'), L(1, 8, 'B: y = x + 8')], sol: [3, 11], done: d, label: 'two plans' }); };
+  R('q32b', { kind: 'pt', ans: [3, 11], viz: 'q32b', ok: '3x + 2 = x + 8 → 2x = 6 → x = 3. Cost: 3(3) + 2 = 11. They meet at (3, 11).', miss: [{ v: [3, 0], m: 'x = 3 is right. Now find the cost: put x = 3 into y = x + 8.' }] });
+  /* ---- Topic 3 ---- */
+  V.e33bar = function (d) {
+    var s = M1.svgOpen(300, 168, 'bar model for x + y = 9'), x0 = 24, w = 252, u = w / 3;
+    s += '<rect width="300" height="168" fill="#fafcff"/>';
+    s += '<path d="M' + x0 + ',34 L' + x0 + ',26 L' + (x0 + w) + ',26 L' + (x0 + w) + ',34" fill="none" stroke="#1E2D4F" stroke-width="1.5"/>' + M1.text(150, 20, 'x + y = 9', { fs: 12, b: true });
+    s += '<rect x="' + x0 + '" y="40" width="' + u + '" height="34" fill="#eef3fb" stroke="#1E2D4F" stroke-width="1.6"/>' + M1.text(x0 + u / 2, 62, 'x', { fs: 14, b: true, halo: false });
+    s += '<rect x="' + (x0 + u) + '" y="40" width="' + 2 * u + '" height="34" fill="#fff8e1" stroke="#1E2D4F" stroke-width="1.6"/>';
+    s += '<line x1="' + (x0 + 2 * u) + '" y1="40" x2="' + (x0 + 2 * u) + '" y2="74" stroke="#1E2D4F" stroke-dasharray="4 3"/>';
+    s += M1.text(x0 + 1.5 * u, 62, 'x', { fs: 14, b: true, halo: false }) + M1.text(x0 + 2.5 * u, 62, 'x', { fs: 14, b: true, halo: false });
+    s += '<path d="M' + (x0 + u + 2) + ',80 L' + (x0 + u + 2) + ',87 L' + (x0 + w - 2) + ',87 L' + (x0 + w - 2) + ',80" fill="none" stroke="#7a5a00" stroke-width="1.5"/>' + M1.text(x0 + 2 * u, 101, 'y = 2x (two x-bars)', { fs: 11.5, c: '#7a5a00', b: true });
+    s += M1.text(150, 124, '3 equal parts make 9', { fs: 12, c: C.navy });
+    if (d) s += M1.text(150, 150, 'x = 9 ÷ 3 = 3,  y = 2(3) = 6', { fs: 13, c: C.green, b: true });
+    else s += M1.text(132, 150, 'one part: x =', { fs: 13 }) + M1.pill(194, 146, '?', { fs: 12 });
+    return s + '</svg>';
+  };
+  V.e33 = function (d) { return M1.subst({ done: d, eq1: ['y', ' = ', '2x'], k1: 2, eq2: ['x + ', 'y', ' = 9'], k2: 1, res: [['3x = 9  →  x = ', '?'], ['y = 2x  →  (', '?', ', ', '?', ')']], resDone: [['3x = 9  →  x = 3'], ['y = 2(3) = 6  →  (3, 6)']] }); };
+  V.e33g = function (d) { return d ? S({ x: [-1, 8], y: [-1, 10], lines: [L(2, 0, 'y = 2x'), { A: 1, B: 1, C: 9, label: 'x + y = 9' }], sol: [3, 6], done: true, label: 'graph check' }) : waitG({ x: [-1, 8], y: [-1, 10] }); };
+  V.e33b = function (d) { return M1.subst({ done: d, eq1: ['y', ' = ', 'x − 1'], k1: 2, eq2: ['3x + ', 'y', ' = 11'], k2: 1, res: [['4x − 1 = 11  →  x = ', '?'], ['y = x − 1  →  (', '?', ', ', '?', ')']], resDone: [['4x − 1 = 11  →  x = 3'], ['y = 3 − 1 = 2  →  (3, 2)']] }); };
+  V.f33 = function (d) { if (!d) return ''; return S({ x: [-1, 7], y: [-2, 11], yl: 2, lines: [L(2, -1, 'y = 2x − 1'), { A: 3, B: -1, C: 4, label: '3x − y = 4' }], sol: [3, 5], done: true, pts: [{ t: 'pt', x: 5, y: 9, c: C.red, label: '(5, 9) ✗' }], label: 'the true crossing (3, 5) and the wrong answer (5, 9)' }); };
+  R('f33', { kind: 'fix', ans: 2, viz: 'f33', reveal: 'f33-next', ok: 'Step 2 is the mistake. The minus sign goes to BOTH terms in the ( ): −(2x − 1) = −2x + 1. The red point (5, 9) is only on one line.',
+    why: { 1: 'Step 1 is right. Kai swapped (2x − 1) in for y, with ( ). Good!', 3: 'Step 3 is correct for step 2. The mistake is earlier.', 4: 'Step 4 uses x = 5 correctly. But x = 5 came from an earlier mistake.' } });
+  R('f33b', { kind: 'pt', ans: [3, 5], viz: 'f33', ok: '3x − 2x + 1 = 4 → x + 1 = 4 → x = 3. Then y = 2(3) − 1 = 5. Solution (3, 5).', miss: [{ v: [5, 9], m: 'That is Kai\'s answer. Use −(2x − 1) = −2x + 1.' }] });
+  V.q33 = function (d) { return M1.subst({ done: d, eq1: ['y', ' = ', 'x + 1'], k1: 2, eq2: ['x + ', 'y', ' = 7'], k2: 1, res: [['2x + 1 = 7  →  x = ', '?'], ['y = x + 1  →  (', '?', ', ', '?', ')']], resDone: [['2x + 1 = 7  →  x = 3'], ['y = 3 + 1 = 4  →  (3, 4)']] }); };
+  R('q33', { kind: 'pt', ans: [3, 4], viz: 'q33', ok: 'x + (x + 1) = 7 → 2x = 6 → x = 3. y = 3 + 1 = 4.', miss: [{ v: [4, 3], m: 'You switched them. x = 3 and y = 4, so write (3, 4).' }] });
+  V.q33b = function (d) { return M1.subst({ done: d, eq1: ['x', ' = ', '2y'], k1: 2, eq2: ['x', ' + y = 12'], k2: 0, res: [['3y = 12  →  y = ', '?'], ['x = 2y  →  (', '?', ', ', '?', ')']], resDone: [['3y = 12  →  y = 4'], ['x = 2(4) = 8  →  (8, 4)']] }); };
+  R('q33b', { kind: 'pt', ans: [8, 4], viz: 'q33b', ok: '2y + y = 12 → 3y = 12 → y = 4. x = 2(4) = 8. Solution (8, 4).', miss: [{ v: [4, 8], m: 'Careful! You found y first this time. y = 4 and x = 8. The x-value still goes first: (8, 4).' }] });
+  /* ---- Topic 4 ---- */
+  V.t4bal = function () {
+    var s = M1.svgOpen(300, 210, 'two balanced scales add to a balanced scale'); s += '<rect width="300" height="210" fill="#fafcff"/>';
+    s += M1.balance(70, 62, 'x + y', '10', 112) + M1.balance(230, 62, 'x − y', '4', 112);
+    s += M1.text(150, 50, '+', { fs: 20, b: true }) + M1.text(150, 114, 'add left sides, add right sides', { fs: 11, c: C.muted, fam: 'Inter,sans-serif' });
+    s += '<line x1="150" y1="120" x2="150" y2="134" stroke="#1E2D4F" stroke-width="2"/><path d="M144,130 L150,138 L156,130" fill="none" stroke="#1E2D4F" stroke-width="2"/>';
+    s += M1.balance(150, 172, '2x', '14', 150);
+    return s + '</svg>';
+  };
+  V.e34 = function (d) { return M1.elim({ e: [[1, 1, 10], [1, -1, 4]], done: d }); };
+  V.e34b = function (d) { return M1.elim({ e: [[3, 2, 16], [1, 1, 6]], k: [1, -2], done: d }); };
+  V.f34 = function (d) { if (!d) return ''; return M1.elim({ e: [[1, 2, 7], [3, -1, 7]], k: [1, 2], done: true }); };
+  R('f34', { kind: 'fix', ans: 1, viz: 'f34', reveal: 'f34-next', ok: 'Step 1 is the mistake. Multiply EVERY term by 2, even the 7: 6x − 2y = 14. The picture shows the right way.',
+    why: { 2: 'Adding is fine: x + 6x = 7x, and 2y − 2y = 0. But look at the number 7 in step 1.', 3: 'Step 3 follows from step 2. The mistake is earlier.', 4: 'Step 4 uses x = 2. But x = 2 came from a mistake earlier.' } });
+  R('f34b', { kind: 'pt', ans: [3, 2], viz: 'f34', ok: '6x − 2y = 14. Add x + 2y = 7: 7x = 21, x = 3. Then 3 + 2y = 7, y = 2. Solution (3, 2).', miss: [{ v: [2, 2.5], m: 'That is Jada\'s answer. Multiply the 7 by 2 as well.' }] });
+  V.q34 = function (d) { return M1.elim({ e: [[1, 1, 8], [1, -1, 2]], done: d }); };
+  R('q34', { kind: 'pt', ans: [5, 3], viz: 'q34', ok: 'Add: 2x = 10, x = 5. Then 5 + y = 8, y = 3.', miss: [{ v: [10, -2], m: 'After 2x = 10, divide by 2: x = 5.' }] });
+  V.q34b = function (d) { return M1.elim({ e: [[2, 1, 9], [1, -1, 3]], done: d }); };
+  R('q34b', { kind: 'pt', ans: [4, 1], viz: 'q34b', ok: 'Add: 3x = 12, x = 4. Then 2(4) + y = 9, y = 1.' });
+  /* ---- Topic 5 ---- */
+  V.t5flow = function () {
+    var s = M1.svgOpen(300, 360, 'flowchart for choosing a method'), y = 8;
+    s += '<defs><marker id="fa" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker></defs><rect width="300" height="360" fill="#fafcff"/>';
+    function box(y, h, fill, st, lines, col, b) { var t = '<rect x="14" y="' + y + '" width="272" height="' + h + '" rx="9" fill="' + fill + '" stroke="' + st + '" stroke-width="2"/>';
+      lines.forEach(function (l, i) { t += M1.text(150, y + h / 2 + 4.5 - (lines.length - 1) * 8 + i * 16, l, { fs: 12, c: col, b: b, halo: false, fam: 'Inter,system-ui,sans-serif' }); }); return t; }
+    function arr(y1, y2) { return '<line x1="150" y1="' + y1 + '" x2="150" y2="' + (y2 - 2) + '" stroke="#1E2D4F" stroke-width="2" marker-end="url(#fa)"/>'; }
+    s += box(8, 34, '#1E2D4F', '#1E2D4F', ['System of two equations'], '#fff', true) + arr(42, 58);
+    s += box(58, 48, '#fff8e1', '#E0A800', ['Is a variable already alone?', '(y = … or x = …)'], '#5c4400', true) + arr(106, 122);
+    s += box(122, 34, '#f8faff', '#cdd5e0', ['Yes → SUBSTITUTION'], '#1E2D4F', true) + M1.text(166, 182, 'No ↓', { fs: 12, c: C.muted, a: 'start', fam: 'Inter,sans-serif' }) + arr(156, 194);
+    s += box(194, 48, '#fff8e1', '#E0A800', ['No: are coefficients opposite', 'or easy to match?'], '#5c4400', true) + arr(242, 258);
+    s += box(258, 34, '#f8faff', '#cdd5e0', ['Yes → ELIMINATION'], '#1E2D4F', true) + arr(292, 308);
+    s += box(308, 46, '#e8f5e2', '#15803D', ['Otherwise → GRAPH to estimate', 'the intersection'], '#15803D', true);
+    return s + '</svg>';
+  };
+  V.e35t = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 2x + 3', 'y = 2x − 1'], [2, 2], [3, -1]], hide: [[1, 0], [1, 1], [2, 0], [2, 1]], done: d, label: 'compare slope and intercept' }); };
+  V.e35g = function (d) { return d ? S({ w: 240, x: [-3, 3], y: [-4, 6], lines: [L(2, 3, 'y = 2x + 3'), L(2, -1, 'y = 2x − 1')], label: 'parallel lines' }) : waitG({ w: 240, x: [-3, 3], y: [-4, 6] }); };
+  V.e35b = function (d) { return M1.subst({ done: d, eq1: ['y', ' = ', '−x + 4'], k1: 2, eq2: ['2x + 2', 'y', ' = 8'], k2: 1, res: [['2x − 2x + 8 = 8  →  ', '?']], resDone: [['8 = 8: always true'], ['→ infinitely many']] }); };
+  V.e35bg = function (d) { return d ? S({ w: 240, x: [-2, 6], y: [-2, 6], lines: [L(-1, 4, 'y = −x + 4', { at: 0.2 }), { A: 2, B: 2, C: 8, label: '2x + 2y = 8', dash: '8 6', at: 0.8 }], label: 'the same line' }) : waitG({ w: 240, x: [-2, 6], y: [-2, 6] }); };
+  V.f35 = function (d) { if (!d) return ''; return S({ x: [-4, 3], y: [-4, 7], lines: [L(2, 1, 'y = 2x + 1'), L(2, 5, 'y = 2x + 5')], label: 'parallel lines never meet' }); };
+  R('f35', { kind: 'fix', ans: 3, viz: 'f35', ok: 'Step 3 is the mistake. Same slope + different intercepts means the lines are parallel. They never cross: NO solution.',
+    why: { 1: 'Step 1 is right. Both slopes are 2.', 2: 'Step 2 is right. The b-values are 1 and 5.' } });
+  var w3 = { one: 'Look at the slopes. Different slopes cross once.', none: 'Same slope and different b means parallel.', inf: 'Same slope and same b means the same line.' };
+  V.q35 = function (d) { if (!d) return ''; return S({ x: [-4, 4], y: [-1, 8], lines: [L(1, 4, 'y = x + 4'), L(-1, 4, 'y = −x + 4')], sol: [0, 4], done: true, label: 'one solution' }); };
+  R('q35', { kind: 'mc', ans: 'one', viz: 'q35', ok: 'The slopes are 1 and −1. Different slopes, so the lines cross once, at (0, 4).', why: { none: 'Parallel lines need the SAME slope. Here the slopes are 1 and −1.', inf: 'The same line needs the same slope. Here the slopes are 1 and −1.' } });
+  V.q35b = function (d) { if (!d) return ''; return S({ x: [-3, 3], y: [-5, 6], lines: [L(3, -2, 'y = 3x − 2'), L(3, 1, 'y = 3x + 1')], label: 'parallel lines' }); };
+  R('q35b', { kind: 'mc', ans: 'none', viz: 'q35b', ok: 'Same slope (3), different b (−2 and 1). The lines are parallel: no solution.', why: { one: 'Both slopes are 3. Lines with the same slope do not cross.', inf: 'The b-values are different (−2 and 1), so it is not the same line.' } });
+  V.q35c = function (d) { if (!d) return ''; return S({ x: [-3, 4], y: [-5, 5], lines: [L(-2, 1, 'y = −2x + 1', { at: 0.2 }), { A: 4, B: 2, C: 2, label: '4x + 2y = 2', dash: '8 6', at: 0.8 }], label: 'the same line' }); };
+  R('q35c', { kind: 'mc', ans: 'inf', viz: 'q35c', ok: 'Solve 4x + 2y = 2 for y: 2y = −4x + 2, so y = −2x + 1. It is the SAME line: infinitely many solutions.', why: { one: 'First get y alone in 4x + 2y = 2. Divide by 2. Compare.', none: 'Get y alone in 4x + 2y = 2: y = −2x + 1. Is the b different?' } });
+  V.q35d = function (d) { if (!d) return ''; return M1.elim({ e: [[2, 5, 1], [-2, 3, 7]], done: true }); };
+  R('q35d', { kind: 'mc', ans: 'elim', viz: 'q35d', ok: '+2x and −2x are opposites. Add the equations and x cancels: 8y = 8, y = 1, x = −2.', why: { sub: 'Nothing is alone here. You would have to solve for a letter first. Look at the x-terms.', graph: 'Graphing works, but these lines have fraction slopes. They are hard to graph exactly. Look at 2x and −2x.' } });
+  /* ---- Topic 6 ---- */
+  V.t6a = function () { return P({ x: [-2, 8], y: [-2, 8], label: 'x + y ≤ 6 shaded below', items: [
+    { t: 'region', hp: [{ A: 1, B: 1, C: 6, s: '<' }], c: C.navy, op: 0.16 }, { t: 'line', A: 1, B: 1, C: 6, label: 'x + y = 6' }, { t: 'pt', x: 1, y: 1, c: C.green, label: '(1, 1) ✓' }] }); };
+  V.e36 = function (d) { var it = d ? [{ t: 'region', hp: [{ m: 2, b: -1, s: '>' }], c: C.navy, op: 0.16 }] : [];
+    it.push({ t: 'line', m: 2, b: -1, dash: true, label: 'y = 2x − 1' }, d ? { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓ test' } : { t: 'pt', x: 0, y: 0, c: C.gold, label: 'test (0, 0)?', pill: true });
+    return P({ x: [-4, 4], y: [-4, 5], label: 'y > 2x − 1', items: it }); };
+  V.t6sys = function () { return P({ x: [-2, 6], y: [-2, 6], label: 'system y ≥ x − 1 and y ≤ −x + 3', items: [
+    { t: 'region', hp: [{ m: 1, b: -1, s: '>' }], c: C.navy, op: 0.08 }, { t: 'region', hp: [{ m: -1, b: 3, s: '<' }], c: C.purple, op: 0.08 },
+    { t: 'region', hp: [{ m: 1, b: -1, s: '>' }, { m: -1, b: 3, s: '<' }], c: C.green, op: 0.22 },
+    { t: 'line', m: 1, b: -1, label: 'y = x − 1' }, { t: 'line', m: -1, b: 3, c: C.purple, label: 'y = −x + 3' }, { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓' }] }); };
+  V.e36b = function (d) { var it = [];
+    if (d) it.push({ t: 'region', hp: [{ m: 2, b: 1, s: '<' }], c: C.navy, op: 0.08 }, { t: 'region', hp: [{ m: -1, b: -2, s: '>' }], c: C.purple, op: 0.08 }, { t: 'region', hp: [{ m: 2, b: 1, s: '<' }, { m: -1, b: -2, s: '>' }], c: C.green, op: 0.22 });
+    it.push({ t: 'line', m: 2, b: 1, label: 'y = 2x + 1' }, { t: 'line', m: -1, b: -2, c: C.purple, dash: true, label: 'y = −x − 2' });
+    it.push(d ? { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓' } : { t: 'pt', x: 0, y: 0, c: C.gold, label: 'test (0, 0)?', pill: true });
+    if (d) it.push({ t: 'pt', x: -1, y: -1, c: C.navy, r: 3.5, label: '(−1, −1)' });
+    return P({ x: [-4, 4], y: [-4, 4], label: 'system y ≤ 2x + 1 and y > −x − 2', items: it }); };
+  V.f36 = function (d) { if (!d) return ''; return P({ x: [-4, 4], y: [-3, 5], label: 'y < x + 2, dashed line, shaded below', items: [
+    { t: 'region', hp: [{ m: 1, b: 2, s: '<' }], c: C.navy, op: 0.16 }, { t: 'line', m: 1, b: 2, dash: true, label: 'y = x + 2' }, { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓' }] }); };
+  R('f36', { kind: 'fix', ans: 2, viz: 'f36', ok: 'Step 2 is the mistake. The symbol is &lt; (no "equal" line under it). Points ON the line do not count, so the line must be dashed.',
+    why: { 1: 'Step 1 is right. Change &lt; to = to get the boundary line.', 3: 'Step 3 is right: 0 &lt; 0 + 2 is true.', 4: 'Step 4 is right: the test point was true, so shade its side.' } });
+  V.q36 = function (d) { if (!d) return ''; return P({ x: [-2, 6], y: [-2, 6], label: 'the point (3, 1) is outside the overlap', items: [
+    { t: 'region', hp: [{ m: 1, b: -1, s: '>' }, { m: -1, b: 3, s: '<' }], c: C.green, op: 0.22 }, { t: 'line', m: 1, b: -1, label: 'y = x − 1' }, { t: 'line', m: -1, b: 3, c: C.purple, label: 'y = −x + 3' }, { t: 'pt', x: 3, y: 1, c: C.red, label: '(3, 1) ✗' }] }); };
+  R('q36', { kind: 'mc', ans: 'no', viz: 'q36', ok: 'First: is 1 ≥ 3 − 1? That is 1 ≥ 2. False! One false is enough: (3, 1) is not in the overlap.', why: { yes: 'Check the first one: 1 ≥ 3 − 1 means 1 ≥ 2. Is that true?' } });
+  V.q36b = function (d) { if (!d) return ''; return P({ x: [-2, 5], y: [-3, 6], label: 'y ≤ −2x + 4 shaded below', items: [
+    { t: 'region', hp: [{ m: -2, b: 4, s: '<' }], c: C.navy, op: 0.16 }, { t: 'line', m: -2, b: 4, label: 'y = −2x + 4' }, { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓' }] }); };
+  R('q36b', { kind: 'mc', ans: 'below', viz: 'q36b', ok: 'Test (0, 0): 0 ≤ −2(0) + 4 means 0 ≤ 4. True! Shade the side with (0, 0): below.', why: { above: 'Try the test point (0, 0): 0 ≤ 4 is true. Which side is (0, 0) on?' } });
+  V.q36c = function (d) { if (!d) return ''; return P({ x: [-3, 3], y: [-4, 5], label: 'y > 3x − 2, dashed line, shaded above', items: [
+    { t: 'region', hp: [{ m: 3, b: -2, s: '>' }], c: C.navy, op: 0.16 }, { t: 'line', m: 3, b: -2, dash: true, label: 'y = 3x − 2' }] }); };
+  R('q36c', { kind: 'mc', ans: 'dashed', viz: 'q36c', ok: '&gt; has no "or equal" part. Points on the line are not solutions, so the line is dashed.', why: { solid: 'Solid lines are for ≤ and ≥. This symbol is &gt; with no line under it.' } });
+
+  /* ---- slider explorer ---- */
+  function sx() {
+    var g = function (id) { return parseFloat(document.getElementById(id).value); };
+    var m1 = g('sx-m1'), b1 = g('sx-b1'), m2 = g('sx-m2'), b2 = g('sx-b2');
+    ['m1', 'b1', 'm2', 'b2'].forEach(function (k) { document.getElementById('sx-' + k + 'o').textContent = f(g('sx-' + k)); });
+    var out = document.getElementById('sx-out'), lines = [L(m1, b1, M1.eqSI(m1, b1)), L(m2, b2, M1.eqSI(m2, b2), m1 === m2 && b1 === b2 ? { dash: '8 6' } : null)], sol = null;
+    if (m1 === m2) out.textContent = b1 === b2 ? 'Same line → infinitely many solutions.' : 'Same slope, different b → parallel → no solution.';
+    else { var x = (b2 - b1) / (m1 - m2), y = m1 * x + b1; sol = [x, y];
+      out.textContent = 'One solution: (' + f(x, 2) + ', ' + f(y, 2) + ')' + (Math.abs(x) > 6 || Math.abs(y) > 6 ? ' — off this screen!' : ''); }
+    document.getElementById('sx-viz').innerHTML = S({ x: [-6, 6], y: [-6, 6], xl: 2, yl: 2, lines: lines, sol: sol && Math.abs(sol[0]) <= 6 && Math.abs(sol[1]) <= 6 ? sol : null, done: true, solLabel: sol ? '(' + f(sol[0], 2) + ', ' + f(sol[1], 2) + ')' : '', label: 'two lines you control' });
+  }
+  ['sx-m1', 'sx-b1', 'sx-m2', 'sx-b2'].forEach(function (id) { document.getElementById(id).addEventListener('input', sx); });
+  sx();
+  /* ---- drag a test point ---- */
+  var dgo = { x: [-2, 6], y: [-2, 6] }, map = M1.planeMap(dgo);
+  M1.dragPoint(document.getElementById('dg-viz'), { x: 0, y: 0, x0: -2, x1: 6, y0: -2, y1: 6, fromPx: map,
+    render: function (x, y) {
+      var a = y >= x - 1, b = y <= -x + 3, col = a && b ? C.green : C.red;
+      return P({ x: dgo.x, y: dgo.y, label: 'drag the point', items: [
+        { t: 'region', hp: [{ m: 1, b: -1, s: '>' }], c: C.navy, op: 0.08 }, { t: 'region', hp: [{ m: -1, b: 3, s: '<' }], c: C.purple, op: 0.08 },
+        { t: 'region', hp: [{ m: 1, b: -1, s: '>' }, { m: -1, b: 3, s: '<' }], c: C.green, op: 0.2 },
+        { t: 'line', m: 1, b: -1, label: 'y ≥ x − 1' }, { t: 'line', m: -1, b: 3, c: C.purple, label: 'y ≤ −x + 3' },
+        { t: 'pt', x: x, y: y, c: col, r: 8, label: '(' + f(x) + ', ' + f(y) + ')' }] });
+    },
+    onMove: function (x, y) {
+      var a = y >= x - 1, b = y <= -x + 3;
+      document.getElementById('dg-out').innerHTML = '(' + f(x) + ', ' + f(y) + '): &nbsp;' + f(y) + ' ≥ ' + f(x - 1) + ' ' + (a ? '✓' : '✗') + ' &nbsp;·&nbsp; ' + f(y) + ' ≤ ' + f(-x + 3) + ' ' + (b ? '✓' : '✗') +
+        ' → ' + (a && b ? '<span style="color:#15803D">in the overlap — a solution!</span>' : '<span style="color:#B42318">not a solution</span>');
+    } });
+  M1.init();
+})();
+</script>
 </body>
 </html>

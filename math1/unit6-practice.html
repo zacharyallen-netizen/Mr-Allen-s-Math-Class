@@ -18,6 +18,49 @@
 <title>Unit 6 Practice — Quadratic Expressions &amp; Equations | NC Math 1</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
+<style>
+/* Units 5–6 page additions (visuals, steps, checks). Builds on theme.css. */
+.viz{margin:12px auto 14px;text-align:center}
+.viz svg.mviz{display:block;width:100%;max-width:440px;height:auto;margin:0 auto;border:1px solid var(--border);border-radius:8px}
+.viz.sm svg.mviz{max-width:360px}
+.viz.wide svg.mviz{max-width:520px}
+.viz-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.viz-row>.viz{flex:1 1 260px;margin:6px 0;max-width:440px}
+.legend{font-size:.8rem;color:var(--muted);margin:4px 0 10px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px}
+.vw{font-weight:700;color:var(--navy);border-bottom:2px dotted #E0A800}
+.howto{background:#F7F9FC;border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:8px;padding:10px 14px;margin:12px 0}
+.howto h4{margin:0 0 6px;color:var(--navy);font-family:var(--font-head);font-size:.98rem}
+.howto ol{margin:0;padding-left:22px}.howto li{margin:3px 0;font-size:.92rem}
+.fm{border:1px solid #f0d9a8;background:#FFFBF0;border-radius:8px;padding:12px 14px;margin:14px 0}
+.fm h4{margin:0 0 6px;color:#8A6500;font-family:var(--font-head);font-size:.98rem}
+.fm .work{list-style:none;margin:8px 0;padding:0}
+.fm .work li{font-family:var(--font-mono);font-size:.88rem;background:#fff;border:1px solid var(--border);border-radius:6px;padding:6px 10px;margin:5px 0}
+.fm .work li b{color:var(--muted);font-family:var(--font-body);margin-right:6px}
+.yt{border:1px solid #cfe9c6;background:#F6FCF4;border-radius:8px;padding:12px 14px;margin:14px 0}
+.yt h4{margin:0 0 6px;color:#15803D;font-family:var(--font-head);font-size:.98rem}
+.chk-btn:disabled{cursor:default;opacity:.92}
+.chk-opts.row{flex-direction:row;flex-wrap:wrap}.chk-opts.row .chk-btn{flex:1 1 120px;text-align:center}
+.val-chk input.ok,.mgrid input.ok{border-color:#15803D;background:#EFFAF2}
+.val-chk input.bad,.mgrid input.bad{border-color:#B42318;background:#FFF5F5}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin:6px 0}
+.mgrid label{display:flex;flex-direction:column;font-size:.78rem;font-weight:700;color:var(--navy);gap:3px}
+.mgrid input{border:1.5px solid #cdd5e0;border-radius:8px;padding:7px 9px;font-size:.95rem;font-family:var(--font-mono);width:100%;min-width:0}
+.mcheck{background:var(--royal);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-weight:600;cursor:pointer;margin-top:4px}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:var(--font-mono)}
+.frac .fn{padding:0 4px 2px;border-bottom:2px solid currentColor}.frac .fd{padding:2px 4px 0}
+.rad{border-top:2px solid currentColor;padding:0 2px;margin-left:1px}
+.bigmath{font-family:var(--font-mono);font-size:1.15rem;text-align:center;margin:10px 0;color:var(--navy)}
+.ctrl{background:#F7F9FC;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:10px auto;max-width:460px}
+.ctrl label{display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:600;color:var(--navy);margin:6px 0}
+.ctrl label span.v{font-family:var(--font-mono);min-width:44px;text-align:right}
+.ctrl input[type=range]{flex:1;min-width:0;height:28px;accent-color:#1E2D4F;touch-action:pan-y}
+.ctrl .read{font-family:var(--font-mono);font-size:.9rem;color:var(--navy);margin-top:6px}
+.drag-area svg{touch-action:none;cursor:grab}
+.partlbl{font-size:.8rem;color:var(--muted);margin:2px 0 6px}
+@media (max-width:600px){.topic{padding:14px 12px}.example,.sa,.fm,.yt,.howto{padding:10px 10px}}
+@media print{.ctrl{display:none}}
+</style>
 </head>
 <body>
 <script src="../site-bar.js"></script>
@@ -29,58 +72,559 @@
   <p>Work each problem on your printed copy, then check it on screen.</p>
   <p class="stds">Standards: A-APR.1/3 · A-SSE.3 · A-REI.4 · F-IF.8a</p>
 </div>
+<div class="intro"><p>Each problem has its own picture. Gold <b>?</b> marks what you are looking for. After a correct answer, the picture fills in with green. Type exponents as <span class="coord">^2</span> or <span class="coord">²</span>. Type solutions like <span class="coord">x=2,3</span>, <span class="coord">−4 or 1</span> or <span class="coord">±7</span>.</p></div>
 <div class="score-box" id="score">Score: <b>0</b> / 0</div>
 <div class="keyhdr"><h2>Part A · Multiplying Polynomials</h2><p>Type the simplified expression, e.g. <span class="coord">x²+5x+6</span> — you can type the exponent as ^2 or ².</p></div>
 <section class="topic"><h2><span class="num">A</span> Multiply Binomials</h2>
-  <div class="diagram"><svg viewBox="0 0 230 190" width="230" height="190" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="230" height="190" fill="#fafcff"/><rect x="60" y="30" width="150" height="120" fill="none" stroke="#1E2D4F" stroke-width="2"/><line x1="160" y1="30" x2="160" y2="150" stroke="#1E2D4F" stroke-width="1.6"/><line x1="60" y1="110" x2="210" y2="110" stroke="#1E2D4F" stroke-width="1.6"/><text x="110.0" y="75.0" font-size="16" fill="#0056B3" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">x&#178;</text><text x="185.0" y="75.0" font-size="13" fill="#b08800" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">3x</text><text x="110.0" y="135.0" font-size="13" fill="#b08800" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">2x</text><text x="185.0" y="135.0" font-size="13" fill="#22AC00" text-anchor="middle" font-family="JetBrains Mono" font-weight="700">6</text><text x="110.0" y="20" font-size="12" fill="#1E2D4F" text-anchor="middle" font-family="JetBrains Mono">x</text><text x="185.0" y="20" font-size="12" fill="#1E2D4F" text-anchor="middle" font-family="JetBrains Mono">3</text><text x="46" y="74.0" font-size="12" fill="#1E2D4F" text-anchor="middle" font-family="JetBrains Mono">x</text><text x="46" y="134.0" font-size="12" fill="#1E2D4F" text-anchor="middle" font-family="JetBrains Mono">2</text><text x="115.0" y="182" font-size="10" fill="#5a6680" text-anchor="middle">Area model for (x + 3)(x + 2)</text></svg></div>
-  <div class="chk" id="a1"><div class="chk-q"><span class="badge">1</span> Use the area model above to find the product (x + 3)(x + 2).</div><div class="val-chk"><input id="a1-in" placeholder="x^2+...+..."><button onclick="chkVal('a1',['x^2+5x+6','x²+5x+6'])">Check</button></div><div class="chk-fb" id="fb-a1"></div>
+  <div class="chk" id="a1"><div class="chk-q"><span class="badge">1</span> Use the area model below to find the product (x + 3)(x + 2).</div><div class="viz sm" id="v-a1"></div><div class="val-chk"><input id="a1-in" placeholder="x^2+...+..."><button onclick="M.check('a1')">Check</button></div><div class="chk-fb" id="fb-a1"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Add all 4 cells of the area model: x² + 3x + 2x + 6 → combine like terms → <strong>x² + 5x + 6</strong></div></div></div>
-  <div class="chk" id="a2"><div class="chk-q"><span class="badge">2</span> Multiply and simplify: (x − 4)(x + 4).</div><div class="val-chk"><input id="a2-in" placeholder="x^2+...+..."><button onclick="chkVal('a2',['x^2-16','x²-16'])">Check</button></div><div class="chk-fb" id="fb-a2"></div>
+  <div class="chk" id="a2"><div class="chk-q"><span class="badge">2</span> Multiply and simplify: (x − 4)(x + 4).</div><div class="viz sm" id="v-a2"></div><div class="val-chk"><input id="a2-in" placeholder="type like x^2..."><button onclick="M.check('a2')">Check</button></div><div class="chk-fb" id="fb-a2"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">This is a difference of squares: (x)² − (4)² → <strong>x² − 16</strong> (the middle terms −4x and +4x cancel)</div></div></div>
-  <div class="chk" id="a3"><div class="chk-q"><span class="badge">3</span> Multiply and simplify: (2x + 1)(x − 3).</div><div class="val-chk"><input id="a3-in" placeholder="2x^2+...+..."><button onclick="chkVal('a3',['2x^2-5x-3','2x²-5x-3'])">Check</button></div><div class="chk-fb" id="fb-a3"></div>
+  <div class="chk" id="a3"><div class="chk-q"><span class="badge">3</span> Multiply and simplify: (2x + 1)(x − 3).</div><div class="viz sm" id="v-a3"></div><div class="val-chk"><input id="a3-in" placeholder="2x^2+...+..."><button onclick="M.check('a3')">Check</button></div><div class="chk-fb" id="fb-a3"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">FOIL: (2x)(x) + (2x)(−3) + (1)(x) + (1)(−3) = 2x² − 6x + x − 3 → <strong>2x² − 5x − 3</strong></div></div></div>
-  <div class="chk" id="a4"><div class="chk-q"><span class="badge">4</span> Multiply and simplify: (x + 5)².</div><div class="val-chk"><input id="a4-in" placeholder="x^2+...+..."><button onclick="chkVal('a4',['x^2+10x+25','x²+10x+25'])">Check</button></div><div class="chk-fb" id="fb-a4"></div>
+  <div class="chk" id="a4"><div class="chk-q"><span class="badge">4</span> Multiply and simplify: (x + 5)².</div><div class="viz sm" id="v-a4"></div><div class="val-chk"><input id="a4-in" placeholder="x^2+...+..."><button onclick="M.check('a4')">Check</button></div><div class="chk-fb" id="fb-a4"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">(x+5)² = (x+5)(x+5) = x² + 5x + 5x + 25 → <strong>x² + 10x + 25</strong></div></div></div>
+  <div class="chk" id="a5"><div class="chk-q"><span class="badge">5</span> Subtract and simplify: (3x² − 2x + 5) − (x² + 4x − 1).</div><div class="viz sm" id="v-a5"></div><div class="val-chk"><input id="a5-in" placeholder="type like 2x^2..."><button onclick="M.check('a5')">Check</button></div><div class="chk-fb" id="fb-a5"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Flip every sign in the 2nd ( ): 3x² − 2x + 5 − x² − 4x + 1 → <strong>2x² − 6x + 6</strong></div></div></div>
+  <div class="chk" id="a6"><div class="chk-q"><span class="badge">6</span> Multiply and simplify: (x − 2)(x − 5).</div><div class="viz sm" id="v-a6"></div><div class="val-chk"><input id="a6-in" placeholder="type like x^2..."><button onclick="M.check('a6')">Check</button></div><div class="chk-fb" id="fb-a6"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">x² − 5x − 2x + 10 → <strong>x² − 7x + 10</strong> (negative × negative = positive)</div></div></div>
 </section>
 <div class="keyhdr"><h2>Part B · Factoring</h2><p>Type the fully factored form, e.g. <span class="coord">(x+3)(x+4)</span>.</p></div>
 <section class="topic"><h2><span class="num">B</span> Factor Completely</h2>
-  <div class="chk" id="b1"><div class="chk-q"><span class="badge">1</span> Factor completely: x² + 7x + 12.</div><div class="val-chk"><input id="b1-in" placeholder="(x+_)(x+_)"><button onclick="chkVal('b1',['(x+3)(x+4)','(x+4)(x+3)'])">Check</button></div><div class="chk-fb" id="fb-b1"></div>
+  <div class="chk" id="b1"><div class="chk-q"><span class="badge">1</span> Factor completely: x² + 7x + 12.</div><div class="viz sm" id="v-b1"></div><div class="val-chk"><input id="b1-in" placeholder="(x+_)(x+_)"><button onclick="M.check('b1')">Check</button></div><div class="chk-fb" id="fb-b1"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Find two numbers that multiply to 12 and add to 7 → 3 and 4 → <strong>(x + 3)(x + 4)</strong></div></div></div>
-  <div class="chk" id="b2"><div class="chk-q"><span class="badge">2</span> Factor completely: x² − 9.</div><div class="val-chk"><input id="b2-in" placeholder="(x+_)(x-_)"><button onclick="chkVal('b2',['(x+3)(x-3)','(x-3)(x+3)'])">Check</button></div><div class="chk-fb" id="fb-b2"></div>
+  <div class="chk" id="b2"><div class="chk-q"><span class="badge">2</span> Factor completely: x² − 9.</div><div class="viz sm" id="v-b2"></div><div class="val-chk"><input id="b2-in" placeholder="(x+_)(x-_)"><button onclick="M.check('b2')">Check</button></div><div class="chk-fb" id="fb-b2"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Difference of squares: x² − 3² → <strong>(x + 3)(x − 3)</strong></div></div></div>
-  <div class="chk" id="b3"><div class="chk-q"><span class="badge">3</span> Factor completely: 2x² + 5x − 3.</div><div class="val-chk"><input id="b3-in" placeholder="(_x+_)(x+_)"><button onclick="chkVal('b3',['(2x-1)(x+3)','(x+3)(2x-1)'])">Check</button></div><div class="chk-fb" id="fb-b3"></div>
+  <div class="chk" id="b3"><div class="chk-q"><span class="badge">3</span> Factor completely: 2x² + 5x − 3.</div><div class="viz sm" id="v-b3"></div><div class="val-chk"><input id="b3-in" placeholder="(_x+_)(x+_)"><button onclick="M.check('b3')">Check</button></div><div class="chk-fb" id="fb-b3"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Look for factors of 2 and −3 that combine to give 5x: try (2x − 1)(x + 3) → 2x² + 6x − x − 3 = 2x² + 5x − 3 ✓ → <strong>(2x − 1)(x + 3)</strong></div></div></div>
-  <div class="chk" id="b4"><div class="chk-q"><span class="badge">4</span> Factor completely by pulling out the GCF: 3x² + 12x.</div><div class="val-chk"><input id="b4-in" placeholder="_x(x+_)"><button onclick="chkVal('b4',['3x(x+4)'])">Check</button></div><div class="chk-fb" id="fb-b4"></div>
+  <div class="chk" id="b4"><div class="chk-q"><span class="badge">4</span> Factor completely by pulling out the GCF: 3x² + 12x.</div><div class="viz sm" id="v-b4"></div><div class="val-chk"><input id="b4-in" placeholder="_x(x+_)"><button onclick="M.check('b4')">Check</button></div><div class="chk-fb" id="fb-b4"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">GCF of 3x² and 12x is 3x → <strong>3x(x + 4)</strong></div></div></div>
+  <div class="chk" id="b5"><div class="chk-q"><span class="badge">5</span> Factor completely: x² − 3x − 18.</div><div class="viz sm" id="v-b5"></div><div class="val-chk"><input id="b5-in" placeholder="(x+_)(x-_)"><button onclick="M.check('b5')">Check</button></div><div class="chk-fb" id="fb-b5"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">3 · (−6) = −18 and 3 + (−6) = −3 → <strong>(x + 3)(x − 6)</strong></div></div></div>
+  <div class="chk" id="b6"><div class="chk-q"><span class="badge">6</span> Factor completely: x² + 10x + 25. (Hint: it is a perfect square.)</div><div class="viz sm" id="v-b6"></div><div class="val-chk"><input id="b6-in" placeholder="(x+_)^2"><button onclick="M.check('b6')">Check</button></div><div class="chk-fb" id="fb-b6"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">5 · 5 = 25 and 5 + 5 = 10 → (x + 5)(x + 5) = <strong>(x + 5)²</strong></div></div></div>
 </section>
 <div class="keyhdr"><h2>Part C · Solving Quadratic Equations</h2><p>Type all solutions, e.g. <span class="coord">x=2,3</span>.</p></div>
 <section class="topic"><h2><span class="num">C</span> Solve by Factoring or Square Roots</h2>
-  <div class="chk" id="c1"><div class="chk-q"><span class="badge">1</span> Solve by factoring: x² − 5x + 6 = 0.</div><div class="val-chk"><input id="c1-in" placeholder="x=_,_"><button onclick="chkVal('c1',['x=2,3','x=3,2','2,3','3,2','x=2,x=3','x=3,x=2'])">Check</button></div><div class="chk-fb" id="fb-c1"></div>
+  <div class="chk" id="c1"><div class="chk-q"><span class="badge">1</span> Solve by factoring: x² − 5x + 6 = 0.</div><div class="viz sm" id="v-c1"></div><div class="val-chk"><input id="c1-in" placeholder="x=_,_"><button onclick="M.check('c1')">Check</button></div><div class="chk-fb" id="fb-c1"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Factor: (x − 2)(x − 3) = 0 → x − 2 = 0 or x − 3 = 0 → <strong>x = 2, 3</strong></div></div></div>
-  <div class="chk" id="c2"><div class="chk-q"><span class="badge">2</span> Solve using square roots: x² = 49.</div><div class="val-chk"><input id="c2-in" placeholder="x=_,_"><button onclick="chkVal('c2',['x=7,-7','x=-7,7','7,-7','-7,7'])">Check</button></div><div class="chk-fb" id="fb-c2"></div>
+  <div class="chk" id="c2"><div class="chk-q"><span class="badge">2</span> Solve using square roots: x² = 49.</div><div class="viz sm" id="v-c2"></div><div class="val-chk"><input id="c2-in" placeholder="x=_,_"><button onclick="M.check('c2')">Check</button></div><div class="chk-fb" id="fb-c2"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Take the square root of both sides (don't forget ±): x = ±√49 → <strong>x = 7, −7</strong></div></div></div>
-  <div class="chk" id="c3"><div class="chk-q"><span class="badge">3</span> Solve by factoring: x² + 4x = 0.</div><div class="val-chk"><input id="c3-in" placeholder="x=_,_"><button onclick="chkVal('c3',['x=0,-4','x=-4,0','0,-4','-4,0'])">Check</button></div><div class="chk-fb" id="fb-c3"></div>
+  <div class="chk" id="c3"><div class="chk-q"><span class="badge">3</span> Solve by factoring: x² + 4x = 0.</div><div class="viz sm" id="v-c3"></div><div class="val-chk"><input id="c3-in" placeholder="x=_,_"><button onclick="M.check('c3')">Check</button></div><div class="chk-fb" id="fb-c3"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Factor out x: x(x + 4) = 0 → x = 0 or x + 4 = 0 → <strong>x = 0, −4</strong></div></div></div>
-  <div class="chk" id="c4"><div class="chk-q"><span class="badge">4</span> Solve using square roots: 2x² − 8 = 0.</div><div class="val-chk"><input id="c4-in" placeholder="x=_,_"><button onclick="chkVal('c4',['x=2,-2','x=-2,2','2,-2','-2,2'])">Check</button></div><div class="chk-fb" id="fb-c4"></div>
+  <div class="chk" id="c4"><div class="chk-q"><span class="badge">4</span> Solve using square roots: 2x² − 8 = 0.</div><div class="viz sm" id="v-c4"></div><div class="val-chk"><input id="c4-in" placeholder="x=_,_"><button onclick="M.check('c4')">Check</button></div><div class="chk-fb" id="fb-c4"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">2x² = 8 → x² = 4 → x = ±√4 → <strong>x = 2, −2</strong></div></div></div>
 </section>
 <div class="keyhdr"><h2>Part D · Zeros &amp; the Graph Connection</h2><p>Use the graph of the quadratic function to answer Questions 1–3.</p></div>
 <section class="topic"><h2><span class="num">D</span> Reading Zeros from a Graph</h2>
-  <div class="diagram"><svg viewBox="0 0 270 270" width="270" height="270" xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="270" height="270" fill="#fafcff"/><line x1="24.0" y1="24" x2="24.0" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="51.8" y1="24" x2="51.8" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="79.5" y1="24" x2="79.5" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="107.2" y1="24" x2="107.2" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="135.0" y1="24" x2="135.0" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="162.8" y1="24" x2="162.8" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="190.5" y1="24" x2="190.5" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="218.2" y1="24" x2="218.2" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="246.0" y1="24" x2="246.0" y2="246" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="246.0" x2="246" y2="246.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="227.5" x2="246" y2="227.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="209.0" x2="246" y2="209.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="190.5" x2="246" y2="190.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="172.0" x2="246" y2="172.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="153.5" x2="246" y2="153.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="135.0" x2="246" y2="135.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="116.5" x2="246" y2="116.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="98.0" x2="246" y2="98.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="79.5" x2="246" y2="79.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="61.0" x2="246" y2="61.0" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="42.5" x2="246" y2="42.5" stroke="#dde4f0" stroke-width="1"/><line x1="24" y1="24.0" x2="246" y2="24.0" stroke="#dde4f0" stroke-width="1"/><line x1="107.2" y1="24" x2="107.2" y2="246" stroke="#5a6680" stroke-width="1.8"/><line x1="24" y1="135.0" x2="246" y2="135.0" stroke="#5a6680" stroke-width="1.8"/><text x="24.0" y="146.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-3</text><text x="79.5" y="146.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">-1</text><text x="135.0" y="146.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">1</text><text x="190.5" y="146.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">3</text><text x="246.0" y="146.0" font-size="9" fill="#5a6680" text-anchor="middle" font-family="JetBrains Mono">5</text><text x="102.2" y="249.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-6</text><text x="102.2" y="212.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-4</text><text x="102.2" y="175.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">-2</text><text x="102.2" y="101.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">2</text><text x="102.2" y="64.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">4</text><text x="102.2" y="27.0" font-size="9" fill="#5a6680" text-anchor="end" font-family="JetBrains Mono">6</text><text x="256" y="138.0" font-size="10" fill="#5a6680" font-style="italic">x</text><text x="110.2" y="16" font-size="10" fill="#5a6680" font-style="italic">y</text><polyline points="46.2,19.6 49.9,35.0 53.6,49.8 57.3,64.0 61.0,77.4 64.7,90.3 68.4,102.4 72.1,114.0 75.8,124.8 79.5,135.0 83.2,144.5 86.9,153.4 90.6,161.6 94.3,169.2 98.0,176.1 101.7,182.4 105.4,188.0 109.1,192.9 112.8,197.2 116.5,200.8 120.2,203.7 123.9,206.0 127.6,207.7 131.3,208.7 135.0,209.0 138.7,208.7 142.4,207.7 146.1,206.0 149.8,203.7 153.5,200.8 157.2,197.2 160.9,192.9 164.6,188.0 168.3,182.4 172.0,176.1 175.7,169.2 179.4,161.6 183.1,153.4 186.8,144.5 190.5,135.0 194.2,124.8 197.9,114.0 201.6,102.4 205.3,90.3 209.0,77.4 212.7,64.0 216.4,49.8 220.1,35.0 223.8,19.6" fill="none" stroke="#0056B3" stroke-width="2.8"/><circle cx="79.5" cy="135.0" r="4.5" fill="#b08800" stroke="#b08800" stroke-width="2"/><text x="24.5" y="129.0" font-size="11" fill="#b08800" font-weight="700" font-family="JetBrains Mono">(-1,0)</text><circle cx="190.5" cy="135.0" r="4.5" fill="#b08800" stroke="#b08800" stroke-width="2"/><text x="196.5" y="129.0" font-size="11" fill="#b08800" font-weight="700" font-family="JetBrains Mono">(3,0)</text><circle cx="135.0" cy="209.0" r="4.5" fill="#22AC00" stroke="#22AC00" stroke-width="2"/><text x="141.0" y="225.0" font-size="11" fill="#22AC00" font-weight="700" font-family="JetBrains Mono">(1,-4)</text></svg></div>
-  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> What are the zeros of the function shown?</div><div class="chk-opts">
-    <button class="chk-btn" onclick="chk('d1','a','a')">x = −1 and x = 3</button>
-    <button class="chk-btn" onclick="chk('d1','a','b')">x = 1 and x = −3</button>
-    <button class="chk-btn" onclick="chk('d1','a','c')">x = −3 and x = 1</button>
-    <button class="chk-btn" onclick="chk('d1','a','d')">x = 0 and x = −3</button></div>
-    <div class="chk-fb c" id="fb-d1" data-keep="1">✓ The graph crosses the x-axis at x = −1 and x = 3.</div></div>
-  <div class="chk" id="d2"><div class="chk-q"><span class="badge">2</span> Write the factored form of the function shown.</div><div class="val-chk"><input id="d2-in" placeholder="(x+_)(x-_)"><button onclick="chkVal('d2',['(x+1)(x-3)','(x-3)(x+1)'])">Check</button></div><div class="chk-fb" id="fb-d2"></div>
+  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> What are the zeros of the function shown?</div><div class="viz sm" id="v-d1"></div><div class="chk-opts">
+    <button class="chk-btn" data-v="a" onclick="M.mc('d1',this)">x = −1 and x = 3</button>
+    <button class="chk-btn" data-v="b" onclick="M.mc('d1',this)">x = 1 and x = −3</button>
+    <button class="chk-btn" data-v="c" onclick="M.mc('d1',this)">x = 1 and x = 3</button>
+    <button class="chk-btn" data-v="d" onclick="M.mc('d1',this)">x = 0 and x = −3</button></div>
+    <div class="chk-fb" id="fb-d1"></div></div>
+  <div class="chk" id="d2"><div class="chk-q"><span class="badge">2</span> Write the factored form of the function shown.</div><div class="viz sm" id="v-d2"></div><div class="val-chk"><input id="d2-in" placeholder="(x+_)(x-_)"><button onclick="M.check('d2')">Check</button></div><div class="chk-fb" id="fb-d2"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Zeros at x=−1 and x=3 give factors (x−(−1)) and (x−3) → <strong>(x + 1)(x − 3)</strong></div></div></div>
-  <div class="chk" id="d3"><div class="chk-q"><span class="badge">3</span> What is the vertex of the parabola shown?</div><div class="val-chk"><input id="d3-in" placeholder="(x,y)"><button onclick="chkVal('d3',['(1,-4)','1,-4'])">Check</button></div><div class="chk-fb" id="fb-d3"></div>
+  <div class="chk" id="d3"><div class="chk-q"><span class="badge">3</span> What is the vertex of the parabola shown?</div><div class="viz sm" id="v-d3"></div><div class="val-chk"><input id="d3-in" placeholder="(x,y)"><button onclick="M.check('d3')">Check</button></div><div class="chk-fb" id="fb-d3"></div>
     <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">The vertex's x-value is the midpoint of the zeros: (−1+3)/2 = 1. Then y = 1²−2(1)−3 = −4 → <strong>(1, −4)</strong></div></div></div>
+</section>
+<div class="keyhdr"><h2>Part E · Completing the Square</h2><p>Find the missing corner tile, then solve.</p></div>
+<section class="topic"><h2><span class="num">E</span> Missing Corner</h2>
+  <div class="chk" id="e1"><div class="chk-q"><span class="badge">1</span> What number c makes x² + 8x + c a perfect square?</div><div class="viz sm" id="v-e1"></div><div class="val-chk"><input id="e1-in" placeholder="c = ?"><button onclick="M.check('e1')">Check</button></div><div class="chk-fb" id="fb-e1"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Half of 8 is 4. 4² = <strong>16</strong>. x² + 8x + 16 = (x + 4)².</div></div></div>
+  <div class="chk" id="e2"><div class="chk-q"><span class="badge">2</span> Solve x² + 6x = 16 by completing the square.</div><div class="viz sm" id="v-e2"></div><div class="val-chk"><input id="e2-in" placeholder="x=_,_"><button onclick="M.check('e2')">Check</button></div><div class="chk-fb" id="fb-e2"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">Add 9: (x + 3)² = 25 → x + 3 = ±5 → <strong>x = 2 or x = −8</strong></div></div></div>
+</section>
+<div class="keyhdr"><h2>Part F · The Quadratic Formula</h2><p>x = (−b ± √(b² − 4ac)) ÷ (2a). You may type answers like <span class="coord">(4±sqrt(40))/4</span> or decimals.</p></div>
+<section class="topic"><h2><span class="num">F</span> Formula Practice</h2>
+  <div class="bigmath">x = <span class="frac"><span class="fn">−b ± √<span class="rad">b² − 4ac</span></span><span class="fd">2a</span></span></div>
+  <div class="chk" id="f1"><div class="chk-q"><span class="badge">1</span> For x² + 3x − 10 = 0, find the discriminant b² − 4ac.</div><div class="viz sm" id="v-f1"></div><div class="val-chk"><input id="f1-in" placeholder="b²−4ac = ?"><button onclick="M.check('f1')">Check</button></div><div class="chk-fb" id="fb-f1"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">a = 1, b = 3, c = −10. 3² − 4(1)(−10) = 9 + 40 → <strong>49</strong></div></div></div>
+  <div class="chk" id="f2"><div class="chk-q"><span class="badge">2</span> Solve x² + 3x − 10 = 0.</div><div class="viz sm" id="v-f2"></div><div class="val-chk"><input id="f2-in" placeholder="x=_,_"><button onclick="M.check('f2')">Check</button></div><div class="chk-fb" id="fb-f2"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">x = (−3 ± √49) ÷ 2 = (−3 ± 7) ÷ 2 → <strong>x = 2 or x = −5</strong></div></div></div>
+  <div class="chk" id="f3"><div class="chk-q"><span class="badge">3</span> Solve 2x² − 4x − 3 = 0. Round to the nearest hundredth, or type an exact answer.</div><div class="viz sm" id="v-f3"></div><div class="val-chk"><input id="f3-in" placeholder="x=_,_"><button onclick="M.check('f3')">Check</button></div><div class="chk-fb" id="fb-f3"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">(−4)² − 4(2)(−3) = 16 + 24 = 40. x = (4 ± √40) ÷ 4 → <strong>x ≈ 2.58 or x ≈ −0.58</strong></div></div></div>
+</section>
+<div class="keyhdr"><h2>Part G · Find the Mistake</h2><p>Each student made one mistake. Find the first wrong line. Then fix it.</p></div>
+<section class="topic"><h2><span class="num">G</span> Error Analysis</h2>
+  <div class="fm chk" id="g1"><h4>🔍 Multiply (x + 4)²</h4>
+    <ol class="work"><li><b>Line 1</b>(x + 4)² = x² + 4²</li><li><b>Line 2</b>= x² + 16</li></ol>
+    <div class="viz sm" id="v-g1"></div>
+    <div class="chk-q">Which line has the first mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('g1',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('g1',this)">Line 2</button></div><div class="chk-fb" id="fb-g1"></div></div>
+  <div class="chk" id="g1b"><div class="chk-q">Fix it: multiply (x + 4)².</div><div class="val-chk"><input id="g1b-in" placeholder="x^2+..."><button onclick="M.check('g1b')">Check</button></div><div class="chk-fb" id="fb-g1b"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">(x + 4)(x + 4) = x² + 4x + 4x + 16 → <strong>x² + 8x + 16</strong></div></div></div>
+  <div class="fm chk" id="g2"><h4>🔍 Solve x² − x − 12 = 0</h4>
+    <ol class="work"><li><b>Line 1</b>(x − 4)(x + 3) = 0</li><li><b>Line 2</b>x = −4 or x = 3</li></ol>
+    <div class="viz sm" id="v-g2"></div>
+    <div class="chk-q">Which line has the first mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('g2',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('g2',this)">Line 2</button></div><div class="chk-fb" id="fb-g2"></div></div>
+  <div class="chk" id="g2b"><div class="chk-q">Fix it: solve x² − x − 12 = 0.</div><div class="val-chk"><input id="g2b-in" placeholder="x=_,_"><button onclick="M.check('g2b')">Check</button></div><div class="chk-fb" id="fb-g2b"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">x − 4 = 0 → x = 4; x + 3 = 0 → x = −3. <strong>x = 4 or x = −3</strong></div></div></div>
+  <div class="fm chk" id="g3"><h4>🔍 Discriminant of x² − 4x − 5 = 0</h4>
+    <ol class="work"><li><b>Line 1</b>a = 1, b = −4, c = −5</li><li><b>Line 2</b>b² − 4ac = 16 − 20 = −4</li><li><b>Line 3</b>Negative, so there are no real solutions.</li></ol>
+    <div class="viz sm" id="v-g3"></div>
+    <div class="chk-q">Which line has the first mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('g3',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('g3',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('g3',this)">Line 3</button></div><div class="chk-fb" id="fb-g3"></div></div>
+  <div class="chk" id="g3b"><div class="chk-q">Fix it: solve x² − 4x − 5 = 0.</div><div class="val-chk"><input id="g3b-in" placeholder="x=_,_"><button onclick="M.check('g3b')">Check</button></div><div class="chk-fb" id="fb-g3b"></div>
+    <div style="margin-top:8px"><button class="sa-btn" onclick="sa(this)" style="font-size:.76rem;padding:5px 11px;opacity:.9">📖 Show full solution</button><div class="sa-ans" style="margin-top:6px">16 − 4(1)(−5) = 16 + 20 = 36. x = (4 ± 6) ÷ 2 → <strong>x = 5 or x = −1</strong></div></div></div>
 </section>
 <div style="text-align:center;margin-top:18px"><a href="unit6.html" class="plink gold" style="padding:12px 24px;font-family:Arvo">← Back to Unit 6</a></div>
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script>
+/* ===== Math 1 · Units 5–6 visual + checker library (inline) =====
+   Every picture is drawn from the problem's own numbers.
+   Colors: navy = given, gold = what we want, green = answer (after check). */
+var M=(function(){
+'use strict';
+var C={navy:'#1E2D4F',navyL:'#E4E9F2',gold:'#E0A800',goldD:'#8A6500',goldL:'#FFF3C4',green:'#15803D',greenL:'#DCF2E3',
+  grid:'#D9DFE8',axis:'#5A6680',muted:'#5A6680',red:'#B42318',redL:'#FDE4E4',white:'#fff'};
+var MONO='JetBrains Mono, ui-monospace, Menlo, monospace', SANS='Inter, system-ui, sans-serif';
+var uid=0;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function r1(n){return Math.round(n*10)/10;}
+function fmt(n,d){if(d==null)d=2;var p=Math.pow(10,d);var v=Math.round(n*p)/p;if(Object.is(v,-0)||Math.abs(v)<1e-12)v=0;return String(v).replace('-','−');}
+function sgn(n,d){return (n>0?'+':'')+fmt(n,d);}
+function sc(d0,d1,a,b){return function(v){return a+(v-d0)*(b-a)/(d1-d0);};}
+/* ---------- svg primitives ---------- */
+function svg(w,h,body,label){return '<svg class="mviz" style="max-width:'+Math.round(Math.min(440,w*1.3))+'px" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+esc(label||'diagram')+'"><rect x="0" y="0" width="'+w+'" height="'+h+'" fill="#fff"/>'+body+'</svg>';}
+function ln(x1,y1,x2,y2,c,w,dash){return '<line x1="'+r1(x1)+'" y1="'+r1(y1)+'" x2="'+r1(x2)+'" y2="'+r1(y2)+'" stroke="'+(c||C.axis)+'" stroke-width="'+(w||1)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linecap="round"/>';}
+function tx(x,y,s,o){o=o||{};return '<text x="'+r1(x)+'" y="'+r1(y)+'" font-size="'+(o.size||12)+'" fill="'+(o.fill||C.navy)+'" text-anchor="'+(o.anchor||'middle')+'" font-family="'+(o.mono?MONO:SANS)+'"'+(o.bold?' font-weight="700"':'')+(o.italic?' font-style="italic"':'')+(o.rot?' transform="rotate('+o.rot+' '+r1(x)+' '+r1(y)+')"':'')+(o.halo?' stroke="#fff" stroke-width="3.2" paint-order="stroke" stroke-linejoin="round"':'')+'>'+esc(s)+'</text>';}
+function rc(x,y,w,h,fill,stroke,sw,rx,dash){return '<rect x="'+r1(x)+'" y="'+r1(y)+'" width="'+r1(w)+'" height="'+r1(h)+'" fill="'+(fill||'none')+'"'+(stroke?' stroke="'+stroke+'" stroke-width="'+(sw||1)+'"':'')+(rx?' rx="'+rx+'"':'')+(dash?' stroke-dasharray="'+dash+'"':'')+'/>';}
+function ci(cx,cy,r,fill,stroke,sw){return '<circle cx="'+r1(cx)+'" cy="'+r1(cy)+'" r="'+r+'" fill="'+(fill||C.navy)+'"'+(stroke?' stroke="'+stroke+'" stroke-width="'+(sw||1.5)+'"':'')+'/>';}
+function pg(pts,fill,stroke,sw){return '<polygon points="'+pts.map(function(p){return r1(p[0])+','+r1(p[1]);}).join(' ')+'" fill="'+(fill||'none')+'"'+(stroke?' stroke="'+stroke+'" stroke-width="'+(sw||1)+'"':'')+'/>';}
+function pl(pts,c,w,dash){return '<polyline points="'+pts.map(function(p){return r1(p[0])+','+r1(p[1]);}).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="'+(w||2)+'"'+(dash?' stroke-dasharray="'+dash+'"':'')+' stroke-linejoin="round"/>';}
+function arrow(x1,y1,x2,y2,c,w,dash){var a=Math.atan2(y2-y1,x2-x1),L=8,s=4.5;var bx=x2-L*Math.cos(a),by=y2-L*Math.sin(a);
+  return ln(x1,y1,bx,by,c,w||2,dash)+pg([[x2,y2],[bx-s*Math.sin(a),by+s*Math.cos(a)],[bx+s*Math.sin(a),by-s*Math.cos(a)]],c);}
+function tw(s,size,mono){return String(s).length*size*(mono?0.62:0.56);}
+/* label with white backing so it never sits on top of lines */
+function tag(x,y,s,o){o=o||{};var size=o.size||12,w=tw(s,size,o.mono)+8,h=size+6,ax=o.anchor||'middle';
+  var lx=ax==='middle'?x-w/2:(ax==='start'?x-4:x-w+4);
+  return rc(lx,y-size+1-3,w,h,o.bg||'#fff',o.border||null,1,4)+tx(x,y,s,{size:size,fill:o.fill||C.navy,anchor:ax,mono:o.mono,bold:o.bold!==false});}
+function niceStep(range){var raw=range/8,p=Math.pow(10,Math.floor(Math.log10(raw))),m=raw/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p;}
+function onStep(v,st){return Math.abs(v/st-Math.round(v/st))<1e-6;}
+/* ---------- number line ---------- */
+function axisX(o){var X=sc(o.min,o.max,o.x0,o.x1),s=ln(o.x0-8,o.y,o.x1+8,o.y,C.axis,1.6),ls=o.lab||o.step;
+  for(var v=o.min;v<=o.max+1e-9;v+=o.step){var big=onStep(v,ls);s+=ln(X(v),o.y-(big?5:3),X(v),o.y+(big?5:3),C.axis,1.2);
+    if(big)s+=tx(X(v),o.y+18,fmt(v),{size:o.fs||12,mono:true,fill:C.axis});}
+  if(o.title)s+=tx((o.x0+o.x1)/2,o.y+34,o.title,{size:11.5,fill:C.muted});return {s:s,X:X};}
+/* ---------- dot plot ---------- */
+function dotPlot(data,o){o=o||{};var w=o.w||360,min=o.min,max=o.max,step=o.step||1,r=o.r||6,gap=2*r+2;
+  var cnt={},stack=[];data.forEach(function(v){cnt[v]=(cnt[v]||0)+1;stack.push(cnt[v]);});
+  var mx=Math.max.apply(null,Object.keys(cnt).map(function(k){return cnt[k];}));
+  var marks=o.marks||[],rows=0;marks.forEach(function(m){rows=Math.max(rows,(m.row||0)+1);});
+  var top=8+rows*16,ay=top+mx*gap+12+(o.extraTop||0),h=ay+(o.title?42:26)+(o.below||0);
+  var A=axisX({x0:o.x0||22,x1:w-(o.x1pad||22),y:ay,min:min,max:max,step:step,lab:o.lab,title:o.title}),X=A.X,s='';
+  marks.forEach(function(m){var col=m.color||C.gold,x=X(m.v),ly=8+(m.row||0)*16+11;
+    s+=ln(x,ly+4,x,ay,col,2.2,m.dash||'5 3');s+=tag(x,ly,m.label,{fill:col===C.gold?C.goldD:col,size:11.5,anchor:m.anchor});});
+  var seen={};data.forEach(function(v,i){seen[v]=(seen[v]||0)+1;var cy=ay-8-(seen[v]-1)*gap,cx=X(v);
+    if(o.dist){var d=o.dist(v,i,cx,cy,X);if(d)s+=d;}
+    var col=o.color?o.color(v,i):C.navy;s+=ci(cx,cy,r,col,'#fff',1.2);});
+  if(o.after)s+=o.after(X,ay);
+  return svg(w,h,s+A.s,o.label||'dot plot');}
+/* ---------- histogram ---------- */
+function histogram(labels,freqs,o){o=o||{};var w=o.w||360,h=o.h||236,L=48,R=10,T=22,B=50,n=freqs.length;
+  var yMax=o.yMax||Math.max.apply(null,freqs),ys=o.ystep||(yMax>10?2:1),Y=sc(0,yMax,h-B,T),bw=(w-L-R)/n,s='';
+  for(var v=0;v<=yMax+1e-9;v+=ys){s+=ln(L,Y(v),w-R,Y(v),C.grid,1);s+=tx(L-7,Y(v)+4,fmt(v),{size:11,mono:true,fill:C.axis,anchor:'end'});}
+  for(var i=0;i<n;i++){var st=o.style?o.style(i):{};var x=L+i*bw;
+    s+=rc(x,Y(freqs[i]),bw,Y(0)-Y(freqs[i]),st.fill||'#C9D3E6',st.stroke||C.navy,st.sw||1.4);
+    s+=tx(x+bw/2,h-B+16,labels[i],{size:10.5,mono:true,fill:C.axis});
+    if(o.top){var t=o.top(i);if(t)s+=tag(x+bw/2,Y(freqs[i])-6,t.t,{fill:t.c||C.green,size:12,mono:true});}}
+  s+=ln(L,h-B,w-R,h-B,C.axis,1.6)+ln(L,T-6,L,h-B,C.axis,1.6);
+  s+=tx((L+w-R)/2,h-12,o.xTitle||'',{size:11.5,fill:C.muted})+tx(13,(T+h-B)/2,o.yTitle||'Frequency',{size:11.5,fill:C.muted,rot:-90});
+  return svg(w,h,s,o.label||'histogram');}
+/* ---------- box plots ---------- */
+function boxPlots(rows,o){o=o||{};var w=o.w||360,rowH=o.rowH||70,top=o.top||8,n=rows.length,ay=top+n*rowH+6,h=ay+(o.title?44:28)+(o.below||0);
+  var A=axisX({x0:o.x0||22,x1:w-22,y:ay,min:o.min,max:o.max,step:o.step||1,lab:o.lab,title:o.title}),X=A.X,s='';
+  if(o.grid)for(var g=o.min;g<=o.max+1e-9;g+=o.grid)s+=ln(X(g),top,X(g),ay,C.grid,1);
+  rows.forEach(function(r,k){var f=r.f,cy=top+k*rowH+(r.name?44:40),bh=26,hl=r.hl||{},col=function(p){return hl[p]||C.navy;};
+    if(r.name)s+=tx(X(o.min),cy-30,r.name,{size:12,bold:true,anchor:'start'});
+    if(hl.box)s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,C.goldL);
+    s+=ln(X(f[0]),cy,X(f[1]),cy,col('lw'),2.2)+ln(X(f[3]),cy,X(f[4]),cy,col('rw'),2.2);
+    s+=ln(X(f[0]),cy-9,X(f[0]),cy+9,col('min'),2.4)+ln(X(f[4]),cy-9,X(f[4]),cy+9,col('max'),2.4);
+    s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,hl.box?'none':'#EEF1F8',hl.box||C.navy,2.2);
+    s+=ln(X(f[2]),cy-bh/2,X(f[2]),cy+bh/2,col('med'),3);
+    (r.out||[]).forEach(function(v){s+=ci(X(v),cy,5,'#fff',hl.out||C.navy,2.2);});
+    if(r.parts){var nm=['min','Q1','median','Q3','max'];var lastX=-99;for(var p=0;p<5;p++){if(r.parts[p]==null)continue;var t=r.parts[p],x=X(f[p]);
+        var yy=(x-lastX<44)?cy+bh/2+16:cy-bh/2-7;if(yy<cy)lastX=x;
+        s+=tag(x,yy,t.t,{fill:t.c||C.muted,size:11,mono:true,bold:t.c!=null});}}
+    if(r.extra)s+=r.extra(X,cy);});
+  if(o.after)s+=o.after(X,ay,top);
+  return svg(w,h,s+A.s,o.label||'box plot');}
+/* ---------- scatter plot ---------- */
+function scatter(pts,o){o=o||{};var w=o.w||360,h=o.h||300,L=o.L||46,B=44,T=14,R=o.R||14;
+  var X=sc(o.xmin,o.xmax,L,w-R),Y=sc(o.ymin,o.ymax,h-B,T),s='',v;
+  if(o.shade)s+=rc(X(o.shade[0]),T,X(o.shade[1])-X(o.shade[0]),h-B-T,'#F3F6FB')+tx((X(o.shade[0])+X(o.shade[1]))/2,T+14,o.shadeLabel||'',{size:10.5,fill:C.muted});
+  for(v=o.xmin;v<=o.xmax+1e-9;v+=o.xstep){s+=ln(X(v),T,X(v),h-B,C.grid,1);if(onStep(v,o.xlab||o.xstep))s+=tx(X(v),h-B+16,fmt(v),{size:11,mono:true,fill:C.axis});}
+  for(v=o.ymin;v<=o.ymax+1e-9;v+=o.ystep){s+=ln(L,Y(v),w-R,Y(v),C.grid,1);if(onStep(v,o.ylab||o.ystep))s+=tx(L-6,Y(v)+4,fmt(v),{size:11,mono:true,fill:C.axis,anchor:'end'});}
+  s+=ln(L,h-B,w-R,h-B,C.axis,1.6)+ln(L,T,L,h-B,C.axis,1.6);
+  s+=tx((L+w-R)/2,h-10,o.xTitle||'x',{size:11.5,fill:C.muted})+tx(12,(T+h-B)/2,o.yTitle||'y',{size:11.5,fill:C.muted,rot:-90});
+  var f=null;if(o.line){var a=o.line.a,b=o.line.b;f=function(x){return a+b*x;};
+    var xa=o.line.x0!=null?o.line.x0:o.xmin,xb=o.line.x1!=null?o.line.x1:o.xmax;
+    if(Math.abs(b)>1e-12){var lo=(o.ymin-a)/b,hi=(o.ymax-a)/b;var m1=Math.min(lo,hi),m2=Math.max(lo,hi);xa=Math.max(xa,m1);xb=Math.min(xb,m2);}
+    s+=ln(X(xa),Y(f(xa)),X(xb),Y(f(xb)),o.line.color||C.navy,2.4,o.line.dash);
+    if(o.line.label&&o.line.at){s+=tag(X(o.line.at[0]),Y(o.line.at[1]),o.line.label,{size:11.5,fill:o.line.color||C.navy,mono:true,anchor:'start'});}
+    else if(o.line.label){var lx=o.line.lx!=null?o.line.lx:xb-(xb-xa)*0.18;s+=tag(X(lx),Y(f(lx))+(o.line.ly||-10),o.line.label,{size:11.5,fill:o.line.color||C.navy,mono:true,anchor:o.line.anchor||'end'});}}
+  if(o.resid&&f)pts.forEach(function(p,i){var yh=f(p[0]);if(Math.abs(p[1]-yh)<1e-9)return;s+=ln(X(p[0]),Y(p[1]),X(p[0]),Y(yh),o.residColor||C.gold,2.4);
+    if(o.residLabel){var t=o.residLabel(p,i,p[1]-yh);if(t)s+=tag(X(p[0])+(o.residSide||1)*5,(Y(p[1])+Y(yh))/2+4,t.t,{size:10.5,mono:true,fill:t.c||C.goldD,anchor:(o.residSide||1)>0?'start':'end'});}});
+  if(o.guides)o.guides.forEach(function(g){var col=g.color||C.gold;if(g.x!=null)s+=ln(X(g.x),h-B,X(g.x),Y(g.y),col,2,'5 4');if(g.toY)s+=ln(L,Y(g.y),X(g.x),Y(g.y),col,2,'5 4');});
+  pts.forEach(function(p,i){var c=o.ptColor?o.ptColor(i):C.navy;s+=ci(X(p[0]),Y(p[1]),o.r||4.8,c,'#fff',1.2);});
+  if(o.marks)o.marks.forEach(function(m){s+=ci(X(m.x),Y(m.y),m.r||5.5,m.hollow?'#fff':(m.color||C.gold),m.color||C.gold,2.2);if(m.label)s+=tag(X(m.x)+(m.dx||8),Y(m.y)+(m.dy||-8),m.label,{size:11.5,mono:true,fill:m.tc||(m.color===C.green?C.green:C.goldD),anchor:m.anchor||'start'});});
+  if(o.after)s+=o.after(X,Y);
+  return svg(w,h,s,o.label||'scatter plot');}
+/* ---------- coordinate plane (equal units) ---------- */
+function plane(o){var w=o.w||340,pad=o.pad||22,u=(w-2*pad)/(o.xmax-o.xmin),h=o.h||Math.round(u*(o.ymax-o.ymin)+2*pad),yg=o.ygrid||1,ylab=o.ylab||o.lab||2;
+  var X=sc(o.xmin,o.xmax,pad,w-pad),Y=sc(o.ymin,o.ymax,h-pad,pad),s='',v,lab=o.lab||2;
+  for(v=o.xmin;v<=o.xmax+1e-9;v++)s+=ln(X(v),pad,X(v),h-pad,C.grid,1);
+  for(v=o.ymin;v<=o.ymax+1e-9;v+=yg)s+=ln(pad,Y(v),w-pad,Y(v),C.grid,1);
+  var ax0=Math.min(Math.max(0,o.ymin),o.ymax),ay0=Math.min(Math.max(0,o.xmin),o.xmax);
+  s+=ln(pad-6,Y(ax0),w-pad+6,Y(ax0),C.axis,1.7)+ln(X(ay0),pad-6,X(ay0),h-pad+6,C.axis,1.7);
+  s+=tx(w-pad+2,Y(ax0)-7,'x',{size:12,italic:true,fill:C.axis,anchor:'end'})+tx(X(ay0)+8,pad-8+12,'y',{size:12,italic:true,fill:C.axis,anchor:'start'});
+  var labs='';for(v=Math.ceil(o.xmin);v<=o.xmax;v++){if(v===0||!onStep(v,lab)||v===o.xmax)continue;labs+=tx(X(v),Y(ax0)+15,fmt(v),{size:10.5,mono:true,fill:C.axis,halo:1});}
+  for(v=Math.ceil(o.ymin);v<=o.ymax;v++){if(v===0||!onStep(v,ylab)||v===o.ymax)continue;labs+=tx(X(ay0)-5,Y(v)+4,fmt(v),{size:10.5,mono:true,fill:C.axis,anchor:'end',halo:1});}
+  (o.vlines||[]).forEach(function(l){s+=ln(X(l.x),pad,X(l.x),h-pad,l.color||C.gold,2,l.dash||'6 4');if(l.label)s+=tag(X(l.x)+(l.dx||0),pad+12,l.label,{size:11,mono:true,fill:l.tc||C.goldD,anchor:l.anchor||'middle'});});
+  (o.fns||[]).forEach(function(F){var seg=[],out='',N=360,prev=null;
+    for(var i=0;i<=N;i++){var x=o.xmin+(o.xmax-o.xmin)*i/N,y=F.f(x),inr=y>=o.ymin&&y<=o.ymax;
+      if(inr){if(prev&&!prev.in){var yb=prev.y>o.ymax?o.ymax:o.ymin,xb=prev.x+(x-prev.x)*(yb-prev.y)/(y-prev.y);seg.push([X(xb),Y(yb)]);}seg.push([X(x),Y(y)]);}
+      else if(prev&&prev.in){var yb2=y>o.ymax?o.ymax:o.ymin,xb2=prev.x+(x-prev.x)*(yb2-prev.y)/(y-prev.y);seg.push([X(xb2),Y(yb2)]);out+=pl(seg,F.color||C.navy,F.w||2.6,F.dash);seg=[];}
+      prev={x:x,y:y,in:inr};}
+    if(seg.length>1)out+=pl(seg,F.color||C.navy,F.w||2.6,F.dash);s+=out;});
+  s+=labs;
+  (o.pts||[]).forEach(function(p){s+=ci(X(p.x),Y(p.y),p.r||5,p.hollow?'#fff':(p.color||C.navy),p.color||C.navy,2.2);
+    if(p.label){var dx=p.dx!=null?p.dx:8,dy=p.dy!=null?p.dy:-9;s+=tag(X(p.x)+dx,Y(p.y)+dy,p.label,{size:11.5,mono:true,fill:p.tc||p.color||C.navy,anchor:p.anchor||'start'});}});
+  if(o.after)s+=o.after(X,Y);
+  return svg(w,h,s,o.label||'graph');}
+/* ---------- area (box) model ---------- */
+function cellStyle(k){return k==='want'?[C.goldL,C.goldD]:k==='ans'?[C.greenL,C.green]:k==='neg'?[C.redL,C.red]:[C.navyL,C.navy];}
+function areaModel(o){var cols=o.top.length,rows=o.left.length,cw=o.cw||86,chh=o.ch||50,L=54,T=34,w=Math.max(o.w||0,L+cols*cw+12),h=T+rows*chh+12+(o.foot?26:0),s='';
+  o.top.forEach(function(t,j){var k=typeof t==='object'?t:{t:t};s+=tx(L+j*cw+cw/2,T-11,k.t,{size:14,mono:true,bold:true,fill:k.k==='want'?C.goldD:k.k==='ans'?C.green:C.navy});});
+  o.left.forEach(function(t,i){var k=typeof t==='object'?t:{t:t};s+=tx(L-12,T+i*chh+chh/2+5,k.t,{size:14,mono:true,bold:true,fill:k.k==='want'?C.goldD:k.k==='ans'?C.green:C.navy,anchor:'end'});});
+  for(var i=0;i<rows;i++)for(var j=0;j<cols;j++){var c=o.cells[i][j],k=typeof c==='object'?c:{t:c};var st=cellStyle(k.k);
+    s+=rc(L+j*cw,T+i*chh,cw,chh,st[0],C.navy,1.8);s+=tx(L+j*cw+cw/2,T+i*chh+chh/2+5,k.t,{size:k.t.length>6?12.5:14.5,mono:true,bold:true,fill:st[1]});}
+  if(o.foot){var f=typeof o.foot==='object'?o.foot:{t:o.foot};s+=tx(L+cols*cw/2,h-8,f.t,{size:12.5,mono:true,bold:true,fill:f.k==='ans'?C.green:f.k==='want'?C.goldD:C.navy});}
+  return svg(w,h,s,o.label||'area model');}
+/* ---------- algebra tiles: (x+p)(x+q), p,q >= 0 ---------- */
+function tileRect(p,q,o){o=o||{};var Xl=o.X||78,U=o.U||17,L=56,T=34,W=Xl+p*U,H=Xl+q*U,w=Math.max(o.w||0,L+W+16,o.foot?tw(o.foot.t,12.5,true)+30:0),h=T+H+(o.foot?34:14),s='';
+  s+=rc(L,T,Xl,Xl,C.navyL,C.navy,1.6)+tx(L+Xl/2,T+Xl/2+5,'x²',{size:15,mono:true,bold:true});
+  for(var i=0;i<p;i++)s+=rc(L+Xl+i*U,T,U,Xl,'#C9D3E6',C.navy,1.4);
+  for(var j=0;j<q;j++)s+=rc(L,T+Xl+j*U,Xl,U,'#C9D3E6',C.navy,1.4);
+  for(i=0;i<p;i++)for(j=0;j<q;j++)s+=rc(L+Xl+i*U,T+Xl+j*U,U,U,'#9FB0CF',C.navy,1.2);
+  if(p)s+=tx(L+Xl+p*U/2,T+Xl/2+4,'x',{size:11,mono:true,fill:C.navy,rot:0});
+  s+=tx(L+Xl/2,T-10,'x',{size:14,mono:true,bold:true})+(p?tx(L+Xl+p*U/2,T-10,'+'+p,{size:14,mono:true,bold:true}):'');
+  s+=tx(L-12,T+Xl/2+5,'x',{size:14,mono:true,bold:true,anchor:'end'})+(q?tx(L-12,T+Xl+q*U/2+5,'+'+q,{size:14,mono:true,bold:true,anchor:'end'}):'');
+  if(o.foot){var f=o.foot;s+=tag(Math.max(L+W/2,tw(f.t,12.5,true)/2+12),h-10,f.t,{size:12.5,mono:true,fill:f.k==='ans'?C.green:f.k==='want'?C.goldD:C.navy});}
+  return svg(w,h,s,o.label||'algebra tiles');}
+/* ---------- completing the square tiles: x² + bx ---------- */
+function csTiles(b,o){o=o||{};var hb=b/2,Xl=o.X||92,U=o.U||Math.min(15,64/hb),L=56,T=30,W=Xl+hb*U,w=Math.max(o.w||0,L+W+30,o.foot?tw(o.foot.t,12.5,true)+30:0),h=T+W+(o.foot?36:12),s='';
+  s+=rc(L,T,Xl,Xl,C.navyL,C.navy,1.6)+tx(L+Xl/2,T+Xl/2+5,'x²',{size:15,mono:true,bold:true});
+  s+=rc(L+Xl,T,hb*U,Xl,'#C9D3E6',C.navy,1.6)+tx(L+Xl+hb*U/2,T+Xl/2+5,fmt(hb)+'x',{size:12,mono:true,bold:true,rot:hb*U<40?-90:0});
+  s+=rc(L,T+Xl,Xl,hb*U,'#C9D3E6',C.navy,1.6)+tx(L+Xl/2,T+Xl+hb*U/2+5,fmt(hb)+'x',{size:12,mono:true,bold:true});
+  var cs=o.corner||{t:'?',k:'want'},st=cellStyle(cs.k);
+  s+=rc(L+Xl,T+Xl,hb*U,hb*U,st[0],st[1],2,0,cs.k==='want'?'4 3':null)+tx(L+Xl+hb*U/2,T+Xl+hb*U/2+5,cs.t,{size:12.5,mono:true,bold:true,fill:st[1]});
+  s+=tx(L+Xl/2,T-9,'x',{size:14,mono:true,bold:true})+tx(L+Xl+hb*U/2,T-9,'+'+fmt(hb),{size:13,mono:true,bold:true});
+  s+=tx(L-10,T+Xl/2+5,'x',{size:14,mono:true,bold:true,anchor:'end'})+tx(L-10,T+Xl+hb*U/2+5,'+'+fmt(hb),{size:13,mono:true,bold:true,anchor:'end'});
+  if(o.foot){var f=o.foot;s+=tag(Math.max(L+W/2,tw(f.t,12.5,true)/2+12),h-11,f.t,{size:12.5,mono:true,fill:f.k==='ans'?C.green:f.k==='want'?C.goldD:C.navy});}
+  return svg(w,h,s,o.label||'completing the square');}
+/* ---------- difference of squares: cut and move ---------- */
+function dosPic(a,b,o){o=o||{};var A=112,Bs=42,s='',L=34,T=30,solved=o.solved,lb=solved?C.green:C.goldD;
+  s+=rc(L,T,A,A,C.navyL,C.navy,1.8)+rc(L+A-Bs,T+A-Bs,Bs,Bs,'#fff',C.red,1.8,0,'4 3')+tx(L+A-Bs/2,T+A-Bs/2+5,b+'²',{size:12,mono:true,bold:true,fill:C.red});
+  s+=ln(L,T+A-Bs,L+A-Bs,T+A-Bs,C.navy,1.2,'3 3');
+  s+=tx(L+A/2,T-9,a,{size:13,mono:true,bold:true})+tx(L-8,T+A/2+5,a,{size:13,mono:true,bold:true,anchor:'end'});
+  var sq=function(t){return /^([a-z]|\d+)$/i.test(t)?t:'('+t+')';},al=sq(a)+'² − '+sq(b)+'²';
+  s+=tx(L+(A-Bs)/2,T+(A-Bs)/2+5,al,{size:al.length>8?11:12,mono:true,bold:true});
+  s+=arrow(L+A+10,T+A/2,L+A+42,T+A/2,C.navy,2);
+  var x2=L+A+52,R=A-Bs;
+  s+=rc(x2,T+10,A,R,C.navyL,C.navy,1.8)+rc(x2+A,T+10,Bs,R,'#C9D3E6',C.navy,1.8);
+  s+=tx(x2+(A+Bs)/2,T+2,solved?'('+a+' + '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
+  s+=tx(x2+(A+Bs)/2,T+10+R+20,solved?'('+a+' − '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
+  s+=tx(x2+A+Bs/2,T+10+R/2+4,'moved',{size:9.5,fill:C.navy,rot:-90});
+  var w=x2+A+Bs+10,h=T+A+(o.foot?34:12);
+  if(o.foot)s+=tag(w/2,h-10,o.foot.t,{size:12.5,mono:true,fill:o.foot.k==='ans'?C.green:C.goldD});
+  return svg(w,h,s,o.label||'difference of squares picture');}
+/* ---------- number line with marked points ---------- */
+function pointsLine(o){var w=o.w||360,y=o.y||58,A=axisX({x0:22,x1:w-22,y:y,min:o.min,max:o.max,step:o.step||1,lab:o.lab||1,title:o.title}),s='',X=A.X;
+  (o.pts||[]).forEach(function(p,i){var col=p.c||C.navy;s+=ci(X(p.v),y,6,p.hollow?'#fff':col,col,2.2);
+    if(p.t)s+=tag(X(p.v),y-14-(p.row||0)*20,p.t,{size:11.5,mono:true,fill:col===C.gold?C.goldD:col});});
+  if(o.after)s+=o.after(X,y);
+  return svg(w,y+(o.title?42:28),s+A.s,o.label||'number line');}
+/* ---------- vertical flow chart (phone friendly) ---------- */
+function flow(o){var w=360,s='',y=8,bxW=o.bw||172,rx=bxW+38,rw=w-10-rx;
+  s+=rc(10,y,w-20,34,C.navy,null,0,8)+tx(w/2,y+22,o.start,{size:13,bold:true,fill:'#fff'});y+=34;
+  if(o.pre){s+=arrow(10+bxW/2,y,10+bxW/2,y+18,C.navy,2);y+=18;s+=rc(10,y,w-20,34,'#F3F6FB',C.navy,1.5,8)+tx(w/2,y+22,o.pre,{size:12.5,bold:true});y+=34;}
+  o.rows.forEach(function(r){s+=arrow(10+bxW/2,y,10+bxW/2,y+18,C.navy,2);y+=18;var hh=(r.q2||r.a2)?46:34;
+    s+=rc(10,y,bxW,hh,C.goldL,C.gold,2,8)+tx(10+bxW/2,y+(r.q2?19:hh/2+5),r.q,{size:12,bold:true,fill:C.goldD})+(r.q2?tx(10+bxW/2,y+36,r.q2,{size:12,bold:true,fill:C.goldD}):'');
+    s+=arrow(10+bxW,y+hh/2,rx-2,y+hh/2,C.navy,1.8)+tx((10+bxW+rx)/2,y+hh/2-5,'yes',{size:9.5,bold:true,fill:C.green});
+    s+=rc(rx,y,rw,hh,C.greenL,C.green,2,8)+tx(rx+rw/2,y+(r.a2?19:22),r.a,{size:r.mono?12:11.5,bold:true,mono:r.mono,fill:C.green})+(r.a2?tx(rx+rw/2,y+36,r.a2,{size:11.5,bold:true,mono:r.mono2,fill:C.green}):'');
+    y+=hh;if(r.no!==false)s+=tx(10+bxW/2+8,y+14,'no',{size:9.5,bold:true,fill:C.muted,anchor:'start'});});
+  if(o.end){s+=arrow(10+bxW/2,y,10+bxW/2,y+18,C.navy,2);y+=18;s+=rc(10,y,w-20,34,'#F3F6FB',C.navy,1.5,8)+tx(w/2,y+22,o.end,{size:12,bold:true});y+=34;}
+  return svg(w,y+8,s,o.label||'flow chart');}
+/* ================= statistics ================= */
+var St={
+  sort:function(a){return a.slice().sort(function(x,y){return x-y;});},
+  sum:function(a){return a.reduce(function(s,v){return s+v;},0);},
+  mean:function(a){return St.sum(a)/a.length;},
+  median:function(a){var s=St.sort(a),n=s.length;return n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2;},
+  five:function(a){var s=St.sort(a),n=s.length,lo=s.slice(0,Math.floor(n/2)),hi=s.slice(Math.ceil(n/2));return [s[0],St.median(lo),St.median(s),St.median(hi),s[n-1]];},
+  mad:function(a){var m=St.mean(a);return St.mean(a.map(function(v){return Math.abs(v-m);}));},
+  sd:function(a){var m=St.mean(a);return Math.sqrt(St.mean(a.map(function(v){return (v-m)*(v-m);})));},
+  lsrl:function(p){var n=p.length,sx=0,sy=0,sxy=0,sxx=0;p.forEach(function(q){sx+=q[0];sy+=q[1];sxy+=q[0]*q[1];sxx+=q[0]*q[0];});
+    var b=(n*sxy-sx*sy)/(n*sxx-sx*sx);return {b:b,a:(sy-b*sx)/n};},
+  r:function(p){var n=p.length,mx=0,my=0;p.forEach(function(q){mx+=q[0]/n;my+=q[1]/n;});var sxy=0,sxx=0,syy=0;
+    p.forEach(function(q){sxy+=(q[0]-mx)*(q[1]-my);sxx+=(q[0]-mx)*(q[0]-mx);syy+=(q[1]-my)*(q[1]-my);});return sxy/Math.sqrt(sxx*syy);}
+};
+/* ================= answer parsing ================= */
+function nrm(s){return String(s==null?'':s).trim().toLowerCase()
+  .replace(/[−‒–—‐‑﹣－]/g,'-').replace(/[×·∙⋅]/g,'*').replace(/÷/g,'/')
+  .replace(/²/g,'^2').replace(/³/g,'^3').replace(/√/g,'sqrt').replace(/ŷ/g,'y').replace(/\s+/g,'');}
+function nz(v){return Math.abs(v)>1e-9;}
+function ptrim(c){c=c.slice();while(c.length>1&&!nz(c[c.length-1]))c.pop();return c;}
+function padd(a,b){var r=[];for(var i=0;i<Math.max(a.length,b.length);i++)r[i]=(a[i]||0)+(b[i]||0);return r;}
+function pneg(a){return a.map(function(v){return -v;});}
+function pmul(a,b){var r=[];for(var i=0;i<a.length+b.length-1;i++)r[i]=0;for(i=0;i<a.length;i++)for(var j=0;j<b.length;j++)r[i+j]+=a[i]*b[j];return r;}
+function isConst(a){return ptrim(a).length===1;}
+function parsePoly(str){var s=nrm(str).replace(/^(y|f\(x\)|p\(x\))=/,''),i=0;
+  function expr(){var a=unary();while(i<s.length&&(s[i]==='+'||s[i]==='-')){var op=s[i++];var b=term1();a=op==='+'?padd(a,b):padd(a,pneg(b));}return a;}
+  function term1(){return termRest(unary());}
+  function termRest(a){while(i<s.length){var ch=s[i];
+      if(ch==='*'){i++;a=pmul(a,unary());}
+      else if(ch==='/'){i++;var b;if(s[i]==='-'){i++;b=pneg(power());}else b=power();if(!isConst(b)||!nz(b[0]))throw 0;a=a.map(function(v){return v/b[0];});}
+      else if(/[0-9.x(\[s]/.test(ch)||s.substr(i,2)==='pi'){a=pmul(a,power());}
+      else break;}return a;}
+  function unary(){if(s[i]==='-'){i++;return pneg(unary());}if(s[i]==='+'){i++;return unary();}return termRest(power());}
+  function power(){var b=atom();if(s[i]==='^'){i++;var e;if(s[i]==='('){i++;e=expr();if(s[i]!==')')throw 0;i++;}else{var neg=false;if(s[i]==='-'){neg=true;i++;}e=atom();if(neg)e=pneg(e);}
+      if(!isConst(e))throw 0;var n=e[0];if(isConst(b))return [Math.pow(b[0],n)];if(n<0||n!==Math.floor(n)||n>8)throw 0;var r=[1];for(var k=0;k<n;k++)r=pmul(r,b);return r;}return b;}
+  function atom(){var ch=s[i];
+    if(ch==='('||ch==='['){var cl=ch==='('?')':']';i++;var v=expr();if(s[i]!==cl)throw 0;i++;return v;}
+    if(s.substr(i,4)==='sqrt'){i+=4;var w;if(s[i]==='('){i++;w=expr();if(s[i]!==')')throw 0;i++;}else{w=atom();}if(!isConst(w)||w[0]<0)throw 0;return [Math.sqrt(w[0])];}
+    if(s.substr(i,2)==='pi'){i+=2;return [Math.PI];}
+    if(ch==='x'){i++;return [0,1];}
+    var m=/^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));if(m){i+=m[0].length;return [parseFloat(m[0])];}
+    throw 0;}
+  try{if(!s)return null;var r=expr();if(i!==s.length)return null;return ptrim(r);}catch(e){return null;}}
+function numOf(raw){var s=nrm(raw);if(s.indexOf('=')>=0)s=s.slice(s.lastIndexOf('=')+1);var pct=false;
+  s=s.replace(/(percent|students?|points?|pts|hours?|hrs?|h|minutes?|mins?|seconds?|secs?|s|people|squareunits|sq\.?units|units?\^2|units?|squarefeet|sq\.?ft|ft\^2|feet|foot|ft|squaremeters|sq\.?m|m\^2|meters?|m|cm|inches|inch|in|miles?|mi|mph|years?|yrs?|games?|dollars?|degrees?|°f|°c|°)$/,'');
+  if(/%$/.test(s)){pct=true;s=s.slice(0,-1);}s=s.replace(/^\$/,'');
+  var c=parsePoly(s);if(!c||!isConst(c))return null;return {v:c[0],pct:pct};}
+function setOf(raw){var s=nrm(String(raw==null?'':raw).replace(/(\d)\s+(?=[-\u2212]?\d)/g,'$1,')).replace(/[{}]/g,'').replace(/\+\/-|\+-/g,'±');
+  s=s.replace(/f\(x\)=/g,'').replace(/[xy]=/g,'');
+  var parts=s.split(/,|;|or|and|&/).filter(function(p){return p.length;}),out=[];if(!parts.length)return null;
+  for(var k=0;k<parts.length;k++){var p=parts[k].replace(/^x=/,'');
+    var vs=p.indexOf('±')>=0?[p.replace('±','+'),p.replace('±','-')]:[p];
+    for(var j=0;j<vs.length;j++){var c=parsePoly(vs[j]);if(!c||!isConst(c))return null;out.push(c[0]);}}
+  return out;}
+function ptOf(raw){var s=nrm(raw);if(s.indexOf('=')>=0)s=s.slice(s.lastIndexOf('=')+1);s=s.replace(/^[(\[]|[)\]]$/g,'');var p=s.split(/,|;/);if(p.length!==2)return null;
+  var a=parsePoly(p[0]),b=parsePoly(p[1]);if(!a||!b||!isConst(a)||!isConst(b))return null;return [a[0],b[0]];}
+function close(a,b,t){return Math.abs(a-b)<=(t==null?1e-6:t);}
+function sameSet(a,b,t){if(a.length!==b.length)return false;var x=a.slice().sort(function(p,q){return p-q;}),y=b.slice().sort(function(p,q){return p-q;});
+  return x.every(function(v,i){return close(v,y[i],t);});}
+function peq(a,b){a=ptrim(a);b=ptrim(b);if(a.length!==b.length)return false;for(var i=0;i<a.length;i++)if(Math.abs(a[i]-b[i])>1e-9)return false;return true;}
+function sup(n){return String(n).split('').map(function(d){return '⁰¹²³⁴⁵⁶⁷⁸⁹'[+d];}).join('');}
+function pstr(c){c=ptrim(c);var out='';for(var d=c.length-1;d>=0;d--){var v=c[d];if(!nz(v))continue;var a=Math.abs(v);
+    var coef=(d>0&&Math.abs(a-1)<1e-9)?'':fmt(a,3);var t=coef+(d===0?'':(d===1?'x':'x'+sup(d)));
+    out+=out?(v<0?' − ':' + ')+t:(v<0?'−':'')+t;}return out||'0';}
+/* split a product like 3x(x+4)(x-2)^2 into factors; returns null if not a product */
+function factorsOf(raw){var s=nrm(raw).replace(/^(y|f\(x\))=/,''),depth=0,out=[],mono='',i=0;
+  if(s.indexOf('(')<0)return null;
+  while(i<s.length){var ch=s[i];
+    if(ch==='('){var j=i,d=0;do{if(s[j]==='(')d++;if(s[j]===')')d--;j++;}while(j<s.length&&d>0);if(d)return null;
+      var inner=s.slice(i+1,j-1),pw=1;var m=/^\^(\d)/.exec(s.slice(j));if(m){pw=+m[1];j+=m[0].length;}
+      for(var k=0;k<pw;k++)out.push(inner);i=j;if(s[i]==='*')i++;continue;}
+    if((ch==='+'||ch==='-')&&i>0&&!(mono===''&&ch==='-'))return null;
+    mono+=ch;i++;}
+  mono=mono.replace(/\*/g,'');return {mono:mono,fs:out};}
+function gcdInt(a,b){a=Math.abs(Math.round(a));b=Math.abs(Math.round(b));while(b){var t=b;b=a%b;a=t;}return a;}
+/* ================= items + feedback ================= */
+var SPEC={},EX={},FIG={},INT={},started={};
+function el(id){return document.getElementById(id);}
+function fb(id,ok,msg){var f=el('fb-'+id);if(!f)return;f.innerHTML=msg;f.className='chk-fb show '+(ok?'c':'x');}
+function score(first,ok){try{if(first)_answered++;if(ok)_correct++;_updateScore();}catch(e){}}
+function render(id,state){var sp=SPEC[id],box=el('v-'+id);if(!sp||!box||!sp.viz)return;box.innerHTML=sp.viz(state||'q')+(sp.cap?'<div class="diagram-cap">'+sp.cap+'</div>':'');}
+function solveViz(id){var sp=SPEC[id];if(sp&&sp.viz)render(id,'solved');}
+function judge(sp,raw){var ans=typeof sp.ans==='function'?sp.ans():sp.ans,t=sp.tol,i,v,f;
+  function custom(match){for(i=0;i<(sp.fb||[]).length;i++){f=sp.fb[i];if(match(f[0]))return f[1];}return null;}
+  switch(sp.type){
+  case 'num':{var p=numOf(raw);if(!p)return {ok:false,msg:'I can’t read that as a number. Type just the number, like <b>7</b>, <b>−2</b> or <b>2.5</b>.'};
+    v=p.v;if(sp.pct&&!p.pct&&Math.abs(v)<=1&&Math.abs(ans)>1)v*=100;
+    if(close(v,ans,t))return {ok:true};
+    var m=custom(function(k){return typeof k==='function'?k(v):close(v,k,sp.fbTol!=null?sp.fbTol:(t||1e-6));});if(m)return {ok:false,msg:m};
+    if(nz(ans)&&close(-v,ans,t))return {ok:false,msg:'So close — the size is right, but check the <b>sign</b> (+ or −).'};
+    if(sp.round&&close(v,ans,sp.round))return {ok:false,msg:'Very close! Round the way the question asks.'};
+    return {ok:false,msg:sp.hint||'Not yet. Look at the picture and try once more.'};}
+  case 'set':{var a=setOf(raw);if(!a)return {ok:false,msg:'Type the solutions with commas, like <b>x = 2, 3</b>, <b>−4 or 1</b>, or <b>±7</b>.'};
+    if(sameSet(a,ans,t))return {ok:true};
+    m=custom(function(k){return typeof k==='function'?k(a):sameSet(a,k,t||1e-6);});if(m)return {ok:false,msg:m};
+    if(a.length<ans.length&&a.every(function(x){return ans.some(function(y){return close(x,y,t);});}))return {ok:false,msg:'Good start — '+a.map(function(x){return 'x = '+fmt(x);}).join(', ')+' is right. A quadratic can have <b>two</b> solutions. Find the other one.'};
+    if(a.length===ans.length&&sameSet(a.map(function(x){return -x;}),ans,t))return {ok:false,msg:'Your signs are flipped. If (x − 3) = 0, then x = <b>+3</b>. Set each factor equal to 0 and solve.'};
+    return {ok:false,msg:sp.hint||'Not yet. Check each answer by plugging it back into the equation.'};}
+  case 'pt':{var q=ptOf(raw);if(!q)return {ok:false,msg:'Type a point like <b>(1, −4)</b>.'};
+    if(close(q[0],ans[0],t)&&close(q[1],ans[1],t))return {ok:true};
+    m=custom(function(k){return close(q[0],k[0],t)&&close(q[1],k[1],t);});if(m)return {ok:false,msg:m};
+    if(close(q[0],ans[1],t)&&close(q[1],ans[0],t))return {ok:false,msg:'You switched x and y. Write the point as <b>(x, y)</b>: x first.'};
+    if(close(q[0],ans[0],t))return {ok:false,msg:'The x-value is right. Now find y by plugging x into the equation.'};
+    return {ok:false,msg:sp.hint||'Not yet. Find x first, then y.'};}
+  case 'poly':{var c=parsePoly(raw);if(!c)return {ok:false,msg:'I can’t read that. Type it like <b>x^2+5x+6</b> (use ^ for exponents).'};
+    var tgt=ans;m=custom(function(k){return peq(c,parsePoly(k));});if(m&&!peq(c,tgt))return {ok:false,msg:m};
+    if(peq(c,tgt)){if(/\(/.test(nrm(raw)))return {ok:false,msg:'That is equal, but it still has parentheses. Multiply it out and combine like terms.'};return {ok:true};}
+    var tips=[];if(!close(c[2]||0,tgt[2]||0))tips.push('the <b>x²</b> term (first × first)');
+    if(!close(c[1]||0,tgt[1]||0))tips.push('the <b>x</b> term (add the two middle boxes)');
+    if(!close(c[0]||0,tgt[0]||0))tips.push('the <b>number</b> term (last × last — watch the sign)');
+    return {ok:false,msg:'Not yet. You wrote '+pstr(c)+'. Check '+tips.join(' and ')+'.'};}
+  case 'factor':{c=parsePoly(raw);if(!c)return {ok:false,msg:'I can’t read that. Type it like <b>(x+3)(x+4)</b>.'};
+    tgt=ans;var fs=factorsOf(raw);
+    m=custom(function(k){return peq(c,parsePoly(k))&&nrm(k)===nrm(raw);});if(m)return {ok:false,msg:m};
+    if(!peq(c,tgt)){m=custom(function(k){return peq(c,parsePoly(k));});if(m)return {ok:false,msg:m};
+      if(fs)return {ok:false,msg:'Check by multiplying: your factors give <b>'+pstr(c)+'</b>. We need <b>'+pstr(tgt)+'</b>.'+((Math.abs(c[0]-tgt[0])<1e-9&&Math.abs((c[1]||0)+(tgt[1]||0))<1e-9)?' Only the middle sign is off — switch the signs in your factors.':'')};
+      return {ok:false,msg:'Not yet. Your answer equals '+pstr(c)+', not '+pstr(tgt)+'.'};}
+    if(!fs)return {ok:false,msg:'That is the same polynomial — but it isn’t factored yet. Write it as a <b>product</b>, like (x + _)(x + _).'};
+    for(i=0;i<fs.fs.length;i++){var fc=parsePoly(fs.fs[i]);if(!fc)continue;
+      if(fc.length>2)return {ok:false,msg:'Almost! The factor ('+pstr(fc)+') can still be factored. Keep going.'};
+      if(fc.length===2&&gcdInt(fc[0],fc[1])>1&&Number.isInteger(fc[0])&&Number.isInteger(fc[1]))return {ok:false,msg:'Almost! ('+pstr(fc)+') still has a common factor of '+gcdInt(fc[0],fc[1])+'. Pull it out too.'};}
+    return {ok:true};}
+  case 'text':{var s=nrm(raw);if((sp.accept||[]).some(function(k){return nrm(k)===s;}))return {ok:true};
+    m=custom(function(k){return nrm(k)===s;});return {ok:false,msg:m||sp.hint||'Not yet — look again.'};}
+  }
+  return {ok:false,msg:'?'};}
+function check(id){var sp=SPEC[id],card=el(id);if(!sp||!card||card.dataset.solved)return;
+  if(sp.type==='multi'){var allOk=true,msgs=[],any=false;
+    sp.parts.forEach(function(p){var inp=el(id+'-'+p.k);if(!inp)return;if(inp.value.trim())any=true;});
+    if(!any){fb(id,false,'Type your answers first.');return;}
+    sp.parts.forEach(function(p){var inp=el(id+'-'+p.k);if(inp.disabled)return;var r=inp.value.trim()?judge(p,inp.value):{ok:false,msg:'Fill in this box.'};
+      inp.classList.remove('ok','bad');inp.classList.add(r.ok?'ok':'bad');if(r.ok)inp.disabled=true;else{allOk=false;msgs.push('<b>'+p.label+':</b> '+r.msg);}});
+    var first=!started[id];started[id]=1;
+    if(allOk){card.dataset.solved='1';score(first,true);fb(id,true,'✓ All correct! '+(sp.ok||''));solveViz(id);}
+    else{score(first,false);fb(id,false,msgs.join('<br>'));}
+    return;}
+  var inp=el(id+'-in');if(!inp)return;if(!inp.value.trim()){fb(id,false,'Type your answer first.');return;}
+  var r=judge(sp,inp.value),first2=!started[id];started[id]=1;
+  if(r.ok){card.dataset.solved='1';inp.disabled=true;inp.classList.add('ok');score(first2,true);fb(id,true,'✓ Correct! '+(sp.ok||''));solveViz(id);if(sp.then)sp.then();}
+  else{inp.classList.add('bad');score(first2,false);fb(id,false,r.msg);}}
+function mc(id,btn){var sp=SPEC[id],card=el(id);if(!sp||!card||card.dataset.solved)return;var v=btn.getAttribute('data-v'),first=!started[id];started[id]=1;
+  if(v===String(sp.ans)){card.dataset.solved='1';btn.classList.add('correct');card.querySelectorAll('.chk-btn').forEach(function(b){b.disabled=true;});
+    score(first,first);fb(id,true,'✓ '+(first?'Correct! ':'Yes — that’s it. ')+(sp.ok||''));solveViz(id);}
+  else{btn.classList.add('wrong');btn.disabled=true;if(first)score(true,false);fb(id,false,((sp.fb||{})[v]||'Not this one.')+' Try another choice.');}}
+/* ---------- worked examples in notes ---------- */
+function drawEx(name,stage){var e=EX[name],box=document.querySelector('[data-ex="'+name+'"]');if(!e||!box)return;
+  box.innerHTML=e.viz(stage)+(e.cap?'<div class="diagram-cap">'+e.cap+'</div>':'');}
+function exStage(name){var steps=document.querySelectorAll('.steps[data-example="'+name+'"] .step');if(!steps.length)return 'q';
+  var n=0;steps.forEach(function(s){if(s.classList.contains('revealed'))n++;});var fin=steps[steps.length-1].classList.contains('revealed');return fin?'solved':n;}
+function hook(){
+  if(typeof window.reveal==='function'){var r0=window.reveal;window.reveal=function(s){r0(s);var p=s.closest('.steps');if(p){var n=p.getAttribute('data-example');if(EX[n])drawEx(n,exStage(n));}};}
+  if(typeof window.revealAll==='function'){var r1=window.revealAll;window.revealAll=function(id){r1(id);if(EX[id])drawEx(id,'solved');};}
+  if(typeof window.revealPage==='function'){var r2=window.revealPage;window.revealPage=function(){r2();Object.keys(EX).forEach(function(n){drawEx(n,'solved');});Object.keys(SPEC).forEach(function(id){if(SPEC[id].viz)render(id,'solved');});};}
+  if(typeof window.sa==='function'){var r3=window.sa;window.sa=function(b){r3(b);var c=b.closest('[data-item]');if(c&&SPEC[c.id])solveViz(c.id);};}}
+function init(){
+  Object.keys(SPEC).forEach(function(id){render(id,'q');var card=el(id);if(card)card.setAttribute('data-item','1');});
+  Object.keys(EX).forEach(function(n){drawEx(n,exStage(n));});
+  document.querySelectorAll('[data-fig]').forEach(function(b){var f=FIG[b.getAttribute('data-fig')];if(f){var cap=b.getAttribute('data-cap');b.innerHTML=f()+(cap?'<div class="diagram-cap">'+cap+'</div>':'');}});
+  document.querySelectorAll('[data-int]').forEach(function(b){var f=INT[b.getAttribute('data-int')];if(f)f(b);});
+  document.querySelectorAll('.mgrid input, .val-chk input').forEach(function(inp){inp.setAttribute('autocomplete','off');inp.setAttribute('autocapitalize','off');inp.setAttribute('spellcheck','false');
+    inp.addEventListener('input',function(){inp.classList.remove('bad');});
+    if(inp.closest('.mgrid'))inp.addEventListener('keydown',function(e){if(e.key==='Enter'){var c=inp.closest('[data-item]');if(c)check(c.id);}});});
+  hook();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
+return {C:C,svg:svg,ln:ln,tx:tx,rc:rc,ci:ci,pg:pg,pl:pl,arrow:arrow,tag:tag,fmt:fmt,sgn:sgn,sc:sc,esc:esc,axisX:axisX,
+  dotPlot:dotPlot,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
+  dosPic:dosPic,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
+  judge:judge,check:check,mc:mc,SPEC:SPEC,EX:EX,FIG:FIG,INT:INT,render:render,drawEx:drawEx,uid:function(){return ++uid;}};
+})();
+</script>
+<script>
+(function(){
+var C=M.C,f=M.fmt,tag=M.tag,ln=M.ln,tx=M.tx,rc=M.rc,ci=M.ci,SP=M.SPEC;
+function sv(st){return st==='solved';}
+function g(t){return {t:t};}function w(t){return {t:t||'?',k:'want'};}function an(t){return {t:t,k:'ans'};}
+function P(s){return M.parsePoly(s);}
+function termMul(a,b){return M.pstr(M.parsePoly('('+a+')*('+b+')'));}
+function boxModel(top,left,o){o=o||{};var cells=left.map(function(l,i){return top.map(function(t,j){var v=termMul(t,l),neg=v.charAt(0)==='−';
+    var st=o.cell?o.cell(i,j):'g';return st==='w'?w():st==='a'?an(v):(neg&&o.negColor?{t:v,k:'neg'}:g(v));});});
+  var T=top.map(function(t,j){var st=o.side?o.side('t',j):'g';return st==='w'?w():st==='a'?an(t):g(t);}),
+      L=left.map(function(t,i){var st=o.side?o.side('l',i):'g';return st==='w'?w():st==='a'?an(t):g(t);});
+  return M.areaModel({top:T,left:L,cells:cells,foot:o.foot,label:o.label||'area model'});}
+/* multiply item: sides given, cells ? until solved */
+function mulViz(top,left,prod){return function(st){return boxModel(top,left,{negColor:true,cell:function(){return sv(st)?'a':'w';},foot:sv(st)?{t:'= '+M.pstr(P(prod)),k:'ans'}:{t:'add the 4 boxes = ?',k:'want'}});};}
+/* factor item: the x² box and the number box are given; sides ? until solved */
+function facViz(top,left,known){return function(st){return boxModel(top,left,{negColor:true,cell:function(i,j){return (known||[[0,0],[1,1]]).some(function(k){return k[0]===i&&k[1]===j;})?'g':(sv(st)?'a':'w');},side:function(){return sv(st)?'a':'w';},label:'factoring box'});};}
+function parab(fn,o){o=o||{};return M.plane({h:o.h,ygrid:o.ygrid,ylab:o.ylab,xmin:o.xmin!=null?o.xmin:-4,xmax:o.xmax!=null?o.xmax:6,ymin:o.ymin!=null?o.ymin:-5,ymax:o.ymax!=null?o.ymax:6,lab:o.lab||1,w:o.w||330,fns:[{f:fn,color:C.navy}],pts:o.pts,vlines:o.vlines,label:o.label||'parabola'});}
+function zeroLine(z,st,o){o=o||{};return M.pointsLine({min:o.min,max:o.max,lab:o.lab||1,y:62,pts:sv(st)?z.map(function(v,i){return {v:v,t:'x = '+f(v),c:C.green,row:z.length>1&&Math.abs(z[0]-z[1])<2?i:0};}):[],label:'solutions on a number line',
+  after:function(X,y){return sv(st)?'':tag((X(o.min)+X(o.max))/2,y-24,o.q||'x = ?',{size:12,mono:true,fill:C.goldD});}});}
+function sqArea(area,st,o){o=o||{};var r=Math.sqrt(area),S=100,s='',L=120,T=26;s+=rc(L,T,S,S,C.navyL,C.navy,2)+tx(L+S/2,T+S/2+6,'x² = '+area,{size:14,mono:true,bold:true});
+  s+=tx(L+S/2,T-8,sv(st)?'side '+f(r):'side x = ?',{size:13,mono:true,bold:true,fill:sv(st)?C.green:C.goldD})+tx(L-8,T+S/2+5,sv(st)?f(r):'?',{size:13,mono:true,bold:true,fill:sv(st)?C.green:C.goldD,anchor:'end'});
+  var y=T+S+52,ax=M.axisX({x0:24,x1:336,y:y,min:-o.max,max:o.max,step:1,lab:o.lab||2}),X=ax.X;s+=ax.s;
+  if(sv(st)){[-r,r].forEach(function(v){s+=ci(X(v),y,6,C.green)+tag(X(v),y-14,'x = '+f(v),{size:11.5,mono:true,fill:C.green});});}else s+=tag(180,y-18,'x = ?   (two answers)',{size:12,mono:true,fill:C.goldD});
+  return M.svg(360,y+28,s,'square with area '+area);}
+function pairs(c,b){var out=[],A=Math.abs(c);for(var m=1;m<=A;m++){if(A%m)continue;var n=A/m;if(m>n)break;if(c>0){out.push([m,n]);out.push([-m,-n]);}else{out.push([m,-n]);out.push([-m,n]);}}
+  return out.filter(function(p){return c>0?(b>=0?p[0]>0:p[0]<0):true;});}
+function pairTable(c,b,o){o=o||{};var ps=pairs(c,b),rh=26,y0=30,s='',x0=14,x1=150,x2=236;
+  s+=tx((x0+x1)/2,20,'multiply to '+f(c),{size:12,bold:true})+tx((x1+x2)/2,20,'add to '+f(b)+'?',{size:12,bold:true,fill:C.goldD});
+  ps.forEach(function(p,i){var y=y0+i*rh,good=p[0]+p[1]===b,hl=o.solved&&good;s+=rc(x0,y,x2-x0,rh,hl?C.greenL:(i%2?'#F7F9FC':'#fff'),C.grid,1);
+    s+=tx((x0+x1)/2,y+18,f(p[0])+' · '+f(p[1]),{size:13,mono:true,bold:true,fill:hl?C.green:C.navy});s+=tx((x1+x2)/2,y+18,o.solved?f(p[0]+p[1]):'?',{size:13,mono:true,bold:true,fill:o.solved?(good?C.green:C.navy):C.goldD});
+    if(hl)s+=tx(x2+8,y+18,'✓',{size:14,bold:true,fill:C.green,anchor:'start'});});
+  s+=ln(x1,y0,x1,y0+ps.length*rh,C.grid,1.5);return M.svg(262,y0+ps.length*rh+10,s,'factor pair table');}
+function D(a,b,c){return b*b-4*a*c;}
+function fcard(a,b,c,s){var o='';[['a',a],['b',b],['c',c]].forEach(function(k,i){var x=20+i*82;o+=rc(x,10,70,40,s>=1?C.greenL:C.goldL,s>=1?C.green:C.gold,1.8,6)+tx(x+35,36,k[0]+' = '+(s>=1?f(k[1]):'?'),{size:13,mono:true,bold:true,fill:s>=1?C.green:C.goldD});});
+  var d=D(a,b,c);o+=rc(270,10,80,40,s>=2?C.greenL:C.goldL,s>=2?C.green:C.gold,1.8,6)+tx(310,26,'b² − 4ac',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD})+tx(310,43,s>=2?f(d):'?',{size:13,mono:true,bold:true,fill:s>=2?C.green:C.goldD});
+  var y=88,num=s>=3?'−('+f(b)+') ± √'+f(d):'−b ± √(b² − 4ac)',den=s>=3?'2('+f(a)+')':'2a';
+  o+=tx(70,y+8,'x =',{size:15,mono:true,bold:true})+tx(200,y-4,num,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy})+ln(110,y+4,290,y+4,C.navy,2)+tx(200,y+24,den,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy});
+  if(s>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+f((-b+r)/(2*a))+'  or  x = '+f((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
+  return M.svg(360,s>=4?156:124,o,'quadratic formula card');}
+function roots(a,b,c){var d=D(a,b,c),r=Math.sqrt(d);return [(-b+r)/(2*a),(-b-r)/(2*a)];}
+/* ---------- Part A ---------- */
+SP.a1={type:'poly',ans:P('(x+3)(x+2)'),fb:[['x^2+6','You added only the first and last boxes. Add the two x-boxes too: 3x + 2x.'],['x^2+5x+5','The last box is 3 × 2 = 6.']],viz:mulViz(['x','+3'],['x','+2'],'(x+3)(x+2)')};
+SP.a2={type:'poly',ans:P('(x-4)(x+4)'),fb:[['x^2+16','The last box is (−4)(+4) = −16.'],['x^2-8x-16','The two x-boxes are +4x and −4x. They cancel to 0.'],['x^2+8x-16','The two x-boxes are +4x and −4x. They cancel to 0.']],viz:mulViz(['x','+4'],['x','−4'],'(x-4)(x+4)')};
+SP.a3={type:'poly',ans:P('(2x+1)(x-3)'),fb:[['2x^2+5x-3','The x-boxes are −6x and +x. −6x + x = −5x.'],['2x^2-7x-3','The x-boxes are −6x and +x, so −5x.'],['2x^2-5x+3','The last box is (1)(−3) = −3.']],viz:mulViz(['x','−3'],['2x','+1'],'(2x+1)(x-3)')};
+SP.a4={type:'poly',ans:P('(x+5)^2'),fb:[['x^2+25','(x + 5)² means (x + 5)(x + 5). There are two 5x boxes in the middle.'],['x^2+5x+25','There are TWO 5x boxes. 5x + 5x = 10x.']],viz:mulViz(['x','+5'],['x','+5'],'(x+5)^2')};
+var A5a=P('3x^2-2x+5'),A5b=P('x^2+4x-1'),A5=A5a.map(function(v,i){return v-(A5b[i]||0);});
+SP.a5={type:'poly',ans:A5,fb:[['2x^2+2x+4','You added the 2nd polynomial. Flip ALL its signs first.'],['2x^2-6x+4','−(−1) is +1, so 5 + 1 = 6.'],['2x^2+2x+6','−(+4x) is −4x, so −2x − 4x = −6x.']],
+  viz:function(st){var o='',X0=112,cw=76;function row(y,lab,arr,col,bg){o+=tx(X0-8,y+17,lab,{size:11.5,anchor:'end',bold:true,fill:col});for(var j=0;j<3;j++){var v=arr[2-j];o+=rc(X0+j*cw,y,cw,26,bg||'#fff',C.grid,1)+tx(X0+j*cw+cw/2,y+18,M.sgn(v),{size:13,mono:true,bold:true,fill:col});}}
+    ['x²','x','number'].forEach(function(c,j){o+=tx(X0+j*cw+cw/2,16,c,{size:12,bold:true,fill:C.muted});});
+    row(24,'first',A5a,C.navy);row(56,'− 2nd, flipped',A5b.map(function(v){return -v;}),C.red,'#FFF7F7');o+=ln(X0,90,X0+3*cw,90,C.navy,2);
+    if(sv(st))row(96,'answer',A5,C.green);else{o+=tx(X0-8,113,'answer',{size:11.5,anchor:'end',bold:true,fill:C.goldD});for(var j=0;j<3;j++)o+=rc(X0+j*cw,96,cw,26,C.goldL,C.gold,1)+tx(X0+j*cw+cw/2,114,'?',{size:13,bold:true,fill:C.goldD});}
+    return M.svg(360,132,o,'subtracting like terms');}};
+SP.a6={type:'poly',ans:P('(x-2)(x-5)'),fb:[['x^2-7x-10','The last box is (−2)(−5) = +10. Negative × negative = positive.'],['x^2+7x+10','The x-boxes are −5x and −2x, so −7x.'],['x^2-3x+10','The x-boxes are −5x and −2x. Add them: −7x.']],viz:mulViz(['x','−5'],['x','−2'],'(x-2)(x-5)')};
+/* ---------- Part B ---------- */
+SP.b1={type:'factor',ans:P('x^2+7x+12'),fb:[['(x+2)(x+6)','2 · 6 = 12, but 2 + 6 = 8. You need a sum of 7.'],['(x+1)(x+12)','1 · 12 = 12, but 1 + 12 = 13. You need a sum of 7.']],viz:facViz(['x','+4'],['x','+3'])};
+SP.b2={type:'factor',ans:P('x^2-9'),fb:[['(x-3)(x-3)','That gives x² − 6x + 9. One factor needs a + sign.'],['(x+3)(x+3)','That gives x² + 6x + 9. One factor needs a − sign.']],viz:function(st){return M.dosPic('x','3',{solved:sv(st),foot:sv(st)?{t:'(x + 3)(x − 3)',k:'ans'}:{t:'x² − 9 = (?)(?)',k:'want'}});}};
+SP.b3={type:'factor',ans:P('2x^2+5x-3'),fb:[['(2x+1)(x-3)','That gives 2x² − 5x − 3. Switch the signs.'],['(2x+3)(x-1)','That gives 2x² + x − 3. Try the 3 with the x instead.']],viz:facViz(['x','+3'],['2x','−1'])};
+SP.b4={type:'factor',ans:P('3x^2+12x'),fb:[['x(3x+12)','3x + 12 still has a common factor 3. The GCF is 3x.'],['3(x^2+4x)','x² + 4x still has a common factor x. The GCF is 3x.']],
+  viz:function(st){return M.areaModel({top:sv(st)?[an('x'),an('+4')]:[w(),w()],left:[sv(st)?an('3x'):w()],cells:[[g('3x²'),g('12x')]],foot:sv(st)?{t:'3x(x + 4)',k:'ans'}:{t:'GCF = ?',k:'want'},label:'GCF area model'});}};
+SP.b5={type:'factor',ans:P('x^2-3x-18'),fb:[['(x-3)(x+6)','That gives x² + 3x − 18. Switch the signs.'],['(x-2)(x+9)','−2 · 9 = −18 but −2 + 9 = 7.']],viz:function(st){return pairTable(-18,-3,{solved:sv(st)});}};
+SP.b6={type:'factor',ans:P('x^2+10x+25'),fb:[['(x+25)(x+1)','25 · 1 = 25 but 25 + 1 = 26. Try 5 and 5.']],viz:facViz(['x','+5'],['x','+5'])};
+/* ---------- Part C ---------- */
+SP.c1={hint:'Factor: (x − 2)(x − 3) = 0. Then set each factor to 0.',type:'set',ans:[2,3],fb:[[[-2,-3],'(x − 2) = 0 gives x = +2. Flip the sign from the factor.']],viz:function(st){return facViz(['x','−3'],['x','−2'])(st)+(sv(st)?zeroLine([2,3],st,{min:-1,max:5}):'');}};
+SP.c2={hint:'What number times itself is 49? There are two of them.',type:'set',ans:[7,-7],fb:[[[7],'Don’t forget ±. (−7)(−7) = 49 too.'],[[24.5,-24.5],'Take the square root, not half: √49.']],viz:function(st){return sqArea(49,st,{max:8,lab:2});}};
+SP.c3={hint:'Factor out x: x(x + 4) = 0. Then set each factor to 0.',type:'set',ans:[0,-4],fb:[[[-4],'x = 0 is a solution too. The factor x can be 0.'],[[4],'x + 4 = 0 gives x = −4. And x = 0 is a solution too.'],[[0,4],'x + 4 = 0 gives x = −4, not 4.']],
+  viz:function(st){return M.areaModel({top:sv(st)?[an('x'),an('+4')]:[w(),w()],left:[sv(st)?an('x'):w()],cells:[[g('x²'),g('4x')]],foot:sv(st)?{t:'x(x + 4) = 0',k:'ans'}:{t:'x² + 4x = ?(? + ?)',k:'want'},label:'GCF box'})+(sv(st)?zeroLine([-4,0],st,{min:-6,max:2}):'');}};
+SP.c4={hint:'Add 8 to both sides and divide by 2: x² = 4. Then take ± square roots.',type:'set',ans:[2,-2],fb:[[[2],'Don’t forget ±. (−2)(−2) = 4 too.'],[[4,-4],'2x² = 8 means x² = 4. Now take the square root.'],[[Math.sqrt(8),-Math.sqrt(8)],'First divide both sides by 2: x² = 4.']],viz:function(st){return sqArea(8/2,st,{max:4,lab:1});}};
+/* ---------- Part D ---------- */
+function dg(st,extra){return parab(function(x){return x*x-2*x-3;},extra);}
+SP.d1={type:'mc',ans:'a',ok:'The graph crosses the x-axis at x = −1 and x = 3.',fb:{b:'Those have the wrong signs. Read where the curve crosses the x-axis.',c:'x = 3 is right. Look at the left crossing: it is to the LEFT of 0, at −1. (x = 1 is the middle of the parabola, under the vertex.)',d:'The curve crosses the y-axis at −3. Zeros are where it crosses the x-axis.'},
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'3',dx:7,dy:-9}]:[]});}};
+SP.d2={type:'factor',ans:P('x^2-2x-3'),fb:[['(x-1)(x+3)','A zero at x = −1 gives the factor (x + 1). A zero at 3 gives (x − 3).']],
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'x + 1 = 0',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'x − 3 = 0',dx:7,dy:-9}]:[]})+(sv(st)?'':'<div class="diagram-cap" style="font-family:var(--font-mono);color:#8A6500">y = (x − ?)(x − ?)</div>');}};
+SP.d3={hint:'The axis is halfway between the zeros −1 and 3. Plug that x into y = x² − 2x − 3.',type:'pt',ans:[1,-4],fb:[[[-4,1],'Write (x, y): x first.'],[[1,4],'The vertex is below the x-axis, so y is negative.'],[[0,-3],'(0, −3) is the y-intercept. The vertex is the lowest point.']],
+  viz:function(st){return dg(st,{vlines:[{x:1,label:sv(st)?'x = 1':'axis x = ?',color:sv(st)?C.green:C.gold,tc:sv(st)?C.green:C.goldD,dx:sv(st)?20:30}],pts:sv(st)?[{x:1,y:-4,color:C.green,label:'(1, −4)',dx:8,dy:16}]:[]});}};
+/* ---------- Part E ---------- */
+SP.e1={hint:'Take half of 8. Then square it.',type:'num',ans:Math.pow(8/2,2),fb:[[8,'8 is b. Take half of it, then square it.'],[4,'4 is half of 8. Now square it.'],[64,'Square HALF of 8, not 8 itself.']],viz:function(st){return M.csTiles(8,{corner:sv(st)?{t:'16',k:'ans'}:{t:'c = ?',k:'want'},foot:sv(st)?{t:'x² + 8x + 16 = (x + 4)²',k:'ans'}:null,label:'tiles for x² + 8x'});}};
+SP.e2={hint:'Add 9 to both sides: (x + 3)² = 25. Then take ± square roots.',type:'set',ans:[2,-8],fb:[[[2],'Remember ±: x + 3 = 5 OR x + 3 = −5.'],[[5,-5],'Those are values of x + 3. Subtract 3 from each.'],[[1,-7],'Add 9 to BOTH sides: 16 + 9 = 25.']],
+  viz:function(st){return M.csTiles(6,{corner:sv(st)?{t:'9',k:'ans'}:{t:'?',k:'want'},foot:sv(st)?{t:'(x + 3)² = 25 → x = 2 or −8',k:'ans'}:{t:'x² + 6x = 16',k:'g'},label:'tiles for x² + 6x'});}};
+/* ---------- Part F ---------- */
+SP.f1={hint:'b² − 4ac = 3² − 4(1)(−10).',type:'num',ans:D(1,3,-10),fb:[[9-40,'c = −10, so −4(1)(−10) = +40. 9 + 40.'],[-31,'c = −10, so −4ac = +40.'],[9,'You still need to subtract 4ac: 9 − 4(1)(−10).']],viz:function(st){return fcard(1,3,-10,sv(st)?2:0);}};
+SP.f2={hint:'x = (−3 ± √49) ÷ 2. Do the + and the − separately.',type:'set',ans:roots(1,3,-10),fb:[[[-2,5],'−b = −3, so x = (−3 ± 7) ÷ 2. Check your signs.'],[[4,-10],'Divide by 2a = 2.']],viz:function(st){return fcard(1,3,-10,sv(st)?4:0)+(sv(st)?parab(function(x){return x*x+3*x-10;},{xmin:-7,xmax:4,ymin:-13,ymax:5,h:240,ygrid:1,lab:1,ylab:4,pts:[{x:-5,y:0,color:C.green,label:'−5',anchor:'end',dx:-6,dy:-9},{x:2,y:0,color:C.green,label:'2',dx:6,dy:-9}]}):'');}};
+var F3=roots(2,-4,-3);
+SP.f3={type:'set',ans:F3,tol:0.01,fb:[[[(-4+Math.sqrt(40))/4,(-4-Math.sqrt(40))/4],'−b = −(−4) = +4. Start the top with +4.'],[[(4+Math.sqrt(40))/2,(4-Math.sqrt(40))/2],'The bottom is 2a = 2(2) = 4.'],[[(4+Math.sqrt(-8+16))/4,(4-Math.sqrt(8))/4],'c = −3, so −4(2)(−3) = +24. The discriminant is 16 + 24 = 40.']],hint:'Discriminant: (−4)² − 4(2)(−3) = 40. Then x = (4 ± √40) ÷ 4. Round to hundredths.',
+  viz:function(st){return fcard(2,-4,-3,sv(st)?4:0)+(sv(st)?parab(function(x){return 2*x*x-4*x-3;},{xmin:-2,xmax:4,ymin:-6,ymax:6,h:240,lab:1,ylab:2,pts:F3.map(function(v){return {x:v,y:0,color:C.green};})}):'');}};
+/* ---------- Part G ---------- */
+SP.g1={type:'mc',ans:'1',ok:'(x + 4)² = (x + 4)(x + 4). The box has two 4x pieces that were left out.',fb:{'2':'4² = 16 is fine. Look at Line 1.'},viz:function(st){return boxModel(['x','+4'],['x','+4'],{cell:function(i,j){return i!==j?(sv(st)?'a':'w'):'g';},label:'area model of (x + 4)²'});}};
+SP.g1b={type:'poly',ans:P('(x+4)^2'),fb:[['x^2+16','You still left out the middle: 4x + 4x = 8x.'],['x^2+4x+16','There are TWO 4x boxes: 8x.']]};
+SP.g2={type:'mc',ans:'2',ok:'(x − 4) = 0 gives x = +4, and (x + 3) = 0 gives x = −3. The signs were flipped.',fb:{'1':'(x − 4)(x + 3) = x² − x − 12. Line 1 is right.'},
+  viz:function(st){return M.pointsLine({min:-6,max:6,lab:1,y:62,pts:sv(st)?[{v:-3,t:'x = −3',c:C.green},{v:4,t:'x = 4',c:C.green}]:[{v:-4,t:'−4?',c:C.gold},{v:3,t:'3?',c:C.gold}],label:'checking the solutions'});}};
+SP.g2b={hint:'Set each factor to 0: x − 4 = 0 and x + 3 = 0.',type:'set',ans:[4,-3],fb:[[[-4,3],'Those are the student’s answers. x − 4 = 0 means x = +4.']]};
+SP.g3={type:'mc',ans:'2',ok:'c = −5, so −4ac = −4(1)(−5) = +20. b² − 4ac = 16 + 20 = 36. That is positive: two solutions.',fb:{'1':'a = 1, b = −4, c = −5 is right.','3':'Line 3 is wrong only because Line 2 was wrong.'},
+  viz:function(st){return parab(function(x){return x*x-4*x-5;},{xmin:-3,xmax:7,ymin:-10,ymax:6,h:250,ygrid:1,ylab:2,lab:1,pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-6,dy:-9},{x:5,y:0,color:C.green,label:'5',dx:6,dy:-9}]:[]})+'<div class="diagram-cap">'+(sv(st)?'Two x-intercepts → two real solutions.':'The student says “no real solutions.” Does the graph agree?')+'</div>';}};
+SP.g3b={hint:'Discriminant = 36. Then x = (4 ± 6) ÷ 2.',type:'set',ans:roots(1,-4,-5),fb:[[[-5,1],'−b = −(−4) = +4. So x = (4 ± 6) ÷ 2.']]};
+})();
+</script>
 </body>
 </html>
