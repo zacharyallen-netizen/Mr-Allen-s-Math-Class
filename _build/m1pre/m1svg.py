@@ -609,33 +609,42 @@ def mapping(dom, rng, pairs, label, W=220):
     for a, c in pairs: b.append(arrow(ox + 12, pd[a], rx - 14, pr[c], NAVY, 1.6, 7))
     return svg(W, H, ''.join(b), label)
 
-def sketch_parabola(label, up=True, nroots=2, W=230, H=150, xlab='x', ylab='y', root_labels=('?', '?'), vertex_lbl=None):
-    """Number-free sketch (no grid numbers): only the shape and where the zeros are, marked with '?' boxes."""
-    oy = 92 if up else 58
-    ax = 34
-    b = [L(10, oy, W - 10, oy, AXIS, 1.6), T(W - 8, oy - 6, xlab, 11, AXIS, 'end', 'bold', True),
-         L(ax, H - 6, ax, 8, AXIS, 1.6), T(ax + 6, 16, ylab, 11, AXIS, 'start', 'bold', True)]
-    r1, r2 = 84, 176
-    h = (r1 + r2) / 2.0
-    depth = 46
-    a = depth / float((h - r1) ** 2)
+def sketch_parabola(label, fn, xr, yr, roots=(), W=230, H=150, xlab='x', ylab='y', root_labels=('?', '?'), vertex_lbl=None, n=120):
+    """Number-free sketch drawn from the real function: the y-axis sits at x = 0 and the x-axis at y = 0 of the
+    window xr × yr, so the zeros, the y-intercept and the vertex are where the numbers put them.
+    No grid numbers are printed; zeros (roots) get dots with '?' boxes, the vertex an optional '?' box."""
+    pad = 8
+    ux = (W - 2 * pad) / float(xr[1] - xr[0]); uy = (H - 2 * pad) / float(yr[1] - yr[0])
+    X = lambda x: pad + (x - xr[0]) * ux
+    Y = lambda y: pad + (yr[1] - y) * uy
+    assert xr[0] < 0 < xr[1] and yr[0] < 0 < yr[1], 'sketch window must contain the origin'
+    ox, oy = X(0), Y(0)
+    b = [L(4, oy, W - 4, oy, AXIS, 1.6), T(W - 6, oy - 6, xlab, 11, AXIS, 'end', 'bold', True),
+         L(ox, H - 4, ox, 4, AXIS, 1.6), T(ox + 6, 15, ylab, 11, AXIS, 'start', 'bold', True)]
     pts = []
-    for i in range(81):
-        x = 52 + (W - 64) * i / 80.0
-        if nroots == 0:   # vertex on the other side of the axis: no zeros
-            y = (oy - 26 - a * 0.6 * (x - h) ** 2) if up else (oy + 26 + a * 0.6 * (x - h) ** 2)
-        else:
-            y = (oy + depth - a * (x - h) ** 2) if up else (oy - depth + a * (x - h) ** 2)
-        if 6 <= y <= H - 6: pts.append((x, y))
+    for i in range(n + 1):
+        x = xr[0] + (xr[1] - xr[0]) * i / float(n)
+        y = Y(fn(x))
+        if 5 <= y <= H - 5: pts.append((X(x), y))
     b.append(PL(pts, NAVY, 2.4))
-    if nroots == 2 and root_labels:
-        for rx, lab in zip((r1, r2), root_labels):
-            b.append(C(rx, oy, 3.8))
-            b.append(qbox(rx + (14 if rx < h else -14), oy + (15 if not up else -15), lab, 11))
+    # vertex from three samples (fn is quadratic): h = -B / 2A
+    f0, f1, f2 = fn(0.0), fn(1.0), fn(-1.0)
+    A = (f1 + f2 - 2 * f0) / 2.0; B = (f1 - f2) / 2.0
+    h = -B / (2 * A); k = fn(h); up = A > 0
+    if roots and root_labels:
+        for r, lab in zip(sorted(roots), root_labels):
+            assert abs(fn(r)) < 1e-9, 'root %s is not a zero of the sketched function' % r
+            out = -1 if r < h else 1          # outer side of the zero (the curve is on the other side of the x-axis there)
+            sgn = 1 if up else -1
+            # first choice: outside the zero, across the axis from the curve; else inside, on the empty side
+            spots = [(X(r) + 15 * out, oy + 15 * sgn), (X(r) - 15 * out, oy - 15 * sgn), (X(r) + 30 * out, oy + 15 * sgn)]
+            bx, by = next(((x, y) for (x, y) in spots if abs(x - ox) > 15 and 12 < x < W - 12), spots[0])
+            b.append(C(X(r), oy, 3.8))
+            b.append(qbox(bx, by, lab, 11))
     if vertex_lbl:
-        vy = (oy + depth if up else oy - depth) if nroots else (oy - 26 if up else oy + 26)
-        b.append(C(h, vy, 3.8))
-        b.append(qbox(h, vy + 14, vertex_lbl, 11) if up else qbox(h + 56, vy + 6, vertex_lbl, 11))
+        vx, vy = X(h), Y(k)
+        b.append(C(vx, vy, 3.8))
+        b.append(qbox(vx, vy + 14, vertex_lbl, 11) if up else qbox(vx + 56, vy + 6, vertex_lbl, 11))
     return svg(W, H, ''.join(b), label)
 
 def arc_sketch(label, W=240, H=140, start_lbl=None, ylab='height', xlab='time', q_at='end'):

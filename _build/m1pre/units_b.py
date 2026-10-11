@@ -38,7 +38,7 @@ q.append(Q(5, 'basic', 'S-ID.1', 'Box plot', 'Use the box plot. What is Q3 (the 
            S.boxplots([d['box5']], 0, 16, 'Box plot on a scale from 0 to 16', step=1, lab_every=2), 'Q3 =',
            'Q3 is the RIGHT edge of the box.'))
 q.append(Q(6, 'basic', 'S-ID.6', 'Association', 'Describe the association: positive, negative, or none?', 'positive',
-           ['text', ['positive', 'positive association', 'pos', 'positive correlation', 'a positive association', 'positive linear']],
+           ['words', [['positive', 'pos', 'positively']], ['negative', 'neg', 'negatively', 'none', 'no association', 'no correlation', 'no relationship']],
            S.scatter(d['assoc'], (0, 8), (50, 100), 'Scatter plot of hours studied and test score', xlab='hours studied', ylab='test score', ystep=10),
            'Answer:', 'As x goes up, y tends to go up too. That is a positive association.'))
 # target
@@ -49,12 +49,12 @@ q.append(Q(8, 'target', 'S-ID.3', 'Outlier?', 'Use the 1.5 × IQR rule. Is 48 an
            S.boxplots([d['box8']], 10, 50, 'Box plot: min 12, Q1 20, median 24, Q3 30, max 48', step=5, lab_every=10, show_vals=True),
            'Answer:', 'IQR = 30 − 20 = 10. Upper fence = Q3 + 1.5(10) = 45. Is 48 past 45?'))
 q.append(Q(9, 'target', 'S-ID.3', 'Best center', 'Data: 10, 13, 16, 19, 52. Which describes the center better: the mean or the median?', 'the median (52 is an outlier)',
-           ['words', [['median']]],
+           ['words', [['median']], ['mean', 'average']],
            S.dotplot(d['skew'], 5, 55, 'Dot plot of 10, 13, 16, 19, 52', step=5, lab_every=10), 'Answer:',
            'The outlier 52 pulls the mean up to 22. The median (16) is not pulled.'))
-q.append(Q(10, 'target', 'S-ID.6', 'Predict', 'The trend line is ŷ = 2.5x + 40. Predict y when x = 8.', '60', ['n', 60],
-           S.scatter(d['pred'], (0, 12), (30, 80), 'Scatter plot with trend line and a dashed line at x = 8', line=(2.5, 40), ystep=10, xlab_every=2, vx=8,
-                     eq='ŷ = 2.5x + 40'), 'ŷ =', 'Substitute x = 8: 2.5(8) + 40 = 20 + 40.'))
+q.append(Q(10, 'target', 'S-ID.6', 'Predict', 'The trend line is ŷ = 2.5x + 40. Use the equation to predict y when x = 11.', '67.5', ['n', 67.5],
+           S.scatter(d['pred'], (0, 12), (30, 80), 'Scatter plot with a trend line', line=(2.5, 40), ystep=10, xlab_every=2,
+                     eq='ŷ = 2.5x + 40'), 'ŷ =', 'Substitute x = 11: 2.5(11) + 40 = 27.5 + 40.'))
 q.append(Q(11, 'target', 'S-ID.6', 'Residual', 'The trend line is ŷ = 6x + 60. A student studied 4 hours and scored 82. Find the residual.', MI + '2', ['n', -2],
            S.scatter(d['resid'], (0, 7), (50, 110), 'Scatter plot with trend line; the point (4, 82) and its miss from the line', line=(6, 60), ystep=10,
                      resid=(4, 82), xlab='hours', ylab='score', eq='ŷ = 6x + 60'), 'residual =',
@@ -63,14 +63,14 @@ q.append(Q(12, 'target', 'S-ID.8', 'Correlation', 'Which value of r fits this sc
            S.scatter(d['neg'], (0, 11), (0, 50), 'Scatter plot with a strong downward pattern', ystep=10),
            'r =', 'The points fall from left to right (negative) and stay close to a line (strong).'))
 # advanced
-q.append(Q(13, 'advanced', 'S-ID.7', 'Interpret slope', 'ŷ = 3.2x + 15 predicts plant height (cm) after x weeks. How many cm does the plant grow each week?', '3.2 cm', ['n', 3.2],
+q.append(Q(13, 'advanced', 'S-ID.7', 'Interpret slope', 'ŷ = 3.2x + 15 predicts plant height (cm) after x weeks. Use the slope: how many cm does the model say the plant grows from week 2 to week 6?', '12.8 cm', ['n', 12.8],
            S.scatter(d['plant'], (0, 9), (0, 45), 'Scatter plot of plant height by week with a trend line', line=(3.2, 15), ystep=5, ylab_every=10,
-                     xlab='weeks', ylab='height (cm)', eq='ŷ = 3.2x + 15'), 'cm =', 'The slope is the change in y for each 1 added to x.'))
-q.append(Q(14, 'advanced', 'S-ID.7', 'Interpret intercept', 'ŷ = ' + MI + '1.5x + 90 predicts phone battery (%) after x hours. What was the battery at the start (x = 0)?', '90%', ['n', 90],
+                     xlab='weeks', ylab='height (cm)', eq='ŷ = 3.2x + 15'), 'cm =', 'The slope 3.2 is the growth for EACH week. Week 2 to week 6 is 4 weeks: 4 × 3.2.'))
+q.append(Q(14, 'advanced', 'S-ID.7', 'Interpret intercepts', 'ŷ = ' + MI + '1.5x + 90 predicts phone battery (%) after x hours. The 90 means the battery starts at 90%. Use the model: after how many hours is the battery at 0%?', '60 hours', ['n', 60],
            S.scatter(d['battery'], (0, 18), (50, 100), 'Scatter plot of battery percent by hour with a trend line', line=(-1.5, 90), xstep=2, ystep=10,
-                     xlab='hours', ylab='battery (%)'), 'percent =', 'At the start x = 0, so ŷ = the y-intercept.'))
+                     xlab='hours', ylab='battery (%)'), 'hours =', 'Set ŷ = 0: −1.5x + 90 = 0, so 1.5x = 90 and x = 90 ÷ 1.5. (The graph stops at 18 hours, so use the equation.)'))
 q.append(Q(15, 'advanced', 'S-ID.9', 'Causation?', 'Ice cream sales and sunburns have a strong positive correlation. Does eating ice cream <b>cause</b> sunburns? Write yes or no.',
-           'no (hot, sunny weather drives both)', ['words', [['no', 'not', "doesn't", 'nope']]],
+           'no (hot, sunny weather drives both)', ['words', [['no', 'not', 'nope']], ['yes', 'yeah', 'yep']],
            S.scatter(d['ice'], (0, 11), (0, 16), 'Scatter plot of ice cream sales and sunburns', xstep=1, ystep=2, ylab_every=4,
                      xlab='ice cream sales', ylab='sunburns'), 'Answer:',
            'Correlation is not causation. A lurking variable — hot, sunny weather — pushes both up.'))
@@ -82,10 +82,10 @@ q.append(Q(17, 'advanced', 'S-ID.2', 'Standard deviation', 'Both data sets have 
            ['text', ['b', 'set b', 'data set b', 'b)', 'plot b']],
            S.dotplot(d['sdA'], 2, 18, 'Dot plot A', lab_every=2, title='A') + '<br>' + S.dotplot(d['sdB'], 2, 18, 'Dot plot B', lab_every=2, title='B'),
            'Answer:', 'Standard deviation = typical distance from the mean. B’s dots are spread farther from 10.'))
-q.append(Q(18, 'advanced', 'S-ID.8', 'Correlation strength', 'A data set has r = 0.92. Is the correlation strong or weak?', 'strong (positive)',
-           ['words', [['strong', 'very strong']]],
-           S.scatter(d['strong'], (0, 9), (10, 60), 'Scatter plot of the data', ystep=10), 'Answer:',
-           'r close to 1 or −1 means strong. 0.92 is close to 1.'))
+q.append(Q(18, 'advanced', 'S-ID.8', 'Correlation strength', 'Set A is graphed. Its r = 0.93. Set B has r = ' + MI + '0.97. Which set has the <b>stronger</b> linear association: A or B?', 'B (|−0.97| is closer to 1)',
+           ['text', ['b', 'set b', 'data set b', 'b)', 'b is stronger', 'set b is stronger']],
+           S.scatter(d['strong'], (0, 9), (10, 60), 'Scatter plot of set A', ystep=10), 'Answer:',
+           'Strength depends on how close r is to 1 OR −1. The sign only gives the direction. |−0.97| = 0.97 is closer to 1 than 0.93.'))
 CFGS.append(unit_cfg(5, 'Statistics', 'Statistics: Center, Spread &amp; Regression', [
     band('basic', ['S-ID.1', 'S-ID.2', 'S-ID.6'], 'Read data displays and find center and spread.',
          'I can read dot plots, histograms, box plots, and scatter plots, and find the mean, median, and range.',
@@ -95,7 +95,7 @@ CFGS.append(unit_cfg(5, 'Statistics', 'Statistics: Center, Spread &amp; Regressi
          'I can find the IQR, test for outliers, predict with a trend line, find a residual, and match r to a scatter plot.',
          'Solve each problem. Show your work on paper.'),
     band('advanced', ['S-ID.2', 'S-ID.7', 'S-ID.8', 'S-ID.9'], 'Interpret models and compare data sets.',
-         'I can explain slope and intercept in context, compare spread, judge correlation strength, and tell correlation from causation.',
+         'I can use slope and intercepts in context, compare spread, compare correlation strength, and tell correlation from causation.',
          'Solve each problem. Some answers are words.'),
 ], q, 'Standards assessed: NC.M1.S-ID.1 · S-ID.2 · S-ID.3 · S-ID.6 · S-ID.7 · S-ID.8 · S-ID.9'))
 
@@ -136,7 +136,7 @@ q.append(Q(10, 'target', 'A-REI.4', 'Solve by factoring', 'Solve: x' + sup(2) + 
            S.xpuzzle('6', '−5', 'Puzzle: two numbers that multiply to 6 and add to −5'),
            'x =', '(x − 2)(x − 3) = 0, so x − 2 = 0 or x − 3 = 0.', 'type like 1, 4'))
 q.append(Q(11, 'target', 'A-APR.3', 'Zeros', 'Find the zeros of ' + nw('f(x) = (x + 1)(x ' + MI + ' 4)') + '.', 'x = ' + MI + '1 and x = 4', ['set', [-1, 4]],
-           S.sketch_parabola('Sketch of the parabola crossing the x-axis at two unknown points'),
+           S.sketch_parabola('Sketch of the parabola crossing the x-axis at two unknown points', fn=lambda x: (x + 1) * (x - 4), xr=(-3, 6), yr=(-7.5, 4.5), roots=(-1, 4)),
            'x =', 'A zero makes a factor equal 0: x + 1 = 0 → x = −1, and x − 4 = 0 → x = 4.', 'type like 2, -6'))
 q.append(Q(12, 'target', 'A-APR.1', 'Multiply', '(2x + 1)(x ' + MI + ' 3)', '2x' + sup(2) + ' ' + MI + ' 5x ' + MI + ' 3', FX('2*x^2-5*x-3'),
            S.area_model([('x', 1.6), ('−3', 1.2)], [('2x', 1.6), ('+1', 1)], [['?', '?'], ['?', '?']], 'Area model for (2x + 1)(x − 3) with four unknown parts'),
@@ -145,16 +145,16 @@ q.append(Q(12, 'target', 'A-APR.1', 'Multiply', '(2x + 1)(x ' + MI + ' 3)', '2x'
 q.append(Q(13, 'advanced', 'A-SSE.3', 'Factor (a ≠ 1)', 'Factor: 2x' + sup(2) + ' + 5x ' + MI + ' 3', '(2x ' + MI + ' 1)(x + 3)', ['expr', '(2*x-1)*(x+3)', ['x'], {'form': 'fact'}],
            S.area_model([('?', 1.6), ('?', 1.2)], [('?', 1.6), ('?', 1)], [['2x^2', '?'], ['?', '−3']], 'Area model: corner parts 2x squared and −3, all sides unknown'),
            'Answer:', 'Try factors of 2x² and −3 until the inside + outside terms make 5x: (2x − 1)(x + 3).', 'like (2x+1)(x-4)'))
-q.append(Q(14, 'advanced', 'A-REI.4', 'Complete the square', 'Solve by completing the square: ' + nw('x' + sup(2) + ' + 6x = 16'), 'x = 2 or x = ' + MI + '8', ['set', [2, -8]],
-           S.complete_square(3, 'x squared plus two 3x strips; the missing corner square is unknown'),
-           'x =', 'Add 9 to both sides: (x + 3)² = 25. So x + 3 = 5 or x + 3 = −5.', 'type like 1, -7'))
-q.append(Q(15, 'advanced', 'A-REI.4', 'Quadratic formula', 'Solve: ' + nw('x' + sup(2) + ' + 4x ' + MI + ' 1 = 0') + '. (Exact, or round to the hundredth.)',
-           'x = ' + MI + '2 ± √5  (≈ 0.24 and ' + MI + '4.24)', ['set', [-2 + 5 ** 0.5, -2 - 5 ** 0.5], 0.006],
-           S.card(['a = 1,  b = 4,  c = −1', ('frac', 'x = ', '−b ± √(b^2 − 4ac)', '2a', '')], 'The quadratic formula with a = 1, b = 4, c = −1', W=260),
-           'x =', 'b² − 4ac = 16 + 4 = 20. x = (−4 ± √20) ÷ 2 = −2 ± √5.', 'like -1±sqrt(3)'))
-q.append(Q(16, 'advanced', 'F-IF.8a', 'Vertex form', nw('x' + sup(2) + ' ' + MI + ' 6x + 11') + ' = ' + nw('(x ' + MI + ' 3)' + sup(2) + ' + 2') + '. What is the <b>minimum value</b> of ' + nw('y = x' + sup(2) + ' ' + MI + ' 6x + 11') + '?', '2', ['n', 2],
-           S.sketch_parabola('Sketch of an upward parabola above the x-axis with an unknown minimum', up=True, nroots=0, vertex_lbl='min = ?'),
-           'min =', 'In (x − h)² + k the smallest value is k, because (x − 3)² is never below 0.'))
+q.append(Q(14, 'advanced', 'A-REI.4', 'Square roots', 'Solve: ' + nw('x' + sup(2) + ' + 6x + 9 = 25') + '. (Hint: the left side is a perfect square.)', 'x = 2 or x = ' + MI + '8', ['set', [2, -8]],
+           S.complete_square(3, 'x squared plus two 3x strips and a corner square make x² + 6x + 9; the corner is unknown'),
+           'x =', 'x² + 6x + 9 = (x + 3)². Take square roots of (x + 3)² = 25: x + 3 = 5 or x + 3 = −5. (Or factor x² + 6x − 16 = 0.)', 'type like 1, -7'))
+q.append(Q(15, 'advanced', 'A-REI.4', 'Solve by factoring', 'Solve by factoring: ' + nw('2x' + sup(2) + ' ' + MI + ' 7x + 3 = 0') + '.',
+           'x = ' + fr('1', '2') + ' or x = 3', ['set', [0.5, 3]],
+           S.xpuzzle('6', '−7', 'Puzzle: a times c is 6; two numbers that multiply to 6 and add to −7'),
+           'x =', 'Factor: (2x − 1)(x − 3) = 0. Then 2x − 1 = 0 gives x = ½, and x − 3 = 0 gives x = 3.', 'type like 1/3, 5'))
+q.append(Q(16, 'advanced', 'F-IF.8a', 'Use the factors', nw('y = x' + sup(2) + ' ' + MI + ' 6x + 5') + ' = ' + nw('(x ' + MI + ' 1)(x ' + MI + ' 5)') + '. Use the factors to find the <b>minimum value</b> of y.', MI + '4  (at x = 3)', ['n', -4],
+           S.sketch_parabola('Sketch of an upward parabola with two unknown zeros and an unknown minimum', fn=lambda x: (x - 1) * (x - 5), xr=(-1.5, 6.5), yr=(-5.5, 6), roots=(1, 5), vertex_lbl='min = ?'),
+           'min =', 'The zeros are 1 and 5. The vertex is halfway between them, at x = 3. Then y = (3 − 1)(3 − 5) = 2 · (−2).'))
 p = S.Plane(-4, 7, -3, 3, W=260); p.pt(-2, 0); p.pt(5, 0); p.label(-2, 0, '(−2, 0)', 0, -10, S.NAVY, 11, 'middle'); p.label(5, 0, '(5, 0)', 0, -10, S.NAVY, 11, 'middle')
 q.append(Q(17, 'advanced', 'A-APR.3', 'Build from zeros', 'A quadratic has zeros x = ' + MI + '2 and x = 5, and a = 1. Write it in standard form.', 'x' + sup(2) + ' ' + MI + ' 3x ' + MI + ' 10',
            FX('x^2-3*x-10'), p.render('The zeros (−2, 0) and (5, 0) on a grid'),
@@ -166,19 +166,19 @@ CFGS.append(unit_cfg(6, 'Quadratic Expressions & Equations', 'Quadratic Expressi
     band('basic', ['A-APR.1', 'A-APR.3', 'A-SSE.3', 'A-REI.4'], 'Multiply and add polynomials, factor out a GCF, and solve simple quadratics.',
          'I can multiply and add polynomials, factor out a common factor, and solve with square roots or zero products.',
          'Answer each question. Use the picture to help you.',
-         typing_box([('power', 'x^2+5x+6'), ('factored', '(x+3)(x+4)'), ('two answers', '3, -5'), ('±', '-2+sqrt(5)')])),
+         typing_box([('power', 'x^2+5x+6'), ('factored', '(x+3)(x+4)'), ('two answers', '3, -5'), ('fraction', '1/2')])),
     band('target', ['A-APR.1', 'A-APR.3', 'A-SSE.3', 'A-REI.4'], 'Factor trinomials and differences of squares, and solve by factoring.',
          'I can factor x² + bx + c and a² − b², multiply binomials, and use factors to find zeros.',
          'Solve each problem. Show your work on paper.'),
-    band('advanced', ['A-APR.3', 'A-SSE.3', 'A-REI.4', 'F-IF.8a'], 'Factor with a ≠ 1, complete the square, and use the quadratic formula.',
-         'I can factor harder trinomials, complete the square, use the quadratic formula, and use forms to find key features.',
+    band('advanced', ['A-APR.3', 'A-SSE.3', 'A-REI.4', 'F-IF.8a'], 'Factor with a ≠ 1, solve harder quadratics by factoring and square roots, and use factors to find key features.',
+         'I can factor harder trinomials, solve by factoring or by taking square roots, and use factors to find zeros and the minimum.',
          'Solve each problem. Give every solution.'),
 ], q, 'Standards assessed: NC.M1.A-APR.1 · A-APR.3 · A-SSE.3 · A-REI.4 · F-IF.8a'))
 
 # ======================================================================= UNIT 7
 q = []
 q.append(Q(1, 'basic', 'F-IF.7', 'Direction', 'Does y = ' + MI + '2x' + sup(2) + ' + 3 open up or down?', 'down (a = −2 is negative)',
-           ['words', [['down', 'downward', 'downwards']]],
+           ['words', [['down', 'downward', 'downwards']], ['up', 'upward', 'upwards']],
            S.term_cards(['−2x^2', '+3'], 'The terms of −2x squared plus 3', qidx=(0,), notes={0: 'a = ?'}),
            'Answer:', 'Look at a, the number in front of x². If a is negative, the parabola opens down.'))
 p = S.Plane(-1, 5, -2, 6, W=240); p.curve(lambda x: -(x - 2) ** 2 + 5, -1, 5)
@@ -195,7 +195,7 @@ q.append(Q(5, 'basic', 'F-IF.7', 'Table of values', 'f(x) = x' + sup(2) + ' + 2x
            'f(3) =', '3² + 2(3) − 1 = 9 + 6 − 1. Square first.'))
 p = S.Plane(-2, 4, -3, 5, W=240); p.curve(lambda x: (x - 1) ** 2 - 2, -2, 4)
 q.append(Q(6, 'basic', 'F-IF.4', 'Max or min?', 'Is the vertex of this parabola a maximum or a minimum?', 'minimum',
-           ['words', [['minimum', 'min', 'minimun', 'minium']]], p.render('Graph of a parabola that opens up'),
+           ['words', [['minimum', 'min', 'minimun', 'minium']], ['maximum', 'max', 'maximun']], p.render('Graph of a parabola that opens up'),
            'Answer:', 'It opens up, so the vertex is the lowest point: a minimum.'))
 # target
 q.append(Q(7, 'target', 'F-IF.7', 'Find the vertex', 'Find the vertex of y = x' + sup(2) + ' ' + MI + ' 6x + 8.', '(3, ' + MI + '1)', ['pt', 3, -1],
@@ -204,12 +204,12 @@ q.append(Q(7, 'target', 'F-IF.7', 'Find the vertex', 'Find the vertex of y = x' 
 p = S.Plane(-2, 6, -1, 7, W=240); p.curve(lambda x: x * x, -2.7, 2.7, S.MUTED, 2, dash='5 4'); p.label(3.2, 1.2, 'y = x^2 (parent)', 0, 0, S.MUTED, 11)
 q.append(Q(8, 'target', 'F-IF.7', 'Vertex form', 'y = (x ' + MI + ' 4)' + sup(2) + ' + 1 is the parent graph y = x' + sup(2) + ' moved. What is its vertex?', '(4, 1)', ['pt', 4, 1],
            p.render('Dashed parent graph y = x squared'), 'Answer:', 'In y = (x − h)² + k the vertex is (h, k). Watch the sign: x − 4 means h = 4.', 'type like (2, -4)'))
-q.append(Q(9, 'target', 'F-IF.4', 'Range', 'What is the range of y = ' + MI + '(x ' + MI + ' 1)' + sup(2) + ' + 6?', 'y ≤ 6', ['ineq', 'y', '<=', 6],
-           S.sketch_parabola('Sketch of a parabola that opens down with an unknown maximum', up=False, root_labels=None, vertex_lbl='max = ?'),
+q.append(Q(9, 'target', 'F-IF.4', 'Range', 'What is the range of ' + nw('y = ' + MI + '(x ' + MI + ' 1)' + sup(2) + ' + 6') + '?', 'y ≤ 6', ['ineq', 'y', '<=', 6],
+           S.sketch_parabola('Sketch of a parabola that opens down with an unknown maximum', fn=lambda x: -(x - 1) ** 2 + 6, xr=(-3, 5), yr=(-3.5, 8), vertex_lbl='max = ?'),
            'Answer:', 'It opens down (a = −1), so 6 is the highest y-value. Every y-value is 6 or less.', 'type like y>=-2'))
 p = S.Plane(-4, 2, -1, 7, W=240); p.curve(lambda x: (x + 1) ** 2 + 1, -4, 2, S.BLUE2); p.label(-3.8, 2, 'g(x)', 0, 0, S.BLUE2, 11.5)
 q.append(Q(10, 'target', 'F-IF.9', 'Compare', 'f(x) = x' + sup(2) + ' ' + MI + ' 4x + 7. The function g is graphed. Which function has the smaller minimum value: f or g?', 'g (min 1 &lt; 3)',
-           ['words', [['g']]], p.render('Graph of g, a parabola that opens up'),
+           ['words', [['g']], ['f']], p.render('Graph of g, a parabola that opens up'),
            'Answer:', 'f has vertex x = 2 and f(2) = 3. g’s lowest point is at y = 1.'))
 p = S.Plane(-1, 5, -4, 2, W=240); p.pt(2, -3); p.label(2, -3, 'vertex (2, −3)', 8, 4, S.NAVY, 11)
 q.append(Q(11, 'target', 'A-CED.2', 'Write the equation', 'Write the equation of the parabola with vertex (2, ' + MI + '3) and a = 1. Use vertex form.', 'y = (x ' + MI + ' 2)' + sup(2) + ' ' + MI + ' 3',
@@ -231,7 +231,7 @@ q.append(Q(15, 'advanced', 'F-BF.1b', 'Multiply functions', 'L(x) = x + 5 and W(
            S.area_model([('x', 1.6), ('+5', 1.2)], [('x', 1.6), ('−2', 1)], [['?', '?'], ['?', '?']], 'Area model for (x + 5)(x − 2) with four unknown parts'),
            'A(x) =', 'Boxes: x², 5x, −2x, −10. Combine 5x − 2x.', 'like x^2+2x-8'))
 q.append(Q(16, 'advanced', 'F-IF.9', 'Compare', 'f(x) = ' + MI + 'x' + sup(2) + ' + 4x. The table shows g. Which has the greater maximum: f or g?', 'g (max 5 &gt; 4)',
-           ['words', [['g']]],
+           ['words', [['g']], ['f']],
            S.table([['x', '0', '1', '2', '3', '4'], ['g(x)', '1', '4', '5', '4', '1']], 'Table of g: x 0 to 4 and g 1, 4, 5, 4, 1', first_w=50),
            'Answer:', 'f’s vertex: x = −4 ÷ (2 · −1) = 2, f(2) = 4. The table shows g reaches 5.'))
 p = S.Plane(-1, 7, -9, 3, W=240, maxH=330); p.pt(1, 0); p.pt(5, 0); p.pt(3, -8)
@@ -319,7 +319,7 @@ p = S.Plane(-1, 5, -1, 5, W=240); p.poly([(0, 0), (4, 0), (2, 4)], S.FILLN, S.NA
 for (x, y, t, dx, dy, an) in [(0, 0, 'A(0, 0)', 4, -6, 'start'), (4, 0, 'B(4, 0)', 0, -8, 'end'), (2, 4, 'C(2, 4)', 8, 4, 'start')]:
     p.pt(x, y); p.label(x, y, t, dx, dy, S.NAVY, 10.5, an)
 q.append(Q(14, 'advanced', 'G-GPE.4', 'Classify', 'Classify triangle ABC by its sides: scalene, isosceles, or equilateral?', 'isosceles (AC = BC = √20)',
-           ['words', [['isosceles', 'isoceles', 'isosceles triangle']]], p.render('Triangle A(0, 0), B(4, 0), C(2, 4)'),
+           ['words', [['isosceles', 'isoceles', 'isoscles']], ['scalene', 'equilateral']], p.render('Triangle A(0, 0), B(4, 0), C(2, 4)'),
            'Answer:', 'AB = 4. AC = √(4 + 16) = √20. BC = √(4 + 16) = √20. Two sides are equal.'))
 p = S.Plane(0, 5, 0, 7, W=230); p.poly([(1, 1), (4, 3), (2, 6)], S.FILLN, S.NAVY, 2.2)
 for (x, y, t, dx, dy, an) in [(1, 1, 'A(1, 1)', 6, 14, 'start'), (4, 3, 'B(4, 3)', 8, 4, 'start'), (2, 6, 'C(2, 6)', 8, 0, 'start')]:
@@ -332,7 +332,7 @@ for (x, y) in [(1, -2), (4, 0)]: p.pt(x, y, S.BLUE2)
 p.label(0, 1, '(0, 1)', -6, -6, S.NAVY, 10.5, 'end'); p.label(3, 3, '(3, 3)', -6, -6, S.NAVY, 10.5, 'end')
 p.label(1, -2, '(1, −2)', 8, 12, S.BLUE2, 10.5); p.label(4, 0, '(4, 0)', 8, 12, S.BLUE2, 10.5)
 q.append(Q(16, 'advanced', 'G-GPE.5', 'Compare lines', 'One line goes through (0, 1) and (3, 3). Another goes through (1, ' + MI + '2) and (4, 0). Are they parallel, perpendicular, or neither?',
-           'parallel (both slopes are ' + fr('2', '3') + ')', ['text', ['parallel', 'they are parallel', 'parallel lines', 'the lines are parallel']],
+           'parallel (both slopes are ' + fr('2', '3') + ')', ['words', [['parallel']], ['perpendicular', 'neither']],
            p.render('Two lines, each through two labeled points'), 'Answer:', 'Slope 1 = 2/3. Slope 2 = 2/3. Equal slopes → parallel.'))
 p = seg_plane((-4, 7), (0, 8), [(-3, 1), (6, 7)], [('A(−3, 1)', 8, 14, 'start'), ('B(6, 7)', -8, -8, 'end')]); p.q(-3.6, 7.6, 'AP : PB = 2 : 1', 52, 8, 10.5)
 q.append(Q(17, 'advanced', 'G-GPE.6', 'Partition', 'P is on AB so that AP : PB = 2 : 1. A is (' + MI + '3, 1) and B is (6, 7). Find P.', '(3, 5)', ['pt', 3, 5],

@@ -24,9 +24,9 @@ q.append(Q(4, 'basic', 'A-SSE.1', 'Parts of an expression', 'In 4x' + sup(2) + '
 q.append(Q(5, 'basic', 'A-REI.3', 'Solve the inequality', 'x + 4 &gt; 10', 'x &gt; 6', ['ineq', 'x', '>', 6],
            S.numline(0, 12, 'Number line from 0 to 12 for graphing the answer', lab_every=2, title='Graph your answer here'),
            'Answer:', 'Subtract 4 from both sides. Adding or subtracting never flips the sign.', 'type like x>2'))
-q.append(Q(6, 'basic', 'N-RN.2', 'Evaluate', '25' + sup('1/2'), '5', ['n', 5],
-           S.square_area('Area = 25', '?', 'Square with area 25; side length unknown'),
-           'Answer:', 'An exponent of ½ means square root: 25<sup>1/2</sup> = √25.'))
+q.append(Q(6, 'basic', 'N-RN.2', 'Simplify', fr('x' + sup(8), 'x' + sup(2)), 'x' + sup(6), ['expr', 'x^6', ['x'], {'form': 'mono'}],
+           S.card([('frac', '', 'x·x·x·x·x·x·x·x', 'x·x', ' = x^?')], 'x to the eighth over x squared written out as factors', W=250),
+           'Answer:', 'Same base, dividing: keep the base and SUBTRACT the exponents (8 − 2). Each x on the bottom cancels one x on top.', 'type like x^5'))
 # target
 q.append(Q(7, 'target', 'A-REI.3', 'Solve', '3(x ' + MI + ' 2) + 4x = 22', 'x = 4', ['n', 4],
            S.balance('3(x − 2) + 4x', '22', 'Balance: 3(x − 2) + 4x on the left, 22 on the right'),
@@ -39,7 +39,7 @@ q.append(Q(9, 'target', 'A-CED.4', 'Literal equation', 'The perimeter of a recta
            S.rect_fig('l = ?', 'w', 'perimeter P', 'Rectangle with width w, length unknown, perimeter P', wq=True),
            'l =', 'Undo + 2w (subtract 2w from both sides), then divide both sides by 2.', 'type like (P-2w)/2'))
 q.append(Q(10, 'target', 'A-REI.1', 'Justify the step', '2(x + 3) = 14  →  2x + 6 = 14<br><span style="font-size:16px">Which property makes this step true?</span>',
-           'the distributive property', ['words', [['distributive', 'distribute', 'distributing', 'distribution']]],
+           'the distributive property', ['words', [['distributive', 'distribute', 'distributing', 'distribution']], ['commutative', 'associative', 'identity']],
            S.area_model([('x', 2), ('3', 1.2)], [('2', 1.2)], [['2x', '6']], 'Area model: 2 times (x + 3) splits into 2x and 6'),
            'Answer:', 'Multiplying 2 by each term inside the ( ) is the distributive property.'))
 q.append(Q(11, 'target', 'A-CED.1', 'Write and solve', 'A gym charges $20 to join plus $15 each month. Kai paid $95 in all. How many months did he pay for?',
@@ -67,9 +67,10 @@ q.append(Q(16, 'advanced', 'A-CED.1', 'Write and solve', 'Concert tickets cost $
            S.tape([(2.2, '$4 fee', 'g'), (2, '$8', 'g'), (2, '$8', 'g'), (1.3, '…', 'n'), (2, '$8', 'g')], 'at most $60',
                   'Bar model: $4 fee plus some $8 tickets, at most $60', top_label='? tickets at $8'),
            'tickets =', '8t + 4 ≤ 60 → 8t ≤ 56 → t ≤ 7.'))
-q.append(Q(17, 'advanced', 'N-RN.2', 'Rewrite', 'Write ∛x using a fraction exponent.', 'x' + sup('1/3'), ['expr', 'x^(1/3)', ['x'], {'need': '\\^'}],
-           S.cube('V = x', 'edge = ?', 'A cube with volume x; edge length unknown'),
-           'Answer:', 'The root number goes on the bottom of the exponent: ∛x = x^(1/3).', 'type like x^(1/2)'))
+q.append(Q(17, 'advanced', 'N-RN.2', 'Negative exponents', 'Simplify ' + nw('(2x' + sup(3) + ')' + sup(MI + '2')) + '. Write your answer with <b>positive</b> exponents only.',
+           fr('1', '4x' + sup(6)), ['expr', '1/(4*x^6)', ['x'], {'need': '^(?!.*\\^\\(?-)(?!.*\\)\\^)'}],
+           S.card([('frac', 'a^−n = ', '1', 'a^n', '')], 'Reminder card: a to the negative n equals 1 over a to the n', W=200),
+           'Answer:', 'A negative exponent means “one over”: (2x³)⁻² = 1 ÷ (2x³)². Then square every factor: 2² = 4 and (x³)² = x⁶.', 'type like 1/(3x^4)'))
 q.append(Q(18, 'advanced', 'A-REI.3', 'How many solutions?', '4(x + 1) ' + MI + ' x = 3x + 4', 'infinitely many solutions', INF,
            S.balance('4(x + 1) − x', '3x + 4', 'Balance: 4(x + 1) − x on the left, 3x + 4 on the right'),
            'Answer:', 'Simplify the left side: 4x + 4 − x = 3x + 4. Both sides match, so every x works.', 'how many?'))
@@ -81,8 +82,8 @@ CFGS.append(unit_cfg(1, 'Equations, Inequalities & Reasoning', 'Equations, Inequ
     band('target', ['A-REI.1', 'A-REI.3', 'A-CED.1', 'A-CED.4', 'N-RN.2'], 'Solve multi-step equations and inequalities, justify steps, and rearrange formulas.',
          'I can solve multi-step equations and inequalities, explain each step, write equations from words, and solve a formula for one letter.',
          'Solve each problem. Show your work on paper.'),
-    band('advanced', ['A-SSE.1', 'A-REI.3', 'A-CED.1', 'A-CED.4', 'N-RN.2'], 'Solve harder equations, interpret models, and rewrite roots as exponents.',
-         'I can clear fractions, find special solutions, interpret parts of a model, and write roots with fraction exponents.',
+    band('advanced', ['A-SSE.1', 'A-REI.3', 'A-CED.1', 'A-CED.4', 'N-RN.2'], 'Solve harder equations, interpret models, and use negative exponents.',
+         'I can clear fractions, find special solutions, interpret parts of a model, and rewrite negative exponents as positive ones.',
          'Solve each problem. Some answers are words.'),
 ], q, 'Standards assessed: NC.M1.A-SSE.1 · A-CED.1 · A-CED.4 · A-REI.1 · A-REI.3 · N-RN.2'))
 
@@ -151,9 +152,9 @@ q.append(Q(16, 'advanced', 'F-IF.4', 'Positive or negative', 'Use the graph of f
            ['ineq', 'x', '<', 3], p.render('Graph of a decreasing line y = f(x)'),
            'Answer:', 'f(x) &gt; 0 means the line is ABOVE the x-axis. That happens left of the x-intercept, x = 3.', 'type like x>1'))
 p = S.Plane(-3, 3, -4, 9, W=200, maxH=240); p.line(3, 2); p.label(0.5, -2.5, 'y = 3x + 2', 0, 0, S.NAVY, 11)
-q.append(Q(17, 'advanced', 'F-LE.5', 'Change a parameter', 'f(x) = 3x + 2 is graphed. The 2 is changed to 7. How does the graph move? (Give a direction and a number.)',
-           'up 5 units', ['words', [['up', 'upward', 'upwards', 'higher', 'raised', 'rises'], ['5', 'five']]],
-           p.render('Graph of y = 3x + 2'), 'Answer:', 'Changing b moves the y-intercept: from 2 to 7 is up 5. The slope stays the same.', 'like: left 2'))
+q.append(Q(17, 'advanced', 'F-LE.5', 'Change a parameter', 'f(x) = 3x + 2 is graphed. The 2 is changed to 7. Does the graph move <b>up or down</b>, and by how many units?',
+           'up 5 units', ['words', [['up', 'upward', 'upwards', 'higher', 'raised', 'rises'], ['5', 'five']], ['down', 'downward', 'downwards', 'lower', 'left', 'right']],
+           p.render('Graph of y = 3x + 2'), 'Answer:', 'Changing b moves the y-intercept: from 2 to 7 is up 5. The slope stays the same.', 'like: down 2'))
 q.append(Q(18, 'advanced', 'F-IF.6', 'Average rate of change', 'Find the average rate of change from x = 2 to x = 6.', '2.75  (' + fr('11', '4') + ')', ['n', 2.75],
            S.table([['x', '0', '2', '4', '6'], ['y', '3', '4', '8', '15']], 'Table: x 0, 2, 4, 6 and y 3, 4, 8, 15', hl_cols=(2, 4)),
            'Answer:', '(15 − 4) ÷ (6 − 2) = 11 ÷ 4.'))
@@ -265,7 +266,7 @@ q.append(Q(4, 'basic', 'F-BF.2', 'Common ratio', 'What is the common ratio <i>r<
            S.chain(['81', '27', '9', '3'], ['?', '?', '?'], 'Sequence 81, 27, 9, 3 with unknown multipliers'),
            'r =', 'r = next term ÷ term before: 27 ÷ 81 = 1/3.', 'type like 1/2'))
 q.append(Q(5, 'basic', 'F-LE.1', 'Linear or exponential?', 'Is this table linear or exponential?', 'exponential (×3 each time)',
-           ['text', ['exponential', 'exponential function', 'exp', 'expo', 'exponetial', 'exponental', 'it is exponential']],
+           ['words', [['exponential', 'exp', 'expo', 'exponetial', 'exponental', 'exponentially']], ['linear', 'lin', 'liner']],
            S.table([['x', '0', '1', '2', '3'], ['y', '2', '6', '18', '54']], 'Table: x 0, 1, 2, 3 and y 2, 6, 18, 54'),
            'Answer:', 'Linear adds the same amount each step. Here y is multiplied by 3 each step.'))
 q.append(Q(6, 'basic', 'F-IF.7', 'Evaluate', 'f(x) = 3 · 2' + sup('x') + '. Find f(3).', '24', ['n', 24],
@@ -291,7 +292,7 @@ q.append(Q(11, 'target', 'F-IF.8b', 'Growth or decay', 'y = 400(0.85)' + sup('t'
 p = S.Plane(0, 5, 0, 60, W=230, H=200, square=False, step=1, ystep=10, lab=1, ylab_every=10, padL=30)
 p.line(10, 0); p.curve(lambda x: 2 ** x, 0, 5, S.BLUE2); p.label(3.6, 36, 'f(x) = 10x', -4, -2, S.NAVY, 11, 'end'); p.label(4.6, 24, 'g(x) = 2^x', 4, 8, S.BLUE2, 11, 'end')
 q.append(Q(12, 'target', 'F-LE.3', 'Compare growth', 'f(x) = 10x and g(x) = 2' + sup('x') + ' are graphed for 0 ≤ x ≤ 5. Which is greater when x = 10: f or g?', 'g (1024 &gt; 100)',
-           ['words', [['g', 'exponential', '2^x', '2x']]], p.render('Graphs of f(x) = 10x and g(x) = 2 to the x from 0 to 5'),
+           ['words', [['g', 'exponential', '2^x', '2x']], ['f', 'linear', '10x']], p.render('Graphs of f(x) = 10x and g(x) = 2 to the x from 0 to 5'),
            'Answer:', 'f(10) = 100 but g(10) = 2¹⁰ = 1024. Exponential growth passes linear growth.'))
 # advanced
 p = S.Plane(0, 5, 0, 24, W=200, H=200, square=False, step=1, ystep=2, lab=1, ylab_every=4, xlab='n', ylab='a_n', padL=30)
@@ -310,7 +311,7 @@ q.append(Q(16, 'advanced', 'F-LE.5', 'Interpret', 'P(t) = 1500(1.04)' + sup('t')
            S.term_cards(['1500', '(1.04)^t'], 'Parts of the model: 1500 and 1.04 to the t', qidx=(1,), notes={1: 'growth rate = ?'}),
            'percent =', '1.04 = 1 + 0.04, so the population grows 4% each year.'))
 q.append(Q(17, 'advanced', 'F-LE.1', 'Linear or exponential?', 'A plant is 12 cm tall. It grows 1.5 cm each week. Is its height linear or exponential?', 'linear (adds 1.5 each week)',
-           ['text', ['linear', 'linear function', 'it is linear', 'lin', 'liner']],
+           ['words', [['linear', 'lin', 'liner', 'linearly']], ['exponential', 'exp', 'expo', 'exponentially']],
            S.seq_bars([12, 13.5, 15, 16.5], 'Bars for height at weeks 0 to 3: 12, 13.5, 15, 16.5', n_labels=['week 0', '1', '2', '3']),
            'Answer:', 'It ADDS the same amount each week. Equal differences → linear.'))
 p = S.Plane(-4, 3, 0, 28, W=220, H=210, square=False, step=1, ystep=2, lab=1, ylab_every=4, padL=30)

@@ -34,12 +34,20 @@ def Q(id, lvl, code, op, expr, disp, chk, svg=None, lab='Answer:', tip=None, ph=
     q['plain'] = plain(expr)
     return q
 
-YES = ['text', ['yes', 'y', 'yes it is', 'yes, it is', 'yes it is a solution', 'yes, it is a solution', 'it is a solution', 'true']]
-NO = ['text', ['no', 'n', 'no it is not', 'no, it is not', 'no it is not a solution', 'no, it is not a solution', 'not a solution',
-               'it is not a solution', 'false', 'not a function', 'no, not a function', 'no it is not a function', 'no, it is not a function']]
-NOSOL = ['text', ['no solution', 'no solutions', 'none', 'no soln', 'empty', 'empty set', '0 solutions', 'zero solutions', '0', 'zero', 'no real solution']]
-INF = ['text', ['infinitely many', 'infinitely many solutions', 'infinite', 'infinite solutions', 'all real numbers', 'all reals',
-                'all numbers', 'every number', 'identity', 'many', 'infinitely']]
+_YES = ['text', ['yes', 'y', 'yes it is', 'yes, it is', 'yes it is a solution', 'yes, it is a solution', 'it is a solution', 'true']]
+_NO = ['text', ['no', 'n', 'no it is not', 'no, it is not', 'no it is not a solution', 'no, it is not a solution', 'not a solution',
+                'it is not a solution', 'false', 'not a function', 'no, not a function', 'no it is not a function', 'no, it is not a function']]
+_NOSOL = ['text', ['no solution', 'no solutions', 'none', 'no soln', 'empty', 'empty set', '0 solutions', 'zero solutions', '0', 'zero', 'no real solution']]
+_INF = ['text', ['infinitely many', 'infinitely many solutions', 'infinite', 'infinite solutions', 'all real numbers', 'all reals',
+                 'all numbers', 'every number', 'identity', 'many', 'infinitely']]
+# exact short forms ('y', 'n', '0') OR a sentence that picks the choice and does not also pick a rival
+YES = ['any', _YES, ['words', [['yes', 'yeah', 'yep']], ['no', 'nope']]]
+NO = ['any', _NO, ['words', [['no', 'not', 'nope']], ['yes', 'yeah', 'yep']]]
+NOSOL = ['any', _NOSOL, ['words', [['no solution', 'no solutions', 'none', 'no soln', 'zero solutions', '0 solutions', 'no real solution', 'no real solutions', 'empty set']],
+                         ['one solution', 'exactly one', '1 solution', 'infinite', 'infinitely', 'infinity', 'all real', 'all numbers', 'every number', 'two solutions']]]
+INF = ['any', _INF, ['words', [['infinitely many', 'infinite', 'infinitely', 'infinity', 'all real numbers', 'all reals', 'all numbers', 'every number',
+                                'every x', 'all x', 'identity', 'endless', 'unlimited']],
+                     ['no solution', 'no solutions', 'none', 'zero solutions', 'one solution', 'exactly one', '1 solution', 'two solutions', 'empty set']]]
 
 GATE = open('/home/claude/mr-allen-s-math-class/math1/unit1-notes.html', encoding='utf-8').read().split('<head>\n', 1)[1].split('</script>', 1)[0] + '</script>\n'
 assert GATE.startswith('<script>') and "gate.html" in GATE
@@ -67,7 +75,7 @@ EXTRA_CSS = """.qfb .tip{display:block;font-family:var(--serif);font-style:itali
 sub{font-size:.62em;vertical-align:sub;line-height:0}
 .refbox .typ{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;justify-content:center;margin:4px 0 0}
 .refbox .typ code{font-family:var(--mono);font-size:13px;background:#fff;border:1px solid #e3d7b0;border-radius:3px;padding:0 4px}
-@media print{.dia svg{max-width:255px;max-height:2.25in;width:auto}.q{break-inside:avoid}.band{break-after:avoid}.ans input::placeholder{color:transparent}.q .expr{font-size:17px;margin:6px 0 8px}.q{padding:8px 2px 10px}}
+@media print{.dia svg{max-width:255px;max-height:2.25in;width:auto}.q{break-inside:avoid}.band{break-after:avoid;break-inside:avoid}.stripe{break-before:avoid}.stripe>.objline,.stripe>.can,.stripe>.prompt,.stripe>.refbox{break-after:avoid;break-inside:avoid}.qgrid{break-before:avoid}.ans input::placeholder{color:transparent}.q .expr{font-size:17px;margin:6px 0 8px}.q{padding:8px 2px 10px}}
 """
 
 def typing_box(pairs, note=None):

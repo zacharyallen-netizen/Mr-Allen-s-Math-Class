@@ -64,7 +64,7 @@ E[1] = {
  3: ('expr', lambda x: x ** 3 * x ** 4, ['x']),
  4: ('n', -7),                                             # coefficient of x in 4x² − 7x + 9
  5: ('ineq', 'x', '>', solve_lin(lambda x: x + 4 - 10)),
- 6: ('n', 25 ** 0.5),
+ 6: ('expr', lambda x: x ** 8 / x ** 2, ['x']),
  7: ('n', solve_lin(lambda x: 3 * (x - 2) + 4 * x - 22)),
  8: ('ineq', 'x', '<=', solve_lin(lambda x: -3 * x + 4 - 13)),   # dividing by −3 flips ≥
  9: ('expr', lambda p, w: next(l for l in [(p - 2 * w) / 2]), ['p', 'w']),
@@ -75,7 +75,7 @@ E[1] = {
  14: ('n', round((1 - 0.9) * 100, 9)),
  15: ('expr', lambda y, b, m: (y - b) / m, ['y', 'b', 'm']),
  16: ('n', max(t for t in range(0, 50) if 8 * t + 4 <= 60)),
- 17: ('expr', lambda x: x ** (1 / 3), ['x']),
+ 17: ('expr', lambda x: (2 * x ** 3) ** -2, ['x']),
  18: ('text', 'all' if solve_lin(lambda x: 4 * (x + 1) - x - (3 * x + 4)) == 'all' else 'x'),
 }
 # ------------------------------------------------------------------ Unit 2
@@ -165,15 +165,15 @@ E[5] = {
  7: ('n', q3 - q1),
  8: ('text', 'yes' if b8[4] > fence else 'no'),
  9: ('words', 'median' if abs(st.mean(U5['skew']) - st.median(U5['skew'])) > 3 else 'mean'),
- 10: ('n', 2.5 * 8 + 40),
+ 10: ('n', 2.5 * 11 + 40),
  11: ('n', 82 - (6 * 4 + 60)),
  12: ('n', min([-0.95, -0.3, 0.3, 0.95], key=lambda c: abs(c - r_of(U5['neg'])))),
- 13: ('n', 3.2),
- 14: ('n', -1.5 * 0 + 90),
+ 13: ('n', (3.2 * 6 + 15) - (3.2 * 2 + 15)),
+ 14: ('n', solve_lin(lambda x: -F(3, 2) * x + 90)),
  15: ('words', 'no'),
  16: ('text', 'b' if (U5['boxB'][3] - U5['boxB'][1]) > (U5['boxA'][3] - U5['boxA'][1]) else 'a'),
  17: ('text', 'b' if st.pstdev(U5['sdB']) > st.pstdev(U5['sdA']) and st.mean(U5['sdA']) == st.mean(U5['sdB']) == 10 else 'a'),
- 18: ('words', 'strong' if abs(0.92) >= 0.7 else 'weak'),
+ 18: ('text', 'b' if abs(-0.97) > abs(r_of(U5['strong'])) and abs(round(r_of(U5['strong']), 2) - 0.93) < 0.006 else 'a'),
 }
 assert r_of(U5['strong']) > 0.85 and r_of(U5['neg']) < -0.9 and r_of(U5['ice']) > 0.85, 'scatter data does not match its item'
 # ------------------------------------------------------------------ Unit 6
@@ -191,9 +191,9 @@ E[6] = {
  11: ('set', sorted(x for x in range(-20, 21) if (x + 1) * (x - 4) == 0)),
  12: ('expr', lambda x: (2 * x + 1) * (x - 3), ['x']),
  13: ('expr', lambda x: 2 * x * x + 5 * x - 3, ['x']),
- 14: ('set', roots_quad(1, 6, -16)),
- 15: ('set', roots_quad(1, 4, -1)),
- 16: ('n', min(x * x - 6 * x + 11 for x in [i / 100 for i in range(-1000, 1000)])),
+ 14: ('set', roots_quad(1, 6, 9 - 25)),
+ 15: ('set', roots_quad(2, -7, 3)),
+ 16: ('n', min((x - 1) * (x - 5) for x in [i / 100 for i in range(-1000, 1000)])),
  17: ('expr', lambda x: (x + 2) * (x - 5), ['x']),
  18: ('n', max(roots_quad(-16, 32, 0))),
 }
@@ -250,6 +250,7 @@ def first_text(chk):
     t = chk[0]
     if t == 'text': return chk[1]
     if t == 'words': return [' '.join(g[0] for g in chk[1])] + [w for g in chk[1] for w in g]
+    if t == 'any': return [w for c in chk[1:] for w in first_text(c)]
     return []
 
 bad = 0; total = 0

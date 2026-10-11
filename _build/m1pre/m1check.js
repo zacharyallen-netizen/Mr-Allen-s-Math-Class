@@ -91,7 +91,7 @@ const M1=(function(){
   /* ---- answer types ---- */
   const T={};
   T.n=(c,raw)=>{  // number: ['n', value, tol]
-    let s=norm(raw).replace(/^[a-z]{1,2}(\([a-z0-9]\))?(=|≈)/,'').replace(/[$,%°]/g,'').replace(/≈/g,'');
+    let s=norm(raw).replace(/^[a-z]{1,4}(\([a-z0-9]\))?(=|≈)/,'').replace(/[$,%°]/g,'').replace(/≈/g,'');
     let v=num(s);if(!isFinite(v))v=num(cleanUnits(s));
     if(!isFinite(v))v=parseNumber(raw);
     return close(v,c[1],c[2]);
@@ -169,9 +169,27 @@ const M1=(function(){
   T.eqn=(c,raw)=>{ // ['eqn', [accepted equations]] exact form, spaces ignored
     const s=norm(raw);return c[1].some(a=>norm(a)===s);
   };
-  T.words=(c,raw)=>{ // ['words', [[alt,alt],[alt]]] every group needs one word
-    const s=' '+String(raw||'').toLowerCase().replace(/[−–]/g,'-').replace(/[^a-z0-9.\- ]/g,' ').replace(/\s+/g,' ')+' ';
-    return c[1].every(g=>g.some(w=>s.includes(' '+w+' ')));
+  /* words: ['words', [[alt,alt],[alt]], [rivals]]
+     Every group needs one of its words, said as the student's choice (not after "not", "than", "instead of" ...).
+     Punctuation is dropped ("No." = "no"); a decimal point between digits is kept.
+     rivals = the other choices (e.g. f for a "f or g" item): if the student also picks a rival, the answer is wrong,
+     so "f or g" and "f, not g" (key g) are rejected while "g, not f" and "g is greater than f" are accepted. */
+  function wordStr(raw){
+    let s=String(raw==null?'':raw).toLowerCase().replace(/[−–—]/g,'-').replace(/[’‘`]/g,"'");
+    s=s.replace(/\bcan'?t\b/g,'can not').replace(/n't\b/g,' not').replace(/'s\b/g,' is').replace(/'re\b/g,' are');
+    s=s.replace(/(\d)\.(?=\d)/g,'$1\u0001').replace(/[^a-z0-9^\/\-\u0001 ]/g,' ').replace(/\u0001/g,'.');
+    return ' '+s.replace(/\s+/g,' ').trim()+' ';
+  }
+  const NEG=/ (not|never|than|cannot|instead of|rather than|nor)( (the|a|an|class|set|function|graph|plot))? $/;
+  function picks(s,w){ // true if w occurs at least once NOT right after a negating word
+    const pat=' '+w+' ';let i=s.indexOf(pat);
+    while(i>=0){if(!NEG.test(s.slice(0,i+1)))return true;i=s.indexOf(pat,i+1);}
+    return false;
+  }
+  T.words=(c,raw)=>{
+    const s=wordStr(raw);if(s.trim()==='')return false;
+    if(!c[1].every(g=>g.some(w=>picks(s,w))))return false;
+    return !(c[2]||[]).some(w=>picks(s,w));
   };
   T.any=(c,raw)=>c.slice(1).some(k=>runCheck(k,raw));
   return {T:T,norm:norm,num:num,parse:tryParse,sameExpr:sameExpr};
