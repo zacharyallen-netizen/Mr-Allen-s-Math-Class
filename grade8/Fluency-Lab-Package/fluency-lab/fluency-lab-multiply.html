@@ -126,9 +126,15 @@
     padding:5px 9px;display:block}
   .example .ansline{margin-top:12px;text-align:center;font-size:15px;color:#cfd3f5}
   .example .ansline b{color:var(--mint);font-family:var(--mono);font-size:18px}
+
+  .labnav{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
 </style>
 </head>
 <body>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-multiply.html">Skill check →</a></nav>
 
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
@@ -191,9 +197,13 @@
     </div>
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-multiply.html">Take the Skill check</a>
   </section>
 
 <script>
+// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
+function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
+
 const SET_LEN=10;
 let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
 let levelReachedThisSet=1, sessionBest=0, current=null, answered=false;
@@ -368,7 +378,7 @@ function checkStep(){
   const st=G.steps[G.si];
   let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const el=$('bx'+i); const raw=clean(el.value);
     const ok = raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
     el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
     if(!ok) allOk=false;

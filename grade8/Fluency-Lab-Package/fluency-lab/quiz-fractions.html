@@ -52,7 +52,7 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <script src="fluency-config.js"></script>
 <script src="fluency-submit.js"></script>
 <script>
-const Q=[["Simplify  6/8", ["3/4", "6/8", "3/8", "4/6"], 0, "Divide the top and the bottom by the biggest number that goes into both. That is 2: 6÷2=3, 8÷2=4 → 3/4."], ["Simplify  10/15", ["2/3", "5/7", "10/15", "3/5"], 0, "Greatest common factor of 10 and 15 is 5: 10÷5=2, 15÷5=3 → 2/3."], ["2/3  =  ?/12   (what is the missing top number?)", ["8", "6", "4", "9"], 0, "To turn 3 into 12 you multiply by 4, so multiply the top too: 2×4 = 8."], ["3/8 + 2/8", ["5/8", "5/16", "6/8", "1/4"], 0, "Same denominator: add the tops, keep the bottom. 3+2 = 5 → 5/8 (already simplest)."], ["5/6 − 1/6", ["2/3", "4/6", "4/12", "1/3"], 0, "Same denominator: 5−1 = 4 → 4/6, which simplifies to 2/3."], ["3/4 + 1/4", ["1", "4/8", "1/2", "4/4"], 0, "3+1 = 4 → 4/4 = 1 whole."], ["1/2 + 1/3", ["5/6", "2/5", "2/6", "3/5"], 0, "Common denominator 6: 1/2 = 3/6, 1/3 = 2/6. Add the tops: 3+2 = 5 → 5/6. (Never add the bottoms.)"], ["5/6 − 1/4", ["7/12", "4/2", "1/3", "6/10"], 0, "Common denominator 12: 5/6 = 10/12, 1/4 = 3/12. 10−3 = 7 → 7/12."], ["2/3 × 4/5", ["8/15", "6/8", "8/8", "2/15"], 0, "Multiply straight across: 2×4 = 8 over 3×5 = 15 → 8/15. No common denominator for multiplying."], ["3/4 × 2/9", ["1/6", "6/13", "5/13", "6/36"], 0, "3×2 = 6 over 4×9 = 36 → 6/36, which simplifies to 1/6."], ["1/2 ÷ 1/4", ["2", "1/8", "1/2", "8"], 0, "Flip the second and multiply: 1/2 × 4/1 = 4/2 = 2. Dividing by 1/4 asks how many quarters are in a half — two."], ["2/3 ÷ 4/9", ["3/2", "8/27", "6/12", "2/3"], 0, "Flip the second and multiply: 2/3 × 9/4 = 18/12 = 3/2."]];
+const Q=[["Simplify  6/8", ["3/4", "6/8", "3/8", "4/6"], 0, "Divide the top and the bottom by the biggest number that goes into both. That is 2: 6÷2=3, 8÷2=4 → 3/4."], ["Simplify  10/15", ["2/3", "5/7", "10/15", "3/5"], 0, "Greatest common factor of 10 and 15 is 5: 10÷5=2, 15÷5=3 → 2/3."], ["2/3  =  ?/12   (what is the missing top number?)", ["8", "6", "4", "9"], 0, "To turn 3 into 12 you multiply by 4, so multiply the top too: 2×4 = 8."], ["3/8 + 2/8", ["5/8", "5/16", "6/8", "1/4"], 0, "Same denominator: add the tops, keep the bottom. 3+2 = 5 → 5/8 (already simplest)."], ["5/6 − 1/6", ["2/3", "6/6", "4/12", "1/3"], 0, "Same denominator: 5−1 = 4 → 4/6, which simplifies to 2/3."], ["3/4 + 1/4", ["1", "4/8", "1/2", "4/16"], 0, "3+1 = 4 → 4/4 = 1 whole."], ["1/2 + 1/3", ["5/6", "2/5", "2/6", "3/5"], 0, "Common denominator 6: 1/2 = 3/6, 1/3 = 2/6. Add the tops: 3+2 = 5 → 5/6. (Never add the bottoms.)"], ["5/6 − 1/4", ["7/12", "4/2", "1/3", "6/10"], 0, "Common denominator 12: 5/6 = 10/12, 1/4 = 3/12. 10−3 = 7 → 7/12."], ["2/3 × 4/5", ["8/15", "6/8", "8/8", "2/15"], 0, "Multiply straight across: 2×4 = 8 over 3×5 = 15 → 8/15. No common denominator for multiplying."], ["3/4 × 2/9", ["1/6", "6/13", "5/13", "27/8"], 0, "3×2 = 6 over 4×9 = 36 → 6/36, which simplifies to 1/6."], ["1/2 ÷ 1/4", ["2", "1/8", "1/2", "8"], 0, "Flip the second and multiply: 1/2 × 4/1 = 4/2 = 2. Dividing by 1/4 asks how many quarters are in a half — two."], ["2/3 ÷ 4/9", ["3/2", "8/27", "6/12", "2/3"], 0, "Flip the second and multiply: 2/3 × 9/4 = 18/12 = 3/2."]];
 const box=document.getElementById('quiz');
 let locked=false;
 const sel={};
@@ -60,7 +60,10 @@ function render(){
   box.innerHTML='';
   Q.forEach((q,i)=>{
     const d=document.createElement('div');d.className='q';d.id='q'+i;
-    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    // shuffle the order shown; data-o keeps each choice's ORIGINAL index so grading is unchanged
+    const order=q[1].map((_,k)=>k);
+    for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]];}
+    let opts=order.map(oi=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${q[1][oi]}</span></div>`).join('');
     d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
     box.appendChild(d);
   });
@@ -71,6 +74,13 @@ function render(){
   });
 }
 function check(){
+  const skipped=Q.filter((q,i)=>sel[i]===undefined).length;
+  if(skipped){
+    const s=document.getElementById('score');
+    s.innerHTML='You have '+skipped+' question'+(skipped>1?'s':'')+' left. Pick an answer for each one, then check.';
+    s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
   let score=0;
   Q.forEach((q,i)=>{
     const correct=q[2];

@@ -52,7 +52,7 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <script src="fluency-config.js"></script>
 <script src="fluency-submit.js"></script>
 <script>
-const Q=[["Simplify the ratio 12:8", ["3:2", "2:3", "4:2", "6:4"], 0, "Divide both by 4: 12:8 = 3:2."], ["Simplify the ratio 30:24", ["5:4", "6:5", "5:3", "10:8"], 0, "Divide both by 6: 30:24 = 5:4."], ["2:3 = ?:12  (find the missing number)", ["8", "6", "9", "4"], 0, "3×4=12, so 2×4=8."], ["4:5 = 16:?  (find the missing number)", ["20", "24", "25", "18"], 0, "4×4=16, so 5×4=20."], ["180 miles in 3 hours is how many miles per hour?", ["60", "54", "45", "90"], 0, "180 ÷ 3 = 60 mph."], ["$12 for 4 pens is how much per pen?", ["$3", "$4", "$2", "$8"], 0, "12 ÷ 4 = $3 per pen."], ["Solve: x/4 = 6/8", ["3", "2", "4", "6"], 0, "6/8 = 3/4, so x/4 = 3/4 → x = 3."], ["Solve: x/10 = 9/15", ["6", "9", "5", "4"], 0, "9/15 = 3/5 = 6/10 → x = 6."], ["Split 30 in the ratio 2:3. What is the smaller part?", ["12", "18", "15", "10"], 0, "2+3=5 shares; 30÷5=6; smaller = 2×6 = 12."], ["Split 40 in the ratio 3:5. What is the larger part?", ["25", "15", "24", "20"], 0, "3+5=8 shares; 40÷8=5; larger = 5×5 = 25."], ["If 3 notebooks cost $9, how much do 5 cost?", ["$15", "$12", "$18", "$14"], 0, "One costs 9÷3=$3; 5 × $3 = $15."], ["A recipe for 4 uses 6 cups. How many cups for 6?", ["9", "8", "12", "10"], 0, "Per person: 6÷4 = 1.5 cups; ×6 = 9."]];
+const Q=[["Simplify the ratio 12:8", ["3:2", "2:3", "4:2", "6:4"], 0, "Divide both by 4: 12:8 = 3:2."], ["Simplify the ratio 30:24", ["5:4", "6:5", "5:3", "10:8"], 0, "Divide both by 6: 30:24 = 5:4."], ["2:3 = ?:12  (find the missing number)", ["8", "6", "9", "4"], 0, "3×4=12, so 2×4=8."], ["4:5 = 16:?  (find the missing number)", ["20", "24", "25", "18"], 0, "4×4=16, so 5×4=20."], ["180 miles in 3 hours is how many miles per hour?", ["60", "54", "45", "90"], 0, "180 ÷ 3 = 60 mph."], ["$12 for 4 pens is how much per pen?", ["$3", "$4", "$2", "$8"], 0, "12 ÷ 4 = $3 per pen."], ["Solve: x/4 = 6/8", ["3", "2", "4", "6"], 0, "6/8 = 3/4, so x/4 = 3/4 → x = 3."], ["Solve: x/10 = 9/15", ["6", "9", "5", "4"], 0, "9/15 = 3/5 = 6/10 → x = 6."], ["Split 30 in the ratio 2:3. What is the smaller part?", ["12", "18", "15", "10"], 0, "2+3=5 shares; 30÷5=6; smaller = 2×6 = 12."], ["Split 40 in the ratio 3:5. What is the larger part?", ["25", "15", "24", "20"], 0, "3+5=8 shares; 40÷8=5; larger = 5×5 = 25."], ["If 3 notebooks cost $9, how much do 5 cost?", ["$15", "$12", "$18", "$14"], 0, "One costs 9÷3=$3; 5 × $3 = $15."], ["A recipe for 4 people uses 6 cups of flour. How many cups are needed for 6 people?", ["9", "8", "12", "10"], 0, "Per person: 6÷4 = 1.5 cups; ×6 = 9."]];
 const box=document.getElementById('quiz');
 let locked=false;
 const sel={};
@@ -60,7 +60,10 @@ function render(){
   box.innerHTML='';
   Q.forEach((q,i)=>{
     const d=document.createElement('div');d.className='q';d.id='q'+i;
-    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    // shuffle the order shown; data-o keeps each choice's ORIGINAL index so grading is unchanged
+    const order=q[1].map((_,k)=>k);
+    for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]];}
+    let opts=order.map(oi=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${q[1][oi]}</span></div>`).join('');
     d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
     box.appendChild(d);
   });
@@ -71,6 +74,13 @@ function render(){
   });
 }
 function check(){
+  const skipped=Q.filter((q,i)=>sel[i]===undefined).length;
+  if(skipped){
+    const s=document.getElementById('score');
+    s.innerHTML='You have '+skipped+' question'+(skipped>1?'s':'')+' left. Pick an answer for each one, then check.';
+    s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
   let score=0;
   Q.forEach((q,i)=>{
     const correct=q[2];

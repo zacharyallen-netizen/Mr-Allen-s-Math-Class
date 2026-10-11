@@ -60,7 +60,10 @@ function render(){
   box.innerHTML='';
   Q.forEach((q,i)=>{
     const d=document.createElement('div');d.className='q';d.id='q'+i;
-    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    // shuffle the order shown; data-o keeps each choice's ORIGINAL index so grading is unchanged
+    const order=q[1].map((_,k)=>k);
+    for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]];}
+    let opts=order.map(oi=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${q[1][oi]}</span></div>`).join('');
     d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
     box.appendChild(d);
   });
@@ -71,6 +74,13 @@ function render(){
   });
 }
 function check(){
+  const skipped=Q.filter((q,i)=>sel[i]===undefined).length;
+  if(skipped){
+    const s=document.getElementById('score');
+    s.innerHTML='You have '+skipped+' question'+(skipped>1?'s':'')+' left. Pick an answer for each one, then check.';
+    s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
   let score=0;
   Q.forEach((q,i)=>{
     const correct=q[2];

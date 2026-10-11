@@ -90,9 +90,15 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  .labnav{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
 </style>
 </head>
 <body>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-add-subtract.html">Skill check →</a></nav>
 
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
@@ -136,9 +142,13 @@
     </div>
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-add-subtract.html">Take the Skill check</a>
   </section>
 
 <script>
+// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
+function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
+
 const SET_LEN=10;
 let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
 let levelReachedThisSet=1, sessionBest=0, current=null, answered=false, results=[];
@@ -208,12 +218,21 @@ function stepsSub(p){
     if(avail<bot){
       const bt=avail+10; diff=bt-bot; outgoing=1;
       boxes=[{bl:'the top is now',expect:bt},{bl:`− ${bot} =`,expect:diff,connector:'→'}];
-      q=`Top is <b>${top}</b>${borrowIn?` (it lent 1 to the right)`:''}, bottom is <b>${bot}</b> — too small, so <b>borrow 10</b> from the next column left, then subtract.`;
-      info=`After borrowing, the top is ${bt}; ${bt} − ${bot} = ${diff}. The next column left loses 1.`;
+      if(borrowIn && top===0){
+        // borrowing across a zero: it has nothing to give, so it borrows first
+        q=`This top digit is <b>0</b>, so it had nothing to give the column on its right. It borrows 10 from the left first and becomes 10. Then it gives 1 away, so now it is <b>9</b>. Subtract: <b>9 − ${bot}</b>.`;
+        info=`0 borrows from the left and becomes 10. It gives 1 to the right, so it is 9. 9 − ${bot} = ${diff}. The column to the left goes down by 1.`;
+      } else if(borrowIn){
+        q=`This top digit was <b>${top}</b>, but it gave 1 to the right, so now it is <b>${avail}</b>. ${avail} is smaller than ${bot}, so borrow 1 ten from the left. The top becomes <b>${bt}</b>. Then subtract.`;
+        info=`${avail} + 10 = ${bt}. Then ${bt} − ${bot} = ${diff}. The column to the left goes down by 1.`;
+      } else {
+        q=`The top digit is <b>${top}</b>. The bottom digit is <b>${bot}</b>. ${top} is smaller than ${bot}, so you cannot subtract yet. Borrow 1 ten from the left. The top becomes <b>${bt}</b>. Then subtract.`;
+        info=`${top} + 10 = ${bt}. Then ${bt} − ${bot} = ${diff}. The column to the left goes down by 1.`;
+      }
     } else {
       diff=avail-bot; outgoing=0;
       boxes=[{bl:`${avail} − ${bot} =`,expect:diff}];
-      q=borrowIn?`This top lent 1 to the right, so it's now <b>${avail}</b>. Subtract: <b>${avail} − ${bot}</b>.`
+      q=borrowIn?`This top digit gave 1 to the right, so now it is <b>${avail}</b>. Subtract: <b>${avail} − ${bot}</b>.`
                :`Subtract the <b>${NAMES[c]}</b> column: <b>${top} − ${bot}</b>.`;
       info=`${avail} − ${bot} = ${diff}.`;
     }
@@ -259,7 +278,7 @@ function renderStep(){
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const el=$('bx'+i); const raw=clean(el.value);
     const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
     el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
     if(!ok) allOk=false;

@@ -86,9 +86,15 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  .labnav{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
 </style>
 </head>
 <body>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-decimals.html">Skill check →</a></nav>
 
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
@@ -133,9 +139,13 @@
     </div>
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-decimals.html">Take the Skill check</a>
   </section>
 
 <script>
+// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
+function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
+
 const SET_LEN=10;
 let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
@@ -231,7 +241,7 @@ function renderStep(){
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=(el.value||'').trim().replace('−','-');
+    const el=$('bx'+i); const raw=clean(el.value);
     const ok=raw!=='' && isFinite(+raw) && Math.abs(+raw - bx.expect)<1e-9;
     el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
     if(!ok) allOk=false;
@@ -242,7 +252,7 @@ function checkStep(){
     gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
     gv.className='verdict help';
     if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); const raw=(el.value||'').trim().replace('−','-'); if(!(isFinite(+raw)&&Math.abs(+raw-bx.expect)<1e-9)) el.placeholder=String(bx.expect);}); }
+      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); const raw=clean(el.value); if(!(isFinite(+raw)&&Math.abs(+raw-bx.expect)<1e-9)) el.placeholder=String(bx.expect);}); }
     const bad=st.boxes.findIndex((bx,i)=>{const raw=($('bx'+i).value||'').trim().replace('−','-'); return !(isFinite(+raw)&&Math.abs(+raw-bx.expect)<1e-9);});
     if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
     return;

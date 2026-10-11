@@ -86,9 +86,15 @@
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
   .pop{animation:pop .3s ease}
   @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  .labnav{display:flex;justify-content:space-between;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
 </style>
 </head>
 <body>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-ratios.html">Skill check →</a></nav>
 
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
@@ -133,9 +139,13 @@
     </div>
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-ratios.html">Take the Skill check</a>
   </section>
 
 <script>
+// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
+function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
+
 const SET_LEN=10;
 let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
@@ -174,7 +184,7 @@ function buildSteps(p){
   }
   if(p.kind==='equiv'){
     return [
-      {lab:'Step 1 · scale factor', q:`The bottom went from <b>${p.bd}</b> to <b>${p.bd*p.k}</b>.  ${p.bd} × ? = ${p.bd*p.k}.`,
+      {lab:'Step 1 · scale factor', q:`Look at the second numbers: <b>${p.bd}</b> and <b>${p.bd*p.k}</b>. ${p.bd} × ? = ${p.bd*p.k}.`,
        boxes:[{bl:`${p.bd} × ? = ${p.bd*p.k}`,expect:p.k}], info:`${p.bd} × ${p.k} = ${p.bd*p.k}.`, line:`scale by ${p.k}`},
       {lab:'Step 2 · scale the other side', q:`Do the same to the first number: <b>${p.bn} × ${p.k}</b>.`,
        boxes:[{bl:`${p.bn} × ${p.k}`,expect:p.bn*p.k}], info:`${p.bn} × ${p.k} = ${p.bn*p.k}.`, line:`= ${p.bn*p.k} : ${p.bd*p.k}`, last:true}
@@ -186,9 +196,9 @@ function buildSteps(p){
   }
   if(p.kind==='prop'){
     return [
-      {lab:'Step 1 · compare the bottoms', q:`How many times bigger is the known bottom? <b>${p.d} ÷ ${p.b}</b>.`,
+      {lab:'Step 1 · compare the bottoms', q:`Compare the two bottom numbers, ${p.b} and ${p.d}. How many times bigger is ${p.d}? <b>${p.d} ÷ ${p.b}</b>.`,
        boxes:[{bl:`${p.d} ÷ ${p.b}`,expect:p.m}], info:`${p.d} ÷ ${p.b} = ${p.m}, so the fractions scale by ${p.m}.`, line:`scale = ${p.m}`},
-      {lab:'Step 2 · scale the top the same way', q:`Divide the known top the same way: <b>${p.c} ÷ ${p.m}</b>.`,
+      {lab:'Step 2 · scale the top the same way', q:`The top must shrink by the same amount. Divide the top you know: <b>${p.c} ÷ ${p.m}</b>.`,
        boxes:[{bl:`${p.c} ÷ ${p.m}`,expect:p.x}], info:`${p.c} ÷ ${p.m} = ${p.x}, so ? = ${p.x}.`, line:`? = ${p.x}`, last:true}
     ];
   }
@@ -240,7 +250,7 @@ function renderStep(){
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=(el.value||'').trim();
+    const el=$('bx'+i); const raw=clean(el.value);
     const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
     el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
     if(!ok) allOk=false;

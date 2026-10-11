@@ -52,7 +52,7 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <script src="fluency-config.js"></script>
 <script src="fluency-submit.js"></script>
 <script>
-const Q=[["-7 + -5", ["-12", "12", "-2", "2"], 0, "Same sign: add the numbers (7+5=12) and keep that sign → -12."], ["-8 + 3", ["-5", "5", "-11", "11"], 0, "Different signs, so subtract: 8-3=5. The bigger number is 8 and it is negative, so the answer is negative → -5."], ["6 + (-9)", ["-3", "3", "-15", "15"], 0, "Different signs, so subtract: 9-6=3. The bigger number is negative, so the answer is negative → -3."], ["5 - (-3)", ["8", "2", "-8", "-2"], 0, "Subtracting a negative is adding: 5 + 3 = 8."], ["-4 - 6", ["-10", "2", "10", "-2"], 0, "-4 - 6 = -4 + (-6) = -10."], ["-2 - (-9)", ["7", "-11", "-7", "11"], 0, "-2 - (-9) = -2 + 9 = 7."], ["(-4) × 6", ["-24", "24", "-10", "10"], 0, "Different signs → negative: -24."], ["(-3) × (-7)", ["21", "-21", "10", "-10"], 0, "Same signs → positive: 21."], ["(-40) ÷ 8", ["-5", "5", "-32", "32"], 0, "Different signs → negative: -5."], ["(-56) ÷ (-7)", ["8", "-8", "49", "-49"], 0, "Same signs → positive: 8."], ["-3 × 4 + 5", ["-7", "-17", "7", "17"], 0, "Multiply first: -3×4=-12, then +5 = -7."], ["The temperature was 4° and dropped 11°. What is it now?", ["-7°", "7°", "15°", "-15°"], 0, "4 - 11 = 4 + (-11) = -7°."]];
+const Q=[["−7 + (−5)", ["−12", "12", "−2", "2"], 0, "Same sign: add the numbers (7+5=12) and keep that sign → −12."], ["−8 + 3", ["−5", "5", "−11", "11"], 0, "Different signs, so subtract: 8 − 3 = 5. −8 is farther from 0 than 3, so the answer is negative → −5."], ["6 + (−9)", ["−3", "3", "−15", "15"], 0, "Different signs, so subtract: 9 − 6 = 3. −9 is farther from 0 than 6, so the answer is negative → −3."], ["5 − (−3)", ["8", "2", "−8", "−2"], 0, "Subtracting a negative is adding: 5 + 3 = 8."], ["−4 − 6", ["−10", "2", "10", "−2"], 0, "−4 − 6 = −4 + (−6) = −10."], ["−2 − (−9)", ["7", "−11", "−7", "11"], 0, "−2 − (−9) = −2 + 9 = 7."], ["(−4) × 6", ["−24", "24", "−10", "10"], 0, "Different signs → negative: −24."], ["(−3) × (−7)", ["21", "−21", "10", "−10"], 0, "Same signs → positive: 21."], ["(−40) ÷ 8", ["−5", "5", "−32", "32"], 0, "Different signs → negative: −5."], ["(−56) ÷ (−7)", ["8", "−8", "49", "−49"], 0, "Same signs → positive: 8."], ["−3 × 4 + 5", ["−7", "−17", "7", "17"], 0, "Multiply first: −3×4=−12, then +5 = −7."], ["The temperature was 4° and dropped 11°. What is it now?", ["−7°", "7°", "15°", "−15°"], 0, "4 − 11 = 4 + (−11) = −7°."]];
 const box=document.getElementById('quiz');
 let locked=false;
 const sel={};
@@ -60,7 +60,10 @@ function render(){
   box.innerHTML='';
   Q.forEach((q,i)=>{
     const d=document.createElement('div');d.className='q';d.id='q'+i;
-    let opts=q[1].map((t,oi)=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${t}</span></div>`).join('');
+    // shuffle the order shown; data-o keeps each choice's ORIGINAL index so grading is unchanged
+    const order=q[1].map((_,k)=>k);
+    for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]];}
+    let opts=order.map(oi=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${q[1][oi]}</span></div>`).join('');
     d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
     box.appendChild(d);
   });
@@ -71,6 +74,13 @@ function render(){
   });
 }
 function check(){
+  const skipped=Q.filter((q,i)=>sel[i]===undefined).length;
+  if(skipped){
+    const s=document.getElementById('score');
+    s.innerHTML='You have '+skipped+' question'+(skipped>1?'s':'')+' left. Pick an answer for each one, then check.';
+    s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
+    return;
+  }
   let score=0;
   Q.forEach((q,i)=>{
     const correct=q[2];
