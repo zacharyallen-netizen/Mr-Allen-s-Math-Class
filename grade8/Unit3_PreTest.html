@@ -223,10 +223,11 @@ function cleanNum(raw){
   s=s.replace(/(cm|mm|km|m|ft|in|yd)\s*(\^\s*[23]|[\u00b2\u00b3]|[23](?![0-9]))/g,'$1'); // cm³ / ft^2 -> unit only, before superscripts are expanded
   s=s.replace(/[%\u00b0]/g,'');                          // 60% -> 60, 55° -> 55
   s=deSup(s);
+  s=s.replace(/[\u00bd\u2153\u2154\u00bc\u00be]/g,c=>({'\u00bd':'1/2','\u2153':'1/3','\u2154':'2/3','\u00bc':'1/4','\u00be':'3/4'})[c]); // ½ ⅓ ⅔ ¼ ¾
   s=s.replace(/−/g,'-');
   s=s.replace(/,/g,'').replace(/\$/g,'').replace(/≈|=/g,'');
   s=s.replace(/\b(square|cubic)\b/g,'');
-  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|times|hours?|hr|miles?|mi|g)\b/g,'');
+  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|m|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|times|hours?|hr|miles?|mi|g)\b/g,'');
   s=s.replace(/°/g,'');
   s=s.replace(/\s+/g,'');
   return s;
