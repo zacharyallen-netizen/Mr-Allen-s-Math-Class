@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 5 Guided Notes — Statistics | NC Math 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<!--STYLE-->
+</head>
+<body>
+<script src="../site-bar.js"></script>
+
+<div class="page-wrap">
+<a href="unit5.html" class="back-link">← Back to Unit 5</a>
+<div class="page-hdr">
+  <h1>📝 Unit 5 Guided Notes — Statistics</h1>
+  <p>Describe the shape, center, and spread. A line can model a trend — but correlation isn’t cause.</p>
+  <p class="stds">Standards: S-ID.1/2/3/6/7/8/9</p>
+</div>
+<div class="intro"><p>Fill the blanks on your printed copy first, then click any blank, step, or button to check. <strong>Print → Save as PDF</strong> for a blank student worksheet; click <em>Reveal all</em> first to print the answer key.</p></div>
+<div class="legend"><span><i style="background:#1E2D4F"></i>navy = given</span><span><i style="background:#E0A800"></i>gold = what we want (?)</span><span><i style="background:#15803D"></i>green = answer (shows after you check)</span></div>
+<div class="topic-nav">
+  <a href="#t1">① Displays</a>
+  <a href="#t2">② Center & Spread</a>
+  <a href="#t3">③ Outliers</a>
+  <a href="#t4">④ Regression</a>
+  <a href="#t5">⑤ Residuals & r</a>
+  <a href="#t6">⑥ Causation</a>
+</div>
+<p style="text-align:right"><button class="reveal-all" onclick="revealPage()">👁 Reveal all answers (for printing an answer key)</button></p>
+
+<!-- ================= TOPIC 1 ================= -->
+<section class="topic" id="t1">
+  <h2><span class="num">1</span> Representing Data</h2>
+<div class="key"><strong>📌</strong> A <strong>histogram</strong> shows the shape of one variable. A <strong>box plot</strong> shows the 5-number summary: min, Q1, median, Q3, max.</div>
+<div class="note"><strong>New words.</strong> <span class="vw">Data</span> is a list of numbers we collect. A <span class="vw">dot plot</span> puts one dot for each value above a number line. Dots for the same value stack up. A <span class="vw">histogram</span> uses bars. Each bar counts the values in one <span class="vw">interval</span> (a range, like 10–19). The bars touch. <span class="vw">Frequency</span> means “how many.” <span class="vw">Quartiles</span> are the three numbers that cut ordered data into four equal parts: <strong>Q1</strong>, the <strong>median</strong>, and <strong>Q3</strong>.</div>
+<div class="viz-row">
+  <div class="viz" data-fig="dot1" data-cap="Dot plot: one dot for each quiz score"></div>
+  <div class="viz" data-fig="hist1" data-cap="Histogram (shape): bar height = how many students"></div>
+</div>
+<div class="viz sm" data-fig="box1" data-cap="Box plot: min 2, Q1 5, med 8, Q3 12, max 18"></div>
+
+  <div class="example">
+    <h4>Worked example: Quiz scores 7, 4, 9, 5, 7, 10, 6, 8, 5, 7. Find the five-number summary.</h4>
+    <div class="viz" data-ex="e51a"></div>
+    <div class="steps" data-example="e51a">
+      <div class="step" onclick="reveal(this)"><strong>1. Put the data in order:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 4, 5, 5, 6, 7, 7, 7, 8, 9, 10</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Min and max (smallest and largest):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> min = 4, max = 10</span></div>
+      <div class="step" onclick="reveal(this)"><strong>3. Median (10 values, so average the 5th and 6th):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> (7 + 7) ÷ 2 = 7</span></div>
+      <div class="step" onclick="reveal(this)"><strong>4. Q1 = middle of the lower half 4, 5, 5, 6, 7:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Q1 = 5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 5. Q3 = middle of the upper half 7, 7, 8, 9, 10:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Q3 = 8 → summary 4, 5, 7, 8, 10</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e51a')">Reveal all steps</button>
+  </div>
+
+  <div class="example">
+    <h4>Worked example: Ages at a party: 12, 15, 18, 21, 22, 25, 27, 28, 33, 36, 38, 41. Make a histogram.</h4>
+    <div class="viz" data-ex="e51b"></div>
+    <div class="steps" data-example="e51b">
+      <div class="step" onclick="reveal(this)"><strong>1. Pick equal intervals:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 10–19, 20–29, 30–39, 40–49</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Count the values in each interval:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3, 5, 3, 1</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 3. Draw touching bars that tall. The tallest bar is:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 20–29 (5 people)</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e51b')">Reveal all steps</button>
+  </div>
+
+  <div class="howto"><h4>How to find the five-number summary</h4><ol>
+    <li>Put the numbers in order from least to greatest.</li>
+    <li>Write the min (first) and the max (last).</li>
+    <li>Find the median. Odd count: the middle value. Even count: average the two middle values.</li>
+    <li>Split the data into a lower half and an upper half. If the count is odd, leave the median out.</li>
+    <li>Q1 is the median of the lower half. Q3 is the median of the upper half.</li>
+    <li>Draw the box from Q1 to Q3. Draw a line at the median. Draw whiskers out to the min and max.</li></ol></div>
+
+  <div class="fm chk" id="fm51"><h4>🔍 Find the mistake</h4>
+    <p>Kai found the median of 9, 2, 7, 4, 5.</p>
+    <ol class="work"><li><b>Line 1</b>Data: 9, 2, 7, 4, 5</li><li><b>Line 2</b>The middle number in the list is 7.</li><li><b>Line 3</b>Median = 7</li></ol>
+    <div class="viz sm" id="v-fm51"></div>
+    <div class="chk-q">Which line has the mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm51',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm51',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('fm51',this)">Line 3</button></div>
+    <div class="chk-fb" id="fb-fm51"></div>
+  </div>
+  <div class="chk" id="fm51b"><div class="chk-q">Fix it: what is the correct median?</div><div class="val-chk"><input id="fm51b-in" placeholder="median = ?"><button onclick="M.check('fm51b')">Check</button></div><div class="chk-fb" id="fb-fm51b"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">In order: 2, 4, 5, 7, 9. The middle value is <strong>5</strong>.</div></div></div>
+
+  <div class="yt chk" id="yt51"><h4>✏️ Your turn</h4>
+    <div class="chk-q">Data: 3, 8, 6, 1, 9, 4, 7. Find the five-number summary.</div>
+    <div class="viz sm" id="v-yt51"></div>
+    <div class="mgrid"><label>min<input id="yt51-min"></label><label>Q1<input id="yt51-q1"></label><label>median<input id="yt51-med"></label><label>Q3<input id="yt51-q3"></label><label>max<input id="yt51-max"></label></div>
+    <button class="mcheck" onclick="M.check('yt51')">Check</button><div class="chk-fb" id="fb-yt51"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">In order: 1, 3, 4, 6, 7, 8, 9. Min 1, Q1 3, median 6, Q3 8, max 9.</div></div>
+  </div>
+</section>
+
+<!-- ================= TOPIC 2 ================= -->
+<section class="topic" id="t2">
+  <h2><span class="num">2</span> Center & Spread</h2>
+<div class="key"><strong>📌</strong> Center: <strong>mean</strong> (average) or <strong>median</strong> (middle). Spread: <strong>range</strong>, <strong>IQR = Q3 − Q1</strong>, and <strong>standard deviation</strong> (typical distance from the mean). Median & IQR resist outliers.</div>
+<div class="note"><strong>New words.</strong> The <span class="vw">mean</span> is the fair-share value: add all values, then divide by how many. It is the balance point of a dot plot. <span class="vw">Spread</span> tells how far apart the data are. The <span class="vw">range</span> is max − min. The <span class="vw">MAD</span> (mean absolute deviation) is the average distance from the mean. The <span class="vw">standard deviation</span> is another “typical distance” from the mean. Bigger MAD or standard deviation = more spread out.</div>
+  <div class="example">
+    <h4>Data: 3, 5, 7, 9, 16</h4>
+    <div class="viz" data-ex="e52"></div>
+    <div class="steps" data-example="e52">
+      <div class="step" onclick="reveal(this)"><strong>Mean = (3+5+7+9+16) ÷ 5 =</strong> 40 ÷ 5 =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 8</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Median (middle value):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 7</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Range = 16 − 3 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 13</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e52')">Reveal all steps</button>
+  </div>
+  <div class="example">
+    <h4>Worked example: Find the MAD of 3, 5, 7, 9, 16.</h4>
+    <div class="viz" data-ex="e52m"></div>
+    <div class="steps" data-example="e52m">
+      <div class="step" onclick="reveal(this)"><strong>1. Find the mean:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 8 (from above)</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Find each distance from 8 (always positive):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 5, 3, 1, 1, 8</span></div>
+      <div class="step" onclick="reveal(this)"><strong>3. Add the distances:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 5 + 3 + 1 + 1 + 8 = 18</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 4. Divide by how many values:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> MAD = 18 ÷ 5 = 3.6</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e52m')">Reveal all steps</button>
+  </div>
+  <div class="example">
+    <h4>Worked example: Picture the standard deviation of 3, 5, 7, 9, 16.</h4>
+    <div class="viz" data-ex="e52s"></div>
+    <div class="steps" data-example="e52s">
+      <div class="step" onclick="reveal(this)"><strong>1. Distances from the mean 8:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 5, 3, 1, 1, 8</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Square each distance (the area of each square):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 25, 9, 1, 1, 64</span></div>
+      <div class="step" onclick="reveal(this)"><strong>3. Find the mean of the squares:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 100 ÷ 5 = 20</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 4. Take the square root:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> standard deviation = √20 ≈ 4.47</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e52s')">Reveal all steps</button>
+    <p class="partlbl">On a calculator this is σx (sigma x). You usually let the calculator do it — the picture shows what it means.</p>
+  </div>
+<div class="key"><strong>📌 COMPARE two data sets</strong> by lining up their box plots: compare the <strong>medians</strong> (center) and the <strong>box width = IQR</strong> (spread).</div>
+<div class="viz" data-fig="cmp" data-cap="Same number line for both classes. Read each median and look at each box’s width."></div>
+<p class="blank-tip">From the plots:</p><p>Higher median: Class <span class="blank" data-ans="B" onclick="rb(this)">?</span> &nbsp;·&nbsp; More spread out (bigger IQR): Class <span class="blank" data-ans="B" onclick="rb(this)">?</span></p>
+
+  <div class="howto"><h4>How to find the MAD</h4><ol>
+    <li>Find the mean.</li><li>Find how far each value is from the mean. Distances are never negative.</li>
+    <li>Add all the distances.</li><li>Divide by how many values there are.</li></ol></div>
+
+  <div class="fm chk" id="fm52"><h4>🔍 Find the mistake</h4>
+    <p>Ana found the MAD of 3, 5, 7, 9, 16.</p>
+    <ol class="work"><li><b>Line 1</b>Mean = 40 ÷ 5 = 8</li><li><b>Line 2</b>Differences from 8: −5, −3, −1, 1, 8</li><li><b>Line 3</b>Add them: −5 − 3 − 1 + 1 + 8 = 0</li><li><b>Line 4</b>MAD = 0 ÷ 5 = 0</li></ol>
+    <div class="viz sm" id="v-fm52"></div>
+    <div class="chk-q">Which line has the mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm52',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm52',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('fm52',this)">Line 3</button><button class="chk-btn" data-v="4" onclick="M.mc('fm52',this)">Line 4</button></div>
+    <div class="chk-fb" id="fb-fm52"></div>
+  </div>
+  <div class="chk" id="fm52b"><div class="chk-q">Fix it: what is the correct MAD?</div><div class="val-chk"><input id="fm52b-in" placeholder="MAD = ?"><button onclick="M.check('fm52b')">Check</button></div><div class="chk-fb" id="fb-fm52b"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Use distances: 5 + 3 + 1 + 1 + 8 = 18. MAD = 18 ÷ 5 = <strong>3.6</strong>.</div></div></div>
+
+  <div class="yt chk" id="yt52"><h4>✏️ Your turn</h4>
+    <div class="chk-q">Data: 2, 4, 4, 6, 9. Find the mean, median, range and MAD.</div>
+    <div class="viz sm" id="v-yt52"></div>
+    <div class="mgrid"><label>mean<input id="yt52-mean"></label><label>median<input id="yt52-med"></label><label>range<input id="yt52-rng"></label><label>MAD<input id="yt52-mad"></label></div>
+    <button class="mcheck" onclick="M.check('yt52')">Check</button><div class="chk-fb" id="fb-yt52"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Mean = 25 ÷ 5 = 5. Median = 4. Range = 9 − 2 = 7. Distances 3, 1, 1, 1, 4 → 10 ÷ 5 = MAD 2.</div></div>
+  </div>
+</section>
+
+<!-- ================= TOPIC 3 ================= -->
+<section class="topic" id="t3">
+  <h2><span class="num">3</span> Outliers</h2>
+<div class="key"><strong>📌</strong> A value is an <strong>outlier</strong> if it is below Q1 − 1.5·IQR or above Q3 + 1.5·IQR. Outliers pull the <strong>mean</strong>, not the median.</div>
+<div class="note">Because the median resists outliers, it’s often the fairer ‘typical’ value for skewed data (like income).</div>
+<div class="note"><strong>New words.</strong> An <span class="vw">outlier</span> is a value far away from the rest. A <span class="vw">fence</span> is a cut-off line. Values past a fence are outliers. <span class="vw">Skewed</span> data has a long tail on one side. <span class="vw">Resist</span> means “does not move much.”</div>
+<div class="viz" data-fig="pull" data-cap="Adding one big value (25) moves the mean a lot. The median barely moves."></div>
+
+  <div class="example">
+    <h4>Worked example: Is 25 an outlier in 4, 6, 7, 8, 9, 10, 11, 25?</h4>
+    <div class="viz" data-ex="e53"></div>
+    <div class="steps" data-example="e53">
+      <div class="step" onclick="reveal(this)"><strong>1. Quartiles (8 values; halves 4, 6, 7, 8 and 9, 10, 11, 25):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Q1 = 6.5, Q3 = 10.5</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. IQR = Q3 − Q1:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 10.5 − 6.5 = 4</span></div>
+      <div class="step" onclick="reveal(this)"><strong>3. 1.5 × IQR:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 1.5 × 4 = 6</span></div>
+      <div class="step" onclick="reveal(this)"><strong>4. Fences: Q1 − 6 and Q3 + 6:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 0.5 and 16.5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 5. Compare 25 to the upper fence:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 25 &gt; 16.5, so 25 IS an outlier</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e53')">Reveal all steps</button>
+  </div>
+  <div class="howto"><h4>How to test for outliers (1.5 × IQR rule)</h4><ol>
+    <li>Find Q1 and Q3.</li><li>Find IQR = Q3 − Q1.</li><li>Multiply: 1.5 × IQR.</li>
+    <li>Lower fence = Q1 − 1.5 × IQR. Upper fence = Q3 + 1.5 × IQR.</li>
+    <li>Any value below the lower fence or above the upper fence is an outlier.</li></ol></div>
+
+  <div class="fm chk" id="fm53"><h4>🔍 Find the mistake</h4>
+    <p>Lee tested the same data. Q1 = 6.5 and Q3 = 10.5.</p>
+    <ol class="work"><li><b>Line 1</b>IQR = 10.5 − 6.5 = 4</li><li><b>Line 2</b>Upper fence = 10.5 + 4 = 14.5</li><li><b>Line 3</b>25 &gt; 14.5, so 25 is an outlier.</li></ol>
+    <div class="viz sm" id="v-fm53"></div>
+    <div class="chk-q">Which line has the mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm53',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm53',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('fm53',this)">Line 3</button></div>
+    <div class="chk-fb" id="fb-fm53"></div>
+  </div>
+  <div class="chk" id="fm53b"><div class="chk-q">Fix it: what is the correct upper fence?</div><div class="val-chk"><input id="fm53b-in" placeholder="upper fence = ?"><button onclick="M.check('fm53b')">Check</button></div><div class="chk-fb" id="fb-fm53b"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Upper fence = 10.5 + 1.5 × 4 = 10.5 + 6 = <strong>16.5</strong>.</div></div></div>
+
+  <div class="yt chk" id="yt53"><h4>✏️ Your turn</h4>
+    <div class="chk-q">Data: 12, 14, 15, 15, 16, 18, 19, 40. Find Q1, Q3, the IQR and the upper fence.</div>
+    <div class="viz sm" id="v-yt53"></div>
+    <div class="mgrid"><label>Q1<input id="yt53-q1"></label><label>Q3<input id="yt53-q3"></label><label>IQR<input id="yt53-iqr"></label><label>upper fence<input id="yt53-uf"></label></div>
+    <button class="mcheck" onclick="M.check('yt53')">Check</button><div class="chk-fb" id="fb-yt53"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Halves: 12, 14, 15, 15 and 16, 18, 19, 40. Q1 = 14.5, Q3 = 18.5, IQR = 4, upper fence = 18.5 + 6 = 24.5. So 40 is an outlier.</div></div>
+  </div>
+  <div class="chk" id="yt53b"><div class="chk-q">Is 40 an outlier?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="yes" onclick="M.mc('yt53b',this)">Yes</button><button class="chk-btn" data-v="no" onclick="M.mc('yt53b',this)">No</button></div><div class="chk-fb" id="fb-yt53b"></div></div>
+</section>
+
+<!-- ================= TOPIC 4 ================= -->
+<section class="topic" id="t4">
+  <h2><span class="num">4</span> Scatter Plots & Regression</h2>
+<div class="key"><strong>📌</strong> The line of best fit <span class='coord'>ŷ = a + bx</span> models the trend. <strong>Slope</strong> = predicted change per unit; <strong>intercept</strong> = predicted value at x = 0. <strong>Interpolate</strong> inside the data; <strong>extrapolate</strong> beyond it (risky).</div>
+<div class="note"><strong>New words.</strong> A <span class="vw">scatter plot</span> shows pairs of numbers (x, y) as dots. The <span class="vw">line of best fit</span> (or regression line) runs through the middle of the dots. <span class="vw">ŷ</span> is read “y-hat.” It means the <em>predicted</em> y. To <span class="vw">interpolate</span> is to predict for an x inside the data. To <span class="vw">extrapolate</span> is to predict for an x outside the data. That is risky.</div>
+<div class="viz" data-fig="sc1" data-cap="Scatter with line of best fit ŷ = 2 + x"></div>
+<div class="viz" data-fig="interp" data-cap="Inside the data (shaded) we interpolate. Outside it we extrapolate."></div>
+<p class="partlbl"><strong>Try it:</strong> move the sliders. Make the gold misses (residuals) as small as you can.</p>
+<div data-int="fit"></div>
+  <div class="example">
+    <h4>Model ŷ = 2 + 3x. Predict y when x = 4.</h4>
+    <div class="viz sm" data-ex="e54"></div>
+    <div class="steps" data-example="e54">
+      <div class="step" onclick="reveal(this)"><strong>Substitute x = 4:</strong> 2 + 3(4) =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 + 12</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Predicted ŷ =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 14</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e54')">Reveal all steps</button>
+  </div>
+  <div class="example">
+    <h4>Worked example: For ŷ = 2 + x (practice hours → baskets), explain the slope and intercept.</h4>
+    <div class="viz sm" data-ex="e54b"></div>
+    <div class="steps" data-example="e54b">
+      <div class="step" onclick="reveal(this)"><strong>1. Slope b = 1:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> each extra hour of practice predicts about 1 more basket</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Intercept a = 2:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> with 0 hours of practice, the model predicts 2 baskets</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 3. Is predicting for 20 hours safe?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> No — 20 is outside 1 to 7 hours. That is extrapolation.</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e54b')">Reveal all steps</button>
+  </div>
+  <div class="howto"><h4>How to predict with a model</h4><ol>
+    <li>Find the x-value in the question.</li><li>Put it in for x. Use parentheses: ŷ = 2 + 3(4).</li>
+    <li>Multiply first. Then add.</li><li>Check: is the x inside the data? If not, say the prediction is risky.</li></ol></div>
+
+  <div class="fm chk" id="fm54"><h4>🔍 Find the mistake</h4>
+    <p>Mia used the model ŷ = 5 + 2x to predict y when x = 6.</p>
+    <ol class="work"><li><b>Line 1</b>ŷ = 5 + 2(6)</li><li><b>Line 2</b>ŷ = 7(6)</li><li><b>Line 3</b>ŷ = 42</li></ol>
+    <div class="viz sm" id="v-fm54"></div>
+    <div class="chk-q">Which line has the mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm54',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm54',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('fm54',this)">Line 3</button></div>
+    <div class="chk-fb" id="fb-fm54"></div>
+  </div>
+  <div class="chk" id="fm54b"><div class="chk-q">Fix it: what is the correct prediction?</div><div class="val-chk"><input id="fm54b-in" placeholder="ŷ = ?"><button onclick="M.check('fm54b')">Check</button></div><div class="chk-fb" id="fb-fm54b"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Multiply first: 2(6) = 12. Then 5 + 12 = <strong>17</strong>.</div></div></div>
+
+  <div class="yt chk" id="yt54"><h4>✏️ Your turn</h4>
+    <div class="chk-q">The model is ŷ = 4 + 1.5x. Predict y when x = 6.</div>
+    <div class="viz sm" id="v-yt54"></div>
+    <div class="val-chk"><input id="yt54-in" placeholder="ŷ = ?"><button onclick="M.check('yt54')">Check</button></div><div class="chk-fb" id="fb-yt54"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">ŷ = 4 + 1.5(6) = 4 + 9 = <strong>13</strong>.</div></div>
+  </div>
+  <div class="chk" id="yt54b"><div class="chk-q">The data used x-values from 0 to 8. Predicting y at x = 20 is…</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="i" onclick="M.mc('yt54b',this)">interpolation</button><button class="chk-btn" data-v="e" onclick="M.mc('yt54b',this)">extrapolation</button></div><div class="chk-fb" id="fb-yt54b"></div></div>
+</section>
+
+<!-- ================= TOPIC 5 ================= -->
+<section class="topic" id="t5">
+  <h2><span class="num">5</span> Residuals & Correlation</h2>
+<div class="key"><strong>📌</strong> <strong>Residual = actual − predicted.</strong> A good fit has small residuals scattered randomly. <strong>Correlation r</strong> is from −1 to 1: near ±1 = strong, near 0 = weak; the sign gives the direction.</div>
+<div class="note"><strong>New words.</strong> A <span class="vw">residual</span> is the miss: actual y minus predicted ŷ. Positive = the dot is above the line. Negative = below. A <span class="vw">residual plot</span> graphs the residuals. The <span class="vw">correlation coefficient r</span> is one number that tells the direction (+ or −) and the strength of a straight-line pattern.</div>
+<div class="viz" data-fig="res1" data-cap="Residuals (gold) = vertical gaps from the line"></div>
+<div class="viz sm" data-fig="resplot" data-cap="Residual plot: no pattern, dots scattered around 0 → the line is a good fit"></div>
+<div class="viz-row" data-fig="rgal"></div>
+<p class="diagram-cap" style="text-align:center">Each r above is computed from that plot’s own dots.</p>
+  <div class="example">
+    <h4>Actual y = 14, predicted ŷ = 12. Find the residual.</h4>
+    <div class="viz sm" data-ex="e55"></div>
+    <div class="steps" data-example="e55">
+      <div class="step final" onclick="reveal(this)"><strong>✓ Residual = actual − predicted = 14 − 12 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> +2</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e55')">Reveal all steps</button>
+  </div>
+  <div class="example">
+    <h4>Worked example: The basket data has r ≈ 0.94. Describe the correlation.</h4>
+    <div class="viz sm" data-ex="e55b"></div>
+    <div class="steps" data-example="e55b">
+      <div class="step" onclick="reveal(this)"><strong>1. Sign of r:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> positive → as x goes up, y tends to go up</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Size of r (0.94 is close to 1):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> strong</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 3. Describe it:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> a strong positive linear correlation</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e55b')">Reveal all steps</button>
+  </div>
+<p class="partlbl"><strong>Try it:</strong> drag a dot. Watch the line and r change.</p>
+<div data-int="drag"></div>
+  <div class="howto"><h4>How to find and read a residual</h4><ol>
+    <li>Find the actual y (the dot).</li><li>Find the predicted ŷ (plug x into the model).</li>
+    <li>Subtract: actual − predicted.</li><li>Positive → dot above the line. Negative → dot below the line.</li></ol></div>
+
+  <div class="fm chk" id="fm55"><h4>🔍 Find the mistake</h4>
+    <p>Jo found a residual. The actual y is 20. The predicted ŷ is 23.</p>
+    <ol class="work"><li><b>Line 1</b>Residual = predicted − actual</li><li><b>Line 2</b>= 23 − 20 = 3</li><li><b>Line 3</b>The dot is above the line.</li></ol>
+    <div class="viz sm" id="v-fm55"></div>
+    <div class="chk-q">Which line has the first mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm55',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm55',this)">Line 2</button><button class="chk-btn" data-v="3" onclick="M.mc('fm55',this)">Line 3</button></div>
+    <div class="chk-fb" id="fb-fm55"></div>
+  </div>
+  <div class="chk" id="fm55b"><div class="chk-q">Fix it: what is the correct residual?</div><div class="val-chk"><input id="fm55b-in" placeholder="residual = ?"><button onclick="M.check('fm55b')">Check</button></div><div class="chk-fb" id="fb-fm55b"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">Residual = actual − predicted = 20 − 23 = <strong>−3</strong>. The dot is below the line.</div></div></div>
+
+  <div class="yt chk" id="yt55"><h4>✏️ Your turn</h4>
+    <div class="chk-q">Actual y = 9. Predicted ŷ = 11.5. Find the residual.</div>
+    <div class="viz sm" id="v-yt55"></div>
+    <div class="val-chk"><input id="yt55-in" placeholder="residual = ?"><button onclick="M.check('yt55')">Check</button></div><div class="chk-fb" id="fb-yt55"></div>
+    <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">9 − 11.5 = <strong>−2.5</strong>. The dot is 2.5 below the line.</div></div>
+  </div>
+  <div class="chk" id="yt55b"><div class="chk-q">Which words describe r = −0.85?</div>
+    <div class="chk-opts"><button class="chk-btn" data-v="sn" onclick="M.mc('yt55b',this)">strong negative</button><button class="chk-btn" data-v="wn" onclick="M.mc('yt55b',this)">weak negative</button><button class="chk-btn" data-v="sp" onclick="M.mc('yt55b',this)">strong positive</button><button class="chk-btn" data-v="no" onclick="M.mc('yt55b',this)">no correlation</button></div><div class="chk-fb" id="fb-yt55b"></div></div>
+</section>
+
+<!-- ================= TOPIC 6 ================= -->
+<section class="topic" id="t6">
+  <h2><span class="num">6</span> Correlation vs. Causation</h2>
+<div class="warn"><strong>⚠️ Correlation is NOT causation.</strong> A strong relationship doesn’t prove one variable causes the other — a hidden <em>lurking variable</em> may explain both.</div>
+<div class="note">Ice-cream sales and shark attacks rise together — but hot weather drives both. Neither causes the other.</div>
+<div class="note"><strong>New words.</strong> <span class="vw">Causation</span> means one thing makes the other happen. A <span class="vw">lurking variable</span> is a hidden third thing that pushes both variables. Only a controlled <span class="vw">experiment</span> (we change one thing on purpose and keep the rest the same) can show cause.</div>
+<div class="viz-row">
+  <div class="viz" data-fig="lurk" data-cap="Hot weather is the lurking variable"></div>
+  <div class="viz" data-fig="icecream" data-cap="Strong r — but neither one causes the other"></div>
+</div>
+<div class="viz sm" data-fig="cvc" data-cap="Can we say “causes”?"></div>
+  <div class="example">
+    <h4>Worked example: Students who sleep more tend to have higher grades (r = 0.6). Does more sleep cause higher grades?</h4>
+    <div class="viz sm" data-ex="e56"></div>
+    <div class="steps" data-example="e56">
+      <div class="step" onclick="reveal(this)"><strong>1. Is there a correlation?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Yes — moderate and positive (r = 0.6)</span></div>
+      <div class="step" onclick="reveal(this)"><strong>2. Was it a controlled experiment?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> No — the data was only observed</span></div>
+      <div class="step" onclick="reveal(this)"><strong>3. Name a possible lurking variable:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> study habits (or less screen time) may raise both</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ 4. Conclusion:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> sleep and grades are related — we cannot say sleep causes the grades</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e56')">Reveal all steps</button>
+  </div>
+  <div class="howto"><h4>How to judge a cause claim</h4><ol>
+    <li>Check r: is there a real correlation?</li><li>Ask: was it a controlled experiment?</li>
+    <li>If not, think of a lurking variable that could push both.</li><li>Say “is related to,” not “causes.”</li></ol></div>
+
+  <div class="fm chk" id="fm56"><h4>🔍 Find the mistake</h4>
+    <p>At fires, the number of firefighters and the amount of damage have r = 0.95.</p>
+    <ol class="work"><li><b>Line 1</b>r = 0.95 is a strong positive correlation.</li><li><b>Line 2</b>So sending more firefighters causes more damage.</li></ol>
+    <div class="viz sm" id="v-fm56"></div>
+    <div class="chk-q">Which line has the mistake?</div>
+    <div class="chk-opts row"><button class="chk-btn" data-v="1" onclick="M.mc('fm56',this)">Line 1</button><button class="chk-btn" data-v="2" onclick="M.mc('fm56',this)">Line 2</button></div>
+    <div class="chk-fb" id="fb-fm56"></div>
+  </div>
+
+  <div class="yt chk" id="yt56"><h4>✏️ Your turn</h4>
+    <div class="chk-q">Towns with more libraries also have more crimes (see the plot). What is the best explanation?</div>
+    <div class="viz sm" id="v-yt56"></div>
+    <div class="chk-opts"><button class="chk-btn" data-v="a" onclick="M.mc('yt56',this)">Libraries cause crime.</button><button class="chk-btn" data-v="b" onclick="M.mc('yt56',this)">Crime causes towns to build libraries.</button><button class="chk-btn" data-v="c" onclick="M.mc('yt56',this)">A lurking variable — town population — raises both.</button><button class="chk-btn" data-v="d" onclick="M.mc('yt56',this)">There is no correlation.</button></div>
+    <div class="chk-fb" id="fb-yt56"></div>
+  </div>
+</section>
+</div>
+<div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
+<script src="script.js"></script>
+<!--LIB-->
+<script>
+(function(){
+var C=M.C,St=M.St,f=M.fmt,tag=M.tag,ln=M.ln,tx=M.tx,rc=M.rc,ci=M.ci,FIG=M.FIG,EX=M.EX,SP=M.SPEC,INT=M.INT;
+function G(t){return {t:t};} function W(t){return {t:t||'?',c:C.goldD};} function A(t){return {t:t,c:C.green};}
+/* dot plot with a box plot drawn under the number line; known = which of the 5 parts are shown */
+function dotBox(data,o){var five=St.five(data),kn=o.known||[0,0,0,0,0],all=kn.every(Boolean);
+  return M.dotPlot(data,{min:o.min,max:o.max,step:o.step||1,lab:o.lab,below:78,label:o.label||'dot plot and box plot',color:o.color,marks:o.marks,dist:o.dist,
+    after:function(X,ay){var cy=ay+58,s='',nm=['min','Q1','med','Q3','max'];
+      if(all){s+=ln(X(five[0]),cy,X(five[1]),cy,C.navy,2.2)+ln(X(five[3]),cy,X(five[4]),cy,C.navy,2.2)+rc(X(five[1]),cy-12,X(five[3])-X(five[1]),24,'#EEF1F8',C.navy,2.2)+ln(X(five[2]),cy-12,X(five[2]),cy+12,C.green,3)
+        +ln(X(five[0]),cy-8,X(five[0]),cy+8,C.navy,2.4)+ln(X(five[4]),cy-8,X(five[4]),cy+8,C.navy,2.4);}
+      else{s+=tx((X(o.min)+X(o.max))/2,cy+4,o.qtext||'box plot: finish the steps to build it',{size:11,fill:C.goldD});}
+      var lastX=-99;
+      for(var p=0;p<5;p++){if(!kn[p])continue;var x=X(five[p]);if(!all)s+=ln(x,cy-14,x,cy+14,C.green,2.4,'4 3');
+        var up=x-lastX>40;if(up)lastX=x;s+=tag(x,up?cy-17:cy+27,nm[p]+' '+f(five[p]),{size:10.5,mono:true,fill:C.green});}
+      return s;}});}
+/* ---------- topic 1 figures ---------- */
+var QUIZ=[7,4,9,5,7,10,6,8,5,7];
+FIG.dot1=function(){return M.dotPlot(QUIZ,{min:3,max:11,title:'Quiz score',label:'dot plot of quiz scores'});};
+FIG.hist1=function(){return M.histogram(['0–9','10–19','20–29','30–39','40–49'],[2,5,8,4,1],{xTitle:'Minutes of reading',yTitle:'Number of students',label:'histogram'});};
+FIG.box1=function(){var F=[2,5,8,12,18];return M.boxPlots([{f:F,parts:F.map(function(v,i){return {t:['min ','Q1 ','med ','Q3 ','max '][i]+v};})}],{min:0,max:20,step:1,lab:2,label:'box plot'});};
+EX.e51a={viz:function(st){var k=[0,0,0,0,0];if(st==='solved')k=[1,1,1,1,1];else{if(st>=2){k[0]=1;k[4]=1;}if(st>=3)k[2]=1;if(st>=4)k[1]=1;}
+  return dotBox(QUIZ,{min:3,max:11,known:k,label:'quiz scores: dot plot and box plot'});}};
+var AGES=[12,15,18,21,22,25,27,28,33,36,38,41],BINS=['10–19','20–29','30–39','40–49'];
+function binCount(d,lo,w,n){var c=[];for(var i=0;i<n;i++)c.push(d.filter(function(v){return v>=lo+i*w&&v<lo+(i+1)*w;}).length);return c;}
+EX.e51b={viz:function(st){var cnt=binCount(AGES,10,10,4),show=st==='solved'||st>=2,mx=Math.max.apply(null,cnt);
+  return M.histogram(BINS,show?cnt:[0,0,0,0],{yMax:6,xTitle:'Age (years)',yTitle:'Number of people',label:'histogram of ages',
+    style:function(i){return st==='solved'&&cnt[i]===mx?{fill:'#BFE5CB',stroke:C.green,sw:2}:{};},
+    top:function(i){return show?{t:String(cnt[i]),c:C.green}:{t:'?',c:C.goldD};}});}};
+SP.fm51={type:'mc',ans:'2',ok:'Kai never put the numbers in order. In order they are 2, 4, 5, 7, 9, so the median is 5.',
+  fb:{'1':'Line 1 just copies the data. That part is fine.','3':'Line 3 follows from Line 2. The problem starts one line earlier.'},
+  viz:function(st){var d=[9,2,7,4,5];return M.dotPlot(d,{min:0,max:10,label:'dot plot of 9, 2, 7, 4, 5',marks:[st==='solved'?{v:5,label:'median 5',color:C.green}:{v:7,label:'Kai: 7?',color:C.gold}]});}};
+SP.fm51b={type:'num',ans:function(){return St.median([9,2,7,4,5]);},fb:[[7,'7 is the middle of the unsorted list. Put the numbers in order first.']],hint:'Order the numbers: 2, 4, 5, 7, 9. Pick the middle one.'};
+var D51=[3,8,6,1,9,4,7],F51=St.five(D51);
+SP.yt51={type:'multi',ok:'Your box plot is drawn under the dots.',viz:function(st){return dotBox(D51,{min:0,max:10,known:st==='solved'?[1,1,1,1,1]:[0,0,0,0,0],qtext:'box plot appears when you are right',label:'dot plot of 3, 8, 6, 1, 9, 4, 7'});},
+  parts:[{k:'min',label:'min',type:'num',hint:'The min is the smallest value.',ans:F51[0]},
+    {k:'q1',label:'Q1',type:'num',ans:F51[1],hint:'Q1 is the middle of the lower half 1, 3, 4.',fb:[[3.5,'With 7 values, leave the median (6) out. The lower half is 1, 3, 4.'],[4,'Q1 is the middle of the lower half 1, 3, 4.']]},
+    {k:'med',label:'median',type:'num',ans:F51[2],fb:[[9,'9 is the middle of the unsorted list. Put the numbers in order first.']],hint:'In order: 1, 3, 4, 6, 7, 8, 9. Pick the 4th value.'},
+    {k:'q3',label:'Q3',type:'num',ans:F51[3],hint:'Q3 is the middle of the upper half 7, 8, 9.',fb:[[7.5,'With 7 values, leave the median (6) out. The upper half is 7, 8, 9.']]},
+    {k:'max',label:'max',type:'num',hint:'The max is the largest value.',ans:F51[4]}]};
+/* ---------- topic 2 ---------- */
+var D52=[3,5,7,9,16],m52=St.mean(D52);
+EX.e52={viz:function(st){var mk=[];var s=st==='solved'?3:(st||0);
+  mk.push(s>=1?{v:m52,label:'mean '+f(m52),color:C.green,row:0,anchor:'start'}:{v:m52,label:'mean ?',color:C.gold,row:0,anchor:'start'});
+  if(s>=2)mk.push({v:St.median(D52),label:'median '+f(St.median(D52)),color:C.green,row:1,anchor:'end'});
+  return M.dotPlot(D52,{min:0,max:18,lab:2,marks:mk,below:s>=3?30:0,label:'dot plot of 3, 5, 7, 9, 16',
+    after:function(X,ay){if(s<3)return '';var y=ay+40;return ln(X(3),y,X(16),y,C.green,2)+ln(X(3),y-5,X(3),y+5,C.green,2)+ln(X(16),y-5,X(16),y+5,C.green,2)+tag((X(3)+X(16))/2,y+4,'range 13',{size:11,mono:true,fill:C.green});}});}};
+function distViz(d,st,o){var m=St.mean(d);o=o||{};var cnt={},mx=0;d.forEach(function(v){cnt[v]=(cnt[v]||0)+1;mx=Math.max(mx,cnt[v]);});
+  var idx=d.map(function(v,i){return i;}).filter(function(i){return d[i]!==m;}),n=idx.length;
+  return M.dotPlot(d,{min:o.min||0,max:o.max||18,lab:o.lab||2,label:o.label||'distances from the mean',extraTop:n*17+8,
+  marks:[{v:m,label:'mean '+f(m),color:C.navy,dash:'3 3'}],
+  after:function(X,ay){var s='',seen={},base=ay-8-(mx-1)*14-6-12;
+    d.forEach(function(v,i){seen[v]=(seen[v]||0)+1;if(v===m)return;var k=idx.indexOf(i),y=base-k*17,cy=ay-8-(seen[v]-1)*14,dd=Math.abs(v-m),sv=st==='solved',col=sv?C.green:C.gold;
+      s+=ln(X(v),cy-6,X(v),y,C.grid,1.2,'2 2')+ln(X(v),y,X(m),y,col,2.6)+ln(X(v),y-4,X(v),y+4,col,2);
+      var t=sv?(o.signed?M.sgn(v-m):f(dd)):(o.q?'?':'');if(t)s+=tag(v<m?X(v)-5:X(v)+5,y+4,t,{size:10.5,mono:true,fill:sv?C.green:C.goldD,anchor:v<m?'end':'start'});});
+    return s;}});}
+EX.e52m={viz:function(st){return distViz(D52,st==='solved'||st>=2?'solved':'q',{q:true});}};
+EX.e52s={viz:function(st){var s=st==='solved'?4:(st||0),W0=360,X=M.sc(0,18,22,338),ay=200,out='';
+  var sq=D52.map(function(v){return {v:v,d:Math.abs(v-m52),dir:v<m52?1:-1};}).sort(function(a,b){return b.d-a.d;});
+  sq.forEach(function(q){if(!q.d)return;var side=X(q.d)-X(0),x0=q.dir>0?X(q.v):X(q.v)-side;
+    out+=rc(x0,ay-side,side,side,s>=2?'rgba(21,128,61,0.10)':'rgba(224,168,0,0.12)',s>=2?C.green:C.gold,1.8);
+    var lx=q.dir>0?X(q.v)+4:X(q.v)-4;out+=tag(lx,side<24?ay-side-6:ay-side+14,s>=2?f(q.d*q.d):'?',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD,anchor:q.dir>0?'start':'end'});});
+  out+=ln(X(m52),12,X(m52),ay,C.navy,2,'4 3')+tag(X(m52),22,'mean 8',{size:11,fill:C.navy});
+  D52.forEach(function(v){out+=ci(X(v),ay,5.5,C.navy,'#fff',1.2);});
+  var A2=M.axisX({x0:22,x1:338,y:ay,min:0,max:18,step:1,lab:2});
+  var foot=s>=4?'SD = √(100 ÷ 5) = √20 ≈ '+f(St.sd(D52)):(s>=3?'mean of squares = 100 ÷ 5 = 20':'each square: side = distance, area = distance²');
+  return M.svg(W0,ay+50,out+A2.s+tag(180,ay+42,foot,{size:11.5,mono:true,fill:s>=3?C.green:C.navy}),'squared distances picture');}};
+FIG.cmp=function(){var A=[60,70,78,85,95],B=[50,65,80,88,100];
+  return M.boxPlots([{f:A,name:'Class A',parts:[null,null,{t:'median '+A[2]},null,null]},{f:B,name:'Class B',parts:[null,null,{t:'median '+B[2]},null,null]}],{min:50,max:100,step:5,lab:10,grid:5,rowH:76,title:'Test score',label:'two box plots'});};
+SP.fm52={type:'mc',ans:'3',ok:'Ana added the signed differences. They always add to 0! MAD uses distances, which are never negative: 5 + 3 + 1 + 1 + 8 = 18.',
+  fb:{'1':'The mean really is 40 ÷ 5 = 8. That line is fine.','2':'Those differences are correct. The trouble is what she does with them next.','4':'Line 4 divides correctly. The problem is the 0 it was given.'},
+  viz:function(st){return distViz(D52,st==='solved'?'solved':'q',{signed:false});}};
+SP.fm52b={type:'num',ans:function(){return St.mad(D52);},fb:[[0,'Use distances (no negative signs), not signed differences.'],[18,'18 is the total distance. Divide by 5.']],hint:'Add the distances 5, 3, 1, 1, 8. Then divide by 5.'};
+var D52y=[2,4,4,6,9];
+SP.yt52={type:'multi',ok:'The gold gaps are the distances from the mean.',viz:function(st){return st==='solved'?distViz(D52y,'solved',{min:0,max:10,lab:1,label:'dot plot of 2, 4, 4, 6, 9 with distances'}):M.dotPlot(D52y,{min:0,max:10,label:'dot plot of 2, 4, 4, 6, 9'});},
+  parts:[{k:'mean',label:'mean',type:'num',hint:'Add 2 + 4 + 4 + 6 + 9, then divide by 5.',ans:St.mean(D52y),fb:[[4,'4 is the median (and the mode). The mean = add all, then ÷ 5.']]},
+    {k:'med',label:'median',type:'num',ans:St.median(D52y),hint:'The middle value of 2, 4, 4, 6, 9.',fb:[[5,'5 is the mean. The median is the middle value of 2, 4, 4, 6, 9.']]},
+    {k:'rng',label:'range',type:'num',hint:'Range = max − min.',ans:Math.max.apply(null,D52y)-Math.min.apply(null,D52y),fb:[[9,'Range = max − min = 9 − 2.']]},
+    {k:'mad',label:'MAD',type:'num',hint:'Distances from the mean 5: 3, 1, 1, 1, 4. Find their average.',ans:St.mad(D52y),fb:[[0,'Use distances (no negative signs).'],[10,'10 is the total distance. Divide by 5.']]}]};
+/* ---------- topic 3 ---------- */
+var D53=[4,6,7,8,9,10,11,25],F53=St.five(D53),IQR53=F53[3]-F53[1],UF53=F53[3]+1.5*IQR53,LF53=F53[1]-1.5*IQR53;
+FIG.pull=function(){var a=D53.slice(0,7),X=M.sc(0,26,22,338),s='',rows=[{d:a,y:70,name:'Without 25'},{d:D53,y:160,name:'With 25'}];
+  rows.forEach(function(r){var m=St.mean(r.d),md=St.median(r.d);s+=tx(22,r.y-48,r.name,{size:12,bold:true,anchor:'start'});
+    s+=ln(22,r.y,338,r.y,C.axis,1.4);r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});
+    var mr=m>md;s+=ln(X(m),r.y-34,X(m),r.y,C.gold,2.2,'4 3')+tag(X(m)+(mr?3:-3),r.y-36,'mean '+f(m),{size:10.5,mono:true,fill:C.goldD,anchor:mr?'start':'end'});
+    s+=ln(X(md),r.y-34,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-36,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});});
+  var A2=M.axisX({x0:22,x1:338,y:186,min:0,max:26,step:1,lab:2});
+  return M.svg(360,215,s+A2.s,'mean versus median with an outlier');};
+function fenceViz(d,st,o){var F=St.five(d),I=F[3]-F[1],uf=F[3]+1.5*I,lf=F[1]-1.5*I;o=o||{};
+  return M.dotPlot(d,{min:o.min,max:o.max,lab:o.lab||2,label:'dot plot with fences',color:function(v){return st==='solved'&&(v>uf||v<lf)?C.gold:C.navy;},
+    marks:st==='solved'?[{v:uf,label:'fence '+f(uf),color:C.green,row:1}].concat(lf>=o.min?[{v:lf,label:'fence '+f(lf),color:C.green,row:0,anchor:'start'}]:[]):(o.qm||[]),
+    after:function(X,ay){if(st!=='solved')return '';var s='';d.forEach(function(v){if(v>uf||v<lf)s+=tag(X(v),ay-26,'outlier',{size:10.5,fill:C.goldD});});return s;}});}
+EX.e53={viz:function(st){return fenceViz(D53,st==='solved'||st>=4?'solved':'q',{min:0,max:26,qm:[{v:F53[3],label:'Q3 '+(st>=1?f(F53[3]):'?'),color:st>=1?C.green:C.gold,row:0},{v:F53[1],label:'Q1 '+(st>=1?f(F53[1]):'?'),color:st>=1?C.green:C.gold,row:1}]});}};
+SP.fm53={type:'mc',ans:'2',ok:'The fence uses 1.5 × IQR, not just the IQR. Upper fence = 10.5 + 1.5 × 4 = 16.5.',fb:{'1':'10.5 − 6.5 = 4 is right.','3':'25 is an outlier — but Line 3 uses the wrong fence from an earlier line.'},
+  viz:function(st){return fenceViz(D53,st,{min:0,max:26,qm:[{v:14.5,label:'Lee: 14.5?',color:C.gold}]});}};
+SP.fm53b={hint:'Upper fence = Q3 + 1.5 × IQR = 10.5 + 1.5 × 4.',type:'num',ans:UF53,fb:[[14.5,'That is Q3 + IQR. Use 1.5 × IQR = 6.'],[6,'6 is 1.5 × IQR. Add it to Q3.']]};
+var D53y=[12,14,15,15,16,18,19,40],F53y=St.five(D53y),I53y=F53y[3]-F53y[1];
+SP.yt53={type:'multi',ok:'The fences are drawn on the plot.',viz:function(st){return fenceViz(D53y,st,{min:10,max:42,lab:4});},
+  parts:[{k:'q1',label:'Q1',type:'num',ans:F53y[1],hint:'Q1 = middle of the lower half 12, 14, 15, 15.',fb:[[15,'Q1 is the middle of the lower half 12, 14, 15, 15: average 14 and 15.']]},
+    {k:'q3',label:'Q3',type:'num',ans:F53y[3],hint:'Q3 = middle of the upper half 16, 18, 19, 40.',fb:[[19,'Q3 is the middle of the upper half 16, 18, 19, 40: average 18 and 19.']]},
+    {k:'iqr',label:'IQR',type:'num',hint:'IQR = Q3 − Q1.',ans:I53y,fb:[[28,'That is the range (max − min). IQR = Q3 − Q1.']]},
+    {k:'uf',label:'upper fence',type:'num',hint:'Upper fence = Q3 + 1.5 × IQR.',ans:F53y[3]+1.5*I53y,fb:[[22.5,'That is Q3 + IQR. Use 1.5 × IQR.']]}]};
+SP.yt53b={type:'mc',ans:(40>F53y[3]+1.5*I53y)?'yes':'no',ok:'40 is above the upper fence 24.5.',fb:{no:'Compare 40 to the upper fence. Is it bigger?',yes:'Compare 40 to the upper fence again.'}};
+/* ---------- topic 4 ---------- */
+var BK=[[1,3],[2,5],[3,4],[4,6],[5,6],[6,9],[7,9]],FIT=St.lsrl(BK);
+var BKO={xmin:0,xmax:8,xstep:1,ymin:0,ymax:12,ystep:1,ylab:2,xTitle:'Practice hours (x)',yTitle:'Baskets made (y)'};
+function o(base,extra){var r={},k;for(k in base)r[k]=base[k];for(k in extra)r[k]=extra[k];return r;}
+function eqn(a,b){var B=Math.abs(b);return 'ŷ = '+f(a)+(b<0?' − ':' + ')+(Math.abs(B-1)<1e-9?'':f(B))+'x';}
+FIG.sc1=function(){return M.scatter(BK,o(BKO,{line:{a:FIT.a,b:FIT.b,label:eqn(FIT.a,FIT.b),at:[0.3,11]},label:'scatter plot with line of best fit'}));};
+FIG.interp=function(){return M.scatter(BK,o(BKO,{xmax:12,ymax:16,ylab:4,shade:[1,7],shadeLabel:'data: 1 to 7 hours',line:{a:FIT.a,b:FIT.b},
+  marks:[{x:4.5,y:FIT.a+FIT.b*4.5,color:C.green,label:'interpolate',dy:16,dx:6},{x:11,y:FIT.a+FIT.b*11,color:C.gold,label:'extrapolate',anchor:'end',dx:-8,dy:-6}],label:'interpolate versus extrapolate'}));};
+INT.fit=function(el){el.innerHTML='<div class="viz" id="fitv"></div><div class="ctrl"><label>slope b <input type="range" id="fit-m" min="0" max="2" step="0.1" value="0.5"><span class="v" id="fit-mv"></span></label><label>intercept a <input type="range" id="fit-b" min="-2" max="6" step="0.5" value="4"><span class="v" id="fit-bv"></span></label><div class="read" id="fit-read"></div><button class="mcheck" id="fit-best">Show the best line</button></div>';
+  var mI=el.querySelector('#fit-m'),bI=el.querySelector('#fit-b');
+  function draw(){var m=+mI.value,b=+bI.value,sse=0;BK.forEach(function(p){var e=p[1]-(b+m*p[0]);sse+=e*e;});
+    el.querySelector('#fit-mv').textContent=f(m);el.querySelector('#fit-bv').textContent=f(b);
+    var best=Math.abs(m-FIT.b)<1e-9&&Math.abs(b-FIT.a)<1e-9;
+    el.querySelector('#fitv').innerHTML=M.scatter(BK,o(BKO,{line:{a:b,b:m,label:'ŷ = '+f(b)+' + '+f(m)+'x',color:best?C.green:C.navy,at:[0.3,11]},resid:true,label:'line fitting tool'}));
+    el.querySelector('#fit-read').innerHTML='Sum of squared residuals = <b>'+f(sse,1)+'</b>'+(best?' ← the smallest possible. This is the line of best fit!':' (smaller is better)');}
+  mI.addEventListener('input',draw);bI.addEventListener('input',draw);
+  el.querySelector('#fit-best').addEventListener('click',function(){mI.value=FIT.b;bI.value=FIT.a;draw();});draw();};
+EX.e54={viz:function(st){var s=st==='solved'?2:(st||0),y=2+3*4;
+  return M.scatter([],{xmin:0,xmax:6,xstep:1,ymin:0,ymax:22,ystep:2,ylab:4,h:250,xTitle:'x',yTitle:'ŷ',line:{a:2,b:3,label:'ŷ = 2 + 3x',lx:5.2,anchor:'end',ly:-6},
+    guides:[{x:4,y:y,toY:s>=2,color:s>=2?C.green:C.gold}],marks:[{x:4,y:y,color:s>=2?C.green:C.gold,label:s>=2?'(4, 14)':'(4, ?)',dx:-8,anchor:'end',dy:-6}],label:'prediction at x = 4'});}};
+EX.e54b={viz:function(st){var s=st==='solved'?3:(st||0);
+  return M.scatter(BK,o(BKO,{h:270,line:{a:FIT.a,b:FIT.b},label:'slope and intercept',
+    after:function(X,Y){var q='',x0=5.5,x1=6.5,y0=FIT.a+FIT.b*x0,y1=FIT.a+FIT.b*x1,c1=s>=1?C.green:C.gold;q+=ln(X(x0),Y(y0),X(x1),Y(y0),c1,2.6)+ln(X(x1),Y(y0),X(x1),Y(y1),c1,2.6);
+      q+=tag(X(6),Y(y0)+16,'run 1',{size:10.5,fill:C.navy})+tag(X(x1)+5,Y((y0+y1)/2)+4,s>=1?'rise '+f(FIT.b):'rise ?',{size:10.5,mono:true,fill:s>=1?C.green:C.goldD,anchor:'start'});
+      q+=ci(X(0),Y(FIT.a),5.5,s>=2?C.green:C.gold)+tag(X(0)+8,Y(FIT.a)+18,s>=2?'(0, '+f(FIT.a)+')':'(0, ?)',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD,anchor:'start'});return q;}}));}};
+SP.fm54={type:'mc',ans:'2',ok:'Mia added 5 + 2 before multiplying. Multiply first: 2(6) = 12. Then 5 + 12 = 17.',fb:{'1':'Putting 6 in for x is right.','3':'7 × 6 really is 42 — the mistake happened before this line.'},
+  viz:function(st){var y=5+2*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:44,ystep:4,ylab:8,h:250,xTitle:'x',yTitle:'ŷ',line:{a:5,b:2,label:'ŷ = 5 + 2x',lx:7.6,anchor:'end',ly:-8},
+    guides:[{x:6,y:st==='solved'?y:42,toY:true,color:st==='solved'?C.green:C.gold}],marks:[st==='solved'?{x:6,y:y,color:C.green,label:'(6, 17)',anchor:'end',dx:-8}:{x:6,y:42,color:C.gold,label:'Mia: 42?',anchor:'end',dx:-8,dy:14}],label:'Mia’s prediction'});}};
+SP.fm54b={hint:'Multiply first: 2 × 6. Then add 5.',type:'num',ans:5+2*6,fb:[[42,'Multiply before you add: 2(6) first.'],[13,'2(6) means 2 × 6 = 12, not 2 + 6.']]};
+SP.yt54={hint:'Put 6 in for x: 4 + 1.5(6). Multiply first.',type:'num',ans:4+1.5*6,fb:[[33,'Multiply first: 1.5 × 6 = 9. Then add 4.'],[11.5,'1.5x means 1.5 × 6, not 1.5 + 6.'],[9,'9 is 1.5 × 6. Now add the 4.']],ok:'',
+  viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',lx:0.4,anchor:'start',ly:-10},
+    guides:[{x:6,y:y,toY:st==='solved',color:st==='solved'?C.green:C.gold}],marks:[{x:6,y:y,color:st==='solved'?C.green:C.gold,label:st==='solved'?'(6, 13)':'(6, ?)',dx:8,dy:14}],label:'prediction at x = 6'});}};
+SP.yt54b={type:'mc',ans:'e',ok:'20 is outside 0 to 8, so it is extrapolation. The prediction is risky.',fb:{i:'Interpolation means inside the data (0 to 8). Is 20 inside?'}};
+/* ---------- topic 5 ---------- */
+FIG.res1=function(){return M.scatter(BK,o(BKO,{line:{a:FIT.a,b:FIT.b,label:eqn(FIT.a,FIT.b),at:[0.3,11]},resid:true,residLabel:function(p,i,e){return {t:M.sgn(e)};},label:'residuals'}));};
+FIG.resplot=function(){var r=BK.map(function(p){return [p[0],p[1]-(FIT.a+FIT.b*p[0])];});
+  return M.scatter(r,{xmin:0,xmax:8,xstep:1,ymin:-2,ymax:2,ystep:1,h:200,xTitle:'Practice hours (x)',yTitle:'Residual',label:'residual plot',
+    after:function(X,Y){return ln(X(0),Y(0),X(8),Y(0),C.navy,2,'6 4');}});};
+var GAL=[[2,3,3,5,6,6,8,8,10,11],[4,2,6,3,5,8,4,7,9,5],[5,8,2,6,9,3,7,4,8,5],[9,7,8,5,8,4,6,3,6,2],[11,10,9,9,7,6,5,4,2,2]];
+function rWords(r){var a=Math.abs(r);return (a>=0.8?'strong ':a>=0.5?'moderate ':a>=0.3?'weak ':'')+(a<0.3?'no correlation':(r>0?'positive':'negative'));}
+function mini(ys,lab){var p=ys.map(function(y,i){return [i+1,y];}),r=St.r(p);
+  return '<div class="viz" style="flex:1 1 150px;max-width:190px">'+M.scatter(p,{w:180,h:160,L:36,R:8,xmin:0,xmax:11,xstep:1,xlab:5,ymin:0,ymax:12,ystep:2,ylab:4,r:3.6,xTitle:'x',yTitle:'y',label:'scatter r = '+f(r)})+
+    '<div class="diagram-cap"><b>r = '+f(r)+'</b><br>'+(lab||rWords(r))+'</div></div>';}
+FIG.rgal=function(){return GAL.map(function(y){return mini(y);}).join('');};
+EX.e55={viz:function(st){var sv=st==='solved';return M.scatter([[5,14]],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'y',line:{a:2,b:2,label:'line: ŷ = 2 + 2x',at:[0.3,16.6]},
+  marks:[{x:5,y:12,hollow:true,color:C.navy,tc:C.navy,label:'predicted 12',anchor:'start',dx:10,dy:18}],
+  after:function(X,Y){return ln(X(5),Y(14),X(5),Y(12),sv?C.green:C.gold,3)+tag(X(5)+9,Y(13)+4,sv?'+2':'?',{size:11.5,mono:true,fill:sv?C.green:C.goldD,anchor:'start'})+tag(X(5)-10,Y(14)-2,'actual 14',{size:10.5,mono:true,anchor:'end'});},label:'residual picture'});}};
+var R_BK=St.r(BK);
+EX.e55b={viz:function(st){var sv=st==='solved'||st>=2;return M.scatter(BK,o(BKO,{h:270,label:'basket data',after:function(X,Y){return tag(X(0.4),Y(11),'r = '+f(R_BK),{size:12,mono:true,fill:C.navy,anchor:'start'})+tag(X(0.4),Y(9.6),sv?rWords(R_BK):'strength? direction?',{size:11,fill:sv?C.green:C.goldD,anchor:'start'});}}));}};
+INT.drag=function(el){var P=BK.map(function(p){return p.slice();}),w=360,h=300,L=46,R=14,T=14,B=44,X0=0,X1=8,Y0=0,Y1=12,dragI=-1;
+  el.className='viz drag-area';
+  var box=document.createElement('div');el.appendChild(box);var rd=document.createElement('div');rd.className='ctrl read';rd.style.textAlign='center';el.appendChild(rd);
+  function draw(){var F=St.lsrl(P),r=St.r(P);box.innerHTML=M.scatter(P,o(BKO,{line:{a:F.a,b:F.b},ptColor:function(i){return i===dragI?C.gold:C.navy;},r:6.5,label:'drag a dot'}));
+    rd.innerHTML=eqn(F.a,F.b)+' &nbsp; · &nbsp; r = <b>'+f(r)+'</b> ('+rWords(r)+')';}
+  function toData(e){var s=box.querySelector('svg'),pt=s.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;var q=pt.matrixTransform(s.getScreenCTM().inverse());
+    return [X0+(q.x-L)*(X1-X0)/(w-R-L),Y0+(h-B-q.y)*(Y1-Y0)/(h-B-T)];}
+  el.addEventListener('pointerdown',function(e){var d=toData(e),best=-1,bd=1e9;P.forEach(function(p,i){var dx=(p[0]-d[0])*(w-L-R)/(X1-X0),dy=(p[1]-d[1])*(h-B-T)/(Y1-Y0),dd=dx*dx+dy*dy;if(dd<bd){bd=dd;best=i;}});
+    if(bd<26*26){dragI=best;try{el.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();draw();}});
+  el.addEventListener('pointermove',function(e){if(dragI<0)return;var d=toData(e);P[dragI]=[Math.min(X1,Math.max(X0,Math.round(d[0]*2)/2)),Math.min(Y1,Math.max(Y0,Math.round(d[1]*2)/2))];draw();});
+  function up(){if(dragI>=0){dragI=-1;draw();}}el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+  var rs=document.createElement('button');rs.className='mcheck';rs.textContent='Reset dots';rs.style.marginTop='6px';rs.onclick=function(){P=BK.map(function(p){return p.slice();});draw();};el.appendChild(rs);draw();};
+function resViz(act,pred,st,x){var sv=st==='solved',lo=Math.min(act,pred),hi=Math.max(act,pred),ymax=Math.ceil((hi+4)/2)*2;
+  return M.scatter([[x,act]],{xmin:0,xmax:8,xstep:1,ymin:Math.max(0,Math.floor((lo-6)/2)*2),ymax:ymax,ystep:1,ylab:2,h:230,xTitle:'x',yTitle:'y',label:'residual picture',
+    marks:[{x:x,y:pred,hollow:true,color:C.navy,tc:C.navy,label:'predicted '+f(pred),anchor:'start',dx:10,dy:act>pred?14:-6}],
+    after:function(X,Y){return ln(X(x),Y(act),X(x),Y(pred),sv?C.green:C.gold,3)+tag(X(x)-9,Y((act+pred)/2)+4,sv?M.sgn(act-pred):'?',{size:11.5,mono:true,fill:sv?C.green:C.goldD,anchor:'end'})+tag(X(x)+10,Y(act)+(act>pred?-6:14),'actual '+f(act),{size:10.5,mono:true,anchor:'start'});}});}
+SP.fm55={type:'mc',ans:'1',ok:'The order is backwards. Residual = actual − predicted = 20 − 23 = −3. The dot is below the line.',fb:{'2':'23 − 20 is 3 — the subtraction is fine, but look at the rule it used.','3':'Line 3 is wrong too, but it comes from an earlier mistake.'},viz:function(st){return resViz(20,23,st,4);}};
+SP.fm55b={hint:'Residual = actual − predicted = 20 − 23.',type:'num',ans:20-23,fb:[[3,'That is predicted − actual. Do actual − predicted: 20 − 23.']]};
+SP.yt55={hint:'Residual = actual − predicted = 9 − 11.5.',type:'num',ans:9-11.5,fb:[[2.5,'Actual − predicted = 9 − 11.5. The dot is below the line, so the residual is negative.'],[20.5,'Subtract, don’t add.']],viz:function(st){return resViz(9,11.5,st,3);}};
+SP.yt55b={type:'mc',ans:'sn',ok:'Negative sign → as x goes up, y goes down. 0.85 is close to 1 → strong.',fb:{wn:'0.85 is close to 1, so it is strong, not weak.',sp:'The minus sign means negative.',no:'No correlation would be r near 0.'}};
+/* ---------- topic 6 ---------- */
+function lurk(top,l,r,st){var s='',col=st==='solved'?C.green:st==='q'?C.gold:C.navy;
+  s+=rc(105,10,150,40,st==='q'?C.goldL:(st==='solved'?C.greenL:C.navyL),col,2,8)+tx(180,35,top,{size:12.5,bold:true,fill:st==='q'?C.goldD:(st==='solved'?C.green:C.navy)});
+  s+=rc(8,120,150,40,'#fff',C.navy,1.8,8)+tx(83,145,l,{size:12,bold:true})+rc(202,120,150,40,'#fff',C.navy,1.8,8)+tx(277,145,r,{size:12,bold:true});
+  s+=M.arrow(150,50,95,118,C.navy,2)+M.arrow(210,50,265,118,C.navy,2);
+  s+=ln(160,140,200,140,C.red,2,'5 4')+tx(180,177,'related, but neither causes the other',{size:10.5,fill:C.red});
+  return M.svg(360,186,s,'lurking variable diagram');}
+FIG.lurk=function(){return lurk('Hot weather','Ice-cream sales','Shark attacks','g');};
+var ICE=[2,3,4,6,8,11,13,12,9,6,3,2],SHK=[0,1,1,2,3,5,6,5,4,2,1,0],ICEP=ICE.map(function(v,i){return [v,SHK[i]];});
+FIG.icecream=function(){return M.scatter(ICEP,{xmin:0,xmax:14,xstep:1,xlab:2,ymin:0,ymax:7,ystep:1,h:260,xTitle:'Ice-cream sales (hundreds) per month',yTitle:'Shark attacks',label:'ice cream and sharks',
+  after:function(X,Y){return tag(X(0.5),Y(6.4),'r = '+f(St.r(ICEP)),{size:12,mono:true,anchor:'start'});}});};
+FIG.cvc=function(){return M.flow({start:'Two variables move together',rows:[{q:'Is r close to 0?',a:'No relationship'},{q:'Controlled experiment?',a:'Can say “causes”'}],end:'Say “related,” not “causes”'});};
+EX.e56={viz:function(st){var s=st==='solved'?4:(st||0);return lurk(s>=3?'Study habits?':'Lurking variable ?','Hours of sleep','Grades',s>=3?'solved':'q');}};
+SP.fm56={type:'mc',ans:'2',ok:'Strong r does not prove cause. A bigger fire (the lurking variable) brings more firefighters AND more damage.',fb:{'1':'0.95 really is strong and positive. That line is fine.'},
+  viz:function(st){return lurk(st==='solved'?'Size of the fire':'Lurking variable ?','Firefighters sent','Damage',st==='solved'?'solved':'q');}};
+var LIB=[[2,40],[3,55],[4,52],[5,80],[6,75],[7,98],[8,110],[9,105]];
+SP.yt56={type:'mc',ans:'c',ok:'Bigger towns have more libraries and more crime. Population is the lurking variable.',fb:{a:'A correlation does not prove cause.',b:'That is still a cause claim. Is there a third thing that raises both?',d:'Look at the plot and r. The dots go up together.'},
+  viz:function(st){return M.scatter(LIB,{xmin:0,xmax:10,xstep:1,xlab:2,ymin:0,ymax:120,ystep:20,h:240,xTitle:'Libraries in town',yTitle:'Crimes per year',label:'libraries and crime',
+    after:function(X,Y){return tag(X(0.4),Y(110),'r = '+f(St.r(LIB)),{size:12,mono:true,anchor:'start'})+(st==='solved'?tag(X(9.6),Y(14),'bigger towns → more of both',{size:10.5,fill:C.green,anchor:'end'}):'');}});}};
+})();
+</script>
+</body>
+</html>

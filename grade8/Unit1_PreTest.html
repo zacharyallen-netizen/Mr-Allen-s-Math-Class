@@ -139,6 +139,44 @@
   footer.sitefoot{margin-top:44px;background:var(--navy);color:#fff;text-align:center;padding:18px;font-size:.9rem;}
   footer.sitefoot a{color:#fff;font-weight:600;}
   @media(max-width:520px){.masthead h1{font-size:1.6rem;}input.answer{min-width:120px;}}
+
+  /* ---- Answer key flag + paper-only pieces (hidden on screen) ---- */
+  .key-flag,.print-line{display:none;}
+
+  /* ---- Paper version: a clean worksheet (screen look is unchanged) ---- */
+  @media print{
+    @page{size:letter;margin:.5in .45in;}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact;font-variant-ligatures:no-contextual;}
+    html{font-size:14.5px;}
+    body{background:#fff;}
+    .backrow,.scorebar,.toolbar,footer.sitefoot,.check-btn,.mini,.chips,.nl-readout{display:none!important;}
+    .answer-row:has(> .check-btn),.answer-row:has(> .mini){display:none!important;}
+    .sheet{max-width:none;padding:0;}
+    .masthead{padding-bottom:10px;}
+    .masthead h1{font-size:1.75rem;}
+    .meta{gap:8px 28px;font-size:.92rem;}
+    .meta label{color:var(--ink);}
+    .meta{flex-wrap:nowrap;}
+    .meta input{border-bottom:1.2px solid #333;min-width:0;width:1.65in;}
+    .band{margin:16px 0 2px;padding:8px 14px;break-after:avoid;page-break-after:avoid;}
+    .subsec{margin:12px 0 0;break-after:avoid;page-break-after:avoid;}
+    .directive{margin:2px 0 6px;break-after:avoid;page-break-after:avoid;}
+    .garden{margin:8px auto;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid;}
+    .q{background:#fff;margin:8px 0;padding:10px 14px 12px;break-inside:avoid;page-break-inside:avoid;}
+    .answer-row{margin-top:10px;}
+    input.answer{border:0;border-bottom:1.5px solid #333;border-radius:0;background:transparent;min-width:2.6in;padding:5px 2px 2px;}
+    input.answer::placeholder{color:#8a8578;}
+    .feedback{transition:none;margin-top:6px;}
+    .hint{margin-top:2px;}
+    .feedback.show{max-height:none;}
+    .print-line{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.95rem;color:var(--muted);align-items:flex-end;gap:8px;margin-top:8px;}
+    .print-line .pl-blank{display:inline-block;width:3.6in;border-bottom:1.5px solid #333;height:1.2em;}
+    body:not(.answer-key) .print-line{display:flex;}
+    body:not(.answer-key) .order-readout{display:none;}
+    body.answer-key .key-flag{display:inline-block;margin:6px 0 0;padding:3px 12px;border:2px solid var(--bad);color:var(--bad);font-weight:800;letter-spacing:.18em;text-transform:uppercase;font-size:.9rem;border-radius:4px;}
+    body.answer-key input.answer{color:var(--good);font-weight:700;}
+    body.answer-key .q.correct{background:#fff;}
+  }
 </style>
 </head>
 <body>
@@ -154,6 +192,7 @@
 
   <header class="masthead">
     <p class="eyebrow">Unit 1 Pre-Test</p>
+    <p class="key-flag">Answer Key</p>
     <h1>The Real Number System</h1>
     <span class="sub">Answer each question, then check your work.</span>
     <div class="meta">
@@ -279,6 +318,7 @@ function buildNumberLine(lo,hi,onChange){
     node:wrap,
     hasAnswer:()=>selected!=null,
     getValue:()=>selected,
+    setValue:(v)=>select(v),
     mark:(ok)=>{ dot.setAttribute('fill', ok?'#256d4f':'#b23b2e'); readout.innerHTML='You plotted: <b>'+(selected!=null?selected.toFixed(1):'—')+'</b>'; },
     reset:()=>{ selected=null; dot.setAttribute('cx','-99'); halo.setAttribute('cx','-99'); hits.forEach(h=>h.el.setAttribute('aria-checked','false')); readout.innerHTML='Tap a mark on the line to plot your estimate.'; }
   };
@@ -338,6 +378,7 @@ function buildOrderLine(items,lo,hi,onChange){
 
   refreshReadout();
   wrap.appendChild(chipsRow); wrap.appendChild(readout);
+  const pl=document.createElement('div'); pl.className='print-line'; pl.innerHTML='Order: <span class="pl-blank"></span>'; wrap.appendChild(pl);
   const clearRow=document.createElement('div'); clearRow.className='answer-row'; clearRow.appendChild(clear); wrap.appendChild(clearRow);
 
   return {
@@ -345,6 +386,7 @@ function buildOrderLine(items,lo,hi,onChange){
     hasAnswer:()=>placed.length===items.length,
     isCorrect:()=>{ if(placed.length!==items.length)return false; for(let i=1;i<placed.length;i++){if(placed[i].value<placed[i-1].value)return false;} return true; },
     mark:(ok)=>{ placed.forEach(p=>p.color=ok?'#256d4f':'#b23b2e'); drawMarkers(); },
+    placeInOrder:()=>{ reset(); items.map((it,k)=>({it,b:chipBtns[k]})).sort((x,y)=>x.it.value-y.it.value).forEach(o=>placeItem(o.it,o.b)); },
     reset:reset,
     needMsg:'Click all four values, least to greatest.'
   };
@@ -354,24 +396,24 @@ function buildOrderLine(items,lo,hi,onChange){
 const BANDS = [
   { band:"3.0", label:"Score", name:"Basic Understanding", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
-      { no:1, prompt:'Write as a decimal: <span class="math">3/8</span>', label:"=", hint:"e.g. 0.5", type:'text', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
-      { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', check:valCheck(0.25,1e-6), why:"0.25 = 25/100 = 1/4 in simplest form." },
+      { no:1, prompt:'Write as a decimal: <span class="math">3/8</span>', label:"=", hint:"e.g. 0.5", type:'text', ans:'0.375', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
+      { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', ans:'1/4', check:valCheck(0.25,1e-6), why:"0.25 = 25/100 = 1/4 in simplest form." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
-      { no:3, prompt:'Classify: <span class="math">√144</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('R'), why:"√144 = 12, a whole number, so it is rational." },
+      { no:3, prompt:'Classify: <span class="math">√144</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'R', check:classCheck('R'), why:"√144 = 12, a whole number, so it is rational." },
     ]},
   ]},
   { band:"4.0", label:"Score", name:"Target Content", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
-      { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', check:valCheck(2/3,1e-4), why:"Let x = 0.666…, then 10x − x = 6, so 9x = 6 and x = 2/3." },
-      { no:5, prompt:'Write as a decimal: <span class="math">2<sup>5</sup>&frasl;<sub>6</sub></span> <span class="hint" style="display:inline">(2 and 5/6)</span>', label:"=", hint:"use … for the repeating part", type:'text', check:valCheck(2.8333,0.005), why:"2 5/6 = 2 + 5/6 = 2.8333… (the 3 repeats)." },
+      { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', ans:'2/3', check:valCheck(2/3,1e-4), why:"Let x = 0.666…, then 10x − x = 6, so 9x = 6 and x = 2/3." },
+      { no:5, prompt:'Write as a decimal: <span class="math">2<sup>5</sup>&frasl;<sub>6</sub></span> <span class="hint" style="display:inline">(2 and 5/6)</span>', label:"=", hint:"use … for the repeating part", type:'text', ans:'2.833…', check:valCheck(2.8333,0.005), why:"2 5/6 = 2 + 5/6 = 2.8333… (the 3 repeats)." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
-      { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('IR'), why:"20 is not a perfect square, so √20 = 2√5 ≈ 4.47… — non-terminating and non-repeating, so irrational." },
+      { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"20 is not a perfect square, so √20 = 2√5 ≈ 4.47… — non-terminating and non-repeating, so irrational." },
     ]},
     { code:"1.2b", hideCode:true, directive:"<em>Simplify each expression first,</em> then classify the result.", qs:[
-      { no:7, prompt:'Classify: <span class="math">√3 × √27</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"√3 × √27 = √81 = 9, a whole number, so rational." },
-      { no:8, prompt:'Classify: <span class="math">√32 ÷ √2</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"√32 ÷ √2 = √16 = 4, a whole number, so rational." },
+      { no:7, prompt:'Classify: <span class="math">√3 × √27</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', ans:'R', check:classCheck('R'), why:"√3 × √27 = √81 = 9, a whole number, so rational." },
+      { no:8, prompt:'Classify: <span class="math">√32 ÷ √2</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', ans:'R', check:classCheck('R'), why:"√32 ÷ √2 = √16 = 4, a whole number, so rational." },
     ]},
     { code:"1.3", title:"Estimating Non-Perfect Square Roots", directive:"Estimate each value to the <em>nearest tenth</em> by clicking the number line.", qs:[
       { no:9, prompt:'Estimate: <span class="math">√40</span>', type:'numberline', lo:6, hi:7, target:6.3, why:"6² = 36 and 7² = 49, so √40 ≈ 6.32, which rounds to 6.3." },
@@ -380,8 +422,8 @@ const BANDS = [
   ]},
   { band:"5.0", label:"Score", name:"Advanced Content", sections:[
     { code:"1.2", title:"Real Number Classification", directive:"Evaluate or simplify each expression if possible, then classify as Rational (R) or Irrational (IR).", qs:[
-      { no:11, prompt:'Classify: <span class="math">−(√49 − √36)</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', check:classCheck('R'), why:"−(√49 − √36) = −(7 − 6) = −1, an integer, so rational." },
-      { no:12, prompt:'Classify: <span class="math">3 + √5</span>', label:"Classification:", hint:"type R or IR", type:'text', check:classCheck('IR'), why:"√5 is irrational, and a rational number (3) plus an irrational number is irrational." },
+      { no:11, prompt:'Classify: <span class="math">−(√49 − √36)</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', ans:'R', check:classCheck('R'), why:"−(√49 − √36) = −(7 − 6) = −1, an integer, so rational." },
+      { no:12, prompt:'Classify: <span class="math">3 + √5</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"√5 is irrational, and a rational number (3) plus an irrational number is irrational." },
     ]},
     { code:"1.4", title:"Ordering Real Numbers", directive:"Click the values in order from <em>least to greatest</em>. Each one drops onto the number line.", qs:[
       { no:13, prompt:'Set: <span class="math">{ 0.6, √2, 1.5, 5/3 }</span>', type:'order', lo:0, hi:4,
@@ -390,7 +432,7 @@ const BANDS = [
     ]},
     { code:"1.5", title:"Area", garden:true, directive:"A square garden has an area of 225 ft². Find the side length and the perimeter.", qs:[
       { no:14, prompt:'Find the side length and perimeter of the square garden.', type:'multi',
-        multi:[ {label:"Side length =",hint:"ft",check:valCheck(15,0.01)}, {label:"Perimeter =",hint:"ft",check:valCheck(60,0.01)} ],
+        multi:[ {label:"Side length =",hint:"ft",check:valCheck(15,0.01),ans:"15 ft"}, {label:"Perimeter =",hint:"ft",check:valCheck(60,0.01),ans:"60 ft"} ],
         why:"Side = √225 = 15 ft. Perimeter = 4 × 15 = 60 ft." },
     ]},
   ]},
@@ -492,6 +534,7 @@ BANDS.forEach(b=>{
       btn.addEventListener('click',()=>{entry.evaluate();updateScore();});
       (entry.inputs||[]).forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();entry.evaluate();updateScore();}}));
 
+      entry.q=q;
       registry.push(entry);
       quiz.appendChild(card);
     });
@@ -509,11 +552,30 @@ document.getElementById('checkAll').addEventListener('click',()=>{
   if(t)t.card.scrollIntoView({behavior:'smooth',block:'center'});
 });
 document.getElementById('reset').addEventListener('click',()=>{
+  document.body.classList.remove('answer-key');
   registry.forEach(e=>{ e.reset(); e.card.classList.remove('correct','incorrect'); e.feedbackEl.className='feedback'; e.feedbackEl.innerHTML=''; });
   updateScore(); window.scrollTo({top:0,behavior:'smooth'});
   if(window.ScoreSend)ScoreSend.reset();
 });
 updateScore();
+
+/* ================= Answer key (prints the answer-key PDF; no button on screen) ================= */
+function showAnswerKey(){
+  document.body.classList.add('answer-key');
+  registry.forEach(e=>{
+    const q=e.q;
+    if(q.type==='numberline') e.comp.setValue(q.target);
+    else if(q.type==='order') e.comp.placeInOrder();
+    else if(q.type==='multi') e.inputs.forEach((i,k)=>{i.value=q.multi[k].ans;});
+    else e.inputs[0].value=q.ans;
+    const ok=e.isCorrect(); e.applyMark(ok);
+    e.card.classList.remove('correct','incorrect'); e.card.classList.add(ok?'correct':'incorrect');
+    verdict(e.feedbackEl, ok?'pass':'fail', ok?'Solution:':'KEY ERROR: this answer fails the checker', e.why);
+  });
+  updateScore();
+  if(window.ScoreSend&&ScoreSend.revealed)ScoreSend.revealed();
+}
+window.showAnswerKey=showAnswerKey;
 </script>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>

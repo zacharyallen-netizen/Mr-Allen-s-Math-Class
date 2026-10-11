@@ -1,0 +1,13 @@
+global.document={readyState:'complete',querySelectorAll:()=>[],getElementById:()=>null,addEventListener(){}};global.window={};
+global.setTimeout=()=>{};
+const fs=require('fs');eval(fs.readFileSync(__dirname+'/src/lib.js','utf8')+';global.M=M;');
+const P=s=>JSON.stringify(M.parsePoly(s));
+for(const s of ['x^2+5x+6','x²+5x+6','6+5x+x^2','(x+3)(x+2)','3x(x+4)','-x^2+3','2x²−5x−3','(x+5)^2','1/2x','12/2*3','sqrt(2)','3√2','√(16)','x^2+-5x','2(x-0.5)(x+3)','y=2x+1','.5x'])console.log(s,'=>',P(s));
+for(const s of ['x=2,3','x = 2 or x = 3','±7','x=±7','7 and -7','-7, 7','{2,3}','x=(−3±5)/4','1±sqrt(10)/2','2 3','x = −4, x = 1','0 and -4'])console.log(s,'=>',JSON.stringify(M.setOf(s)));
+for(const s of ['4.0','x=4','−3','1/2','41.7%','24 students','mean = 8','sqrt(2)','+3'])console.log(s,'=>',JSON.stringify(M.numOf(s)));
+for(const s of ['(1,-4)','1, −4','(1, -4)','vertex=(1,-4)'])console.log(s,'=>',JSON.stringify(M.ptOf(s)));
+for(const s of ['3x(x+4)','(x+3)(x+4)','x(3x+12)','x^2+7x+12','-(x-3)(x+3)','(x+5)^2'])console.log(s,'=>',JSON.stringify(M.factorsOf(s)));
+const J=(sp,r)=>console.log(sp.type,r,'=>',JSON.stringify(M.judge(sp,r)));
+J({type:'factor',ans:[0,12,3]},'x(3x+12)');J({type:'factor',ans:[0,12,3]},'3(x^2+4x)');J({type:'factor',ans:[0,12,3]},'3x(4+x)');
+J({type:'factor',ans:[12,7,1]},'(x+2)(x+6)');J({type:'factor',ans:[-15,-2,1]},'(x+5)(x-3)');J({type:'poly',ans:[6,5,1]},'(x+3)(x+2)');J({type:'poly',ans:[6,5,1]},'x^2+6');
+J({type:'set',ans:[2,3]},'x=2');J({type:'set',ans:[2,3]},'-2,-3');J({type:'num',ans:41.6667,tol:0.5,pct:true},'0.417');J({type:'num',ans:-2},'2');

@@ -137,6 +137,41 @@
     .controls{display:none}
     .ans input{border:0;border-bottom:1px solid #333;border-radius:0}
   }
+
+  /* ---- Answer key flag (shown only on the printed key) ---- */
+  .key-flag{display:none}
+
+  /* ---- Paper version: clean worksheet, no web controls (screen look is unchanged) ---- */
+  @media print{
+    @page{size:letter;margin:.5in .45in}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-size:15.5px}
+    .sheet{background:#fff;padding:0 4px}
+    .masthead h1{font-size:30px}
+    .rule-gold{margin:10px 0 14px}
+    .band{margin-top:14px;break-after:avoid;page-break-after:avoid}
+    .stripe{padding:10px 16px 10px}
+    .objline,.can,.prompt{break-after:avoid;page-break-after:avoid}
+    table.vocab tr,.refbox{break-inside:avoid;page-break-inside:avoid}
+    table.vocab td{padding:5px 10px}
+    .refbox{margin:10px 0 2px;padding:8px 14px 10px}
+    .mono5x{font-size:32px;margin:0}
+    .q{break-inside:avoid;page-break-inside:avoid;padding:8px 2px 10px}
+    .q .expr{font-size:19px;margin:6px 0 12px}
+    .ans input{width:2.1in;background:transparent;border-bottom:1.5px solid #333}
+    /* vocabulary dropdowns become write-in blanks */
+    .term select{-webkit-appearance:none;appearance:none;background:transparent;border:0;
+      border-bottom:1.5px solid #333;border-radius:0;width:2.4em;padding:2px 0;
+      text-align:center;text-align-last:center;font-weight:700}
+    .term select:has(option[value=""]:checked){color:transparent}
+    .fb{font-size:13px}
+    body.answers-shown .key-flag{display:inline-block;margin:8px 0 0;padding:3px 12px;border:2px solid var(--no);
+      color:var(--no);font-family:var(--mono);font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:14px;border-radius:4px}
+    /* key: the answer takes the place of the blank answer line */
+    body.answers-shown .ans{display:none}
+    body.answers-shown .qfb{font-size:14px;font-weight:700;min-height:2.1em;display:flex;align-items:center;gap:7px}
+    body.answers-shown .qfb .key{font-size:19px}
+  }
 </style>
 </head>
 <body>
@@ -148,6 +183,7 @@
     <h1>Unit 2 Pre-Test</h1>
     <p class="sub">Exponent Rules &amp; Properties</p>
     <p class="std">Standard assessed: NC.8.EE.1</p>
+    <p class="key-flag">Answer Key</p>
   </div>
   <hr class="rule-gold">
   <div class="idline">
@@ -368,6 +404,7 @@ function check(){
 
 /* ---------- reveal ---------- */
 function reveal(){
+  document.body.classList.add('answers-shown');
   document.querySelectorAll('#vocab select').forEach(sel=>{
     sel.value=VOCAB[sel.dataset.term];
     const fb=sel.parentElement.querySelector('.fb');fb.textContent='✓';fb.className='fb ok';
@@ -387,6 +424,7 @@ function reveal(){
 
 /* ---------- reset ---------- */
 function reset(){
+  document.body.classList.remove('answers-shown');
   document.querySelectorAll('#vocab select').forEach(s=>{s.value='';
     const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});
   QS.forEach(q=>{

@@ -1,0 +1,34 @@
+# _build — the scripts behind the site
+
+Nothing in this folder is a student page. It holds the generators, checks and
+the Score Tracker script used to build and test Mr. Allen's Math Class.
+The scripts assume the site lives at `/home/claude/mr-allen-s-math-class`
+(change the path at the top of a script if you run it somewhere else).
+Python 3, Node 18+ and Playwright with Chromium are needed.
+
+## Generated pages — edit the SOURCE here, then rebuild
+| What | Rebuild with | Notes |
+|---|---|---|
+| 8th-grade pre-tests (Units 2 Sci. Notation, 3–9) | `python3 build_all_units.py` and `python3 unit2_sci.py` | Engine `build_pretest.py`, diagrams `pretest_svg.py`, `u4viz.py`, style `pretest_style.css`. PDFs: `node render_all.js` (answer key = #reveal). |
+| Unit 1 (Forms A, B) and Unit 2 Exponent Rules PDFs | `node u12pdf/make_u12_pdfs.js` | PDFs are printed straight from the online pages, so they always match. |
+| Math 1 pre-tests (Units 1–8) | `cd m1pre && python3 build_m1.py` then `node render_m1.js` | Items in `units_a.py`, `units_b.py`; diagrams `m1svg.py`. |
+| Math 1 notes + practice | Units 1–2 `node m1/u12/tools/build.js` · Units 3–4 `python3 m1/u34/build.py` · Units 5–6 `python3 m1/u56/build.py` · Units 7–8 `node m1/u78/build/u7n.js` (u7p, u8n, u8p) | The page HTML is generated: a hand edit to the page is lost on the next rebuild, so change the source here. |
+| Math 1 study guide | `node m1/guide/build.js` | |
+| Materials Index | `python3 build_matidx.py` | Reads every grade8 unit page, so new materials appear automatically. |
+| Hub look / shared top bar | `makeover.py`, `rollout.py` | Already applied; kept for reference. The bar itself is `/site-bar.js`, the hub style `/site.css`. |
+
+## Score Tracker (Google Apps Script)
+`tracker/ScoreTracker_v2.gs` is the script pasted into Google (see the update guide).
+Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in for Google Sheets).
+`node tracker/check_payload.js file.json` checks a page's "Send my work" data against the real script.
+`tracker/calib.js` re-runs the calibration of the practice cut-offs.
+
+## Site checks
+- `node audit.js <site> out.json pages.txt` — every page at 390 and 1280: errors, sideways scroll, bar overlap.
+- `node audit_m1.js` — Math 1 pages incl. clipped diagram labels.
+- `node eog3/play.js eog_math_review_game.html g 900` (and `play2.js` with N=60 / 45) — plays the EOG games end to end.
+- `node verify_lab.js` (Fluency Lab), `node pt_grade.js` (pre-test keys), `node send_repro.js` (Send panel).
+
+## Briefs
+`BUILD_BRIEF.md`, `final/*.md`, `m1/M1_BRIEF.md`, `tracker/WIRE_BRIEF.md` record the house rules
+(language level, notation, visuals drawn from each problem's own numbers, verification) used for every build.

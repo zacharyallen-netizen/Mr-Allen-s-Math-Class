@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 4 Guided Notes — Sequences &amp; Exponential Functions | NC Math 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<!--M1CSS-->
+</head>
+<body>
+<script src="../site-bar.js"></script>
+
+<div class="page-wrap">
+<a href="unit4.html" class="back-link">← Back to Unit 4</a>
+<div class="page-hdr">
+  <h1>📝 Unit 4 Guided Notes — Sequences &amp; Exponential Functions</h1>
+  <p>Add for arithmetic, multiply for geometric. Lines climb steadily; exponentials take off.</p>
+  <p class="stds">Standards: F-IF.3/7/8b · F-BF.1a/2 · F-LE.1/3/5</p>
+</div>
+<div class="intro"><p>Fill the blanks on your printed copy first, then click any blank, step, or button to check. <strong>Print → Save as PDF</strong> for a blank student worksheet; click <em>Reveal all</em> first to print the answer key.</p></div>
+<div class="legend" aria-label="Color key for the pictures"><span><b style="background:#1E2D4F"></b>given</span><span><b style="background:#E0A800"></b>what we want (?)</span><span><b style="background:#15803D"></b>answer (shows after you check)</span><span><b style="background:#7C3AED"></b>second function</span></div>
+<div class="topic-nav">
+  <a href="#t1">① Sequences</a>
+  <a href="#t2">② Arithmetic</a>
+  <a href="#t3">③ Geometric</a>
+  <a href="#t4">④ Linear vs Exp</a>
+  <a href="#t5">⑤ Growth &amp; Decay</a>
+  <a href="#t6">⑥ Features</a>
+</div>
+<p style="text-align:right"><button class="reveal-all" onclick="revealPage()">👁 Reveal all answers (for printing an answer key)</button></p>
+
+<!-- ============ TOPIC 1 ============ -->
+<section class="topic" id="t1">
+  <h2><span class="num">1</span> Sequences Are Functions</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Sequence</dt> <dd>— a list of numbers in order.</dd>
+    <dt>Term</dt> <dd>— one number in the list.</dd>
+    <dt>Term number n</dt> <dd>— the place of a term: 1st, 2nd, 3rd, …</dd>
+    <dt>a<sub>n</sub></dt> <dd>— say "a sub n." It means the nth term. a<sub>1</sub> is the first term. a<sub>4</sub> is the fourth term.</dd>
+    <dt>Arithmetic</dt> <dd>— you ADD the same number each time.</dd>
+    <dt>Geometric</dt> <dd>— you MULTIPLY by the same number each time.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> A sequence is a function whose inputs are the term numbers 1, 2, 3, … <strong>Add → arithmetic → linear.</strong> <strong>Multiply → geometric → exponential.</strong></div>
+<table class="rules-table"><tr><th>Type</th><th>Pattern</th><th>Becomes a…</th></tr><tr><td>Arithmetic</td><td class="rule">2, 5, 8, 11  (+3 each)</td><td>Linear function</td></tr><tr><td>Geometric</td><td class="rule">2, 6, 18, 54  (×3 each)</td><td>Exponential function</td></tr></table>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t1map" data-static></div><div class="diagram-cap">Each term number n goes to one term a<sub>n</sub>. That makes it a function.</div></div>
+    <div class="diagram"><div class="viz" data-v="t1dots" data-static></div><div class="diagram-cap">Graph (n, a<sub>n</sub>): arithmetic dots make a line; geometric dots curve up.</div></div>
+  </div>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t1a" data-static></div><div class="diagram-cap">Arithmetic: +3 each time</div></div>
+    <div class="diagram"><div class="viz" data-v="t1g" data-static></div><div class="diagram-cap">Geometric: ×3 each time</div></div>
+  </div>
+  <div class="note"><strong>🎚 Try it:</strong> Pick Add or Multiply. Move the sliders. Watch the bars and the rule change.</div>
+  <div class="ctrl" id="sm-ctrl">
+    <div class="seg"><button id="sm-add" class="on" onclick="smMode('add')">Add (arithmetic)</button><button id="sm-mul" onclick="smMode('mul')">Multiply (geometric)</button></div>
+    <label><span>a₁ = <b id="sm-ao">2</b></span><input type="range" id="sm-a" min="1" max="10" step="1" value="2" aria-label="first term"></label>
+    <label><span id="sm-sl">d = <b id="sm-so">3</b></span><input type="range" id="sm-s" min="-4" max="5" step="1" value="3" aria-label="step"></label>
+    <div class="out" id="sm-out" role="status"></div>
+  </div>
+  <div class="viz" id="sm-viz"></div>
+  <div class="example">
+    <h4>Is 4, 9, 14, 19, … arithmetic, geometric, or neither?</h4>
+    <div class="steps" data-example="e41">
+      <div class="step" onclick="reveal(this)"><strong>Subtract next − this:</strong> 9 − 4, 14 − 9, 19 − 14 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 5, 5, 5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ All the same?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> Yes → arithmetic, d = 5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e41')">Reveal all steps</button>
+    <div class="viz" data-v="e41" data-ex="e41"></div>
+  </div>
+  <div class="example">
+    <h4>Is 3, 6, 12, 24, … arithmetic, geometric, or neither?</h4>
+    <div class="steps" data-example="e41b">
+      <div class="step" onclick="reveal(this)"><strong>Differences:</strong> 3, 6, 12 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> not the same, so not arithmetic</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Divide next ÷ this:</strong> 6 ÷ 3, 12 ÷ 6, 24 ÷ 12 →<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2, 2, 2</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ So:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> geometric, r = 2</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e41b')">Reveal all steps</button>
+    <div class="viz" data-v="e41b" data-ex="e41b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: name the sequence</h5><ol>
+    <li>Subtract each term from the next one.</li>
+    <li>All the differences the same? It is arithmetic. That number is d.</li>
+    <li>Not the same? Divide each term by the one before it.</li>
+    <li>All the ratios the same? It is geometric. That number is r.</li>
+    <li>Neither one stays the same? It is neither.</li>
+  </ol></div>
+  <div class="fix" id="f41"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ray looks at 1, 2, 4, 8, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f41',this,1)"><span class="sn">Step 1</span> 2 − 1 = 1</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f41',this,2)"><span class="sn">Step 2</span> So the common difference is d = 1.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f41',this,3)"><span class="sn">Step 3</span> It is arithmetic. The next term is 9.</button>
+    <div class="chk-fb" id="fb-f41" role="status"></div>
+    <div class="viz" data-v="f41"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn — arithmetic, geometric, or neither?</h5>
+    <div class="chk" id="q41"><div class="q">1. 10, 7, 4, 1, …</div><div class="viz" data-v="q41"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41" role="status"></div></div>
+    <div class="chk" id="q41b"><div class="q">2. 5, 10, 20, 40, …</div><div class="viz" data-v="q41b"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41b',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41b',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41b',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41b" role="status"></div></div>
+    <div class="chk" id="q41c"><div class="q">3. 1, 4, 9, 16, …</div><div class="viz" data-v="q41c"></div><div class="chk-opts">
+      <button class="chk-btn" data-o="a" onclick="M1.pick('q41c',this,'a')">Arithmetic</button><button class="chk-btn" data-o="g" onclick="M1.pick('q41c',this,'g')">Geometric</button><button class="chk-btn" data-o="n" onclick="M1.pick('q41c',this,'n')">Neither</button></div>
+      <div class="chk-fb" id="fb-q41c" role="status"></div></div>
+  </div>
+</section>
+
+<!-- ============ TOPIC 2 ============ -->
+<section class="topic" id="t2">
+  <h2><span class="num">2</span> Arithmetic Sequences</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Common difference d</dt> <dd>— the number you add each time. It can be negative.</dd>
+    <dt>Explicit formula</dt> <dd>— finds ANY term right away from n.</dd>
+    <dt>Recursive formula</dt> <dd>— finds the NEXT term from the one before it. a<sub>n−1</sub> means "the term before."</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Add the common difference d. Explicit: <span class='coord'>a<sub>n</sub> = a<sub>1</sub> + (n − 1)d</span>. Recursive: <span class='coord'>a<sub>n</sub> = a<sub>n−1</sub> + d</span>.</div>
+  <div class="diagram"><div class="viz" data-v="t2bars" data-static></div><div class="diagram-cap">3, 7, 11, 15: each bar is 4 taller than the one before</div></div>
+  <div class="example">
+    <h4>Sequence 3, 7, 11, 15, …  Find a<sub>10</sub>.</h4>
+    <div class="steps" data-example="e42">
+      <div class="step" onclick="reveal(this)"><strong>d = 4, a<sub>1</sub> = 3 → explicit:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 + (n − 1)·4 = 4n − 1</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>10</sub> = 4(10) − 1 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 39</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e42')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e42" data-ex="e42"></div><div class="diagram-cap">From a<sub>1</sub> to a<sub>10</sub> is 9 jumps (10 − 1), not 10.</div></div>
+  </div>
+  <div class="example">
+    <h4>Translate forms: recursive a<sub>1</sub> = 2, a<sub>n</sub> = a<sub>n−1</sub> + 5 → explicit</h4>
+    <div class="steps" data-example="e42b">
+      <div class="step" onclick="reveal(this)"><strong>a<sub>1</sub> = 2, d = 5 → a<sub>n</sub> = a<sub>1</sub> + (n − 1)d:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 + (n − 1)·5</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Simplify:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 5n − 3</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e42b')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e42b" data-ex="e42b"></div><div class="diagram-cap">The terms are points on a line with slope d = 5</div></div>
+  </div>
+<p class="blank-tip">Now go the other way: explicit <span class="coord">a<sub>n</sub> = 3n + 1</span> → recursive.</p><p>a<sub>1</sub> = <span class="blank" data-ans="4" onclick="rb(this)">?</span> &nbsp;·&nbsp; a<sub>n</sub> = a<sub>n−1</sub> + <span class="blank" data-ans="3" onclick="rb(this)">?</span></p>
+  <div class="stepbox"><h5>🪜 Steps: arithmetic sequences</h5><ol>
+    <li>Find a<sub>1</sub>, the first term.</li>
+    <li>Find d. Subtract any term from the next one.</li>
+    <li>Explicit: a<sub>n</sub> = a<sub>1</sub> + (n − 1)d.</li>
+    <li>Put in the n you want. Do (n − 1) first. Then times d. Then add a<sub>1</sub>.</li>
+    <li>Recursive: write a<sub>1</sub> = first term and a<sub>n</sub> = a<sub>n−1</sub> + d.</li>
+  </ol></div>
+  <div class="fix" id="f42"><h5>🔍 Find the mistake</h5>
+    <p class="who">Zoe finds a<sub>20</sub> for 8, 11, 14, 17, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f42',this,1)"><span class="sn">Step 1</span> a<sub>1</sub> = 8 and d = 3</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f42',this,2)"><span class="sn">Step 2</span> a<sub>20</sub> = 8 + 20 · 3</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f42',this,3)"><span class="sn">Step 3</span> a<sub>20</sub> = 8 + 60 = 68</button>
+    <div class="chk-fb" id="fb-f42" role="status"></div>
+    <div class="viz" data-v="f42"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q42"><div class="q">1. 6, 10, 14, 18, …  Find a<sub>15</sub>.</div>
+      <div class="viz" data-v="q42"></div>
+      <div class="val-chk"><input id="q42-in" placeholder="a₁₅ = ?" aria-label="answer"><button onclick="M1.check('q42')">Check</button></div><div class="chk-fb" id="fb-q42" role="status"></div></div>
+    <div class="chk" id="q42b"><div class="q">2. Write an explicit formula for 20, 17, 14, 11, … (Type n for the term number.)</div>
+      <div class="viz" data-v="q42b"></div>
+      <div class="val-chk"><input id="q42b-in" placeholder="aₙ = …" aria-label="formula"><button onclick="M1.check('q42b')">Check</button></div><div class="chk-fb" id="fb-q42b" role="status"></div></div>
+  </div>
+</section>
+
+<!-- ============ TOPIC 3 ============ -->
+<section class="topic" id="t3">
+  <h2><span class="num">3</span> Geometric Sequences</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Common ratio r</dt> <dd>— the number you multiply by each time.</dd>
+    <dt>Exponent</dt> <dd>— tells how many times to multiply. 3<sup>4</sup> = 3 · 3 · 3 · 3 = 81.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Multiply by the common ratio r. Explicit: <span class='coord'>a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup></span>. Recursive: <span class='coord'>a<sub>n</sub> = a<sub>n−1</sub> · r</span>.</div>
+  <div class="diagram"><div class="viz" data-v="t3bars" data-static></div><div class="diagram-cap">2, 6, 18, 54: each bar is 3 times as tall as the one before</div></div>
+  <div class="example">
+    <h4>Sequence 2, 6, 18, 54, …  Find a<sub>5</sub>.</h4>
+    <div class="steps" data-example="e43">
+      <div class="step" onclick="reveal(this)"><strong>r = 3, a<sub>1</sub> = 2 → explicit:</strong> a<sub>n</sub> =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 2 · 3<sup>n−1</sup></span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>5</sub> = 2 · 3<sup>4</sup> = 2 · 81 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 162</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e43')">Reveal all steps</button>
+    <div class="viz" data-v="e43" data-ex="e43"></div>
+  </div>
+  <div class="example">
+    <h4>Sequence 80, 40, 20, 10, …  Find a<sub>6</sub>.</h4>
+    <div class="steps" data-example="e43b">
+      <div class="step" onclick="reveal(this)"><strong>r = 40 ÷ 80 =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> <span class="frac"><span>1</span><span>2</span></span> (the terms shrink)</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a<sub>6</sub> = 80 · (<span class="frac"><span>1</span><span>2</span></span>)<sup>5</sup> = 80 · <span class="frac"><span>1</span><span>32</span></span> =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2.5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e43b')">Reveal all steps</button>
+    <div class="viz" data-v="e43b" data-ex="e43b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: geometric sequences</h5><ol>
+    <li>Find a<sub>1</sub>, the first term.</li>
+    <li>Find r. Divide any term by the one before it.</li>
+    <li>Explicit: a<sub>n</sub> = a<sub>1</sub> · r<sup>n−1</sup>.</li>
+    <li>Do the exponent first: (n − 1). Then the power r<sup>n−1</sup>. Then multiply by a<sub>1</sub>.</li>
+    <li>Recursive: a<sub>1</sub> = first term and a<sub>n</sub> = a<sub>n−1</sub> · r.</li>
+  </ol></div>
+  <div class="fix" id="f43"><h5>🔍 Find the mistake</h5>
+    <p class="who">Max finds a<sub>5</sub> for 4, 12, 36, … Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f43',this,1)"><span class="sn">Step 1</span> a<sub>1</sub> = 4 and r = 3</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f43',this,2)"><span class="sn">Step 2</span> a<sub>5</sub> = 4 · 3<sup>4</sup></button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f43',this,3)"><span class="sn">Step 3</span> a<sub>5</sub> = 12<sup>4</sup> = 20,736</button>
+    <div class="chk-fb" id="fb-f43" role="status"></div>
+    <div class="viz" data-v="f43"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q43"><div class="q">1. 5, 10, 20, …  Find a<sub>7</sub>.</div>
+      <div class="viz" data-v="q43"></div>
+      <div class="val-chk"><input id="q43-in" placeholder="a₇ = ?" aria-label="answer"><button onclick="M1.check('q43')">Check</button></div><div class="chk-fb" id="fb-q43" role="status"></div></div>
+    <div class="chk" id="q43b"><div class="q">2. a<sub>1</sub> = 81 and a<sub>n</sub> = a<sub>n−1</sub> · <span class="frac"><span>1</span><span>3</span></span>. Find a<sub>4</sub>.</div>
+      <div class="viz" data-v="q43b"></div>
+      <div class="val-chk"><input id="q43b-in" placeholder="a₄ = ?" aria-label="answer"><button onclick="M1.check('q43b')">Check</button></div><div class="chk-fb" id="fb-q43b" role="status"></div></div>
+  </div>
+</section>
+
+<!-- ============ TOPIC 4 ============ -->
+<section class="topic" id="t4">
+  <h2><span class="num">4</span> Linear vs. Exponential</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Linear function</dt> <dd>— adds the same amount each step. Its graph is a straight line.</dd>
+    <dt>Exponential function</dt> <dd>— multiplies by the same number each step: y = a · b<sup>x</sup>. Its graph curves.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Constant <strong>difference</strong> → linear. Constant <strong>ratio</strong> → exponential. Exponential growth starts slow, then rockets up.</div>
+<div class="diagram"><div class="viz" data-v="t4g" data-static></div>
+  <div class="diagram-cap">y = 2x + 1 (line) vs. y = 2<sup>x</sup> (curve) — the curve overtakes the line</div></div>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t4l" data-static></div><div class="diagram-cap">Linear: +2 each step</div></div>
+    <div class="diagram"><div class="viz" data-v="t4e" data-static></div><div class="diagram-cap">Exponential: ×2 each step</div></div>
+  </div>
+  <div class="example">
+    <h4>x: 0, 1, 2, 3 and y: 3, 6, 12, 24. Linear or exponential? Write the function.</h4>
+    <div class="steps" data-example="e44">
+      <div class="step" onclick="reveal(this)"><strong>Differences 3, 6, 12. Ratios:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2, 2, 2 → exponential, b = 2</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ a = y when x = 0 = 3, so</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 3 · 2<sup>x</sup></span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e44')">Reveal all steps</button>
+    <div class="viz" data-v="e44" data-ex="e44"></div>
+  </div>
+  <div class="example">
+    <h4>x: 0, 1, 2, 3 and y: 5, 8, 11, 14. Linear or exponential? Write the function.</h4>
+    <div class="steps" data-example="e44b">
+      <div class="step" onclick="reveal(this)"><strong>Differences:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3, 3, 3 → linear, slope m = 3</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ b = y when x = 0 = 5, so</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 3x + 5</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e44b')">Reveal all steps</button>
+    <div class="viz" data-v="e44b" data-ex="e44b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: linear or exponential?</h5><ol>
+    <li>Check that x goes up by 1 each time.</li>
+    <li>Find the differences in y. All the same? Linear: y = mx + b.</li>
+    <li>Not the same? Find the ratios in y. All the same? Exponential: y = a · b<sup>x</sup>.</li>
+    <li>The start value (y when x = 0) is b for a line, and a for an exponential.</li>
+  </ol></div>
+  <div class="fix" id="f44"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ivy looks at x: 0, 1, 2, 3 and y: 2, 6, 18, 54. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f44',this,1)"><span class="sn">Step 1</span> Differences 4, 12, 36 are not the same.</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f44',this,2)"><span class="sn">Step 2</span> Ratios 3, 3, 3 are the same: exponential.</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f44',this,3)"><span class="sn">Step 3</span> Start value a = 2, factor b = 3.</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f44',this,4)"><span class="sn">Step 4</span> y = 3 · 2<sup>x</sup></button>
+    <div class="chk-fb" id="fb-f44" role="status"></div>
+    <div class="viz" data-v="f44"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q44"><div class="q">1. x: 0, 1, 2, 3 and y: 4, 12, 36, 108. Write the function. (Use ^ for a power, like 5(2)^x.)</div>
+      <div class="viz" data-v="q44"></div>
+      <div class="val-chk"><input id="q44-in" placeholder="y = …" aria-label="function"><button onclick="M1.check('q44')">Check</button></div><div class="chk-fb" id="fb-q44" role="status"></div></div>
+    <div class="chk" id="q44b"><div class="q">2. At x = 6, which is bigger: f(x) = 5x + 10 or g(x) = 2<sup>x</sup>?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="f" onclick="M1.pick('q44b',this,'f')">f(x) = 5x + 10</button><button class="chk-btn" data-o="g" onclick="M1.pick('q44b',this,'g')">g(x) = 2<sup>x</sup></button><button class="chk-btn" data-o="e" onclick="M1.pick('q44b',this,'e')">They are equal</button></div>
+      <div class="chk-fb" id="fb-q44b" role="status"></div><div class="viz" data-v="q44b"></div></div>
+  </div>
+</section>
+
+<!-- ============ TOPIC 5 ============ -->
+<section class="topic" id="t5">
+  <h2><span class="num">5</span> Growth &amp; Decay</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Initial value a</dt> <dd>— the starting amount. It is y when x = 0.</dd>
+    <dt>Growth factor b</dt> <dd>— the number you multiply by each time step.</dd>
+    <dt>Rate r</dt> <dd>— the percent change, written as a decimal. 4% → 0.04.</dd>
+    <dt>Decay</dt> <dd>— shrinking by the same percent each step.</dd>
+    <dt>Compound growth</dt> <dd>— each step grows from the NEW amount, so the growth itself grows.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> <span class='coord'>y = a · b<sup>x</sup></span>. <strong>a</strong> = initial value. <strong>b</strong> = growth factor. b &gt; 1 → growth; 0 &lt; b &lt; 1 → decay. Rate: growth b = 1 + r, decay b = 1 − r.</div>
+  <div class="warn"><strong>Heads up:</strong> In Topic 3, r was the common ratio. Here, r is the percent rate. The growth factor b plays the "ratio" job: b = 1 + r or b = 1 − r.</div>
+<div class="two-col">
+  <div class="diagram"><div class="viz" data-v="t5g" data-static></div><div class="diagram-cap">Growth: y = 1.5<sup>x</sup></div></div>
+  <div class="diagram"><div class="viz" data-v="t5d" data-static></div><div class="diagram-cap">Decay: y = 10·(0.6)<sup>x</sup></div></div>
+</div>
+  <div class="note"><strong>🎚 Try it:</strong> Move a and b. When is it growth? When is it decay? Watch the ×b arrows in the table.</div>
+  <div class="ctrl">
+    <label><span>a = <b id="gs-ao">2</b></span><input type="range" id="gs-a" min="1" max="10" step="1" value="2" aria-label="initial value a"></label>
+    <label><span>b = <b id="gs-bo">1.5</b></span><input type="range" id="gs-b" min="0.2" max="2.5" step="0.1" value="1.5" aria-label="growth factor b"></label>
+    <div class="out" id="gs-out" role="status"></div>
+  </div>
+  <div class="viz" id="gs-viz"></div>
+  <div class="viz" id="gs-tbl"></div>
+  <div class="example">
+    <h4>$500 grows 4% per year. Write the model.</h4>
+    <div class="steps" data-example="e45">
+      <div class="step" onclick="reveal(this)"><strong>a = 500, r = 0.04 → b = 1 + 0.04:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> b = 1.04</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Model:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 500(1.04)<sup>x</sup></span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e45')">Reveal all steps</button>
+    <div class="diagram"><div class="viz" data-v="e45" data-ex="e45"></div><div class="diagram-cap">Year by year (rounded to the nearest dollar). Each bar is the one before times the same factor.</div></div>
+  </div>
+  <div class="example">
+    <h4>A car worth $18,000 loses 10% of its value each year. Write the model. Find the value after 3 years.</h4>
+    <div class="steps" data-example="e45b">
+      <div class="step" onclick="reveal(this)"><strong>a = 18,000, r = 0.10, decay → b = 1 − 0.10:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> b = 0.9, so y = 18000(0.9)<sup>x</sup></span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ x = 3:</strong> 18000(0.9)<sup>3</sup> = 18000(0.729) =<span class="placeholder"> click to reveal</span><span class="hidden-content"> $13,122</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e45b')">Reveal all steps</button>
+    <div class="viz" data-v="e45b" data-ex="e45b"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: write a growth or decay model</h5><ol>
+    <li>Find a, the starting amount.</li>
+    <li>Change the percent to a decimal r. (4% → 0.04)</li>
+    <li>Growth? b = 1 + r. Decay? b = 1 − r.</li>
+    <li>Write y = a · b<sup>x</sup>.</li>
+    <li>To find a value, put in x. Do the power first. Then multiply by a.</li>
+  </ol></div>
+  <div class="fix" id="f45"><h5>🔍 Find the mistake</h5>
+    <p class="who">A town of 2,000 people shrinks 5% per year. Leo writes a model. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f45',this,1)"><span class="sn">Step 1</span> a = 2000</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f45',this,2)"><span class="sn">Step 2</span> r = 0.05</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f45',this,3)"><span class="sn">Step 3</span> b = 1 + 0.05 = 1.05</button>
+    <button class="fix-step" data-o="4" onclick="M1.pick('f45',this,4)"><span class="sn">Step 4</span> y = 2000(1.05)<sup>x</sup></button>
+    <div class="chk-fb" id="fb-f45" role="status"></div>
+    <div class="viz" data-v="f45"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q45"><div class="q">1. $300 grows 6% per year. Write the model. (Use ^ for the power, like 100(1.02)^x.)</div>
+      <div class="viz" data-v="q45"></div>
+      <div class="val-chk"><input id="q45-in" placeholder="y = …" aria-label="model"><button onclick="M1.check('q45')">Check</button></div><div class="chk-fb" id="fb-q45" role="status"></div></div>
+    <div class="chk" id="q45b"><div class="q">2. Use your model. How much money is there after 2 years? Round to the nearest cent.</div>
+      <div class="viz" data-v="q45b"></div>
+      <div class="val-chk"><input id="q45b-in" placeholder="$" aria-label="amount"><button onclick="M1.check('q45b')">Check</button></div><div class="chk-fb" id="fb-q45b" role="status"></div></div>
+    <div class="chk" id="q45c"><div class="q">3. Describe y = 50(0.8)<sup>x</sup>.</div><div class="chk-opts">
+      <button class="chk-btn" data-o="d20" onclick="M1.pick('q45c',this,'d20')">Decay, 20% each step</button>
+      <button class="chk-btn" data-o="g80" onclick="M1.pick('q45c',this,'g80')">Growth, 80% each step</button>
+      <button class="chk-btn" data-o="d80" onclick="M1.pick('q45c',this,'d80')">Decay, 80% each step</button>
+      <button class="chk-btn" data-o="g20" onclick="M1.pick('q45c',this,'g20')">Growth, 20% each step</button></div>
+      <div class="chk-fb" id="fb-q45c" role="status"></div><div class="viz" data-v="q45c"></div></div>
+  </div>
+</section>
+
+<!-- ============ TOPIC 6 ============ -->
+<section class="topic" id="t6">
+  <h2><span class="num">6</span> Key Features &amp; End Behavior</h2>
+  <div class="words"><h5>📖 Words to know</h5><dl>
+    <dt>Horizontal asymptote</dt> <dd>— a flat line the graph gets closer and closer to, but never touches.</dd>
+    <dt>Domain</dt> <dd>— all the x-values you can put in.</dd>
+    <dt>Range</dt> <dd>— all the y-values that come out.</dd>
+    <dt>End behavior</dt> <dd>— what the graph does far to the left and far to the right.</dd>
+  </dl></div>
+<div class="key"><strong>📌</strong> Exponentials have a <strong>horizontal asymptote</strong> (usually y = 0), domain all real numbers, and range y &gt; 0 (when a &gt; 0). Exponential growth <strong>eventually exceeds</strong> any linear or quadratic.</div>
+<div class="diagram"><div class="viz" data-v="t6a" data-static></div>
+  <div class="diagram-cap">y = 2<sup>x</sup> : y-intercept (0, 1), range y &gt; 0, never touches the asymptote y = 0</div></div>
+<p class="blank-tip">For y = 2<sup>x</sup>:</p><p>y-intercept (0, <span class="blank" data-ans="1" onclick="rb(this)">?</span>) &nbsp;·&nbsp; range y <span class="blank" data-ans="&gt;" onclick="rb(this)">?</span> 0 &nbsp;·&nbsp; asymptote y = <span class="blank" data-ans="0" onclick="rb(this)">?</span></p>
+  <div class="two-col">
+    <div class="diagram"><div class="viz" data-v="t6b" data-static></div><div class="diagram-cap">Decay y = 8(0.5)<sup>x</sup>: falls toward 0 on the right</div></div>
+    <div class="diagram"><div class="viz" data-v="t6c" data-static></div><div class="diagram-cap">2<sup>x</sup> passes x<sup>2</sup> at x = 4 and stays ahead</div></div>
+  </div>
+  <div class="example">
+    <h4>Find the key features of y = 3(2)<sup>x</sup>.</h4>
+    <div class="steps" data-example="e46">
+      <div class="step" onclick="reveal(this)"><strong>y-intercept: x = 0 → 3(2)<sup>0</sup> = 3(1) =</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 3, so (0, 3)</span></div>
+      <div class="step" onclick="reveal(this)"><strong>Asymptote:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 0</span></div>
+      <div class="step final" onclick="reveal(this)"><strong>✓ Domain and range:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> domain: all real numbers; range: y &gt; 0</span></div>
+    </div>
+    <button class="reveal-all" onclick="revealAll('e46')">Reveal all steps</button>
+    <div class="viz" data-v="e46" data-ex="e46"></div>
+  </div>
+  <div class="stepbox"><h5>🪜 Steps: key features of y = a · b<sup>x</sup></h5><ol>
+    <li>y-intercept: put in x = 0. Anything to the 0 power is 1, so you get a. The point is (0, a).</li>
+    <li>Asymptote: y = 0.</li>
+    <li>Domain: all real numbers.</li>
+    <li>Range: y &gt; 0 when a &gt; 0.</li>
+    <li>End behavior: b &gt; 1 rises to the right. 0 &lt; b &lt; 1 falls toward 0 on the right.</li>
+  </ol></div>
+  <div class="fix" id="f46"><h5>🔍 Find the mistake</h5>
+    <p class="who">Ana lists the features of y = 5(0.5)<sup>x</sup>. Click the step with the mistake.</p>
+    <button class="fix-step" data-o="1" onclick="M1.pick('f46',this,1)"><span class="sn">Step 1</span> y-intercept: (0, 0.5)</button>
+    <button class="fix-step" data-o="2" onclick="M1.pick('f46',this,2)"><span class="sn">Step 2</span> Asymptote: y = 0</button>
+    <button class="fix-step" data-o="3" onclick="M1.pick('f46',this,3)"><span class="sn">Step 3</span> Range: y &gt; 0</button>
+    <div class="chk-fb" id="fb-f46" role="status"></div>
+    <div class="viz" data-v="f46"></div>
+  </div>
+  <div class="turn"><h5>✍️ Your turn</h5>
+    <div class="chk" id="q46"><div class="q">1. The y-intercept of y = 7(1.2)<sup>x</sup> is (0, ___). Type the missing number.</div>
+      <div class="viz" data-v="q46"></div>
+      <div class="val-chk"><input id="q46-in" placeholder="?" aria-label="y-intercept"><button onclick="M1.check('q46')">Check</button></div><div class="chk-fb" id="fb-q46" role="status"></div></div>
+    <div class="chk" id="q46b"><div class="q">2. What is the range of y = 4(3)<sup>x</sup>? Type it like y &gt; 2.</div>
+      <div class="val-chk"><input id="q46b-in" placeholder="y …" aria-label="range"><button onclick="M1.check('q46b')">Check</button></div><div class="chk-fb" id="fb-q46b" role="status"></div><div class="viz" data-v="q46b"></div></div>
+    <div class="chk" id="q46c"><div class="q">3. As x gets very large, what does y = 6(0.5)<sup>x</sup> get close to?</div><div class="chk-opts">
+      <button class="chk-btn" data-o="0" onclick="M1.pick('q46c',this,'0')">0</button><button class="chk-btn" data-o="6" onclick="M1.pick('q46c',this,'6')">6</button>
+      <button class="chk-btn" data-o="up" onclick="M1.pick('q46c',this,'up')">It grows forever</button><button class="chk-btn" data-o="h" onclick="M1.pick('q46c',this,'h')">0.5</button></div>
+      <div class="chk-fb" id="fb-q46c" role="status"></div><div class="viz" data-v="q46c"></div></div>
+  </div>
+</section>
+</div>
+<div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
+<script src="script.js"></script>
+<!--M1JS-->
+<script>
+var smMode;
+(function () {
+  var C = M1.C, V = M1.V, R = M1.reg, P = M1.plane, f = M1.fmt;
+  function seq(a1, step, n, geo) { var o = [], v = a1; for (var i = 0; i < n; i++) { o.push(+v.toFixed(10)); v = geo ? v * step : v + step; } return o; }
+  function ar(a1, d, n) { return a1 + (n - 1) * d; }
+  function gm(a1, r, n) { return a1 * Math.pow(r, n - 1); }
+  function nlab(n) { var o = []; for (var i = 1; i <= n; i++) o.push(i); return o; }
+  function ops(vals, geo) { var o = []; for (var i = 1; i < vals.length; i++) { var s = geo ? vals[i] / vals[i - 1] : vals[i] - vals[i - 1]; o.push(geo ? '×' + f(s) : (s >= 0 ? '+' : '−') + f(Math.abs(s))); } return o; }
+  function seqT(vals, o) { o = o || {}; return M1.tbl({ heads: ['n', 'a_n'], rows: [nlab(vals.length), vals], ops: o.ops || ops(vals, o.geo), opsQ: o.q, hide: o.hide, done: o.done, label: 'sequence table' }); }
+  function after(d, s) { return d ? s : ''; }
+  /* ---- Topic 1 ---- */
+  V.t1map = function () { return M1.mapping({ inp: [1, 2, 3, 4], out: seq(2, 3, 4) }); };
+  V.t1dots = function () { var A = seq(2, 3, 4), G = seq(2, 3, 4, true), it = [];
+    A.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: i === 3 ? 'arithmetic' : null }); }); G.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.purple, r: 4, label: i === 3 ? 'geometric' : null }); });
+    return P({ x: [0, 5], y: [0, 56], ys: 8, yl: 8, xname: 'n', yname: 'a_n', label: 'dot graphs of two sequences', items: it }); };
+  V.t1a = function () { return seqT(seq(2, 3, 4)); };
+  V.t1g = function () { return seqT(seq(2, 3, 4, true), { geo: true }); };
+  V.e41 = function (d) { return seqT([4, 9, 14, 19], { q: true, done: d }); };
+  V.e41b = function (d) { return seqT([3, 6, 12, 24], { geo: true, q: true, done: d }); };
+  V.f41 = function (d) { return after(d, seqT([1, 2, 4, 8], { geo: true, q: true, done: true })); };
+  R('f41', { kind: 'fix', ans: 2, viz: 'f41', ok: 'Step 2 is the mistake. Ray checked only ONE pair. 4 − 2 = 2 and 8 − 4 = 4, so the differences are not the same. The ratios are 2, 2, 2: it is geometric, and the next term is 16.',
+    why: { 1: 'Step 1 is right: 2 − 1 = 1. The problem is what Ray did next.', 3: 'Step 3 follows from step 2. Look earlier: did he check every pair?' } });
+  var Q41 = { q41: [[10, 7, 4, 1], 'a'], q41b: [[5, 10, 20, 40], 'g'], q41c: [[1, 4, 9, 16], 'n'] };
+  Object.keys(Q41).forEach(function (id) {
+    var v = Q41[id][0], dif = ops(v, false), rat = ops(v, true), isA = dif.every(function (x) { return x === dif[0]; }), isG = rat.every(function (x) { return x === rat[0]; });
+    var key = isA ? 'a' : isG ? 'g' : 'n';
+    V[id] = function (d) { return seqT(v, { ops: key === 'g' ? rat : dif, q: true, done: d }); };
+    R(id, { kind: 'mc', ans: key, viz: id, ok: key === 'a' ? 'The differences are all ' + dif[0] + '. Arithmetic!' : key === 'g' ? 'The ratios are all ' + rat[0] + '. Geometric!' : 'Differences ' + dif.join(', ') + ' change, and ratios change too. Neither.',
+      why: { a: 'Subtract each pair: ' + dif.join(', ') + '. Are they all the same?', g: 'Divide each pair: ' + rat.join(', ') + '. Are they all the same?', n: 'Check again. Subtract each pair, then divide each pair.' } });
+  });
+  /* seq maker */
+  var sm = 'add';
+  smMode = function (m) { sm = m; document.getElementById('sm-add').className = m === 'add' ? 'on' : ''; document.getElementById('sm-mul').className = m === 'mul' ? 'on' : '';
+    var s = document.getElementById('sm-s'); if (m === 'add') { s.min = -4; s.max = 5; s.step = 1; s.value = 3; } else { s.min = 0.5; s.max = 3; s.step = 0.5; s.value = 2; } smDraw(); };
+  function smDraw() {
+    var a = +document.getElementById('sm-a').value, s = +document.getElementById('sm-s').value, geo = sm === 'mul', v = seq(a, s, 5, geo);
+    document.getElementById('sm-ao').textContent = f(a);
+    document.getElementById('sm-sl').innerHTML = (geo ? 'r' : 'd') + ' = <b id="sm-so">' + f(s) + '</b>';
+    document.getElementById('sm-out').innerHTML = geo ? 'Geometric: a<sub>n</sub> = ' + f(a) + ' · ' + f(s) + '<sup>n−1</sup> &nbsp;→ exponential' : 'Arithmetic: a<sub>n</sub> = ' + f(a) + ' + (n − 1)(' + f(s) + ') &nbsp;→ linear';
+    document.getElementById('sm-viz').innerHTML = M1.bars({ vals: v, ops: ops(v, geo), c: geo ? C.purple : C.navy, fmt: function (x) { return f(x, 2); }, label: 'bars of your sequence' });
+  }
+  ['sm-a', 'sm-s'].forEach(function (id) { document.getElementById(id).addEventListener('input', smDraw); }); smDraw();
+  /* ---- Topic 2 ---- */
+  V.t2bars = function () { var v = seq(3, 4, 4); return M1.bars({ vals: v, ops: ops(v) }); };
+  V.e42 = function (d) { return M1.hops({ start: 3, step: 4, count: 9, min: 0, max: 40, tick: 1, lab: 10, done: d, startLab: 'a_1 = 3', endQ: 'a_{10} = ?', endLab: 'a_{10} = ' + ar(3, 4, 10), note: '9 jumps of +4' }); };
+  V.e42b = function (d) { var it = []; if (d) it.push({ t: 'fn', f: function (n) { return 5 * n - 3; }, c: C.green, dash: true, w: 2, label: 'a_n = 5n − 3', dom: [0.5, 5.5] });
+    seq(2, 5, 5).forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: f(v) }); });
+    return P({ x: [0, 6], y: [0, 26], ys: 2, yl: 4, xname: 'n', yname: 'a_n', label: 'terms of 2, 7, 12, 17, 22', items: it }); };
+  V.f42 = function (d) { return after(d, M1.hops({ start: 8, step: 3, count: 19, min: 0, max: 70, tick: 5, lab: 10, done: true, startLab: 'a_1 = 8', endLab: 'a_{20} = ' + ar(8, 3, 20), note: '19 jumps of +3, not 20' })); };
+  R('f42', { kind: 'fix', ans: 2, viz: 'f42', ok: 'Step 2 is the mistake. Use (n − 1): a<sub>20</sub> = 8 + 19 · 3 = 8 + 57 = 65. From the 1st term to the 20th term is only 19 jumps.',
+    why: { 1: 'Step 1 is right: 11 − 8 = 3.', 3: 'The math 8 + 60 = 68 is right, but step 2 used the wrong number of jumps.' } });
+  V.q42 = function (d) { return M1.hops({ start: 6, step: 4, count: 14, min: 0, max: 70, tick: 2, lab: 10, done: d, startLab: 'a_1 = 6', endQ: 'a_{15} = ?', endLab: 'a_{15} = ' + ar(6, 4, 15), note: '14 jumps of +4' }); };
+  R('q42', { kind: 'num', ans: ar(6, 4, 15), viz: 'q42', ok: 'a<sub>15</sub> = 6 + (15 − 1)(4) = 6 + 56 = 62.', miss: [{ v: 6 + 15 * 4, m: 'Close! Use (n − 1) = 14 jumps, not 15.' }, { v: 15 * 4, m: 'Remember to start at a<sub>1</sub> = 6, and use (n − 1).' }], hint: 'Use a<sub>n</sub> = a<sub>1</sub> + (n − 1)d with a<sub>1</sub> = 6, d = 4, n = 15.' });
+  V.q42b = function (d) { var v = seq(20, -3, 4); return M1.bars({ vals: v, ops: d ? ops(v) : ['?', '?', '?'], opC: d ? C.green : null }); };
+  R('q42b', { kind: 'expr', vars: ['n'], ans: '20+(n-1)(-3)', show: 'a<sub>n</sub> = 20 + (n − 1)(−3) = 23 − 3n', viz: 'q42b', eg: '20 − 3(n − 1)', ok: 'a<sub>n</sub> = 20 + (n − 1)(−3), which simplifies to 23 − 3n.',
+    miss: [{ v: '20-3n', m: 'Close! Use (n − 1): a<sub>n</sub> = 20 − 3(n − 1). Check n = 1: you should get 20.' }, { v: '20+3(n-1)', m: 'The terms go DOWN, so d = −3, not +3.' }, { v: '3n+17', m: 'The terms go DOWN, so d is negative.' }],
+    hint: 'a<sub>1</sub> = 20 and d = 17 − 20 = −3. Use a<sub>n</sub> = a<sub>1</sub> + (n − 1)d.' });
+  /* ---- Topic 3 ---- */
+  V.t3bars = function () { var v = seq(2, 3, 4, true); return M1.bars({ vals: v, ops: ops(v, true), c: C.purple }); };
+  V.e43 = function (d) { return seqT(seq(2, 3, 5, true), { geo: true, hide: [[1, 4]], done: d }); };
+  V.e43b = function (d) { var v = seq(80, 0.5, 6, true); return M1.bars({ vals: v, ops: v.slice(1).map(function () { return '×½'; }), hide: [5], done: d, c: C.purple, labs: nlab(6).map(function (i) { return 'a_' + i; }) }); };
+  V.f43 = function (d) { return after(d, seqT(seq(4, 3, 5, true), { geo: true, hide: [[1, 4]], done: true })); };
+  R('f43', { kind: 'fix', ans: 3, viz: 'f43', ok: 'Step 3 is the mistake. Do the power FIRST: 3<sup>4</sup> = 81. Then multiply: 4 · 81 = 324. (4 · 3 = 12 first is the wrong order.)',
+    why: { 1: 'Step 1 is right: 12 ÷ 4 = 3.', 2: 'Step 2 is right: a<sub>5</sub> = a<sub>1</sub> · r<sup>5−1</sup> = 4 · 3<sup>4</sup>.' } });
+  V.q43 = function (d) { var v = seq(5, 2, 7, true); return M1.bars({ vals: v, ops: ops(v, true), hide: [6], done: d, c: C.purple }); };
+  R('q43', { kind: 'num', ans: gm(5, 2, 7), viz: 'q43', ok: 'a<sub>7</sub> = 5 · 2<sup>6</sup> = 5 · 64 = 320.', miss: [{ v: 5 * Math.pow(2, 7), m: 'Use the exponent n − 1 = 6, not 7.' }, { v: Math.pow(10, 6), m: 'Do the power first: 2<sup>6</sup> = 64. Then times 5.' }, { v: ar(5, 5, 7), m: 'This sequence multiplies by 2. It does not add 5.' }], hint: 'r = 10 ÷ 5 = 2. Use a<sub>7</sub> = 5 · 2<sup>6</sup>.' });
+  V.q43b = function (d) { return seqT(seq(81, 1 / 3, 4, true), { ops: ['×⅓', '×⅓', '×⅓'], hide: [[1, 1], [1, 2], [1, 3]], done: d }); };
+  R('q43b', { kind: 'num', ans: gm(81, 1 / 3, 4), viz: 'q43b', ok: '81 → 27 → 9 → 3. So a<sub>4</sub> = 3.', miss: [{ v: 1, m: 'You went one step too far. a<sub>4</sub> is the 4th term: 81, 27, 9, …' }, { v: 9, m: 'That is a<sub>3</sub>. Go one more step.' }], hint: 'Multiply by 1/3 (divide by 3) each step: a<sub>2</sub> = 27, then keep going.' });
+  /* ---- Topic 4 ---- */
+  V.t4g = function () { return P({ x: [0, 6], y: [0, 16], ys: 2, yl: 2, label: 'line vs exponential', items: [
+    { t: 'line', m: 2, b: 1, label: 'y = 2x + 1' }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'y = 2^x', at: 0.75 }, { t: 'pt', x: 3, y: 7, c: C.navy, r: 3.5 }, { t: 'pt', x: 3, y: 8, c: C.purple, r: 3.5, label: 'at x = 3: 8 > 7' }] }); };
+  V.t4l = function () { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], [1, 3, 5, 7, 9]], ops: ['+2', '+2', '+2', '+2'] }); };
+  V.t4e = function () { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], [1, 2, 4, 8, 16]], ops: ['×2', '×2', '×2', '×2'], opC: C.purple }); };
+  V.e44 = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [3, 6, 12, 24]], ops: ['×2', '×2', '×2'], opsQ: true, done: d }); };
+  V.e44b = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [5, 8, 11, 14]], ops: ['+3', '+3', '+3'], opsQ: true, done: d }); };
+  V.f44 = function (d) { return after(d, P({ x: [0, 3.3], y: [0, 60], ys: 10, yl: 10, label: 'right model vs wrong model', items: [
+    { t: 'fn', f: function (x) { return 2 * Math.pow(3, x); }, c: C.green, label: 'y = 2·3^x ✓' }, { t: 'fn', f: function (x) { return 3 * Math.pow(2, x); }, c: C.red, dash: true, label: 'y = 3·2^x ✗', at: 0.95 },
+    { t: 'pt', x: 0, y: 2, c: C.navy, r: 3.5 }, { t: 'pt', x: 1, y: 6, c: C.navy, r: 3.5 }, { t: 'pt', x: 2, y: 18, c: C.navy, r: 3.5 }, { t: 'pt', x: 3, y: 54, c: C.navy, r: 3.5 }] })); };
+  R('f44', { kind: 'fix', ans: 4, viz: 'f44', ok: 'Step 4 is the mistake. a and b are switched. a = 2 goes in front, and b = 3 gets the exponent: y = 2 · 3<sup>x</sup>. The green curve hits every data point.',
+    why: { 1: 'Step 1 is right: 6 − 2 = 4, 18 − 6 = 12, 54 − 18 = 36.', 2: 'Step 2 is right: 6 ÷ 2 = 3, 18 ÷ 6 = 3, 54 ÷ 18 = 3.', 3: 'Step 3 is right: a is the y-value at x = 0, which is 2.' } });
+  V.q44 = function (d) { return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3], [4, 12, 36, 108]], ops: ['×3', '×3', '×3'], opsQ: true, done: d }); };
+  R('q44', { kind: 'expr', vars: ['x'], ans: '4*3^x', show: 'y = 4 · 3<sup>x</sup>', viz: 'q44', eg: '4(3)^x', ok: 'Ratios are all 3, and y = 4 when x = 0: y = 4 · 3<sup>x</sup>.',
+    miss: [{ v: '3*4^x', m: 'You switched a and b. The start value 4 goes in front. The ratio 3 gets the exponent.' }, { v: '8x+4', m: 'The differences 8, 24, 72 are not the same, so it is not linear. Check the ratios.' }, { v: '4*3^(x-1)', m: 'Close! In y = a · b<sup>x</sup>, x starts at 0, so no "− 1" is needed.' }], hint: 'Find the ratio (12 ÷ 4). The start value is y when x = 0.' });
+  var f6 = 5 * 6 + 10, g6 = Math.pow(2, 6), k44 = f6 > g6 ? 'f' : g6 > f6 ? 'g' : 'e';
+  V.q44b = function (d) { return after(d, P({ x: [0, 7], y: [0, 80], ys: 10, yl: 20, label: 'f and g', items: [
+    { t: 'line', m: 5, b: 10, label: 'f(x) = 5x + 10', at: 0.3 }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'g(x) = 2^x', at: 0.6 }, { t: 'pt', x: 6, y: f6, c: C.navy, label: f(f6) }, { t: 'pt', x: 6, y: g6, c: C.green, label: f(g6) }] })); };
+  R('q44b', { kind: 'mc', ans: k44, viz: 'q44b', ok: 'f(6) = 5(6) + 10 = 40. g(6) = 2<sup>6</sup> = 64. The exponential is bigger.', why: { f: 'Find both: f(6) = 40. g(6) = 2<sup>6</sup> = 2·2·2·2·2·2 = ?', e: 'Work out both values. f(6) = 40. What is 2<sup>6</sup>?' } });
+  /* ---- Topic 5 ---- */
+  function expPts(a, b, n) { var o = []; for (var x = 0; x <= n; x++) o.push({ t: 'pt', x: x, y: a * Math.pow(b, x), c: C.navy, r: 3 }); return o; }
+  V.t5g = function () { return P({ x: [0, 6], y: [0, 12], ys: 1, yl: 2, label: 'growth curve', items: [{ t: 'fn', f: function (x) { return Math.pow(1.5, x); }, c: C.green, label: 'b > 1: growth', at: 0.55 }].concat(expPts(1, 1.5, 6)) }); };
+  V.t5d = function () { return P({ x: [0, 6], y: [0, 12], ys: 1, yl: 2, label: 'decay curve', items: [{ t: 'fn', f: function (x) { return 10 * Math.pow(0.6, x); }, c: C.red, label: '0 < b < 1: decay', at: 0.25 }].concat(expPts(10, 0.6, 6)) }); };
+  function gsDraw() {
+    var a = +document.getElementById('gs-a').value, b = +(+document.getElementById('gs-b').value).toFixed(2);
+    document.getElementById('gs-ao').textContent = f(a); document.getElementById('gs-bo').textContent = f(b);
+    var kind = b > 1 ? 'Growth: grows ' + f((b - 1) * 100, 0) + '% each step' : b < 1 ? 'Decay: shrinks ' + f((1 - b) * 100, 0) + '% each step' : 'b = 1: no change — a flat line';
+    document.getElementById('gs-out').innerHTML = 'y = ' + f(a) + '(' + f(b) + ')<sup>x</sup> &nbsp;→ ' + kind;
+    document.getElementById('gs-viz').innerHTML = P({ x: [0, 5], y: [0, 40], ys: 5, yl: 10, label: 'your exponential', items: [{ t: 'fn', f: function (x) { return a * Math.pow(b, x); }, c: b >= 1 ? C.green : C.red, label: 'y = ' + f(a) + '(' + f(b) + ')^x' }, { t: 'pt', x: 0, y: a, c: C.navy, label: '(0, ' + f(a) + ')' }] });
+    var ys = [0, 1, 2, 3, 4].map(function (x) { return +(a * Math.pow(b, x)).toFixed(2); });
+    document.getElementById('gs-tbl').innerHTML = M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4], ys.map(function (v) { return f(v, 2); })], ops: ['×' + f(b), '×' + f(b), '×' + f(b), '×' + f(b)], label: 'table of values' });
+  }
+  ['gs-a', 'gs-b'].forEach(function (id) { document.getElementById(id).addEventListener('input', gsDraw); }); gsDraw();
+  function money0(v) { return '$' + M1.commas(Math.round(v)); }
+  V.e45 = function (d) { var v = [0, 1, 2, 3, 4, 5].map(function (t) { return 500 * Math.pow(1.04, t); });
+    return M1.bars({ vals: v, labs: ['yr 0', 'yr 1', 'yr 2', 'yr 3', 'yr 4', 'yr 5'], ops: v.slice(1).map(function () { return d ? '×1.04' : '?'; }), opC: d ? C.green : null, fmt: money0, max: 650 }); };
+  V.e45b = function (d) { var it = [{ t: 'fn', f: function (x) { return 18000 * Math.pow(0.9, x); }, c: C.red, label: 'y = 18000(0.9)^x', at: 0.75 }];
+    [0, 1, 2].forEach(function (x) { it.push({ t: 'pt', x: x, y: 18000 * Math.pow(0.9, x), c: C.navy, r: 3.5 }); });
+    it.push(d ? { t: 'pt', x: 3, y: 18000 * Math.pow(0.9, 3), c: C.green, label: '(3, $13,122)' } : { t: 'pt', x: 3, y: 18000 * Math.pow(0.9, 3), c: C.gold, label: '(3, ?)', pill: true });
+    return P({ x: [0, 6], y: [0, 20000], ys: 2000, yl: 4000, tick: function (v) { return M1.commas(v); }, xtitle: 'years', ytitle: 'value ($)', xname: '', yname: '', label: 'car value decay', items: it }); };
+  V.f45 = function (d) { return after(d, P({ x: [0, 10], y: [0, 3500], ys: 500, yl: 500, tick: function (v) { return M1.commas(v); }, xtitle: 'years', ytitle: 'people', xname: '', yname: '', label: 'right and wrong town models', items: [
+    { t: 'fn', f: function (x) { return 2000 * Math.pow(0.95, x); }, c: C.green, label: '2000(0.95)^x ✓', at: 0.6 }, { t: 'fn', f: function (x) { return 2000 * Math.pow(1.05, x); }, c: C.red, dash: true, label: '2000(1.05)^x ✗', at: 0.55 }] })); };
+  R('f45', { kind: 'fix', ans: 3, viz: 'f45', ok: 'Step 3 is the mistake. The town SHRINKS, so it is decay: b = 1 − 0.05 = 0.95. The model is y = 2000(0.95)<sup>x</sup>. Leo\'s model grows instead (red).',
+    why: { 1: 'Step 1 is right. The town starts with 2,000 people.', 2: 'Step 2 is right: 5% = 0.05.', 4: 'Step 4 copies step 3 correctly. The mistake is in step 3.' } });
+  V.q45 = function (d) { var v = [0, 1, 2, 3].map(function (t) { return 300 * Math.pow(1.06, t); });
+    return M1.bars({ vals: v, labs: ['yr 0', 'yr 1', 'yr 2', 'yr 3'], ops: v.slice(1).map(function () { return d ? '×1.06' : '?'; }), opC: d ? C.green : null, hide: d ? [] : [1, 2, 3], done: d, fmt: function (x) { return M1.money(x, 2); } }); };
+  R('q45', { kind: 'expr', vars: ['x'], ans: '300*1.06^x', show: 'y = 300(1.06)<sup>x</sup>', viz: 'q45', eg: '300(1.06)^x', ok: 'a = 300, b = 1 + 0.06 = 1.06: y = 300(1.06)<sup>x</sup>.',
+    miss: [{ v: '300*0.06^x', m: 'b is not the rate. For growth, b = 1 + 0.06.' }, { v: '300*1.6^x', m: '6% = 0.06, not 0.6. So b = 1.06.' }, { v: '300*0.94^x', m: 'This money GROWS, so add: b = 1 + 0.06.' }, { v: '300*6^x', m: 'Change 6% to a decimal (0.06), then b = 1 + 0.06.' }, { v: '1.06*300^x', m: 'You switched a and b. The start amount 300 goes in front.' }], hint: 'Start: a = 300. Growth factor: b = 1 + 0.06.' });
+  var v2 = Math.round(300 * Math.pow(1.06, 2) * 100) / 100;
+  V.q45b = function (d) { return M1.tbl({ heads: ['year', '$'], hw: 52, cw: 70, rows: [[0, 1, 2], ['300', M1.money(300 * 1.06, 2).slice(1), d ? M1.money(v2, 2).slice(1) : '?']], ops: ['×1.06', '×1.06'], hide: [[1, 2]], done: d }); };
+  R('q45b', { kind: 'num', ans: v2, tol: 0.006, viz: 'q45b', ok: '300(1.06)<sup>2</sup> = 300(1.1236) = $337.08.', miss: [{ v: 336, m: 'That adds 6% of 300 twice. Compound growth multiplies: 300(1.06)<sup>2</sup>.' }, { v: 318, m: 'That is after 1 year. Use x = 2.' }, { v: 300 * 2.12, m: 'Do the power: 1.06<sup>2</sup> = 1.06 × 1.06, not 1.06 × 2.' }], hint: 'Put x = 2 into y = 300(1.06)<sup>x</sup>. Do the power first.' });
+  V.q45c = function (d) { return after(d, P({ x: [0, 6], y: [0, 60], ys: 10, yl: 10, label: 'decay 50(0.8)^x', items: [{ t: 'fn', f: function (x) { return 50 * Math.pow(0.8, x); }, c: C.red, label: 'y = 50(0.8)^x' }].concat(expPts(50, 0.8, 6)) })); };
+  R('q45c', { kind: 'mc', ans: 'd20', viz: 'q45c', ok: 'b = 0.8 is less than 1, so it is decay. 1 − 0.8 = 0.2 = 20% lost each step.', why: { g80: 'b = 0.8 is less than 1. Multiplying by 0.8 makes things smaller.', d80: 'Decay is right. But 0.8 is what is LEFT. The loss is 1 − 0.8 = 0.2.', g20: 'Multiplying by 0.8 makes things smaller, not bigger.' } });
+  /* ---- Topic 6 ---- */
+  V.t6a = function () { return P({ x: [-3, 3], y: [0, 8], ys: 1, yl: 2, label: 'y = 2^x with its asymptote', items: [
+    { t: 'seg', x1: -3, y1: 0.08, x2: 3, y2: 0.08, c: C.gold, w: 2.4, dash: true }, { t: 'txt', x: -1.6, y: 0.9, s: 'asymptote y = 0', c: C.goldTx },
+    { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.navy, label: 'y = 2^x', at: 0.82 }, { t: 'pt', x: 0, y: 1, c: C.green, label: '(0, 1)' }] }); };
+  V.t6b = function () { return P({ w: 260, x: [-1, 5], y: [0, 10], ys: 1, yl: 2, label: 'decay with asymptote', items: [
+    { t: 'seg', x1: -1, y1: 0.1, x2: 5, y2: 0.1, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 8 * Math.pow(0.5, x); }, c: C.red, label: 'y = 8(0.5)^x', at: 0.35 },
+    { t: 'pt', x: 0, y: 8, c: C.green, label: '(0, 8)' }, { t: 'txt', x: 3.6, y: 2, s: '→ near 0', c: C.goldTx }] }); };
+  V.t6c = function () { return P({ w: 260, x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: '2^x vs x squared', items: [
+    { t: 'fn', f: function (x) { return x * x; }, c: C.navy, label: 'y = x^2', at: 0.62 }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'y = 2^x', at: 0.9 }, { t: 'pt', x: 4, y: 16, c: C.green, label: '(4, 16)' }] }); };
+  V.e46 = function (d) { return P({ x: [-3, 3], y: [0, 14], ys: 1, yl: 2, label: 'y = 3(2)^x', items: [
+    { t: 'seg', x1: -3, y1: 0.12, x2: 3, y2: 0.12, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 3 * Math.pow(2, x); }, c: C.navy, label: 'y = 3(2)^x', at: 0.8 },
+    d ? { t: 'pt', x: 0, y: 3, c: C.green, label: '(0, 3)' } : { t: 'pt', x: 0, y: 3, c: C.gold, label: '(0, ?)', pill: true }] }); };
+  V.f46 = function (d) { return after(d, P({ x: [-2, 4], y: [0, 22], ys: 2, yl: 4, label: 'y = 5(0.5)^x', items: [
+    { t: 'fn', f: function (x) { return 5 * Math.pow(0.5, x); }, c: C.red, label: 'y = 5(0.5)^x', at: 0.2 }, { t: 'pt', x: 0, y: 5, c: C.green, label: '(0, 5) ✓' }, { t: 'pt', x: 0, y: 0.5, c: C.red, r: 3.5, label: '(0, 0.5) ✗' }] })); };
+  R('f46', { kind: 'fix', ans: 1, viz: 'f46', ok: 'Step 1 is the mistake. At x = 0: 5(0.5)<sup>0</sup> = 5(1) = 5. The y-intercept is (0, 5) — always (0, a).',
+    why: { 2: 'Step 2 is right. y = a · b<sup>x</sup> has the asymptote y = 0.', 3: 'Step 3 is right: a = 5 is positive, so y &gt; 0.' } });
+  V.q46 = function (d) { return P({ x: [-3, 4], y: [0, 16], ys: 2, yl: 4, label: 'y = 7(1.2)^x', items: [
+    { t: 'fn', f: function (x) { return 7 * Math.pow(1.2, x); }, c: C.navy, label: 'y = 7(1.2)^x', at: 0.8 }, d ? { t: 'pt', x: 0, y: 7, c: C.green, label: '(0, 7)' } : { t: 'pt', x: 0, y: 7, c: C.gold, label: '(0, ?)', pill: true }] }); };
+  R('q46', { kind: 'num', ans: 7 * Math.pow(1.2, 0), viz: 'q46', ok: 'At x = 0: 7(1.2)<sup>0</sup> = 7(1) = 7. The y-intercept is (0, 7).', miss: [{ v: 1.2, m: 'That is b. Put x = 0: anything to the 0 power is 1. So y = 7 · 1.' }, { v: 8.4, m: 'That is x = 1. The y-intercept uses x = 0.' }, { v: 0, m: 'The graph never touches 0. Put x = 0 into 7(1.2)<sup>x</sup>.' }] });
+  V.q46b = function (d) { return after(d, P({ x: [-3, 2], y: [-2, 30], ys: 2, yl: 4, label: 'range of 4(3)^x', items: [
+    { t: 'region', hp: [{ m: 0, b: 0, s: '>' }], c: C.green, op: 0.1 }, { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy, label: 'y = 4(3)^x', at: 0.85 }, { t: 'txt', x: -1.8, y: 14, s: 'y > 0', c: C.green }] })); };
+  R('q46b', { kind: 'ineq', v: 'y', op: '>', n: 0, viz: 'q46b', show: 'y &gt; 0', ok: 'The graph is always above the asymptote y = 0, so the range is y &gt; 0.', eqMsg: 'Close! The graph never touches 0, so 0 is not included. Use &gt;, not ≥.',
+    miss: [{ op: '>', n: 4, m: '4 is the y-intercept. Far to the left the graph gets lower than 4, close to 0.' }, { op: '<', n: 0, m: 'a = 4 is positive, so every y-value is positive.' }], hint: 'Look at the asymptote. The graph is always above it.' });
+  V.q46c = function (d) { return after(d, P({ x: [0, 8], y: [0, 7], ys: 1, yl: 1, label: '6(0.5)^x', items: [
+    { t: 'seg', x1: 0, y1: 0.06, x2: 8, y2: 0.06, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 6 * Math.pow(0.5, x); }, c: C.red, label: 'y = 6(0.5)^x', at: 0.15 }, { t: 'txt', x: 6.4, y: 1.2, s: '→ 0', c: C.green }] })); };
+  R('q46c', { kind: 'mc', ans: '0', viz: 'q46c', ok: 'Halving again and again: 6, 3, 1.5, 0.75, … It gets closer and closer to 0 (the asymptote).', why: { '6': '6 is where it STARTS (x = 0). What happens as you keep halving?', up: 'b = 0.5 is less than 1, so it shrinks, not grows.', h: '0.5 is the factor b. Keep multiplying 6 by 0.5 and see where it heads.' } });
+  M1.init();
+})();
+</script>
+</body>
+</html>

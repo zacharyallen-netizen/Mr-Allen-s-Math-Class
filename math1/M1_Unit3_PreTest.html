@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit 3 Pre-Test — Linear Systems | NC Math 1</title>
+<style>
+  :root{
+    --navy:#22314f;
+    --navy-deep:#1b2740;
+    --gold:#c6972e;
+    --gold-soft:#e9d9ad;
+    --ink:#1b2333;
+    --paper:#fbfaf6;
+    --line:#d9d3c4;
+    --ok:#1f7a4d;
+    --ok-bg:#e7f3ec;
+    --no:#b4402f;
+    --no-bg:#fbe9e5;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --mono:"SFMono-Regular",Consolas,"DejaVu Sans Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:#efece3;color:var(--ink);
+    font-family:var(--serif);font-size:17px;line-height:1.5;
+  }
+  .sheet{
+    max-width:860px;margin:24px auto;background:var(--paper);
+    padding:38px 46px 60px;border:1px solid var(--line);
+    box-shadow:0 2px 18px rgba(20,25,40,.10);
+  }
+
+  /* ---- masthead ---- */
+  .masthead h1{
+    font-size:38px;line-height:1.02;letter-spacing:.5px;margin:0;
+    font-weight:700;color:var(--ink);
+  }
+  .masthead .sub{font-size:20px;margin:.15em 0 0;font-weight:400}
+  .masthead .std{font-style:italic;font-size:13px;color:#6b6754;margin:.35em 0 0}
+  .rule-gold{height:2px;background:var(--gold);border:0;margin:14px 0 18px}
+
+  .idline{display:flex;flex-wrap:wrap;gap:8px 30px;margin:0 0 6px;font-size:15px}
+  .idline .fld{display:flex;align-items:flex-end;gap:8px;flex:1 1 180px}
+  .idline .fld b{font-weight:700}
+  .idline .fld .blank{flex:1;border-bottom:1px solid #8a8676;min-width:70px;height:1.1em}
+
+  /* ---- score band ---- */
+  .band{
+    background:var(--navy);color:#fff;margin:26px 0 0;
+    padding:9px 16px;display:flex;align-items:baseline;gap:12px;
+  }
+  .band .lvl{font-family:var(--mono);font-size:11px;letter-spacing:3px;color:var(--gold-soft)}
+  .band .num{color:var(--gold);font-size:22px;font-weight:700;font-style:italic}
+  .band .name{font-size:18px;font-weight:700}
+  .stripe{border-left:1px solid var(--line);border-right:1px solid var(--line);
+          border-bottom:1px solid var(--line);padding:16px 18px 20px}
+  .objline{font-size:13px;color:#4a4636;margin:0 0 2px}
+  .objline .code{font-weight:700;color:var(--navy)}
+  .can{font-style:italic;font-size:13.5px;color:#514c3b;margin:.15em 0 14px}
+  .prompt{font-weight:700;margin:0 0 12px}
+
+  /* ---- vocab ---- */
+  table.vocab{width:100%;border-collapse:collapse;margin:2px 0 8px}
+  table.vocab td{border:1px solid var(--line);padding:9px 11px;vertical-align:middle}
+  table.vocab td.term{width:42%;background:#f4f1e8}
+  .term .word{font-family:var(--mono);font-size:14px;letter-spacing:.5px}
+  .term select{
+    font-family:var(--mono);font-size:14px;margin-right:10px;padding:3px 4px;
+    border:1px solid #b7ae97;background:#fff;color:var(--ink);border-radius:3px;
+  }
+  table.vocab td.def b{color:var(--navy)}
+  .fb{font-family:var(--mono);font-size:12px;margin-left:8px}
+  .fb.ok{color:var(--ok)} .fb.no{color:var(--no)}
+
+  /* ---- monomial reference ---- */
+  .refbox{border:1.5px solid var(--gold);background:#fdfbf4;border-radius:6px;
+          padding:14px 16px 16px;margin:16px 0 6px}
+  .refbox .rl{font-size:12px;letter-spacing:1px;color:#8a7328;font-weight:700;
+              text-transform:none;margin:0 0 6px}
+  .mono5x{font-size:44px;font-style:italic;font-weight:700;text-align:center;
+          margin:8px 0 4px;font-family:Georgia,serif}
+  .mono5x sup{font-size:.5em}
+  .parts{display:flex;justify-content:center;gap:34px;flex-wrap:wrap;
+         font-size:12px;color:#4a4636;text-align:center}
+  .parts .p b{color:var(--navy);font-size:13px;display:block}
+  .refbox .tag{font-size:13.5px;font-style:italic;text-align:center;margin:10px 0 0;color:#3f3b2d}
+  .refbox .tag b{font-style:normal}
+
+  /* ---- questions ---- */
+  .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 34px;margin-top:6px}
+  @media(max-width:620px){.qgrid{grid-template-columns:1fr}}
+  .q{padding:12px 2px 14px;border-bottom:1px dotted #ccc5b2}
+  .q .n{font-weight:700;color:var(--gold);font-size:16px}
+  .q .op{font-size:13px;color:#6b6754;font-style:italic;margin-left:2px}
+  .q .expr{font-size:20px;margin:10px 0 12px;min-height:1.4em}
+  .ans{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .ans label{font-size:14px;color:#514c3b}
+  .ans input{
+    font-family:var(--mono);font-size:15px;padding:5px 8px;width:150px;
+    border:1px solid #b7ae97;border-radius:4px;background:#fff;color:var(--ink);
+  }
+  .ans input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+  .q.correct input{border-color:var(--ok);background:var(--ok-bg)}
+  .q.wrong input{border-color:var(--no);background:var(--no-bg)}
+  .qfb{font-family:var(--mono);font-size:13px;min-height:1.1em}
+  .qfb.ok{color:var(--ok)} .qfb.no{color:var(--no)}
+  .qfb .key{font-family:var(--serif);font-size:16px}
+
+  /* fraction component */
+  .frac{display:inline-flex;flex-direction:column;text-align:center;
+        vertical-align:middle;margin:0 .12em;line-height:1.05}
+  .frac .num{border-bottom:1.6px solid currentColor;padding:0 .4em 1px}
+  .frac .den{padding:1px .4em 0}
+  sup{font-size:.62em;vertical-align:super;line-height:0}
+
+  /* ---- controls ---- */
+  .controls{position:sticky;bottom:0;margin:30px -46px -60px;
+    background:linear-gradient(#fbfaf6cc,#fbfaf6);backdrop-filter:blur(3px);
+    padding:16px 46px;border-top:1px solid var(--line);
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  button{
+    font-family:var(--serif);font-size:15px;cursor:pointer;border-radius:5px;
+    padding:9px 18px;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--navy);color:#fff}
+  .btn-primary:hover{background:var(--navy-deep)}
+  .btn-ghost{background:#fff;color:var(--navy);border-color:#b7ae97}
+  .btn-ghost:hover{background:#f4f1e8}
+  .scorebox{margin-left:auto;font-size:15px;font-weight:700;color:var(--navy)}
+  .scorebox .lvls{font-weight:400;font-size:13px;color:#6b6754;display:block;margin-top:2px}
+
+  @media print{
+    body{background:#fff}
+    .sheet{box-shadow:none;border:0;margin:0;max-width:none;padding:0 12px}
+    .controls{display:none}
+    .ans input{border:0;border-bottom:1px solid #333;border-radius:0}
+  }
+</style>
+<style>
+@media print{.sitenav{display:none!important}}
+.dia{text-align:center;margin:6px 0 10px}
+.dia svg{max-width:100%;height:auto;vertical-align:middle}
+@media print{.dia svg{max-width:200px}.dia *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.qfb .tip{display:block;font-family:var(--serif);font-style:italic;font-size:14px;color:#6b4a00;margin-top:3px;line-height:1.35}
+.ans input{width:190px}
+.nw{white-space:nowrap}
+.q .expr{font-size:19px}
+.q .expr .frac{font-size:.95em}
+sub{font-size:.62em;vertical-align:sub;line-height:0}
+.refbox .typ{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;justify-content:center;margin:4px 0 0}
+.refbox .typ code{font-family:var(--mono);font-size:13px;background:#fff;border:1px solid #e3d7b0;border-radius:3px;padding:0 4px}
+@media print{.dia svg{max-width:255px;max-height:2.25in;width:auto}.q{break-inside:avoid}.band{break-after:avoid}.ans input::placeholder{color:transparent}.q .expr{font-size:17px;margin:6px 0 8px}.q{padding:8px 2px 10px}}
+</style>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit3.html">← Unit 3</a></nav>
+<div class="sheet">
+  <div class="masthead">
+    <h1>Unit 3 Pre-Test</h1>
+    <p class="sub">Systems of Equations &amp; Inequalities</p>
+    <p class="std">Standards assessed: NC.M1.A-CED.3 · A-REI.5 · A-REI.6 · A-REI.10 · A-REI.11 · A-REI.12</p>
+  </div>
+  <hr class="rule-gold">
+  <div class="idline">
+    <span class="fld"><b>Name:</b><span class="blank"></span></span>
+    <span class="fld"><b>Date:</b><span class="blank"></span></span>
+    <span class="fld"><b>Period:</b><span class="blank"></span></span>
+  </div>
+<div class="band"><span class="lvl">SCORE</span><span class="num">3.0</span><span class="name">Basic Understanding</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.M1.A-REI.6 · NC.M1.A-REI.10 · NC.M1.A-REI.12</span> Check solutions and solve simple systems.</p>
+  <p class="can">• I can tell if a point is a solution, read a solution from a graph, and solve simple systems.</p>
+  <p class="prompt">Answer each question. Use the picture to help you.</p>
+    <div class="refbox"><p class="rl">How to type your answers</p><div class="typ"><span>point <code>(2, 5)</code></span><span>number <code>-3</code></span><span>yes / no <code>yes</code></span><span>inequality <code>y&lt;=-x+4</code></span></div></div>
+  <div class="qgrid" data-level="basic"></div>
+</div>
+
+<div class="band"><span class="lvl">SCORE</span><span class="num">4.0</span><span class="name">Target Content</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.M1.A-REI.5 · NC.M1.A-REI.6 · NC.M1.A-REI.12 · NC.M1.A-CED.3</span> Solve systems by substitution and elimination and write systems from words.</p>
+  <p class="can">• I can solve systems with substitution or elimination, tell how many solutions there are, and write a system for a situation.</p>
+  <p class="prompt">Solve each problem. Show your work on paper.</p>
+  <div class="qgrid" data-level="target"></div>
+</div>
+
+<div class="band"><span class="lvl">SCORE</span><span class="num">5.0</span><span class="name">Advanced Content</span></div>
+<div class="stripe">
+  <p class="objline"><span class="code">NC.M1.A-REI.6 · NC.M1.A-REI.11 · NC.M1.A-REI.12 · NC.M1.A-CED.3</span> Solve harder systems and use constraints.</p>
+  <p class="can">• I can solve any linear system, test systems of inequalities, and use constraints in real situations.</p>
+  <p class="prompt">Solve each problem. Some answers are words.</p>
+  <div class="qgrid" data-level="advanced"></div>
+</div>
+
+  <div class="controls">
+    <button class="btn-primary" id="check">Check answers</button>
+    <button class="btn-ghost" id="reveal">Show answers</button>
+    <button class="btn-ghost" id="reset">Reset</button>
+    <span class="scorebox" id="scorebox">Not checked yet
+      <span class="lvls" id="lvls"></span></span>
+  </div>
+</div>
+<script>
+const VOCAB=null;
+const QS=[{"id": 1, "lvl": "basic", "op": "Solution?", "expr": "Is the point <span class=\"nw\">(2, 3)</span> a solution of y = 2x − 1? Write yes or no.", "disp": "yes", "chk": ["text", ["yes", "y", "yes it is", "yes, it is", "yes it is a solution", "yes, it is a solution", "it is a solution", "true"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Graph of the line y = 2x − 1\" width=\"230\" height=\"350\" viewBox=\"0 0 230 350\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"186.0\" height=\"310.0\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"59.0\" y1=\"16.0\" x2=\"59.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"90.0\" y1=\"16.0\" x2=\"90.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"121.0\" y1=\"16.0\" x2=\"121.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"152.0\" y1=\"16.0\" x2=\"152.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"183.0\" y1=\"16.0\" x2=\"183.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"214.0\" y1=\"16.0\" x2=\"214.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"326.0\" x2=\"214.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"295.0\" x2=\"214.0\" y2=\"295.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"264.0\" x2=\"214.0\" y2=\"264.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"233.0\" x2=\"214.0\" y2=\"233.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"202.0\" x2=\"214.0\" y2=\"202.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"171.0\" x2=\"214.0\" y2=\"171.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"140.0\" x2=\"214.0\" y2=\"140.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"109.0\" x2=\"214.0\" y2=\"109.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"78.0\" x2=\"214.0\" y2=\"78.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"47.0\" x2=\"214.0\" y2=\"47.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"214.0\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"202.0\" x2=\"214.0\" y2=\"202.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"90.0\" y1=\"326.0\" x2=\"90.0\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"59.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"121.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"152.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"183.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"214.0\" y=\"215.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"86.0\" y=\"329.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−4</text><text x=\"86.0\" y=\"298.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−3</text><text x=\"86.0\" y=\"267.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"86.0\" y=\"236.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"86.0\" y=\"174.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"86.0\" y=\"143.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"86.0\" y=\"112.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"86.0\" y=\"81.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"86.0\" y=\"50.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"86.0\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"86.0\" y=\"214.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"215.0\" y=\"197.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"95.0\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><line x1=\"43.5\" y1=\"326.0\" x2=\"198.5\" y2=\"16.0\" stroke=\"#1E2D4F\" stroke-width=\"2.4\"/><rect x=\"125.2\" y=\"278.8\" width=\"59.0\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"127.2\" y=\"288.8\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">y = 2x − 1</text></svg>", "tip": "Substitute: 2(2) − 1 = 3. The point makes the equation true, so it is on the line.", "plain": "Is the point (2, 3) a solution of y = 2x − 1? Write yes or no."}, {"id": 2, "lvl": "basic", "op": "Solve by graphing", "expr": "Use the graph. What is the solution of the system?", "disp": "(1, 3)", "chk": ["pt", 1, 3], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Two lines: y = x + 2 and y = −2x + 5\" width=\"240\" height=\"301\" viewBox=\"0 0 240 301\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"196.0\" height=\"261.3\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"60.7\" y1=\"16.0\" x2=\"60.7\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"93.3\" y1=\"16.0\" x2=\"93.3\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"126.0\" y1=\"16.0\" x2=\"126.0\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"158.7\" y1=\"16.0\" x2=\"158.7\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"191.3\" y1=\"16.0\" x2=\"191.3\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"224.0\" y1=\"16.0\" x2=\"224.0\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"277.3\" x2=\"224.0\" y2=\"277.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"244.7\" x2=\"224.0\" y2=\"244.7\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"179.3\" x2=\"224.0\" y2=\"179.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"146.7\" x2=\"224.0\" y2=\"146.7\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"114.0\" x2=\"224.0\" y2=\"114.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"81.3\" x2=\"224.0\" y2=\"81.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"48.7\" x2=\"224.0\" y2=\"48.7\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"93.3\" y1=\"277.3\" x2=\"93.3\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"60.7\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"126.0\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"158.7\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"191.3\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"224.0\" y=\"225.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"89.3\" y=\"280.8\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"89.3\" y=\"248.2\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"89.3\" y=\"182.8\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"89.3\" y=\"150.2\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"89.3\" y=\"117.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"89.3\" y=\"84.8\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"89.3\" y=\"52.2\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"89.3\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"89.3\" y=\"224.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"225.0\" y=\"207.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"98.3\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#1E2D4F\" stroke-width=\"2.4\"/><line x1=\"77.0\" y1=\"16.0\" x2=\"207.7\" y2=\"277.3\" stroke=\"#2f6fb3\" stroke-width=\"2.4\"/><rect x=\"29.3\" y=\"84.4\" width=\"53.5\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"31.3\" y=\"94.4\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">y = x + 2</text><rect x=\"29.3\" y=\"244.5\" width=\"64.5\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"31.3\" y=\"254.5\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#2f6fb3\">y = −2x + 5</text></svg>", "tip": "The solution is the point where the two lines cross. Read x, then y.", "ph": "type like (2, 5)", "plain": "Use the graph. What is the solution of the system?"}, {"id": 3, "lvl": "basic", "op": "Substitution", "expr": "Solve the system.<br>y = 2x<br>x + y = 12", "disp": "(4, 8)", "chk": ["pt", 4, 8], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Bar model: x plus y equals 12, where y is two x\" width=\"270\" height=\"88\" viewBox=\"0 0 270 88\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"10.0\" y=\"12.0\" width=\"83.3\" height=\"34.0\" rx=\"0\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"51.7\" y=\"34.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">x</text><rect x=\"93.3\" y=\"12.0\" width=\"166.7\" height=\"34.0\" rx=\"0\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"176.7\" y=\"34.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">y = 2x</text><path d=\"M10 52.0 q0 8 8 8 H127.0 q8 0 8 8 q0 -8 8 -8 H252.0 q8 0 8 -8\" fill=\"none\" stroke=\"#5b6475\" stroke-width=\"1.6\"/><text x=\"135.0\" y=\"82.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">12 in all</text></svg>", "tip": "Replace y with 2x: x + 2x = 12, so 3x = 12 and x = 4. Then y = 2(4).", "ph": "type like (2, 5)", "plain": "Solve the system.y = 2xx + y = 12"}, {"id": 4, "lvl": "basic", "op": "Inequality", "expr": "Is <span class=\"nw\">(0, 0)</span> a solution of y &gt; x + 2? Write yes or no.", "disp": "no", "chk": ["text", ["no", "n", "no it is not", "no, it is not", "no it is not a solution", "no, it is not a solution", "not a solution", "it is not a solution", "false", "not a function", "no, not a function", "no it is not a function", "no, it is not a function"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Dashed line y = x + 2 and the point (0, 0)\" width=\"240\" height=\"264\" viewBox=\"0 0 240 264\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"196.0\" height=\"224.0\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"56.0\" y1=\"16.0\" x2=\"56.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"84.0\" y1=\"16.0\" x2=\"84.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"112.0\" y1=\"16.0\" x2=\"112.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"140.0\" y1=\"16.0\" x2=\"140.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"168.0\" y1=\"16.0\" x2=\"168.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"196.0\" y1=\"16.0\" x2=\"196.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"224.0\" y1=\"16.0\" x2=\"224.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"240.0\" x2=\"224.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"184.0\" x2=\"224.0\" y2=\"184.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"156.0\" x2=\"224.0\" y2=\"156.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"128.0\" x2=\"224.0\" y2=\"128.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"100.0\" x2=\"224.0\" y2=\"100.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"72.0\" x2=\"224.0\" y2=\"72.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"44.0\" x2=\"224.0\" y2=\"44.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"156.0\" x2=\"224.0\" y2=\"156.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"140.0\" y1=\"240.0\" x2=\"140.0\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−4</text><text x=\"56.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−3</text><text x=\"84.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"112.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"168.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"196.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"224.0\" y=\"169.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"136.0\" y=\"243.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−3</text><text x=\"136.0\" y=\"215.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"136.0\" y=\"187.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"136.0\" y=\"131.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"136.0\" y=\"103.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"136.0\" y=\"75.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"136.0\" y=\"47.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"136.0\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"136.0\" y=\"168.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"225.0\" y=\"151.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"145.0\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#1E2D4F\" stroke-width=\"2.2\" stroke-dasharray=\"6 4\"/><circle cx=\"140.0\" cy=\"156.0\" r=\"4.2\" fill=\"#1E2D4F\"/><rect x=\"145.0\" y=\"139.0\" width=\"37.0\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"147.0\" y=\"149.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">(0, 0)</text><rect x=\"28.8\" y=\"48.0\" width=\"53.5\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"30.8\" y=\"58.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">y = x + 2</text></svg>", "tip": "Test it: is 0 &gt; 0 + 2? 0 &gt; 2 is false.", "plain": "Is (0, 0) a solution of y > x + 2? Write yes or no."}, {"id": 5, "lvl": "basic", "op": "Elimination", "expr": "Solve the system.<br>x + y = 7<br>x − y = 1", "disp": "(4, 3)", "chk": ["pt", 4, 3], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Add the two equations; the sum is unknown\" width=\"250\" height=\"106\" viewBox=\"0 0 250 106\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"135.0\" y=\"24.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">x + y = 7</text><text x=\"135.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">x − y = 1</text><text x=\"28.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#1E2D4F\">+</text><line x1=\"40.0\" y1=\"64.0\" x2=\"210.0\" y2=\"64.0\" stroke=\"#1E2D4F\" stroke-width=\"2\"/><rect x=\"105.0\" y=\"73.5\" width=\"60.0\" height=\"21.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"135.0\" y=\"88.7\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Add the equations: 2x = 8, so x = 4. Then 4 + y = 7.", "ph": "type like (2, 5)", "plain": "Solve the system.x + y = 7x − y = 1"}, {"id": 6, "lvl": "basic", "op": "Point on a line", "expr": "The point (3, k) is on the line y = 2x + 1. Find k.", "disp": "k = 7", "chk": ["n", 7], "lab": "k =", "svg": "<svg role=\"img\" aria-label=\"Line y = 2x + 1 with a dashed line at x = 3\" width=\"213\" height=\"350\" viewBox=\"0 0 213 350\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"169.1\" height=\"310.0\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"56.2\" y1=\"16.0\" x2=\"56.2\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"84.4\" y1=\"16.0\" x2=\"84.4\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"112.5\" y1=\"16.0\" x2=\"112.5\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"140.7\" y1=\"16.0\" x2=\"140.7\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"168.9\" y1=\"16.0\" x2=\"168.9\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"197.1\" y1=\"16.0\" x2=\"197.1\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"326.0\" x2=\"197.1\" y2=\"326.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"297.8\" x2=\"197.1\" y2=\"297.8\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"269.6\" x2=\"197.1\" y2=\"269.6\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"241.5\" x2=\"197.1\" y2=\"241.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"213.3\" x2=\"197.1\" y2=\"213.3\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"185.1\" x2=\"197.1\" y2=\"185.1\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"156.9\" x2=\"197.1\" y2=\"156.9\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"128.7\" x2=\"197.1\" y2=\"128.7\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"100.5\" x2=\"197.1\" y2=\"100.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"72.4\" x2=\"197.1\" y2=\"72.4\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"44.2\" x2=\"197.1\" y2=\"44.2\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"197.1\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"297.8\" x2=\"197.1\" y2=\"297.8\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"56.2\" y1=\"326.0\" x2=\"56.2\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"84.4\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"112.5\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"140.7\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"168.9\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"197.1\" y=\"310.8\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"52.2\" y=\"245.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"52.2\" y=\"188.6\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"52.2\" y=\"132.2\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"52.2\" y=\"75.9\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">8</text><text x=\"52.2\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">10</text><text x=\"52.2\" y=\"309.8\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"198.1\" y=\"292.8\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"61.2\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><line x1=\"28.0\" y1=\"326.0\" x2=\"183.0\" y2=\"16.0\" stroke=\"#1E2D4F\" stroke-width=\"2.4\"/><line x1=\"140.7\" y1=\"326.0\" x2=\"140.7\" y2=\"16.0\" stroke=\"#E0A800\" stroke-width=\"1.8\" stroke-dasharray=\"5 4\"/><rect x=\"141.5\" y=\"270.9\" width=\"31.5\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"143.5\" y=\"280.9\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#7a5a00\">x = 3</text><rect x=\"31.6\" y=\"118.7\" width=\"59.0\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"33.6\" y=\"128.7\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">y = 2x + 1</text></svg>", "tip": "Every point on the line makes the equation true: k = 2(3) + 1.", "plain": "The point (3, k) is on the line y = 2x + 1. Find k."}, {"id": 7, "lvl": "target", "op": "Elimination", "expr": "Solve the system.<br>2x + 3y = 12<br>x − 3y = −3", "disp": "(3, 2)", "chk": ["pt", 3, 2], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Add the two equations; the sum is unknown\" width=\"250\" height=\"106\" viewBox=\"0 0 250 106\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"135.0\" y=\"24.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">2x + 3y = 12</text><text x=\"135.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">x − 3y = −3</text><text x=\"28.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#1E2D4F\">+</text><line x1=\"40.0\" y1=\"64.0\" x2=\"210.0\" y2=\"64.0\" stroke=\"#1E2D4F\" stroke-width=\"2\"/><rect x=\"105.0\" y=\"73.5\" width=\"60.0\" height=\"21.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"135.0\" y=\"88.7\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Adding cancels y: 3x = 9, so x = 3. Then 3 − 3y = −3 gives y = 2.", "ph": "type like (2, 5)", "plain": "Solve the system.2x + 3y = 12x − 3y = −3"}, {"id": 8, "lvl": "target", "op": "Substitution", "expr": "Solve the system.<br>y = 3x − 5<br>2x + y = 10", "disp": "(3, 4)", "chk": ["pt", 3, 4], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"In 2x + y = 10, replace y using y = 3x − 5\" width=\"220\" height=\"78\" viewBox=\"0 0 220 78\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"10.0\" y=\"10.0\" width=\"40.0\" height=\"32.0\" rx=\"6\" fill=\"#e9eef7\" stroke=\"#1E2D4F\" stroke-width=\"1.4\"/><text x=\"30.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#1E2D4F\">2x</text><rect x=\"58.0\" y=\"10.0\" width=\"40.0\" height=\"32.0\" rx=\"6\" fill=\"#e9eef7\" stroke=\"#1E2D4F\" stroke-width=\"1.4\"/><text x=\"78.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#1E2D4F\">+</text><rect x=\"106.0\" y=\"10.0\" width=\"40.0\" height=\"32.0\" rx=\"6\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"126.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#1E2D4F\">y</text><text x=\"126.0\" y=\"62.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10.5\" font-weight=\"bold\" font-style=\"italic\" fill=\"#7a5a00\">y = 3x − 5</text><rect x=\"154.0\" y=\"10.0\" width=\"56.0\" height=\"32.0\" rx=\"6\" fill=\"#e9eef7\" stroke=\"#1E2D4F\" stroke-width=\"1.4\"/><text x=\"182.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"14\" font-weight=\"bold\" fill=\"#1E2D4F\">= 10</text></svg>", "tip": "2x + (3x − 5) = 10 → 5x = 15 → x = 3. Then y = 3(3) − 5.", "ph": "type like (2, 5)", "plain": "Solve the system.y = 3x − 52x + y = 10"}, {"id": 9, "lvl": "target", "op": "How many solutions?", "expr": "How many solutions does this system have?<br>y = 2x + 3<br>y = 2x − 1", "disp": "no solution (parallel lines)", "chk": ["text", ["no solution", "no solutions", "none", "no soln", "empty", "empty set", "0 solutions", "zero solutions", "0", "zero", "no real solution"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Table to compare the slope and y-intercept of each line\" width=\"166\" height=\"82\" viewBox=\"0 0 166 82\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2.0\" y=\"2.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">line</text><rect x=\"52.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"80.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">slope</text><rect x=\"108.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"136.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">y-int</text><rect x=\"2.0\" y=\"28.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">A</text><rect x=\"52.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"70.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"80.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"108.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"126.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"136.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"2.0\" y=\"54.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">B</text><rect x=\"52.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"70.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"80.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"108.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"126.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"136.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Same slope (2) but different y-intercepts: the lines are parallel and never meet.", "ph": "how many?", "plain": "How many solutions does this system have?y = 2x + 3y = 2x − 1"}, {"id": 10, "lvl": "target", "op": "Write a system", "expr": "Adult tickets cost $8. Student tickets cost $5. 20 tickets sold for $130 in all. How many <b>adult</b> tickets were sold?", "disp": "10 adult tickets", "chk": ["n", 10], "lab": "adult =", "svg": "<svg role=\"img\" aria-label=\"Table: a + s = 20 tickets, 8a + 5s = 130 dollars\" width=\"234\" height=\"82\" viewBox=\"0 0 234 82\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2.0\" y=\"2.0\" width=\"62.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"64.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"92.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">adult</text><rect x=\"120.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"148.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">student</text><rect x=\"176.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"204.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">total</text><rect x=\"2.0\" y=\"28.0\" width=\"62.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"33.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">tickets</text><rect x=\"64.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"92.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">a</text><rect x=\"120.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"148.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">s</text><rect x=\"176.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"204.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">20</text><rect x=\"2.0\" y=\"54.0\" width=\"62.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"33.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">dollars</text><rect x=\"64.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"92.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">8a</text><rect x=\"120.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"148.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">5s</text><rect x=\"176.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"204.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">130</text></svg>", "tip": "a + s = 20 and 8a + 5s = 130. Substitute s = 20 − a: 8a + 100 − 5a = 130, so 3a = 30.", "plain": "Adult tickets cost $8. Student tickets cost $5. 20 tickets sold for $130 in all. How many adult tickets were sold?"}, {"id": 11, "lvl": "target", "op": "Read the graph", "expr": "Write the inequality shown by the graph. (The line is solid. The shading is below.)", "disp": "y ≤ −x + 4", "chk": ["lineineq", "<=", -1, 4], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Solid line y = −x + 4 with shading below\" width=\"240\" height=\"236\" viewBox=\"0 0 240 236\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"196.0\" height=\"196.0\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"52.5\" y1=\"16.0\" x2=\"52.5\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"77.0\" y1=\"16.0\" x2=\"77.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"101.5\" y1=\"16.0\" x2=\"101.5\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"126.0\" y1=\"16.0\" x2=\"126.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"150.5\" y1=\"16.0\" x2=\"150.5\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"175.0\" y1=\"16.0\" x2=\"175.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"199.5\" y1=\"16.0\" x2=\"199.5\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"224.0\" y1=\"16.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"187.5\" x2=\"224.0\" y2=\"187.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"163.0\" x2=\"224.0\" y2=\"163.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"138.5\" x2=\"224.0\" y2=\"138.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"114.0\" x2=\"224.0\" y2=\"114.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"89.5\" x2=\"224.0\" y2=\"89.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"65.0\" x2=\"224.0\" y2=\"65.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"40.5\" x2=\"224.0\" y2=\"40.5\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"163.0\" x2=\"224.0\" y2=\"163.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"77.0\" y1=\"212.0\" x2=\"77.0\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"52.5\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"101.5\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"126.0\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"150.5\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"175.0\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"199.5\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"224.0\" y=\"176.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"73.0\" y=\"215.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"73.0\" y=\"191.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"73.0\" y=\"142.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"73.0\" y=\"117.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"73.0\" y=\"93.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"73.0\" y=\"68.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"73.0\" y=\"44.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"73.0\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"73.0\" y=\"175.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"225.0\" y=\"158.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"82.0\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><polygon points=\"28.0,212.0 224.0,212.0 224.0,212.0 28.0,16.0 28.0,16.0\" fill=\"#2f6fb3\" stroke=\"none\" stroke-width=\"0\" fill-opacity=\"0.16\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#1E2D4F\" stroke-width=\"2.4\"/><rect x=\"109.3\" y=\"23.2\" width=\"59.0\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"111.3\" y=\"33.2\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">y = −x + 4</text></svg>", "tip": "Solid line → ≤ or ≥. Shaded below → y ≤.", "ph": "type like y>=2x-1", "plain": "Write the inequality shown by the graph. (The line is solid. The shading is below.)"}, {"id": 12, "lvl": "target", "op": "Elimination step", "expr": "x + 2y = 7<br>3x − y = 7<br>Multiply the second equation by 2, then add the equations. What new equation do you get?", "disp": "7x = 21", "chk": ["eqn", ["7x=21", "21=7x", "7x+0y=21"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Multiply the second equation by 2, then add\" width=\"250\" height=\"106\" viewBox=\"0 0 250 106\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"135.0\" y=\"24.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">x + 2y = 7</text><text x=\"135.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">3x − y = 7</text><text x=\"242.0\" y=\"54.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#7a5a00\">× 2</text><text x=\"28.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#1E2D4F\">+</text><line x1=\"40.0\" y1=\"64.0\" x2=\"210.0\" y2=\"64.0\" stroke=\"#1E2D4F\" stroke-width=\"2\"/><rect x=\"105.0\" y=\"73.5\" width=\"60.0\" height=\"21.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"135.0\" y=\"88.7\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "2(3x − y = 7) gives 6x − 2y = 14. Add x + 2y = 7: the y-terms cancel, 7x = 21.", "ph": "type like 5x=10", "plain": "x + 2y = 73x − y = 7Multiply the second equation by 2, then add the equations. What new equation do you get?"}, {"id": 13, "lvl": "advanced", "op": "How many solutions?", "expr": "How many solutions does this system have?<br>2x − y = 3<br>4x − 2y = 6", "disp": "infinitely many solutions (same line)", "chk": ["text", ["infinitely many", "infinitely many solutions", "infinite", "infinite solutions", "all real numbers", "all reals", "all numbers", "every number", "identity", "many", "infinitely"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Table to compare the slope and y-intercept of each line\" width=\"166\" height=\"82\" viewBox=\"0 0 166 82\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2.0\" y=\"2.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">line</text><rect x=\"52.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"80.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">slope</text><rect x=\"108.0\" y=\"2.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"136.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">y-int</text><rect x=\"2.0\" y=\"28.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">A</text><rect x=\"52.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"70.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"80.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"108.0\" y=\"28.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"126.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"136.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"2.0\" y=\"54.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">B</text><rect x=\"52.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"70.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"80.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"108.0\" y=\"54.0\" width=\"56.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"126.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"136.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Solve each for y: both are y = 2x − 3. Same line, so every point on it works.", "ph": "how many?", "plain": "How many solutions does this system have?2x − y = 34x − 2y = 6"}, {"id": 14, "lvl": "advanced", "op": "System of inequalities", "expr": "Is <span class=\"nw\">(2, 1)</span> a solution of the system?<br>y &gt; x − 3<br>y ≤ −2x + 4", "disp": "no", "chk": ["text", ["no", "n", "no it is not", "no, it is not", "no it is not a solution", "no, it is not a solution", "not a solution", "it is not a solution", "false", "not a function", "no, not a function", "no it is not a function", "no, it is not a function"]], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Boundary lines y = x − 3 (dashed) and y = −2x + 4 (solid) with the point (2, 1)\" width=\"240\" height=\"320\" viewBox=\"0 0 240 320\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"28.0\" y=\"16.0\" width=\"196.0\" height=\"280.0\" rx=\"0\" fill=\"#fff\" stroke=\"none\" stroke-width=\"0\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"28.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"56.0\" y1=\"16.0\" x2=\"56.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"84.0\" y1=\"16.0\" x2=\"84.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"112.0\" y1=\"16.0\" x2=\"112.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"140.0\" y1=\"16.0\" x2=\"140.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"168.0\" y1=\"16.0\" x2=\"168.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"196.0\" y1=\"16.0\" x2=\"196.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"224.0\" y1=\"16.0\" x2=\"224.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"296.0\" x2=\"224.0\" y2=\"296.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"268.0\" x2=\"224.0\" y2=\"268.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"240.0\" x2=\"224.0\" y2=\"240.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"212.0\" x2=\"224.0\" y2=\"212.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"184.0\" x2=\"224.0\" y2=\"184.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"156.0\" x2=\"224.0\" y2=\"156.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"128.0\" x2=\"224.0\" y2=\"128.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"100.0\" x2=\"224.0\" y2=\"100.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"72.0\" x2=\"224.0\" y2=\"72.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"44.0\" x2=\"224.0\" y2=\"44.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"16.0\" x2=\"224.0\" y2=\"16.0\" stroke=\"#dde2ea\" stroke-width=\"1\"/><line x1=\"28.0\" y1=\"184.0\" x2=\"224.0\" y2=\"184.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><line x1=\"84.0\" y1=\"296.0\" x2=\"84.0\" y2=\"16.0\" stroke=\"#56607a\" stroke-width=\"1.6\"/><text x=\"28.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"56.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"112.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"140.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"168.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"196.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"224.0\" y=\"197.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"80.0\" y=\"299.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−4</text><text x=\"80.0\" y=\"271.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−3</text><text x=\"80.0\" y=\"243.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−2</text><text x=\"80.0\" y=\"215.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">−1</text><text x=\"80.0\" y=\"159.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">1</text><text x=\"80.0\" y=\"131.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">2</text><text x=\"80.0\" y=\"103.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">3</text><text x=\"80.0\" y=\"75.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">4</text><text x=\"80.0\" y=\"47.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">5</text><text x=\"80.0\" y=\"19.5\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10\" font-weight=\"normal\" fill=\"#5b6475\">6</text><text x=\"80.0\" y=\"196.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"9.5\" font-weight=\"normal\" fill=\"#5b6475\">0</text><text x=\"225.0\" y=\"179.0\" text-anchor=\"end\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">x</text><text x=\"89.0\" y=\"26.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" font-style=\"italic\" fill=\"#56607a\">y</text><line x1=\"56.0\" y1=\"296.0\" x2=\"224.0\" y2=\"128.0\" stroke=\"#1E2D4F\" stroke-width=\"2.2\" stroke-dasharray=\"6 4\"/><line x1=\"56.0\" y1=\"16.0\" x2=\"196.0\" y2=\"296.0\" stroke=\"#2f6fb3\" stroke-width=\"2.4\"/><circle cx=\"140.0\" cy=\"156.0\" r=\"4.2\" fill=\"#1E2D4F\"/><rect x=\"144.0\" y=\"162.0\" width=\"37.0\" height=\"14.0\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"146.0\" y=\"172.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11\" font-weight=\"bold\" fill=\"#1E2D4F\">(2, 1)</text><rect x=\"177.2\" y=\"107.3\" width=\"51.2\" height=\"13.5\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"179.2\" y=\"116.8\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#1E2D4F\">y &gt; x − 3</text><rect x=\"84.8\" y=\"20.5\" width=\"61.8\" height=\"13.5\" rx=\"2\" fill=\"rgba(255,255,255,0.85)\" stroke=\"none\" stroke-width=\"0\"/><text x=\"86.8\" y=\"30.0\" text-anchor=\"start\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"10.5\" font-weight=\"bold\" fill=\"#2f6fb3\">y ≤ −2x + 4</text></svg>", "tip": "It must make BOTH true. 1 &gt; −1 is true, but 1 ≤ 0 is false.", "plain": "Is (2, 1) a solution of the system?y > x − 3y ≤ −2x + 4"}, {"id": 15, "lvl": "advanced", "op": "Constraint", "expr": "Shirts cost $12. Hats cost $8. Ana can spend <b>at most</b> $96. She buys 5 shirts. What is the greatest number of hats she can buy?", "disp": "4 hats", "chk": ["n", 4], "lab": "hats =", "svg": "<svg role=\"img\" aria-label=\"Bar model: 5 shirts at $12 plus some hats at $8, at most $96\" width=\"270\" height=\"88\" viewBox=\"0 0 270 88\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"10.0\" y=\"12.0\" width=\"138.9\" height=\"34.0\" rx=\"0\" fill=\"#e9eef7\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><text x=\"79.4\" y=\"34.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">5 shirts × $12</text><rect x=\"148.9\" y=\"12.0\" width=\"111.1\" height=\"34.0\" rx=\"0\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"204.4\" y=\"34.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">? hats × $8</text><path d=\"M10 52.0 q0 8 8 8 H127.0 q8 0 8 8 q0 -8 8 -8 H252.0 q8 0 8 -8\" fill=\"none\" stroke=\"#5b6475\" stroke-width=\"1.6\"/><text x=\"135.0\" y=\"82.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">at most $96</text></svg>", "tip": "12(5) + 8h ≤ 96 → 8h ≤ 36 → h ≤ 4.5. She can only buy whole hats.", "plain": "Shirts cost $12. Hats cost $8. Ana can spend at most $96. She buys 5 shirts. What is the greatest number of hats she can buy?"}, {"id": 16, "lvl": "advanced", "op": "Elimination", "expr": "Solve the system.<br>3x + 2y = 16<br>2x − 3y = −11", "disp": "(2, 5)", "chk": ["pt", 2, 5], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Multiply each equation by a number, then add\" width=\"250\" height=\"106\" viewBox=\"0 0 250 106\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"135.0\" y=\"24.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">3x + 2y = 16</text><rect x=\"210.1\" y=\"8.8\" width=\"31.8\" height=\"20.5\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"226.0\" y=\"23.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#1E2D4F\">× ?</text><text x=\"135.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"15\" font-weight=\"bold\" fill=\"#1E2D4F\">2x − 3y = −11</text><rect x=\"210.1\" y=\"38.8\" width=\"31.8\" height=\"20.5\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"226.0\" y=\"53.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#1E2D4F\">× ?</text><text x=\"28.0\" y=\"54.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"18\" font-weight=\"bold\" fill=\"#1E2D4F\">+</text><line x1=\"40.0\" y1=\"64.0\" x2=\"210.0\" y2=\"64.0\" stroke=\"#1E2D4F\" stroke-width=\"2\"/><rect x=\"105.0\" y=\"73.5\" width=\"60.0\" height=\"21.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"135.0\" y=\"88.7\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Multiply the first by 3 and the second by 2: 9x + 6y = 48 and 4x − 6y = −22. Add: 13x = 26.", "ph": "type like (2, 5)", "plain": "Solve the system.3x + 2y = 162x − 3y = −11"}, {"id": 17, "lvl": "advanced", "op": "f(x) = g(x)", "expr": "f(x) = 2x + 1 and g(x) = −x + 7. For what value of x is f(x) = g(x)?", "disp": "x = 2", "chk": ["n", 2], "lab": "x =", "svg": "<svg role=\"img\" aria-label=\"Table of f and g for x = 0 to 3 with some values unknown\" width=\"214\" height=\"82\" viewBox=\"0 0 214 82\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2.0\" y=\"2.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">x</text><rect x=\"52.0\" y=\"2.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"72.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">0</text><rect x=\"92.0\" y=\"2.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"112.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">1</text><rect x=\"132.0\" y=\"2.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"152.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">2</text><rect x=\"172.0\" y=\"2.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"192.0\" y=\"19.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">3</text><rect x=\"2.0\" y=\"28.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">f(x)</text><rect x=\"52.0\" y=\"28.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"72.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">1</text><rect x=\"92.0\" y=\"28.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"112.0\" y=\"45.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">3</text><rect x=\"132.0\" y=\"28.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"142.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"152.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"172.0\" y=\"28.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"182.0\" y=\"31.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"192.0\" y=\"45.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"2.0\" y=\"54.0\" width=\"50.0\" height=\"26.0\" rx=\"0\" fill=\"#1E2D4F\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"27.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"bold\" fill=\"#fff\">g(x)</text><rect x=\"52.0\" y=\"54.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"72.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">7</text><rect x=\"92.0\" y=\"54.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><text x=\"112.0\" y=\"71.5\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12.5\" font-weight=\"normal\" fill=\"#1E2D4F\">6</text><rect x=\"132.0\" y=\"54.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"142.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"152.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text><rect x=\"172.0\" y=\"54.0\" width=\"40.0\" height=\"26.0\" rx=\"0\" fill=\"#fff\" stroke=\"#b9c1cf\" stroke-width=\"1\"/><rect x=\"182.0\" y=\"57.0\" width=\"20.0\" height=\"20.0\" rx=\"4\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"192.0\" y=\"71.3\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"12\" font-weight=\"bold\" fill=\"#1E2D4F\">?</text></svg>", "tip": "Set 2x + 1 = −x + 7. Then 3x = 6. (Or fill in the table and look for equal outputs.)", "plain": "f(x) = 2x + 1 and g(x) = −x + 7. For what value of x is f(x) = g(x)?"}, {"id": 18, "lvl": "advanced", "op": "Write a system", "expr": "Two numbers add to 30. Their difference is 8. What is the <b>larger</b> number?", "disp": "19", "chk": ["n", 19], "lab": "Answer:", "svg": "<svg role=\"img\" aria-label=\"Bar model: the larger number is the smaller plus 8\" width=\"270\" height=\"102\" viewBox=\"0 0 270 102\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"135.0\" y=\"14.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"11.5\" font-weight=\"normal\" font-style=\"italic\" fill=\"#5b6475\">larger = small + 8</text><rect x=\"10.0\" y=\"26.0\" width=\"96.2\" height=\"34.0\" rx=\"0\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"58.1\" y=\"48.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">small</text><rect x=\"106.2\" y=\"26.0\" width=\"96.2\" height=\"34.0\" rx=\"0\" fill=\"#FFF4CC\" stroke=\"#E0A800\" stroke-width=\"2\"/><text x=\"154.2\" y=\"48.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">small</text><rect x=\"202.3\" y=\"26.0\" width=\"57.7\" height=\"34.0\" rx=\"0\" fill=\"#e9eef7\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><text x=\"231.2\" y=\"48.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">8</text><path d=\"M10 66.0 q0 8 8 8 H127.0 q8 0 8 8 q0 -8 8 -8 H252.0 q8 0 8 -8\" fill=\"none\" stroke=\"#5b6475\" stroke-width=\"1.6\"/><text x=\"135.0\" y=\"96.0\" text-anchor=\"middle\" font-family=\"Georgia,'Times New Roman',serif\" font-size=\"13\" font-weight=\"bold\" fill=\"#1E2D4F\">30 in all</text></svg>", "tip": "L + S = 30 and L − S = 8. Add: 2L = 38.", "plain": "Two numbers add to 30. Their difference is 8. What is the larger number?"}];
+const PT_STD={"1": "NC.M1.A-REI.10", "2": "NC.M1.A-REI.6", "3": "NC.M1.A-REI.6", "4": "NC.M1.A-REI.12", "5": "NC.M1.A-REI.6", "6": "NC.M1.A-REI.10", "7": "NC.M1.A-REI.6", "8": "NC.M1.A-REI.6", "9": "NC.M1.A-REI.6", "10": "NC.M1.A-CED.3", "11": "NC.M1.A-REI.12", "12": "NC.M1.A-REI.5", "13": "NC.M1.A-REI.6", "14": "NC.M1.A-REI.12", "15": "NC.M1.A-CED.3", "16": "NC.M1.A-REI.6", "17": "NC.M1.A-REI.11", "18": "NC.M1.A-CED.3"};
+/* ===== Math 1 answer types (added to the pre-test engine's runCheck) ===== */
+const M1=(function(){
+  const SUPD={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
+  function norm(raw){
+    let s=String(raw==null?'':raw).trim();
+    s=s.replace(/[−–—]/g,'-').replace(/[×·⋅∙•]/g,'*').replace(/÷/g,'/').replace(/π/g,'pi');
+    s=s.replace(/\*\*/g,'^');
+    s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g,m=>'^('+m.replace(/./g,c=>SUPD[c])+')');   // x² -> x^(2), x⁻² -> x^(-2)
+    s=s.replace(/[½⅓⅔¼¾]/g,c=>({'½':'(1/2)','⅓':'(1/3)','⅔':'(2/3)','¼':'(1/4)','¾':'(3/4)'})[c]);
+    s=s.replace(/∞/g,'inf');
+    s=s.replace(/∛/g,'cbrt').replace(/√/g,'sqrt');
+    s=s.replace(/ₙ/g,'n').replace(/a_n/gi,'an');
+    s=s.replace(/≤|=</g,'<=').replace(/≥|=>/g,'>=');
+    return s.toLowerCase().replace(/\s+/g,'');
+  }
+  /* ---- tiny expression parser: + - * / ^, ( ), implicit ×, sqrt cbrt, one-letter variables ---- */
+  function tokens(s){
+    const t=[];let i=0;
+    while(i<s.length){
+      const c=s[i];
+      if(/[0-9.]/.test(c)){let j=i;while(j<s.length&&/[0-9.]/.test(s[j]))j++;const v=s.slice(i,j);if((v.match(/\./g)||[]).length>1)throw 0;t.push({k:'n',v:parseFloat(v)});i=j;continue;}
+      if(s.startsWith('sqrt',i)){t.push({k:'f',v:'sqrt'});i+=4;continue;}
+      if(s.startsWith('cbrt',i)){t.push({k:'f',v:'cbrt'});i+=4;continue;}
+      if(s.startsWith('pi',i)){t.push({k:'n',v:Math.PI});i+=2;continue;}
+      if(/[a-z]/.test(c)){t.push({k:'v',v:c});i++;continue;}
+      if('+-*/^()'.includes(c)){t.push({k:c});i++;continue;}
+      if(c==='['){t.push({k:'('});i++;continue;}
+      if(c===']'){t.push({k:')'});i++;continue;}
+      throw 0;
+    }
+    return t;
+  }
+  function parse(str){
+    const t=tokens(str);let p=0;
+    const peek=()=>t[p], eat=k=>{if(!t[p]||t[p].k!==k)throw 0;return t[p++];};
+    function expr(){let n=term();while(peek()&&(peek().k==='+'||peek().k==='-')){const o=t[p++].k;n={o:o,a:n,b:term()};}return n;}
+    function startsAtom(x){return x&&(x.k==='n'||x.k==='v'||x.k==='f'||x.k==='(');}
+    function term(){let n=unary();
+      while(peek()&&(peek().k==='*'||peek().k==='/'||startsAtom(peek()))){
+        let o='*';if(peek().k==='*'||peek().k==='/')o=t[p++].k;else o='i';
+        n={o:o==='i'?'*':o,a:n,b:unary(),imp:o==='i'};}
+      return n;}
+    function unary(){if(peek()&&peek().k==='-'){p++;return {o:'neg',a:unary()};}if(peek()&&peek().k==='+'){p++;return unary();}return power();}
+    function power(){const b=atom();if(peek()&&peek().k==='^'){p++;return {o:'^',a:b,b:unary()};}return b;}
+    function atom(){const x=t[p++];if(!x)throw 0;
+      if(x.k==='n')return {o:'n',v:x.v};
+      if(x.k==='v')return {o:'v',v:x.v};
+      if(x.k==='f'){return {o:x.v,a:power()};}
+      if(x.k==='('){const e=expr();eat(')');return {o:'()',a:e};}
+      throw 0;}
+    const r=expr();if(p!==t.length)throw 0;return r;
+  }
+  function ev(n,env){
+    switch(n.o){
+      case 'n':return n.v;
+      case 'v':if(!(n.v in env))throw 0;return env[n.v];
+      case '()':return ev(n.a,env);
+      case 'neg':return -ev(n.a,env);
+      case '+':return ev(n.a,env)+ev(n.b,env);
+      case '-':return ev(n.a,env)-ev(n.b,env);
+      case '*':return ev(n.a,env)*ev(n.b,env);
+      case '/':return ev(n.a,env)/ev(n.b,env);
+      case '^':return Math.pow(ev(n.a,env),ev(n.b,env));
+      case 'sqrt':return Math.sqrt(ev(n.a,env));
+      case 'cbrt':return Math.cbrt(ev(n.a,env));
+    }
+    throw 0;
+  }
+  function tryParse(s){try{return parse(s);}catch(e){return null;}}
+  function num(s){const a=tryParse(s);if(!a)return NaN;try{return ev(a,{});}catch(e){return NaN;}}
+  function close(a,b,tol){if(!isFinite(a)||!isFinite(b))return false;return Math.abs(a-b)<=(tol==null?Math.max(1e-7,Math.abs(b)*1e-7):tol);}
+  /* strip a leading name like y=, f(x)=, p(t)=, an=, (f+g)(x)=, l= */
+  function stripLHS(s){
+    const i=s.indexOf('=');if(i<0)return s;
+    if(s.indexOf('=',i+1)>=0)return null;
+    const L=s.slice(0,i);
+    if(/^[a-z]{1,2}(\([a-z]\))?$/.test(L)||/^\([a-z][+\-*\/][a-z]\)\([a-z]\)$/.test(L))return s.slice(i+1);
+    return null;
+  }
+  const SAMPLES=[[1.37,2.21,0.83],[2.9,1.13,3.41],[0.61,3.07,1.79],[1.91,0.73,2.53],[3.3,2.6,1.2]];
+  function sameExpr(stu,key,vars){
+    const A=tryParse(stu),B=tryParse(key);if(!A||!B)return false;
+    for(const smp of SAMPLES){const env={};vars.forEach((v,i)=>env[v]=smp[i%smp.length]+0.17*i);
+      let a,b;try{a=ev(A,env);b=ev(B,env);}catch(e){return false;}
+      if(!isFinite(a)||!isFinite(b)||Math.abs(a-b)>1e-6*Math.max(1,Math.abs(b)))return false;}
+    return true;
+  }
+  function topIsProduct(n){while(n.o==='neg')n=n.a;return n.o==='*'||n.o==='^';}
+  function hasSum(n){if(!n||typeof n!=='object')return false;if(n.o==='+'||n.o==='-')return true;return hasSum(n.a)||hasSum(n.b);}
+  function cleanUnits(s){const m=s.match(/^([-+]?[0-9.\/]+)[a-z$%°]*$/);return m?m[1]:s;}
+  /* ---- answer types ---- */
+  const T={};
+  T.n=(c,raw)=>{  // number: ['n', value, tol]
+    let s=norm(raw).replace(/^[a-z]{1,2}(\([a-z0-9]\))?(=|≈)/,'').replace(/[$,%°]/g,'').replace(/≈/g,'');
+    let v=num(s);if(!isFinite(v))v=num(cleanUnits(s));
+    if(!isFinite(v))v=parseNumber(raw);
+    return close(v,c[1],c[2]);
+  };
+  T.expr=(c,raw)=>{ // ['expr', key, vars, {form:'fact'|'mono'|'paren', need:'regex'}]
+    let s=stripLHS(norm(raw).replace(/(\d),(?=\d{3}(?!\d))/g,'$1'));if(s==null||s==='')return false;
+    const o=c[3]||{};
+    if(o.need&&!(new RegExp(o.need)).test(s))return false;
+    const A=tryParse(s);if(!A)return false;
+    if(o.form==='fact'&&!topIsProduct(A))return false;
+    if(o.form==='mono'){if(/[()]/.test(s.replace(/\^\(-?[0-9\/]+\)/g,'')))return false;if(hasSum(A))return false;
+      const vs=s.replace(/sqrt|cbrt|pi/g,'').match(/[a-z]/g)||[];if(new Set(vs).size!==vs.length)return false;}
+    if(o.form==='paren'&&!/\(/.test(s))return false;
+    if(o.form==='expand'&&/[()]/.test(s.replace(/\^\([^()]*\)/g,'')))return false;
+    return sameExpr(s,c[1],c[2]);
+  };
+  function pieces(s){
+    s=s.replace(/^\{|\}$/g,'').replace(/(and|or)/g,',').replace(/;/g,',');
+    s=s.replace(/[a-z]=/g,',');                 // x=2,x=-3  ->  ,2,,-3
+    let out=[];
+    s.split(',').filter(x=>x!=='').forEach(x=>{
+      if(x.includes('±')||x.includes('+-')){const k=x.replace('+-','±').indexOf('±');const xx=x.replace('+-','±');
+        const a=xx.slice(0,k),b=xx.slice(k+1);out.push((a||'0')+'+('+b+')');out.push((a||'0')+'-('+b+')');}
+      else out.push(x);});
+    return out;
+  }
+  T.set=(c,raw)=>{ // ['set', [values], tol]
+    const s=norm(raw);if(!s)return false;
+    const vals=pieces(s).map(num);if(vals.some(v=>!isFinite(v)))return false;
+    const tol=c[2]==null?1e-6:c[2];
+    const uniq=[];vals.forEach(v=>{if(!uniq.some(u=>Math.abs(u-v)<=tol))uniq.push(v);});
+    const key=c[1];
+    return uniq.length===key.length&&key.every(k=>uniq.some(u=>Math.abs(u-k)<=tol));
+  };
+  T.pt=(c,raw)=>{ // ['pt', x, y]
+    let s=norm(raw).replace(/^[a-z]=?(?=\()/,'');
+    s=s.replace(/^\((.*)\)$/,'$1');
+    let m=s.match(/^x=(.+),y=(.+)$/)||s.match(/^(.+),(.+)$/);if(!m)return false;
+    return close(num(m[1]),c[1],1e-6)&&close(num(m[2]),c[2],1e-6);
+  };
+  function flip(o){return {'<':'>','>':'<','<=':'>=','>=':'<='}[o];}
+  T.ineq=(c,raw)=>{ // ['ineq', var, op, value, loose]  loose: < and <= both fine
+    const s=norm(raw);const v=c[1];let op,val;
+    let m=s.match(new RegExp('^'+v+'(<=|>=|<|>)(.+)$'));
+    if(m){op=m[1];val=num(m[2]);}
+    else if((m=s.match(new RegExp('^(.+?)(<=|>=|<|>)'+v+'$')))){op=flip(m[2]);val=num(m[1]);}
+    else if((m=s.match(/^\(-inf(?:inity)?,(.+)([\)\]])$/))){op=m[2]===']'?'<=':'<';val=num(m[1]);}
+    else if((m=s.match(/^([\(\[])(.+),inf(?:inity)?\)$/))){op=m[1]==='['?'>=':'>';val=num(m[2]);}
+    else return false;
+    const want=c[2];
+    const sameDir=op[0]===want[0], sameStrict=op.length===want.length;
+    return close(val,c[3],1e-6)&&sameDir&&(sameStrict||!!c[4]);
+  };
+  T.ineq2=(c,raw)=>{ // ['ineq2', var, lo, loIncl, hi, hiIncl]
+    const s=norm(raw);const v=c[1];let m,lo,hi,li,hiI;
+    if((m=s.match(new RegExp('^(.+?)(<=|<)'+v+'(<=|<)(.+)$')))){lo=num(m[1]);li=m[2]==='<=';hi=num(m[4]);hiI=m[3]==='<=';}
+    else if((m=s.match(new RegExp('^(.+?)(>=|>)'+v+'(>=|>)(.+)$')))){hi=num(m[1]);hiI=m[2]==='>=';lo=num(m[4]);li=m[3]==='>=';}
+    else if((m=s.match(/^([\(\[])(.+),(.+)([\)\]])$/))){lo=num(m[2]);hi=num(m[3]);li=m[1]==='[';hiI=m[4]===']';}
+    else return false;
+    return close(lo,c[2],1e-6)&&close(hi,c[4],1e-6)&&li===c[3]&&hiI===c[5];
+  };
+  T.lineineq=(c,raw)=>{ // ['lineineq', op, m, b]  : y op m x + b, any equivalent form
+    const s=norm(raw);const m=s.match(/^(.+?)(<=|>=|<|>)(.+)$/);if(!m)return false;
+    const L=tryParse(m[1]),R=tryParse(m[3]);if(!L||!R)return false;
+    const op=m[2];const strict=op.length===1, kstrict=c[1].length===1;if(strict!==kstrict)return false;
+    const f=(x,y)=>ev(L,{x:x,y:y})-ev(R,{x:x,y:y});
+    const test=(d,o)=>o[0]==='<'?d<0:d>0;
+    try{
+      for(let i=0;i<6;i++){const x=-4+i*1.7, yb=c[2]*x+c[3];if(Math.abs(f(x,yb))>1e-6)return false;}   // same boundary line
+      for(let i=0;i<12;i++){const x=-5+i*0.9, y=c[2]*x+c[3]+((i%2)?2.3:-1.9);
+        const kt=test(y-(c[2]*x+c[3]),c[1]), st=test(f(x,y),op);if(kt!==st)return false;}
+    }catch(e){return false;}
+    return true;
+  };
+  T.eqn=(c,raw)=>{ // ['eqn', [accepted equations]] exact form, spaces ignored
+    const s=norm(raw);return c[1].some(a=>norm(a)===s);
+  };
+  T.words=(c,raw)=>{ // ['words', [[alt,alt],[alt]]] every group needs one word
+    const s=' '+String(raw||'').toLowerCase().replace(/[−–]/g,'-').replace(/[^a-z0-9.\- ]/g,' ').replace(/\s+/g,' ')+' ';
+    return c[1].every(g=>g.some(w=>s.includes(' '+w+' ')));
+  };
+  T.any=(c,raw)=>c.slice(1).some(k=>runCheck(k,raw));
+  return {T:T,norm:norm,num:num,parse:tryParse,sameExpr:sameExpr};
+})();
+
+/* ===== parsers ===== */
+const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
+function deSup(s){return s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]/g,c=>SUP[c]);}
+function cleanNum(raw){
+  let s=String(raw==null?'':raw).toLowerCase().trim();
+  s=s.replace(/^[a-z]\s*=\s*/,'');                       // "x = 5" -> "5" (the box is labelled x =)
+  s=s.replace(/(cm|mm|km|m|ft|in|yd)\s*(\^\s*[23]|[\u00b2\u00b3]|[23](?![0-9]))/g,'$1'); // cm³ / ft^2 -> unit only, before superscripts are expanded
+  s=s.replace(/[%\u00b0]/g,'');                          // 60% -> 60, 55° -> 55
+  s=deSup(s);
+  s=s.replace(/[\u00bd\u2153\u2154\u00bc\u00be]/g,c=>({'\u00bd':'1/2','\u2153':'1/3','\u2154':'2/3','\u00bc':'1/4','\u00be':'3/4'})[c]); // ½ ⅓ ⅔ ¼ ¾
+  s=s.replace(/−/g,'-');
+  s=s.replace(/,/g,'').replace(/\$/g,'').replace(/≈|=/g,'');
+  s=s.replace(/\b(square|cubic)\b/g,'');
+  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|m|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|times|hours?|hr|miles?|mi|g)\b/g,'');
+  s=s.replace(/°/g,'');
+  s=s.replace(/\s+/g,'');
+  return s;
+}
+function parseNumber(raw){
+  let s=cleanNum(raw);
+  if(s==='')return NaN;
+  s=s.replace(/[×·∙•⋅]/g,'x').replace(/\*\*/g,'^').replace(/\*/g,'x');
+  let m=s.match(/^(-?\d*\.?\d+)x?10\^?(-?\d+)$/); if(m)return parseFloat(m[1])*Math.pow(10,parseInt(m[2],10));
+  m=s.match(/^(-?\d*\.?\d+)e(-?\d+)$/); if(m)return parseFloat(m[1])*Math.pow(10,parseInt(m[2],10));
+  m=s.match(/^(-?\d+)\/(-?\d+)$/); if(m)return parseInt(m[1],10)/parseInt(m[2],10);
+  m=s.match(/^(?:√|sqrt|root)\(?(-?\d*\.?\d+)\)?$/); if(m)return Math.sqrt(parseFloat(m[1]));
+  m=s.match(/^-?\d*\.?\d+$/); if(m)return parseFloat(s);
+  return NaN;
+}
+function parseSciParts(raw){
+  let s=cleanNum(raw).replace(/[×·∙•⋅]/g,'x').replace(/\*\*/g,'^').replace(/\*/g,'x');
+  let m=s.match(/^(-?\d*\.?\d+)x?10\^?(-?\d+)$/)||s.match(/^(-?\d*\.?\d+)e(-?\d+)$/);
+  if(!m)return null;
+  return {coeff:parseFloat(m[1]),exp:parseInt(m[2],10)};
+}
+function normText(raw){return String(raw==null?'':raw).toLowerCase().replace(/\s+/g,' ').trim().replace(/[.;,!]+$/,'');}
+function near(a,b){ if(!isFinite(a))return false; if(b===0)return Math.abs(a)<1e-9; return Math.abs(a-b)<=Math.abs(b)*1e-4+1e-9; }
+function runCheck(chk,raw){
+  if(!chk)return false;
+  const t=chk[0];
+  if(M1.T[t])return M1.T[t](chk,raw);
+  if(t==='val'){const v=parseNumber(raw);return isFinite(v)&&near(v,chk[1]);}
+  if(t==='num'){const v=parseNumber(raw);const tol=(chk[2]==null?0.01:chk[2]);return isFinite(v)&&Math.abs(v-chk[1])<=tol;}
+  if(t==='sci'){const p=parseSciParts(raw);if(!p)return false;const okform=Math.abs(p.coeff)>=1&&Math.abs(p.coeff)<10;return okform&&near(p.coeff*Math.pow(10,p.exp),chk[1]);}
+  if(t==='frac'){const v=parseNumber(raw);return isFinite(v)&&near(v,chk[1]/chk[2]);}
+  if(t==='coord'){let s=String(raw==null?'':raw).replace(/−/g,'-').replace(/\s/g,'');const m=s.match(/^\(?(-?\d*\.?\d+),(-?\d*\.?\d+)\)?$/);return !!m&&near(parseFloat(m[1]),chk[1])&&near(parseFloat(m[2]),chk[2]);}
+  if(t==='text'){const n=normText(raw);return chk[1].some(a=>normText(a)===n);}
+  if(t==='contains'){const n=normText(raw);return chk[1].some(a=>n.includes(normText(a)));}
+  if(t==='pi'){const s=cleanNum(raw);let m=s.match(/^(-?\d*\.?\d+)(?:pi|π)$/);if(m)return near(parseFloat(m[1]),chk[1]);if(/^(?:pi|π)$/.test(s))return near(1,chk[1]);const v=parseNumber(raw);return isFinite(v)&&Math.abs(v-chk[1]*Math.PI)<=Math.max(0.15,Math.abs(chk[1]*Math.PI)*0.01);}
+  if(t==='linear'){let s=String(raw==null?'':raw).toLowerCase().replace(/−/g,'-').replace(/\s/g,'').replace(/·|\*/g,'').replace(/^y=/,'');const xm=s.match(/([+-]?\d*\.?\d*)x/);if(!xm)return false;let mc=xm[1];if(mc===''||mc==='+')mc='1';if(mc==='-')mc='-1';mc=parseFloat(mc);let rest=s.replace(/([+-]?\d*\.?\d*)x/,'');let bc=(rest===''?0:parseFloat(rest));if(isNaN(bc))bc=0;return near(mc,chk[1])&&near(bc,chk[2]);}
+  return false;
+}
+/* ===== render ===== */
+QS.forEach(q=>{
+  const grid=document.querySelector('.qgrid[data-level="'+q.lvl+'"]'); if(!grid)return;
+  const div=document.createElement('div'); div.className='q'; div.id='q'+q.id;
+  div.innerHTML='<div><span class="n">'+q.id+'.</span>'+(q.op?' <span class="op">'+q.op+'</span>':'')+'</div>'
+    +'<div class="expr">'+q.expr+'</div>'
+    +(q.svg?'<div class="dia">'+q.svg+'</div>':'')
+    +'<div class="ans"><label>'+(q.lab||'Answer:')+'</label><input id="i'+q.id+'" autocomplete="off" spellcheck="false"'+(q.ph?' placeholder="'+q.ph+'"':'')+'></div>'
+    +'<div class="qfb" id="fb'+q.id+'"></div>';
+  grid.appendChild(div);
+});
+/* ===== send to Mr. Allen (score-send.js): every graded question is recorded ===== */
+const PT_BAND={basic:3,target:4,advanced:5};
+function ptLabel(q){if(q.plain)return ((q.op?q.op+': ':'')+q.plain).slice(0,80);const d=document.createElement('div');d.innerHTML=(q.op?q.op+': ':'')+String(q.expr).replace(/<sup>/g,'^');return d.textContent.replace(/\s+/g,' ').trim().slice(0,80);}
+function ptRecord(q,ok){if(!window.ScoreSend)return;try{ScoreSend.record('q'+q.id,ok,{std:PT_STD[q.id],band:PT_BAND[q.lvl],label:ptLabel(q)});}catch(e){}}
+/* ===== check / reveal / reset ===== */
+function check(){
+  let levels={basic:[0,0],target:[0,0],advanced:[0,0]};
+  if(typeof VOCAB==='object'&&VOCAB){
+    document.querySelectorAll('#vocab select').forEach(sel=>{
+      const term=sel.dataset.term, fb=sel.parentElement.querySelector('.fb');
+      const good=sel.value===VOCAB[term];
+      fb.textContent=sel.value?(good?'✓':'✗'):''; fb.className='fb '+(good?'ok':'no');
+      levels.basic[1]++; if(good)levels.basic[0]++;
+    });
+  }
+  QS.forEach(q=>{
+    const inp=document.getElementById('i'+q.id), fb=document.getElementById('fb'+q.id), div=document.getElementById('q'+q.id);
+    levels[q.lvl][1]++; div.classList.remove('correct','wrong');
+    if(inp.value.trim()===''){fb.textContent='';fb.className='qfb';return;}
+    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';ptRecord(q,true);}
+    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>'+(q.tip?'<span class="tip">Tip: '+q.tip+'</span>':'');fb.className='qfb no';ptRecord(q,false);}
+  });
+  const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
+  const den=levels.basic[1]+levels.target[1]+levels.advanced[1];
+  document.getElementById('scorebox').firstChild.textContent=tot+' / '+den+' correct ';
+  document.getElementById('lvls').textContent='3.0 Basic '+levels.basic[0]+'/'+levels.basic[1]+'  ·  4.0 Target '+levels.target[0]+'/'+levels.target[1]+'  ·  5.0 Advanced '+levels.advanced[0]+'/'+levels.advanced[1];
+}
+function reveal(){
+  if(typeof VOCAB==='object'&&VOCAB){
+    document.querySelectorAll('#vocab select').forEach(sel=>{sel.value=VOCAB[sel.dataset.term];const fb=sel.parentElement.querySelector('.fb');fb.textContent='✓';fb.className='fb ok';});
+  }
+  QS.forEach(q=>{const fb=document.getElementById('fb'+q.id),div=document.getElementById('q'+q.id);div.classList.remove('wrong');div.classList.add('correct');fb.innerHTML='answer: <span class="key">'+q.disp+'</span>';fb.className='qfb ok';});
+  document.getElementById('scorebox').firstChild.textContent='Answers shown '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.revealed();
+}
+function reset(){
+  if(typeof VOCAB==='object'&&VOCAB){document.querySelectorAll('#vocab select').forEach(s=>{s.value='';const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});}
+  QS.forEach(q=>{document.getElementById('i'+q.id).value='';const fb=document.getElementById('fb'+q.id);fb.textContent='';fb.className='qfb';document.getElementById('q'+q.id).classList.remove('correct','wrong');});
+  document.getElementById('scorebox').firstChild.textContent='Not checked yet '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.reset();
+}
+document.getElementById('check').addEventListener('click',check);
+document.getElementById('reveal').addEventListener('click',reveal);
+document.getElementById('reset').addEventListener('click',reset);
+document.querySelectorAll('.ans input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check();}));
+
+</script>
+<style>@media (max-width:760px){body>#scoresend{margin:24px 12px!important}}</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>if(window.ScoreSend)ScoreSend.setup({"kind": "pretest", "unit": "M1 U3", "page": "Math 1 Unit 3 Pre-Test", "mount": "body", "std": "NC.M1.A-REI.6", "band": 4});</script>
+</body>
+</html>

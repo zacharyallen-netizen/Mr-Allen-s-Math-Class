@@ -1,0 +1,16 @@
+const fs=require('fs'),vm=require('vm');const ctx={console};vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/lib.js','utf8')+';this.M1=M1;',ctx);const M1=ctx.M1;
+const J=(sp,r)=>M1.judge(sp,r);
+const pt={kind:'pt',ans:[3,-2]};
+for (const r of ['(3,-2)','(3, −2)','3,-2','x=3, y=-2','x = 3 and y = −2','(3.0,-2)','[3;-2]','(-2,3)','(3,2)','(3,5)','3','(6/2, -4/2)']) console.log('pt',JSON.stringify(r),J(pt,r));
+const num={kind:'num',ans:6400};
+for (const r of ['6400','6,400','6,400 bacteria','P(5)=6400','$6400','6400.0','-6400','64*100']) console.log('num',r,J(num,r));
+console.log(J({kind:'num',ans:0.5},'1/2'),J({kind:'num',ans:12.5},'25/2'),J({kind:'num',ans:12.5},'a₄ = 12.50'),J({kind:'num',ans:1.4142135623730951},'sqrt(2)'),J({kind:'num',ans:3},'d = +3'),J({kind:'num',ans:-2},'a4=−2'));
+const ex={kind:'expr',ans:'200*2^t',vars:['t']};
+for (const r of ['200(2)^t','P(t)=200·2^t','200*2**t','200(2)ᵗ','200 × 2^t','2^t*200','200(1+1)^t','400^t','200(2t)']) console.log('expr',r,J(ex,r));
+const e2={kind:'expr',ans:'4n-1',vars:['n']};
+for (const r of ['4n−1','aₙ = 4n − 1','a_n=3+(n-1)4','3+4(n−1)','an=4n-1','4n+3']) console.log('expr2',r,J(e2,r));
+const e3={kind:'expr',ans:'3*2^x',vars:['x']};
+for (const r of ['y=3(2)^x','3·2ˣ','f(x)=3*2^x','y = 3(2)ˣ']) console.log('expr3',r,J(e3,r));
+const iq={kind:'ineq',v:'y',op:'>',n:0};
+for (const r of ['y>0','0<y','y > 0','(0, ∞)','y≥0','y<0']) console.log('ineq',r,J(iq,r));
+console.log(J({kind:'text',ans:['exponential','exp','exponentialfunction(s)?','g','g\\(x\\)']},'Exponential function'));

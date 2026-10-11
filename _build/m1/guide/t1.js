@@ -1,0 +1,12 @@
+const L=require('./lib.js');
+const T=(k,i,a,o,exp)=>{const r=L.matches(k,i,a,o); console.log((r===exp?'ok  ':'FAIL')+' '+k+' '+JSON.stringify(i)+' -> '+r);};
+T('num','x = 4',4,{},true);T('num','4.0',4,{},true);T('num','−3',-3,{},true);T('num','-3',-3,{},true);T('num','1/2',0.5,{},true);T('num','0.5',0.5,{},true);
+T('num','sqrt(2)',Math.SQRT2,{},true);T('num','√2',Math.SQRT2,{},true);T('num','x=5',4,{},false);T('num','abc',4,{},null);T('num','y = 45',45,{},true);T('num','$1,000',1000,{},true);
+T('expr','x^2','x^2',{},true);T('expr','x²','x^2',{},true);T('expr','y=2x+1','2x+1',{},true);T('expr','2x + 1','2*x+1',{},true);T('expr','y = 1/2x − 1','0.5x-1',{},true);T('expr','y=x/2-1','0.5x-1',{},true);T('expr','y=0.5x-1','0.5x-1',{},true);
+T('expr','2^x','2^x',{},true);T('expr','1.5^x','1.5^x',{},true);T('expr','200(1.05)^x','200*1.05^x',{},true);T('expr','200 · 1.05ˣ','200*1.05^x',{},true);T('expr','(x+3)(x+5)','x^2+8x+15',{},true);T('expr','(x+5)(x+3)','x^2+8x+15',{},true);
+T('expr','x^9','x^9',{},true);T('expr','x^18','x^9',{},false);T('expr','x¹⁸','x^9',{},false);
+T('pt','(3, -2)',[3,-2],{},true);T('pt','3,-2',[3,-2],{},true);T('pt','(3, −2)',[3,-2],{},true);T('pt','x=3, y=-2',[3,-2],{},true);T('pt','(-2,3)',[3,-2],{},false);
+T('ineq','x>3',{op:'>',n:3},{},true);T('ineq','3<x',{op:'>',n:3},{},true);T('ineq','x ≥ −4',{op:'>=',n:-4},{},true);T('ineq','x>=-4',{op:'>=',n:-4},{},true);T('ineq','-4<=x',{op:'>=',n:-4},{},true);T('ineq','x<=-4',{op:'>=',n:-4},{},false);
+T('ineq','(3, ∞)',{op:'>',n:3},{},true);T('ineq','(3,inf)',{op:'>',n:3},{},true);T('ineq','y ≤ 3',{op:'<=',n:3},{v:'y'},true);
+T('set','x = 7, x = −7',[7,-7],{},true);T('set','±7',[7,-7],{},true);T('set','7 and -7',[7,-7],{},true);T('set','x=7 or x=-7',[7,-7],{},true);T('set','7',[7,-7],{},false);T('set','3,-4',[3,-4],{},true);
+console.log(L.topLevelSum('(x+3)(x+5)'),L.topLevelSum('x^2+8x+15'),L.topLevelSum('-(x+1)(x-2)'), L.topLevelSum('y=(x+3)(x+5)'));
