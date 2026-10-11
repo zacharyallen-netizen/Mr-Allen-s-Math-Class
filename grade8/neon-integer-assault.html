@@ -54,17 +54,17 @@
 
   canvas {
     position: fixed;
-    inset: 0;
+    inset: 56px 0 0 0;   /* starts under the site top bar (56px) */
     z-index: 0;
     display: block;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 56px);
     cursor: crosshair;
   }
 
   #hud {
     position: fixed;
-    top: 0;
+    top: 56px;
     left: 0;
     z-index: 5;
     display: grid;
@@ -179,7 +179,7 @@
 
   #overlay {
     position: fixed;
-    inset: 0;
+    inset: 56px 0 0 0;
     z-index: 20;
     display: grid;
     place-items: center;
@@ -421,6 +421,7 @@
 </style>
 </head>
 <body>
+<script src="../site-bar.js"></script>
 <canvas id="game"></canvas>
 
 <div id="hud" aria-live="polite">
@@ -509,21 +510,21 @@
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, DPR_LIMIT);
     canvas.width = Math.floor(window.innerWidth * dpr);
-    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.height = Math.floor((window.innerHeight - 56) * dpr);
     canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+    canvas.style.height = `${(window.innerHeight - 56)}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     pointer.x = window.innerWidth / 2;
-    pointer.y = window.innerHeight / 2;
+    pointer.y = (window.innerHeight - 56) / 2;
     buildStars();
     layoutBelts();
   }
 
   function buildStars() {
-    const count = Math.min(140, Math.floor((window.innerWidth * window.innerHeight) / 9000));
+    const count = Math.min(140, Math.floor((window.innerWidth * (window.innerHeight - 56)) / 9000));
     state.stars = Array.from({ length: count }, (_, i) => ({
       x: (i * 179 + 37) % Math.max(1, window.innerWidth),
-      y: (i * 113 + 71) % Math.max(1, window.innerHeight),
+      y: (i * 113 + 71) % Math.max(1, (window.innerHeight - 56)),
       size: 1 + (i % 3) * 0.55,
       speed: 8 + (i % 7) * 3,
       alpha: 0.12 + (i % 5) * 0.035
@@ -669,7 +670,7 @@
     }
 
     state.belts = [];
-    const beltCount = window.innerHeight < 640 ? 3 : 4;
+    const beltCount = (window.innerHeight - 56) < 640 ? 3 : 4;
     for (let i = 0; i < beltCount; i++) {
       state.belts.push(createBelt(i));
     }
@@ -714,7 +715,7 @@
     if (!state.belts.length) return;
     const topPad = window.innerWidth < 760 ? 138 : 128;
     const bottomPad = window.innerWidth < 760 ? 106 : 112;
-    const space = Math.max(280, window.innerHeight - topPad - bottomPad);
+    const space = Math.max(280, (window.innerHeight - 56) - topPad - bottomPad);
     const gap = space / state.belts.length;
 
     state.belts.forEach((belt, index) => {
@@ -722,7 +723,7 @@
       belt.boxes.forEach((box) => {
         box.y = belt.y;
         box.w = clamp(window.innerWidth * 0.12, 96, 138);
-        box.h = clamp(window.innerHeight * 0.074, 50, 66);
+        box.h = clamp((window.innerHeight - 56) * 0.074, 50, 66);
       });
     });
   }
@@ -829,7 +830,7 @@
 
   function drawBackground(dt, elapsed) {
     const w = window.innerWidth;
-    const h = window.innerHeight;
+    const h = (window.innerHeight - 56);
     const gradient = ctx.createLinearGradient(0, 0, 0, h);
     gradient.addColorStop(0, "#081525");
     gradient.addColorStop(0.52, "#050814");
@@ -1100,7 +1101,7 @@
   }
 
   function completeWave() {
-    spawnBurst(window.innerWidth / 2, window.innerHeight / 2, colors.cyan, 70, 2.2);
+    spawnBurst(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 70, 2.2);
     state.score += 350 + state.level * 100;
     state.speedMultiplier += 0.12;
     if (state.level >= MAX_LEVEL) {
@@ -1181,7 +1182,7 @@
   function getTurret() {
     return {
       x: window.innerWidth / 2,
-      y: window.innerHeight - (window.innerWidth < 760 ? 54 : 62)
+      y: (window.innerHeight - 56) - (window.innerWidth < 760 ? 54 : 62)
     };
   }
 
@@ -1227,13 +1228,13 @@
     if (!state.paused) return;
     ctx.save();
     ctx.fillStyle = "rgba(2,5,12,0.54)";
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    ctx.fillRect(0, 0, window.innerWidth, (window.innerHeight - 56));
     ctx.fillStyle = colors.white;
     ctx.textAlign = "center";
     ctx.font = "950 48px Inter, Arial, sans-serif";
-    ctx.fillText("PAUSED", window.innerWidth / 2, window.innerHeight / 2);
+    ctx.fillText("PAUSED", window.innerWidth / 2, (window.innerHeight - 56) / 2);
     ctx.font = "800 16px Inter, Arial, sans-serif";
-    ctx.fillText("Press P to resume", window.innerWidth / 2, window.innerHeight / 2 + 34);
+    ctx.fillText("Press P to resume", window.innerWidth / 2, (window.innerHeight - 56) / 2 + 34);
     ctx.restore();
   }
 
@@ -1415,7 +1416,5 @@
   drawTurret(0);
 })();
 </script>
-
-<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
 </body>
 </html>

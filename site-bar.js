@@ -37,6 +37,23 @@
     document.head.appendChild(f);
   }
 
+  // The slim row of page-specific links (e.g. "← Unit 5", U1–U9) that some
+  // pages keep under the bar. Styled here so it looks the same on every page.
+  if (!document.getElementById("sb-local-css")) {
+    var st = document.createElement("style");
+    st.id = "sb-local-css";
+    st.textContent =
+      ".sb-local{display:flex;flex-wrap:wrap;align-items:center;gap:4px 20px;margin:0;padding:10px max(20px,calc((100% - 1080px)/2));" +
+      "background:#fff;border-bottom:1px solid #E3E5EA;font:500 14px/1.5 Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;position:relative;z-index:999}" +
+      ".sb-local a,.sb-local button{color:#1E2D4F;text-decoration:none;background:none;border:0;padding:4px 0;font:inherit;cursor:pointer;" +
+      "border-bottom:2px solid transparent}" +
+      ".sb-local a:hover,.sb-local button:hover{border-bottom-color:#E0A800}" +
+      ".sb-local a.active,.sb-local a[aria-current]{border-bottom-color:#E0A800;font-weight:600}" +
+      ".sb-local a:focus-visible,.sb-local button:focus-visible{outline:2px solid #E0A800;outline-offset:3px}" +
+      "@media print{.sb-local{display:none}}";
+    document.head.appendChild(st);
+  }
+
   var host = document.createElement("div");
   host.id = "site-bar";
   host.setAttribute("role", "banner");
@@ -90,6 +107,28 @@
     if (e.key === "Escape" && bar.classList.contains("open")) btn.click();
   });
 
-  function mount() { document.body.insertBefore(host, document.body.firstChild); }
+  // Some pages pad, center or flex their <body>. Stretch the bar (and the slim
+  // row of page links, if any) to the full width of the window and pull it up to
+  // the very top, whatever the page's own layout is.
+  function fit() {
+    var w = document.documentElement.clientWidth;
+    var local = document.querySelector("body > .sb-local");
+    [host, local].forEach(function (el, i) {
+      if (!el) return;
+      el.style.alignSelf = "stretch"; el.style.flex = "none"; el.style.boxSizing = "border-box";
+      el.style.marginLeft = "0px"; el.style.marginRight = "0px"; el.style.width = w + "px";
+      if (i === 0) el.style.marginTop = "0px";
+      var r = el.getBoundingClientRect();
+      el.style.marginLeft = -(r.left + window.scrollX) + "px";
+      if (i === 0) el.style.marginTop = -(r.top + window.scrollY) + "px";
+    });
+  }
+  function mount() {
+    document.body.insertBefore(host, document.body.firstChild);
+    fit();
+    window.addEventListener("resize", fit);
+    window.addEventListener("load", fit);
+    document.addEventListener("DOMContentLoaded", fit);
+  }
   if (document.body) mount(); else document.addEventListener("DOMContentLoaded", mount);
 })();
