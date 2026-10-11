@@ -733,16 +733,21 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 </div>
 </div>
 
+<div id="ss-mount"></div>
 </div>
 
 
 <script>
 
 const scores={};
+var SS_STD={"u7c1_10": "NC.8.SP.2", "u7c2_1": "NC.8.SP.3", "u7c3_1": "NC.8.SP.4", "u7c2_2": "NC.8.SP.3", "u7c3_2": "NC.8.SP.4", "u7c2_3": "NC.8.SP.3", "u7c3_3": "NC.8.SP.4", "u7c2_4": "NC.8.SP.3", "u7c3_4": "NC.8.SP.4", "u7c2_5": "NC.8.SP.3", "u7c3_5": "NC.8.SP.4", "u7c2_6": "NC.8.SP.3", "u7c3_6": "NC.8.SP.4", "u7c2_7": "NC.8.SP.3", "u7c3_7": "NC.8.SP.4", "u7c2_8": "NC.8.SP.3", "u7c3_8": "NC.8.SP.4"};
+function ssStd(id){return SS_STD[id]||'NC.8.SP.1';}
+function ssLabel(card){var n=card.querySelector('.qnum,.q-num'),t=card.querySelector('.qt,.q-text');return ((n?n.textContent.trim().replace(/\s+/g,' '):card.id)+(t?': '+t.textContent.trim().replace(/\s+/g,' '):'')).slice(0,80);}
 function mc(btn,cardId,correct){
   const card=document.getElementById(cardId);
   if(card.classList.contains('answered'))return;
   card.classList.add('answered');
+  try{if(window.ScoreSend)ScoreSend.record(cardId,btn.textContent.trim()===correct.trim(),{std:ssStd(cardId),label:ssLabel(card)});}catch(e){}
   card.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const fb=card.querySelector('.fb');
   if(btn.textContent.trim()===correct.trim()){
@@ -816,5 +821,8 @@ function revealStep(prefix, total) {
 
 
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'7', page:'Unit 7 · Practice 1', mount:'#ss-mount', std:'NC.8.SP.1', band:4 }); </script>
 </body>
 </html>

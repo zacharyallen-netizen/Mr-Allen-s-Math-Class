@@ -219,6 +219,7 @@
 <script>
 const VOCAB={"scientific notation": "D", "coefficient": "B", "standard form": "A", "base": "E", "positive exponent": "F", "negative exponent": "C"};
 const QS=[{"id": 1, "lvl": "basic", "op": "Write in scientific notation", "expr": "45,000", "disp": "4.5 × 10<sup>4</sup>", "chk": ["sci", 45000]}, {"id": 2, "lvl": "basic", "op": "Write in standard form", "expr": "3 × 10<sup>4</sup>", "disp": "30,000", "chk": ["val", 30000]}, {"id": 3, "lvl": "basic", "op": "Write in scientific notation", "expr": "0.0062", "disp": "6.2 × 10<sup>-3</sup>", "chk": ["sci", 0.0062]}, {"id": 4, "lvl": "basic", "op": "Write in standard form", "expr": "7.1 × 10<sup>-2</sup>", "disp": "0.071", "chk": ["val", 0.071]}, {"id": 5, "lvl": "basic", "op": "Write in scientific notation", "expr": "580,000", "disp": "5.8 × 10<sup>5</sup>", "chk": ["sci", 580000]}, {"id": 6, "lvl": "basic", "op": "Fix the notation", "expr": "Is 12.5 × 10<sup>6</sup> correct? Write the correct form.", "disp": "1.25 × 10<sup>7</sup>", "chk": ["sci", 12500000]}, {"id": 7, "lvl": "target", "op": "Multiply", "expr": "(3 × 10<sup>4</sup>)(2 × 10<sup>3</sup>)", "disp": "6 × 10<sup>7</sup>", "chk": ["sci", 60000000.0]}, {"id": 8, "lvl": "target", "op": "Divide", "expr": "(8 × 10<sup>9</sup>) ÷ (4 × 10<sup>5</sup>)", "disp": "2 × 10<sup>4</sup>", "chk": ["sci", 20000.0]}, {"id": 9, "lvl": "target", "op": "Multiply", "expr": "(5 × 10<sup>6</sup>)(4 × 10<sup>3</sup>)", "disp": "2 × 10<sup>10</sup>", "chk": ["sci", 20000000000.0]}, {"id": 10, "lvl": "target", "op": "Compare", "expr": "How many times larger is 6 × 10<sup>8</sup> than 2 × 10<sup>3</sup>?", "disp": "3 × 10<sup>5</sup>", "chk": ["sci", 300000.0]}, {"id": 11, "lvl": "target", "op": "Divide", "expr": "(9 × 10<sup>-2</sup>) ÷ (3 × 10<sup>4</sup>)", "disp": "3 × 10<sup>-6</sup>", "chk": ["sci", 3e-06]}, {"id": 12, "lvl": "target", "op": "Multiply", "expr": "(2.5 × 10<sup>5</sup>)(2 × 10<sup>-8</sup>)", "disp": "5 × 10<sup>-3</sup>", "chk": ["sci", 0.005]}, {"id": 13, "lvl": "advanced", "op": "Add", "expr": "(4 × 10<sup>5</sup>) + (3 × 10<sup>5</sup>)", "disp": "7 × 10<sup>5</sup>", "chk": ["sci", 700000.0]}, {"id": 14, "lvl": "advanced", "op": "Add", "expr": "(5 × 10<sup>6</sup>) + (3 × 10<sup>5</sup>)", "disp": "5.3 × 10<sup>6</sup>", "chk": ["sci", 5300000.0]}, {"id": 15, "lvl": "advanced", "op": "Subtract", "expr": "(8.4 × 10<sup>-3</sup>) − (2.1 × 10<sup>-3</sup>)", "disp": "6.3 × 10<sup>-3</sup>", "chk": ["sci", 0.0063]}, {"id": 16, "lvl": "advanced", "op": "Apply", "expr": "A proton’s mass ≈ 1.67 × 10<sup>-27</sup> kg. Find the mass of 2,000 protons.", "disp": "3.34 × 10<sup>-24</sup> kg", "chk": ["sci", 3.34e-24]}, {"id": 17, "lvl": "advanced", "op": "Apply", "expr": "Light travels 3 × 10<sup>8</sup> m/s. How far in 2 × 10<sup>2</sup> seconds?", "disp": "6 × 10<sup>10</sup> m", "chk": ["sci", 60000000000.0]}, {"id": 18, "lvl": "advanced", "op": "Apply", "expr": "A server holds 4.5 × 10<sup>12</sup> bytes. Each video is 9 × 10<sup>5</sup> bytes. How many videos fit?", "disp": "5 × 10<sup>6</sup>", "chk": ["sci", 5000000.0]}];
+const PT_STD={"1": "NC.8.EE.3", "2": "NC.8.EE.3", "3": "NC.8.EE.3", "4": "NC.8.EE.3", "5": "NC.8.EE.3", "6": "NC.8.EE.3", "7": "NC.8.EE.4", "8": "NC.8.EE.4", "9": "NC.8.EE.4", "10": "NC.8.EE.4", "11": "NC.8.EE.4", "12": "NC.8.EE.4", "13": "NC.8.EE.4", "14": "NC.8.EE.4", "15": "NC.8.EE.4", "16": "NC.8.EE.4", "17": "NC.8.EE.4", "18": "NC.8.EE.4"};
 
 /* ===== parsers ===== */
 const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
@@ -282,6 +283,10 @@ QS.forEach(q=>{
     +'<div class="qfb" id="fb'+q.id+'"></div>';
   grid.appendChild(div);
 });
+/* ===== send to Mr. Allen (score-send.js): every graded question is recorded ===== */
+const PT_BAND={basic:3,target:4,advanced:5};
+function ptLabel(q){const d=document.createElement('div');d.innerHTML=(q.op?q.op+': ':'')+String(q.expr).replace(/<sup>/g,'^');return d.textContent.replace(/\s+/g,' ').trim().slice(0,80);}
+function ptRecord(q,ok){if(!window.ScoreSend)return;try{ScoreSend.record('q'+q.id,ok,{std:PT_STD[q.id],band:PT_BAND[q.lvl],label:ptLabel(q)});}catch(e){}}
 /* ===== check / reveal / reset ===== */
 function check(){
   let levels={basic:[0,0],target:[0,0],advanced:[0,0]};
@@ -297,8 +302,8 @@ function check(){
     const inp=document.getElementById('i'+q.id), fb=document.getElementById('fb'+q.id), div=document.getElementById('q'+q.id);
     levels[q.lvl][1]++; div.classList.remove('correct','wrong');
     if(inp.value.trim()===''){fb.textContent='';fb.className='qfb';return;}
-    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';}
-    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';}
+    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';ptRecord(q,true);}
+    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';ptRecord(q,false);}
   });
   const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
   const den=levels.basic[1]+levels.target[1]+levels.advanced[1];
@@ -311,11 +316,13 @@ function reveal(){
   }
   QS.forEach(q=>{const fb=document.getElementById('fb'+q.id),div=document.getElementById('q'+q.id);div.classList.remove('wrong');div.classList.add('correct');fb.innerHTML='answer: <span class="key">'+q.disp+'</span>';fb.className='qfb ok';});
   document.getElementById('scorebox').firstChild.textContent='Answers shown '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.revealed();
 }
 function reset(){
   if(typeof VOCAB==='object'&&VOCAB){document.querySelectorAll('#vocab select').forEach(s=>{s.value='';const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});}
   QS.forEach(q=>{document.getElementById('i'+q.id).value='';const fb=document.getElementById('fb'+q.id);fb.textContent='';fb.className='qfb';document.getElementById('q'+q.id).classList.remove('correct','wrong');});
   document.getElementById('scorebox').firstChild.textContent='Not checked yet '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.reset();
 }
 document.getElementById('check').addEventListener('click',check);
 document.getElementById('reveal').addEventListener('click',reveal);
@@ -323,5 +330,9 @@ document.getElementById('reset').addEventListener('click',reset);
 document.querySelectorAll('.ans input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check();}));
 
 </script>
+<style>@media (max-width:760px){body>#scoresend{margin:24px 12px!important}}</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>if(window.ScoreSend)ScoreSend.setup({"kind": "pretest", "unit": "2", "page": "Unit 2 Pre-Test — Scientific Notation", "mount": "body", "std": "NC.8.EE.3", "band": 4});</script>
 </body>
 </html>

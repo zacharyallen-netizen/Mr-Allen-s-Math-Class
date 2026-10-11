@@ -139,6 +139,7 @@
       <button class="btn" id="tryNew" style="background:#eef1f8;color:var(--navy)">New root</button>
       <div class="fb" id="tryFb"></div>
     </div>
+    <div id="ss-mount"></div>
   </section>
 
   <!-- ===================== PART 3 ===================== -->
@@ -286,6 +287,8 @@
     var v=parseFloat($('tryInput').value);
     if(isNaN(v)){$('tryFb').className='fb no';$('tryFb').textContent='Type a decimal like '+tryC.tenth.toFixed(1)+'.';return;}
     var fb=$('tryFb');
+    if(window.ScoreSend) ScoreSend.record('try-'+tryC.type+tryC.n, Math.abs(v-tryC.tenth)<0.001,   // Send-my-work tracker
+      {std:'NC.8.NS.2', band:4, label:'Estimate '+tryC.sym+tryC.n+' to the nearest tenth'});
     if(Math.abs(v-tryC.tenth)<0.001){
       fb.className='fb ok';
       fb.innerHTML='✅ Spot on — '+tryC.sym+tryC.n+' ≈ '+tryC.tenth.toFixed(1)+'. (Calculator: '+tryC.actual.toFixed(3)+'…)';
@@ -333,6 +336,12 @@
   select('sq',45,$('sqPicker').children[6]);  // √45
   newTry();
 })();
+</script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/* Send-my-work tracker: the "Your turn" estimates. */
+if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'1', page:'Unit 1 · Estimating Roots · Your turn', mount:'#ss-mount', std:'NC.8.NS.2', band:4 });
 </script>
 </body>
 </html>

@@ -1059,6 +1059,7 @@ function chk(qid, correct, chosen){
   const box = document.getElementById(qid);
   const fb = document.getElementById('fb-'+qid);
   const buttons = box.querySelectorAll('.chk-btn');
+  if(window.ssRec) ssRec(qid, chosen === correct);   // Send-my-work tracker (first click = first try)
   buttons.forEach(b=>{
     b.disabled = true;
     const btnText = b.textContent.trim().replace(/\s+/g,' ');
@@ -1148,6 +1149,7 @@ function chkVal(qid,answers){
   const list=Array.isArray(answers)?answers:[answers];
   if(v===''){fb.classList.add('w');fb.innerHTML='Type your answer first.';return;}
   const cv=canon(v);
+  if(window.ssRec) ssRec(qid, list.some(a=>canon(a)===cv));   // Send-my-work tracker
   if(list.some(a=>canon(a)===cv)){
     fb.classList.add('c'); fb.innerHTML='✓ Correct! '+pretty(list[0]);
     return;
@@ -1220,6 +1222,19 @@ if(location.search.indexOf("key=1") !== -1){
   }
 }
 
+</script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/* Send-my-work tracker: practice problems and quick checks only (not the note fill-ins). */
+if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'3', page:'Unit 3 · Equations Guided Notes practice', mount:'#practice', std:'NC.8.EE.7', band:4 });
+function ssStd(id){ return 'NC.8.EE.7'; }
+function ssRec(qid, ok){
+  if(!window.ScoreSend) return;
+  var q=document.querySelector('#'+qid+' .chk-q'), label='';
+  if(q){ q=q.cloneNode(true); q.querySelectorAll('.badge,svg,button').forEach(function(e){e.remove();}); label=q.textContent.replace(/\s+/g,' ').trim(); }
+  ScoreSend.record(qid, !!ok, { std:ssStd(qid), band:4, label:label });
+}
 </script>
 </body>
 </html>

@@ -564,6 +564,7 @@ ol.steps li{margin-bottom:.4rem}
 </div>
 </div>
 </section>
+<div id="ss-mount"></div>
 </div><!-- end container -->
 
 <script>
@@ -586,6 +587,7 @@ function checkAnswer(id, correct) {
   const val = document.getElementById('a' + id).value.trim().toLowerCase().replace(/\s+/g,' ');
   const fb = document.getElementById('f' + id);
   const prob = document.getElementById('p' + id);
+  if (val !== '' && window.ssRec) ssRec(id, val === correct.toLowerCase());   // Send-my-work tracker
   if (val === correct.toLowerCase()) {
     fb.textContent = '✓ Correct!'; fb.className = 'feedback correct'; prob.className = 'problem correct';
   } else {
@@ -604,6 +606,7 @@ function checkFrac(id, num, den) {
     // Check equivalence
     if (n * den === num * d && d > 0) {
       // Check simplest form
+      if (window.ssRec) ssRec(id, gcd(Math.abs(n), d) === 1);   // Send-my-work tracker
       if (gcd(Math.abs(n), d) === 1) {
         fb.textContent = '✓ Correct!'; fb.className = 'feedback correct'; prob.className = 'problem correct'; return;
       } else {
@@ -611,6 +614,7 @@ function checkFrac(id, num, den) {
       }
     }
   }
+  if (val !== '' && window.ssRec) ssRec(id, false);   // Send-my-work tracker
   fb.textContent = '✗ Not quite — try again!'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect';
 }
 
@@ -623,6 +627,7 @@ function checkSqrt(id, target) {
   if (isNaN(val)) { fb.textContent = '✗ Enter a number.'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect'; return; }
   const algo = sqrtAlgo(target);
   const diff = Math.abs(val - algo);
+  if (window.ssRec) ssRec(id, diff < 0.015);   // Send-my-work tracker
   if (diff < 0.015) {
     fb.textContent = `✓ Correct! Algorithm gives ${algo.toFixed(3)}.`; fb.className = 'feedback correct'; prob.className = 'problem correct';
   } else {
@@ -635,6 +640,7 @@ function checkClose(id, target, tol) {
   const fb = document.getElementById('f' + id);
   const prob = document.getElementById('p' + id);
   if (isNaN(val)) { fb.textContent = '✗ Enter a number.'; fb.className = 'feedback incorrect'; prob.className = 'problem incorrect'; return; }
+  if (window.ssRec) ssRec(id, Math.abs(val - target) <= tol);   // Send-my-work tracker
   if (Math.abs(val - target) <= tol) {
     fb.textContent = `✓ Correct! ≈ ${target}`; fb.className = 'feedback correct'; prob.className = 'problem correct';
   } else {
@@ -944,6 +950,7 @@ function checkOrder(id, zoneId) {
   for (let i = 1; i < vals.length; i++) {
     if (vals[i] < vals[i - 1]) { sorted = false; break; }
   }
+  if (window.ssRec) ssRec(id, sorted);   // Send-my-work tracker
   if (sorted) {
     fb.textContent = '✓ Correct! Great job!'; fb.className = 'feedback correct'; prob.className = 'problem correct';
   } else {
@@ -958,6 +965,23 @@ document.querySelectorAll('.order-zone').forEach(zone => {
   zone.addEventListener('dragenter', () => zone.classList.add('over'));
   zone.addEventListener('dragleave', () => zone.classList.remove('over'));
 });
+</script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/* Send-my-work tracker: the Practice problems in Targets 1-3 (not the examples or the number-line explorer). */
+if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'1', page:'Unit 1 · Real Number System Guided Notes practice', mount:'#ss-mount', std:'NC.8.NS.2', band:4 });
+function ssRec(id, ok){
+  if(!window.ScoreSend) return;
+  var q=document.querySelector('#p'+id+' .q'), label='';
+  if(q){
+    q=q.cloneNode(true);   // stacked fractions -> "n/d", bar notation -> "(digits)"
+    q.querySelectorAll('.frac').forEach(function(fr){var n=fr.querySelector('.num'),d=fr.querySelector('.den');if(n&&d)fr.textContent=' '+n.textContent+'/'+d.textContent;});
+    q.querySelectorAll('.overline').forEach(function(o){o.textContent='('+o.textContent+')';});
+    label=q.textContent.replace(/\s+/g,' ').trim();
+  }
+  ScoreSend.record('p'+id, !!ok, { std:/^1-/.test(id)?'NC.8.NS.1':'NC.8.NS.2', band:4, label:label });
+}
 </script>
 </body>
 </html>

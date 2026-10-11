@@ -128,6 +128,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 </div>
 </div>
 
+<div id="ss-mount"></div>
 </div>
 
 <script>
@@ -274,6 +275,7 @@ function checkSlope() {
   }
   // Also check points aren't the same
   if(slopePoints[0].x === slopePoints[1].x && slopePoints[0].y === slopePoints[1].y) ok = false;
+  try{if(window.ScoreSend)ScoreSend.record('line'+(slopeIdx+1),ok,{std:'NC.8.F.3',label:'Graph '+p.eq});}catch(e){}
   
   if(ok) {
     r.className = 'result show correct';
@@ -393,6 +395,7 @@ function checkSystem() {
     if(Math.abs(p.m1 * sysLine1[i].x + p.b1 - sysLine1[i].y) > 0.01) ok1 = false;
     if(Math.abs(p.m2 * sysLine2[i].x + p.b2 - sysLine2[i].y) > 0.01) ok2 = false;
   }
+  try{if(window.ScoreSend)ScoreSend.record('sys'+(sysIdx+1),ok1&&ok2,{std:'NC.8.EE.8',label:'Solve by graphing: '+p.eq1+' and '+p.eq2});}catch(e){}
   
   if(ok1 && ok2) {
     r.className = 'result show correct';
@@ -441,4 +444,7 @@ window.addEventListener('load', function() { initSlope(); initSys(); });
 </script>
 
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Graphing Practice', mount:'#ss-mount', std:'NC.8.F.3', band:4 }); </script>
 </body></html>

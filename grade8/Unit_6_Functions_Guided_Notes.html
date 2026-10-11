@@ -1041,6 +1041,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </ol>
 </div>
 </div></div>
+<div id="ss-mount" style="padding:0 16px"></div>
 <script>
 // =============================================================================
 // JS - tab switching, fill checking, progress
@@ -1061,6 +1062,7 @@ function init() {
     if (saved) { input.value = saved; checkFill(input); }
   });
   updateAllProgress();
+  SS_LIVE = true;
 }
 
 // progress is kept in this browser only (nothing is sent anywhere)
@@ -1113,12 +1115,37 @@ function accepted(userAnswer, expected) {
   if (sameNumber(userAnswer, expected)) return true;
   return (SYNONYMS[expected] || []).indexOf(userAnswer) !== -1;
 }
+// Score tracking: only the Practice problems (not the note-taking blanks), only when the
+// student checks an answer in this visit (not answers restored from this browser), and only
+// when the answer changed since the last check.
+let SS_LIVE = false;
+const SS_LAST = {};
+const SS_STD = { '6-1': 'NC.8.F.1', '6-4': 'NC.8.F.4', '6-5': 'NC.8.F.2', '6-6': 'NC.8.F.5' };
+function ssRecord(input, qid, userAnswer, expected) {
+  try {
+    if (!SS_LIVE || !window.ScoreSend) return;
+    const box = input.closest('.try-it');
+    const head = box ? box.querySelector('strong') : null;
+    if (!head || !/^Practice/.test(head.textContent.trim())) return;
+    if (SS_LAST[qid] === userAnswer) return;
+    if (SS_LAST[qid] === undefined && SHOWN_HINTS.has(qid)) return;   // answer was shown first
+    SS_LAST[qid] = userAnswer;
+    const ok = accepted(userAnswer, expected) || userAnswer.replace(/\s+/g, '') === expected.replace(/\s+/g, '');
+    const sec = qid.split('-').slice(0, 2).join('-');
+    const blanks = Array.prototype.slice.call(box.querySelectorAll('input.fill'));
+    const label = sec.replace('-', '.') + ' ' + head.textContent.trim().replace(/:$/, '') +
+      (blanks.length > 1 ? ' (blank ' + (blanks.indexOf(input) + 1) + ')' : '');
+    ScoreSend.record(qid, ok, { std: SS_STD[sec] || 'NC.8.F.1', label: label });
+  } catch (e) {}
+}
+
 function checkFill(input) {
   const qid = input.dataset.qid;
   const userAnswer = normalize(input.value);
   saveFill(qid, input.value);
   if (!userAnswer) return;
   const expected = ANSWER_KEY[qid];
+  ssRecord(input, qid, userAnswer, expected);
   if (accepted(userAnswer, expected)) {
     input.classList.add('correct');
     input.classList.remove('incorrect');
@@ -1199,5 +1226,8 @@ if (document.readyState === 'loading') {
   init();
 }
 </script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Functions Notes', mount:'#ss-mount', std:'NC.8.F.1', band:4 }); </script>
 </body>
 </html>

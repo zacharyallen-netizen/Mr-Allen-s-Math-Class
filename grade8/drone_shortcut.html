@@ -998,12 +998,27 @@ function focusActive(){
 
 /* ============ checking ============ */
 function record(st,ok){
+  ssTrack(st,ok);
   if(st.tries===0){
     G.steps++;
     if(ok){G.first++;G.streak++;G.best=Math.max(G.best,G.streak);G.score+=Math.min(G.streak,5);}
     else G.streak=0;
   }else if(!ok)G.streak=0;
   st.tries++;
+}
+/* Send-my-work tracker: one item per delivery / corner / job, scored on its final answer step
+   (c, the missing leg, the rod, or the converse decision). */
+let ssN=0;
+function ssTrack(st,ok){
+  const P=G&&G.prob;
+  if(!window.ScoreSend||!P||st!==P.steps[P.steps.length-1])return;
+  if(!P.ssId)P.ssId='L'+G.L.id+'-'+(++ssN);
+  let std='NC.8.G.7',label='';
+  if(P.type==='flight'){std='NC.8.G.8';label='Level '+G.L.id+' flight '+pt(P.A.x,P.A.y)+' to '+pt(P.B.x,P.B.y)+': c';}
+  else if(P.type==='corner'){std='NC.8.G.6';label='Corner '+P.a+', '+P.b+', '+P.c+': right angle?';}
+  else if(P.type==='range'){label='Range c = '+P.c+', a = '+P.a+': find leg b';}
+  else if(P.type==='box'){label='Box '+P.l+' × '+P.w+' × '+P.h+': longest rod';}
+  ScoreSend.record(P.ssId,ok,{std,band:4,label});
 }
 function checkNum(i){
   const P=G.prob,st=P.steps[i],inp=$('#in'+i),raw=inp?inp.value:'';
@@ -1140,6 +1155,11 @@ $('#levels').addEventListener('click',e=>{const b=e.target.closest('button[data-
 renderHome();
 window.__ds={get G(){return G;},parseNum,genOffers,LEVELS,flightProb,cornerProb,rangeProb,boxProb,genCorners};
 })();
+</script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'5', page:'Unit 5 · Drone Shortcut game', mount:'.wrap', std:'NC.8.G.7', band:4 });
 </script>
 </body>
 </html>

@@ -450,6 +450,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   <div class="hint" id="h-p6">Δx = 3, 2, 4.  Δy = −6, −4, −8.  Compute each Δy/Δx.</div>
 </div>
 
+<div id="ss-mount"></div>
 </div>
 </section>
 
@@ -470,8 +471,10 @@ function toggleHint(id) {
   h.style.display = h.style.display === 'block' ? 'none' : 'block';
 }
 
+var SS_STD={p1:'NC.8.F.3',p2:'NC.8.F.3',p3:'NC.8.F.4',p4:'NC.8.F.3',p5:'NC.8.F.4',p6:'NC.8.F.4'};
 function setFB(id, msg, ok) {
   var fb = document.getElementById('f-' + id);
+  try{if(window.ScoreSend){var q=document.querySelector('#'+id+' .q');ScoreSend.record(id,!!ok,{std:SS_STD[id]||'NC.8.F.3',label:'Problem '+id.slice(1)+(q?': '+q.textContent.replace(/^\s*\d+\s*/,'').trim():'')});}}catch(e){}
   fb.textContent = msg;
   fb.className = 'feedback ' + (ok ? 'correct' : 'incorrect');
   document.getElementById(id).className = 'problem ' + (ok ? 'correct' : 'incorrect');
@@ -547,5 +550,8 @@ function checkP4() { checkLinearSlope('p4', false, 0); }
 function checkP5() { checkLinearSlope('p5', true, 5); }
 function checkP6() { checkLinearSlope('p6', true, -2); }
 </script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Tables & Linear Functions Practice', mount:'#ss-mount', std:'NC.8.F.3', band:4 }); </script>
 </body>
 </html>

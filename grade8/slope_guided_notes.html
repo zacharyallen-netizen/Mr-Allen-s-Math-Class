@@ -488,6 +488,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
         </div>
         <div class="prob-feedback" id="fb-5"></div>
       </div>
+      <div id="ss-mount"></div>
     </div>
   </div>
 </div>
@@ -772,6 +773,7 @@ function checkProb(idx) {
   const parsed = parseAnswer(val);
   const correct = PROBLEMS[idx].answer;
   
+  try{if(window.ScoreSend)ScoreSend.record('p'+(idx+1),parsed === correct,{std:'NC.8.F.4',label:'Problem '+(idx+1)+': slope through '+PROBLEMS[idx].pts});}catch(e){}
   if (parsed === correct || (typeof correct === 'string' && parsed === correct)) {
     input.classList.remove('wrong'); input.classList.add('correct');
     fb.className = 'prob-feedback correct';
@@ -793,5 +795,8 @@ function hintProb(idx) {
   fb.textContent = '💡 ' + PROBLEMS[idx].hint;
 }
 </script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Slope Notes', mount:'#ss-mount', std:'NC.8.F.4', band:4 }); </script>
 </body>
 </html>

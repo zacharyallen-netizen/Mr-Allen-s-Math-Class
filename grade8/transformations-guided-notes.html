@@ -1552,6 +1552,8 @@ h3.sub{
   </div>
 </section>
 
+<div id="ss-mount"></div>
+
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- WRAP-UP                                                     -->
 <!-- ═══════════════════════════════════════════════════════════ -->
@@ -1591,6 +1593,15 @@ function revealAll(exId){
 }
 
 // Multiple choice answer check
+// Score tracking for the quick checks and practice problems
+const SS_STD = { chk1a:'NC.8.G.2', chk1b:'NC.8.G.4', chk6a:'NC.8.G.4', chk6b:'NC.8.G.2', chk6c:'NC.8.G.4', chk6d:'NC.8.G.4' };
+function ssRec(qid, ok){
+  try{
+    if(!window.ScoreSend) return;
+    const q = document.querySelector('#'+qid+' .chk-q');
+    ScoreSend.record(qid, !!ok, { std: SS_STD[qid] || 'NC.8.G.3', label: q ? q.textContent.replace(/\s+/g,' ').trim() : qid });
+  }catch(e){}
+}
 function chk(qid, correct, chosen){
   const box = document.getElementById(qid);
   const fb = document.getElementById('fb-'+qid);
@@ -1603,6 +1614,7 @@ function chk(qid, correct, chosen){
     if(btnText === correctText) b.classList.add('correct');
     else if(btnText === chosenText) b.classList.add('wrong');
   });
+  ssRec(qid, chosen === correct);
   if(chosen === correct){
     fb.classList.add('show','c');
     fb.classList.remove('w');
@@ -1627,6 +1639,7 @@ function chkInput(qid, correctPair){
     fb.innerHTML = 'Enter a number for both x and y.';
     return;
   }
+  ssRec(qid, xNum === correctPair[0] && yNum === correctPair[1]);
   if(xNum === correctPair[0] && yNum === correctPair[1]){
     fb.classList.add('c');
     fb.innerHTML = '✓ Correct! ('+formatNum(correctPair[0])+', '+formatNum(correctPair[1])+')';
@@ -1640,5 +1653,8 @@ function formatNum(n){
 }
 </script>
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'8', page:'Unit 8 · Transformations Notes', mount:'#ss-mount', std:'NC.8.G.3', band:4 }); </script>
 </body>
 </html>

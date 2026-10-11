@@ -1717,16 +1717,21 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 </div>
 </div>
 
+<div id="ss-mount"></div>
 </div>
 
 
 <script>
 
 const scores={};
+var SS_STD={"u8h2_6": "NC.8.G.1", "u8h4_4": "NC.8.G.4", "u8h4_5": "NC.8.G.4", "u8h5_1": "NC.8.G.4", "u8h5_3": "NC.8.G.2", "u8h5_5": "NC.8.G.4", "u8h5_7": "NC.8.G.2"};
+function ssStd(id){return SS_STD[id]||'NC.8.G.3';}
+function ssLabel(card){var n=card.querySelector('.qnum,.q-num'),t=card.querySelector('.qt,.q-text');return ((n?n.textContent.trim().replace(/\s+/g,' '):card.id)+(t?': '+t.textContent.trim().replace(/\s+/g,' '):'')).slice(0,80);}
 function mc(btn,cardId,correct){
   const card=document.getElementById(cardId);
   if(card.classList.contains('answered'))return;
   card.classList.add('answered');
+  try{if(window.ScoreSend)ScoreSend.record(cardId,btn.textContent.trim()===correct.trim(),{std:ssStd(cardId),label:ssLabel(card)});}catch(e){}
   card.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const fb=card.querySelector('.fb');
   if(btn.textContent.trim()===correct.trim()){
@@ -1787,5 +1792,8 @@ function openTab(id,btn){
 </div>
 
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'8', page:'Unit 8 · Practice 2', mount:'#ss-mount', std:'NC.8.G.3', band:4 }); </script>
 </body>
 </html>

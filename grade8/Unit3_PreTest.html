@@ -210,6 +210,7 @@
 <script>
 const VOCAB={"coefficient": "C", "constant": "E", "inverse operations": "D", "solution": "B", "distributive property": "F", "like terms": "A"};
 const QS=[{"id": 1, "lvl": "basic", "op": "Solve", "expr": "x + 7 = 12", "disp": "x = 5", "chk": ["val", 5], "lab": "x ="}, {"id": 2, "lvl": "basic", "op": "Solve", "expr": "x − 4 = 9", "disp": "x = 13", "chk": ["val", 13], "lab": "x ="}, {"id": 3, "lvl": "basic", "op": "Solve", "expr": "3x = 21", "disp": "x = 7", "chk": ["val", 7], "lab": "x ="}, {"id": 4, "lvl": "basic", "op": "Solve", "expr": "x ÷ 5 = 6", "disp": "x = 30", "chk": ["val", 30], "lab": "x ="}, {"id": 5, "lvl": "basic", "op": "Solve", "expr": "2x + 3 = 11", "disp": "x = 4", "chk": ["val", 4], "lab": "x ="}, {"id": 6, "lvl": "basic", "op": "Solve", "expr": "4x + 5 = 25", "disp": "x = 5", "chk": ["val", 5], "lab": "x ="}, {"id": 7, "lvl": "target", "op": "Solve", "expr": "2(x + 3) = 14", "disp": "x = 4", "chk": ["val", 4], "lab": "x ="}, {"id": 8, "lvl": "target", "op": "Solve", "expr": "3(x − 2) = 9", "disp": "x = 5", "chk": ["val", 5], "lab": "x ="}, {"id": 9, "lvl": "target", "op": "Solve", "expr": "5x + 2 = 3x + 10", "disp": "x = 4", "chk": ["val", 4], "lab": "x ="}, {"id": 10, "lvl": "target", "op": "Solve", "expr": "7x − 4 = 2x + 11", "disp": "x = 3", "chk": ["val", 3], "lab": "x ="}, {"id": 11, "lvl": "target", "op": "Solve", "expr": "2(x + 4) = 3x + 5", "disp": "x = 3", "chk": ["val", 3], "lab": "x ="}, {"id": 12, "lvl": "target", "op": "Solve", "expr": "3(2x − 1) = 4x + 7", "disp": "x = 5", "chk": ["val", 5], "lab": "x ="}, {"id": 13, "lvl": "advanced", "op": "Solve", "expr": "½x + 3 = 9", "disp": "x = 12", "chk": ["val", 12], "lab": "x ="}, {"id": 14, "lvl": "advanced", "op": "Solve", "expr": "0.2x + 1 = 3", "disp": "x = 10", "chk": ["val", 10], "lab": "x ="}, {"id": 15, "lvl": "advanced", "op": "Solve", "expr": "⅔x = 8", "disp": "x = 12", "chk": ["val", 12], "lab": "x ="}, {"id": 16, "lvl": "advanced", "op": "Solve", "expr": "3x + 5 = 3x + 5", "disp": "infinitely many solutions", "chk": ["text", ["infinitely many", "infinitely many solutions", "infinite", "infinite solutions", "all real numbers", "all reals", "identity"]], "lab": "Answer:"}, {"id": 17, "lvl": "advanced", "op": "Solve", "expr": "2x + 4 = 2x − 1", "disp": "no solution", "chk": ["text", ["no solution", "no solutions", "none", "no soln", "empty", "empty set"]], "lab": "Answer:"}, {"id": 18, "lvl": "advanced", "op": "Solve", "expr": "5(x + 2) − 3 = 2(x + 5)", "disp": "x = 1", "chk": ["val", 1], "lab": "x ="}];
+const PT_STD={"1": "NC.8.EE.7", "2": "NC.8.EE.7", "3": "NC.8.EE.7", "4": "NC.8.EE.7", "5": "NC.8.EE.7", "6": "NC.8.EE.7", "7": "NC.8.EE.7", "8": "NC.8.EE.7", "9": "NC.8.EE.7", "10": "NC.8.EE.7", "11": "NC.8.EE.7", "12": "NC.8.EE.7", "13": "NC.8.EE.7", "14": "NC.8.EE.7", "15": "NC.8.EE.7", "16": "NC.8.EE.7", "17": "NC.8.EE.7", "18": "NC.8.EE.7"};
 
 /* ===== parsers ===== */
 const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+'};
@@ -273,6 +274,10 @@ QS.forEach(q=>{
     +'<div class="qfb" id="fb'+q.id+'"></div>';
   grid.appendChild(div);
 });
+/* ===== send to Mr. Allen (score-send.js): every graded question is recorded ===== */
+const PT_BAND={basic:3,target:4,advanced:5};
+function ptLabel(q){const d=document.createElement('div');d.innerHTML=(q.op?q.op+': ':'')+String(q.expr).replace(/<sup>/g,'^');return d.textContent.replace(/\s+/g,' ').trim().slice(0,80);}
+function ptRecord(q,ok){if(!window.ScoreSend)return;try{ScoreSend.record('q'+q.id,ok,{std:PT_STD[q.id],band:PT_BAND[q.lvl],label:ptLabel(q)});}catch(e){}}
 /* ===== check / reveal / reset ===== */
 function check(){
   let levels={basic:[0,0],target:[0,0],advanced:[0,0]};
@@ -288,8 +293,8 @@ function check(){
     const inp=document.getElementById('i'+q.id), fb=document.getElementById('fb'+q.id), div=document.getElementById('q'+q.id);
     levels[q.lvl][1]++; div.classList.remove('correct','wrong');
     if(inp.value.trim()===''){fb.textContent='';fb.className='qfb';return;}
-    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';}
-    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';}
+    if(runCheck(q.chk,inp.value)){levels[q.lvl][0]++;div.classList.add('correct');fb.innerHTML='✓ correct';fb.className='qfb ok';ptRecord(q,true);}
+    else{div.classList.add('wrong');fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';ptRecord(q,false);}
   });
   const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
   const den=levels.basic[1]+levels.target[1]+levels.advanced[1];
@@ -302,11 +307,13 @@ function reveal(){
   }
   QS.forEach(q=>{const fb=document.getElementById('fb'+q.id),div=document.getElementById('q'+q.id);div.classList.remove('wrong');div.classList.add('correct');fb.innerHTML='answer: <span class="key">'+q.disp+'</span>';fb.className='qfb ok';});
   document.getElementById('scorebox').firstChild.textContent='Answers shown '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.revealed();
 }
 function reset(){
   if(typeof VOCAB==='object'&&VOCAB){document.querySelectorAll('#vocab select').forEach(s=>{s.value='';const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});}
   QS.forEach(q=>{document.getElementById('i'+q.id).value='';const fb=document.getElementById('fb'+q.id);fb.textContent='';fb.className='qfb';document.getElementById('q'+q.id).classList.remove('correct','wrong');});
   document.getElementById('scorebox').firstChild.textContent='Not checked yet '; document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.reset();
 }
 document.getElementById('check').addEventListener('click',check);
 document.getElementById('reveal').addEventListener('click',reveal);
@@ -314,5 +321,9 @@ document.getElementById('reset').addEventListener('click',reset);
 document.querySelectorAll('.ans input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check();}));
 
 </script>
+<style>@media (max-width:760px){body>#scoresend{margin:24px 12px!important}}</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>if(window.ScoreSend)ScoreSend.setup({"kind": "pretest", "unit": "3", "page": "Unit 3 Pre-Test — Linear Equations", "mount": "body", "std": "NC.8.EE.7", "band": 4});</script>
 </body>
 </html>

@@ -210,13 +210,18 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
 </div>
 
 
+<div id="ss-mount"></div>
 </div>
 <script>
 var ts=0,ta=0;
+var SS_STD={"8g": "NC.8.G.4", "8h": "NC.8.G.4", "8i": "NC.8.G.2", "8j": "NC.8.G.4"};
+function ssStd(id){return SS_STD[id]||'NC.8.G.3';}
+function ssLabel(card){var n=card.querySelector('.qnum,.q-num'),t=card.querySelector('.qt,.q-text');return ((n?n.textContent.trim().replace(/\s+/g,' '):card.id)+(t?': '+t.textContent.trim().replace(/\s+/g,' '):'')).slice(0,80);}
 function mc(btn,qid,correct){
   var card=document.getElementById(qid);
   if(card.classList.contains('answered'))return;
   card.classList.add('answered');
+  try{if(window.ScoreSend)ScoreSend.record(qid,btn.textContent.trim()===correct.trim(),{std:ssStd(qid),label:ssLabel(card)});}catch(e){}
   var btns=card.querySelectorAll('.opt-btn');
   var fb=card.querySelector('.feedback');
   btns.forEach(function(b){b.disabled=true});
@@ -272,5 +277,8 @@ function mc(btn,qid,correct){
 </div>
 
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'8', page:'Unit 8 · Extra Practice', mount:'#ss-mount', std:'NC.8.G.3', band:4 }); </script>
 </body>
 </html>

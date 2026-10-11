@@ -208,6 +208,7 @@ input.box:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1
   <nav class="backs" aria-label="Back links"><a class="back" href="unit7.html">← Unit 7</a><a class="back" href="arcade.html">Arcade</a></nav>
   <main id="app" aria-live="off"></main>
   <div class="foot"><span>Trendline Lab · Unit 7 · NC.8.SP.1–4</span><button class="linkbtn" id="resetBtn" type="button">Reset my progress</button></div>
+  <div id="ss-mount"></div>
 </div>
 
 <script>
@@ -493,8 +494,12 @@ function showItem(){
   const panel=h('div',{class:'panel'});
   app.append(top,h('div',{class:'lab'+(st.wide?' wide':'')},left,panel));
   const upd=()=>{scoreChip.textContent=SES.parts?(st.id===3?`Lines with 2+ stars: ${SES.good} of ${SES.parts}`:`First-try correct: ${SES.good} of ${SES.parts}`):'';};
+  let ssPart=0;   // score tracking: one item per scored answer in this round
   const ui={ctx,plotBox,panel,left,
-    record(ok){SES.parts++; if(ok) SES.good++; upd();},
+    record(ok){SES.parts++; if(ok) SES.good++; upd();
+      try{ if(window.ScoreSend){ ssPart++; ScoreSend.record(`S${st.id}.R${SES.idx+1}.${ssPart}`,!!ok,{std:st.std,
+        label:`Station ${st.id} ${st.name} · Round ${SES.idx+1} · answer ${ssPart}`}); } }catch(e){}
+    },
     finish(){const last=SES.idx===st.n-1;
       const nb=h('button',{class:'btn',type:'button',id:'nextBtn',onclick:()=>{ if(last) showEnd(); else {SES.idx++; showItem(); window.scrollTo(0,0);} }},last?'Finish station →':'Next round →');
       (st.wide?left:panel).append(h('div',{class:'btn-row'},nb,scoreChip)); upd();
@@ -1417,5 +1422,8 @@ const STATIONS=[
 document.getElementById('resetBtn').addEventListener('click',()=>{store.res={}; store.att={}; saveStore(); showHome();});
 showHome();
 </script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'7', page:'Unit 7 · Trendline Lab', mount:'#ss-mount', std:'NC.8.SP.1', band:4 }); </script>
 </body>
 </html>

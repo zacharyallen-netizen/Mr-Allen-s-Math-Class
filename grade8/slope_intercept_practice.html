@@ -109,6 +109,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="celebration" id="celebration">🎉 Practice Set Complete! You're a slope-intercept pro! 🎉</div>
   <div id="cards"></div>
+  <div id="ss-mount"></div>
 </div>
 
 <script>
@@ -197,6 +198,7 @@ function checkAnswers(idx){
   });
   s.showLine=true;s.cellResults=results;s.stepPrompt=null;
   if(!allFilled)s.feedback={type:'warn',msg:'Fill in all y-values first!'};
+  if(allFilled){try{if(window.ScoreSend)ScoreSend.record('eq'+eq.id,allCorrect&&s.revealed.size===0,{std:'NC.8.F.3',label:'Table of values for '+eq.label});}catch(e){}}
   else if(allCorrect){s.feedback={type:'success',msg:'✓ All correct! Great job!'};s.complete=true;updateProgress();}
   else{const wc=results.filter(r=>r==='wrong').length;s.feedback={type:'error',msg:`${wc} value${wc>1?'s':''} need${wc===1?'s':''} fixing.`+(s.attempts>=3?' Use "Show Answer" if you\'re stuck.':'')};} 
   render(idx);
@@ -257,5 +259,8 @@ document.addEventListener('input',e=>{
   }
 });
 </script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Slope-Intercept Practice', mount:'#ss-mount', std:'NC.8.F.3', band:4 }); </script>
 </body>
 </html>

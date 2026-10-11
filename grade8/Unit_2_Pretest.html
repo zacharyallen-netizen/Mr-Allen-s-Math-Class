@@ -321,6 +321,11 @@ function build(){
 }
 build();
 
+/* ---------- send to Mr. Allen (score-send.js): every graded question is recorded ---------- */
+const PT_BAND={basic:3,target:4,advanced:5};
+function ptLabel(q){const d=document.createElement('div');d.innerHTML=q.op+': '+String(q.expr).replace(/<sup>/g,'^').replace(/<span class="den">/g,' / ');return d.textContent.replace(/\s+/g,' ').trim().slice(0,80);}
+function ptRecord(q,ok){if(!window.ScoreSend)return;try{ScoreSend.record('q'+q.id,ok,{std:'NC.8.EE.1',band:PT_BAND[q.lvl],label:ptLabel(q)});}catch(e){}}
+
 /* ---------- grading ---------- */
 function check(){
   let levels={basic:[0,0],target:[0,0],advanced:[0,0]},vok=0;
@@ -345,9 +350,11 @@ function check(){
       levels[q.lvl][0]++;
       div.classList.add('correct');
       fb.innerHTML='✓ correct';fb.className='qfb ok';
+      ptRecord(q,true);
     }else{
       div.classList.add('wrong');
       fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';
+      ptRecord(q,false);
     }
   });
   const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
@@ -375,6 +382,7 @@ function reveal(){
   });
   document.getElementById('scorebox').firstChild.textContent='Answers shown ';
   document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.revealed();
 }
 
 /* ---------- reset ---------- */
@@ -388,11 +396,16 @@ function reset(){
   });
   document.getElementById('scorebox').firstChild.textContent='Not checked yet ';
   document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.reset();
 }
 
 document.getElementById('check').addEventListener('click',check);
 document.getElementById('reveal').addEventListener('click',reveal);
 document.getElementById('reset').addEventListener('click',reset);
 </script>
+<style>@media (max-width:760px){body>#scoresend{margin:24px 12px!important}}</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>if(window.ScoreSend)ScoreSend.setup({kind:'pretest',unit:'2',page:'Unit 2 Pre-Test — Exponent Rules & Properties',mount:'body',std:'NC.8.EE.1',band:4});</script>
 </body>
 </html>
