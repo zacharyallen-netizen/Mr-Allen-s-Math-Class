@@ -350,6 +350,11 @@
       overflow: hidden;
     }
     .visual.hidden, .hidden { display: none !important; }
+    /* Pictures: "giv" parts show before answering, "ans" parts only after. */
+    #game:not(.revealed) .ans { display: none; }
+    #game.revealed .giv { display: none; }
+    .answer-btn .choice-art { display: block; margin-top: 8px; }
+    .answer-btn .choice-art svg { width: 100%; max-width: 300px !important; }
 
     .answers {
       display: grid;
@@ -638,7 +643,7 @@
         <select id="questionCount">
           <option value="10">10 quick hits</option>
           <option value="20">20 review round</option>
-          <option value="45">All available</option>
+          <option value="45">All 45</option>
         </select>
       </div>
       <div class="field">
@@ -723,10 +728,10 @@
   </div>
 
   <script>
-    // The Form 3 released PDF is not in this site. The link used to point at a retired repo
-    // (and at Form R, the wrong form). Until "Released Questions 3.pdf" is added to grade8/,
-    // items whose diagram lives only in that PDF are left out of play so no student gets an
-    // unanswerable question. To restore them: add the file and set PDF = "Released Questions 3.pdf".
+    // The Form 3 released PDF ("Released Questions 3.pdf") is not in this site. Every item that
+    // used to need a diagram from that PDF now carries its own facts in the prompt and its own
+    // picture (see makeVisuals below), so all 45 questions play with no PDF. The "Page" badge is
+    // the page number in the released form, for the teacher's reference only.
     const PDF = "";
 
     // ============================================================
@@ -736,16 +741,16 @@
     // ============================================================
     const questions = [
       {
-        n:1, type:"mc", standard:"8.SP.1", topic:"Statistics", dok:1, page:3, answer:"C", source:true,
-        prompt:"Which graph shows a negative association?",
+        n:1, type:"mc", standard:"8.SP.1", topic:"Statistics", dok:1, page:3, answer:"C",
+        prompt:"Look at the four scatterplots. Which graph shows a negative association?",
         choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},
         hint:"A negative association trends downward as x increases.",
-        visual:"scatter_negative",
         explain:{
           setup:"A scatterplot shows a NEGATIVE association when y-values DECREASE as x-values INCREASE — the cloud of points falls from upper-left to lower-right.",
           steps:[
             "Look at each scatterplot's overall trend left-to-right.",
             "<b>Positive</b>: points rise. <b>Negative</b>: points fall. <b>None</b>: random scatter with no direction.",
+            "<b>A</b> rises. <b>B</b> has no pattern. <b>D</b> goes up, then down.",
             "Pick the only graph where the cloud descends as x grows."
           ],
           result:"Graph C is the answer because its points fall steadily as x increases — the signature of a negative association."
@@ -786,17 +791,17 @@
         }
       },
       {
-        n:4, type:"mc", standard:"8.F.1", topic:"Functions", dok:1, page:6, answer:"B", source:true,
-        prompt:"In which graph is y NOT a function of x?",
+        n:4, type:"mc", standard:"8.F.1", topic:"Functions", dok:1, page:6, answer:"B",
+        prompt:"Look at the four graphs. In which graph is y NOT a function of x?",
         choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},
         hint:"Use the vertical line test.",
-        visual:"vertical_line_test",
         explain:{
           setup:"<b>Vertical Line Test:</b> y is a function of x only if every vertical line you can draw crosses the graph AT MOST once. Two crossings = two y-values for one x = NOT a function.",
           steps:[
             "Imagine sliding a vertical line across each graph.",
             "If the line ever hits the graph twice at the same x, that graph fails the test.",
-            "Sideways parabolas, circles, and ellipses all fail. Lines, regular parabolas, and curves like y = √x pass."
+            "Sideways parabolas, circles, and ellipses all fail. Lines, regular parabolas, and curves like y = √x pass.",
+            "<b>A</b> (a slanted line), <b>C</b> (a U-shape opening up), and <b>D</b> (a flat line) are crossed only once. <b>B</b> is a U-shape turned on its side. The line x = 1 crosses it two times."
           ],
           result:"<b>Graph B</b> is the only graph where a vertical line crosses twice — so it's NOT a function."
         }
@@ -836,18 +841,18 @@
         }
       },
       {
-        n:7, type:"mc", standard:"8.G.3", topic:"Transformations", dok:3, page:10, answer:"D", source:true,
-        prompt:"A transformation sequence maps triangle EGH onto triangle MPT. After the first transformation, the shape is dilated by scale factor 2 and translated 7 right and 13 up. Which description should replace the first transformation?",
+        n:7, type:"mc", standard:"8.G.3", topic:"Transformations", dok:3, page:10, answer:"D",
+        prompt:"Triangle EGH has E(−4, 1), G(−4, 4), and H(−2, 1). Three moves map it onto triangle MPT, with M(5, 5), P(−1, 5), and T(5, 9). Move 2 is a dilation by a scale factor of 2 about the origin. Move 3 is a translation 7 units right and 13 units up. What is move 1?",
         choices:{A:"Reflection across the x-axis",B:"Reflection across the y-axis",C:"90° clockwise rotation about the origin",D:"90° counterclockwise rotation about the origin"},
-        hint:"Track how orientation changes before the dilation and translation.",
-        visual:"rotation_90",
+        hint:"Work backward from M. Undo the slide, then undo the dilation.",
         explain:{
-          setup:"Dilations and translations DON'T change orientation — they only scale and slide. So the first transformation must be the one that flips/rotates the figure into the orientation of triangle MPT.",
+          setup:"Dilations and translations DON'T change orientation — they only scale and slide. So move 1 is the one that turns or flips EGH. Work backward from M to see where move 1 sent E.",
           steps:[
-            "Compare orientation of EGH and MPT (in the source diagram). The vertices have rotated counterclockwise.",
-            "Reflections create a MIRROR image; rotations preserve handedness. Since MPT isn't a mirror, eliminate A and B.",
-            "Test 90° clockwise: (x, y) → (y, −x). Test 90° counterclockwise: (x, y) → (−y, x).",
-            "Match the rotated coordinates against MPT — counterclockwise lands the vertices in the right places."
+            "Undo move 3 (slide back 7 left, 13 down): M(5, 5) → (5 − 7, 5 − 13) = (−2, −8).",
+            "Undo move 2 (divide by 2): (−2, −8) → (−1, −4). So move 1 sent E(−4, 1) to (−1, −4).",
+            "A 90° counterclockwise turn sends (x, y) → (−y, x). E(−4, 1) → (−1, −4). ✓",
+            "Check G: (−4, 4) → (−4, −4) → × 2 → (−8, −8) → slide → (−1, 5) = P. ✓ Check H: (−2, 1) → (−1, −2) → (−2, −4) → (5, 9) = T. ✓",
+            "The others miss: clockwise sends E to (1, 4). Reflecting across the x-axis sends E to (−4, −1). Reflecting across the y-axis sends E to (4, 1)."
           ],
           result:"<b>D — 90° counterclockwise rotation</b> is the only first step that produces MPT's orientation after the dilation and translation."
         }
@@ -904,33 +909,31 @@
         }
       },
       {
-        n:11, type:"fr", standard:"8.EE.1", topic:"Exponents", dok:3, page:14, answer:"0.1", source:true,
-        prompt:"Evaluate the expression shown in item 11 of the released form.",
+        n:11, type:"fr", standard:"8.EE.1", topic:"Exponents", dok:3, page:14, answer:"0.1",
+        prompt:"Find the value of 2⁻³ × 5⁻³ × 10². Write your answer as a decimal.",
         hint:"Use exponent rules before multiplying.",
-        visual:"exponent_rules",
         explain:{
-          setup:"Use the exponent rules: <span class='math'>aᵐ · aⁿ = aᵐ⁺ⁿ</span>, <span class='math'>aᵐ ÷ aⁿ = aᵐ⁻ⁿ</span>, <span class='math'>(aᵐ)ⁿ = aᵐⁿ</span>, and <span class='math'>a⁻ⁿ = 1/aⁿ</span>.",
+          setup:"Use the exponent rules: <span class='math'>aⁿ × bⁿ = (a × b)ⁿ</span>, <span class='math'>aᵐ × aⁿ = aᵐ⁺ⁿ</span>, and <span class='math'>a⁻ⁿ = 1/aⁿ</span>.",
           steps:[
-            "Open the source page to see the exact expression.",
-            "Combine bases that match using product/quotient rules.",
-            "Apply any negative exponents by flipping to fractions.",
-            "Simplify the final numeric result."
+            "2⁻³ and 5⁻³ have the same exponent. Multiply the bases: <span class='math'>2⁻³ × 5⁻³ = (2 × 5)⁻³ = 10⁻³</span>.",
+            "Now both are powers of 10. Add the exponents: <span class='math'>10⁻³ × 10² = 10⁻¹</span>.",
+            "A negative exponent means \"1 over\": <span class='math'>10⁻¹ = 1/10 = 0.1</span>.",
+            "Check another way: 2⁻³ = 1/8 and 5⁻³ = 1/125. Then 1/8 × 1/125 = 1/1,000, and 1/1,000 × 100 = 1/10. ✓"
           ],
           result:"Final value: <b>0.1</b> (or 1/10)."
         }
       },
       {
-        n:12, type:"fr", standard:"8.F.4", topic:"Slope", dok:1, page:14, answer:"3.5", source:true,
-        prompt:"The table defines y as a linear function of x. What is the slope?",
+        n:12, type:"fr", standard:"8.F.4", topic:"Slope", dok:1, page:14, answer:"3.5",
+        prompt:"The table shows y as a linear function of x. What is the slope?",
         hint:"Slope is change in y divided by change in x.",
-        visual:"slope_from_table",
         explain:{
           setup:"For a linear function from a table: <span class='math'>slope = Δy / Δx = (y₂ − y₁) / (x₂ − x₁)</span>.",
           steps:[
-            "Pick any two rows from the table.",
-            "Subtract: rise = y₂ − y₁ (change in y).",
-            "Subtract: run = x₂ − x₁ (change in x).",
-            "Divide rise ÷ run."
+            "Pick two rows from the table: (2, 5) and (4, 12).",
+            "Change in y: 12 − 5 = 7.",
+            "Change in x: 4 − 2 = 2.",
+            "Divide: 7 ÷ 2 = 3.5. Check with the next rows: (19 − 12) ÷ (6 − 4) = 7 ÷ 2 = 3.5. ✓"
           ],
           result:"Slope = <b>3.5</b> — y increases by 3.5 for every 1-unit increase in x."
         }
@@ -953,32 +956,31 @@
         }
       },
       {
-        n:14, type:"fr", standard:"8.EE.1", topic:"Exponents", dok:1, page:15, answer:"81", source:true,
-        prompt:"Evaluate the exponent expression shown in item 14 of the released form.",
+        n:14, type:"fr", standard:"8.EE.1", topic:"Exponents", dok:1, page:15, answer:"81",
+        prompt:"Find the value of 9³ ÷ 3².",
         hint:"Rewrite with the same base, then simplify.",
-        visual:"exponent_rules",
         explain:{
           setup:"When two terms have the same base but different exponents, combine them with the product (add exponents) or quotient (subtract exponents) rules.",
           steps:[
-            "Open the source page for the exact expression.",
-            "Make sure both terms share the same base; rewrite if needed.",
-            "Apply the exponent rules and compute the simplified power."
+            "9 is 3 × 3, so 9 = 3². Rewrite: <span class='math'>9³ = (3²)³ = 3⁶</span>.",
+            "Same base, so subtract the exponents: <span class='math'>3⁶ ÷ 3² = 3⁴</span>.",
+            "<span class='math'>3⁴ = 3 × 3 × 3 × 3 = 81</span>.",
+            "Check: 9³ = 729 and 3² = 9. 729 ÷ 9 = 81. ✓"
           ],
           result:"Final value: <b>81</b> (which is 3⁴)."
         }
       },
       {
-        n:15, type:"fr", standard:"8.F.4", topic:"Linear functions", dok:1, page:16, answer:"20", source:true,
+        n:15, type:"fr", standard:"8.F.4", topic:"Linear functions", dok:1, page:16, answer:"20",
         prompt:"A linear function passes through the points in the table. What is the y-intercept?",
         hint:"Find the slope, then work back to x = 0.",
-        visual:"y_intercept_from_table",
         explain:{
           setup:"To find the y-intercept of a linear function from a table: (1) find the slope, (2) use a point and slope to write y = mx + b, (3) solve for b.",
           steps:[
-            "Compute slope: m = Δy / Δx using two table rows.",
-            "Pick any point (x, y) from the table.",
-            "Plug into y = mx + b and solve for b.",
-            "Or: extend the pattern back step-by-step until you reach x = 0."
+            "Slope: (32 − 26) ÷ (4 − 2) = 6 ÷ 2 = 3.",
+            "Use the point (2, 26): 26 = 3(2) + b, so 26 = 6 + b.",
+            "Subtract 6: b = 20.",
+            "Or step back: from x = 2 to x = 0 is 2 steps back, so y goes down 6. 26 − 6 = 20."
           ],
           result:"y-intercept: <b>20</b> — when x = 0, y = 20."
         }
@@ -1000,18 +1002,16 @@
         }
       },
       {
-        n:17, type:"fr", standard:"8.EE.7", topic:"Equations", dok:1, page:18, answer:"-12", source:true,
-        prompt:"Solve for x in the equation shown in item 17 of the released form.",
+        n:17, type:"fr", standard:"8.EE.7", topic:"Equations", dok:1, page:18, answer:"-12",
+        prompt:"Solve for x:  ½x − 3 = x + 3",
         hint:"Clear fractions first, then combine like terms.",
-        visual:"equation_solving",
         explain:{
-          setup:"Solving multi-step equations: distribute, clear fractions, combine like terms, isolate the variable, check.",
+          setup:"Solving multi-step equations: clear fractions, combine like terms, get x alone, then check.",
           steps:[
-            "Open the source page for the exact equation.",
-            "Multiply both sides by the LCD to remove fractions.",
-            "Distribute and combine like terms on each side.",
-            "Get x-terms on one side and constants on the other.",
-            "Divide to isolate x, then check by substituting back."
+            "Clear the fraction. Multiply every term by 2: <span class='math'>x − 6 = 2x + 6</span>.",
+            "Subtract x from both sides: <span class='math'>−6 = x + 6</span>.",
+            "Subtract 6 from both sides: <span class='math'>−12 = x</span>.",
+            "Check: ½(−12) − 3 = −6 − 3 = −9, and −12 + 3 = −9. ✓"
           ],
           result:"x = <b>−12</b>."
         }
@@ -1033,17 +1033,16 @@
         }
       },
       {
-        n:19, type:"fr", standard:"8.G.5", topic:"Angle relationships", dok:2, page:20, answer:"67", source:true,
-        prompt:"Lines R and S are parallel and cut by transversal Q. What is x in the diagram?",
+        n:19, type:"fr", standard:"8.G.5", topic:"Angle relationships", dok:2, page:20, answer:"67",
+        prompt:"Lines R and S are parallel. Line Q cuts across both. One angle is 113°. What is the value of x?",
         hint:"Use corresponding, alternate interior, or supplementary angle relationships.",
-        visual:"parallel_transversal",
         explain:{
           setup:"When parallel lines are cut by a transversal: corresponding angles are EQUAL, alternate interior angles are EQUAL, alternate exterior angles are EQUAL, and same-side (co-interior) angles are SUPPLEMENTARY (sum to 180°).",
           steps:[
-            "Identify the relationship between the angle labeled with x and the given angle.",
-            "If they're corresponding/alternate interior/alternate exterior → set them EQUAL.",
-            "If they form a linear pair or are co-interior → set their sum to 180°.",
-            "Solve the resulting equation for x."
+            "At line R, the 113° angle sits next to another angle along R. Together they make a straight line, so they add to 180°.",
+            "That angle is 180° − 113° = 67°.",
+            "The 67° angle at R and the x° angle at S are in the same spot at each crossing (above the line, left of Q). They are corresponding angles, so they are equal.",
+            "So x = 67."
           ],
           result:"x = <b>67°</b>."
         }
@@ -1082,17 +1081,17 @@
         }
       },
       {
-        n:22, type:"mc", standard:"8.G.3", topic:"Dilations", dok:2, page:23, answer:"D", source:true,
-        prompt:"Which choice shows the pentagon after it is dilated with respect to the origin by a scale factor of 2?",
-        choices:{A:"Choice A",B:"Choice B",C:"Choice C",D:"Choice D"},
+        n:22, type:"mc", standard:"8.G.3", topic:"Dilations", dok:2, page:23, answer:"D",
+        prompt:"A pentagon has vertices (1, 1), (3, 1), (4, 3), (2, 4), and (1, 3). Which graph shows the pentagon after it is dilated with respect to the origin by a scale factor of 2? (The dashed shape is the original.)",
+        choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},
         hint:"A dilation from the origin doubles both x- and y-coordinates.",
-        visual:"dilation",
         explain:{
           setup:"A dilation centered at the origin with scale factor k sends every point <span class='math'>(x, y) → (kx, ky)</span>. Distances from the origin are MULTIPLIED by k; the shape is similar (same angles, proportional sides).",
           steps:[
-            "Pick any vertex of the original pentagon, say (a, b).",
-            "Multiply: new vertex is (2a, 2b).",
-            "Repeat for at least two vertices to be sure.",
+            "Multiply each vertex by 2: (1, 1) → (2, 2), (3, 1) → (6, 2), (4, 3) → (8, 6), (2, 4) → (4, 8), (1, 3) → (2, 6).",
+            "<b>A</b> is smaller — that is a scale factor of ½.",
+            "<b>B</b> is the same size, just slid 2 right and 2 up.",
+            "<b>C</b> doubles only the x-values, so it is stretched sideways.",
             "The image must be twice as far from the origin and twice as wide/tall as the original."
           ],
           result:"<b>D</b> is the only choice where every vertex is doubled in both coordinates."
@@ -1133,11 +1132,10 @@
         }
       },
       {
-        n:25, type:"mc", standard:"8.SP.4", topic:"Two-way tables", dok:2, page:28, answer:"A", source:true,
+        n:25, type:"mc", standard:"8.SP.4", topic:"Two-way tables", dok:2, page:28, answer:"A",
         prompt:"A school has 250 students. 65 play football, 40 play basketball, and 12 play both. Which two-way table represents the data?",
-        choices:{A:"Choice A",B:"Choice B",C:"Choice C",D:"Choice D"},
+        choices:{A:"Table A",B:"Table B",C:"Table C",D:"Table D"},
         hint:"The cell where both rows and columns are 'yes' should hold 12.",
-        visual:"two_way_table",
         explain:{
           setup:"A two-way table cross-classifies two yes/no variables. Build it from the totals: each cell uses inclusion-exclusion.",
           steps:[
@@ -1145,7 +1143,8 @@
             "Football only: 65 − 12 = <b>53</b>.",
             "Basketball only: 40 − 12 = <b>28</b>.",
             "Neither: 250 − (53 + 28 + 12) = 250 − 93 = <b>157</b>.",
-            "Match those four numbers to a choice. Row and column totals should still hit 65, 40, 250."
+            "Match those four numbers to a choice. Row and column totals should still hit 65, 40, 250.",
+            "<b>B</b> has a football total of 77. <b>C</b> has a basketball total of 81. <b>D</b> has a grand total of 238."
           ],
           result:"<b>A</b> is the only table whose row, column, and grand totals all match."
         }
@@ -1168,18 +1167,17 @@
         }
       },
       {
-        n:27, type:"mc", standard:"8.F.5", topic:"Graphs", dok:2, page:31, answer:"D", source:true,
-        prompt:"Alex rode at a constant speed, sped up to reach a friend, then stopped to talk. Which graph best shows the ride?",
+        n:27, type:"mc", standard:"8.F.5", topic:"Graphs", dok:2, page:31, answer:"D",
+        prompt:"Alex rode at a constant speed, sped up to reach a friend, then stopped to talk. Which distance–time graph best shows the ride?",
         choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},
         hint:"Look for steady increase, then steeper increase, then a flat section.",
-        visual:"piecewise_story",
         explain:{
           setup:"On a distance-vs-time graph: a constant speed is a straight line with positive slope; speeding up makes a steeper line; stopping makes a HORIZONTAL line (distance unchanged).",
           steps:[
             "Section 1 (constant speed): straight, gently rising line.",
             "Section 2 (sped up): straight line, but with a STEEPER slope.",
             "Section 3 (stopped): a flat (horizontal) segment — distance stays the same as time passes.",
-            "Eliminate any graph that decreases (Alex didn't go backward)."
+            "Eliminate any graph that decreases (Alex didn't go backward). <b>A</b> stops in the middle. <b>B</b> goes back down at the end. <b>C</b> gets less steep (slows down)."
           ],
           result:"<b>D</b> is the only graph showing rise → steeper rise → flat."
         }
@@ -1237,18 +1235,18 @@
         }
       },
       {
-        n:31, type:"mc", standard:"8.F.2", topic:"Slope", dok:2, page:36, answer:"D", source:true,
-        prompt:"Which choice is a function with a slope two times the slope of the linear function in the table?",
+        n:31, type:"mc", standard:"8.F.2", topic:"Slope", dok:2, page:36, answer:"D",
+        prompt:"The table shows a linear function. Which choice is a function with a slope two times the slope of the function in the table?",
         choices:{A:"y = 3x − 2",B:"y = (²⁄₃)x − 1",C:"y = (²⁄₃)x + 1",D:"y = 6x − 4"},
         hint:"Find the table's slope first, then double it.",
-        visual:"slope_double",
         explain:{
           setup:"Step 1: find the table's slope using <span class='math'>m = Δy / Δx</span>. Step 2: double that slope. Step 3: pick the equation whose slope (the coefficient of x) equals the doubled value.",
           steps:[
-            "Open the source page and pick two table rows.",
-            "Compute the table's slope. (For this item, it works out to 3.)",
+            "Pick two table rows: (1, 1) and (2, 4).",
+            "Table slope: (4 − 1) ÷ (2 − 1) = 3 ÷ 1 = 3. Every row goes up 3.",
             "Double: 2 × 3 = 6.",
-            "Find the equation with slope 6 → y = 6x − 4."
+            "Find the equation with slope 6 → y = 6x − 4.",
+            "Watch out: A, y = 3x − 2, is the table's own line. Its slope is 3, not 6."
           ],
           result:"<b>D: y = 6x − 4</b>."
         }
@@ -1271,16 +1269,15 @@
         }
       },
       {
-        n:33, type:"mc", standard:"8.SP.1", topic:"Statistics", dok:1, page:38, answer:"B", source:true,
-        prompt:"Which graph shows a positive association?",
+        n:33, type:"mc", standard:"8.SP.1", topic:"Statistics", dok:1, page:38, answer:"B",
+        prompt:"Look at the four scatterplots. Which graph shows a positive association?",
         choices:{A:"Graph A",B:"Graph B",C:"Graph C",D:"Graph D"},
         hint:"A positive association trends upward as x increases.",
-        visual:"scatter_positive",
         explain:{
           setup:"<b>Positive association:</b> as x grows, y grows — points rise from lower-left to upper-right.",
           steps:[
             "Scan each graph for an overall direction.",
-            "Eliminate graphs that fall (negative) or scatter randomly (no association).",
+            "Eliminate graphs that fall (negative) or scatter randomly (no association). <b>A</b> falls. <b>C</b> has no pattern. <b>D</b> stays flat.",
             "Pick the only graph where points climb steadily as x increases."
           ],
           result:"<b>B</b> is the graph where the cloud rises left-to-right."
@@ -1338,18 +1335,17 @@
         }
       },
       {
-        n:37, type:"mc", standard:"8.SP.2", topic:"Scatterplots", dok:2, page:43, answer:"B", source:true,
+        n:37, type:"mc", standard:"8.SP.2", topic:"Scatterplots", dok:2, page:43, answer:"B",
         prompt:"Which choice best models the data in the scatterplot?",
         choices:{A:"y = x − 4",B:"y = x + 4",C:"y = 2x − 4",D:"y = 2x + 4"},
         hint:"Estimate both the slope and y-intercept from the trend.",
-        visual:"line_of_best_fit",
         explain:{
           setup:"To match a line of best fit to an equation: estimate the slope (rise/run) and the y-intercept (where the line crosses the y-axis).",
           steps:[
-            "Estimate the slope from two points on the trend line.",
-            "Estimate where the trend line crosses the y-axis.",
-            "Match (slope, y-intercept) to one of y = mx + b options.",
-            "For this item: slope ≈ 1 and y-intercept ≈ 4."
+            "Where does the trend cross the y-axis? Near (0, 4). So b ≈ 4. That rules out A and C (they start at −4).",
+            "Slope: the trend goes from about 4 at x = 0 to about 14 at x = 10. Rise 10 ÷ run 10 = 1.",
+            "D has slope 2. At x = 10 it gives 24 — far above the dots.",
+            "Slope ≈ 1 and y-intercept ≈ 4 → y = x + 4."
           ],
           result:"<b>B: y = x + 4</b> — slope 1 and y-intercept 4."
         }
@@ -1406,18 +1402,17 @@
         }
       },
       {
-        n:41, type:"mc", standard:"8.G.5", topic:"Angle relationships", dok:2, page:47, answer:"C", source:true,
-        prompt:"What is the measure of angle z in the diagram?",
+        n:41, type:"mc", standard:"8.G.5", topic:"Angle relationships", dok:2, page:47, answer:"C",
+        prompt:"Two lines cross at point A. Side AB of triangle ABC is extended past point B. Use the angles shown. What is the measure of angle z?",
         choices:{A:"15°",B:"36°",C:"69°",D:"75°"},
         hint:"Use angle relationships from intersecting lines and triangle angle sums.",
-        visual:"angle_chain",
         explain:{
           setup:"Multi-step angle problems use: vertical angles equal, linear pairs sum to 180°, parallel-line relationships, and triangle angles sum to 180°.",
           steps:[
-            "Open the source page to see the marked angles.",
-            "Identify which known angles share relationships with z.",
-            "Build an equation using the appropriate rule (linear pair, triangle sum, etc.).",
-            "Solve for z."
+            "At A, the 36° angle and the angle inside the triangle are vertical angles. So the inside angle at A is 36°.",
+            "At B, the 105° angle and the inside angle make a straight line. So the inside angle at B is 180° − 105° = 75°.",
+            "The three angles of a triangle add to 180°: z = 180° − 36° − 75°.",
+            "z = 69°. (Check: the outside angle 105° = 36° + 69°. ✓)"
           ],
           result:"z = <b>69°</b>."
         }
@@ -1441,17 +1436,17 @@
         }
       },
       {
-        n:43, type:"mc", standard:"8.G.3", topic:"Transformations", dok:2, page:48, answer:"D", source:true,
-        prompt:"Triangle PQR is reflected over the y-axis and then translated 2 units right. What are the coordinates of P′?",
+        n:43, type:"mc", standard:"8.G.3", topic:"Transformations", dok:2, page:48, answer:"D",
+        prompt:"Triangle PQR has P(−3, −4), Q(−1, −1), and R(−5, −1). It is reflected over the y-axis and then translated 2 units right. What are the coordinates of P′?",
         choices:{A:"(−5, 4)",B:"(−1, 4)",C:"(1, −4)",D:"(5, −4)"},
         hint:"Reflect across y-axis: change x's sign. Then add 2 to x.",
-        visual:"reflect_translate",
         explain:{
           setup:"Two transformations applied in order: (1) reflection over y-axis sends <span class='math'>(x, y) → (−x, y)</span>; (2) translation 2 right sends <span class='math'>(x, y) → (x + 2, y)</span>.",
           steps:[
-            "Working backward from the answer (5, −4): before the +2 translation, x was 3. So after the reflection: (3, −4).",
-            "Before the reflection (negate x back): P = (−3, −4).",
-            "Forward check: (−3, −4) → reflect → (3, −4) → translate +2 right → (5, −4). ✓"
+            "Reflect P(−3, −4) over the y-axis: change the sign of x → (3, −4).",
+            "Translate 2 units right: add 2 to x → (3 + 2, −4) = (5, −4).",
+            "The y-value never changes in either move, so P′ must still have y = −4. That rules out A and B.",
+            "C, (1, −4), comes from moving 2 left instead of right."
           ],
           result:"<b>D: (5, −4)</b>."
         }
@@ -1491,469 +1486,731 @@
       }
     ];
 
-    // ============================================================
-    // SVG VISUAL LIBRARY — concept figures keyed by question.visual
-    // Every SVG uses IC Imagine palette: navy #1E2D4F, gold #FFC107.
-    // ============================================================
-    const NAVY = "#1E2D4F", GOLD = "#FFC107", BLUE = "#1d4ed8", GREEN = "#15803d", ROSE = "#be123c";
-    const visuals = {
-      // ----- Statistics / Scatter -----
-      scatter_negative: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Negative association scatter">
-          ${axes(460, 200)}
-          ${[ [60,40], [90,55], [120,70], [150,80], [185,95], [220,110], [255,115], [290,130], [325,140], [365,160] ]
-            .map(([x,y]) => `<circle cx="${x}" cy="${y}" r="5" fill="${NAVY}"/>`).join("")}
-          <line x1="55" y1="35" x2="380" y2="170" stroke="${GOLD}" stroke-width="3" stroke-dasharray="6 5"/>
-          <text x="230" y="195" fill="${NAVY}" font-size="13" font-weight="700" text-anchor="middle" font-family="Arvo, serif">Negative association: y falls as x rises</text>
-        </svg>`,
-      scatter_positive: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Positive association scatter">
-          ${axes(460, 200)}
-          ${[ [60,160], [95,150], [130,140], [165,128], [195,115], [225,98], [260,85], [295,75], [330,60], [365,45] ]
-            .map(([x,y]) => `<circle cx="${x}" cy="${y}" r="5" fill="${NAVY}"/>`).join("")}
-          <line x1="55" y1="170" x2="385" y2="40" stroke="${GOLD}" stroke-width="3" stroke-dasharray="6 5"/>
-          <text x="230" y="195" fill="${NAVY}" font-size="13" font-weight="700" text-anchor="middle" font-family="Arvo, serif">Positive association: y rises as x rises</text>
-        </svg>`,
-      line_of_best_fit: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Line of best fit">
-          ${axes(460, 220)}
-          ${[ [80,150], [110,140], [140,135], [170,118], [200,108], [230,98], [260,85], [290,75], [320,65], [350,55] ]
-            .map(([x,y]) => `<circle cx="${x}" cy="${y}" r="5" fill="${NAVY}"/>`).join("")}
-          <line x1="50" y1="170" x2="380" y2="40" stroke="${GOLD}" stroke-width="3"/>
-          <text x="55" y="35" fill="${GOLD}" font-size="13" font-weight="800" font-family="Arvo, serif">y ≈ x + 4</text>
-        </svg>`,
-      // ----- Functions -----
-      linear_form: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Linear form y = mx + b">
-          <rect x="20" y="30" width="200" height="140" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="120" y="58" text-anchor="middle" fill="${NAVY}" font-size="13" font-weight="800" font-family="Arvo, serif">LINEAR — passes</text>
-          <text x="120" y="100" text-anchor="middle" fill="${NAVY}" font-size="22" font-weight="800" font-family="Arvo, serif">y = mx + b</text>
-          <text x="120" y="130" text-anchor="middle" fill="${GREEN}" font-size="13" font-weight="700">e.g. y = 2x + 4</text>
-          <text x="120" y="153" text-anchor="middle" fill="#5d6b85" font-size="11">x to the 1st power</text>
-          <rect x="240" y="30" width="200" height="140" rx="8" fill="#fff" stroke="${ROSE}" stroke-width="2" stroke-dasharray="4 4"/>
-          <text x="340" y="58" text-anchor="middle" fill="${ROSE}" font-size="13" font-weight="800" font-family="Arvo, serif">NOT LINEAR — fails</text>
-          <text x="340" y="86" text-anchor="middle" fill="${ROSE}" font-size="14" font-weight="700">y = x²</text>
-          <text x="340" y="108" text-anchor="middle" fill="${ROSE}" font-size="14" font-weight="700">xy = 2  (= 2/x)</text>
-          <text x="340" y="130" text-anchor="middle" fill="${ROSE}" font-size="14" font-weight="700">y = 5ˣ</text>
-          <text x="340" y="155" text-anchor="middle" fill="#5d6b85" font-size="11">power of x ≠ 1</text>
-        </svg>`,
-      vertical_line_test: () => `
-        <svg viewBox="0 0 460 210" role="img" aria-label="Vertical line test">
-          <g transform="translate(20,10)">
-            ${axes(200, 190)}
-            <path d="M 30 150 Q 100 30 170 150" fill="none" stroke="${NAVY}" stroke-width="3"/>
-            <line x1="100" y1="20" x2="100" y2="180" stroke="${GOLD}" stroke-width="2" stroke-dasharray="3 3"/>
-            <circle cx="100" cy="48" r="5" fill="${GREEN}"/>
-            <text x="100" y="200" text-anchor="middle" fill="${GREEN}" font-size="12" font-weight="800">PASSES — function</text>
-          </g>
-          <g transform="translate(240,10)">
-            ${axes(200, 190)}
-            <path d="M 100 30 Q 30 100 100 170 Q 170 100 100 30" fill="none" stroke="${NAVY}" stroke-width="3"/>
-            <line x1="60" y1="20" x2="60" y2="180" stroke="${GOLD}" stroke-width="2" stroke-dasharray="3 3"/>
-            <circle cx="60" cy="68" r="5" fill="${ROSE}"/>
-            <circle cx="60" cy="132" r="5" fill="${ROSE}"/>
-            <text x="100" y="200" text-anchor="middle" fill="${ROSE}" font-size="12" font-weight="800">FAILS — not a function</text>
-          </g>
-        </svg>`,
-      function_set: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Function set diagram">
-          <text x="230" y="22" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="14">Each x-value gets EXACTLY ONE y-value</text>
-          <g transform="translate(60,40)">
-            <text x="0" y="14" fill="${NAVY}" font-weight="800" font-size="13">FUNCTION ✓</text>
-            <ellipse cx="40" cy="70" rx="34" ry="50" fill="none" stroke="${NAVY}"/>
-            <ellipse cx="170" cy="70" rx="34" ry="50" fill="none" stroke="${NAVY}"/>
-            <text x="40" y="38" text-anchor="middle" fill="${NAVY}" font-size="11" font-weight="700">x</text>
-            <text x="170" y="38" text-anchor="middle" fill="${NAVY}" font-size="11" font-weight="700">y</text>
-            <text x="40" y="65" text-anchor="middle" font-size="12">2</text>
-            <text x="40" y="85" text-anchor="middle" font-size="12">1</text>
-            <text x="40" y="105" text-anchor="middle" font-size="12">−1</text>
-            <text x="170" y="75" text-anchor="middle" font-size="12">4</text>
-            <line x1="55" y1="62" x2="155" y2="73" stroke="${GREEN}" stroke-width="2"/>
-            <line x1="55" y1="82" x2="155" y2="75" stroke="${GREEN}" stroke-width="2"/>
-            <line x1="55" y1="102" x2="155" y2="77" stroke="${GREEN}" stroke-width="2"/>
-          </g>
-          <g transform="translate(290,40)">
-            <text x="0" y="14" fill="${ROSE}" font-weight="800" font-size="13">NOT A FUNCTION ✗</text>
-            <ellipse cx="20" cy="70" rx="24" ry="40" fill="none" stroke="${ROSE}"/>
-            <ellipse cx="120" cy="70" rx="24" ry="40" fill="none" stroke="${ROSE}"/>
-            <text x="20" y="42" text-anchor="middle" fill="${ROSE}" font-size="11" font-weight="700">x</text>
-            <text x="120" y="42" text-anchor="middle" fill="${ROSE}" font-size="11" font-weight="700">y</text>
-            <text x="20" y="80" text-anchor="middle" font-size="12">3</text>
-            <text x="120" y="60" text-anchor="middle" font-size="12">1</text>
-            <text x="120" y="90" text-anchor="middle" font-size="12">5</text>
-            <line x1="32" y1="76" x2="105" y2="60" stroke="${ROSE}" stroke-width="2"/>
-            <line x1="32" y1="78" x2="105" y2="89" stroke="${ROSE}" stroke-width="2"/>
-            <text x="70" y="125" text-anchor="middle" fill="${ROSE}" font-size="11" font-weight="700">x = 3 → two y's</text>
-          </g>
-        </svg>`,
-      // ----- Slope -----
-      slope_two_points: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Slope between two points">
-          ${axes(460, 200, true)}
-          <circle cx="120" cy="160" r="6" fill="${NAVY}"/>
-          <text x="105" y="180" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif">(3, 1)</text>
-          <circle cx="320" cy="40" r="6" fill="${NAVY}"/>
-          <text x="320" y="32" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif">(8, 7)</text>
-          <line x1="120" y1="160" x2="320" y2="40" stroke="${GOLD}" stroke-width="3"/>
-          <line x1="120" y1="160" x2="320" y2="160" stroke="${BLUE}" stroke-width="2" stroke-dasharray="4 3"/>
-          <line x1="320" y1="160" x2="320" y2="40" stroke="${BLUE}" stroke-width="2" stroke-dasharray="4 3"/>
-          <text x="220" y="178" fill="${BLUE}" font-weight="700" font-size="12">run = 5</text>
-          <text x="332" y="105" fill="${BLUE}" font-weight="700" font-size="12">rise = 6</text>
-          <text x="60" y="35" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">slope = 6 / 5</text>
-        </svg>`,
-      slope_from_table: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Slope from a table">
-          <rect x="40" y="30" width="380" height="140" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="55" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="14">slope = Δy / Δx</text>
-          <line x1="60" y1="80" x2="400" y2="80" stroke="#d6dde9"/>
-          <text x="100" y="105" fill="${NAVY}" font-weight="800" font-size="13">x</text>
-          <text x="180" y="105" fill="${NAVY}" font-weight="800" font-size="13">y</text>
-          <text x="100" y="130" fill="${NAVY}" font-size="13">2</text>
-          <text x="180" y="130" fill="${NAVY}" font-size="13">5</text>
-          <text x="100" y="155" fill="${NAVY}" font-size="13">4</text>
-          <text x="180" y="155" fill="${NAVY}" font-size="13">12</text>
-          <text x="270" y="130" fill="${BLUE}" font-weight="700" font-size="13">Δx = 4 − 2 = 2</text>
-          <text x="270" y="155" fill="${BLUE}" font-weight="700" font-size="13">Δy = 12 − 5 = 7</text>
-          <text x="270" y="178" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">→ slope = 7/2 = 3.5</text>
-        </svg>`,
-      slope_compare: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Comparing slopes">
-          ${axes(460, 200, true)}
-          <line x1="60" y1="180" x2="400" y2="20" stroke="${GOLD}" stroke-width="3"/>
-          <text x="380" y="35" fill="${GOLD}" font-weight="800" font-size="13" font-family="Arvo, serif">slope 6 (reference)</text>
-          <line x1="80" y1="40" x2="380" y2="170" stroke="${ROSE}" stroke-width="3"/>
-          <text x="80" y="32" fill="${ROSE}" font-weight="800" font-size="13" font-family="Arvo, serif">slope −7 (steeper)</text>
-        </svg>`,
-      slope_double: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Double the slope">
-          <rect x="20" y="20" width="200" height="140" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="120" y="50" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">Find slope from table</text>
-          <text x="120" y="90" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="22">m = 3</text>
-          <text x="120" y="125" text-anchor="middle" fill="#5d6b85" font-size="11">(use Δy / Δx)</text>
-          <text x="240" y="93" fill="${GOLD}" font-size="36" font-weight="800" font-family="Arvo, serif">→</text>
-          <rect x="280" y="20" width="160" height="140" rx="8" fill="${GOLD}" stroke="${NAVY}" stroke-width="2"/>
-          <text x="360" y="50" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">Double it</text>
-          <text x="360" y="100" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="26">2 × 3 = 6</text>
-          <text x="360" y="135" text-anchor="middle" fill="${NAVY}" font-size="11" font-weight="700">→ y = 6x − 4</text>
-        </svg>`,
-      // ----- Distance / Pythag -----
-      distance_coords: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Distance between two coordinate points">
-          ${axes(460, 200, true)}
-          <circle cx="100" cy="40" r="6" fill="${NAVY}"/>
-          <text x="40" y="32" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif">(−4, 6)</text>
-          <circle cx="340" cy="160" r="6" fill="${NAVY}"/>
-          <text x="345" y="180" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif">(8, 1)</text>
-          <line x1="100" y1="40" x2="340" y2="40" stroke="${BLUE}" stroke-width="2.5"/>
-          <line x1="340" y1="40" x2="340" y2="160" stroke="${BLUE}" stroke-width="2.5"/>
-          <line x1="100" y1="40" x2="340" y2="160" stroke="${GOLD}" stroke-width="3"/>
-          <text x="220" y="32" text-anchor="middle" fill="${BLUE}" font-weight="700" font-size="12">12</text>
-          <text x="350" y="105" fill="${BLUE}" font-weight="700" font-size="12">5</text>
-          <text x="180" y="115" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">d = √(12² + 5²) = 13</text>
-        </svg>`,
-      ladder: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Ladder against a wall">
-          <line x1="50" y1="200" x2="430" y2="200" stroke="#5d6b85" stroke-width="3"/>
-          <line x1="120" y1="200" x2="120" y2="40" stroke="${NAVY}" stroke-width="6"/>
-          <text x="106" y="120" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif" transform="rotate(-90 106 120)">wall (h)</text>
-          <line x1="120" y1="40" x2="240" y2="200" stroke="${GOLD}" stroke-width="5"/>
-          <text x="195" y="105" fill="${GOLD}" font-weight="800" font-size="13" font-family="Arvo, serif">15 ft</text>
-          <text x="160" y="220" fill="${BLUE}" font-weight="700" font-size="12">5 ft</text>
-          <rect x="120" y="187" width="14" height="14" fill="none" stroke="${NAVY}" stroke-width="2"/>
-          <text x="295" y="100" fill="${NAVY}" font-weight="800" font-size="13" font-family="Arvo, serif">h² + 5² = 15²</text>
-          <text x="295" y="125" fill="${NAVY}" font-weight="700" font-size="13" font-family="Arvo, serif">h² = 200</text>
-          <text x="295" y="150" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">h ≈ 14 ft</text>
-        </svg>`,
-      tower_wire: () => `
-        <svg viewBox="0 0 460 230" role="img" aria-label="Tower with supporting wire">
-          <line x1="40" y1="210" x2="430" y2="210" stroke="#5d6b85" stroke-width="3"/>
-          <rect x="100" y="40" width="14" height="170" fill="${NAVY}"/>
-          <text x="80" y="130" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif" transform="rotate(-90 80 130)">140 ft</text>
-          <line x1="114" y1="40" x2="280" y2="210" stroke="${GOLD}" stroke-width="4"/>
-          <text x="220" y="115" fill="${GOLD}" font-weight="800" font-size="13" font-family="Arvo, serif">wire = ?</text>
-          <text x="180" y="228" fill="${BLUE}" font-weight="700" font-size="12">72 ft</text>
-          <rect x="114" y="196" width="14" height="14" fill="none" stroke="${NAVY}" stroke-width="2"/>
-          <text x="305" y="100" fill="${NAVY}" font-weight="800" font-size="13" font-family="Arvo, serif">w² = 140² + 72²</text>
-          <text x="305" y="125" fill="${NAVY}" font-weight="700" font-size="13" font-family="Arvo, serif">w² = 24,784</text>
-          <text x="305" y="150" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">w ≈ 157 ft</text>
-        </svg>`,
-      rect_diagonal: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Rectangle with diagonal path">
-          <rect x="60" y="40" width="320" height="140" fill="#f8faff" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="60" y1="180" x2="380" y2="40" stroke="${GOLD}" stroke-width="4"/>
-          <text x="220" y="200" text-anchor="middle" fill="${BLUE}" font-weight="700" font-size="13">320 yd</text>
-          <text x="40" y="115" fill="${BLUE}" font-weight="700" font-size="13" transform="rotate(-90 40 115)">200 yd</text>
-          <text x="240" y="100" fill="${GOLD}" font-weight="800" font-size="13" font-family="Arvo, serif">d ≈ 377.4 yd</text>
-          <text x="80" y="32" fill="${NAVY}" font-weight="700" font-size="11" font-family="Arvo, serif">Path: ≈ 377 sq yd × $10.75 ≈ $4,060</text>
-        </svg>`,
-      // ----- Volume -----
-      cone: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Cone with radius and height">
-          <ellipse cx="180" cy="180" rx="80" ry="20" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="100" y1="180" x2="180" y2="40" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="260" y1="180" x2="180" y2="40" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="180" y1="180" x2="180" y2="40" stroke="${GOLD}" stroke-width="2" stroke-dasharray="4 3"/>
-          <line x1="180" y1="180" x2="260" y2="180" stroke="${BLUE}" stroke-width="3"/>
-          <text x="220" y="195" fill="${BLUE}" font-weight="800" font-size="12">r = 5</text>
-          <text x="190" y="115" fill="${GOLD}" font-weight="800" font-size="12" font-family="Arvo, serif">h = 12</text>
-          <text x="300" y="80" fill="${NAVY}" font-weight="800" font-size="14" font-family="Arvo, serif">V = ⅓ π r² h</text>
-          <text x="300" y="105" fill="${NAVY}" font-weight="700" font-size="12">= ⅓ π (25)(12)</text>
-          <text x="300" y="128" fill="${NAVY}" font-weight="700" font-size="12">= 100π</text>
-          <text x="300" y="155" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">≈ 314 cm³</text>
-        </svg>`,
-      cylinder: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Cylinder with diameter and height">
-          <ellipse cx="160" cy="40" rx="70" ry="14" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <ellipse cx="160" cy="180" rx="70" ry="14" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="90" y1="40" x2="90" y2="180" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="230" y1="40" x2="230" y2="180" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="90" y1="180" x2="230" y2="180" stroke="${BLUE}" stroke-width="3"/>
-          <text x="155" y="200" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="12">d = 5 → r = 2.5</text>
-          <text x="240" y="115" fill="${GOLD}" font-weight="800" font-size="12" font-family="Arvo, serif">h = 7.5</text>
-          <text x="290" y="80" fill="${NAVY}" font-weight="800" font-size="14" font-family="Arvo, serif">V = π r² h</text>
-          <text x="290" y="105" fill="${NAVY}" font-weight="700" font-size="12">= π (2.5)² (7.5)</text>
-          <text x="290" y="128" fill="${NAVY}" font-weight="700" font-size="12">= 46.875 π</text>
-          <text x="290" y="155" fill="${GOLD}" font-weight="800" font-size="14" font-family="Arvo, serif">≈ 147 cm³</text>
-        </svg>`,
-      // ----- Linear models / context -----
-      linear_model_context: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Slope vs y-intercept in context">
-          ${axes(460, 200, true)}
-          <line x1="60" y1="60" x2="400" y2="160" stroke="${GOLD}" stroke-width="3"/>
-          <circle cx="60" cy="60" r="6" fill="${NAVY}"/>
-          <text x="68" y="55" fill="${NAVY}" font-weight="800" font-size="12" font-family="Arvo, serif">y-intercept (b)</text>
-          <text x="68" y="72" fill="#5d6b85" font-size="11">"start value when x = 0"</text>
-          <line x1="200" y1="100" x2="280" y2="100" stroke="${BLUE}" stroke-width="2" stroke-dasharray="4 3"/>
-          <line x1="280" y1="100" x2="280" y2="125" stroke="${BLUE}" stroke-width="2" stroke-dasharray="4 3"/>
-          <text x="290" y="118" fill="${BLUE}" font-weight="800" font-size="12" font-family="Arvo, serif">slope (m)</text>
-          <text x="290" y="135" fill="#5d6b85" font-size="11">"change per 1 of x"</text>
-        </svg>`,
-      // ----- Sci notation -----
-      sci_notation_divide: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Dividing in scientific notation">
-          <text x="230" y="40" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="14">(4 × 10⁶) ÷ 5</text>
-          <text x="230" y="75" text-anchor="middle" fill="${BLUE}" font-weight="700" font-size="13">= 0.8 × 10⁶</text>
-          <text x="230" y="100" text-anchor="middle" fill="#5d6b85" font-size="11">↓ rewrite (coefficient must be 1–10)</text>
-          <rect x="120" y="115" width="220" height="50" rx="8" fill="${GOLD}" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="148" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="20">8 × 10⁵</text>
-        </svg>`,
-      sci_notation_multiply: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Multiplying in scientific notation">
-          <text x="230" y="35" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">x × 10⁵ = 25 × (4 × 10³)</text>
-          <text x="230" y="65" text-anchor="middle" fill="${BLUE}" font-weight="700" font-size="13">= 100 × 10³</text>
-          <text x="230" y="92" text-anchor="middle" fill="#5d6b85" font-size="11">100 = 10², so 10² × 10³ = 10⁵</text>
-          <rect x="120" y="105" width="220" height="55" rx="8" fill="${GOLD}" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="142" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="22">x = 1</text>
-        </svg>`,
-      // ----- Number system -----
-      number_system: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Rational vs irrational">
-          <rect x="20" y="20" width="200" height="130" rx="8" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <text x="120" y="42" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">RATIONAL</text>
-          <text x="120" y="68" text-anchor="middle" fill="${GREEN}" font-weight="700" font-size="13">17/53, √9, 0.5, 0.3̄</text>
-          <text x="120" y="95" text-anchor="middle" fill="#5d6b85" font-size="11">can be written p/q</text>
-          <text x="120" y="120" text-anchor="middle" fill="#5d6b85" font-size="11">terminating or repeating decimals</text>
-          <rect x="240" y="20" width="200" height="130" rx="8" fill="${GOLD}" stroke="${NAVY}" stroke-width="2"/>
-          <text x="340" y="42" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">IRRATIONAL</text>
-          <text x="340" y="68" text-anchor="middle" fill="${ROSE}" font-weight="700" font-size="13">√20, √2, π, e</text>
-          <text x="340" y="95" text-anchor="middle" fill="#5d6b85" font-size="11">cannot be written p/q</text>
-          <text x="340" y="120" text-anchor="middle" fill="#5d6b85" font-size="11">non-terminating, non-repeating</text>
-        </svg>`,
-      sqrt_estimate: () => `
-        <svg viewBox="0 0 460 130" role="img" aria-label="Estimating a square root on a number line">
-          <line x1="40" y1="65" x2="420" y2="65" stroke="${NAVY}" stroke-width="2"/>
-          ${[ [80,"12",144], [180,"13",169], [320,"14",196], [400,"15",225] ].map(([x,n,sq]) => `
-            <line x1="${x}" y1="58" x2="${x}" y2="72" stroke="${NAVY}" stroke-width="2"/>
-            <text x="${x}" y="92" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="13">${n}</text>
-            <text x="${x}" y="108" text-anchor="middle" fill="#5d6b85" font-size="10">${sq}</text>
-          `).join("")}
-          <circle cx="200" cy="65" r="7" fill="${GOLD}" stroke="${NAVY}" stroke-width="2"/>
-          <text x="200" y="42" text-anchor="middle" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="13">√172 ≈ 13.1</text>
-        </svg>`,
-      square_comparison: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Comparing two squares">
-          <rect x="40" y="100" width="60" height="60" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <text x="70" y="135" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="12">A=36</text>
-          <text x="70" y="180" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="12">side = 6</text>
-          <rect x="180" y="40" width="120" height="120" fill="${GOLD}" fill-opacity=".25" stroke="${NAVY}" stroke-width="2"/>
-          <text x="240" y="105" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="13">A=144</text>
-          <text x="240" y="180" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="12">side = 12</text>
-          <text x="370" y="100" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="14">12 − 6</text>
-          <text x="370" y="125" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="20">= 6 ft</text>
-        </svg>`,
-      // ----- Transformations -----
-      rotation_90: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="90 degree counterclockwise rotation">
-          <g transform="translate(20,10)">
-            ${axes(180, 180)}
-            <polygon points="100,90 130,60 130,90" fill="${NAVY}" fill-opacity=".7" stroke="${NAVY}"/>
-            <text x="125" y="65" fill="${NAVY}" font-size="11" font-weight="800">E</text>
-            <text x="40" y="160" fill="${NAVY}" font-size="11">original</text>
-          </g>
-          <text x="225" y="105" text-anchor="middle" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="22">↺</text>
-          <text x="225" y="130" text-anchor="middle" fill="${GOLD}" font-size="11" font-weight="800">90° CCW</text>
-          <g transform="translate(260,10)">
-            ${axes(180, 180)}
-            <polygon points="100,90 70,60 70,90" fill="${GOLD}" fill-opacity=".7" stroke="${NAVY}"/>
-            <text x="62" y="65" fill="${NAVY}" font-size="11" font-weight="800">E'</text>
-            <text x="40" y="160" fill="${NAVY}" font-size="11">rotated</text>
-          </g>
-        </svg>`,
-      dilation: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Dilation by scale factor 2">
-          ${axes(460, 200, true)}
-          <polygon points="220,110 260,110 280,140 240,160 200,140" fill="${NAVY}" fill-opacity=".7" stroke="${NAVY}"/>
-          <text x="225" y="135" fill="#fff" font-size="10" font-weight="800">orig</text>
-          <polygon points="240,40 320,40 360,100 280,140 200,100" fill="${GOLD}" fill-opacity=".4" stroke="${NAVY}" stroke-dasharray="3 3"/>
-          <text x="280" y="80" fill="${NAVY}" font-size="11" font-weight="800">image (×2)</text>
-          <text x="60" y="35" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="13">(x, y) → (2x, 2y)</text>
-        </svg>`,
-      reflect_translate: () => `
-        <svg viewBox="0 0 460 220" role="img" aria-label="Reflect over y axis then translate">
-          ${axes(460, 220, true)}
-          <polygon points="160,80 130,140 200,140" fill="${NAVY}" fill-opacity=".7" stroke="${NAVY}"/>
-          <text x="160" y="125" text-anchor="middle" fill="#fff" font-size="11" font-weight="800">P</text>
-          <polygon points="300,80 270,140 340,140" fill="#9ca3af" fill-opacity=".5" stroke="#9ca3af" stroke-dasharray="3 3"/>
-          <text x="300" y="125" text-anchor="middle" fill="#5d6b85" font-size="10" font-weight="800">step 1</text>
-          <polygon points="340,80 310,140 380,140" fill="${GOLD}" fill-opacity=".7" stroke="${NAVY}"/>
-          <text x="340" y="125" text-anchor="middle" fill="${NAVY}" font-size="11" font-weight="800">P'</text>
-          <text x="60" y="32" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="12">reflect over y-axis: (x,y) → (−x, y)</text>
-          <text x="60" y="50" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="12">translate +2 right: (x,y) → (x+2, y)</text>
-        </svg>`,
-      // ----- Systems -----
-      system_equal: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="When two costs are equal">
-          ${axes(460, 200, true)}
-          <line x1="60" y1="160" x2="400" y2="60" stroke="${NAVY}" stroke-width="3"/>
-          <line x1="60" y1="180" x2="400" y2="40" stroke="${GOLD}" stroke-width="3"/>
-          <circle cx="240" cy="105" r="7" fill="${ROSE}"/>
-          <text x="250" y="100" fill="${ROSE}" font-weight="800" font-size="13" font-family="Arvo, serif">costs equal</text>
-          <text x="80" y="40" fill="${NAVY}" font-weight="700" font-size="12">Co. 1</text>
-          <text x="80" y="195" fill="${GOLD}" font-weight="800" font-size="12">Co. 2</text>
-        </svg>`,
-      no_solutions: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="No solutions parallel lines">
-          ${axes(460, 180, true)}
-          <line x1="50" y1="60" x2="410" y2="20" stroke="${NAVY}" stroke-width="3"/>
-          <line x1="50" y1="160" x2="410" y2="120" stroke="${GOLD}" stroke-width="3"/>
-          <text x="60" y="32" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="12">15x + 30</text>
-          <text x="60" y="180" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="12">15x + 20  (parallel)</text>
-          <text x="240" y="100" fill="${ROSE}" font-weight="800" font-size="13" font-family="Arvo, serif">no intersection → no solution</text>
-        </svg>`,
-      // ----- Misc -----
-      exponent_rules: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Exponent rules summary">
-          <rect x="20" y="20" width="420" height="130" rx="8" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="42" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">Exponent Rules</text>
-          <text x="40" y="72" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">aᵐ · aⁿ = aᵐ⁺ⁿ</text>
-          <text x="240" y="72" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">aᵐ ÷ aⁿ = aᵐ⁻ⁿ</text>
-          <text x="40" y="102" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">(aᵐ)ⁿ = aᵐⁿ</text>
-          <text x="240" y="102" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">a⁻ⁿ = 1 / aⁿ</text>
-          <text x="40" y="132" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">a⁰ = 1   (a ≠ 0)</text>
-          <text x="240" y="132" fill="${NAVY}" font-family="Arvo, serif" font-weight="700" font-size="13">(ab)ⁿ = aⁿbⁿ</text>
-        </svg>`,
-      equation_solving: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Solving equations workflow">
-          <rect x="20" y="20" width="420" height="130" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="42" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">Multi-Step Equation Workflow</text>
-          ${["1. Distribute","2. Clear fractions (× LCD)","3. Combine like terms","4. Move x's to one side","5. Isolate x and check"].map((s,i) => `
-            <text x="50" y="${72+i*15}" fill="${NAVY}" font-size="12" font-weight="600">${s}</text>
-          `).join("")}
-        </svg>`,
-      y_intercept_from_table: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Y-intercept from a table">
-          <rect x="40" y="30" width="380" height="120" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="55" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="13">y-intercept = y when x = 0</text>
-          <text x="60" y="85" fill="${NAVY}" font-weight="800" font-size="12">1. Find slope from two rows</text>
-          <text x="60" y="105" fill="${NAVY}" font-weight="800" font-size="12">2. Plug a point into y = mx + b</text>
-          <text x="60" y="125" fill="${NAVY}" font-weight="800" font-size="12">3. Solve for b</text>
-        </svg>`,
-      y_intercept_match: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Matching y-intercepts">
-          ${axes(460, 200, true)}
-          <line x1="60" y1="20" x2="400" y2="180" stroke="${NAVY}" stroke-width="3"/>
-          <line x1="60" y1="40" x2="400" y2="140" stroke="${GOLD}" stroke-width="3"/>
-          <circle cx="220" cy="120" r="6" fill="${ROSE}"/>
-          <text x="225" y="140" fill="${ROSE}" font-weight="800" font-size="12" font-family="Arvo, serif">(0, −3) — same y-intercept</text>
-        </svg>`,
-      ticket_fee: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Ticket cost with flat fee">
-          <rect x="20" y="20" width="420" height="130" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="46" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">total = (price)·(tickets) + fee</text>
-          <text x="60" y="78" fill="${BLUE}" font-weight="700" font-size="12">slope (price/ticket): (145−91)/(5−3) = $27</text>
-          <text x="60" y="100" fill="${BLUE}" font-weight="700" font-size="12">at 3 tickets: 3×27 = 81 → fee = 91 − 81</text>
-          <text x="230" y="135" text-anchor="middle" fill="${GOLD}" font-family="Arvo, serif" font-weight="800" font-size="18">fee = $10</text>
-        </svg>`,
-      unit_rate: () => `
-        <svg viewBox="0 0 460 170" role="img" aria-label="Comparing unit rates">
-          <rect x="20" y="20" width="420" height="130" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="48" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">unit rate = total ÷ count</text>
-          <text x="60" y="78" fill="#5d6b85" font-size="12">model: $12.50 / bottle (the benchmark)</text>
-          <text x="60" y="102" fill="${ROSE}" font-weight="700" font-size="12">A: $13.00  ·  B: $12.50  ·  D: $12.75 → all ≥ benchmark</text>
-          <text x="60" y="125" fill="${GREEN}" font-weight="800" font-size="13">C: $12.25 → only one BELOW benchmark ✓</text>
-        </svg>`,
-      parallel_transversal: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Parallel lines cut by a transversal">
-          <line x1="20" y1="60" x2="440" y2="60" stroke="${NAVY}" stroke-width="2.5"/>
-          <line x1="20" y1="160" x2="440" y2="160" stroke="${NAVY}" stroke-width="2.5"/>
-          <line x1="80" y1="20" x2="380" y2="200" stroke="${GOLD}" stroke-width="2.5"/>
-          <text x="450" y="65" fill="${NAVY}" font-weight="700" font-size="11">R</text>
-          <text x="450" y="165" fill="${NAVY}" font-weight="700" font-size="11">S</text>
-          <text x="385" y="208" fill="${GOLD}" font-weight="700" font-size="11" font-family="Arvo, serif">Q</text>
-          <circle cx="148" cy="60" r="4" fill="${ROSE}"/>
-          <circle cx="316" cy="160" r="4" fill="${ROSE}"/>
-          <text x="20" y="195" fill="${NAVY}" font-size="11">Corresponding ≅ · Alt int ≅ · Same-side int → 180°</text>
-        </svg>`,
-      angle_chain: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Angle relationships toolkit">
-          <rect x="20" y="20" width="420" height="140" rx="8" fill="#f0f4fa" stroke="${NAVY}" stroke-width="2"/>
-          <text x="230" y="46" text-anchor="middle" fill="${NAVY}" font-family="Arvo, serif" font-weight="800" font-size="14">Angle Relationships Toolkit</text>
-          <text x="50" y="74" fill="${NAVY}" font-weight="600" font-size="12">• Vertical angles → equal</text>
-          <text x="50" y="94" fill="${NAVY}" font-weight="600" font-size="12">• Linear pair → sum to 180°</text>
-          <text x="50" y="114" fill="${NAVY}" font-weight="600" font-size="12">• Parallel lines + transversal → corresponding/alt int equal</text>
-          <text x="50" y="134" fill="${NAVY}" font-weight="600" font-size="12">• Triangle interior angles → sum to 180°</text>
-        </svg>`,
-      two_way_table: () => `
-        <svg viewBox="0 0 460 180" role="img" aria-label="Two-way table">
-          <rect x="40" y="20" width="380" height="140" rx="8" fill="#fff" stroke="${NAVY}" stroke-width="2"/>
-          <line x1="40" y1="60" x2="420" y2="60" stroke="${NAVY}"/>
-          <line x1="170" y1="20" x2="170" y2="160" stroke="${NAVY}"/>
-          <line x1="280" y1="20" x2="280" y2="160" stroke="${NAVY}"/>
-          <line x1="40" y1="100" x2="420" y2="100" stroke="${NAVY}"/>
-          <line x1="40" y1="140" x2="420" y2="140" stroke="${NAVY}"/>
-          <text x="105" y="45" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11"></text>
-          <text x="225" y="45" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11">Basketball</text>
-          <text x="350" y="45" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11">No basketball</text>
-          <text x="105" y="83" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11">Football</text>
-          <text x="225" y="83" text-anchor="middle" fill="${GOLD}" font-weight="800" font-size="13" font-family="Arvo, serif">12</text>
-          <text x="350" y="83" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="13" font-family="Arvo, serif">53</text>
-          <text x="105" y="123" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11">No football</text>
-          <text x="225" y="123" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="13" font-family="Arvo, serif">28</text>
-          <text x="350" y="123" text-anchor="middle" fill="${BLUE}" font-weight="800" font-size="13" font-family="Arvo, serif">157</text>
-          <text x="105" y="153" text-anchor="middle" fill="${NAVY}" font-weight="800" font-size="11">Total</text>
-          <text x="225" y="153" text-anchor="middle" fill="${NAVY}" font-weight="700" font-size="11">40</text>
-          <text x="350" y="153" text-anchor="middle" fill="${NAVY}" font-weight="700" font-size="11">210</text>
-        </svg>`,
-      piecewise_story: () => `
-        <svg viewBox="0 0 460 200" role="img" aria-label="Piecewise distance story">
-          ${axes(460, 200, true)}
-          <line x1="60" y1="170" x2="180" y2="130" stroke="${NAVY}" stroke-width="3"/>
-          <line x1="180" y1="130" x2="280" y2="50" stroke="${GOLD}" stroke-width="3"/>
-          <line x1="280" y1="50" x2="400" y2="50" stroke="${BLUE}" stroke-width="3"/>
-          <text x="100" y="160" fill="${NAVY}" font-weight="700" font-size="11">constant</text>
-          <text x="200" y="100" fill="${GOLD}" font-weight="700" font-size="11">sped up</text>
-          <text x="320" y="40" fill="${BLUE}" font-weight="700" font-size="11">stopped (flat)</text>
-        </svg>`
-    };
+    // ===== VISUALS START =====
+    // One picture per question, drawn from that question's own numbers.
+    // Parts wrapped in giv(...) show only BEFORE the student answers (the "?" labels).
+    // Parts wrapped in ans(...) show only AFTER the student answers (the worked picture).
+    // The page adds class "revealed" to #game after an answer; CSS does the rest.
+    // (The same library is used by eog_math_review_game.html and Grade_8_Math_Review_Quest.html.)
+    function makeVisuals(C) {
+      const FONT = 'font-family="Arvo, Georgia, serif"';
+      const r1 = v => Math.round(v * 10) / 10;
+      const m = n => (n < 0 ? "−" + Math.abs(n) : String(n));
+      const pt = (x, y) => `(${m(x)}, ${m(y)})`;
+      const T = (x, y, s, o = {}) =>
+        `<text x="${r1(x)}" y="${r1(y)}" fill="${o.fill || C.ink}" font-size="${o.size || 14}" font-weight="${o.weight || 700}" text-anchor="${o.anchor || "start"}" ${FONT}${o.rot ? ` transform="rotate(${o.rot} ${r1(x)} ${r1(y)})"` : ""}>${s}</text>`;
+      const Ln = (x1, y1, x2, y2, o = {}) =>
+        `<line x1="${r1(x1)}" y1="${r1(y1)}" x2="${r1(x2)}" y2="${r1(y2)}" stroke="${o.c || C.ink}" stroke-width="${o.w || 2}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linecap="round"/>`;
+      const Dot = (x, y, o = {}) =>
+        `<circle cx="${r1(x)}" cy="${r1(y)}" r="${o.r || 5}" fill="${o.c || C.ink}"${o.stroke ? ` stroke="${o.stroke}" stroke-width="2"` : ""}/>`;
+      const Poly = (pts, o = {}) =>
+        `<polygon points="${pts.map(([x, y]) => r1(x) + "," + r1(y)).join(" ")}" fill="${o.fill || "none"}" fill-opacity="${o.op ?? 1}" stroke="${o.c || C.ink}" stroke-width="${o.w || 2}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linejoin="round"/>`;
+      const PL = (pts, o = {}) =>
+        `<polyline points="${pts.map(([x, y]) => r1(x) + "," + r1(y)).join(" ")}" fill="none" stroke="${o.c || C.ink}" stroke-width="${o.w || 2.5}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""} stroke-linejoin="round" stroke-linecap="round"/>`;
+      const Rect = (x, y, w, h, o = {}) =>
+        `<rect x="${r1(x)}" y="${r1(y)}" width="${r1(w)}" height="${r1(h)}" rx="${o.rx ?? 6}" fill="${o.fill || "#fff"}"${o.op != null ? ` fill-opacity="${o.op}"` : ""} stroke="${o.c || C.ink}" stroke-width="${o.w ?? 1.5}"${o.dash ? ` stroke-dasharray="${o.dash}"` : ""}/>`;
+      const textWidth = (s, size) => [...String(s).replace(/<[^>]+>/g, "")].length * size * 0.6;
+      const Tag = (x, y, s, o = {}) => {
+        const size = o.size || 14, w = textWidth(s, size) + 16, h = size + 12;
+        const left = o.anchor === "start" ? x : o.anchor === "end" ? x - w : x - w / 2;
+        return Rect(left, y - h / 2, w, h, { fill: o.bg || C.goldSoft, c: o.border || C.gold, rx: 6, w: 1.5 }) +
+          T(left + w / 2, y + size * 0.36, s, { size, anchor: "middle", fill: o.fill || C.ink, weight: 800 });
+      };
+      const Bad = (x, y, s, o = {}) => Tag(x, y, s, Object.assign({ bg: C.roseSoft, border: C.rose, fill: C.rose }, o));
+      const Good = (x, y, s, o = {}) => Tag(x, y, s, Object.assign({ bg: C.greenSoft, border: C.green, fill: C.green }, o));
+      const Arrow = (x1, y1, x2, y2, o = {}) => {
+        const a = Math.atan2(y2 - y1, x2 - x1), L = o.head || 9;
+        const p1 = [x2 - L * Math.cos(a - 0.45), y2 - L * Math.sin(a - 0.45)];
+        const p2 = [x2 - L * Math.cos(a + 0.45), y2 - L * Math.sin(a + 0.45)];
+        return Ln(x1, y1, x2 - 4 * Math.cos(a), y2 - 4 * Math.sin(a), o) + Poly([[x2, y2], p1, p2], { fill: o.c || C.ink, c: o.c || C.ink, w: 1 });
+      };
+      const pol = (cx, cy, rad, deg) => [cx + rad * Math.cos(deg * Math.PI / 180), cy - rad * Math.sin(deg * Math.PI / 180)];
+      const Arc = (cx, cy, rad, a1, a2, o = {}) => {
+        const [x1, y1] = pol(cx, cy, rad, a1), [x2, y2] = pol(cx, cy, rad, a2);
+        return `<path d="M ${r1(x1)} ${r1(y1)} A ${rad} ${rad} 0 ${Math.abs(a2 - a1) > 180 ? 1 : 0} ${a2 > a1 ? 0 : 1} ${r1(x2)} ${r1(y2)}" fill="none" stroke="${o.c || C.ink}" stroke-width="${o.w || 2}"/>`;
+      };
+      const giv = s => `<g class="giv">${s}</g>`;
+      const ans = s => `<g class="ans">${s}</g>`;
+      const SVG = (w, h, label, body) =>
+        `<svg viewBox="0 0 ${w} ${h}" width="${w}" style="max-width:100%;height:auto" role="img" aria-label="${label}">${body}</svg>`;
+      const multi = arr => `<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%">${arr.join("")}</div>`;
+      const vlabel = (P, pts, i, s, o = {}) => {
+        const cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+        const [x, y] = pts[i], X = P.X(x), Y = P.Y(y), dx = X - P.X(cx), dy = Y - P.Y(cy), d = Math.hypot(dx, dy) || 1, k = o.dist || 14;
+        return T(X + dx / d * k, Y + dy / d * k + 5, s, { size: o.size || 13, anchor: "middle", fill: o.fill || C.ink, weight: 800 });
+      };
 
-    function axes(w, h, hasNegative=false) {
-      const ox = 50, oy = h - 30, len = w - 70, lenY = h - 50;
-      return `
-        <line x1="${ox}" y1="${oy}" x2="${w-20}" y2="${oy}" stroke="${NAVY}" stroke-width="1.5"/>
-        <line x1="${ox}" y1="${oy}" x2="${ox}" y2="20" stroke="${NAVY}" stroke-width="1.5"/>
-        <text x="${w-15}" y="${oy+4}" fill="${NAVY}" font-size="11" font-weight="700">x</text>
-        <text x="${ox-8}" y="20" fill="${NAVY}" font-size="11" font-weight="700">y</text>`;
+      // Coordinate plane. Every grid line is its own <line>.
+      function plane(o) {
+        const { x0, y0, w, h, xmin, xmax, ymin, ymax } = o;
+        const xs = o.xstep || 1, ys = o.ystep || 1, xl = o.xlab || xs, yl = o.ylab || ys, fs = o.fs || 11;
+        const X = v => x0 + (v - xmin) / (xmax - xmin) * w;
+        const Y = v => y0 + h - (v - ymin) / (ymax - ymin) * h;
+        let s = "";
+        for (let i = 0; xmin + i * xs <= xmax + 1e-9; i++) { const v = xmin + i * xs; s += Ln(X(v), y0, X(v), y0 + h, { c: C.grid, w: 1 }); }
+        for (let i = 0; ymin + i * ys <= ymax + 1e-9; i++) { const v = ymin + i * ys; s += Ln(x0, Y(v), x0 + w, Y(v), { c: C.grid, w: 1 }); }
+        const hasX0 = xmin <= 0 && xmax >= 0, hasY0 = ymin <= 0 && ymax >= 0;
+        const axY = hasY0 ? Y(0) : Y(ymin), axX = hasX0 ? X(0) : X(xmin);
+        s += Ln(x0, axY, x0 + w, axY, { c: C.ink, w: 1.8 }) + Ln(axX, y0, axX, y0 + h, { c: C.ink, w: 1.8 });
+        if (o.labels !== false) {
+          for (let v = Math.ceil(xmin / xl - 1e-9) * xl; v <= xmax + 1e-9; v += xl) {
+            const vv = Math.round(v * 1000) / 1000;
+            if (vv === 0 && hasX0 && hasY0) continue;
+            s += T(X(vv), axY + fs + 4, m(vv), { size: fs, anchor: "middle", weight: 600, fill: C.muted });
+          }
+          for (let v = Math.ceil(ymin / yl - 1e-9) * yl; v <= ymax + 1e-9; v += yl) {
+            const vv = Math.round(v * 1000) / 1000;
+            if (vv === 0 && hasX0 && hasY0) continue;
+            s += T(axX - 5, Y(vv) + fs * 0.36, m(vv), { size: fs, anchor: "end", weight: 600, fill: C.muted });
+          }
+          if (hasX0 && hasY0) s += T(axX - 5, axY + fs + 4, "0", { size: fs, anchor: "end", weight: 600, fill: C.muted });
+        }
+        if (o.xname) s += T(x0 + w, o.labels === false ? axY + fs + 5 : axY + 2 * fs + 10, o.xname, { size: fs + 1, anchor: "end" });
+        if (o.yname) s += o.labels === false ? T(axX - 5, y0 + fs + 1, o.yname, { size: fs + 1, anchor: "end" }) : T(axX + 6, y0 + fs + 1, o.yname, { size: fs + 1 });
+        return { s, X, Y, xmin, xmax, ymin, ymax };
+      }
+      function fn(P, f, a, b, o = {}) {
+        const segs = []; let cur = []; const n = o.n || 120;
+        for (let i = 0; i <= n; i++) {
+          const x = a + (b - a) * i / n, y = f(x);
+          if (isFinite(y) && y >= P.ymin - 1e-9 && y <= P.ymax + 1e-9) cur.push([P.X(x), P.Y(y)]);
+          else { if (cur.length > 1) segs.push(cur); cur = []; }
+        }
+        if (cur.length > 1) segs.push(cur);
+        return segs.map(sg => PL(sg, o)).join("");
+      }
+      // Table: rows of cells. A cell may be a string, or {g:"?", a:"20"} (given / answer text).
+      function table(x, y, rows, o = {}) {
+        const rh = o.rh || 30, fs = o.fs || 14, cws = rows[0].map((_, j) => (Array.isArray(o.cw) ? o.cw[j] : o.cw || 60));
+        let s = "", a = "", g = "";
+        const cell = (i, j) => ({ x: x + cws.slice(0, j).reduce((p, q) => p + q, 0), y: y + i * rh, w: cws[j], h: rh });
+        rows.forEach((row, i) => row.forEach((c, j) => {
+          const k = cell(i, j), head = (o.headRow !== false && i === 0) || (o.headCol && j === 0);
+          s += Rect(k.x, k.y, k.w, k.h, { fill: head ? C.soft : "#fff", c: C.ink, w: 1.2, rx: 0 });
+          const tx = k.x + k.w / 2, ty = k.y + k.h / 2 + fs * 0.36;
+          if (c && typeof c === "object") {
+            g += Rect(k.x + 3, k.y + 3, k.w - 6, k.h - 6, { fill: "#fff", c: C.hl, w: 2, dash: "4 3", rx: 3 }) + T(tx, ty, c.g, { size: fs, anchor: "middle", fill: C.muted, weight: 800 });
+            a += Rect(k.x + 2, k.y + 2, k.w - 4, k.h - 4, { fill: C.goldSoft, c: C.hl, w: 2, rx: 3 }) + T(tx, ty, c.a, { size: fs, anchor: "middle", weight: 800 });
+          } else {
+            s += T(tx, ty, c, { size: fs, anchor: "middle", weight: head ? 800 : 600 });
+          }
+        }));
+        return { s: s + giv(g) + ans(a), cell, width: cws.reduce((p, q) => p + q, 0), height: rows.length * rh };
+      }
+      // Horizontal x/y table with step arrows (used by slope / intercept items)
+      function hTable(x, y, heads, xs, ys, o = {}) {
+        const cw = o.cw || 62, hw = o.hw || 70, fs = o.fs || 15;
+        return table(x, y, [[heads[0], ...xs], [heads[1], ...ys]], { cw: [hw, ...xs.map(() => cw)], rh: o.rh || 34, fs, headRow: false, headCol: true });
+      }
+      const stepArrow = (x1, x2, y, label, up, color) => {
+        const mid = (x1 + x2) / 2, top = up ? y - 18 : y + 18;
+        return `<path d="M ${r1(x1)} ${r1(y)} Q ${r1(mid)} ${r1(top - (up ? 10 : -10))} ${r1(x2)} ${r1(y)}" fill="none" stroke="${color}" stroke-width="2"/>` +
+          Poly([[x2, y], [x2 - 7, y + (up ? -7 : 7)], [x2 + 2, y + (up ? -9 : 9)]], { fill: color, c: color, w: 1 }) +
+          T(mid, up ? y - 20 : y + 30, label, { size: 13, anchor: "middle", fill: color, weight: 800 });
+      };
+
+      const main = {}, choice = {};
+
+      // ---------- 1 & 33: scatterplots as answer choices ----------
+      function scatterMini(pts, o) {
+        const P = plane({ x0: 26, y0: 8, w: 192, h: 122, xmin: 0, xmax: 10, ymin: 0, ymax: 10, labels: false, xname: "x", yname: "y" });
+        let s = P.s + pts.map(([x, y]) => Dot(P.X(x), P.Y(y), { r: 4.5, c: C.main })).join("");
+        let a = "";
+        if (o.trend) { const [x1, y1, x2, y2] = o.trend; a += Ln(P.X(x1), P.Y(y1), P.X(x2), P.Y(y2), { c: C.hl, w: 3, dash: "8 5" }); }
+        a += (o.good ? Good : Bad)(122, 162, o.tag, { size: 12 });
+        return SVG(232, 178, o.label, s + ans(a));
+      }
+      const sc1 = {
+        A: [[[1, 2], [2, 2.6], [3, 3.4], [4, 3.9], [5, 5], [6, 5.4], [7, 6.8], [8, 7.1], [9, 8.2], [9.6, 8.9]], [0.5, 1.4, 9.8, 9.2], "rises → positive"],
+        B: [[[1, 6], [2, 2], [3, 8.4], [4, 4.5], [5, 1.5], [6, 7.5], [7, 3], [8, 9], [9, 5.2], [2.6, 5]], null, "no pattern → none"],
+        C: [[[1, 9], [2, 8.2], [3, 7.6], [4, 6.4], [5, 5.8], [6, 4.6], [7, 4], [8, 2.8], [9, 2.2], [9.6, 1.2]], [0.5, 9.6, 9.8, 1.3], "falls → negative ✓"],
+        D: [[[1, 2], [2, 4.6], [3, 6.6], [4, 7.8], [5, 8.3], [6, 7.9], [7, 6.4], [8, 4.6], [9, 2.2]], null, "up, then down → not negative"]
+      };
+      choice[1] = L => scatterMini(sc1[L][0], { trend: sc1[L][1], tag: sc1[L][2], good: L === "C", label: "Scatterplot " + L });
+      const sc33 = {
+        A: [[[0.6, 8], [1.5, 8.6], [2, 7], [3, 6.8], [4, 6], [5, 5.2], [6, 4], [7, 3.6], [8, 2.5], [9, 2]], [0.3, 8.7, 9.6, 1.6], "falls → negative"],
+        B: [[[1, 1.5], [1.6, 2.8], [2.5, 2.5], [3.5, 4], [4, 4.7], [5, 5], [6, 6.4], [7, 6.6], [8, 8], [9, 8.6]], [0.6, 1.4, 9.6, 9.2], "rises → positive ✓"],
+        C: [[[1, 4], [2, 8], [3, 2], [4, 6], [5, 9], [6, 3], [7, 7], [8, 1.5], [9, 5], [5.5, 5.6]], null, "no pattern → none"],
+        D: [[[1, 5], [2, 5.4], [3, 4.7], [4, 5.2], [5, 4.9], [6, 5.3], [7, 4.6], [8, 5.1], [9, 4.8]], null, "flat → none"]
+      };
+      choice[33] = L => scatterMini(sc33[L][0], { trend: sc33[L][1], tag: sc33[L][2], good: L === "B", label: "Scatterplot " + L });
+
+      // ---------- 2 & 34: which equation is linear? ----------
+      function eqMinis(list, rng, label) {
+        return multi(list.map(([L, eq, f, ok]) => {
+          const P = plane({ x0: 30, y0: 30, w: 170, h: 120, xmin: rng[0], xmax: rng[1], ymin: rng[2], ymax: rng[3], xstep: 1, ystep: rng[4], labels: false, xname: "x", yname: "y" });
+          const g = T(165, 70, "?", { size: 26, anchor: "middle", fill: C.muted });
+          const a = fn(P, f, rng[0], rng[1], { c: ok ? C.hl : C.main, w: 3, n: 240 }) + (ok ? Good : Bad)(115, 172, ok ? "straight line ✓" : "curved → not linear", { size: 12 });
+          return SVG(220, 188, label + " " + L, T(115, 19, `${L}:  ${eq}`, { size: 14, anchor: "middle" }) + P.s + giv(g) + ans(a));
+        }));
+      }
+      main[2] = () => eqMinis([
+        ["A", "y = x²", x => x * x, false],
+        ["B", "xy = 2", x => 2 / x, false],
+        ["C", "y = x² + 8", x => x * x + 8, false],
+        ["D", "y = 2x + 4", x => 2 * x + 4, true]
+      ], [-3, 3, -4, 16, 4], "Graph of choice");
+      main[34] = () => eqMinis([
+        ["A", "y = 3x + 5", x => 3 * x + 5, true],
+        ["B", "y = 5x² + 3", x => 5 * x * x + 3, false],
+        ["C", "y = 5ˣ", x => Math.pow(5, x), false],
+        ["D", "y = 3/x", x => 3 / x, false]
+      ], [-2, 2, -4, 20, 4], "Graph of choice");
+
+      // ---------- 3: 4 × 10⁶ is 5 times last year ----------
+      main[3] = () => {
+        const u = 66, x0 = 120;
+        let s = T(20, 64, "Last year", { size: 14 }) + T(20, 124, "This year", { size: 14 });
+        s += Rect(x0, 44, u, 30, { fill: C.soft, c: C.main, rx: 4 });
+        s += Rect(x0, 104, 5 * u, 30, { fill: C.goldSoft, c: C.main, rx: 4 });
+        for (let i = 1; i < 5; i++) s += Ln(x0 + i * u, 104, x0 + i * u, 134, { c: C.main, w: 1.5, dash: "4 3" });
+        s += Tag(x0 + 2.5 * u, 119, "4 × 10⁶ dollars", { size: 14, bg: "#fff", border: C.main });
+        s += T(x0 + 2.5 * u, 158, "5 equal parts — each part is one “last year”", { size: 12, anchor: "middle", fill: C.muted, weight: 600 });
+        const g = T(x0 + u + 12, 65, "? dollars", { size: 15, fill: C.muted });
+        const a = T(x0 + u + 12, 65, "8 × 10⁵ dollars", { size: 15 }) + Tag(240, 192, "(4 × 10⁶) ÷ 5 = 0.8 × 10⁶ = 8 × 10⁵", { size: 14 });
+        return SVG(480, 212, "Bar model: this year is 5 times last year", s + giv(g) + ans(a));
+      };
+
+      // ---------- 4: vertical line test choices ----------
+      const g4 = {
+        A: { draw: P => fn(P, x => 0.5 * x + 1, -5, 5, { c: C.main, w: 3 }), hits: [1.5] },
+        B: { draw: P => { const pts = []; for (let i = 0; i <= 80; i++) { const t = -3.6 + 7.2 * i / 80; pts.push([P.X(t * t / 2 - 3), P.Y(t)]); } return PL(pts, { c: C.main, w: 3 }); }, hits: [Math.sqrt(8), -Math.sqrt(8)] },
+        C: { draw: P => fn(P, x => x * x / 2 - 3, -3.4, 3.4, { c: C.main, w: 3 }), hits: [-2.5] },
+        D: { draw: P => fn(P, () => 3, -5, 5, { c: C.main, w: 3 }), hits: [3] }
+      };
+      choice[4] = L => {
+        const P = plane({ x0: 26, y0: 8, w: 192, h: 132, xmin: -5, xmax: 5, ymin: -5, ymax: 5, labels: false, xname: "x", yname: "y" });
+        const it = g4[L];
+        const a = Ln(P.X(1), P.Y(5), P.X(1), P.Y(-5), { c: C.hl, w: 2.5, dash: "6 4" }) +
+          it.hits.map(y => Dot(P.X(1), P.Y(y), { r: 5.5, c: it.hits.length > 1 ? C.rose : C.green })).join("") +
+          (it.hits.length > 1 ? Bad(122, 170, "2 crossings → NOT a function", { size: 12 }) : Good(122, 170, "1 crossing → function", { size: 12 }));
+        return SVG(232, 186, "Graph " + L, P.s + it.draw(P) + ans(a));
+      };
+
+      // ---------- 5: which is irrational ----------
+      main[5] = () => {
+        const X = v => 40 + v * 66;
+        let s = Ln(25, 100, 455, 100, { w: 2.5 });
+        for (let n = 0; n <= 6; n++) s += Ln(X(n), 92, X(n), 108, { w: 2 }) + T(X(n), 128, String(n), { size: 15, anchor: "middle" }) + T(X(n), 148, "√" + n * n, { size: 12, anchor: "middle", fill: C.muted, weight: 600 });
+        s += T(240, 22, "Perfect squares: √1, √4, √9, √16, √25, √36 are whole numbers", { size: 13, anchor: "middle", weight: 700 });
+        const v20 = Math.sqrt(20);
+        const a = Dot(X(3), 100, { r: 7, c: C.green }) + Good(X(3) + 8, 62, "√9 = 3 → rational", { size: 12, anchor: "end" }) +
+          Dot(X(v20), 100, { r: 7, c: C.rose, stroke: C.ink }) + Bad(470, 62, "√20 ≈ 4.472… → irrational", { size: 12, anchor: "end" }) +
+          Good(240, 176, "17/53 is a fraction of two integers → rational", { size: 13 });
+        return SVG(480, 194, "Number line with perfect squares", s + ans(a));
+      };
+
+      // ---------- 6: two squares ----------
+      main[6] = () => {
+        const k = 10;
+        let s = Rect(40, 180 - 6 * k, 6 * k, 6 * k, { fill: C.soft, c: C.main, rx: 0, w: 2 }) +
+          T(70, 147, "Area", { size: 11, anchor: "middle" }) + T(70, 162, "36 ft²", { size: 12, anchor: "middle" });
+        s += Rect(150, 180 - 12 * k, 12 * k, 12 * k, { fill: C.goldSoft, c: C.main, rx: 0, w: 2 }) +
+          T(210, 117, "Area", { size: 13, anchor: "middle" }) + T(210, 137, "144 ft²", { size: 15, anchor: "middle" });
+        const g = T(70, 200, "side = ?", { size: 13, anchor: "middle", fill: C.muted }) + T(210, 200, "side = ?", { size: 13, anchor: "middle", fill: C.muted }) +
+          T(300, 110, "How much longer", { size: 14, fill: C.muted }) + T(300, 130, "is the big side?", { size: 14, fill: C.muted });
+        const a = T(70, 200, "side = 6 ft", { size: 13, anchor: "middle", fill: C.blue }) + T(210, 200, "side = 12 ft", { size: 13, anchor: "middle", fill: C.blue }) +
+          T(300, 92, "√36 = 6", { size: 14 }) + T(300, 114, "√144 = 12", { size: 14 }) + Tag(300, 146, "12 − 6 = 6 ft", { size: 16, anchor: "start" });
+        return SVG(480, 212, "Two squares with areas 36 and 144 square feet", s + giv(g) + ans(a));
+      };
+
+      // ---------- 7: three-move transformation ----------
+      main[7] = () => {
+        const P = plane({ x0: 40, y0: 12, w: 306, h: 342, xmin: -9, xmax: 8, ymin: -9, ymax: 10, xlab: 2, ylab: 2 });
+        const E = [[-4, 1], [-4, 4], [-2, 1]], M = [[5, 5], [-1, 5], [5, 9]];
+        const R = [[-1, -4], [-4, -4], [-1, -2]], D = [[-2, -8], [-8, -8], [-2, -4]];
+        const shape = (pts, o) => Poly(pts.map(([x, y]) => [P.X(x), P.Y(y)]), o);
+        let s = P.s + shape(E, { fill: C.main, op: 0.25, c: C.main, w: 2.5 }) + shape(M, { fill: C.hl, op: 0.35, c: C.ink, w: 2.5 });
+        ["E", "G", "H"].forEach((n, i) => s += vlabel(P, E, i, n));
+        ["M", "P", "T"].forEach((n, i) => s += vlabel(P, M, i, n));
+        const a = shape(R, { c: C.blue, w: 2.5, dash: "6 4" }) + shape(D, { c: C.rose, w: 2.5, dash: "6 4" }) +
+          ["E₁", "G₁", "H₁"].map((n, i) => vlabel(P, R, i, n, { fill: C.blue, size: 12 })).join("") +
+          ["E₂", "G₂", "H₂"].map((n, i) => vlabel(P, D, i, n, { fill: C.rose, size: 12 })).join("") +
+          T(20, 380, "1st: turn 90° counterclockwise, (x, y) → (−y, x)", { size: 13, fill: C.blue }) +
+          T(20, 402, "2nd: × 2", { size: 13, fill: C.rose }) + T(110, 402, "3rd: 7 right, 13 up", { size: 13 }) +
+          T(20, 426, "E(−4, 1) → (−1, −4) → (−2, −8) → M(5, 5) ✓", { size: 13 });
+        const g = T(20, 380, "1st move: ?", { size: 14, fill: C.muted }) + T(20, 402, "2nd: × 2 about the origin", { size: 13 }) + T(20, 424, "3rd: 7 right, 13 up", { size: 13 });
+        return SVG(360, 440, "Triangle EGH and triangle MPT on a coordinate plane", s + giv(g) + ans(a));
+      };
+
+      // ---------- 8, 10, 38: linear models in context ----------
+      main[8] = () => {
+        const P = plane({ x0: 50, y0: 24, w: 360, h: 220, xmin: 0, xmax: 8, ymin: 0, ymax: 100, xstep: 1, ystep: 10, ylab: 20, xname: "practices (x)", yname: "score (y)" });
+        let s = P.s + Ln(P.X(0), P.Y(60), P.X(8), P.Y(100), { c: C.main, w: 3 }) + T(P.X(5), P.Y(78), "y = 5x + 60", { size: 14 });
+        const a = Dot(P.X(0), P.Y(60), { r: 7, c: C.hl, stroke: C.ink }) + Tag(P.X(0) + 10, P.Y(60) + 30, "x = 0 practices → y = 60 points", { size: 13, anchor: "start" }) +
+          Ln(P.X(2), P.Y(70), P.X(3), P.Y(70), { c: C.blue, dash: "4 3" }) + Ln(P.X(3), P.Y(70), P.X(3), P.Y(75), { c: C.blue, dash: "4 3" }) + T(P.X(3) + 6, P.Y(71), "+5 (slope)", { size: 12, fill: C.blue });
+        return SVG(480, 280, "Graph of y = 5x + 60", s + ans(a));
+      };
+      main[10] = () => {
+        const P = plane({ x0: 60, y0: 24, w: 360, h: 220, xmin: 0, xmax: 50, ymin: 0, ymax: 1600, xstep: 5, xlab: 10, ystep: 200, ylab: 400, xname: "minutes (x)", yname: "cars (y)" });
+        let s = P.s + Ln(P.X(0), P.Y(1500), P.X(50), P.Y(0), { c: C.main, w: 3 }) + T(P.X(28), P.Y(900), "y = 1500 − 30x", { size: 14 });
+        const a = Ln(P.X(10), P.Y(1200), P.X(20), P.Y(1200), { c: C.blue, w: 2.5 }) + Ln(P.X(20), P.Y(1200), P.X(20), P.Y(900), { c: C.rose, w: 2.5 }) +
+          T(P.X(15), P.Y(1200) - 8, "10 min", { size: 12, anchor: "middle", fill: C.blue }) + T(P.X(20) + 6, P.Y(1050), "−300 cars", { size: 12, fill: C.rose }) +
+          Tag(262, P.Y(1480), "300 ÷ 10 = 30 cars leave each minute", { size: 13 });
+        return SVG(480, 280, "Graph of y = 1500 − 30x", s + ans(a));
+      };
+      main[38] = () => {
+        const P = plane({ x0: 50, y0: 24, w: 360, h: 220, xmin: 0, xmax: 10, ymin: 0, ymax: 100, xstep: 1, xlab: 2, ystep: 10, ylab: 20, xname: "absences (x)", yname: "grade (y)" });
+        let s = P.s + Ln(P.X(0), P.Y(92), P.X(10), P.Y(56), { c: C.main, w: 3 }) + T(P.X(6.5), P.Y(48), "y = −3.6x + 92", { size: 14 });
+        const a = Ln(P.X(2), P.Y(84.8), P.X(7), P.Y(84.8), { c: C.blue, w: 2.5 }) + Ln(P.X(7), P.Y(84.8), P.X(7), P.Y(66.8), { c: C.rose, w: 2.5 }) +
+          T(P.X(4.5), P.Y(84.8) - 8, "5 absences", { size: 12, anchor: "middle", fill: C.blue }) + T(P.X(7) + 6, P.Y(74), "−18 points", { size: 12, fill: C.rose }) +
+          Tag(P.X(0.4), P.Y(28), "18 ÷ 5 = 3.6 points lower per absence", { size: 13, anchor: "start" });
+        return SVG(480, 280, "Graph of y = −3.6x + 92", s + ans(a));
+      };
+
+      // ---------- 9: mapping diagrams ----------
+      main[9] = () => {
+        const sets = {
+          A: [[-2, 3], [0, 3], [-2, 0], [3, 3]], B: [[3, -2], [3, 0], [3, -4], [3, 2]],
+          C: [[3, -2], [0, 0], [4, -3], [3, 2]], D: [[2, 4], [1, 4], [-2, 4], [-1, 4]]
+        };
+        return multi(Object.entries(sets).map(([L, pts]) => {
+          const xs = [...new Set(pts.map(p => p[0]))].sort((a, b) => a - b), ys = [...new Set(pts.map(p => p[1]))].sort((a, b) => a - b);
+          const yAt = (arr, v) => 62 + (arr.indexOf(v) + 0.5) * (100 / arr.length);
+          const repeat = xs.filter(x => pts.filter(p => p[0] === x).length > 1);
+          let s = T(110, 20, "Set " + L, { size: 14, anchor: "middle" }) + T(50, 46, "x", { size: 13, anchor: "middle" }) + T(170, 46, "y", { size: 13, anchor: "middle" }) +
+            `<ellipse cx="50" cy="112" rx="28" ry="56" fill="${C.soft}" stroke="${C.ink}" stroke-width="1.5"/>` +
+            `<ellipse cx="170" cy="112" rx="28" ry="56" fill="${C.soft}" stroke="${C.ink}" stroke-width="1.5"/>`;
+          xs.forEach(x => s += T(50, yAt(xs, x) + 5, m(x), { size: 14, anchor: "middle" }));
+          ys.forEach(y => s += T(170, yAt(ys, y) + 5, m(y), { size: 14, anchor: "middle" }));
+          let a = "";
+          pts.forEach(([x, y]) => {
+            const bad = repeat.includes(x);
+            s += Arrow(64, yAt(xs, x), 155, yAt(ys, y), { c: C.main, w: 1.6, head: 8 });
+            if (bad) a += Arrow(64, yAt(xs, x), 155, yAt(ys, y), { c: C.rose, w: 2.6, head: 8 });
+          });
+          a += repeat.length ? Bad(110, 190, `x = ${m(repeat[0])} has 2+ y's ✗`, { size: 12 }) : Good(110, 190, "each x has one y ✓", { size: 12 });
+          return SVG(220, 206, "Mapping diagram for set " + L, s + ans(a));
+        }));
+      };
+
+      // ---------- 11, 14, 17: expression / equation cards ----------
+      function card(title, given, steps, result, label) {
+        let s = Rect(20, 12, 440, 54, { fill: C.soft, c: C.main, w: 2, rx: 8 }) + T(240, 47, title, { size: 22, anchor: "middle" });
+        const g = T(240, 106, given, { size: 16, anchor: "middle", fill: C.muted });
+        const a = steps.map((st, i) => T(40, 100 + i * 28, st, { size: 15, weight: 600 })).join("") + Tag(240, 106 + steps.length * 28, result, { size: 16 });
+        return SVG(480, 126 + steps.length * 28, label, s + giv(g) + ans(a));
+      }
+      main[11] = () => card("2⁻³ × 5⁻³ × 10²  = ?", "Write the answer as a decimal.", [
+        "Same exponent: 2⁻³ × 5⁻³ = (2 × 5)⁻³ = 10⁻³",
+        "Add exponents: 10⁻³ × 10² = 10⁻¹",
+        "10⁻¹ = 1/10"
+      ], "= 0.1", "Expression 2 to the negative 3 times 5 to the negative 3 times 10 squared");
+      main[14] = () => card("9³ ÷ 3²  = ?", "Hint: 9 = 3 × 3", [
+        "9 = 3², so 9³ = (3²)³ = 3⁶",
+        "Same base, subtract exponents: 3⁶ ÷ 3² = 3⁴",
+        "3⁴ = 3 × 3 × 3 × 3"
+      ], "= 81", "Expression 9 cubed divided by 3 squared");
+      main[17] = () => card("½x − 3 = x + 3", "x = ?", [
+        "Multiply every term by 2:  x − 6 = 2x + 6",
+        "Subtract x:  −6 = x + 6",
+        "Subtract 6:  −12 = x"
+      ], "x = −12", "Equation one half x minus 3 equals x plus 3");
+
+      // ---------- 12, 15, 18, 31: tables ----------
+      main[12] = () => {
+        const t = hTable(100, 60, ["x", "y"], ["2", "4", "6", "8"], ["5", "12", "19", "26"]);
+        const c = (i, j) => t.cell(i, j);
+        let a = "";
+        for (let j = 1; j < 4; j++) {
+          a += stepArrow(c(0, j).x + 31, c(0, j + 1).x + 31, 58, "+2", true, C.blue);
+          a += stepArrow(c(1, j).x + 31, c(1, j + 1).x + 31, 130, "+7", false, C.rose);
+        }
+        a += Tag(240, 200, "slope = 7 ÷ 2 = 3.5", { size: 16 });
+        return SVG(480, 218, "Table of x and y values", t.s + giv(T(240, 170, "slope = change in y ÷ change in x = ?", { size: 14, anchor: "middle", fill: C.muted })) + ans(a));
+      };
+      main[15] = () => {
+        const t = hTable(84, 60, ["x", "y"], [{ g: "0", a: "0" }, "2", "4", "6", "8"], [{ g: "?", a: "20" }, "26", "32", "38", "44"]);
+        const c = (i, j) => t.cell(i, j);
+        let a = "";
+        for (let j = 2; j < 5; j++) {
+          a += stepArrow(c(0, j).x + 31, c(0, j + 1).x + 31, 58, "+2", true, C.blue);
+          a += stepArrow(c(1, j).x + 31, c(1, j + 1).x + 31, 130, "+6", false, C.rose);
+        }
+        a += stepArrow(c(0, 2).x + 31, c(0, 1).x + 31, 58, "−2", true, C.hl) + stepArrow(c(1, 2).x + 31, c(1, 1).x + 31, 130, "−6", false, C.hl);
+        a += Tag(240, 200, "slope 3 · step back to x = 0: 26 − 6 = 20", { size: 14 });
+        return SVG(480, 218, "Table of points on a line", t.s + giv(T(240, 170, "The y-intercept is the y-value when x = 0.", { size: 14, anchor: "middle", fill: C.muted })) + ans(a));
+      };
+      main[18] = () => {
+        const t = hTable(60, 60, ["Tickets", "Total"], [{ g: "0", a: "0" }, "3", "5", "6"], [{ g: "$ ?", a: "$10" }, "$91", "$145", "$172"], { cw: 76, hw: 80 });
+        const c = (i, j) => t.cell(i, j);
+        const a = stepArrow(c(0, 2).x + 38, c(0, 3).x + 38, 58, "+2", true, C.blue) + stepArrow(c(1, 2).x + 38, c(1, 3).x + 38, 130, "+$54", false, C.rose) +
+          stepArrow(c(0, 3).x + 38, c(0, 4).x + 38, 58, "+1", true, C.blue) + stepArrow(c(1, 3).x + 38, c(1, 4).x + 38, 130, "+$27", false, C.rose) +
+          Tag(240, 196, "$54 ÷ 2 = $27 per ticket", { size: 14 }) + Tag(240, 228, "fee = 91 − 3 × 27 = 91 − 81 = $10", { size: 14 });
+        return SVG(480, 246, "Table of ticket totals", t.s + giv(T(240, 172, "0 tickets would cost only the fee.", { size: 14, anchor: "middle", fill: C.muted })) + ans(a));
+      };
+      main[31] = () => {
+        const t = hTable(100, 60, ["x", "y"], ["1", "2", "3", "4"], ["1", "4", "7", "10"]);
+        const c = (i, j) => t.cell(i, j);
+        let a = "";
+        for (let j = 1; j < 4; j++) {
+          a += stepArrow(c(0, j).x + 31, c(0, j + 1).x + 31, 58, "+1", true, C.blue);
+          a += stepArrow(c(1, j).x + 31, c(1, j + 1).x + 31, 130, "+3", false, C.rose);
+        }
+        a += Tag(240, 196, "table slope = 3 ÷ 1 = 3", { size: 14 }) + Tag(240, 228, "2 × 3 = 6  →  y = 6x − 4", { size: 15 });
+        return SVG(480, 246, "Table of a linear function", t.s + giv(T(240, 172, "table slope = ?   Then double it.", { size: 14, anchor: "middle", fill: C.muted })) + ans(a));
+      };
+
+      // ---------- 13: estimate √172 ----------
+      main[13] = () => {
+        const X = v => 40 + (v - 12) * 133.3;
+        let s = Ln(25, 100, 455, 100, { w: 2.5 });
+        for (let n = 12; n <= 15; n++) s += Ln(X(n), 90, X(n), 110, { w: 2 }) + T(X(n), 132, String(n), { size: 16, anchor: "middle" }) + T(X(n), 152, `${n}² = ${n * n}`, { size: 12, anchor: "middle", fill: C.muted, weight: 600 });
+        for (let v = 12.1; v < 15; v += 0.1) if (Math.abs(v - Math.round(v)) > 0.05) s += Ln(X(v), 95, X(v), 105, { w: 1, c: C.muted });
+        const g = T(240, 40, "Where does √172 go?", { size: 15, anchor: "middle", fill: C.muted });
+        const v = Math.sqrt(172);
+        const a = Dot(X(v), 100, { r: 7, c: C.hl, stroke: C.ink }) + Tag(X(v) + 4, 58, "√172 ≈ 13.1", { size: 14 }) +
+          T(240, 182, "172 − 169 = 3   but   196 − 172 = 24  →  closest to 13", { size: 13, anchor: "middle" });
+        return SVG(480, 196, "Number line from 12 to 15", s + giv(g) + ans(a));
+      };
+
+      // ---------- 16: scientific notation ----------
+      main[16] = () => {
+        let s = Rect(20, 14, 200, 50, { fill: C.soft, c: C.main, rx: 8 }) + T(120, 36, "Expression One", { size: 12, anchor: "middle", fill: C.muted }) + T(120, 56, "4 × 10³", { size: 18, anchor: "middle" }) +
+          Rect(260, 14, 200, 50, { fill: C.goldSoft, c: C.main, rx: 8 }) + T(360, 36, "Expression Two", { size: 12, anchor: "middle", fill: C.muted }) +
+          Arrow(222, 39, 258, 39, { c: C.main }) + T(240, 84, "Two is 25 times One", { size: 13, anchor: "middle" });
+        const g = T(360, 56, "? × 10⁵", { size: 18, anchor: "middle" });
+        const a = T(360, 56, "1 × 10⁵", { size: 18, anchor: "middle" }) +
+          T(40, 116, "25 × (4 × 10³) = 100 × 10³", { size: 15, weight: 600 }) + T(40, 142, "100 = 10², so 10² × 10³ = 10⁵", { size: 15, weight: 600 }) + Tag(240, 174, "x × 10⁵ = 1 × 10⁵  →  x = 1", { size: 15 });
+        return SVG(480, 192, "Expression One and Expression Two", s + giv(g) + ans(a));
+      };
+
+      // ---------- 19: parallel lines and a transversal ----------
+      main[19] = () => {
+        const yR = 80, yS = 190, xR = 300, ang = 113, dx = Math.cos(ang * Math.PI / 180), dy = Math.sin(ang * Math.PI / 180);
+        const xS = xR + dx * (yS - yR) / dy * -1;          // where Q meets S
+        const top = [xR + dx * (60 / dy), yR - 60], bot = [xS - dx * (60 / dy), yS + 60];
+        let s = Ln(30, yR, 450, yR, { w: 2.5 }) + Ln(30, yS, 450, yS, { w: 2.5 }) + Ln(top[0], top[1], bot[0], bot[1], { c: C.blue, w: 2.5 });
+        s += T(456, yR + 5, "R", { size: 15 }) + T(456, yS + 5, "S", { size: 15 }) + T(top[0] - 16, top[1] + 4, "Q", { size: 15, fill: C.blue });
+        s += Arrow(80, yR, 70, yR, { head: 9 }) + Arrow(80, yS, 70, yS, { head: 9 });
+        s += Arc(xR, yR, 26, 0, ang, { w: 2 }) + T(...pol(xR, yR, 48, ang / 2), "113°", { size: 15, anchor: "middle" });
+        s += Arc(xS, yS, 30, ang, 180, { c: C.rose, w: 2.5 }) + T(...pol(xS, yS, 50, (ang + 180) / 2 + 4), "x°", { size: 16, anchor: "middle", fill: C.rose });
+        s += T(30, 248, "R ∥ S", { size: 13, fill: C.muted });
+        const a = Arc(xR, yR, 34, ang, 180, { c: C.hl, w: 3 }) + T(...pol(xR, yR, 56, (ang + 180) / 2 + 4), "67°", { size: 15, anchor: "middle", fill: C.goldText }) +
+          Tag(40, 120, "180° − 113° = 67°", { size: 13, anchor: "start" }) + Tag(40, 152, "corresponding angles → x = 67", { size: 13, anchor: "start" });
+        return SVG(480, 256, "Parallel lines R and S cut by transversal Q", s + ans(a));
+      };
+
+      // ---------- 20, 24: distance between points ----------
+      function distance(p1, p2, rng, scale, label) {
+        const [xmin, xmax, ymin, ymax] = rng;
+        const P = plane({ x0: 40, y0: 14, w: (xmax - xmin) * scale, h: (ymax - ymin) * scale, xmin, xmax, ymin, ymax });
+        const c = [p2[0], p1[1]], dxv = Math.abs(p2[0] - p1[0]), dyv = Math.abs(p2[1] - p1[1]);
+        let s = P.s + Dot(P.X(p1[0]), P.Y(p1[1]), { r: 6, c: C.main }) + Dot(P.X(p2[0]), P.Y(p2[1]), { r: 6, c: C.main });
+        s += T(P.X(p1[0]) - 4, P.Y(p1[1]) - 10, pt(...p1), { size: 13, anchor: "end" }) + T(P.X(p2[0]) + 8, P.Y(p2[1]) + 18, pt(...p2), { size: 13 });
+        const g = Ln(P.X(p1[0]), P.Y(p1[1]), P.X(p2[0]), P.Y(p2[1]), { c: C.muted, w: 2, dash: "6 5" });
+        const a = Ln(P.X(p1[0]), P.Y(p1[1]), P.X(c[0]), P.Y(c[1]), { c: C.blue, w: 3 }) + Ln(P.X(c[0]), P.Y(c[1]), P.X(p2[0]), P.Y(p2[1]), { c: C.rose, w: 3 }) +
+          Ln(P.X(p1[0]), P.Y(p1[1]), P.X(p2[0]), P.Y(p2[1]), { c: C.hl, w: 3.5 }) +
+          T((P.X(p1[0]) + P.X(c[0])) / 2, P.Y(c[1]) - 8, String(dxv), { size: 14, anchor: "middle", fill: C.blue }) +
+          T(P.X(c[0]) + 8, (P.Y(c[1]) + P.Y(p2[1])) / 2, String(dyv), { size: 14, fill: C.rose });
+        return { P, s, g, a };
+      }
+      main[20] = () => {
+        const d = distance([-4, 6], [8, 1], [-5, 9, -1, 7], 30, "");
+        const mid = [(d.P.X(-4) + d.P.X(8)) / 2, (d.P.Y(6) + d.P.Y(1)) / 2];
+        const g = d.g + Tag(mid[0], mid[1] + 22, "d = ?", { size: 14 });
+        const a = d.a + Tag(240, 300, "d = √(12² + 5²) = √169 = 13", { size: 15 });
+        return SVG(480, 318, "Points (−4, 6) and (8, 1) on a coordinate plane", d.s + giv(g) + ans(a));
+      };
+      main[24] = () => {
+        const d = distance([-2, 7], [4, -3], [-3, 5, -4, 8], 30, "");
+        const mid = [(d.P.X(-2) + d.P.X(4)) / 2, (d.P.Y(7) + d.P.Y(-3)) / 2];
+        const g = d.g + Tag(mid[0] - 12, mid[1], "d = ?", { size: 14, anchor: "end" });
+        const a = d.a + T(300, 140, "d² = 6² + 10²", { size: 15 }) + T(300, 166, "d² = 36 + 100", { size: 15 }) + T(300, 192, "d² = 136", { size: 15 }) + Tag(300, 226, "d = √136 ≈ 11.7", { size: 15, anchor: "start" });
+        return SVG(480, 396, "Points (−2, 7) and (4, −3) on a coordinate plane", d.s + giv(g) + ans(a));
+      };
+
+      // ---------- 21: steepness compared with slope 6 ----------
+      main[21] = () => {
+        const X = v => 140 + v * 40, rows = [["y = 6x + 5", 6, ""], ["A", 2, "(7 − 3) ÷ (1 − 3) = −2"], ["B", 1, "(6 − 4) ÷ (2 − 4) = −1"], ["C", 7, "(11 − 4) ÷ (5 − 6) = −7"], ["D", 0, "(9 − 9) ÷ (5 − 1) = 0"]];
+        let s = T(240, 20, "Steepness = size of the slope (ignore the sign)", { size: 13, anchor: "middle" }), g = "", a = "";
+        rows.forEach(([lab, v, calc], i) => {
+          const y = 32 + i * 46;
+          s += T(130, y + 19, lab, { size: 14, anchor: "end" });
+          if (i === 0) s += Rect(X(0), y + 2, v * 40, 24, { fill: C.soft, c: C.main, rx: 3 }) + T(X(v) + 6, y + 19, "6", { size: 13 });
+          else {
+            g += T(X(0) + 8, y + 20, "?", { size: 16, fill: C.muted });
+            a += (v > 0 ? Rect(X(0), y + 2, v * 40, 24, { fill: v > 6 ? C.hl : C.soft, c: C.main, rx: 3 }) : "") +
+              T(X(Math.max(v, 0)) + 6, y + 19, `${v}${v > 6 ? " > 6 ✓" : ""}`, { size: 13, fill: v > 6 ? C.green : C.ink }) +
+              T(X(0) + 4, y + 40, "slope " + calc, { size: 11, weight: 600, fill: C.muted });
+          }
+        });
+        s += Ln(X(6), 30, X(6), 262, { c: C.rose, w: 2, dash: "5 4" }) + Ln(X(0), 30, X(0), 262, { w: 1.5 });
+        for (let v = 0; v <= 7; v++) s += T(X(v), 278, String(v), { size: 11, anchor: "middle", fill: C.muted, weight: 600 });
+        return SVG(480, 288, "Steepness of each table compared with 6", s + giv(g) + ans(a));
+      };
+
+      // ---------- 22: dilation of a pentagon ----------
+      const pent = [[1, 1], [3, 1], [4, 3], [2, 4], [1, 3]];
+      const pentChoices = {
+        A: [pent.map(([x, y]) => [x / 2, y / 2]), "× ½ → too small"],
+        B: [pent.map(([x, y]) => [x + 2, y + 2]), "slid, same size"],
+        C: [pent.map(([x, y]) => [2 * x, y]), "only x doubled"],
+        D: [pent.map(([x, y]) => [2 * x, 2 * y]), "every point × 2 ✓"]
+      };
+      main[22] = () => {
+        const P = plane({ x0: 40, y0: 12, w: 264, h: 264, xmin: 0, xmax: 8, ymin: 0, ymax: 8, xstep: 1, ystep: 1, fs: 12 });
+        const sh = pts => pts.map(([x, y]) => [P.X(x), P.Y(y)]);
+        let s = P.s + Poly(sh(pent), { fill: C.main, op: 0.25, c: C.main, w: 2.5 }) + pent.map((p, i) => vlabel(P, pent, i, pt(...p), { size: 13, dist: 22 })).join("");
+        const a = Poly(sh(pentChoices.D[0]), { fill: C.hl, op: 0.12, c: C.ink, w: 2.5, dash: "7 4" }) + Arrow(P.X(0), P.Y(0), P.X(8), P.Y(6), { c: C.rose, w: 2 }) +
+          Dot(P.X(4), P.Y(3), { r: 5, c: C.rose }) + Dot(P.X(8), P.Y(6), { r: 5, c: C.rose }) +
+          T(20, 312, "(x, y) → (2x, 2y)", { size: 15 }) + T(180, 312, "(4, 3) → (8, 6)", { size: 15, fill: C.rose });
+        const g = T(20, 312, "Scale factor 2 about the origin → ?", { size: 15 });
+        return SVG(320, 324, "Pentagon on a coordinate plane", s + giv(g) + ans(a));
+      };
+      choice[22] = L => {
+        const P = plane({ x0: 24, y0: 8, w: 184, h: 168, xmin: 0, xmax: 8, ymin: 0, ymax: 8, xlab: 2, ylab: 2, fs: 10 });
+        const sh = pts => pts.map(([x, y]) => [P.X(x), P.Y(y)]);
+        const [pts, tag] = pentChoices[L];
+        const s = P.s + Poly(sh(pent), { c: C.muted, w: 1.5, dash: "4 3" }) + Poly(sh(pts), { fill: C.main, op: 0.3, c: C.main, w: 2.5 });
+        return SVG(220, 226, "Pentagon choice " + L, s + ans((L === "D" ? Good : Bad)(116, 212, tag, { size: 12 })));
+      };
+
+      // ---------- 23: cost per bottle ----------
+      main[23] = () => {
+        const X = v => 60 + (v - 12) * 288;
+        let s = Ln(40, 120, 440, 120, { w: 2.5 });
+        for (let v = 12; v <= 13.26; v += 0.25) s += Ln(X(v), 112, X(v), 128, { w: 2 }) + T(X(v), 148, "$" + v.toFixed(2), { size: 12, anchor: "middle", fill: C.muted, weight: 600 });
+        s += Ln(X(12.5), 40, X(12.5), 128, { c: C.main, w: 2.5, dash: "6 4" }) + T(X(12.5), 30, "model: y = 12.50x → $12.50 per bottle", { size: 13, anchor: "middle" });
+        const g = T(240, 180, "Cost per bottle = total ÷ bottles.  A ?  B ?  C ?  D ?", { size: 13, anchor: "middle", fill: C.muted });
+        const rates = [["A", 13], ["B", 12.5], ["C", 12.25], ["D", 12.75]];
+        const a = rates.map(([L, v]) => Dot(X(v), 120, { r: 8, c: L === "C" ? C.hl : C.main, stroke: L === "C" ? C.ink : null }) + T(L === "B" ? X(v) + 6 : X(v), L === "B" ? 72 : 100, `${L}: $${v.toFixed(2)}`, { size: 13, anchor: L === "B" ? "start" : "middle", fill: L === "C" ? C.green : C.ink })).join("") +
+          Tag(240, 182, "Only C ($12.25) is below $12.50", { size: 14 });
+        return SVG(480, 200, "Cost per bottle number line", s + giv(g) + ans(a));
+      };
+
+      // ---------- 25: two-way tables ----------
+      const tw = {
+        A: [[12, 53, 65], [28, 157, 185], [40, 210, 250]],
+        B: [[12, 65, 77], [40, 133, 173], [52, 198, 250]],
+        C: [[53, 12, 65], [28, 157, 185], [81, 169, 250]],
+        D: [[12, 53, 65], [28, 145, 173], [40, 198, 238]]
+      };
+      const twBad = { B: [0, 2, "football total must be 65"], C: [2, 0, "basketball total must be 40"], D: [2, 2, "grand total must be 250"] };
+      const twRows = v => [["", "Basketball", "No bball", "Total"], ["Football", ...v[0].map(String)], ["No football", ...v[1].map(String)], ["Total", ...v[2].map(String)]];
+      choice[25] = L => {
+        const t = table(4, 4, twRows(tw[L]), { cw: [86, 80, 72, 54], rh: 26, fs: 12, headCol: true });
+        let a = "";
+        if (twBad[L]) { const [i, j, msg] = twBad[L]; const k = t.cell(i + 1, j + 1); a += Rect(k.x + 1, k.y + 1, k.w - 2, k.h - 2, { fill: "none", c: C.rose, w: 3, rx: 2 }) + Bad(150, 126, msg, { size: 12 }); }
+        else a += Good(150, 126, "12, 53, 28, 157 · all totals match ✓", { size: 12 });
+        return SVG(300, 142, "Two-way table " + L, t.s + ans(a));
+      };
+      main[25] = () => {
+        const q = (a) => ({ g: "?", a: String(a) });
+        const t = table(40, 20, [["", "Basketball", "No basketball", "Total"], ["Football", "12", q(53), "65"], ["No football", q(28), q(157), q(185)], ["Total", "40", q(210), "250"]], { cw: [110, 100, 120, 70], rh: 34, fs: 14, headCol: true });
+        const a = T(240, 182, "65 − 12 = 53 · 40 − 12 = 28 · 250 − 12 − 53 − 28 = 157", { size: 12, anchor: "middle", weight: 600 });
+        return SVG(480, 194, "Two-way table with football and basketball", t.s + ans(a));
+      };
+
+      // ---------- 26: park diagonal ----------
+      main[26] = () => {
+        const x0 = 60, y0 = 40, w = 320, h = 200;
+        let s = Rect(x0, y0, w, h, { fill: C.soft, c: C.main, w: 2, rx: 0 }) + Ln(x0, y0 + h, x0 + w, y0, { c: C.hl, w: 5 });
+        s += T(x0 + w / 2, y0 + h + 22, "320 yd", { size: 14, anchor: "middle", fill: C.blue }) + T(x0 - 12, y0 + h / 2, "200 yd", { size: 14, anchor: "middle", fill: C.blue, rot: -90 });
+        s += Rect(x0, y0 + h - 14, 14, 14, { fill: "none", c: C.ink, rx: 0 }) + T(240, 24, "Path is 1 yd wide · $10.75 per square yard", { size: 13, anchor: "middle" });
+        const g = Tag(x0 + w / 2 + 20, y0 + h / 2 + 20, "path length = ?", { size: 13, anchor: "start" });
+        const a = Tag(x0 + w / 2 + 14, y0 + h / 2 + 22, "d = √(200² + 320²) ≈ 377.4 yd", { size: 13, anchor: "start" }) +
+          Tag(240, 290, "377.4 × 1 × $10.75 ≈ $4,057  →  about $4,060", { size: 14 });
+        return SVG(480, 306, "Rectangular park with a diagonal path", s + giv(g) + ans(a));
+      };
+
+      // ---------- 27: Alex's ride ----------
+      const ride = {
+        A: [[[0, 0], [3, 2], [6, 2], [9, 8]], "stops in the middle"],
+        B: [[[0, 0], [3, 2], [6, 7], [9, 3]], "ends going back"],
+        C: [[[0, 0], [3, 5], [6, 7], [9, 7]], "slows down, not up"],
+        D: [[[0, 0], [4, 3], [6, 8], [9, 8]], "steady → steeper → flat ✓"]
+      };
+      choice[27] = L => {
+        const P = plane({ x0: 68, y0: 8, w: 154, h: 128, xmin: 0, xmax: 10, ymin: 0, ymax: 10, labels: false, xname: "time", yname: "distance" });
+        const [pts, tag] = ride[L];
+        return SVG(244, 192, "Distance-time graph " + L, P.s + PL(pts.map(([x, y]) => [P.X(x), P.Y(y)]), { c: C.main, w: 3.5 }) + ans((L === "D" ? Good : Bad)(140, 176, tag, { size: 12 })));
+      };
+      main[27] = () => {
+        const steps = ["1. constant speed", "2. sped up", "3. stopped to talk"], look = ["straight, rising", "steeper rise", "flat (no new distance)"];
+        let s = "", a = "";
+        steps.forEach((st, i) => {
+          const x = 14 + i * 158;
+          s += Rect(x, 14, 136, 40, { fill: C.soft, c: C.main, rx: 8 }) + T(x + 68, 39, st, { size: 13, anchor: "middle" });
+          if (i < 2) s += Arrow(x + 138, 34, x + 156, 34, { c: C.main, head: 7 });
+          a += T(x + 68, 78, look[i], { size: 12, anchor: "middle", fill: C.green });
+        });
+        return SVG(480, 92, "Story of Alex's ride in three parts", s + ans(a));
+      };
+
+      // ---------- 28, 36, 44: when do two costs match? ----------
+      function costs(o) {
+        const P = plane({ x0: 60, y0: 74, w: 360, h: 200, xmin: 0, xmax: o.xmax, ymin: 0, ymax: o.ymax, xstep: 1, xlab: o.xlab || 1, ystep: o.ystep, ylab: o.ylab, xname: o.xname, yname: "cost ($)" });
+        let s = Rect(14, 8, 220, 50, { fill: C.soft, c: C.main, rx: 8 }) + T(124, 28, o.n1, { size: 12, anchor: "middle", fill: C.muted }) + T(124, 49, o.e1, { size: 15, anchor: "middle", fill: C.main }) +
+          Rect(246, 8, 220, 50, { fill: C.goldSoft, c: C.main, rx: 8 }) + T(356, 28, o.n2, { size: 12, anchor: "middle", fill: C.muted }) + T(356, 49, o.e2, { size: 15, anchor: "middle", fill: C.goldText });
+        s += P.s + Dot(P.X(0), P.Y(o.b1), { r: 5, c: C.main }) + Dot(P.X(0), P.Y(o.b2), { r: 5, c: C.goldText });
+        const [xi, yi] = o.meet;
+        const a = Ln(P.X(0), P.Y(o.b1), P.X(o.xmax), P.Y(o.b1 + o.m1 * o.xmax), { c: C.main, w: 3 }) +
+          Ln(P.X(0), P.Y(o.b2), P.X(o.xmax), P.Y(o.b2 + o.m2 * o.xmax), { c: C.hl, w: 3 }) +
+          Ln(P.X(xi), P.Y(yi), P.X(xi), P.Y(0), { c: C.rose, dash: "4 3" }) + Dot(P.X(xi), P.Y(yi), { r: 7, c: C.rose, stroke: "#fff" }) +
+          Tag(P.X(xi) + 12, P.Y(yi) + 34, o.say, { size: 13, anchor: "start" });
+        const g = T(P.X(o.xmax * 0.55), P.Y(o.ymax * 0.55), "Where do the costs match?", { size: 13, anchor: "middle", fill: C.muted });
+        return SVG(480, 314, o.label, s + giv(g) + ans(a));
+      }
+      main[28] = () => costs({ n1: "Company 1", e1: "cost = 18x + 12", n2: "Company 2", e2: "cost = 20x + 4", b1: 12, m1: 18, b2: 4, m2: 20, meet: [4, 84], xmax: 8, ymax: 180, ystep: 20, ylab: 40, xname: "shirts (x)", say: "4 shirts → $84 at both", label: "Cost of shirts at two companies" });
+      main[36] = () => costs({ n1: "Book club 1", e1: "cost = 20 + 12x", n2: "Book club 2", e2: "cost = 35 + 9x", b1: 20, m1: 12, b2: 35, m2: 9, meet: [5, 80], xmax: 10, ymax: 140, ystep: 10, ylab: 20, xname: "books (x)", say: "5 books → $80 at both", label: "Cost of two book clubs" });
+      main[44] = () => costs({ n1: "Provider 1", e1: "cost = 10 + 2x", n2: "Provider 2", e2: "cost = 8 + 3x", b1: 10, m1: 2, b2: 8, m2: 3, meet: [2, 14], xmax: 6, ymax: 30, ystep: 2, ylab: 6, xname: "movies (x)", say: "2 movies → $14 at both", label: "Cost of two movie providers" });
+
+      // ---------- 29: tables, is y a function of x? ----------
+      main[29] = () => {
+        const tabs = { A: [[5, 4, 3, 2], [6, 6, 6, 6]], B: [[2, 3, 4, 4], [4, 3, 2, 1]], C: [[5, 5, 1, 1], [6, 0, 0, 6]], D: [[3, 3, 1, 7], [7, 6, 3, 1]] };
+        return multi(Object.entries(tabs).map(([L, [xs, ys]]) => {
+          const t = table(30, 28, [["x", "y"], ...xs.map((x, i) => [String(x), String(ys[i])])], { cw: [50, 50], rh: 26, fs: 14 });
+          const rep = xs.filter((x, i) => xs.indexOf(x) !== i);
+          let a = "";
+          xs.forEach((x, i) => { if (rep.includes(x)) { const k = t.cell(i + 1, 0); a += Rect(k.x, k.y, 100, k.h, { fill: C.roseSoft, op: 0.55, c: C.rose, w: 2, rx: 0 }); } });
+          a += rep.length ? Bad(80, 182, `x = ${rep[0]} repeats ✗`, { size: 12 }) : Good(80, 182, "no x repeats ✓", { size: 12 });
+          return SVG(160, 198, "Table " + L, T(80, 18, "Table " + L, { size: 14, anchor: "middle" }) + t.s + ans(a));
+        }));
+      };
+
+      // ---------- 30: tower and wire ----------
+      main[30] = () => {
+        const k = 1.3, gx = 100, gy = 236, ht = 140 * k, bw = 72 * k;
+        let s = Ln(30, gy, 450, gy, { c: C.muted, w: 3 }) + Rect(gx - 12, gy - ht, 12, ht, { fill: C.main, c: C.main, rx: 0 }) +
+          Ln(gx, gy - ht, gx + bw, gy, { c: C.hl, w: 4 }) + Rect(gx, gy - 14, 14, 14, { fill: "none", c: C.ink, rx: 0 }) +
+          T(gx - 22, gy - ht / 2, "140 ft", { size: 14, anchor: "middle", rot: -90, fill: C.blue }) + T(gx + bw / 2, gy + 20, "72 ft", { size: 14, anchor: "middle", fill: C.blue });
+        const g = Tag(gx + bw / 2 + 16, gy - ht / 2, "wire = ?", { size: 14, anchor: "start" });
+        const a = Tag(gx + bw / 2 + 14, gy - ht / 2, "wire ≈ 157 ft", { size: 14, anchor: "start" }) +
+          T(310, 80, "w² = 140² + 72²", { size: 15 }) + T(310, 106, "w² = 19,600 + 5,184", { size: 15 }) + T(310, 132, "w² = 24,784", { size: 15 }) + T(310, 158, "w ≈ 157.4 → 157 ft", { size: 15, fill: C.green });
+        return SVG(480, 262, "Tower with a supporting wire", s + giv(g) + ans(a));
+      };
+
+      // ---------- 32: cone ----------
+      main[32] = () => {
+        const k = 13, cx = 140, by = 214, r = 5 * k, h = 12 * k;
+        let s = `<ellipse cx="${cx}" cy="${by}" rx="${r}" ry="16" fill="${C.soft}" stroke="${C.ink}" stroke-width="2"/>` +
+          Ln(cx - r, by, cx, by - h, { w: 2 }) + Ln(cx + r, by, cx, by - h, { w: 2 }) +
+          Ln(cx, by, cx, by - h, { c: C.rose, w: 2, dash: "5 4" }) + Ln(cx, by, cx + r, by, { c: C.blue, w: 3 }) +
+          Rect(cx, by - 12, 12, 12, { fill: "none", c: C.ink, rx: 0, w: 1.2 }) +
+          T(cx + r / 2, by + 32, "r = 5 cm", { size: 14, anchor: "middle", fill: C.blue }) + Ln(cx + r + 14, by, cx + r + 14, by - h, { c: C.rose, w: 1.5, dash: "3 3" }) + Ln(cx, by - h, cx + r + 20, by - h, { c: C.rose, w: 1, dash: "2 3" }) + T(cx + r + 20, by - h / 2, "h = 12 cm", { size: 14, fill: C.rose });
+        const g = T(300, 110, "V = ⅓πr²h", { size: 16 }) + T(300, 140, "V = ?", { size: 18, fill: C.muted });
+        const a = T(300, 80, "V = ⅓πr²h", { size: 16 }) + T(300, 108, "= ⅓ × π × 5² × 12", { size: 15, weight: 600 }) + T(300, 134, "= ⅓ × π × 300", { size: 15, weight: 600 }) +
+          T(300, 160, "= 100π", { size: 15, weight: 600 }) + Tag(300, 192, "≈ 314 cm³", { size: 16, anchor: "start" });
+        return SVG(480, 252, "Cone with radius 5 cm and height 12 cm", s + giv(g) + ans(a));
+      };
+      // ---------- 35: cylinder ----------
+      main[35] = () => {
+        const k = 22, cx = 130, rx = 2.5 * k, h = 7.5 * k, ty = 32, by = ty + h;
+        let s = `<ellipse cx="${cx}" cy="${by}" rx="${rx}" ry="13" fill="${C.soft}" stroke="${C.ink}" stroke-width="2"/>` +
+          Rect(cx - rx, ty, 2 * rx, h, { fill: C.soft, c: "none", rx: 0, w: 0 }) +
+          Ln(cx - rx, ty, cx - rx, by, { w: 2 }) + Ln(cx + rx, ty, cx + rx, by, { w: 2 }) +
+          `<ellipse cx="${cx}" cy="${ty}" rx="${rx}" ry="13" fill="#fff" stroke="${C.ink}" stroke-width="2"/>` +
+          Ln(cx - rx, ty, cx + rx, ty, { c: C.blue, w: 3 }) + T(cx, ty - 20, "d = 5 cm", { size: 14, anchor: "middle", fill: C.blue }) +
+          Ln(cx + rx + 14, ty, cx + rx + 14, by, { c: C.rose, w: 2 }) + T(cx + rx + 22, (ty + by) / 2, "h = 7.5 cm", { size: 14, fill: C.rose });
+        const g = T(300, 110, "V = πr²h", { size: 16 }) + T(300, 140, "V = ?", { size: 18, fill: C.muted });
+        const a = T(300, 66, "r = 5 ÷ 2 = 2.5 cm", { size: 15, fill: C.blue }) + T(300, 96, "V = πr²h", { size: 16 }) + T(300, 122, "= π × 2.5² × 7.5", { size: 15, weight: 600 }) +
+          T(300, 148, "= 46.875π", { size: 15, weight: 600 }) + Tag(300, 180, "≈ 147 cm³", { size: 16, anchor: "start" });
+        return SVG(480, 228, "Cylinder with diameter 5 cm and height 7.5 cm", s + giv(g) + ans(a));
+      };
+
+      // ---------- 37: line of best fit ----------
+      main[37] = () => {
+        const P = plane({ x0: 50, y0: 14, w: 360, h: 240, xmin: 0, xmax: 10, ymin: 0, ymax: 16, xstep: 1, xlab: 2, ystep: 2, ylab: 4 });
+        const pts = [[0, 4.5], [1, 4.5], [2, 7], [3, 6], [4, 8.5], [5, 9], [6, 9.5], [7, 12], [8, 11.5], [9, 13.5], [10, 13.5]];
+        const s = P.s + pts.map(([x, y]) => Dot(P.X(x), P.Y(y), { r: 5.5, c: C.main })).join("");
+        const a = Ln(P.X(0), P.Y(4), P.X(10), P.Y(14), { c: C.hl, w: 3.5 }) + Dot(P.X(0), P.Y(4), { r: 7, c: C.rose, stroke: "#fff" }) +
+          Tag(P.X(0.3), P.Y(1.5), "crosses the y-axis near 4", { size: 12, anchor: "start" }) +
+          Tag(P.X(5.2), P.Y(3.5), "rise 10 ÷ run 10 = slope 1", { size: 12, anchor: "start" }) + Tag(P.X(6), P.Y(15.3), "y = x + 4", { size: 15 });
+        return SVG(480, 286, "Scatterplot of data", s + ans(a));
+      };
+
+      // ---------- 39: ladder ----------
+      main[39] = () => {
+        const k = 13, wx = 120, gy = 226, hh = Math.sqrt(200) * k, bw = 5 * k;
+        let s = Ln(40, gy, 450, gy, { c: C.muted, w: 3 }) + Ln(wx, gy, wx, 20, { c: C.main, w: 6 }) +
+          Ln(wx, gy - hh, wx + bw, gy, { c: C.hl, w: 5 }) + Rect(wx, gy - 14, 14, 14, { fill: "none", c: C.ink, rx: 0 }) +
+          T(wx + bw / 2 + 14, gy - hh / 2, "15 ft", { size: 14 }) + T(wx + bw / 2, gy + 20, "5 ft", { size: 14, anchor: "middle", fill: C.blue }) +
+          T(wx - 12, 40, "wall", { size: 12, anchor: "end", fill: C.muted });
+        const g = T(wx - 12, gy - hh / 2, "h = ?", { size: 15, anchor: "end", fill: C.muted });
+        const a = T(wx - 12, gy - hh / 2, "h ≈ 14 ft", { size: 15, anchor: "end", fill: C.green }) +
+          T(250, 80, "h² + 5² = 15²", { size: 15 }) + T(250, 106, "h² + 25 = 225", { size: 15 }) + T(250, 132, "h² = 200", { size: 15 }) + Tag(250, 164, "h = √200 ≈ 14.1 → 14 ft", { size: 14, anchor: "start" });
+        return SVG(480, 250, "Ladder leaning on a wall", s + giv(g) + ans(a));
+      };
+
+      // ---------- 40: same y-intercept ----------
+      main[40] = () => {
+        const P = plane({ x0: 44, y0: 14, w: 270, h: 288, xmin: -4, xmax: 2, ymin: -10, ymax: 8, xstep: 1, ystep: 1, ylab: 2 });
+        let s = P.s + fn(P, x => 5 * x - 3, -4, 2, { c: C.main, w: 3 }) + T(P.X(1.2), P.Y(6.5), "y = 5x − 3", { size: 13, fill: C.main, anchor: "end" });
+        const B = [[-3, -9], [-2, -7], [-1, -5]];
+        const a = Ln(P.X(-3), P.Y(-9), P.X(0), P.Y(-3), { c: C.hl, w: 3, dash: "7 4" }) + B.map(([x, y]) => Dot(P.X(x), P.Y(y), { r: 5.5, c: C.goldText })).join("") +
+          Dot(P.X(0), P.Y(-3), { r: 7, c: C.rose, stroke: "#fff" }) +
+          T(330, 110, "Table B: slope 2", { size: 14 }) + T(330, 134, "(−1, −5) → (0, −3)", { size: 14 }) + Tag(330, 170, "y-intercept −3 ✓", { size: 14, anchor: "start" });
+        const g = T(330, 130, "Which table also", { size: 14, fill: C.muted }) + T(330, 150, "crosses here?", { size: 14, fill: C.muted });
+        return SVG(480, 330, "Graph of y = 5x − 3", s + giv(g) + ans(a));
+      };
+
+      // ---------- 41: angle z ----------
+      main[41] = () => {
+        const A = [80, 220], B = [340, 220], AC = 260 * Math.sin(75 * Math.PI / 180) / Math.sin(69 * Math.PI / 180);
+        const Cp = [A[0] + AC * Math.cos(36 * Math.PI / 180), A[1] - AC * Math.sin(36 * Math.PI / 180)];
+        const ext = pol(A[0], A[1], 70, 216);
+        let s = Poly([A, B, Cp], { fill: C.soft, c: C.ink, w: 2.5 }) + Ln(A[0], A[1], 18, A[1], { w: 2.5 }) + Ln(A[0], A[1], ext[0], ext[1], { w: 2.5 }) + Ln(B[0], B[1], 456, B[1], { w: 2.5 });
+        s += T(A[0] + 2, A[1] - 10, "A", { size: 15 }) + T(B[0] - 4, B[1] + 22, "B", { size: 15 }) + T(Cp[0], Cp[1] - 10, "C", { size: 15, anchor: "middle" });
+        s += Arc(A[0], A[1], 30, 180, 216, { c: C.blue, w: 2.5 }) + T(...pol(A[0], A[1], 50, 196), "36°", { size: 14, anchor: "middle", fill: C.blue });
+        s += Arc(B[0], B[1], 26, 0, 105, { c: C.blue, w: 2.5 }) + T(...pol(B[0], B[1], 46, 52), "105°", { size: 14, anchor: "middle", fill: C.blue });
+        s += Arc(Cp[0], Cp[1], 30, 216, 285, { c: C.rose, w: 2.5 }) + T(...pol(Cp[0], Cp[1], 46, 250), "z", { size: 16, anchor: "middle", fill: C.rose });
+        const a = Arc(A[0], A[1], 38, 0, 36, { c: C.hl, w: 3 }) + T(...pol(A[0], A[1], 60, 16), "36°", { size: 13, anchor: "middle", fill: C.goldText }) +
+          Arc(B[0], B[1], 34, 105, 180, { c: C.hl, w: 3 }) + T(...pol(B[0], B[1], 56, 150), "75°", { size: 13, anchor: "middle", fill: C.goldText }) +
+          Tag(240, 268, "z = 180° − 36° − 75° = 69°", { size: 15 });
+        return SVG(480, 286, "Triangle ABC with angle measures", s + ans(a));
+      };
+
+      // ---------- 42: no solutions ----------
+      main[42] = () => {
+        let s = Rect(14, 10, 452, 50, { fill: C.soft, c: C.main, w: 2, rx: 8 }) + T(240, 42, "3x + 6(2x + 5) = k(3x + 4)", { size: 19, anchor: "middle" });
+        const g = T(240, 96, "k = ?   (no solutions)", { size: 16, anchor: "middle", fill: C.muted });
+        const P = plane({ x0: 330, y0: 76, w: 130, h: 150, xmin: -4, xmax: 1, ymin: -50, ymax: 50, xstep: 1, ystep: 10, labels: false, xname: "x", yname: "y" });
+        const a = T(24, 94, "Left:  3x + 12x + 30 = 15x + 30", { size: 14, weight: 600 }) + T(24, 120, "Right: 3kx + 4k", { size: 14, weight: 600 }) +
+          T(24, 146, "Match x-terms: 3k = 15 → k = 5", { size: 14, weight: 600 }) + T(24, 172, "15x + 30 = 15x + 20", { size: 14, weight: 600 }) +
+          Bad(24, 202, "30 ≠ 20 → no solution", { size: 13, anchor: "start" }) + Tag(160, 236, "k = 5", { size: 16 }) +
+          P.s + fn(P, x => 15 * x + 30, -4, 1, { c: C.main, w: 2.5 }) + fn(P, x => 15 * x + 20, -4, 1, { c: C.hl, w: 2.5 }) +
+          T(395, 244, "parallel: never meet", { size: 11, anchor: "middle", fill: C.muted });
+        return SVG(480, 254, "Equation with unknown k", s + giv(g) + ans(a));
+      };
+
+      // ---------- 43: reflect, then translate ----------
+      main[43] = () => {
+        const P = plane({ x0: 40, y0: 12, w: 392, h: 224, xmin: -6, xmax: 8, ymin: -6, ymax: 2, xlab: 2, ylab: 2 });
+        const tri = [[-3, -4], [-1, -1], [-5, -1]], ref = tri.map(([x, y]) => [-x, y]), fin = ref.map(([x, y]) => [x + 2, y]);
+        const sh = pts => pts.map(([x, y]) => [P.X(x), P.Y(y)]);
+        let s = P.s + Poly(sh(tri), { fill: C.main, op: 0.3, c: C.main, w: 2.5 }) + ["P", "Q", "R"].map((n, i) => vlabel(P, tri, i, n)).join("");
+        const a = Poly(sh(ref), { c: C.blue, w: 2, dash: "6 4" }) + Poly(sh(fin), { fill: C.hl, op: 0.35, c: C.ink, w: 2.5 }) +
+          ["P′", "Q′", "R′"].map((n, i) => vlabel(P, fin, i, n)).join("") + Arrow(P.X(-3), P.Y(-4), P.X(3) - 6, P.Y(-4), { c: C.blue, w: 1.8 }) +
+          Arrow(P.X(3), P.Y(-4), P.X(5) - 6, P.Y(-4), { c: C.rose, w: 2.2 }) + Tag(P.X(5) + 10, P.Y(-5.3), "P′ = (5, −4)", { size: 13, anchor: "start" }) +
+          T(P.X(-5.8), P.Y(-5.4), "flip: (x, y) → (−x, y), then 2 right", { size: 12, fill: C.blue }) ;
+        return SVG(480, 270, "Triangle PQR on a coordinate plane", s + ans(a));
+      };
+
+      // ---------- 45: slope through two points ----------
+      main[45] = () => {
+        const P = plane({ x0: 40, y0: 14, w: 270, h: 240, xmin: 0, xmax: 9, ymin: 0, ymax: 8 });
+        let s = P.s + Ln(P.X(3), P.Y(1), P.X(8), P.Y(7), { c: C.main, w: 3 }) + Dot(P.X(3), P.Y(1), { r: 6, c: C.main }) + Dot(P.X(8), P.Y(7), { r: 6, c: C.main }) +
+          T(P.X(3) - 6, P.Y(1) - 10, "(3, 1)", { size: 13, anchor: "end" }) + T(P.X(8) - 10, P.Y(7) - 4, "(8, 7)", { size: 13, anchor: "end" });
+        const g = T(325, 140, "slope = ?", { size: 16, fill: C.muted });
+        const a = Ln(P.X(3), P.Y(1), P.X(8), P.Y(1), { c: C.blue, w: 3 }) + Ln(P.X(8), P.Y(1), P.X(8), P.Y(7), { c: C.rose, w: 3 }) +
+          T(P.X(5.5), P.Y(1) + 18, "run = 5", { size: 13, anchor: "middle", fill: C.blue }) + T(P.X(8) + 8, P.Y(4), "rise = 6", { size: 13, fill: C.rose }) +
+          T(325, 60, "(7 − 1) ÷ (8 − 3)", { size: 14 }) + Tag(325, 90, "slope = 6/5", { size: 16, anchor: "start" });
+        return SVG(480, 284, "Line through (3, 1) and (8, 7)", s + giv(g) + ans(a));
+      };
+
+      return {
+        main: n => (main[n] ? main[n]() : ""),
+        choice: (n, L) => (choice[n] ? choice[n](L) : "")
+      };
     }
+    // ===== VISUALS END =====
+
+    const VIS = makeVisuals({
+      ink: "#1E2D4F", main: "#1E2D4F", muted: "#5d6b85", grid: "#dfe5ee", soft: "#f0f4fa",
+      gold: "#FFC107", hl: "#FFC107", goldSoft: "#FFF3C4", goldText: "#7a4a03",
+      blue: "#1d4ed8", green: "#15803d", greenSoft: "#dcfce7", rose: "#be123c", roseSoft: "#ffe4e6"
+    });
 
     // ============================================================
     // STATE & RENDERERS
@@ -2001,7 +2258,7 @@
 
     function startGame() {
       const filter = els.topic.value;
-      let pool = questions.filter(q => (PDF || !q.source) && (filter === "all" || q.standard.startsWith(filter)));
+      let pool = questions.filter(q => filter === "all" || q.standard.startsWith(filter));
       const count = Math.min(Number(els.count.value), pool.length);
       state.active = shuffle(pool).slice(0, count);
       state.index = 0; state.score = 0; state.streak = 0; state.xp = 0;
@@ -2067,9 +2324,8 @@
         <span class="badge dok">DOK ${q.dok}</span>
         <span class="badge page">Page ${q.page}</span>`;
       els.prompt.textContent = q.prompt;
-      els.note.textContent = q.source
-        ? "This item references a diagram or table from the released form. Open the source page for the exact visual."
-        : (q.hint || "");
+      els.note.textContent = q.hint || "";
+      els.game.classList.remove("revealed");
       renderVisual(q);
       if (q.type === "mc") {
         els.freeResponse.classList.add("hidden");
@@ -2077,7 +2333,7 @@
         els.answers.innerHTML = Object.entries(q.choices).map(([letter, text]) => `
           <button class="answer-btn" data-choice="${letter}">
             <span class="letter">${letter}</span>
-            <span>${text}</span>
+            <span>${text}${VIS.choice(q.n, letter) ? `<span class="choice-art">${VIS.choice(q.n, letter)}</span>` : ""}</span>
           </button>
         `).join("");
         els.answers.querySelectorAll("button").forEach(btn =>
@@ -2091,25 +2347,40 @@
     }
 
     function renderVisual(q) {
-      // For source:true items, the rendered visual is a stand-in that often
-      // gives away the answer (e.g., a scatter labeled "negative association"
-      // when the question asks which graph IS negative). The actual problem
-      // visual lives in the released-form PDF — students should open the source
-      // page to see the real diagram. So we suppress the stand-in entirely.
-      if (q && q.source) {
-        els.visual.classList.add("hidden");
-        els.visual.innerHTML = "";
-        return;
-      }
-      const builder = q.visual ? visuals[q.visual] : null;
-      if (!builder) {
-        els.visual.classList.add("hidden");
-        els.visual.innerHTML = "";
-        return;
-      }
-      els.visual.classList.remove("hidden");
-      els.visual.innerHTML = builder();
+      // Each question has its own picture. Before the answer only the given facts show
+      // (unknowns as "?"); the worked parts appear when #game gets the "revealed" class.
+      const html = VIS.main(q.n);
+      els.visual.classList.toggle("hidden", !html);
+      els.visual.innerHTML = html;
     }
+
+    // Free-response checking: accepts −12, -12, x = -12, 0.1, .1, 1/10, 10^-1, 10⁻¹, 3 1/2, $10, 67°, …
+    function toNumber(raw) {
+      const sup = { "⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-" };
+      let s = String(raw).toLowerCase().trim()
+        .replace(/[−–—]/g, "-")
+        .replace(/^[a-z]\s*=\s*/, "")
+        .replace(/[$°,]/g, "")
+        .replace(/\b(degrees?|units?|feet|ft|dollars?)\b/g, "")
+        .replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, mm => "^" + [...mm].map(c => sup[c]).join(""))
+        .trim();
+      let mm = s.match(/^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/);
+      if (mm) return (mm[1] ? -1 : 1) * (Number(mm[2]) + Number(mm[3]) / Number(mm[4]));
+      s = s.replace(/\s+/g, "");
+      const num = "(-?(?:\\d+\\.?\\d*|\\.\\d+))";
+      if (new RegExp("^" + num + "$").test(s)) return parseFloat(s);
+      mm = s.match(new RegExp("^" + num + "\\/" + num + "$"));
+      if (mm && Number(mm[2]) !== 0) return Number(mm[1]) / Number(mm[2]);
+      mm = s.match(/^(-?\d+(?:\.\d+)?)\^\(?(-?\d+)\)?$/);
+      if (mm) return Math.pow(Number(mm[1]), Number(mm[2]));
+      return NaN;
+    }
+    function freeMatches(input, q) {
+      const a = toNumber(input), b = toNumber(q.answer);
+      if (!isNaN(a) && !isNaN(b)) return Math.abs(a - b) < 1e-9;
+      return normalize(input) === normalize(q.answer);
+    }
+    const showAnswer = q => String(q.answer).replace(/^-/, "−");
 
     function answer(choice) {
       if (state.answered) return;
@@ -2126,15 +2397,17 @@
     }
 
     function answerFree() {
+      if (state.answered) return;
       const q = state.active[state.index];
       const choice = els.freeInput.value;
-      const correct = normalize(choice) === normalize(q.answer);
+      const correct = freeMatches(choice, q);
       finishAnswer(correct, choice || "(blank)");
     }
 
     function finishAnswer(correct, choice) {
       const q = state.active[state.index];
       state.answered = true;
+      els.game.classList.add("revealed");
       const base = correct ? 100 : 0;
       state.streak = correct ? state.streak + 1 : 0;
       const bonus = correct ? Math.min(50, state.streak * 10) : 0;
@@ -2146,7 +2419,7 @@
       els.feedback.className = `feedback show ${correct ? "good" : "try"}`;
       els.feedback.innerHTML = correct
         ? `<strong>Correct.</strong> +${earned} points. ${state.streak >= 3 ? "Streak bonus unlocked." : "Keep going."}`
-        : `<strong>Not quite.</strong> Correct answer: <b>${q.answer}</b>. Review the worked solution below.`;
+        : `<strong>Not quite.</strong> Correct answer: <b>${showAnswer(q)}</b>. Check the picture and the worked solution below — you've got this!`;
       // Worked solution panel
       if (q.explain) {
         els.worked.classList.add("show");
@@ -2159,7 +2432,6 @@
       }
       beep(correct ? "good" : "bad");
       els.nextBtn.classList.remove("hidden");
-      if (!correct && q.source) els.sourceBtn.classList.remove("hidden");
       if (state.teams.length > 1) state.teamTurn = (state.teamTurn + 1) % state.teams.length;
       renderStats(); renderBoard(); renderTeams();
     }
@@ -2197,7 +2469,7 @@
     function openSource(page = null) {
       const q = state.active[state.index];
       const target = page || (q ? q.page : 1);
-      els.modalTitle.textContent = `Released Questions 2.pdf · page ${target}`;
+      els.modalTitle.textContent = `Released Questions 3.pdf · page ${target}`;
       els.pdfFrame.src = `${PDF}#page=${target}&zoom=page-fit`;
       els.modalNewTab.href = `${PDF}#page=${target}`;
       els.modal.classList.add("show");
