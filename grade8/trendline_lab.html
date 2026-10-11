@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trendline Lab — Unit 7 | Mr. Allen's 8th Grade Math</title>
+<meta name="description" content="Trendline Lab: you are a data scientist. Read the pattern, fit the line, and make the call. Scatter plots, lines of best fit, y = mx + b, and two-way tables (NC.8.SP.1–4).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F7F5; --surface:#FFFFFF; --line:#E3E5EA; --line2:#C9CDD6;
+  --navy:#1E2D4F; --ink:#2B3345; --muted:#5B6478;
+  --gold:#FFC107; --goldText:#8A6100; --goldSoft:#FFF4D1;
+  --ok:#15803D; --okSoft:#ECF7EF; --err:#B42318; --errSoft:#FDF0EE; --info:#1D4ED8; --infoSoft:#EEF3FD;
+  --serif:'Source Serif 4', Georgia, serif;
+  --sans:Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans)}
+.wrap{max-width:1040px;margin:0 auto;padding:16px 16px 56px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;color:var(--navy);margin:0}
+h1{font-size:clamp(28px,5vw,40px);line-height:1.15}
+h2{font-size:24px;line-height:1.2}
+h3{font-size:19px;line-height:1.25}
+p{margin:0 0 10px}
+a{color:var(--info)}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+.mono{font-family:var(--mono)}
+.muted{color:var(--muted)}
+.back{display:inline-flex;align-items:center;min-height:44px;color:var(--navy);text-decoration:none;font-weight:500}
+.back:hover{text-decoration:underline}
+.label{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:28px 0 14px}
+.label::after{content:"";flex:1;height:1px;background:var(--line)}
+.hero{padding:8px 0 4px}
+.hero h1{position:relative;display:inline-block;padding-bottom:6px}
+.hero h1::after{content:"";position:absolute;left:0;bottom:0;width:64px;height:3px;background:var(--gold);border-radius:2px}
+.hero .lede{max-width:640px;margin-top:12px;color:var(--ink)}
+.stds{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:8px;border:1px solid var(--navy);background:var(--navy);color:#fff;font:600 15px/1.2 var(--sans);cursor:pointer;text-decoration:none;transition:box-shadow .15s}
+.btn:hover{box-shadow:0 4px 14px rgba(22,33,58,.12)}
+.btn.sec{background:#fff;color:var(--navy);border-color:var(--line2)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--navy);padding:10px 8px}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+/* station picker */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.st-card{display:flex;flex-direction:column;gap:6px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;cursor:pointer;font:inherit;color:inherit;min-height:150px;transition:box-shadow .15s,border-color .15s}
+.st-card:hover:not(:disabled){box-shadow:0 4px 14px rgba(22,33,58,.08);border-color:var(--line2)}
+.st-card:disabled{cursor:not-allowed;background:#FBFBFA}
+.st-card .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.st-num{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em}
+.st-card h3{font-size:21px}
+.st-card .desc{color:var(--ink);font-size:15px;line-height:1.45}
+.st-card:disabled h3,.st-card:disabled .desc{color:#8C93A3}
+.st-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);padding-top:6px}
+.tag{font-family:var(--mono);font-size:12px;color:var(--goldText);background:var(--goldSoft);border-radius:4px;padding:2px 6px}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+/* intro */
+.how p{font-size:17px}
+/* stage */
+.stage-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:4px 0 14px}
+.stage-top .ttl{flex:1;min-width:180px}
+.stage-top .ttl .st-num{display:block}
+.prog{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+.bar{width:140px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold);transition:width .3s}
+.lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.lab{grid-template-columns:1fr}}
+.lab.wide{grid-template-columns:1fr}
+.lab.wide>.panel{order:-1}
+.tray:empty{display:none}
+.plotcard{padding:14px 14px 8px}
+@media (min-width:861px){.lab:not(.wide)>.plotcard{position:sticky;top:12px}}
+.ctx{font-size:15px;color:var(--ink);margin:0 0 6px}
+.ctx b{color:var(--navy)}
+.plotbox{width:100%}
+svg.plot{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+svg.plot.drag{touch-action:none}
+svg.plot text{font-family:var(--mono);fill:var(--muted)}
+svg.plot .axlab{font-family:var(--sans);fill:var(--ink);font-weight:500}
+svg.plot .pt{fill:var(--navy);fill-opacity:.85;stroke:#fff;stroke-width:1.2}
+svg.plot .pt:focus{outline:none;stroke:var(--info);stroke-width:3}
+svg.plot.tap{cursor:crosshair}
+svg.plot .handle{cursor:grab;outline:none}
+svg.plot .handle .hit{fill:transparent}
+svg.plot .handle .knob{fill:#fff;stroke:var(--navy);stroke-width:2.5}
+svg.plot .handle .core{fill:var(--gold)}
+svg.plot .handle:focus .knob{stroke:var(--info);stroke-width:3.5}
+svg.plot .handle.locked{cursor:default}
+.panel{display:flex;flex-direction:column;gap:14px}
+.panel .card{padding:16px}
+.q{font-weight:600;color:var(--navy);margin-bottom:8px;font-size:17px}
+.sub{font-size:15px;color:var(--muted);margin-bottom:10px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choices.row{flex-direction:row;flex-wrap:wrap}
+.choices.row .choice{flex:1 1 120px;justify-content:center}
+.choice{display:flex;align-items:center;gap:10px;min-height:44px;width:100%;padding:10px 14px;border:1px solid var(--line2);border-radius:8px;background:#fff;color:var(--ink);font:500 15px/1.4 var(--sans);text-align:left;cursor:pointer}
+.choice:hover:not(:disabled){border-color:var(--navy)}
+.choice:disabled{cursor:default;opacity:1}
+.choice.right{border-color:var(--ok);background:var(--okSoft);color:#0F5A2B}
+.choice.wrong{border-color:var(--err);background:var(--errSoft);color:#7A1A12}
+.choice.dim{opacity:.6}
+.choice svg{flex:none}
+.fb{display:none;margin-top:10px;padding:10px 12px;border-radius:6px;border-left:3px solid var(--info);background:var(--infoSoft);font-size:15px}
+.fb.show{display:block}
+.fb.ok{border-color:var(--ok);background:var(--okSoft)}
+.fb.err{border-color:var(--err);background:var(--errSoft)}
+.fb.tip{border-color:var(--gold);background:var(--goldSoft)}
+.fields{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center}
+.field{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:15px}
+.field label{font-family:var(--serif);font-size:17px;color:var(--navy)}
+input.box{width:5.2em;min-height:44px;padding:6px 8px;border:1px solid var(--line2);border-radius:6px;font:16px var(--mono);text-align:center;color:var(--ink);background:#fff}
+input.box.wide{width:100%;max-width:300px;text-align:left}
+input.box.good{border-color:var(--ok);background:var(--okSoft)}
+input.box.bad{border-color:var(--err);background:var(--errSoft)}
+input.box:disabled{color:var(--ink);-webkit-text-fill-color:var(--ink);opacity:1}
+.steplab{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.work{margin-top:10px;font-family:var(--mono);font-size:14px;color:var(--ink);background:#FAFAF8;border:1px solid var(--line);border-radius:6px;padding:8px 10px;display:none}
+.work.show{display:block}
+.eq{font-family:var(--serif);font-size:18px;color:var(--navy);white-space:nowrap}
+.eq i{font-style:italic}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 2px;font-size:.92em}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.frac>span:last-child{padding:0 3px}
+.meter{margin-top:6px}
+.meter .track{position:relative;height:12px;border-radius:6px;background:var(--line);overflow:hidden}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;background:var(--gold);border-radius:6px}
+.meter .ends{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:3px}
+.stat{display:flex;justify-content:space-between;gap:8px;font-size:15px;padding:4px 0;border-bottom:1px solid var(--line)}
+.stat:last-child{border-bottom:none}
+.stat b{font-family:var(--mono);font-weight:600;color:var(--navy)}
+.tiptext{font-size:14px;color:var(--muted);margin:8px 0 0}
+.score-chip{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.studentwork{font-family:var(--mono);background:#FAFAF8;border:1px dashed var(--line2);border-radius:6px;padding:10px 12px;margin:8px 0;font-size:15px}
+/* two-way table */
+.tw{border-collapse:collapse;width:100%;font-size:15px;margin:4px 0 10px}
+.tw th,.tw td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.tw th{background:#FAFAF8;color:var(--navy);font-weight:600}
+.tw th.rowh{text-align:left}
+.tw td{font-family:var(--mono)}
+.tw .tot{background:#FBFBFA;font-weight:600}
+.tw input.box{width:100%;max-width:5.6em;min-width:3.6em;padding:6px 4px;font-size:15px}
+@media (max-width:480px){.tw th,.tw td{padding:5px 4px}}
+.tablewrap{overflow-x:auto}
+.cap{font-size:13px;color:var(--muted);margin:2px 0 6px}
+/* end */
+.endcard{max-width:640px}
+.bigstars svg{width:48px;height:48px}
+.kpis{display:flex;gap:24px;flex-wrap:wrap;margin:14px 0}
+.kpi .v{font-family:var(--mono);font-size:28px;color:var(--navy);font-weight:600}
+.kpi .k{font-size:13px;color:var(--muted)}
+.foot{margin-top:28px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.linkbtn{background:none;border:none;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;min-height:44px;padding:0 4px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.backs{display:flex;gap:4px 20px;flex-wrap:wrap}
+/* worked example */
+.ex{border-left:3px solid var(--gold)}
+.ex-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:640px){.ex-grid{grid-template-columns:1fr}}
+.ex ol{margin:0;padding-left:22px}
+.ex li{margin:0 0 8px;font-size:16px}
+.ex svg{display:block;width:100%;height:auto;max-width:360px}
+.ex .tw{max-width:360px}
+/* sorting board (station 1) */
+.board{display:flex;flex-direction:column;gap:16px}
+.tray{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-height:60px}
+@media (max-width:640px){.tray{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
+.pc{display:flex;flex-direction:column;gap:4px;padding:8px;background:#fff;border:1px solid var(--line2);border-radius:8px;cursor:grab;font:inherit;color:inherit;text-align:left;touch-action:none;transition:box-shadow .15s,border-color .15s}
+.pc:hover{border-color:var(--navy)}
+.pc.sel{border-color:var(--info);box-shadow:0 0 0 2px var(--info)}
+.pc .cap2{font-size:13px;line-height:1.3;color:var(--ink);min-height:34px}
+.pc .cap2 b{color:var(--navy);font-weight:600}
+.pc svg{display:block;width:100%;height:auto}
+.pc.ghost{position:fixed;z-index:50;pointer-events:none;opacity:.9;box-shadow:0 10px 24px rgba(22,33,58,.18);width:180px}
+.pc.placed{cursor:default;padding:4px;border-color:var(--ok)}
+.pc.placed .cap2{font-size:12px;min-height:0;overflow-wrap:anywhere;hyphens:auto}
+.pc.done-none{opacity:.75}
+.bins{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:10px}
+.bin{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-height:120px;padding:10px;border:1.5px dashed var(--line2);border-radius:8px;background:#FBFBFA;font:inherit;color:inherit;cursor:pointer;text-align:left}
+.bin:hover,.bin.over{border-color:var(--navy);background:#F3F5F9}
+.bin.armed{border-color:var(--info);border-style:solid}
+.bin .bh{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--navy);font-size:15px;line-height:1.25}
+.bin .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+@media (max-width:640px){.bin .slots{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}}
+.bin .slots .pc{width:100%}
+@media (max-width:480px){.bin{padding:8px;min-height:104px}.bin .bh{font-size:14px;flex-direction:column;align-items:flex-start;gap:2px}}
+/* lab report */
+.report td,.report th{text-align:left}
+.report td.num{font-family:var(--mono);text-align:right}
+@media (max-width:480px){
+  .card{padding:14px}
+  .plotcard{padding:10px 8px 6px}
+  .bar{width:90px}
+  h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<div class="wrap">
+  <nav class="backs" aria-label="Back links"><a class="back" href="unit7.html">← Unit 7</a><a class="back" href="arcade.html">Arcade</a></nav>
+  <main id="app" aria-live="off"></main>
+  <div class="foot"><span>Trendline Lab · Unit 7 · NC.8.SP.1–4</span><button class="linkbtn" id="resetBtn" type="button">Reset my progress</button></div>
+</div>
+
+<script>
+'use strict';
+/* ================= utilities ================= */
+const NS='http://www.w3.org/2000/svg';
+function h(tag,attrs,...kids){
+  const e=document.createElement(tag);
+  if(attrs) for(const k in attrs){const v=attrs[k]; if(v==null||v===false) continue;
+    if(k.startsWith('on')&&typeof v==='function') e.addEventListener(k.slice(2),v);
+    else if(k==='html') e.innerHTML=v; else e.setAttribute(k,v===true?'':v);}
+  for(const k of kids.flat()){ if(k==null||k===false) continue; e.append(k.nodeType?k:document.createTextNode(String(k))); }
+  return e;
+}
+function S(tag,attrs,parent){const e=document.createElementNS(NS,tag); if(attrs) for(const k in attrs){ if(attrs[k]!=null) e.setAttribute(k,attrs[k]); } if(parent) parent.appendChild(e); return e;}
+function T(parent,x,y,str,attrs){const t=S('text',Object.assign({x,y},attrs||{}),parent); t.textContent=str; return t;}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hashSeed(...n){let x=2166136261>>>0; for(const v of n){x^=(v|0)+0x9e3779b9+(x<<6)+(x>>>2); x=Math.imul(x,16777619)>>>0;} return x>>>0;}
+function RNG(seed){const r=mulberry32(seed); const o={
+  next:r, range:(a,b)=>a+(b-a)*r(), int:(a,b)=>Math.floor(a+(b-a+1)*r()),
+  pick:arr=>arr[Math.floor(r()*arr.length)],
+  shuffle:arr=>{const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a;},
+  normal:()=>{let u=0,v=0; while(u===0)u=r(); while(v===0)v=r(); const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); return Math.max(-2.2,Math.min(2.2,z));}
+}; return o;}
+const roundTo=(v,d)=>+(Math.round(v/d)*d).toFixed(6);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function fmt(v,dp=2){ if(!isFinite(v)) return '?'; let r=Math.round(v*Math.pow(10,dp))/Math.pow(10,dp); if(Object.is(r,-0)||Math.abs(r)<1e-12) r=0; return String(r).replace('-','−'); }
+function money(v){ const a=Math.abs(v); const s=Math.abs(a-Math.round(a))<1e-9?String(Math.round(a)):a.toFixed(2); return (v<0?'−':'')+'$'+s; }
+function sgnWord(v){return v<0?'−':'';}
+function eqHTML(m,b){
+  let s='<span class="eq"><i>y</i> = ';
+  const am=Math.abs(m);
+  if(Math.abs(m)<1e-12){ s+=fmt(b); return s+'</span>'; }
+  s+=(m<0?'−':'')+(Math.abs(am-1)<1e-12?'':fmt(am))+'<i>x</i>';
+  if(Math.abs(b)>1e-12) s+=(b<0?' − ':' + ')+fmt(Math.abs(b));
+  return s+'</span>';
+}
+function fracHTML(a,b){return `<span class="frac"><span>${a}</span><span>${b}</span></span>`;}
+function norm(s){return String(s==null?'':s).trim().toLowerCase().replace(/≈/g,'=').replace(/[−–—‒]/g,'-').replace(/\s+/g,' ');}
+function parseFrac(k){const m=String(k).match(/^(\d*\.?\d+)(?:\/(\d*\.?\d+))?$/); if(!m) return NaN; const a=parseFloat(m[1]); if(m[2]==null) return a; const d=parseFloat(m[2]); return d===0?NaN:a/d;}
+/* Number box: accepts -12, −12, 1/2, 0.5, "x = 5", "13 units", "$12.50", "45%", "70°F" */
+function parseNum(raw){
+  let s=norm(raw); if(!s) return NaN;
+  if(s.includes('=')) s=s.split('=').pop().trim();
+  s=s.replace(/[$,]/g,'').trim();
+  let m=s.match(/^([+-])?\s*(\d+)\s+(\d+)\s*\/\s*(\d+)(.*)$/);
+  if(m){ if(/[0-9]/.test(m[5])) return NaN; const v=+m[2]+ +m[3]/+m[4]; return m[1]==='-'?-v:v; }
+  m=s.match(/^([+-])?\s*\(?\s*([+-])?\s*(\d*\.?\d+)\s*(?:\/\s*(\d*\.?\d+))?\s*\)?(.*)$/);
+  if(!m) return NaN;
+  const rest=m[5]||''; if(/[0-9]/.test(rest)) return NaN;
+  let v=parseFloat(m[3]); if(m[4]!=null){const d=parseFloat(m[4]); if(!d) return NaN; v/=d;}
+  let neg=(m[1]==='-')!==(m[2]==='-'); return neg?-v:v;
+}
+/* percent or decimal → percent */
+function parsePct(raw){ const s=norm(raw); const v=parseNum(s); if(!isFinite(v)) return NaN; if(s.includes('%')) return v; return Math.abs(v)<=1?v*100:v; }
+/* y = mx + b in many forms → {m,b} or null */
+function parseLine(raw){
+  let s=norm(raw).replace(/\s/g,'').replace(/[×*·]/g,'');
+  if(!s) return null;
+  if(s.includes('=')){const parts=s.split('='); if(parts.length!==2) return null;
+    if(parts[0]==='y'||parts[0]==='f(x)') s=parts[1]; else if(parts[1]==='y') s=parts[0]; else return null;}
+  if(!s) return null;
+  s=s.replace(/\+\(-/g,'-(').replace(/-\(-/g,'+(').replace(/^\(-/,'-(').replace(/\+-/g,'-').replace(/-\+/g,'-').replace(/--/g,'+');
+  if(!/^[+-]/.test(s)) s='+'+s;
+  const terms=s.match(/[+-][^+-]+/g); if(!terms||terms.join('')!==s) return null;
+  let m=0,b=0;
+  for(const t of terms){
+    const sign=t[0]==='-'?-1:1; let body=t.slice(1);
+    if(body.includes('x')){
+      let c;
+      if(body==='x'||body==='(x)') c=1;
+      else if(/^\(?x\)?\/(\d*\.?\d+)$/.test(body)) c=1/parseFloat(body.split('/')[1]);
+      else { let k=body.replace(/\(?x\)?$/,''); if(k.includes('x')) return null; k=k.replace(/^\((.*)\)$/,'$1'); c=parseFrac(k); }
+      if(!isFinite(c)) return null; m+=sign*c;
+    } else { const c=parseFrac(body.replace(/^\((.*)\)$/,'$1')); if(!isFinite(c)) return null; b+=sign*c; }
+  }
+  return {m,b};
+}
+const near=(a,b,tol=0.051)=>isFinite(a)&&Math.abs(a-b)<=tol+1e-9;
+function lsq(pts){const n=pts.length; let mx=0,my=0; pts.forEach(p=>{mx+=p.x;my+=p.y;}); mx/=n; my/=n; let sxx=0,sxy=0; pts.forEach(p=>{sxx+=(p.x-mx)**2; sxy+=(p.x-mx)*(p.y-my);}); const m=sxy/sxx; return {m,b:my-m*mx};}
+function mae(pts,m,b){return pts.reduce((s,p)=>s+Math.abs(p.y-(m*p.x+b)),0)/pts.length;}
+function corr(pts){const n=pts.length; let mx=0,my=0; pts.forEach(p=>{mx+=p.x;my+=p.y;}); mx/=n; my/=n; let a=0,bx=0,by=0; pts.forEach(p=>{a+=(p.x-mx)*(p.y-my); bx+=(p.x-mx)**2; by+=(p.y-my)**2;}); return a/Math.sqrt(bx*by);}
+function starSVG(filled,size=18){const s=S('svg',{viewBox:'0 0 24 24',width:size,height:size,'aria-hidden':'true'}); S('path',{d:'M12 2.6l2.9 6 6.5.8-4.8 4.5 1.2 6.5L12 17.3l-5.8 3.1 1.2-6.5L2.6 9.4l6.5-.8z',fill:filled?'#FFC107':'none',stroke:filled?'#B98900':'#B7BCC7','stroke-width':'1.4','stroke-linejoin':'round'},s); return s;}
+function starRow(n,size){const w=h('span',{class:'stars',role:'img','aria-label':`${n} of 3 stars`}); for(let i=0;i<3;i++) w.append(starSVG(i<n,size)); return w;}
+function lockSVG(){const s=S('svg',{viewBox:'0 0 24 24',width:16,height:16,'aria-hidden':'true'}); S('rect',{x:5,y:11,width:14,height:10,rx:2,fill:'none',stroke:'#5B6478','stroke-width':1.8},s); S('path',{d:'M8 11V8a4 4 0 0 1 8 0v3',fill:'none',stroke:'#5B6478','stroke-width':1.8},s); return s;}
+function trendIcon(kind){const s=S('svg',{viewBox:'0 0 32 24',width:32,height:24,'aria-hidden':'true'});
+  const pts={pos:[[5,19],[10,16],[15,13],[20,9],[26,5]],neg:[[5,5],[10,8],[15,12],[20,15],[26,19]],none:[[6,8],[11,18],[16,6],[21,15],[26,10]],lin:[[5,19],[11,15],[16,12],[21,8],[27,5]],cur:[[5,20],[12,19],[18,16],[23,11],[27,4]]}[kind];
+  pts.forEach(p=>S('circle',{cx:p[0],cy:p[1],r:2.3,fill:'#1E2D4F'},s)); return s;}
+
+/* ================= storage ================= */
+const STORE_KEY='trendlineLab.v1';
+function loadStore(){try{const s=JSON.parse(localStorage.getItem(STORE_KEY)||'null'); return (s&&typeof s==='object')?s:{};}catch(e){return {};}}
+function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store));}catch(e){}}
+let store=loadStore();
+if(!store.base){store.base=(Math.random()*1e9)>>>0; saveStore();}
+store.att=store.att||{}; store.res=store.res||{};
+const params=new URLSearchParams(location.search);
+const URL_SEED=params.has('seed')?(parseInt(params.get('seed'),10)>>>0):null;
+
+/* ================= axes & plot ================= */
+const NICE=[1,2,5,10,20,25,50,100,200,250,500,1000];
+function niceAxis(lo,hi,maxT,zero){
+  for(const minGap of [0.15,0.06]){
+    for(const st of NICE){
+      let mn=Math.floor(lo/st+1e-9)*st; if(lo-mn<0.3*st) mn-=st;
+      if(zero||(lo>=0&&mn<0)){ if(lo<minGap*st) continue; mn=0; }
+      let mx=Math.ceil(hi/st-1e-9)*st; if(mx-hi<0.3*st) mx+=st;
+      const n=Math.round((mx-mn)/st);
+      if(n<=maxT) return {min:mn,max:mx,step:st,n};
+    }
+  }
+  const st=1000; const mn=Math.max(0,Math.floor(lo/st)*st-st), mx=Math.ceil(hi/st)*st+st; return {min:mn,max:mx,step:st,n:Math.round((mx-mn)/st)};
+}
+function axesFor(pts,o={}){
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  let lo=Math.min(...ys), hi=Math.max(...ys), zeroY=false;
+  (o.extraY||[]).forEach(v=>{ if(v>hi) hi=v; if(v<lo&&v>=0) zeroY=true; });
+  const ya=niceAxis(lo,hi,o.maxY||8,zeroY), dmax=Math.max(...ys);
+  if(o.ycap!=null&&ya.max>o.ycap&&o.ycap-dmax>=0.15*ya.step&&Math.abs((o.ycap-ya.min)/ya.step-Math.round((o.ycap-ya.min)/ya.step))<1e-9){ya.max=o.ycap; ya.n=Math.round((ya.max-ya.min)/ya.step);}
+  return {xa:niceAxis(Math.min(...xs),Math.max(...xs),o.maxX||10,!!o.zeroX), ya};
+}
+let plotUid=0;
+function makePlot(box,cfg){
+  const wide=(box.clientWidth||600)>=520;
+  const W=wide?600:400, H=wide?420:370;
+  const M={l:wide?66:60,r:14,t:14,b:wide?56:54};
+  const L=M.l,R=W-M.r,Tp=M.t,B=H-M.b, xa=cfg.xa, ya=cfg.ya;
+  const X=v=>L+(v-xa.min)/(xa.max-xa.min)*(R-L), Y=v=>B-(v-ya.min)/(ya.max-ya.min)*(B-Tp);
+  const iX=p=>xa.min+(p-L)/(R-L)*(xa.max-xa.min), iY=p=>ya.min+(B-p)/(B-Tp)*(ya.max-ya.min);
+  const svg=S('svg',{viewBox:`0 0 ${W} ${H}`,class:'plot'+(cfg.cls?' '+cfg.cls:''),role:'img','aria-label':cfg.aria||`Scatter plot. x-axis: ${cfg.xl}. y-axis: ${cfg.yl}.`});
+  const id='clip'+(++plotUid);
+  const defs=S('defs',null,svg); const cp=S('clipPath',{id},defs); S('rect',{x:L,y:Tp,width:R-L,height:B-Tp},cp);
+  S('rect',{x:L,y:Tp,width:R-L,height:B-Tp,fill:'#fff'},svg);
+  const gGrid=S('g',null,svg);
+  const maxLab=Math.max(...Array.from({length:xa.n+1},(_,i)=>fmt(xa.min+i*xa.step).length));
+  const xEvery=(R-L)/xa.n<maxLab*7.6+8?2:1, yEvery=(B-Tp)/ya.n<20?2:1;
+  for(let i=0;i<=xa.n;i++){const v=xa.min+i*xa.step, x=X(v); S('line',{x1:x,y1:Tp,x2:x,y2:B,stroke:'#E3E5EA','stroke-width':1},gGrid); S('line',{x1:x,y1:B,x2:x,y2:B+5,stroke:'#1E2D4F','stroke-width':1},gGrid); if(i%xEvery===0) T(gGrid,x,B+19,fmt(v),{'text-anchor':'middle','font-size':12});}
+  for(let i=0;i<=ya.n;i++){const v=ya.min+i*ya.step, y=Y(v); S('line',{x1:L,y1:y,x2:R,y2:y,stroke:'#E3E5EA','stroke-width':1},gGrid); S('line',{x1:L-5,y1:y,x2:L,y2:y,stroke:'#1E2D4F','stroke-width':1},gGrid); if(i%yEvery===0) T(gGrid,L-8,y+4,fmt(v),{'text-anchor':'end','font-size':12});}
+  S('line',{x1:L,y1:B,x2:R,y2:B,stroke:'#1E2D4F','stroke-width':1.6},gGrid);
+  S('line',{x1:L,y1:Tp,x2:L,y2:B,stroke:'#1E2D4F','stroke-width':1.6},gGrid);
+  T(gGrid,(L+R)/2,H-10,cfg.xl,{'text-anchor':'middle','font-size':wide?14:13,class:'axlab'});
+  T(gGrid,0,0,cfg.yl,{'text-anchor':'middle','font-size':wide?14:13,class:'axlab',transform:`translate(${wide?16:14},${(Tp+B)/2}) rotate(-90)`});
+  const gUnder=S('g',{'clip-path':`url(#${id})`},svg);
+  const gPts=S('g',null,svg);
+  const gOver=S('g',{'clip-path':`url(#${id})`},svg);
+  const gTop=S('g',null,svg);
+  box.innerHTML=''; box.appendChild(svg);
+  return {svg,X,Y,iX,iY,L,R,T:Tp,B,W,H,xa,ya,wide,gUnder,gPts,gOver,gTop,r:wide?5.5:5.5};
+}
+function drawPts(p,pts,o={}){
+  return pts.map((q,i)=>{const c=S('circle',{cx:p.X(q.x),cy:p.Y(q.y),r:p.r,class:'pt'},p.gPts);
+    if(o.focusable){c.setAttribute('tabindex','0'); c.setAttribute('role','button'); c.setAttribute('aria-label',`Dot ${i+1}: ${o.lab?o.lab(q):fmt(q.x)+', '+fmt(q.y)}`);}
+    return c;});
+}
+function drawLine(p,g,m,b,attrs){const x1=p.xa.min-1*(p.xa.max-p.xa.min), x2=p.xa.max+1*(p.xa.max-p.xa.min);
+  return S('line',Object.assign({x1:p.X(x1),y1:p.Y(m*x1+b),x2:p.X(x2),y2:p.Y(m*x2+b)},attrs),g);}
+function svgPt(svg,e){const pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse());}
+
+/* ================= contexts ================= */
+const LIN={
+ study:{xl:'Hours studied',yl:'Test score (points)',xw:'hours studied',yw:'test score',fx:v=>fmt(v)+' h',fy:v=>fmt(v)+' points',ycap:100,xr:[0.5,9.5],dx:0.5,dy:1,yB:[30,97],m:[3.5,5.2],b:[45,54],sd:4},
+ cocoa:{xl:'Outside temperature (°F)',yl:'Hot cocoa sold (cups)',xw:'outside temperature',yw:'cups of cocoa sold',fx:v=>fmt(v)+'°F',fy:v=>fmt(v)+' cups',xr:[20,85],dx:1,dy:1,yB:[8,400],m:[-3,-2],b:[240,290],sd:12},
+ armspan:{xl:'Height (inches)',yl:'Arm span (inches)',xw:'height',yw:'arm span',fx:v=>fmt(v)+' in',fy:v=>fmt(v)+' in',xr:[55,75],dx:1,dy:1,yB:[40,90],m:[0.9,1.1],bf:(m,r)=>Math.round(65*(1-m)+r.range(-2,2)),sd:1.8},
+ taxi:{xl:'Trip distance (miles)',yl:'Taxi fare (dollars)',xw:'trip distance',yw:'taxi fare',fx:v=>fmt(v)+' mi',fy:money,xr:[1,15],dx:0.5,dy:0.5,yB:[3,60],m:[2,3],b:[3,6],sd:1.6},
+ absences:{xl:'Days absent',yl:'Final grade (points)',xw:'days absent',yw:'final grade',fx:v=>fmt(v)+' days',fy:v=>fmt(v)+' points',ycap:100,xr:[1,18],dx:1,dy:1,yB:[35,97],m:[-2.2,-1.4],b:[90,97],sd:4},
+ tree:{xl:'Age of tree (years)',yl:'Tree height (feet)',xw:'age of the tree',yw:'tree height',fx:v=>fmt(v)+' years',fy:v=>fmt(v)+' ft',xr:[2,19],dx:1,dy:0.5,yB:[1,70],m:[1.5,2.5],b:[2,6],sd:2.5},
+ battery:{yu:'percent',xl:'Video watched (minutes)',yl:'Battery left (%)',xw:'minutes of video watched',yw:'battery left',fx:v=>fmt(v)+' min',fy:v=>fmt(v)+'%',ycap:100,xr:[10,190],dx:5,dy:1,yB:[3,97],m:[-0.45,-0.3],b:[90,96],sd:4},
+ freethrow:{yu:'free throws',xl:'Practice per day (minutes)',yl:'Free throws made (out of 50)',xw:'minutes of practice',yw:'free throws made',fx:v=>fmt(v)+' min',fy:v=>fmt(v)+' made',ycap:50,xr:[5,58],dx:1,dy:1,yB:[3,47],m:[0.4,0.6],b:[10,16],sd:3},
+ crickets:{yu:'degrees',xl:'Cricket chirps (per minute)',yl:'Air temperature (°F)',xw:'cricket chirps per minute',yw:'air temperature',fx:v=>fmt(v)+' chirps',fy:v=>fmt(v)+'°F',xr:[60,180],dx:2,dy:1,yB:[40,95],m:[0.22,0.28],b:[36,44],sd:2},
+ gas:{xl:'Miles driven',yl:'Gas left in tank (gallons)',xw:'miles driven',yw:'gas left in the tank',fx:v=>fmt(v)+' mi',fy:v=>fmt(v,1)+' gal',xr:[20,300],dx:5,dy:0.1,yB:[0.5,16],m:[-0.05,-0.04],b:[14,16],sd:0.6},
+ icecream:{yu:'cones',xl:'High temperature (°F)',yl:'Ice cream cones sold',xw:'high temperature',yw:'ice cream cones sold',fx:v=>fmt(v)+'°F',fy:v=>fmt(v)+' cones',xr:[55,95],dx:1,dy:1,yB:[10,260],m:[3,5],bf:(m,r)=>Math.round(30-m*55+r.range(-10,10)),sd:12},
+};
+const POS_L=['study','armspan','taxi','tree','freethrow','crickets','icecream'], NEG_L=['cocoa','absences','battery','gas'];
+const NONE={
+ shoe:{xl:'Shoe size',yl:'Phone time (minutes per day)',xw:'shoe size',yw:'phone time',xr:[5,12],dx:0.5,yr:[30,240],dy:5},
+ birthday:{xl:'Shoe size',yl:'Birthday month (1 = Jan)',xw:'shoe size',yw:'birthday month',xr:[5,12],dx:0.5,yr:[1,12],dy:1},
+ heightscore:{xl:'Height (inches)',yl:'Math test score (points)',xw:'height',yw:'math test score',xr:[56,72],dx:1,yr:[55,98],dy:1},
+ distgame:{xl:'Distance from school (miles)',yl:'Video games (hours per week)',xw:'distance from school',yw:'video game time',xr:[0.5,9.5],dx:0.5,yr:[1,20],dy:1},
+};
+const CURVE={
+ bacteria:{xl:'Time (hours)',yl:'Bacteria (thousands)',xw:'time',yw:'number of bacteria',xr:[1,10],dx:0.5,dy:0.5,sign:1,gen:r=>{const a=r.range(3,5),g=r.range(1.36,1.42);return x=>a*Math.pow(g,x);},rel:0.04},
+ carvalue:{xl:'Age of car (years)',yl:'Car value (thousands of dollars)',xw:'age of the car',yw:'value of the car',xr:[0.5,12],dx:0.5,dy:0.5,sign:-1,gen:r=>{const V=r.range(28,36),q=r.range(0.75,0.79);return x=>V*Math.pow(q,x);},rel:0.04},
+ stopping:{xl:'Speed (miles per hour)',yl:'Stopping distance (feet)',xw:'speed',yw:'stopping distance',xr:[10,70],dx:1,dy:1,sign:1,gen:r=>{const k=r.range(0.055,0.065);return x=>k*x*x+0.3*x;},rel:0.025},
+ coffee:{xl:'Time since pouring (minutes)',yl:'Coffee temperature (°F)',xw:'time since pouring',yw:'coffee temperature',xr:[2,60],dx:1,dy:1,sign:-1,gen:r=>{const A=r.range(100,115),t=r.range(11,15);return x=>70+A*Math.exp(-x/t);},abs:1.5},
+ tile:{xl:'Side length of square tile (cm)',yl:'Tile area (square cm)',xw:'side length',yw:'area of the tile',xr:[2,10],dx:0.5,dy:1,sign:1,gen:()=>x=>x*x,rel:0.02},
+ savings:{xl:'Years saved',yl:'Account value (thousands of dollars)',xw:'years saved',yw:'account value',xr:[1,25],dx:1,dy:0.1,sign:1,gen:r=>{const P=r.pick([0.5,0.8,1]),i=r.range(0.1,0.12);return x=>P*Math.pow(1+i,x);},rel:0.03},
+};
+const POS_C=['bacteria','stopping','tile','savings'], NEG_C=['carvalue','coffee'];
+
+function stratX(r,n,lo,hi,dx){const xs=[]; for(let i=0;i<n;i++){xs.push(roundTo(lo+(i+r.range(0.1,0.9))/n*(hi-lo),dx));} return xs.map(x=>clamp(x,lo,hi));}
+function dedupe(pts,dy){const seen=new Set(); return pts.filter(p=>{const k=p.x+'|'+p.y; if(seen.has(k)) return false; seen.add(k); return true;});}
+function genLinear(c,r,o={}){
+  const n=o.n||r.int(12,16), sdm=o.sd==null?1:o.sd;
+  let last=null;
+  for(let t=0;t<120;t++){
+    const m=o.m!=null?o.m:r.range(c.m[0],c.m[1]);
+    const b=o.b!=null?o.b:(c.bf?c.bf(m,r):r.range(c.b[0],c.b[1]));
+    const xs=stratX(r,n,c.xr[0],c.xr[1],c.dx);
+    const pts=xs.map(x=>({x,y:roundTo(m*x+b+r.normal()*c.sd*sdm,c.dy)}));
+    last={pts,m,b};
+    if(pts.every(p=>p.y>=c.yB[0]&&p.y<=c.yB[1])) return {pts:dedupe(pts),m,b};
+  }
+  last.pts.forEach(p=>p.y=clamp(p.y,c.yB[0],c.yB[1])); last.pts=dedupe(last.pts); return last;
+}
+function genNone(c,r){
+  for(let t=0;t<60;t++){const n=r.int(14,18); const xs=stratX(r,n,c.xr[0],c.xr[1],c.dx);
+    const pts=dedupe(r.shuffle(xs).map(x=>({x,y:roundTo(r.range(c.yr[0],c.yr[1]),c.dy)})));
+    if(Math.abs(corr(pts))<0.15) return pts;}
+  return Array.from({length:14},(_,i)=>({x:roundTo(c.xr[0]+i/13*(c.xr[1]-c.xr[0]),c.dx),y:roundTo(c.yr[0]+((i*7)%14)/13*(c.yr[1]-c.yr[0]),c.dy)}));
+}
+function genCurve(c,r){const f=c.gen(r); const n=r.int(14,17); const xs=stratX(r,n,c.xr[0],c.xr[1],c.dx);
+  return {f,pts:dedupe(xs.map(x=>{const y=f(x); const sd=c.abs!=null?c.abs:c.rel*y; return {x,y:roundTo(Math.max(c.dy,y+r.normal()*sd),c.dy)};}))};}
+
+/* ================= session / shell ================= */
+const app=document.getElementById('app');
+let SES=null;
+window.TL={get ses(){return SES;}, parseNum, parseLine, parsePct, lsq, mae, niceAxis};
+function seedFor(id,att,i){return hashSeed(URL_SEED!=null?URL_SEED:store.base,id,att,i==null?999:i);}
+function focusEl(el){ if(!el) return; try{el.focus({preventScroll:true});}catch(e){el.focus();} }
+function totalStars(){return STATIONS.reduce((s,st)=>s+((store.res[st.id]&&store.res[st.id].best)||0),0);}
+function doneCount(){return STATIONS.filter(st=>store.res[st.id]&&store.res[st.id].done).length;}
+
+function showHome(){
+  SES=null; app.innerHTML=''; window.scrollTo(0,0);
+  const hero=h('section',{class:'hero'},
+    h('h1',{},'Trendline Lab'),
+    h('p',{class:'lede'},'You are a data scientist. Read the pattern, fit the line, and make the call.'),
+    h('p',{class:'muted',style:'max-width:640px'},'Six lab stations. Each one starts with a short worked example. Then you do 4 rounds with new data. Go in order, or pick any station.'),
+    h('p',{class:'stds'},'NC.8.SP.1 · NC.8.SP.2 · NC.8.SP.3 · NC.8.SP.4'));
+  app.append(hero, h('div',{class:'label'},'Stations'));
+  const grid=h('div',{class:'grid'});
+  STATIONS.forEach(st=>{
+    const res=store.res[st.id];
+    const foot=h('div',{class:'st-foot'});
+    if(res&&res.done) foot.append(h('span',{},starRow(res.best||0,16)),h('span',{class:'mono'},`best ${res.acc}%`));
+    else foot.append(h('span',{},'Not started'),h('span',{class:'mono'},`${st.n} rounds`));
+    const btn=h('button',{class:'st-card',type:'button','data-station':st.id,onclick:()=>showIntro(st.id)},
+      h('div',{class:'top'},h('span',{class:'st-num'},`STATION ${st.id}`),h('span',{class:'tag'},st.std)),
+      h('h3',{},st.name), h('div',{class:'desc'},st.blurb), foot);
+    grid.append(btn);
+  });
+  app.append(grid);
+  const dc=doneCount();
+  app.append(h('div',{class:'label'},'Lab report'),
+    h('div',{class:'card',style:'display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between'},
+      h('div',{},h('div',{style:'font-weight:600;color:var(--navy)'},`${dc} of ${STATIONS.length} stations done · ${totalStars()} of ${STATIONS.length*3} stars`),
+        h('div',{class:'muted',style:'font-size:14px'},dc?'Open your report to see your strengths and what to practice next.':'Finish a station to start your report.')),
+      h('button',{class:'btn sec',type:'button',id:'reportBtn',disabled:!dc,onclick:showReport},'Open lab report')));
+}
+function showIntro(id){
+  const st=STATIONS[id-1]; app.innerHTML=''; window.scrollTo(0,0);
+  const ex=st.example();
+  const exCard=h('div',{class:'card ex'},h('div',{class:'steplab'},'Worked example'),
+    h('h3',{style:'margin-bottom:10px'},ex.title),
+    h('div',{class:'ex-grid'},h('div',{},ex.visual),h('ol',{},...ex.steps.map(t=>h('li',{html:t})))));
+  app.append(
+    h('div',{class:'stage-top'},h('button',{class:'btn ghost',type:'button',onclick:showHome},'← All stations')),
+    h('div',{},h('span',{class:'st-num'},`STATION ${st.id} · ${st.std}`),h('h2',{style:'margin-top:4px'},st.name)),
+    h('div',{style:'margin-top:16px;display:flex;flex-direction:column;gap:14px'},
+      exCard,
+      h('div',{class:'card how'},h('div',{class:'steplab'},'Your turn'),...st.how.map(t=>h('p',{},t)),
+        h('div',{class:'btn-row'},h('button',{class:'btn',type:'button',id:'startBtn',onclick:()=>startStation(id)},`Start · ${st.n} rounds`)))));
+  focusEl(document.getElementById('startBtn'));
+}
+function startStation(id){
+  const st=STATIONS[id-1];
+  const att=(store.att[id]||0)+1; store.att[id]=att; saveStore();
+  const plan=st.plan?st.plan(RNG(seedFor(id,att,null))):null;
+  const items=[]; for(let i=0;i<st.n;i++) items.push(st.make(RNG(seedFor(id,att,i)),i,plan));
+  SES={id,st,items,idx:0,parts:0,good:0,fit:[],att};
+  showItem(); window.scrollTo(0,0);
+}
+function showItem(){
+  const st=SES.st, it=SES.items[SES.idx]; app.innerHTML='';
+  const scoreChip=h('span',{class:'score-chip'},'');
+  const top=h('div',{class:'stage-top'},
+    h('div',{class:'ttl'},h('span',{class:'st-num'},`STATION ${st.id} · ${st.std}`),h('h2',{},st.name)),
+    h('div',{class:'prog'},h('span',{},`Round ${SES.idx+1} of ${st.n}`),h('div',{class:'bar'},h('i',{style:`width:${SES.idx/st.n*100}%`}))),
+    h('button',{class:'btn ghost',type:'button',onclick:showHome},'← All stations'));
+  const ctx=h('p',{class:'ctx'});
+  const plotBox=h('div',{class:'plotbox'});
+  const left=h('div',{class:'card plotcard'},ctx,plotBox);
+  const panel=h('div',{class:'panel'});
+  app.append(top,h('div',{class:'lab'+(st.wide?' wide':'')},left,panel));
+  const upd=()=>{scoreChip.textContent=SES.parts?(st.id===3?`Lines with 2+ stars: ${SES.good} of ${SES.parts}`:`First-try correct: ${SES.good} of ${SES.parts}`):'';};
+  const ui={ctx,plotBox,panel,left,
+    record(ok){SES.parts++; if(ok) SES.good++; upd();},
+    finish(){const last=SES.idx===st.n-1;
+      const nb=h('button',{class:'btn',type:'button',id:'nextBtn',onclick:()=>{ if(last) showEnd(); else {SES.idx++; showItem(); window.scrollTo(0,0);} }},last?'Finish station →':'Next round →');
+      (st.wide?left:panel).append(h('div',{class:'btn-row'},nb,scoreChip)); upd();
+      nb.focus({preventScroll:true}); setTimeout(()=>{ if(nb.getBoundingClientRect().bottom>innerHeight) nb.scrollIntoView({behavior:'smooth',block:'center'}); },50);
+    }};
+  SES.ui=ui; SES.item=it;
+  st.render(it,ui);
+}
+function showEnd(){
+  const st=SES.st; let stars, acc, extra='';
+  if(st.id===3){ const avg=SES.fit.reduce((a,b)=>a+b,0)/SES.fit.length; stars=Math.round(avg); acc=Math.round(SES.fit.filter(s=>s>=2).length/SES.fit.length*100); extra=`Average fit: ${fmt(avg,1)} stars per line.`; }
+  else { acc=SES.parts?Math.round(SES.good/SES.parts*100):0; stars=acc>=85?3:acc>=65?2:1; extra=`${SES.good} of ${SES.parts} answers right on the first try.`; }
+  const prev=store.res[st.id]||{}; store.res[st.id]={done:true,best:Math.max(prev.best||0,stars),acc:Math.max(prev.acc||0,acc),last:acc,lastStars:stars}; saveStore();
+  app.innerHTML=''; window.scrollTo(0,0);
+  const msg=stars===3?'Excellent work. You have this skill down.':stars===2?'Nice work. One more try with new data will make it stick.':'Good effort. Every try gives you new data. Read the worked example again, then try once more.';
+  const next=STATIONS[st.id];
+  app.append(h('div',{class:'stage-top'},h('button',{class:'btn ghost',type:'button',onclick:showHome},'← All stations')),
+    h('div',{class:'card endcard',id:'endCard'},
+      h('span',{class:'st-num'},`STATION ${st.id} COMPLETE`),h('h2',{style:'margin:4px 0 10px'},st.name),
+      h('div',{class:'bigstars'},starRow(stars,48)),
+      h('div',{class:'kpis'},h('div',{class:'kpi'},h('div',{class:'v'},acc+'%'),h('div',{class:'k'},st.id===3?'lines with 2+ stars':'right on first try')),h('div',{class:'kpi'},h('div',{class:'v'},`${stars}/3`),h('div',{class:'k'},'stars'))),
+      h('p',{},extra),h('p',{},msg),
+      h('div',{class:'btn-row'},
+        next?h('button',{class:'btn',type:'button',id:'nextStation',onclick:()=>showIntro(next.id)},`Next: ${next.name} →`):h('button',{class:'btn',type:'button',id:'reportNow',onclick:showReport},'See my lab report →'),
+        h('button',{class:'btn sec',type:'button',id:'tryAgain',onclick:()=>startStation(st.id)},'Try again'),
+        h('button',{class:'btn sec',type:'button',onclick:showHome},'All stations'))));
+  focusEl(document.getElementById(next?'nextStation':'reportNow'));
+}
+function showReport(){
+  SES=null; app.innerHTML=''; window.scrollTo(0,0);
+  const rows=STATIONS.map(st=>{const r=store.res[st.id]; return {st,r};});
+  const done=rows.filter(x=>x.r&&x.r.done), ts=totalStars();
+  const strong=done.filter(x=>x.r.best===3).map(x=>x.st.name);
+  const practice=rows.filter(x=>!x.r||!x.r.done||x.r.best<2).map(x=>x.st.name);
+  const head=ts>=15?'Outstanding lab work.':ts>=10?'Strong lab work.':ts>=5?'Good progress.':'You have started your lab work.';
+  const enc=ts>=15?'You can read a scatter plot, fit a line, use its equation, and compare groups with percents. That is real data science.':
+    ts>=10?'You know most of the big ideas. A second try on your lowest station will lift your score.':
+    'Every station gives new data each time. Read the worked example, then try again. Your stars will grow.';
+  const tbl=h('table',{class:'tw report'},h('tr',{},h('th',{},'Station'),h('th',{},'Skill'),h('th',{},'Best stars'),h('th',{},'Best score')),
+    ...rows.map(({st,r})=>h('tr',{},h('th',{class:'rowh'},`${st.id}. ${st.name}`),h('td',{style:'font-family:var(--sans);text-align:left'},st.skill),
+      h('td',{},r&&r.done?starRow(r.best,16):h('span',{class:'muted',style:'font-family:var(--sans)'},'not yet')),h('td',{class:'num'},r&&r.done?r.acc+'%':'—'))));
+  app.append(h('div',{class:'stage-top'},h('button',{class:'btn ghost',type:'button',onclick:showHome},'← All stations')),
+    h('div',{class:'card',id:'reportCard'},
+      h('span',{class:'st-num'},'TRENDLINE LAB · LAB REPORT'),h('h2',{style:'margin:4px 0 6px'},head),
+      h('div',{class:'kpis'},h('div',{class:'kpi'},h('div',{class:'v'},`${ts}/${STATIONS.length*3}`),h('div',{class:'k'},'stars')),h('div',{class:'kpi'},h('div',{class:'v'},`${done.length}/${STATIONS.length}`),h('div',{class:'k'},'stations done'))),
+      h('p',{},enc),
+      h('div',{class:'tablewrap'},tbl),
+      strong.length?h('p',{},h('b',{},'Strengths: '),strong.join(', ')+'.'):null,
+      practice.length?h('p',{},h('b',{},'Practice next: '),practice.join(', ')+'.'):h('p',{},h('b',{},'Every station has 2 or more stars. '),'Try for 3 stars on each one.'),
+      h('div',{class:'btn-row'},h('button',{class:'btn',type:'button',onclick:showHome},'Back to the stations'),h('a',{class:'btn sec',href:'unit7.html'},'Back to Unit 7'))));
+}
+
+/* ================= shared step widgets ================= */
+/* Multiple choice. opts: [{t (text) | html, ok, fb}] */
+function mcStep(parent,o){
+  const wrap=h('div',{class:'card'});
+  if(o.lab) wrap.append(h('div',{class:'steplab'},o.lab));
+  const q=h('div',{class:'q'}); if(o.qhtml) q.innerHTML=o.qhtml; else q.textContent=o.q; wrap.append(q);
+  if(o.sub) wrap.append(h('div',{class:'sub',html:o.sub}));
+  const list=h('div',{class:'choices'+(o.row?' row':'')});
+  const fb=h('div',{class:'fb',role:'status'});
+  let wrong=0, done=false; const tries=o.tries||2;
+  const seen=new Set(); o.opts=o.opts.filter(op=>{const k=op.t||op.html; if(seen.has(k)&&!op.ok) return false; seen.add(k); return true;});
+  const btns=o.opts.map(op=>{
+    const b=h('button',{class:'choice',type:'button'}); if(op.icon) b.append(op.icon);
+    const sp=h('span'); if(op.html) sp.innerHTML=op.html; else sp.textContent=op.t; b.append(sp);
+    b.addEventListener('click',()=>{
+      if(done||b.disabled) return;
+      if(op.ok){ b.classList.add('right'); end(wrong===0,(wrong===0?(o.okPre||'Correct. '):'Yes. ')+(op.fb||''),'ok'); }
+      else { wrong++; b.classList.add('wrong'); b.disabled=true;
+        const left=btns.filter(x=>!x.disabled);
+        if(wrong>=tries||left.length<=1){ const c=o.opts.findIndex(z=>z.ok); btns[c].classList.add('right'); end(false,(op.fb?op.fb+' ':'')+(o.opts[c].fb?o.opts[c].fb:''),'err'); }
+        else { fb.className='fb show err'; fb.innerHTML=(op.fb||'Not quite.')+' Try again.'; }
+      }
+    });
+    list.append(b); return b;});
+  function end(first,msg,cls){ done=true; btns.forEach(b=>{b.disabled=true; if(!b.classList.contains('right')&&!b.classList.contains('wrong')) b.classList.add('dim');});
+    fb.className='fb show '+cls; fb.innerHTML=msg; if(o.record!==false&&SES) SES.ui.record(first); if(o.onDone) o.onDone(first); }
+  wrap.append(list,fb); parent.append(wrap);
+  return {wrap,btns};
+}
+/* Box step: fields [{key,label,html,cls,width,ph}] check(vals)->{ok,msg,bad:[keys]} */
+function boxStep(parent,o){
+  const wrap=h('div',{class:'card'});
+  if(o.lab) wrap.append(h('div',{class:'steplab'},o.lab));
+  if(o.q) wrap.append(h('div',{class:'q',html:o.q}));
+  if(o.sub) wrap.append(h('div',{class:'sub',html:o.sub}));
+  const inputs={};
+  const fields=h('div',{class:'fields'});
+  (o.fields||[]).forEach(f=>{
+    const inp=h('input',{class:'box'+(f.cls?' '+f.cls:''),type:'text',autocomplete:'off',autocapitalize:'off',spellcheck:'false','aria-label':f.aria||f.label||f.key,placeholder:f.ph||''});
+    if(f.width) inp.style.width=f.width;
+    inputs[f.key]=inp;
+    const lab=h('span',{class:'field'}); if(f.pre) lab.append(h('label',{html:f.pre})); lab.append(inp); if(f.post) lab.append(h('span',{html:f.post}));
+    fields.append(lab);
+  });
+  if(o.extInputs) Object.assign(inputs,o.extInputs);
+  const fb=h('div',{class:'fb',role:'status'});
+  const work=h('div',{class:'work'});
+  const checkBtn=h('button',{class:'btn',type:'button'},o.checkText||'Check');
+  const hintBtn=o.hint?h('button',{class:'btn sec',type:'button'},'Hint'):null;
+  const showBtn=h('button',{class:'btn sec',type:'button',style:'display:none'},'Show me');
+  let wrong=0, done=false;
+  function vals(){const v={}; for(const k in inputs) v[k]=inputs[k].value; return v;}
+  function check(){
+    if(done) return;
+    const v=vals(); if(Object.values(v).some(x=>!String(x).trim())){fb.className='fb show tip'; fb.innerHTML='Fill in every box first.'; return;}
+    const res=o.check(v);
+    for(const k in inputs){inputs[k].classList.remove('good','bad'); if(res.bad&&res.bad.includes(k)) inputs[k].classList.add('bad'); else if(!res.ok) {} }
+    if(res.ok){ finish(wrong===0,(wrong===0?'Correct. ':'Yes, that is right. ')+(res.msg||''),'ok'); }
+    else { wrong++; fb.className='fb show err'; fb.innerHTML=res.msg||'Not quite. Check your work.'; if(wrong>=2) showBtn.style.display=''; }
+  }
+  function finish(first,msg,cls){ done=true; for(const k in inputs){inputs[k].disabled=true; inputs[k].classList.remove('bad'); if(cls==='ok') inputs[k].classList.add('good');}
+    checkBtn.disabled=true; if(hintBtn) hintBtn.disabled=true; showBtn.style.display='none';
+    fb.className='fb show '+cls; fb.innerHTML=msg;
+    if(o.work){work.innerHTML=o.work(); work.classList.add('show');}
+    if(o.record!==false&&SES) SES.ui.record(first);
+    if(o.onDone) o.onDone(first);
+  }
+  checkBtn.addEventListener('click',check);
+  if(hintBtn) hintBtn.addEventListener('click',()=>{fb.className='fb show tip'; fb.innerHTML=o.hint;});
+  showBtn.addEventListener('click',()=>{ const ans=o.answers(); for(const k in ans) if(inputs[k]) inputs[k].value=ans[k]; finish(false,'Here is the answer. Read the steps below.','err'); });
+  for(const k in inputs) inputs[k].addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault(); check();}});
+  wrap.append(fields,h('div',{class:'btn-row'},checkBtn,hintBtn,showBtn),fb,work);
+  parent.append(wrap);
+  return {wrap,inputs,check,focus(){const f=Object.values(inputs)[0]; if(f&&innerWidth>860) focusEl(f);}};
+}
+
+/* ================= mini plot (thumbnails + worked examples) ================= */
+function miniPlot(pts,o){
+  const W=o.w||240,Hh=o.h||180, lab=!!o.xl;
+  const M={l:lab?(o.ticks?44:24):10,r:10,t:10,b:lab?(o.ticks?40:24):10};
+  const L=M.l,R=W-M.r,Tp=M.t,B=Hh-M.b, xa=o.xa, ya=o.ya;
+  const X=v=>L+(v-xa.min)/(xa.max-xa.min)*(R-L), Y=v=>B-(v-ya.min)/(ya.max-ya.min)*(B-Tp);
+  const svg=S('svg',{viewBox:`0 0 ${W} ${Hh}`,role:'img','aria-label':o.aria||'Scatter plot'});
+  S('rect',{x:L,y:Tp,width:R-L,height:B-Tp,fill:'#fff'},svg);
+  for(let i=0;i<=xa.n;i++){const x=X(xa.min+i*xa.step); S('line',{x1:x,y1:Tp,x2:x,y2:B,stroke:'#E3E5EA','stroke-width':1},svg); if(o.ticks) T(svg,x,B+15,fmt(xa.min+i*xa.step),{'text-anchor':'middle','font-size':11,style:'font-family:var(--mono);fill:#5B6478'});}
+  for(let i=0;i<=ya.n;i++){const y=Y(ya.min+i*ya.step); S('line',{x1:L,y1:y,x2:R,y2:y,stroke:'#E3E5EA','stroke-width':1},svg); if(o.ticks) T(svg,L-6,y+4,fmt(ya.min+i*ya.step),{'text-anchor':'end','font-size':11,style:'font-family:var(--mono);fill:#5B6478'});}
+  S('line',{x1:L,y1:B,x2:R,y2:B,stroke:'#1E2D4F','stroke-width':1.5},svg); S('line',{x1:L,y1:Tp,x2:L,y2:B,stroke:'#1E2D4F','stroke-width':1.5},svg);
+  if(lab){ T(svg,(L+R)/2,Hh-6,o.xl,{'text-anchor':'middle','font-size':12,style:'font-family:var(--sans);fill:#2B3345'});
+    T(svg,0,0,o.yl,{'text-anchor':'middle','font-size':12,style:'font-family:var(--sans);fill:#2B3345',transform:`translate(12,${(Tp+B)/2}) rotate(-90)`}); }
+  const gUnder=S('g',null,svg), gPts=S('g',null,svg), gTop=S('g',null,svg);
+  pts.forEach(q=>S('circle',{cx:X(q.x),cy:Y(q.y),r:o.r||3.6,fill:'#1E2D4F','fill-opacity':.85,stroke:'#fff','stroke-width':1},gPts));
+  return {svg,X,Y,L,R,T:Tp,B,xa,ya,gUnder,gTop};
+}
+function miniLine(p,g,m,b,attrs){const x1=p.xa.min,x2=p.xa.max; const cl=S('clipPath',{id:'mc'+(++plotUid)},p.svg); S('rect',{x:p.L,y:p.T,width:p.R-p.L,height:p.B-p.T},cl);
+  return S('line',Object.assign({x1:p.X(x1),y1:p.Y(m*x1+b),x2:p.X(x2),y2:p.Y(m*x2+b),'clip-path':`url(#mc${plotUid})`},attrs),g);}
+function miniCurve(p,g,f,attrs){let d=''; const N=60; for(let k=0;k<=N;k++){const x=p.xa.min+(p.xa.max-p.xa.min)*k/N; d+=(k?'L':'M')+p.X(x).toFixed(1)+' '+p.Y(f(x)).toFixed(1);}
+  const cl=S('clipPath',{id:'mc'+(++plotUid)},p.svg); S('rect',{x:p.L,y:p.T,width:p.R-p.L,height:p.B-p.T},cl);
+  return S('path',Object.assign({d,fill:'none','clip-path':`url(#mc${plotUid})`},attrs),g);}
+const shortLab=s=>s.replace(/ \(.*\)$/,'');
+
+/* ================= Station 1: Sort the plots ================= */
+function planSort(r){
+  let kinds, rounds;
+  for(let t=0;t<200;t++){
+    kinds=r.shuffle(['pos-lin','pos-lin','pos-lin','neg-lin','neg-lin','neg-lin','none','none','pos-cur','pos-cur','neg-cur',r.pick(['none','neg-cur','pos-lin'])]);
+    rounds=[0,1,2,3].map(k=>kinds.slice(3*k,3*k+3));
+    const ok=rounds.every(R=>{const a=R.map(k=>k.split('-')[0]); return a.filter(x=>x!=='none').length>=2 && new Set(a).size>=2;});
+    if(ok) break;
+  }
+  const pools={'pos-lin':r.shuffle(POS_L),'neg-lin':r.shuffle(NEG_L),'none':r.shuffle(Object.keys(NONE)),'pos-cur':r.shuffle(POS_C),'neg-cur':r.shuffle(NEG_C)};
+  const used={}; const keys=kinds.map(k=>{used[k]=(used[k]||0)+1; return pools[k][(used[k]-1)%pools[k].length];});
+  return {rounds,keys:[0,1,2,3].map(k=>keys.slice(3*k,3*k+3))};
+}
+function makeSortPlot(r,kind,key){
+  let c,pts,f=null,lin=null;
+  if(kind.endsWith('lin')){c=LIN[key]; const g=genLinear(c,r,{sd:0.9}); pts=g.pts; lin=lsq(pts);}
+  else if(kind==='none'){c=NONE[key]; pts=genNone(c,r);}
+  else {c=CURVE[key]; const g=genCurve(c,r); pts=g.pts; f=g.f;}
+  const ax=axesFor(pts,{ycap:c.ycap});
+  const assoc=kind.startsWith('pos')?'pos':kind.startsWith('neg')?'neg':'none';
+  const form=kind.endsWith('lin')?'lin':kind.endsWith('cur')?'cur':null;
+  return {kind,key,c,pts,f,lin,assoc,form,...ax};
+}
+function makeSort(r,i,plan){ return {plots:plan.rounds[i].map((k,j)=>makeSortPlot(r,k,plan.keys[i][j]))}; }
+const ASSOC_NAME={pos:'Positive association',neg:'Negative association',none:'No association'};
+const FORM_NAME={lin:'Linear',cur:'Nonlinear'};
+function renderSort(it,ui){
+  const plots=it.plots;
+  ui.ctx.innerHTML='Drag each plot into the right bin. Or tap a plot, then tap a bin.';
+  const tray=h('div',{class:'tray',role:'group','aria-label':'Plots to sort'});
+  const binsWrap=h('div',{class:'bins'});
+  const noneNote=h('p',{class:'muted',style:'margin:0;font-size:14px;display:none'});
+  const fb=h('div',{class:'fb',role:'status',style:'margin-top:0'});
+  const board=h('div',{class:'board'},tray,binsWrap,noneNote,fb);
+  ui.plotBox.append(board);
+  const stepLab=h('div',{class:'steplab'}), q=h('div',{class:'q'}), sub=h('div',{class:'sub'});
+  ui.panel.append(h('div',{class:'card',id:'sortCard'},stepLab,q,sub));
+  let phase='assoc', sel=null, bins={}, tries=plots.map(()=>0), placed=plots.map(()=>false), cards=[];
+  const why=pl=>{const c=pl.c; return {pos:`As ${c.xw} goes up, ${c.yw} tends to go up. That is a positive association.`,neg:`As ${c.xw} goes up, ${c.yw} tends to go down. That is a negative association.`,none:`${c.xw[0].toUpperCase()+c.xw.slice(1)} and ${c.yw} do not change together. The dots have no up or down pattern. That is no association.`}[pl.assoc];};
+  const aFb={pos:{neg:'Read left to right. These dots go up, not down.',none:'There is a pattern here. The dots go up from left to right.'},
+    neg:{pos:'Read left to right. These dots go down, not up.',none:'There is a pattern here. The dots go down from left to right.'},
+    none:{pos:'These dots do not go up together. They are spread out with no pattern.',neg:'These dots do not go down together. They are spread out with no pattern.'}};
+  const fFb={lin:{cur:'These dots follow a straight path. They do not bend.'},cur:{lin:'These dots bend into a curve. A straight line would miss the ends.'}};
+  const fWhy=pl=>pl.form==='lin'?`The dots of ${pl.c.yw} follow a straight path, so the association is linear.`:`The dots of ${pl.c.yw} bend into a curve, so the association is nonlinear.`;
+  function thumb(pl,small){
+    const p=miniPlot(pl.pts,{xa:pl.xa,ya:pl.ya,w:small?160:240,h:small?120:170,r:small?3:3.6,aria:`Scatter plot of ${shortLab(pl.c.xl)} and ${shortLab(pl.c.yl)}`});
+    pl._p=p; return p.svg;
+  }
+  function capHTML(pl){return `<b>${shortLab(pl.c.xl)}</b> (x) and <b>${shortLab(pl.c.yl)}</b> (y)`;}
+  function setPhase(ph){
+    phase=ph; sel=null; tray.innerHTML=''; binsWrap.innerHTML=''; bins={}; cards=[];
+    const keys=ph==='assoc'?['pos','neg','none']:['lin','cur'];
+    binsWrap.style.setProperty('--n',keys.length);
+    stepLab.textContent=ph==='assoc'?'Step 1 · Association':'Step 2 · Linear or nonlinear';
+    q.textContent=ph==='assoc'?'How do the dots move from left to right?':'Do the dots follow a straight path or a curve?';
+    sub.innerHTML=ph==='assoc'?'Up = positive. Down = negative. No up or down pattern = no association.':'Straight path = linear. Bends into a curve = nonlinear.';
+    keys.forEach(k=>{
+      const slots=h('div',{class:'slots'});
+      const b=h('button',{class:'bin',type:'button','data-bin':k,'aria-label':`Bin: ${ph==='assoc'?ASSOC_NAME[k]:FORM_NAME[k]}`},
+        h('span',{class:'bh'},trendIcon(ph==='assoc'?k:(k==='lin'?'lin':'cur')),h('span',{},ph==='assoc'?ASSOC_NAME[k]:FORM_NAME[k])),slots);
+      b.addEventListener('click',()=>{ if(sel!=null) drop(sel,k); else { fb.className='fb show tip'; fb.textContent='First tap a plot. Then tap a bin.'; } });
+      bins[k]={b,slots}; binsWrap.append(b);
+    });
+    plots.forEach((pl,i)=>{
+      if(ph==='form'&&pl.assoc==='none') return;
+      placed[i]=false; tries[i]=0;
+      const card=h('button',{class:'pc',type:'button','data-plot':i,'aria-pressed':'false','aria-label':`Plot ${i+1}: ${shortLab(pl.c.xl)} and ${shortLab(pl.c.yl)}. Press Enter to pick it.`});
+      card.append(h('span',{class:'cap2',html:capHTML(pl)}),thumb(pl,false));
+      dnd(card,i); cards[i]=card; tray.append(card);
+    });
+    if(ph==='form'){ const nn=plots.filter(pl=>pl.assoc==='none'); noneNote.style.display=nn.length?'':'none';
+      noneNote.textContent=nn.length?`The ${nn.length===1?'plot':'plots'} with no association ${nn.length===1?'has':'have'} no line or curve to describe, so ${nn.length===1?'it stays':'they stay'} out of this step.`:''; }
+  }
+  function select(i){ sel=(sel===i)?null:i; cards.forEach((c,k)=>{ if(!c) return; c.classList.toggle('sel',k===sel); c.setAttribute('aria-pressed',k===sel?'true':'false');});
+    Object.values(bins).forEach(o=>o.b.classList.toggle('armed',sel!=null)); }
+  function binAt(x,y){ const el=document.elementFromPoint(x,y); const b=el&&el.closest?el.closest('.bin'):null; return b?b.getAttribute('data-bin'):null; }
+  function dnd(card,i){
+    let st=null;
+    card.addEventListener('pointerdown',e=>{ if(placed[i]) return; if(e.button!=null&&e.button>0) return; st={x:e.clientX,y:e.clientY,drag:false,ghost:null}; try{card.setPointerCapture(e.pointerId);}catch(_){} });
+    card.addEventListener('pointermove',e=>{ if(!st) return;
+      if(!st.drag&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>8){ st.drag=true; st.ghost=card.cloneNode(true); st.ghost.classList.add('ghost'); st.ghost.classList.remove('sel'); st.ghost.removeAttribute('data-plot'); document.body.append(st.ghost); card.style.opacity='.35'; }
+      if(st.drag){ e.preventDefault(); st.ghost.style.left=(e.clientX-90)+'px'; st.ghost.style.top=(e.clientY-30)+'px'; const k=binAt(e.clientX,e.clientY); Object.entries(bins).forEach(([kk,o])=>o.b.classList.toggle('over',kk===k)); } });
+    const end=(e,cancel)=>{ if(!st) return; const s=st; st=null; card.style.opacity=''; if(s.ghost) s.ghost.remove(); Object.values(bins).forEach(o=>o.b.classList.remove('over'));
+      if(cancel) return;
+      if(s.drag){ const k=binAt(e.clientX,e.clientY); if(k) drop(i,k); } else select(i); };
+    card.addEventListener('pointerup',e=>end(e,false)); card.addEventListener('pointercancel',e=>end(e,true));
+    card.addEventListener('click',e=>{ if(e.detail===0&&!placed[i]) select(i); }); // keyboard
+  }
+  function place(i,k){
+    placed[i]=true; const pl=plots[i]; const card=cards[i]; card.remove();
+    const mini=h('div',{class:'pc placed','data-placed':i},h('span',{class:'cap2'},shortLab(pl.c.yl)),thumb(pl,true));
+    bins[k].slots.append(mini);
+  }
+  function drop(i,k){
+    if(placed[i]) return;
+    const pl=plots[i]; const truth=phase==='assoc'?pl.assoc:pl.form; select(null);
+    if(k===truth){ const first=tries[i]===0; ui.record(first); place(i,k);
+      fb.className='fb show ok'; fb.innerHTML=(first?'Correct. ':'Yes. ')+(phase==='assoc'?why(pl):fWhy(pl)); }
+    else { tries[i]++; const msg=phase==='assoc'?aFb[truth][k]:fFb[truth][k];
+      if(tries[i]>=2){ ui.record(false); place(i,truth); fb.className='fb show err'; fb.innerHTML=`${msg} It goes in <b>${phase==='assoc'?ASSOC_NAME[truth]:FORM_NAME[truth]}</b>. ${phase==='assoc'?why(pl):fWhy(pl)}`; }
+      else { fb.className='fb show err'; fb.innerHTML=`${msg} Try again.`; } }
+    const left=plots.some((pl2,j)=>!placed[j]&&(phase==='assoc'||pl2.assoc!=='none'));
+    if(!left){
+      if(phase==='assoc'){ const keep=fb.innerHTML, cls=fb.className; const nb=h('button',{class:'btn',type:'button',id:'shapeBtn'},'Next: linear or nonlinear →');
+        const row=h('div',{class:'btn-row',style:'margin-top:0'},nb); board.append(row);
+        Object.values(bins).forEach(o=>o.b.disabled=true);
+        nb.addEventListener('click',()=>{ row.remove(); setPhase('form'); fb.className='fb'; });
+        nb.focus({preventScroll:true}); fb.innerHTML=keep; fb.className=cls; }
+      else { Object.values(bins).forEach(o=>o.b.disabled=true); reveal(); ui.finish(); }
+    }
+  }
+  function reveal(){ plots.forEach(pl=>{ const p=pl._p; if(!p) return;
+    if(pl.form==='lin') miniLine(p,p.gUnder,pl.lin.m,pl.lin.b,{stroke:'#E0A800','stroke-width':2.5,'stroke-dasharray':'6 4'});
+    else if(pl.form==='cur') miniCurve(p,p.gUnder,pl.f,{stroke:'#E0A800','stroke-width':2.5,'stroke-dasharray':'6 4'}); });
+    fb.insertAdjacentHTML('beforeend','<br>The dashed gold lines show each pattern.'); }
+  setPhase('assoc');
+}
+
+/* ================= Station 2: Spot It ================= */
+function planSpot(r){return {kinds:r.shuffle(['out','out','clu','clu']),keys:r.shuffle(Object.keys(LIN))};}
+function makeSpot(r,i,plan){
+  const kind=plan.kinds[i]; const key=plan.keys[i%plan.keys.length]; const c=LIN[key];
+  if(kind==='out'){
+    for(let t=0;t<80;t++){
+      const g=genLinear(c,r,{n:r.int(12,14),sd:0.55}); const pts=g.pts.slice().sort((a,b)=>a.x-b.x);
+      const k=r.int(Math.floor(pts.length*0.25),Math.floor(pts.length*0.75));
+      const ys=pts.map(q=>q.y), span=(Math.max(...ys)-Math.min(...ys))||c.sd*6;
+      const pred=g.m*pts[k].x+g.b; let dir=r.next()<0.5?1:-1;
+      let mag=Math.max(6*c.sd,0.45*span);
+      let y=roundTo(pred+dir*mag,c.dy);
+      if(y<c.yB[0]||y>c.yB[1]){dir=-dir; y=roundTo(pred+dir*mag,c.dy);}
+      if(y<c.yB[0]||y>c.yB[1]) continue;
+      pts[k]={x:pts[k].x,y,out:true};
+      const others=pts.filter(q=>!q.out); const fit=lsq(others);
+      const maxOther=Math.max(...others.map(q=>Math.abs(q.y-(fit.m*q.x+fit.b))));
+      if(Math.abs(y-(fit.m*pts[k].x+fit.b))<4*maxOther) continue;
+      return {kind,key,c,pts,outIdx:k,fit,...axesFor(pts,{ycap:c.ycap})};
+    }
+  }
+  // cluster
+  const g0=genLinear(c,r,{n:4,sd:0.1}); const m=g0.m,b=g0.b;
+  for(let t=0;t<80;t++){
+    const R=c.xr[1]-c.xr[0]; const xc=c.xr[0]+R*r.range(0.28,0.72);
+    const cl=[]; const nC=r.int(8,10);
+    const spanY=Math.abs(m)*R+4*c.sd;
+    for(let j=0;j<nC;j++){const x=roundTo(clamp(xc+r.normal()*0.04*R,c.xr[0],c.xr[1]),c.dx); cl.push({x,y:roundTo(m*x+b+r.normal()*0.03*spanY,c.dy),cl:true});}
+    const others=[]; const nO=r.int(6,7); let guard=0;
+    while(others.length<nO&&guard++<200){const x=roundTo(r.range(c.xr[0],c.xr[1]),c.dx); if(Math.abs(x-xc)<0.22*R) continue; others.push({x,y:roundTo(m*x+b+r.normal()*c.sd*1.3,c.dy)});}
+    const pts=dedupe(cl.concat(others));
+    if(!pts.every(q=>q.y>=c.yB[0]&&q.y<=c.yB[1])) continue;
+    if(pts.filter(q=>q.cl).length<7) continue;
+    return {kind:'clu',key,c,pts,...axesFor(pts,{ycap:c.ycap})};
+  }
+  return makeSpot(RNG(hashSeed(i,99,r.int(1,1e6))),i,{kinds:['out','out','out','out'],keys:plan.keys});
+}
+function renderSpot(it,ui){
+  const c=it.c, isOut=it.kind==='out';
+  ui.ctx.innerHTML=`<b>${c.xl}</b> and <b>${c.yl.replace(/ \(.*\)$/,'')}</b>.`;
+  const p=makePlot(ui.plotBox,{xa:it.xa,ya:it.ya,xl:c.xl,yl:c.yl,cls:'tap'}); SES.plot=p;
+  const circles=drawPts(p,it.pts,{focusable:true,lab:q=>`${c.fx(q.x)}, ${c.fy(q.y)}`});
+  // cluster ellipse (pixel space)
+  let ell=null;
+  if(!isOut){const cp=it.pts.filter(q=>q.cl); const xs=cp.map(q=>p.X(q.x)), ys=cp.map(q=>p.Y(q.y));
+    const cx=(Math.min(...xs)+Math.max(...xs))/2, cy=(Math.min(...ys)+Math.max(...ys))/2;
+    ell={cx,cy,rx:(Math.max(...xs)-Math.min(...xs))/2+22,ry:(Math.max(...ys)-Math.min(...ys))/2+22};}
+  const marker=S('g',{style:'display:none','pointer-events':'none'},p.gTop);
+  S('circle',{r:15,fill:'none',stroke:'#1D4ED8','stroke-width':2.5},marker); S('circle',{r:2.5,fill:'#1D4ED8'},marker);
+  let sel=null, done=false;
+  function select(px,py,idx){ if(done) return; sel={px,py,idx}; marker.style.display=''; marker.setAttribute('transform',`translate(${px},${py})`); checkBtn.disabled=false; fb.className='fb'; }
+  p.svg.addEventListener('pointerdown',e=>{ if(done) return; const q=svgPt(p.svg,e);
+    if(q.x<p.L-6||q.x>p.R+6||q.y<p.T-6||q.y>p.B+6) return;
+    let best=-1,bd=1e9; it.pts.forEach((pt,i)=>{const d=Math.hypot(p.X(pt.x)-q.x,p.Y(pt.y)-q.y); if(d<bd){bd=d;best=i;}});
+    if(isOut){ if(bd<=30) select(p.X(it.pts[best].x),p.Y(it.pts[best].y),best); else { fb.className='fb show tip'; fb.textContent='Tap right on a dot.'; } }
+    else select(q.x,q.y,bd<=14?best:-1);
+  });
+  circles.forEach((cEl,i)=>cEl.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault(); if(sel&&sel.idx===i&&!done){check();} else select(p.X(it.pts[i].x),p.Y(it.pts[i].y),i);} }));
+  const card=h('div',{class:'card'},h('div',{class:'steplab'},isOut?'Find the outlier':'Find the cluster'),
+    h('div',{class:'q'},isOut?'Tap the outlier.':'Tap the cluster.'),
+    h('div',{class:'sub'},isOut?'An outlier is a dot that is far away from the pattern of the other dots.':'A cluster is a group of dots packed close together.'));
+  const checkBtn=h('button',{class:'btn',type:'button',disabled:true},'Check');
+  const fb=h('div',{class:'fb',role:'status'});
+  card.append(h('div',{class:'btn-row'},checkBtn),fb, h('p',{class:'tiptext'},'Keyboard: press Tab to move between dots. Press Enter to pick a dot, then Enter again to check.'));
+  ui.panel.append(card);
+  let wrong=0;
+  function check(){
+    if(!sel||done) return;
+    let ok;
+    if(isOut) ok=sel.idx===it.outIdx;
+    else { const dx=(sel.px-ell.cx)/ell.rx, dy=(sel.py-ell.cy)/ell.ry; ok=(dx*dx+dy*dy<=1)||(sel.idx>=0&&it.pts[sel.idx].cl); }
+    if(ok||wrong>=1){ done=true; checkBtn.disabled=true; ui.record(ok&&wrong===0); revealAns(ok); ui.finish(); }
+    else { wrong++; fb.className='fb show err'; fb.textContent=isOut?'That dot fits the pattern. Look for one dot far away from the rest. Try again.':'Those dots are spread out. Look for a spot where many dots crowd together. Try again.'; }
+  }
+  checkBtn.addEventListener('click',check);
+  function revealAns(ok){
+    if(isOut){ const q=it.pts[it.outIdx]; const pred=it.fit.m*q.x+it.fit.b;
+      drawLine(p,p.gUnder,it.fit.m,it.fit.b,{stroke:'#FFC107','stroke-width':2.5,'stroke-dasharray':'7 6'});
+      S('circle',{cx:p.X(q.x),cy:p.Y(q.y),r:13,fill:'none',stroke:'#B42318','stroke-width':2.5},p.gTop);
+      S('line',{x1:p.X(q.x),y1:p.Y(q.y),x2:p.X(q.x),y2:p.Y(pred),stroke:'#B42318','stroke-width':1.5,'stroke-dasharray':'3 3'},p.gTop);
+      const predR=roundTo(pred,c.dy<1?0.5:1);
+      fb.className='fb show '+(ok?'ok':'err');
+      fb.innerHTML=(ok?(wrong===0?'Correct. ':'Yes. '):'Here it is, circled in red. ')+`This dot is the outlier. It is far from the pattern of the other dots. At ${c.fx(q.x)}, the pattern is near ${c.fy(predR)}, but this dot is at ${c.fy(q.y)}.`;
+    } else {
+      S('ellipse',{cx:ell.cx,cy:ell.cy,rx:ell.rx-6,ry:ell.ry-6,fill:'rgba(255,193,7,.12)',stroke:'#B98900','stroke-width':2,'stroke-dasharray':'6 5'},p.gUnder);
+      const cp=it.pts.filter(q=>q.cl); const x1=Math.min(...cp.map(q=>q.x)),x2=Math.max(...cp.map(q=>q.x)),y1=Math.min(...cp.map(q=>q.y)),y2=Math.max(...cp.map(q=>q.y));
+      fb.className='fb show '+(ok?'ok':'err');
+      fb.innerHTML=(ok?(wrong===0?'Correct. ':'Yes. '):'Here it is, inside the dashed oval. ')+`A cluster is a group of dots packed close together. Here, ${cp.length} dots sit between ${c.fx(x1)} and ${c.fx(x2)}, with ${c.yw} from ${c.fy(y1)} to ${c.fy(y2)}.`;
+    }
+  }
+}
+
+/* ================= handles (Fit It / Write It) ================= */
+function makeHandles(p,init,o){
+  const Hs=init.map(q=>({x:q.x,y:q.y}));
+  p.svg.classList.add('drag');
+  const line=S('line',{stroke:'#1E2D4F','stroke-width':3,'stroke-linecap':'round'},p.gOver);
+  const gH=S('g',null,p.gTop);
+  let locked=false;
+  const snap=q=>o.snap?{x:p.xa.min+Math.round((q.x-p.xa.min)/p.xa.step)*p.xa.step,y:p.ya.min+Math.round((q.y-p.ya.min)/p.ya.step)*p.ya.step}:q;
+  const clampQ=q=>({x:clamp(q.x,p.xa.min,p.xa.max),y:clamp(q.y,p.ya.min,p.ya.max)});
+  function tryMove(i,q){ q=snap(clampQ(q)); q={x:+q.x.toFixed(6),y:+q.y.toFixed(6)}; const other=Hs[1-i];
+    if(Math.abs(p.X(q.x)-p.X(other.x))<(o.snap?1:24)) q.x=Hs[i].x; // keep handles apart
+    Hs[i]=q; draw(); }
+  const els=Hs.map((q,i)=>{
+    const g=S('g',{class:'handle',tabindex:0,role:'slider','aria-label':`Line handle ${i+1}. Use arrow keys to move.`},gH);
+    S('circle',{r:26,class:'hit'},g); S('circle',{r:11,class:'knob'},g); S('circle',{r:4,class:'core'},g);
+    let drag=false;
+    g.addEventListener('pointerdown',e=>{ if(locked) return; drag=true; try{g.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); g.focus({preventScroll:true}); });
+    g.addEventListener('pointermove',e=>{ if(!drag||locked) return; const s=svgPt(p.svg,e); tryMove(i,{x:p.iX(s.x),y:p.iY(s.y)}); });
+    const up=e=>{drag=false; try{g.releasePointerCapture(e.pointerId);}catch(_){} };
+    g.addEventListener('pointerup',up); g.addEventListener('pointercancel',up);
+    g.addEventListener('keydown',e=>{ if(locked) return; const big=e.shiftKey?5:1;
+      const sx=o.snap?p.xa.step:(p.xa.max-p.xa.min)/60*big, sy=o.snap?p.ya.step:(p.ya.max-p.ya.min)/60*big;
+      const d={ArrowLeft:[-sx,0],ArrowRight:[sx,0],ArrowUp:[0,sy],ArrowDown:[0,-sy]}[e.key];
+      if(d){e.preventDefault(); tryMove(i,{x:Hs[i].x+d[0],y:Hs[i].y+d[1]});}
+      if(e.key==='Enter'&&o.onEnter){e.preventDefault(); o.onEnter();}
+    });
+    return g;});
+  function mb(){const a=Hs[0],b=Hs[1]; const m=(b.y-a.y)/(b.x-a.x); return {m,b:a.y-m*a.x};}
+  function draw(){ els.forEach((g,i)=>g.setAttribute('transform',`translate(${p.X(Hs[i].x)},${p.Y(Hs[i].y)})`));
+    const L=mb(); const x1=p.xa.min-(p.xa.max-p.xa.min), x2=p.xa.max+(p.xa.max-p.xa.min);
+    line.setAttribute('x1',p.X(x1)); line.setAttribute('y1',p.Y(L.m*x1+L.b)); line.setAttribute('x2',p.X(x2)); line.setAttribute('y2',p.Y(L.m*x2+L.b));
+    if(o.onChange) o.onChange(L); }
+  for(let i=0;i<2;i++) Hs[i]=snap(clampQ(Hs[i]));
+  draw();
+  return {Hs,els,line,mb,draw,set(i,q){Hs[i]=snap(clampQ(q)); draw();},lock(){locked=true; els.forEach(g=>{g.classList.add('locked'); g.setAttribute('aria-disabled','true');}); p.svg.classList.remove('drag');}};
+}
+function fitStars(ratio){return ratio<=1.2?3:ratio<=1.5?2:1;}
+
+/* ================= Station 3: Fit It ================= */
+function makeFit(r,i,plan){
+  const key=plan[i%plan.length]; const c=LIN[key];
+  const g=genLinear(c,r,{n:r.int(12,16),sd:r.range(0.8,1.2)});
+  const best=lsq(g.pts); const ax=axesFor(g.pts,{ycap:c.ycap});
+  return {key,c,pts:g.pts,best,bestMae:mae(g.pts,best.m,best.b),...ax,startY:r.range(0.4,0.6),startTilt:r.range(-0.08,0.08)};
+}
+function planFit(r){return r.shuffle(Object.keys(LIN)).slice(0,4);}
+function renderFit(it,ui){
+  const c=it.c, unit=c.yl.match(/\((.*)\)/); const yUnit=c.yu||(unit?unit[1]:'units');
+  ui.ctx.innerHTML=`<b>${c.xl}</b> and <b>${c.yl.replace(/ \(.*\)$/,'')}</b>. Drag the two round handles.`;
+  const p=makePlot(ui.plotBox,{xa:it.xa,ya:it.ya,xl:c.xl,yl:c.yl}); SES.plot=p;
+  drawPts(p,it.pts);
+  const balEl=h('b'), tiltEl=h('b');
+  const card=h('div',{class:'card'},h('div',{class:'steplab'},'Fit the line'),
+    h('div',{class:'q'},'Place a line of best fit.'),
+    h('div',{class:'sub'},'Rule of thumb: follow the direction of the cloud. Keep about as many dots above the line as below it.'),
+    h('div',{style:'margin-top:4px'},
+      h('div',{class:'stat'},h('span',{},'Dots above · below your line'),balEl),
+      h('div',{class:'stat'},h('span',{},'Your line goes'),tiltEl)),
+    h('p',{class:'tiptext'},'The line does not have to touch any dot. When you are happy, lock it in. Then you see your stars and a good line to compare.'));
+  const lockBtn=h('button',{class:'btn',type:'button',id:'lockBtn'},'Lock in my line');
+  const fb=h('div',{class:'fb',role:'status'});
+  card.append(h('div',{class:'btn-row'},lockBtn),fb); ui.panel.append(card);
+  const xa=it.xa, ya=it.ya, yMid=ya.min+(ya.max-ya.min)*it.startY, tilt=(ya.max-ya.min)*it.startTilt;
+  let cur=null;
+  const H=makeHandles(p,[{x:xa.min+(xa.max-xa.min)*0.22,y:yMid-tilt},{x:xa.min+(xa.max-xa.min)*0.78,y:yMid+tilt}],{snap:false,onEnter:()=>lock(),onChange:L=>{
+    cur=L; const ab=it.pts.filter(q=>q.y>L.m*q.x+L.b).length; balEl.textContent=`${ab} · ${it.pts.length-ab}`;
+    const steep=Math.abs(L.m)*(xa.max-xa.min)/(ya.max-ya.min);
+    tiltEl.textContent=steep<0.05?'flat':L.m>0?'up (left to right)':'down (left to right)';
+    SES.fitNow={ratio:mae(it.pts,L.m,L.b)/it.bestMae,L};
+  }});
+  SES.handles=H;
+  lockBtn.addEventListener('click',lock);
+  let lockedOnce=false;
+  function lock(){
+    if(lockedOnce) return; lockedOnce=true; H.lock(); lockBtn.disabled=true;
+    const L=cur, u=mae(it.pts,L.m,L.b), ratio=u/it.bestMae, st=fitStars(ratio);
+    SES.fit.push(st); ui.record(st>=2);
+    // residuals + best line
+    it.pts.forEach(q=>S('line',{x1:p.X(q.x),y1:p.Y(q.y),x2:p.X(q.x),y2:p.Y(L.m*q.x+L.b),stroke:'#B42318','stroke-width':1.6,opacity:.7},p.gUnder));
+    drawLine(p,p.gUnder,it.best.m,it.best.b,{stroke:'#1D4ED8','stroke-width':2.5,'stroke-dasharray':'9 7',opacity:.45});
+    const ab=it.pts.filter(q=>q.y>L.m*q.x+L.b).length, be=it.pts.length-ab;
+    let advice='';
+    if(Math.sign(L.m)!==Math.sign(it.best.m)&&Math.abs(it.best.m)>1e-9) advice=`Your line slants the wrong way. The cloud goes ${it.best.m>0?'up':'down'} from left to right.`;
+    else if(Math.abs(L.m)<Math.abs(it.best.m)*0.75) advice='Your line is too flat. Make it steeper to follow the cloud.';
+    else if(Math.abs(L.m)>Math.abs(it.best.m)*1.33) advice='Your line is too steep. Tilt it to follow the cloud.';
+    else if(ab>be*1.8+1) advice='Most dots are above your line. Slide it up.';
+    else if(be>ab*1.8+1) advice='Most dots are below your line. Slide it down.';
+    const head=st===3?'Excellent fit.':st===2?'Good fit.':'Not close yet. Compare your line with the blue dashed line.';
+    fb.className='fb show '+(st>=2?'ok':'err');
+    fb.innerHTML='';
+    fb.append(h('div',{},starRow(st,22)),h('p',{style:'margin:6px 0 0'},`${head} Your line misses by ${u.toFixed(1)} ${yUnit} on average. The best line misses by ${it.bestMae.toFixed(1)}.`+(advice?' '+advice:'')),
+      h('p',{style:'margin:6px 0 0',class:'muted'},'The faint blue dashed line is a very good line (the least-squares line). The short red lines show how far each dot is from your line, straight up or down.'));
+    ui.finish();
+  }
+}
+
+/* ================= Station 4: Write it ================= */
+const WRITE_KEYS=['study','taxi','tree','cocoa','absences','freethrow','battery'];
+function planWrite(r){return r.shuffle(WRITE_KEYS).slice(0,4);}
+const isDp=(v,dp)=>Math.abs(v*Math.pow(10,dp)-Math.round(v*Math.pow(10,dp)))<1e-7;
+function makeWrite(r,i,plan){
+  const key=plan[i]; const c=LIN[key];
+  for(let t=0;t<80;t++){
+    const g=genLinear(c,r,{n:r.int(11,14),sd:0.8}); const best=lsq(g.pts), bestMae=mae(g.pts,best.m,best.b);
+    const ax=axesFor(g.pts,{zeroX:true,extraY:[best.b],maxX:12,maxY:10,ycap:c.ycap});
+    const xa=ax.xa, ya=ax.ya; if(xa.min!==0) continue;
+    const cands=[];
+    for(let a=1;a<xa.n;a++) for(let e=a+Math.ceil(xa.n*0.4);e<xa.n;e++) for(let j=1;j<ya.n;j++) for(let k=1;k<ya.n;k++){
+      const x1=xa.min+a*xa.step,x2=xa.min+e*xa.step,y1=ya.min+j*ya.step,y2=ya.min+k*ya.step;
+      const m=(y2-y1)/(x2-x1), b=y1-m*x1;
+      if(!isDp(m,2)||!isDp(b,1)||Math.abs(m)<1e-9) continue;
+      if(b<ya.min||b>ya.max) continue;
+      const ratio=mae(g.pts,m,b)/bestMae; if(ratio>1.25) continue;
+      cands.push({x1,y1,x2,y2,m:+m.toFixed(4),b:+b.toFixed(4),ratio,span:e-a});
+    }
+    if(!cands.length) continue;
+    cands.sort((p,q)=>p.ratio-q.ratio||q.span-p.span);
+    const pick=cands[Math.min(cands.length-1,r.int(0,2))];
+    const A={x:pick.x1,y:pick.y1}, B={x:pick.x2,y:pick.y2};
+    const rise=+(B.y-A.y).toFixed(6), run=+(B.x-A.x).toFixed(6);
+    return {key,c,pts:g.pts,best,bestMae,...ax,ans:{A,B,rise,run,m:pick.m,b:pick.b,ratio:pick.ratio}};
+  }
+}
+function renderWrite(it,ui){
+  const c=it.c, a=it.ans, xa=it.xa, ya=it.ya;
+  ui.ctx.innerHTML=`<b>${c.xl}</b> and <b>${shortLab(c.yl)}</b>. The line of best fit goes through two grid points, A and B.`;
+  const p=makePlot(ui.plotBox,{xa,ya,xl:c.xl,yl:c.yl}); SES.plot=p; SES.ans=a;
+  drawPts(p,it.pts);
+  drawLine(p,p.gOver,a.m,a.b,{stroke:'#1E2D4F','stroke-width':2.5});
+  const lst='fill:#1E2D4F;paint-order:stroke;stroke:#fff;stroke-width:4px';
+  [a.A,a.B].forEach((q,i)=>{const px=p.X(q.x),py=p.Y(q.y);
+    S('circle',{cx:px,cy:py,r:7,fill:'#FFC107',stroke:'#1E2D4F','stroke-width':2},p.gTop);
+    const up=a.m>0, below=i===0?up:!up, nearR=px>p.R-110, nearL=px<p.L+110;
+    const anchor=i?(nearL?'start':'end'):(nearR?'end':'start'), dx=anchor==='start'?12:-12;
+    let ly=below?py+24:py-14; if(ly<p.T+14) ly=py+24; if(ly>p.B-6) ly=py-14;
+    T(p.gTop,px+dx,ly,`${i?'B':'A'} (${fmt(q.x)}, ${fmt(q.y)})`,{'text-anchor':anchor,'font-size':14,'font-weight':600,style:lst});});
+  stepRiseRun();
+  function stepRiseRun(){
+    const st=boxStep(ui.panel,{lab:'Step 1 · Rise and run',q:'Go from point A to point B.',sub:`Rise = change in <i>y</i> (up is +, down is −). Run = change in <i>x</i>.<br>A = (${fmt(a.A.x)}, ${fmt(a.A.y)}) and B = (${fmt(a.B.x)}, ${fmt(a.B.y)}).`,
+      fields:[{key:'rise',pre:'rise =',aria:'rise'},{key:'run',pre:'run =',aria:'run'}],
+      hint:`Rise = ${fmt(a.B.y)} − ${fmt(a.A.y)}. Run = ${fmt(a.B.x)} − ${fmt(a.A.x)}.`,
+      check:v=>{const R=parseNum(v.rise),N=parseNum(v.run);
+        if(near(R,a.rise,1e-6)&&near(N,a.run,1e-6)) return {ok:true};
+        if(near(R,-a.rise,1e-6)&&near(N,-a.run,1e-6)) return {ok:true,msg:'You went from B to A. That works too, because both signs flip.'};
+        if(near(R,a.run,1e-6)&&near(N,a.rise,1e-6)) return {ok:false,bad:['rise','run'],msg:'You swapped them. Rise is the up-and-down change (y). Run is the left-to-right change (x).'};
+        if(near(R,-a.rise,1e-6)&&a.rise!==0) return {ok:false,bad:['rise'],msg:a.rise<0?'The line goes down from A to B. The rise is negative.':'The line goes up from A to B. The rise is positive.'};
+        const bad=[]; if(!near(R,a.rise,1e-6)) bad.push('rise'); if(!near(N,a.run,1e-6)) bad.push('run');
+        return {ok:false,bad,msg:'Subtract: B minus A. Use the y-values for rise and the x-values for run.'};},
+      answers:()=>({rise:fmt(a.rise),run:fmt(a.run)}),
+      work:()=>`rise = ${fmt(a.B.y)} − ${fmt(a.A.y)} = ${fmt(a.rise)}<br>run = ${fmt(a.B.x)} − ${fmt(a.A.x)} = ${fmt(a.run)}`,
+      onDone:()=>{ drawTri(); stepSlope(); }});
+    st.focus();
+  }
+  function drawTri(){const g=S('g',null,p.gTop);
+    S('line',{x1:p.X(a.A.x),y1:p.Y(a.A.y),x2:p.X(a.B.x),y2:p.Y(a.A.y),stroke:'#8A6100','stroke-width':2,'stroke-dasharray':'5 4'},g);
+    S('line',{x1:p.X(a.B.x),y1:p.Y(a.A.y),x2:p.X(a.B.x),y2:p.Y(a.B.y),stroke:'#8A6100','stroke-width':2,'stroke-dasharray':'5 4'},g);
+    const st='fill:#8A6100;paint-order:stroke;stroke:#fff;stroke-width:4px';
+    const risepx=Math.abs(p.Y(a.B.y)-p.Y(a.A.y)), runY=a.rise>0?(risepx>50?-8:18):(risepx>50||p.Y(a.A.y)-p.T<24?18:-8);
+    T(g,(p.X(a.A.x)+p.X(a.B.x))/2,p.Y(a.A.y)+runY,`run = ${fmt(a.run)}`,{'text-anchor':'middle','font-size':13,'font-weight':600,style:st});
+    const nr=p.X(a.B.x)>p.R-90;
+    T(g,p.X(a.B.x)+(nr?-8:6),(p.Y(a.A.y)+p.Y(a.B.y))/2+4,`rise = ${fmt(a.rise)}`,{'text-anchor':nr?'end':'start','font-size':13,'font-weight':600,style:st});}
+  function stepSlope(){
+    const st=boxStep(ui.panel,{lab:'Step 2 · Slope',q:'Find the slope <i>m</i>.',sub:`Slope = rise ÷ run = ${fracHTML(fmt(a.rise),fmt(a.run))}. Type a fraction or a decimal.`,
+      fields:[{key:'m',pre:'<i>m</i> =',aria:'slope m',width:'6em'}],
+      hint:`Divide ${fmt(a.rise)} by ${fmt(a.run)}.`,
+      check:v=>{const M=parseNum(v.m);
+        if(near(M,a.m,0.001)) return {ok:true};
+        if(a.rise!==0&&near(M,a.run/a.rise,0.001)) return {ok:false,bad:['m'],msg:'You did run ÷ rise. Slope is rise ÷ run.'};
+        if(near(M,-a.m,0.001)) return {ok:false,bad:['m'],msg:a.m<0?'Check the sign. The line goes down, so the slope is negative.':'Check the sign. The line goes up, so the slope is positive.'};
+        if(near(M,a.rise,1e-6)) return {ok:false,bad:['m'],msg:'That is the rise. Divide it by the run.'};
+        return {ok:false,bad:['m'],msg:'Divide the rise by the run.'};},
+      answers:()=>({m:fmt(a.m)}),
+      work:()=>`m = ${fmt(a.rise)} ÷ ${fmt(a.run)} = ${fmt(a.m,3)}`,
+      onDone:()=>stepB()});
+    st.focus();
+  }
+  function stepB(){
+    const st=boxStep(ui.panel,{lab:'Step 3 · y-intercept',q:'Find the y-intercept <i>b</i>.',
+      sub:'The y-intercept is the <i>y</i>-value where the line crosses the y-axis (where <i>x</i> = 0). Read it on the graph, or use <i>b</i> = <i>y</i> − <i>m</i> × <i>x</i> with point A.',
+      fields:[{key:'b',pre:'<i>b</i> =',aria:'y-intercept b',width:'6em'}],
+      hint:`b = ${fmt(a.A.y)} − ${fmt(a.m,3)} × ${fmt(a.A.x)}`,
+      check:v=>{const B=parseNum(v.b);
+        if(near(B,a.b,0.01)) return {ok:true};
+        if(near(B,a.A.y+a.m*a.A.x,0.01)) return {ok:false,bad:['b'],msg:'You added m × x. Subtract it instead: b = y − m × x.'};
+        if(near(B,a.A.y,1e-6)) return {ok:false,bad:['b'],msg:'That is the y-value at point A. You need y where x = 0.'};
+        if(near(B,a.m,1e-6)) return {ok:false,bad:['b'],msg:'That is the slope. The y-intercept is where the line crosses the y-axis.'};
+        return {ok:false,bad:['b'],msg:'Follow the line left to the y-axis. Or use b = y − m × x with point A. Multiply first, then subtract.'};},
+      answers:()=>({b:fmt(a.b)}),
+      work:()=>`b = ${fmt(a.A.y)} − ${fmt(a.m,3)} × ${fmt(a.A.x)} = ${fmt(a.A.y)} − ${fmt(a.m*a.A.x,3)} = ${fmt(a.b,3)}`,
+      onDone:()=>{ const g=S('g',null,p.gTop); S('circle',{cx:p.X(0),cy:p.Y(a.b),r:7,fill:'#FFC107',stroke:'#8A6100','stroke-width':2},g);
+        let by=p.Y(a.b)+(a.m>0?20:-10); if(by<p.T+12) by=p.Y(a.b)+20; if(by>p.B-6) by=p.Y(a.b)-10; const clash=Math.abs(p.X(a.A.x)-p.X(0))<110&&Math.abs(p.Y(a.A.y)-p.Y(a.b))<60;
+        if(!clash) T(g,p.X(0)+12,by,`b = ${fmt(a.b)}`,{'font-size':13,'font-weight':600,style:'fill:#8A6100;paint-order:stroke;stroke:#fff;stroke-width:4px'}); stepEq(); }});
+    st.focus();
+  }
+  function stepEq(){
+    const st=boxStep(ui.panel,{lab:'Step 4 · Equation',q:'Write the equation of the line.',sub:'Use the form <span class="eq"><i>y</i> = <i>m</i><i>x</i> + <i>b</i></span>. Example: y = 2x + 5 or y = −0.5x + 40.',
+      fields:[{key:'eq',cls:'wide',aria:'equation',ph:'y = mx + b'}],
+      hint:`Put m = ${fmt(a.m,3)} and b = ${fmt(a.b,2)} into y = mx + b.`,
+      check:v=>{const L=parseLine(v.eq);
+        if(!L) return {ok:false,bad:['eq'],msg:'Write it like y = 2x + 5. Use x for the variable.'};
+        const mOk=near(L.m,a.m,0.001), bOk=near(L.b,a.b,0.01);
+        if(mOk&&bOk) return {ok:true,msg:''};
+        if(near(L.m,a.b,0.01)&&near(L.b,a.m,0.001)) return {ok:false,bad:['eq'],msg:'You swapped m and b. The slope goes in front of x.'};
+        if(near(L.m,-a.m,0.001)&&bOk) return {ok:false,bad:['eq'],msg:'Check the sign of the slope.'};
+        if(mOk&&near(L.b,-a.b,0.01)) return {ok:false,bad:['eq'],msg:'Check the sign of b.'};
+        if(mOk) return {ok:false,bad:['eq'],msg:'Your slope is right. Check b.'};
+        if(bOk) return {ok:false,bad:['eq'],msg:'Your b is right. Check the slope in front of x.'};
+        return {ok:false,bad:['eq'],msg:'Use your m and b from the steps above.'};},
+      answers:()=>({eq:'y = '+fmt(a.m,3)+'x '+(a.b<0?'− ':'+ ')+fmt(Math.abs(a.b),2)}),
+      work:()=>`The line: ${eqHTML(a.m,a.b)}`,
+      onDone:()=>ui.finish()});
+    st.focus();
+  }
+}
+
+/* ================= Station 5: Use It ================= */
+const USE={
+ study:{lin:'study',m:[4,5,6],b:[40,45,50],xr:[1,9],xOne:'hour of studying',yWhat:'test score',yU:v=>`${fmt(v)} points`,yOne:'point',xWhat:'hours studied',xU:v=>`${fmt(v)} hours`,xZero:'a student who studies 0 hours',askX:v=>`a student who studies ${fmt(v)} hours`,cap:[30,96]},
+ cocoa:{lin:'cocoa',m:[-2,-3],b:[260,280,300],xr:[20,80],xOne:'degree of outside temperature',yWhat:'amount of cocoa sold',yU:v=>`${fmt(v)} cups`,yOne:'cup',xWhat:'temperature',xU:v=>`${fmt(v)} degrees`,xZero:'a day when it is 0°F outside',askX:v=>`a day when it is ${fmt(v)}°F`,cap:[10,400]},
+ tree:{lin:'tree',m:[1.5,2,2.5],b:[2,3,4],xr:[2,18],xOne:'year of age',yWhat:'tree height',yU:v=>`${fmt(v)} feet`,yOne:'foot',xWhat:'age of the tree',xU:v=>`${fmt(v)} years`,xZero:'a tree that is 0 years old (just planted)',askX:v=>`a tree that is ${fmt(v)} years old`,cap:[1,70]},
+ taxi:{lin:'taxi',m:[2,2.5,3],b:[3,4,5],xr:[1,14],xOne:'mile',yWhat:'fare',yU:v=>money(v),yOne:'dollar',xWhat:'trip distance',xU:v=>`${fmt(v)} miles`,xZero:'a trip of 0 miles',askX:v=>`a ${fmt(v)}-mile trip`,cap:[3,60]},
+ battery:{lin:'battery',m:[-0.5,-0.4],b:[95,100],xr:[20,180],xOne:'minute of video',yWhat:'battery level',yU:v=>`${fmt(v)}%`,yOne:'percent of battery',xWhat:'minutes of video',xU:v=>`${fmt(v)} minutes`,xZero:'0 minutes of video',askX:v=>`${fmt(v)} minutes of video`,cap:[3,96]},
+ freethrow:{lin:'freethrow',m:[0.4,0.5],b:[10,12,15],xr:[5,58],xOne:'minute of practice per day',yWhat:'number of free throws made',yU:v=>`${fmt(v)} free throws`,yOne:'free throw',xWhat:'minutes of practice',xU:v=>`${fmt(v)} minutes`,xZero:'a player who practices 0 minutes a day',askX:v=>`a player who practices ${fmt(v)} minutes a day`,cap:[3,46]},
+ absences:{lin:'absences',m:[-1.5,-2],b:[92,95],xr:[1,18],xOne:'day absent',yWhat:'final grade',yU:v=>`${fmt(v)} points`,yOne:'point',xWhat:'days absent',xU:v=>`${fmt(v)} days`,xZero:'a student with 0 days absent',askX:v=>`a student who is absent ${fmt(v)} days`,cap:[35,96]},
+};
+const NAMES=['Sam','Maya','Jordan','Ava','Luis','Kiara','Eli','Nia'];
+function planUse(r){const keys=r.shuffle(Object.keys(USE)).slice(0,4); return {keys,mist:r.int(1,3)};}
+function makeUse(r,i,plan){
+  const key=plan.keys[i], u=USE[key], c=LIN[u.lin];
+  let m,b,x0,y0,pts;
+  for(let t=0;t<60;t++){
+    m=r.pick(u.m); b=r.pick(u.b); if(Math.abs(Math.abs(m)-Math.abs(b))<1e-9) continue;
+    const lo=u.xr[0], hi=u.xr[1];
+    if(m*lo+b>u.cap[1]||m*hi+b<u.cap[0]||m*hi+b>u.cap[1]) continue;
+    const g=genLinear(Object.assign({},c,{xr:[lo,hi]}),r,{m,b,n:r.int(11,14),sd:0.8}); pts=g.pts;
+    const step=c.dx>=1?Math.max(1,Math.round((hi-lo)/10)):1;
+    const cands=[]; for(let x=Math.ceil(lo+(hi-lo)*0.2);x<=hi-(hi-lo)*0.15;x+=step){const y=m*x+b; if(Math.abs(y*100-Math.round(y*100))<1e-6&&y>u.cap[0]) cands.push(x);}
+    if(!cands.length) continue;
+    x0=r.pick(cands); y0=+(m*x0+b).toFixed(4); break;
+  }
+  const ax=axesFor(pts,{zeroX:true,extraY:[b],ycap:c.ycap});
+  return {key,u,c,m,b,x0,y0,pts,...ax,mistake:i===plan.mist,name:r.pick(NAMES),shuffleSeed:r.int(1,1e6)};
+}
+function renderUse(it,ui){
+  const {u,c,m,b,x0,y0}=it; const r=RNG(it.shuffleSeed);
+  ui.ctx.innerHTML=`<b>${c.xl}</b> and <b>${c.yl.replace(/ \(.*\)$/,'')}</b>. Line of best fit: ${eqHTML(m,b)}`;
+  const p=makePlot(ui.plotBox,{xa:it.xa,ya:it.ya,xl:c.xl,yl:c.yl}); SES.plot=p;
+  drawPts(p,it.pts);
+  drawLine(p,p.gOver,m,b,{stroke:'#1E2D4F','stroke-width':2.5});
+  // equation tag on plot
+  const tag=S('g',null,p.gTop); const tx=p.R-8, ty=p.T+22;
+  const eqT=T(tag,tx,ty,'',{'text-anchor':'end','font-size':15,style:'font-family:var(--serif);fill:#1E2D4F;paint-order:stroke;stroke:#fff;stroke-width:5px'});
+  eqT.innerHTML=`<tspan font-style="italic">y</tspan> = ${Math.abs(Math.abs(m)-1)<1e-9?(m<0?'−':''):fmt(m)}<tspan font-style="italic">x</tspan> ${b<0?'−':'+'} ${fmt(Math.abs(b))}`;
+  // "?" guide at x0
+  const gq=S('g',null,p.gTop);
+  S('line',{x1:p.X(x0),y1:p.B,x2:p.X(x0),y2:p.Y(y0),stroke:'#1D4ED8','stroke-width':1.8,'stroke-dasharray':'5 4'},gq);
+  S('circle',{cx:p.X(x0),cy:p.Y(y0),r:6,fill:'#fff',stroke:'#1D4ED8','stroke-width':2.5},gq);
+  const qm=T(gq,p.X(x0)+10,p.Y(y0)-10,'?',{'font-size':18,'font-weight':700,style:'fill:#1D4ED8;paint-order:stroke;stroke:#fff;stroke-width:4px'});
+  T(gq,p.X(x0),p.B-6,`x = ${fmt(x0)}`,{'text-anchor':p.X(x0)>p.R-60?'end':'start',dx:p.X(x0)>p.R-60?-6:6,'font-size':12,'font-weight':600,style:'fill:#1D4ED8;paint-order:stroke;stroke:#fff;stroke-width:4px'});
+  function revealPred(){ qm.remove(); S('line',{x1:p.L,y1:p.Y(y0),x2:p.X(x0),y2:p.Y(y0),stroke:'#1D4ED8','stroke-width':1.8,'stroke-dasharray':'5 4'},gq);
+    T(gq,p.L+6,p.Y(y0)-7,`y = ${fmt(y0)}`,{'font-size':13,'font-weight':600,style:'fill:#1D4ED8;paint-order:stroke;stroke:#fff;stroke-width:4px'}); }
+  const mStr=fmt(m), bStr=fmt(b);
+  const predWork=()=>`y = ${mStr} × ${fmt(x0)} ${b<0?'−':'+'} ${fmt(Math.abs(b))}<br>y = ${fmt(m*x0)} ${b<0?'−':'+'} ${fmt(Math.abs(b))} = ${fmt(y0)}`;
+  const predCheck=v=>{const Y=parseNum(v.y);
+    if(near(Y,y0,0.5)) return {ok:true,msg:`The line predicts ${u.yU(y0)} for ${u.askX(x0)}.`};
+    if(near(Y,m*x0,0.5)) return {ok:false,bad:['y'],msg:'You multiplied but forgot to add b. Add b at the end.'};
+    if(near(Y,(x0-b)/m)) return {ok:false,bad:['y'],msg:`You put ${fmt(x0)} in for y. The ${fmt(x0)} is an x-value. Put it in for x.`};
+    if(near(Y,m+x0+b)||near(Y,(m+b)*x0)) return {ok:false,bad:['y'],msg:'Multiply m times x first. Then add b.'};
+    if(near(Y,-m*x0+b)) return {ok:false,bad:['y'],msg:'Check the sign of the slope.'};
+    return {ok:false,bad:['y'],msg:`Put x = ${fmt(x0)} into y = ${mStr}x ${b<0?'−':'+'} ${fmt(Math.abs(b))}. Multiply, then add.`};};
+  const after=()=>{ revealPred(); slopeQ(); };
+  if(!it.mistake){
+    const st=boxStep(ui.panel,{lab:'Part A · Predict',q:`Predict the ${u.yWhat} for ${u.askX(x0)}.`,sub:`Use the line ${eqHTML(m,b)}. Put x = ${fmt(x0)} into the equation. Round to the nearest tenth if needed. Answers within 0.5 of the exact value count.`,
+      fields:[{key:'y',pre:'<i>y</i> ≈',aria:'predicted y',width:'7em'}],hint:`Multiply ${mStr} × ${fmt(x0)}. Then ${b<0?'subtract':'add'} ${fmt(Math.abs(b))}.`,
+      check:predCheck,answers:()=>({y:fmt(y0)}),work:predWork,onDone:after});
+    st.focus();
+  } else {
+    const wrongX=+((x0-b)/m).toFixed(2);
+    const box=h('div',{class:'card'},h('div',{class:'steplab'},'Part A · Find the mistake'),
+      h('div',{class:'q'},`${it.name} predicted the ${u.yWhat} for ${u.askX(x0)}.`),
+      h('div',{class:'studentwork',html:`${fmt(x0)} = ${mStr}<i>x</i> ${b<0?'−':'+'} ${fmt(Math.abs(b))}<br>${fmt(x0-b)} = ${mStr}<i>x</i><br><i>x</i> ≈ ${fmt(wrongX)}<br>"The ${u.yWhat} is about ${fmt(wrongX)}."`}));
+    ui.panel.append(box);
+    const opts=r.shuffle([
+      {t:`${it.name} put ${fmt(x0)} in for y. But ${fmt(x0)} is the x-value, so it goes in for x.`,ok:true,fb:`The question gives ${u.xWhat}, which is x. Put x = ${fmt(x0)} into the equation and find y.`},
+      {t:`${it.name} used the wrong slope. The slope should be ${bStr}.`,fb:`The slope is ${mStr}, the number in front of x. ${bStr} is the y-intercept.`},
+      {t:`${it.name} should have ${b<0?'added':'subtracted'} ${fmt(Math.abs(b))} instead.`,fb:'The sign of b is fine. The problem is which variable the number went into.'},
+      {t:`Nothing. ${it.name} is correct.`,fb:`Check the units. ${fmt(x0)} is the x-value, not the y-value.`}]);
+    mcStep(ui.panel,{q:'What did they do wrong?',opts,onDone:()=>{
+      const st=boxStep(ui.panel,{lab:'Part A · Fix it',q:`Now find the correct prediction for ${u.askX(x0)}.`,sub:'Answers within 0.5 of the exact value count.',fields:[{key:'y',pre:'<i>y</i> ≈',aria:'predicted y',width:'7em'}],
+        hint:`Put x = ${fmt(x0)} into the equation.`,check:predCheck,answers:()=>({y:fmt(y0)}),work:predWork,onDone:()=>{revealPred(); slopeQ();}});
+      st.focus();
+    }});
+    return;
+  }
+  function slopeQ(){
+    const dir=m>0?'goes up':'goes down', wdir=m>0?'goes down':'goes up', am=Math.abs(m);
+    const opts=r.shuffle([
+      {t:`For each extra ${u.xOne}, the predicted ${u.yWhat} ${dir} by ${u.yU(am)}.`,ok:true,fb:`The slope ${mStr} tells how much y changes when x goes up by 1.`},
+      {t:`For each extra ${u.xOne}, the predicted ${u.yWhat} ${dir} by ${u.yU(Math.abs(b))}.`,fb:`${bStr} is the y-intercept, not the slope. The slope is the number in front of x.`},
+      {t:`For each extra ${u.yOne}, the ${u.xWhat} ${dir} by ${u.xU(am)}.`,fb:'That mixes up x and y. The slope tells how y changes when x goes up by 1.'},
+      {t:`For each extra ${u.xOne}, the predicted ${u.yWhat} ${wdir} by ${u.yU(am)}.`,fb:`Check the sign. The slope is ${m>0?'positive, so y goes up':'negative, so y goes down'}.`}]);
+    mcStep(ui.panel,{lab:'Part B · Slope',qhtml:`What does the slope <i>m</i> = ${mStr} mean here?`,opts,onDone:interQ});
+  }
+  function interQ(){
+    const dir=m>0?'goes up':'goes down';
+    const opts=r.shuffle([
+      {t:`For ${u.xZero}, the predicted ${u.yWhat} is ${u.yU(b)}.`,ok:true,fb:'The y-intercept is the predicted y-value when x = 0.'},
+      {t:`For ${u.xZero}, the predicted ${u.yWhat} is ${u.yU(Math.abs(m))}.`,fb:`${mStr} is the slope. The y-intercept is ${bStr}, the value of y when x = 0.`},
+      {t:`The predicted ${u.yWhat} ${dir} by ${u.yU(Math.abs(b))} for each extra ${u.xOne}.`,fb:'That describes a slope. The y-intercept is a starting value, when x = 0.'},
+      {t:`When the ${u.yWhat} is 0, the ${u.xWhat} is ${u.xU(b)}.`,fb:'That mixes up x and y. The y-intercept is the y-value when x = 0.'}]);
+    mcStep(ui.panel,{lab:'Part C · y-intercept',qhtml:`What does the y-intercept <i>b</i> = ${bStr} mean here?`,opts,onDone:()=>ui.finish()});
+  }
+}
+
+/* ================= Station 6: Table It ================= */
+const TBL=[
+ {topic:'Students were asked: "Which sport do you like better, soccer or basketball?"',rows:['7th grade','8th grade'],rowsW:['7th graders','8th graders'],cols:['Soccer','Basketball'],yesW:'like soccer better',aq:'grade level and liking soccer better'},
+ {topic:'Students were asked: "Do you like the new taco bowl at lunch?"',rows:['7th grade','8th grade'],rowsW:['7th graders','8th graders'],cols:['Likes it','Does not'],yesW:'like the taco bowl',aq:'grade level and liking the taco bowl'},
+ {topic:'Students were asked if they play a sport and if they eat breakfast most days.',rows:['Plays a sport','No sport'],rowsW:['students who play a sport','students who do not play a sport'],cols:['Eats breakfast','Skips it'],yesW:'eat breakfast',aq:'playing a sport and eating breakfast'},
+ {topic:'Students were asked how they get to school and if they were late this month.',rows:['Rides the bus','Car ride'],rowsW:['bus riders','car riders'],cols:['Late','Never late'],yesW:'were late this month',aq:'how students get to school and being late'},
+ {topic:'Students were asked if they do homework most nights and if they passed the unit test.',rows:['Homework most nights','Homework rarely'],rowsW:['students who do homework most nights','students who rarely do homework'],cols:['Passed','Did not pass'],yesW:'passed the test',aq:'doing homework and passing the test'},
+ {topic:'Students were asked: "Should school start later in the morning?"',rows:['7th grade','8th grade'],rowsW:['7th graders','8th graders'],cols:['Yes','No'],yesW:'want a later start',aq:'grade level and wanting a later start'},
+ {topic:'Students were asked if they have a pet and if they read for fun.',rows:['Has a pet','No pet'],rowsW:['pet owners','students without a pet'],cols:['Reads for fun','Does not'],yesW:'read for fun',aq:'having a pet and reading for fun'},
+ {topic:'Students were asked if they are in band and if they like math class.',rows:['In band','Not in band'],rowsW:['band students','students not in band'],cols:['Likes math','Does not'],yesW:'like math class',aq:'being in band and liking math class'},
+];
+function planTable(r){const kinds=r.shuffle(['assoc',r.pick(['assoc','assoc-trap']),'none-trap','none']); return {kinds,ctx:r.shuffle(TBL.map((_,i)=>i)),pats:kinds.map(()=>r.pick(['A','B','C']))};}
+function makeTable(r,i,plan){
+  const kind=plan.kinds[i], ctx=TBL[plan.ctx[i]];
+  const sizes=[40,60,80,100,120];
+  let n1,n2,p1,p2;
+  for(let t=0;t<200;t++){
+    n1=r.pick(sizes); n2=r.pick(sizes);
+    if(kind.endsWith('trap')&&Math.abs(n1-n2)<40) continue;
+    if(kind.startsWith('assoc')){ p1=5*r.int(4,17); p2=5*r.int(4,17); if(Math.abs(p1-p2)<25) continue;
+      if(kind==='assoc-trap'){ // the group with the LOWER percent has MORE yes-count
+        const c1=p1*n1/100,c2=p2*n2/100; if(!((p1<p2&&c1>c2)||(p2<p1&&c2>c1))) continue; }
+    } else { p1=5*r.int(6,15); p2=p1+r.pick([-5,0,5]); if(p2<20||p2>85) continue;
+      if(kind==='none-trap'&&Math.abs(p1*n1-p2*n2)/100<10) continue; }
+    if((p1*n1)%100||(p2*n2)%100) continue;
+    break;
+  }
+  const a=[[p1*n1/100,n1-p1*n1/100],[p2*n2/100,n2-p2*n2/100]];
+  const tot={r1:n1,r2:n2,c1:a[0][0]+a[1][0],c2:a[0][1]+a[1][1],g:n1+n2};
+  return {kind,ctx,a,tot,p:[[p1,100-p1],[p2,100-p2]],assoc:kind.startsWith('assoc'),pat:plan.pats[i]};
+}
+function renderTable(it,ui){
+  const {ctx,a,tot}=it;
+  ui.ctx.innerHTML=`${ctx.topic} <span class="muted">This is a two-way table: it counts students in two ways at once.</span>`;
+  const box=ui.plotBox;
+  // which cells are blank
+  const blank={r1:true,r2:true,c1:true,c2:true,g:true};
+  const cellBlank={};
+  if(it.pat==='B'){blank.r1=false; cellBlank['01']=true;}
+  if(it.pat==='C'){blank.r2=false; cellBlank['10']=true;}
+  const inputs={};
+  const mk=(key,aria)=>{const inp=h('input',{class:'box',type:'text',autocomplete:'off','aria-label':aria}); inputs[key]=inp; return inp;};
+  const cell=(i,j)=>cellBlank[''+i+j]?h('td',{},mk('a'+i+j,`${ctx.rows[i]}, ${ctx.cols[j]}`)):h('td',{},String(a[i][j]));
+  const tcell=(k,val,aria)=>blank[k]?h('td',{class:'tot'},mk(k,aria)):h('td',{class:'tot'},String(val));
+  const tbl=h('table',{class:'tw'},
+    h('tr',{},h('th',{}),h('th',{},ctx.cols[0]),h('th',{},ctx.cols[1]),h('th',{},'Total')),
+    h('tr',{},h('th',{class:'rowh'},ctx.rows[0]),cell(0,0),cell(0,1),tcell('r1',tot.r1,`${ctx.rows[0]} total`)),
+    h('tr',{},h('th',{class:'rowh'},ctx.rows[1]),cell(1,0),cell(1,1),tcell('r2',tot.r2,`${ctx.rows[1]} total`)),
+    h('tr',{},h('th',{class:'rowh'},'Total'),tcell('c1',tot.c1,`${ctx.cols[0]} total`),tcell('c2',tot.c2,`${ctx.cols[1]} total`),tcell('g',tot.g,'grand total')));
+  box.append(h('div',{class:'cap'},'Counts (number of students)'),h('div',{class:'tablewrap'},tbl));
+  const truth={r1:tot.r1,r2:tot.r2,c1:tot.c1,c2:tot.c2,g:tot.g,a01:a[0][1],a10:a[1][0]};
+  const st1=boxStep(ui.panel,{lab:'Step 1 · Totals',q:'Fill in the missing boxes in the table.',sub:'Add across a row for the row total. Add down a column for the column total.',fields:[],extInputs:inputs,
+    hint:'The Total row and Total column are sums. The bottom-right box is the grand total: everyone in the survey.'+(it.pat!=='A'?' For a missing count, subtract: total − the other count.':''),
+    check:v=>{const bad=[]; let msg='';
+      for(const k in v){ const n=parseNum(v[k]); if(!near(n,truth[k],1e-9)){ bad.push(k);
+        if(!msg){ if(k==='r1'||k==='r2'){const i=k==='r1'?0:1; msg=`Add across the ${ctx.rows[i]} row: ${a[i][0]} + ${a[i][1]}.`;}
+          else if(k==='c1'||k==='c2'){const j=k==='c1'?0:1; msg=`Add down the ${ctx.cols[j]} column.`;}
+          else if(k==='g') msg='The grand total = the two row totals added (it also equals the two column totals added).';
+          else msg='For the missing count, subtract: row total − the other count in that row.'; } } }
+      return bad.length?{ok:false,bad,msg}:{ok:true,msg:`There are ${tot.g} students in all.`};},
+    answers:()=>{const o={}; for(const k in inputs) o[k]=String(truth[k]); return o;},
+    work:()=>`${ctx.rows[0]}: ${a[0][0]} + ${a[0][1]} = ${tot.r1} · ${ctx.rows[1]}: ${a[1][0]} + ${a[1][1]} = ${tot.r2}<br>Grand total: ${tot.r1} + ${tot.r2} = ${tot.g}`,
+    onDone:step2});
+  st1.focus();
+  function step2(){
+    const pin={};
+    const mk2=(k,aria)=>{const inp=h('input',{class:'box',type:'text',autocomplete:'off','aria-label':aria,placeholder:'%'}); pin[k]=inp; return inp;};
+    const t2=h('table',{class:'tw'},
+      h('tr',{},h('th',{}),h('th',{},ctx.cols[0]),h('th',{},ctx.cols[1]),h('th',{},'Total')),
+      h('tr',{},h('th',{class:'rowh'},ctx.rows[0]),h('td',{},mk2('p00',`${ctx.rows[0]} ${ctx.cols[0]} percent`)),h('td',{},mk2('p01',`${ctx.rows[0]} ${ctx.cols[1]} percent`)),h('td',{class:'tot'},'100%')),
+      h('tr',{},h('th',{class:'rowh'},ctx.rows[1]),h('td',{},mk2('p10',`${ctx.rows[1]} ${ctx.cols[0]} percent`)),h('td',{},mk2('p11',`${ctx.rows[1]} ${ctx.cols[1]} percent`)),h('td',{class:'tot'},'100%')));
+    box.append(h('div',{class:'cap',style:'margin-top:12px'},'Row relative frequencies (percent of each row)'),h('div',{class:'tablewrap'},t2));
+    const P=it.p;
+    const st=boxStep(ui.panel,{lab:'Step 2 · Row percents',q:'Find the relative frequency for each box, by row.',sub:'Relative frequency = part ÷ total. For a row percent, divide each count by its <b>row total</b>, then × 100. Type a percent (like 75%) or a decimal (like 0.75).',
+      fields:[],extInputs:pin,hint:`Example: ${a[0][0]} ÷ ${tot.r1} = ${fmt(a[0][0]/tot.r1,2)} = ${fmt(P[0][0])}%. Each row should add to 100%.`,
+      check:v=>{const bad=[]; let msg='';
+        for(const k in v){const i=+k[1],j=+k[2]; const pv=parsePct(v[k]);
+          if(!near(pv,P[i][j],0.51)){bad.push(k);
+            if(!msg){ const colT=j===0?tot.c1:tot.c2;
+              if(near(pv,a[i][j]/colT*100,0.6)) msg='You divided by the column total. For a row percent, divide by the ROW total.';
+              else if(near(pv,a[i][j]/tot.g*100,0.6)) msg='You divided by the grand total. For a row percent, divide by the ROW total.';
+              else if(near(pv,a[i][j],1e-9)) msg='That is the count. Divide it by the row total, then × 100.';
+              else msg=`Divide the count by the row total. Example: ${ctx.rows[i]} → ${a[i][j]} ÷ ${i?tot.r2:tot.r1}.`; } } }
+        return bad.length?{ok:false,bad,msg}:{ok:true,msg:'Each row adds to 100%.'};},
+      answers:()=>({p00:P[0][0]+'%',p01:P[0][1]+'%',p10:P[1][0]+'%',p11:P[1][1]+'%'}),
+      work:()=>`${ctx.rows[0]}: ${a[0][0]} ÷ ${tot.r1} = ${P[0][0]}% · ${a[0][1]} ÷ ${tot.r1} = ${P[0][1]}%<br>${ctx.rows[1]}: ${a[1][0]} ÷ ${tot.r2} = ${P[1][0]}% · ${a[1][1]} ÷ ${tot.r2} = ${P[1][1]}%`,
+      onDone:step3});
+    st.focus();
+  }
+  function step3(){
+    const P=it.p, r=RNG(hashSeed(tot.g,a[0][0],a[1][1]));
+    const hi=P[0][0]>=P[1][0]?0:1, lo=1-hi;
+    const moreCount=a[0][0]>a[1][0]?0:1;
+    let opts;
+    if(it.assoc){
+      opts=[{t:`Yes. ${P[hi][0]}% of ${ctx.rowsW[hi]} ${ctx.yesW}, compared with ${P[lo][0]}% of ${ctx.rowsW[lo]}. The row percents are far apart.`,ok:true,fb:`The percents differ by ${P[hi][0]-P[lo][0]} points, so the answer depends on the group. That is an association.`},
+        {t:'No. The row percents are about the same.',fb:`Look again. ${P[0][0]}% and ${P[1][0]}% are far apart.`},
+        {t:'You cannot tell, because the groups are different sizes.',fb:'You can tell. Percents let you compare groups of different sizes.'}];
+      if(a[0][0]!==a[1][0]&&moreCount===lo) opts.push({t:`Yes, but the other way: more ${ctx.rowsW[moreCount]} ${ctx.yesW} (${a[moreCount][0]} vs. ${a[1-moreCount][0]}).`,fb:'Counts can trick you when the groups are different sizes. Compare the percents instead.'});
+    } else {
+      const same=P[0][0]===P[1][0];
+      opts=[{t:same?`No. ${P[0][0]}% of both groups ${ctx.yesW}. The row percents are the same.`:`No. ${P[0][0]}% and ${P[1][0]}% are almost the same.`,ok:true,fb:'When the row percents are close, the group does not change the answer much. There is no association.'},
+        {t:'Yes. The row percents are far apart.',fb:`Look again. ${P[0][0]}% and ${P[1][0]}% are close together.`}];
+      if(a[0][0]!==a[1][0]) opts.push({t:`Yes. More ${ctx.rowsW[moreCount]} ${ctx.yesW} (${a[moreCount][0]} vs. ${a[1-moreCount][0]}).`,fb:`That compares counts. The groups are different sizes (${tot.r1} and ${tot.r2}). Compare the percents instead.`});
+      if(!same) opts.push({t:'Yes. The percents are not exactly equal.',fb:'A difference of 5 points or less is small. That counts as about the same.'});
+    }
+    mcStep(ui.panel,{lab:'Step 3 · Association',q:`Is there an association between ${ctx.aq}?`,sub:'Compare the row percents in the first column. Far apart = association. Close together = no association.',opts:r.shuffle(opts),onDone:()=>{drawBars(); ui.finish();}});
+  }
+  function drawBars(){
+    const P=it.p; const W=(box.clientWidth||520)<480?340:520, rowH=58, Hh=2*rowH+40;
+    const svg=S('svg',{viewBox:`0 0 ${W} ${Hh}`,width:'100%',role:'img','aria-label':`Stacked bar graph: ${ctx.rows[0]} ${P[0][0]}% ${ctx.cols[0]}; ${ctx.rows[1]} ${P[1][0]}% ${ctx.cols[0]}.`,style:'display:block;margin-top:6px'});
+    const L=4,R=W-4;
+    [0,1].forEach(i=>{const y=i*rowH+18;
+      T(svg,L,y,`${ctx.rows[i]} (${i?tot.r2:tot.r1} students)`,{'font-size':14,style:'font-family:var(--sans);fill:#2B3345;font-weight:600'});
+      const w0=(R-L)*P[i][0]/100;
+      S('rect',{x:L,y:y+6,width:w0,height:26,fill:'#1E2D4F',rx:3},svg);
+      S('rect',{x:L+w0,y:y+6,width:(R-L)-w0,height:26,fill:'#FFE08A',rx:3},svg);
+      if(w0>44) T(svg,L+8,y+24,`${P[i][0]}%`,{'font-size':13,style:'font-family:var(--mono);fill:#fff;font-weight:600'});
+      if((R-L)-w0>44) T(svg,R-8,y+24,`${P[i][1]}%`,{'text-anchor':'end','font-size':13,style:'font-family:var(--mono);fill:#1E2D4F;font-weight:600'});
+    });
+    const ly=2*rowH+22;
+    S('rect',{x:L,y:ly,width:14,height:14,fill:'#1E2D4F',rx:2},svg); T(svg,L+20,ly+12,ctx.cols[0],{'font-size':13,style:'font-family:var(--sans);fill:#2B3345'});
+    const off=L+44+ctx.cols[0].length*7.5;
+    S('rect',{x:off,y:ly,width:14,height:14,fill:'#FFE08A',stroke:'#B98900',rx:2},svg); T(svg,off+20,ly+12,ctx.cols[1],{'font-size':13,style:'font-family:var(--sans);fill:#2B3345'});
+    box.append(h('div',{class:'cap',style:'margin-top:12px'},'Stacked bar graph from this table (each bar is 100% of a row)'),svg);
+  }
+}
+
+/* ================= worked examples ================= */
+const LBL='font-family:var(--sans);font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:4px';
+function exSort(){
+  const g=genLinear(LIN.study,RNG(4242),{n:12,sd:0.8}); const ax=axesFor(g.pts,{ycap:100}); const L=lsq(g.pts);
+  const p=miniPlot(g.pts,{...ax,w:340,h:250,xl:'Hours studied',yl:'Test score',ticks:true,r:4,aria:'Example scatter plot: hours studied and test score. The dots go up in a straight path.'});
+  miniLine(p,p.gUnder,L.m,L.b,{stroke:'#E0A800','stroke-width':2.5,'stroke-dasharray':'7 5'});
+  return {title:'Hours studied and test score',visual:p.svg,steps:[
+    'Read the dots from left to right.',
+    'The dots go <b>up</b>. As hours studied go up, test scores tend to go up. That is a <b>positive association</b>.',
+    'The dots follow a <b>straight path</b> (the dashed gold line). The association is <b>linear</b>. A path that bends is <b>nonlinear</b>.',
+    'Dots that go <b>down</b> show a negative association. No up or down pattern means <b>no association</b>.']};
+}
+function exSpot(){
+  const pts=[[1,6],[2,9],[3.4,13],[3.6,14],[3.8,12.8],[4,13.6],[4.2,14.6],[3.7,15],[4.1,12.4],[6,19],[7,22],[8,24],[9,27],[7.5,8]].map(([x,y])=>({x,y}));
+  const xa={min:0,max:10,step:2,n:5}, ya={min:0,max:30,step:5,n:6};
+  const p=miniPlot(pts,{xa,ya,w:340,h:250,xl:'Hours of practice',yl:'Points scored',ticks:true,r:4,aria:'Example scatter plot with one outlier circled and one cluster inside an oval.'});
+  S('circle',{cx:p.X(7.5),cy:p.Y(8),r:11,fill:'none',stroke:'#B42318','stroke-width':2.5},p.gTop);
+  T(p.gTop,p.X(7.5)+15,p.Y(8)+5,'outlier',{'font-size':13,style:LBL+';fill:#B42318'});
+  const cx=(p.X(3.4)+p.X(4.2))/2, cy=(p.Y(12.4)+p.Y(15))/2;
+  S('ellipse',{cx,cy,rx:(p.X(4.2)-p.X(3.4))/2+12,ry:(p.Y(12.4)-p.Y(15))/2+12,fill:'rgba(255,193,7,.14)',stroke:'#B98900','stroke-width':2,'stroke-dasharray':'5 4'},p.gUnder);
+  T(p.gTop,cx,cy-((p.Y(12.4)-p.Y(15))/2+18),'cluster',{'text-anchor':'middle','font-size':13,style:LBL+';fill:#8A6100'});
+  return {title:'Hours of practice and points scored',visual:p.svg,steps:[
+    'First find the pattern most dots follow. Here the dots go up.',
+    'An <b>outlier</b> is a dot far away from that pattern. The red circle shows one: (7.5, 8). Most players who practice 7.5 hours score about 23 points.',
+    'A <b>cluster</b> is a group of dots packed close together. The dashed oval shows one, near 4 hours.']};
+}
+function exFit(){
+  const g=genLinear(LIN.tree,RNG(777),{n:10,sd:0.9}); const ax=axesFor(g.pts,{}); const L=lsq(g.pts);
+  const p=miniPlot(g.pts,{...ax,w:340,h:250,xl:'Age of tree (years)',yl:'Height (feet)',ticks:true,r:4,aria:'Example scatter plot with a line of best fit and short red lines from each dot to the line.'});
+  g.pts.forEach(q=>S('line',{x1:p.X(q.x),y1:p.Y(q.y),x2:p.X(q.x),y2:p.Y(L.m*q.x+L.b),stroke:'#B42318','stroke-width':1.5,opacity:.75},p.gUnder));
+  miniLine(p,p.gUnder,L.m,L.b,{stroke:'#1E2D4F','stroke-width':2.5});
+  const ab=g.pts.filter(q=>q.y>L.m*q.x+L.b).length;
+  return {title:'Age of a tree and its height',visual:p.svg,steps:[
+    'The cloud of dots goes up from left to right. So the line tilts up too.',
+    `Slide the line so about half the dots are above it and half are below. Here: ${ab} above and ${g.pts.length-ab} below.`,
+    'The short red lines are the misses. A good line keeps the misses small.',
+    'The line does not have to touch any dot. Never connect the dots.']};
+}
+function exWrite(){
+  const xa={min:0,max:8,step:1,n:8}, ya={min:0,max:70,step:10,n:7};
+  const r=RNG(31); const pts=[1,1.5,2.5,3,4,4.5,5.5,6.5,7,7.5].map(x=>({x,y:roundTo(5*x+20+r.normal()*3,1)}));
+  const p=miniPlot(pts,{xa,ya,w:340,h:250,xl:'Hours worked',yl:'Money earned ($)',ticks:true,r:3.6,aria:'Example: a line through A (2, 30) and B (6, 50) with a rise of 20 and a run of 4.'});
+  miniLine(p,p.gUnder,5,20,{stroke:'#1E2D4F','stroke-width':2.5});
+  const g=p.gTop, st='font-size:13px;'+LBL;
+  S('line',{x1:p.X(2),y1:p.Y(30),x2:p.X(6),y2:p.Y(30),stroke:'#8A6100','stroke-width':2,'stroke-dasharray':'5 4'},g);
+  S('line',{x1:p.X(6),y1:p.Y(30),x2:p.X(6),y2:p.Y(50),stroke:'#8A6100','stroke-width':2,'stroke-dasharray':'5 4'},g);
+  T(g,p.X(4),p.Y(30)+17,'run = 4',{'text-anchor':'middle',style:st+';fill:#8A6100'});
+  T(g,p.X(6)+6,p.Y(40)+4,'rise = 20',{style:st+';fill:#8A6100'});
+  [[2,30,'A (2, 30)'],[6,50,'B (6, 50)']].forEach(([x,y,t],i)=>{S('circle',{cx:p.X(x),cy:p.Y(y),r:6,fill:'#FFC107',stroke:'#1E2D4F','stroke-width':2},g); T(g,p.X(x)+(i?-10:-8),p.Y(y)-12,t,{'text-anchor':'end',style:st+';fill:#1E2D4F'});});
+  S('circle',{cx:p.X(0),cy:p.Y(20),r:6,fill:'#FFC107',stroke:'#8A6100','stroke-width':2},g); T(g,p.X(0)+10,p.Y(20)+20,'b = 20',{style:st+';fill:#8A6100'});
+  return {title:'A line through A (2, 30) and B (6, 50)',visual:p.svg,steps:[
+    'Rise = 50 − 30 = 20. Run = 6 − 2 = 4.',
+    `Slope: <i>m</i> = rise ÷ run = ${fracHTML(20,4)} = 5.`,
+    'y-intercept: the line crosses the y-axis at 20, so <i>b</i> = 20. Check: <i>b</i> = 30 − 5 × 2 = 20.',
+    `Equation: ${eqHTML(5,20)}.`]};
+}
+function exUse(){
+  const xa={min:0,max:10,step:1,n:10}, ya={min:0,max:100,step:10,n:10};
+  const r=RNG(55); const pts=[1,2,2.5,3,4,5,5.5,7,8,9].map(x=>({x,y:roundTo(5*x+45+r.normal()*4,1)}));
+  const p=miniPlot(pts,{xa,ya,w:340,h:250,xl:'Hours studied',yl:'Test score',ticks:true,r:3.6,aria:'Example: the line y = 5x + 45. At x = 6 the line is at y = 75.'});
+  miniLine(p,p.gUnder,5,45,{stroke:'#1E2D4F','stroke-width':2.5});
+  const g=p.gTop;
+  S('line',{x1:p.X(6),y1:p.B,x2:p.X(6),y2:p.Y(75),stroke:'#1D4ED8','stroke-width':1.8,'stroke-dasharray':'5 4'},g);
+  S('line',{x1:p.L,y1:p.Y(75),x2:p.X(6),y2:p.Y(75),stroke:'#1D4ED8','stroke-width':1.8,'stroke-dasharray':'5 4'},g);
+  S('circle',{cx:p.X(6),cy:p.Y(75),r:5,fill:'#fff',stroke:'#1D4ED8','stroke-width':2.5},g);
+  T(g,p.L+6,p.Y(75)-7,'y = 75',{style:'font-size:13px;'+LBL+';fill:#1D4ED8'});
+  return {title:'Line of best fit: y = 5x + 45',visual:p.svg,steps:[
+    'Predict for 6 hours: <i>y</i> = 5 × 6 + 45 = 30 + 45 = 75 points.',
+    'Slope 5: for each extra hour of studying, the predicted score goes up by 5 points.',
+    'y-intercept 45: a student who studies 0 hours is predicted to score 45 points.',
+    'The slope is the number in front of <i>x</i>. The y-intercept is the number added on.']};
+}
+function exTable(){
+  const t=h('table',{class:'tw'},
+    h('tr',{},h('th',{}),h('th',{},'Likes art'),h('th',{},'Does not'),h('th',{},'Total')),
+    h('tr',{},h('th',{class:'rowh'},'7th grade'),h('td',{},'24 (60%)'),h('td',{},'16 (40%)'),h('td',{class:'tot'},'40')),
+    h('tr',{},h('th',{class:'rowh'},'8th grade'),h('td',{},'15 (25%)'),h('td',{},'45 (75%)'),h('td',{class:'tot'},'60')));
+  return {title:'Grade level and liking art class',visual:h('div',{class:'tablewrap'},t),steps:[
+    'A <b>row percent</b> is a count ÷ its row total.',
+    '7th grade: 24 ÷ 40 = 0.6 = 60% like art.',
+    '8th grade: 15 ÷ 60 = 0.25 = 25% like art.',
+    '60% and 25% are far apart. So there <b>is an association</b> between grade level and liking art. If the percents were close, there would be no association.',
+    'Do not compare counts (24 and 15) when the groups are different sizes. Compare percents.']};
+}
+
+/* ================= stations ================= */
+const STATIONS=[
+ {id:1,name:'Sort the plots',skill:'Positive, negative, or no association; linear or nonlinear',std:'NC.8.SP.1',n:4,wide:true,blurb:'Drag each scatter plot into a bin: positive, negative, or no association. Then linear or nonlinear.',
+  how:['Each round has 3 new scatter plots.','Drag each plot into a bin. Or tap a plot, then tap a bin.','Then sort the plots with a pattern into Linear or Nonlinear.'],
+  example:exSort,plan:planSort,make:makeSort,render:renderSort},
+ {id:2,name:'Spot it',skill:'Find outliers and clusters',std:'NC.8.SP.1',n:4,blurb:'Tap the outlier that breaks the pattern, or the cluster where dots crowd together.',
+  how:['Each round asks you to find an outlier or a cluster.','Tap a dot or a spot on the plot. A blue ring shows your pick.','Tap Check. You get one more try if you miss.'],
+  example:exSpot,plan:planSpot,make:makeSpot,render:renderSpot},
+ {id:3,name:'Fit the line',skill:'Place a line of best fit',std:'NC.8.SP.2',n:4,blurb:'Drag two handles to place a line of best fit. Lock it in to see your stars.',
+  how:['Drag the two round handles to move your line. You can also tab to a handle and use the arrow keys.','Follow the direction of the cloud. Keep about as many dots above the line as below it.','Tap Lock in my line. You earn 1 to 3 stars, and you see a very good line to compare.'],
+  example:exFit,plan:planFit,make:makeFit,render:renderFit},
+ {id:4,name:'Write it',skill:'Write y = mx + b from a line',std:'NC.8.SP.3',n:4,blurb:'Use two grid points on a line of best fit to find the slope and y-intercept. Write y = mx + b.',
+  how:['Each line of best fit goes through two grid points, A and B.','Find the rise and run. Then find the slope and the y-intercept.','Write the equation in the form y = mx + b.'],
+  example:exWrite,plan:planWrite,make:makeWrite,render:renderWrite},
+ {id:5,name:'Use it',skill:'Predict; explain slope and y-intercept',std:'NC.8.SP.3',n:4,blurb:'Use the equation of a line of best fit to predict. Pick what the slope and y-intercept mean.',
+  how:['Each plot has a line of best fit and its equation.','Put the x-value into the equation to predict y.','Then pick the sentence that tells what the slope and the y-intercept mean in real life. One round asks you to find a mistake.'],
+  example:exUse,plan:planUse,make:makeUse,render:renderUse},
+ {id:6,name:'Two-way tables',skill:'Row percents and association',std:'NC.8.SP.4',n:4,blurb:'Complete two-way tables, find row percents, and decide if there is an association.',
+  how:['A two-way table counts people in two ways at once.','Fill in the missing totals. Then find the row percents. You can type 40, 40%, 0.4, or 2/5.','Compare the row percents to decide if there is an association.'],
+  example:exTable,plan:planTable,make:makeTable,render:renderTable},
+];
+
+document.getElementById('resetBtn').addEventListener('click',()=>{store.res={}; store.att={}; saveStore(); showHome();});
+showHome();
+</script>
+</body>
+</html>

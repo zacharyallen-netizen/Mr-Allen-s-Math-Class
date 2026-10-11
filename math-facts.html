@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fun Math Facts — Mr. Allen's Math Class</title>
+<meta name="description" content="Today in math history, plus surprising math facts you can check yourself.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F7F4; --surface:#FFFFFF; --border:#E3E5EA; --radius:10px;
+  --navy:#1E2D4F; --navy-2:#2E3F66; --muted:#5B6475; --tint:#F1F2F5;
+  --gold:#E0A800; --gold-2:#FFC107; --gold-soft:#FFF6D6;
+  --success:#15803D; --success-soft:#EEF7F1; --error:#B42318; --error-soft:#FDF1F0; --info:#1D4ED8;
+  --shadow:0 1px 2px rgba(30,45,79,.05);
+  --serif:'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --sans:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{margin:0;background:var(--bg);color:var(--navy);font:17px/1.6 var(--sans);}
+a{color:var(--info);text-underline-offset:2px;}
+a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--info);outline-offset:2px;}
+sup{font-size:.7em;line-height:0;}
+.wrap{max-width:960px;margin:0 auto;padding:8px 16px 72px;}
+.back{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:.95rem;}
+.back:hover{color:var(--navy);text-decoration:underline;}
+.page-head{padding:24px 0 8px;}
+.kicker{margin:0 0 8px;font:500 .78rem/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+h1{margin:0 0 8px;font:600 2.6rem/1.1 var(--serif);letter-spacing:-.01em;}
+.sub{margin:0;color:var(--muted);max-width:60ch;}
+section{padding-top:40px;}
+h2{margin:0 0 6px;font:600 1.75rem/1.2 var(--serif);display:flex;align-items:center;gap:12px;}
+h2::before{content:"";flex:none;width:4px;height:1.1em;background:var(--gold);border-radius:2px;}
+.section-sub{margin:0 0 20px;color:var(--muted);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+button{font:inherit;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:8px;
+  font:600 .98rem/1.2 var(--sans);cursor:pointer;border:1px solid var(--navy);background:var(--surface);color:var(--navy);touch-action:manipulation;}
+.btn:hover{background:var(--tint);}
+.btn-primary{background:var(--navy);color:#fff;}
+.btn-primary:hover{background:#15213B;}
+.btn-quiet{border-color:var(--border);}
+
+/* ---------- Today in Math History ---------- */
+.today{padding:24px;}
+.today-top{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;margin-bottom:20px;}
+.today-top h2{margin:0;}
+.today-date{font:500 .95rem/1.4 var(--mono);color:var(--muted);}
+.hist-grid{display:grid;grid-template-columns:1fr;gap:16px;}
+.hist-grid.two{grid-template-columns:repeat(2,minmax(0,1fr));}
+.hist{display:flex;gap:16px;align-items:flex-start;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--surface);}
+.hist.is-today{border-color:var(--gold);box-shadow:inset 4px 0 0 var(--gold-2);}
+.tile{flex:none;width:68px;border:1px solid var(--border);border-radius:8px;overflow:hidden;text-align:center;background:var(--surface);}
+.tile .mo{display:block;background:var(--navy);color:#fff;font:600 .72rem/1 var(--mono);letter-spacing:.12em;padding:6px 0;}
+.tile .dy{display:block;font:600 1.9rem/1 var(--serif);padding:8px 0 8px;}
+.hist .when{margin:0 0 6px;font:600 .78rem/1.3 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.hist .when b{color:var(--navy);}
+.ev{margin:0 0 12px;}
+.ev:last-child{margin-bottom:0;}
+.ev .t{display:block;font:600 1.08rem/1.35 var(--serif);}
+.ev .yr{font:500 .85rem/1 var(--mono);color:var(--muted);margin-left:4px;white-space:nowrap;}
+.ev .x{display:block;color:var(--navy-2);font-size:.97rem;line-height:1.55;margin-top:2px;}
+.none-note{margin:0 0 16px;color:var(--muted);}
+
+.cal{margin-top:24px;}
+.cal h3{margin:0 0 12px;font:600 1.15rem/1.3 var(--serif);}
+.months{display:flex;flex-direction:column;border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden;}
+.months details{border-top:1px solid var(--border);}
+.months details:first-child{border-top:0;}
+.months summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 16px;cursor:pointer;list-style:none;font-weight:600;}
+.months summary::-webkit-details-marker{display:none;}
+.months summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:-4px 4px 0 0;transition:transform .15s;}
+.months details[open] summary::after{transform:rotate(-135deg);margin-top:4px;}
+.months summary .cnt{margin-left:auto;font:500 .8rem/1 var(--mono);color:var(--muted);font-weight:400;}
+.months summary .now{font:600 .7rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:var(--gold-soft);color:var(--navy);padding:4px 8px;border-radius:4px;}
+.months ul{list-style:none;margin:0;padding:0 16px 8px;}
+.months li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:12px;padding:12px 0;border-top:1px solid var(--border);}
+.months li .d{font:500 .9rem/1.4 var(--mono);color:var(--navy);}
+.months li.hl .d{font-weight:600;}
+.months li .tag{display:table;margin-top:6px;font:600 .68rem/1 var(--sans);letter-spacing:.08em;text-transform:uppercase;background:var(--gold-soft);padding:4px 6px;border-radius:4px;vertical-align:2px;}
+
+/* ---------- Fun Math Facts deck ---------- */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;}
+.chip{min-height:44px;padding:8px 14px;border-radius:999px;border:1px solid var(--border);background:var(--surface);color:var(--navy);
+  font:500 .92rem/1.2 var(--sans);cursor:pointer;touch-action:manipulation;}
+.chip:hover{border-color:#C5CAD5;}
+.chip[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff;}
+.chip .c{font:500 .78rem/1 var(--mono);opacity:.75;margin-left:4px;}
+.deckbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.deckbar .nav{display:flex;gap:8px;flex-wrap:wrap;}
+.count{font:500 .95rem/1 var(--mono);color:var(--muted);}
+.count b{color:var(--navy);}
+
+.fact{padding:28px;}
+.fact-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.unit-tag{display:inline-flex;align-items:center;gap:8px;font:500 .78rem/1.2 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
+.unit-tag::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--gold-2);}
+.fact h3{margin:0 0 12px;font:600 1.6rem/1.3 var(--serif);overflow-wrap:break-word;}
+.fact .body p{margin:0 0 10px;max-width:64ch;}
+.fact-main{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:start;}
+.fig{width:260px;max-width:100%;}
+.fig svg{display:block;width:100%;height:auto;}
+.fig figcaption{font-size:.85rem;color:var(--muted);text-align:center;margin-top:4px;}
+.num{font-family:var(--mono);font-weight:500;white-space:nowrap;}
+.pattern{font-family:var(--mono);font-size:.95rem;}
+.pattern span{white-space:nowrap;}
+.mirror{display:inline-block;transform:scaleX(-1);font-weight:700;letter-spacing:.06em;}
+
+.check{margin-top:20px;border-top:1px solid var(--border);padding-top:20px;}
+.check h4{margin:0 0 8px;font:600 .78rem/1.2 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.check .q{margin:0 0 12px;}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;}
+.field{display:flex;flex-direction:column;gap:4px;flex:1 1 180px;max-width:300px;}
+.field label{font-size:.88rem;color:var(--muted);}
+.field input{min-height:48px;padding:10px 12px;border:1px solid #C5CAD5;border-radius:8px;font:500 1.05rem/1.2 var(--mono);color:var(--navy);background:#fff;width:100%;}
+.row .btn{min-height:48px;}
+.field input:focus{border-color:var(--info);}
+.fb{margin-top:12px;padding:12px 14px;border-radius:8px;font-size:.97rem;display:none;}
+.fb.show{display:block;}
+.fb.good{background:var(--success-soft);color:#0F5E2D;border:1px solid #CFE7D7;}
+.fb.bad{background:var(--error-soft);color:#8A1B12;border:1px solid #F3D3CF;}
+.fb.info{background:var(--tint);color:var(--navy);border:1px solid var(--border);}
+.fb b{font-weight:600;}
+.show-math{margin-top:12px;}
+.steps{margin-top:12px;padding:16px;border-radius:8px;background:var(--tint);border:1px solid var(--border);}
+.steps[hidden]{display:none;}
+.steps ol{margin:0;padding-left:22px;}
+.steps li{margin:6px 0;}
+.steps .eq{font-weight:500;font-variant-numeric:tabular-nums;}
+.steps .wide-num{font-family:var(--mono);font-size:.82rem;overflow-wrap:anywhere;word-break:break-all;}
+.steps .fig{margin:8px 0 0;}
+.explore-out{margin-top:12px;}
+.explore-out table{border-collapse:collapse;font-size:.95rem;}
+.explore-out td{padding:4px 10px 4px 0;vertical-align:top;}
+.explore-out td.e{font-family:var(--mono);}
+.meter{height:10px;border-radius:5px;background:var(--border);overflow:hidden;margin:8px 0 4px;max-width:360px;}
+.meter span{display:block;height:100%;background:var(--navy);}
+.meter.half span{background:var(--success);}
+.keyhint{margin-top:12px;font-size:.85rem;color:var(--muted);}
+
+footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--border);color:var(--muted);font-size:.88rem;}
+
+@media (max-width:760px){
+  .hist-grid.two{grid-template-columns:1fr;}
+  .fact-main{grid-template-columns:1fr;}
+  .fig{width:100%;max-width:300px;margin:0 auto;}
+}
+@media (max-width:600px){
+  body{font-size:16px;}
+  h1{font-size:2.1rem;}
+  h2{font-size:1.5rem;}
+  .today{padding:16px;}
+  .hist{padding:14px;gap:12px;}
+  .tile{width:58px;}
+  .tile .dy{font-size:1.6rem;}
+  .fact{padding:20px;}
+  .fact h3{font-size:1.32rem;}
+  .deckbar .nav{width:100%;}
+  .deckbar .nav .btn{flex:1 1 0;padding:10px 8px;}
+  .chip{padding:8px 12px;font-size:.88rem;}
+}
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<main class="wrap">
+  <a class="back" href="index.html">← Home</a>
+
+  <header class="page-head">
+    <p class="kicker">Mr. Allen's Math Class</p>
+    <h1>Fun Math Facts</h1>
+    <p class="sub">See what happened in math on this day. Then flip through surprising facts and check the math yourself.</p>
+  </header>
+
+  <!-- ===================== TODAY IN MATH HISTORY ===================== -->
+  <section aria-labelledby="today-h" style="padding-top:24px">
+    <div class="card today">
+      <div class="today-top">
+        <h2 id="today-h">Today in Math History</h2>
+        <span class="today-date" id="today-date"></span>
+      </div>
+      <div id="today-out"></div>
+
+      <div class="cal">
+        <h3>Browse the whole year</h3>
+        <div class="months" id="months"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FUN MATH FACTS ===================== -->
+  <section aria-labelledby="facts-h">
+    <h2 id="facts-h">Fun Math Facts</h2>
+    <p class="section-sub">Every fact is true. Don't just trust it. Check it yourself!</p>
+
+    <div class="filters" id="filters" role="group" aria-label="Show facts from one unit"></div>
+
+    <div class="deckbar">
+      <span class="count" id="count" aria-live="polite"></span>
+      <div class="nav">
+        <button class="btn btn-quiet" id="prev" type="button">← Back</button>
+        <button class="btn btn-quiet" id="shuffle" type="button">Shuffle</button>
+        <button class="btn btn-primary" id="next" type="button">Next →</button>
+      </div>
+    </div>
+
+    <article class="card fact" id="fact"></article>
+  </section>
+
+  <footer>Mr. Allen's Math Class · IC Imagine Public Charter School · 2026–27</footer>
+</main>
+
+<script>
+"use strict";
+/* =====================================================================
+   TODAY IN MATH HISTORY — data
+   m = month (1–12), d = day, y = year (null for yearly holidays)
+   ===================================================================== */
+const HISTORY = [
+  {m:1, d:4,  y:1643, t:"Isaac Newton is born in England.", x:"He helped invent calculus and explained how gravity works. (England’s calendar back then listed the date as December 25, 1642.)"},
+  {m:1, d:15, y:1850, t:"Sofia Kovalevskaya is born in Russia.", x:"She became one of the first women in Europe to earn a doctorate (the highest college degree) in math. Later she became a math professor in Sweden."},
+  {m:1, d:23, y:1862, t:"David Hilbert is born in Germany.", x:"He was one of the most important mathematicians of his time. In 1900 he shared a famous list of unsolved math problems."},
+  {m:1, d:25, y:1736, t:"Joseph-Louis Lagrange is born in Turin, Italy.", x:"He used math to explain how objects and planets move. Special spots in space, called Lagrange points, are named after him."},
+  {m:2, d:15, y:1564, t:"Galileo Galilei is born in Pisa, Italy.", x:"He tested ideas with experiments. He used math to describe how things fall and move, and he studied the sky with a telescope."},
+  {m:2, d:20, y:1962, t:"John Glenn becomes the first American to orbit Earth.", x:"Before the flight, NASA mathematician Katherine Johnson checked the computer’s orbit numbers by hand."},
+  {m:3, d:3,  y:1845, t:"Georg Cantor is born in Russia.", x:"He showed that some infinities are bigger than others."},
+  {m:3, d:14, y:null, t:"Pi Day.", x:"The date 3/14 matches the first digits of π = 3.14159… Since 2020, March 14 is also the International Day of Mathematics, created by UNESCO."},
+  {m:3, d:14, y:1879, t:"Albert Einstein is born in Germany.", x:"His famous physics ideas, like E = mc<sup>2</sup>, are written in the language of math."},
+  {m:3, d:23, y:1882, t:"Emmy Noether is born in Germany.", x:"She was a leader in algebra. Her theorem connects symmetry to rules in physics."},
+  {m:3, d:23, y:1749, t:"Pierre-Simon Laplace is born in France.", x:"He did important work in probability (the math of chance) and in astronomy."},
+  {m:3, d:26, y:1913, t:"Paul Erdős is born in Hungary.", x:"He wrote about 1,500 math papers with more than 500 different partners. Very few people have written more."},
+  {m:3, d:31, y:1596, t:"René Descartes is born in France.", x:"He linked algebra and geometry. The coordinate plane, with its (x, y) points, is also called the Cartesian plane after him."},
+  {m:4, d:1,  y:1776, t:"Sophie Germain is born in Paris, France.", x:"Women were kept out of universities, so she studied math on her own. She sent her work to famous mathematicians under a man’s name, “Monsieur LeBlanc.”"},
+  {m:4, d:9,  y:1921, t:"Mary Jackson is born in Hampton, Virginia.", x:"She became NASA’s first Black woman engineer."},
+  {m:4, d:11, y:1953, t:"Andrew Wiles is born in England.", x:"He later proved Fermat’s Last Theorem, a puzzle that stayed unsolved for more than 350 years."},
+  {m:4, d:15, y:1707, t:"Leonhard Euler is born in Switzerland.", x:"He made the symbol π popular and was the first to write f(x) for a function. He is one of the most productive mathematicians ever."},
+  {m:4, d:28, y:1906, t:"Kurt Gödel is born in Austria-Hungary.", x:"He proved that some true math statements can never be proved from a fixed set of rules."},
+  {m:4, d:30, y:1777, t:"Carl Friedrich Gauss is born in Germany.", x:"He made big discoveries about numbers, geometry, and the motion of planets. Many call him the Prince of Mathematics."},
+  {m:4, d:30, y:1916, t:"Claude Shannon is born in Michigan.", x:"He showed how to send any information as bits (1s and 0s). His ideas are behind today’s computers and phones."},
+  {m:5, d:11, y:1997, t:"IBM’s computer Deep Blue beats world chess champion Garry Kasparov.", x:"It was the first time a computer won a full match against the world chess champion."},
+  {m:5, d:12, y:null, t:"International Day of Women in Mathematics.", x:"It is held on the birthday of Maryam Mirzakhani, born May 12, 1977, in Iran."},
+  {m:5, d:12, y:1820, t:"Florence Nightingale is born.", x:"She was a nurse and a pioneer of data graphs. Her charts helped convince leaders to make hospitals cleaner and safer."},
+  {m:6, d:13, y:1928, t:"John Nash is born in West Virginia.", x:"He studied game theory, the math of making choices. He won the Nobel Prize in economics in 1994."},
+  {m:6, d:19, y:1623, t:"Blaise Pascal is born in France.", x:"Pascal’s triangle is named after him. As a young man, he built one of the first mechanical calculators."},
+  {m:6, d:23, y:1912, t:"Alan Turing is born in London.", x:"He is a founder of computer science. In World War II, he helped break secret German codes."},
+  {m:6, d:23, y:1993, t:"Andrew Wiles announces his proof of Fermat’s Last Theorem.", x:"Experts found a gap in the proof. He fixed it in 1994 with help from Richard Taylor."},
+  {m:6, d:28, y:null, t:"Tau Day.", x:"Tau (τ) equals 2π, which is about 6.28. So June 28 (6/28) is Tau Day."},
+  {m:7, d:1,  y:1646, t:"Gottfried Wilhelm Leibniz is born in Germany.", x:"He invented calculus at about the same time as Isaac Newton. Much of the calculus notation we use today comes from him."},
+  {m:7, d:17, y:1975, t:"Terence Tao is born in Australia.", x:"At age 13, he became the youngest person ever to win a gold medal at the International Mathematical Olympiad. In 2006 he won the Fields Medal."},
+  {m:7, d:20, y:1969, t:"Apollo 11 lands on the Moon.", x:"Katherine Johnson worked on trajectory math for the Apollo missions. A trajectory is the path a spacecraft travels."},
+  {m:7, d:22, y:null, t:"Pi Approximation Day.", x:"Written day first, July 22 is 22/7. And 22 ÷ 7 = 3.142857…, which is close to π ≈ 3.14159."},
+  {m:8, d:4,  y:1805, t:"William Rowan Hamilton is born in Dublin, Ireland.", x:"He invented quaternions, a number system now used to turn 3-D objects in video games and spacecraft."},
+  {m:8, d:8,  y:1900, t:"David Hilbert gives a famous talk in Paris about unsolved problems.", x:"His full list of 23 problems guided math research for the next 100 years. Some are still unsolved."},
+  {m:8, d:13, y:2014, t:"Maryam Mirzakhani becomes the first woman to win the Fields Medal.", x:"The Fields Medal is one of the highest prizes in math. She won it for her work on the geometry of curved surfaces."},
+  {m:8, d:21, y:1789, t:"Augustin-Louis Cauchy is born in Paris, France.", x:"He made calculus more careful and exact. He wrote hundreds of research papers."},
+  {m:8, d:26, y:1918, t:"Katherine Johnson is born in West Virginia.", x:"Her math helped send astronauts into space and bring them home. In 2015 she received the Presidential Medal of Freedom."},
+  {m:9, d:17, y:1826, t:"Bernhard Riemann is born in Germany.", x:"The Riemann Hypothesis, a question about prime numbers, is still unsolved. Solving it would earn a $1 million prize."},
+  {m:9, d:20, y:1910, t:"Dorothy Vaughan is born in Kansas City, Missouri.", x:"She was the first Black supervisor at NACA, the group that became NASA. She taught herself and her team the computer language FORTRAN."},
+  {m:10,d:12, y:2024, t:"The largest known prime number is found.", x:"It is 2<sup>136,279,841</sup> − 1, with over 41 million digits. Luke Durant found it. A prime number has exactly two factors: 1 and itself."},
+  {m:10,d:16, y:1843, t:"Hamilton carves a formula into Broom Bridge in Dublin.", x:"On a walk, he suddenly saw how quaternions work. He carved i<sup>2</sup> = j<sup>2</sup> = k<sup>2</sup> = ijk = −1 into the stone. A plaque marks the spot today."},
+  {m:10,d:25, y:1811, t:"Évariste Galois is born in France.", x:"He died at age 20. His ideas started a whole new part of algebra called group theory."},
+  {m:10,d:27, y:1930, t:"Gladys West is born in Virginia.", x:"Her math models of the shape of Earth helped build GPS, the system that helps phones find where you are."},
+  {m:11,d:8,  y:1656, t:"Edmond Halley is born in England.", x:"He used math to predict that a comet would return in 1758. It did, and it is now called Halley’s Comet."},
+  {m:11,d:9,  y:1731, t:"Benjamin Banneker is born in Maryland.", x:"He taught himself math and astronomy. He helped survey the land for Washington, D.C., and he published almanacs."},
+  {m:11,d:20, y:1924, t:"Benoit Mandelbrot is born in Poland.", x:"He named fractals: shapes whose small parts look like the whole shape."},
+  {m:11,d:23, y:null, t:"Fibonacci Day.", x:"11/23 gives 1, 1, 2, 3, the start of the Fibonacci sequence. Each number is the sum of the two before it: 1, 1, 2, 3, 5, 8, 13, …"},
+  {m:12,d:9,  y:1906, t:"Grace Hopper is born in New York City.", x:"She was a computer scientist and a Navy rear admiral. She helped create programming languages, like COBOL, that use English words."},
+  {m:12,d:10, y:1815, t:"Ada Lovelace is born in London.", x:"She wrote steps for Charles Babbage’s planned machine to compute numbers. Many call it the first computer program."},
+  {m:12,d:22, y:1887, t:"Srinivasa Ramanujan is born in India.", x:"He taught himself much of his math and found amazing formulas. India celebrates his birthday as National Mathematics Day."},
+  {m:12,d:26, y:1791, t:"Charles Babbage is born in London.", x:"He designed some of the first mechanical computers."},
+  {m:12,d:26, y:1780, t:"Mary Somerville is born in Scotland.", x:"She wrote science and math books that many people could read. Somerville College at Oxford is named after her."},
+  {m:12,d:27, y:1571, t:"Johannes Kepler is born in Germany.", x:"He found that planets travel around the Sun in ellipses (stretched circles), not perfect circles."},
+  {m:12,d:28, y:1903, t:"John von Neumann is born in Budapest, Hungary.", x:"He helped design early computers and helped start game theory."}
+];
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const MON3 = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
+const WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function onDay(m, d){
+  return HISTORY.filter(e => e.m === m && e.d === d)
+    .sort((a, b) => (a.y === null ? -1 : b.y === null ? 1 : a.y - b.y));
+}
+/* Today's entries, or the next and the most recent dates that have entries (wraps around the year). */
+function historyFor(now){
+  const base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const today = onDay(base.getMonth() + 1, base.getDate());
+  if (today.length) return {today, date: base};
+  let next = null, prev = null;
+  for (let k = 1; k <= 366 && (!next || !prev); k++){
+    if (!next){
+      const f = new Date(base.getFullYear(), base.getMonth(), base.getDate() + k);
+      const ev = onDay(f.getMonth() + 1, f.getDate());
+      if (ev.length) next = {days: k, date: f, events: ev};
+    }
+    if (!prev){
+      const b = new Date(base.getFullYear(), base.getMonth(), base.getDate() - k);
+      const ev = onDay(b.getMonth() + 1, b.getDate());
+      if (ev.length) prev = {days: k, date: b, events: ev};
+    }
+  }
+  return {today: [], date: base, next, prev};
+}
+function evHTML(e){
+  return `<p class="ev"><span class="t">${e.t}${e.y ? ` <span class="yr">${e.y}</span>` : ""}</span><span class="x">${e.x}</span></p>`;
+}
+function tileHTML(date){
+  return `<div class="tile" aria-hidden="true"><span class="mo">${MON3[date.getMonth()]}</span><span class="dy">${date.getDate()}</span></div>`;
+}
+function plural(n, w){ return n + " " + w + (n === 1 ? "" : "s"); }
+
+function renderToday(now){
+  const h = historyFor(now);
+  document.getElementById("today-date").textContent =
+    `${WEEKDAYS[now.getDay()]}, ${MONTHS[now.getMonth()]} ${now.getDate()}`;
+  const out = document.getElementById("today-out");
+  if (h.today.length){
+    out.innerHTML = `<div class="hist-grid"><div class="hist is-today" data-kind="today">${tileHTML(h.date)}<div>
+      <p class="when"><b>Today</b> · ${MONTHS[h.date.getMonth()]} ${h.date.getDate()}</p>${h.today.map(evHTML).join("")}</div></div></div>`;
+  } else {
+    const nTxt = h.next.days === 1 ? "tomorrow" : "in " + plural(h.next.days, "day");
+    const pTxt = h.prev.days === 1 ? "yesterday" : plural(h.prev.days, "day") + " ago";
+    out.innerHTML = `<p class="none-note">Nothing on our list happened on today's date. Here are the closest dates.</p>
+      <div class="hist-grid two">
+        <div class="hist" data-kind="next">${tileHTML(h.next.date)}<div>
+          <p class="when"><b>Coming up</b> · ${MONTHS[h.next.date.getMonth()]} ${h.next.date.getDate()} · ${nTxt}</p>
+          ${h.next.events.map(evHTML).join("")}</div></div>
+        <div class="hist" data-kind="prev">${tileHTML(h.prev.date)}<div>
+          <p class="when"><b>Recently</b> · ${MONTHS[h.prev.date.getMonth()]} ${h.prev.date.getDate()} · ${pTxt}</p>
+          ${h.prev.events.map(evHTML).join("")}</div></div>
+      </div>`;
+  }
+  return h;
+}
+function renderMonths(now, h){
+  const cm = now.getMonth() + 1, cd = now.getDate();
+  const nextKey = h.next ? (h.next.date.getMonth() + 1) + "-" + h.next.date.getDate() : "";
+  const box = document.getElementById("months");
+  box.innerHTML = MONTHS.map((name, i) => {
+    const m = i + 1;
+    const days = [...new Set(HISTORY.filter(e => e.m === m).map(e => e.d))].sort((a, b) => a - b);
+    const isNow = m === cm;
+    const items = days.map(d => {
+      const key = m + "-" + d;
+      const tag = (m === cm && d === cd) ? `<span class="tag">Today</span>` : (key === nextKey ? `<span class="tag">Next</span>` : "");
+      return `<li class="${tag ? "hl" : ""}"><span class="d">${MON3[i].charAt(0) + MON3[i].slice(1).toLowerCase()} ${d}${tag}</span><div>${onDay(m, d).map(evHTML).join("")}</div></li>`;
+    }).join("");
+    return `<details${isNow ? " open" : ""} data-month="${m}"><summary><span>${name}</span>${isNow ? `<span class="now">This month</span>` : ""}<span class="cnt">${plural(days.length, "date")}</span></summary><ul>${items}</ul></details>`;
+  }).join("");
+}
+
+/* =====================================================================
+   ANSWER CHECKING — accepts what students actually type
+   (−3, -3, 3.5, 7/2, 3 1/2, x = 5, 10^20, 1×10^20, 3.2x10^5, 36pi, 36π, units, $, %, °)
+   ===================================================================== */
+const SUP = {"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-"};
+function normalize(raw){
+  let s = String(raw).trim().toLowerCase();
+  s = s.replace(/[−–—]/g, "-").replace(/[×·]/g, "*").replace(/÷/g, "/").replace(/π/g, "pi");
+  s = s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, m => "^(" + [...m].map(c => SUP[c]).join("") + ")");
+  s = s.replace(/^[a-z]\s*=\s*/, "");                 // "x = 5" -> "5"
+  s = s.replace(/[$%°]/g, " ");
+  s = s.replace(/(\d)\s*x\s*(?=\d)/g, "$1*");          // 3.2x10^5
+  s = s.replace(/(\d)e(?=[+-]?\d)/g, "$1*10^");        // 1e20
+  s = s.replace(/(\d),(?=\d{3}(?!\d))/g, "$1");        // 1,234,321
+  s = s.replace(/(\d),(?=\d{3}(?!\d))/g, "$1");
+  // drop unit words (keep "pi"), and any ^3 that follows a unit (cm^3)
+  s = s.replace(/[a-z]+(\^\(?\d+\)?)?/g, w => (w === "pi" ? w : " "));
+  return s.trim();
+}
+function evalExpr(src){
+  let i = 0; const s = src;
+  const peek = () => s[i], eat = c => { if (s[i] === c){ i++; return true; } return false; };
+  function num(){
+    if (s.startsWith("pi", i)){ i += 2; return Math.PI; }
+    if (eat("(")){ const v = add(); if (!eat(")")) throw 0; return v; }
+    const m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
+    if (!m) throw 0;
+    i += m[0].length; return parseFloat(m[0]);
+  }
+  function pow(){
+    let b = num();
+    if (eat("^")){ const e = unary(); b = Math.pow(b, e); }
+    return b;
+  }
+  function unary(){ if (eat("-")) return -unary(); if (eat("+")) return unary(); return pow(); }
+  function mul(){
+    let v = unary();
+    for (;;){
+      if (eat("*")) v *= unary();
+      else if (eat("/")) v /= unary();
+      else if (peek() === "(" || s.startsWith("pi", i) || /\d/.test(peek() || "")) v *= unary(); // 36pi, 2(3)
+      else return v;
+    }
+  }
+  function add(){
+    let v = mul();
+    for (;;){ if (eat("+")) v += mul(); else if (eat("-")) v -= mul(); else return v; }
+  }
+  const v = add();
+  if (i !== s.length) throw 0;
+  return v;
+}
+function parseValue(raw){
+  let s = normalize(raw);
+  if (!s) return NaN;
+  const mixed = /^(-?)(\d+)\s+(\d+)\s*\/\s*(\d+)$/.exec(s);   // 3 1/2
+  if (mixed){ const v = +mixed[2] + (+mixed[3]) / (+mixed[4]); return mixed[1] ? -v : v; }
+  s = s.replace(/\s+/g, "");
+  try { const v = evalExpr(s); return Number.isFinite(v) ? v : NaN; } catch (e) { return NaN; }
+}
+function parsePair(raw){
+  const s = String(raw).replace(/[−–—]/g, "-").replace(/\s+/g, "");
+  const m = /^\(?(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\)?$/.exec(s);
+  return m ? [parseFloat(m[1]), parseFloat(m[2])] : null;
+}
+function near(a, b, tol){
+  const t = tol != null ? tol : Math.max(1e-9, Math.abs(b) * 1e-9);
+  return Math.abs(a - b) <= t;
+}
+const fmt = (n, dp = 2) => Number(n).toLocaleString("en-US", {maximumFractionDigits: dp});
+const neg = s => String(s).replace(/-/g, "−");
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* =====================================================================
+   DIAGRAMS — each one is drawn from its own numbers
+   ===================================================================== */
+const NS = 'xmlns="http://www.w3.org/2000/svg"';
+const INK = "#1E2D4F", MUTED = "#5B6475", GOLD = "#E0A800", LINE = "#E3E5EA";
+
+function svgTriangle(A, B){                 // angles A (left) and B (right) in degrees
+  const C = 180 - A - B, r = Math.PI / 180, base = 220;
+  const side = base * Math.sin(B * r) / Math.sin(C * r);       // left side length (law of sines)
+  const px = side * Math.cos(A * r), py = side * Math.sin(A * r);
+  const ox = 20, oy = 20 + py;
+  const P = [[ox, oy], [ox + base, oy], [ox + px, oy - py]];
+  const lab = (p, q1, q2, txt) => {           // put label inside the corner
+    const mx = (q1[0] + q2[0]) / 2, my = (q1[1] + q2[1]) / 2;
+    const dx = mx - p[0], dy = my - p[1], L = Math.hypot(dx, dy);
+    return `<text x="${(p[0] + dx / L * 34).toFixed(1)}" y="${(p[1] + dy / L * 34 + 5).toFixed(1)}" text-anchor="middle" font-size="15" font-family="Inter,system-ui,sans-serif" fill="${INK}" font-weight="600">${txt}</text>`;
+  };
+  const h = Math.ceil(py + 40);
+  return `<svg ${NS} viewBox="0 0 260 ${h}" role="img" aria-label="A triangle with angles ${A}°, ${B}°, and ${C}°">
+    <polygon points="${P.map(p => p.map(v => v.toFixed(1)).join(",")).join(" ")}" fill="#FFF6D6" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    ${lab(P[0], P[1], P[2], A + "°")}${lab(P[1], P[0], P[2], B + "°")}${lab(P[2], P[0], P[1], C + "°")}
+  </svg>`;
+}
+function svgRightTri(a, b, c, unit){        // legs a (up) and b (across)
+  const s = 150 / Math.max(a, b), W = b * s, H = a * s, ox = 46, oy = 20 + H;
+  const t = (x, y, txt, anc = "middle") => `<text x="${x}" y="${y}" text-anchor="${anc}" font-size="15" font-family="Inter,system-ui,sans-serif" fill="${INK}" font-weight="600">${txt}</text>`;
+  return `<svg ${NS} viewBox="0 0 260 ${Math.ceil(H + 56)}" role="img" aria-label="A right triangle with legs ${a} and ${b} ${unit} and a diagonal of ${c} ${unit}">
+    <polygon points="${ox},${oy} ${ox + W},${oy} ${ox},${oy - H}" fill="#FFF6D6" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    <polyline points="${ox},${oy - 14} ${ox + 14},${oy - 14} ${ox + 14},${oy}" fill="none" stroke="${INK}" stroke-width="1.5"/>
+    ${t(ox - 10, oy - H / 2 + 5, a + " " + unit, "end")}${t(ox + W / 2, oy + 22, b + " " + unit)}
+    ${t(ox + W / 2 + 14, oy - H / 2 - 6, c + " " + unit, "start")}
+  </svg>`;
+}
+function svgGarfield(a, b){
+  const s = 190 / (a + b), A = a * s, B = b * s, ox = 30, oy = 20 + Math.max(A, B);
+  const O = [ox, oy], P = [ox + B, oy], R = [ox + A + B, oy], Q = [ox, oy - A], S = [ox + A + B, oy - B];
+  const pt = p => p.map(v => v.toFixed(1)).join(",");
+  const t = (x, y, txt) => `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" font-size="14" font-family="Inter,system-ui,sans-serif" fill="${INK}" font-weight="600">${txt}</text>`;
+  const G = [(Q[0] + P[0] + S[0]) / 3, (Q[1] + P[1] + S[1]) / 3];          // centre of the middle triangle
+  const cLab = (U, V) => {                                                 // label "c" just inside the middle triangle
+    const mx = (U[0] + V[0]) / 2, my = (U[1] + V[1]) / 2, dx = G[0] - mx, dy = G[1] - my, L = Math.hypot(dx, dy);
+    return t(mx + dx / L * 14, my + dy / L * 14 + 5, "c");
+  };
+  return `<svg ${NS} viewBox="0 0 250 ${Math.ceil(oy + 30)}" role="img" aria-label="Garfield's trapezoid made of three right triangles">
+    <polygon points="${pt(O)} ${pt(P)} ${pt(Q)}" fill="#FFF6D6" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    <polygon points="${pt(P)} ${pt(R)} ${pt(S)}" fill="#FFF6D6" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    <polygon points="${pt(Q)} ${pt(P)} ${pt(S)}" fill="#EEF1F7" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+    ${t(O[0] - 12, oy - A / 2 + 5, "a")}${t(O[0] + B / 2, oy + 20, "b")}
+    ${t(P[0] + A / 2, oy + 20, "a")}${t(R[0] + 12, oy - B / 2 + 5, "b")}
+    ${cLab(Q, P)}${cLab(P, S)}
+  </svg>`;
+}
+function svgGrid(points){                   // points: [{x, y, label}]
+  const n = 5, c = 18, o = 15 + n * c, size = 30 + 2 * n * c;
+  let g = "";
+  for (let k = -n; k <= n; k++){
+    const p = o + k * c, col = k === 0 ? INK : LINE, w = k === 0 ? 1.6 : 1;
+    g += `<line x1="${p}" y1="15" x2="${p}" y2="${size - 15}" stroke="${col}" stroke-width="${w}"/>`;
+    g += `<line x1="15" y1="${p}" x2="${size - 15}" y2="${p}" stroke="${col}" stroke-width="${w}"/>`;
+  }
+  const ticks = `<text x="${o + 5 * c}" y="${o + 14}" font-size="10" text-anchor="middle" fill="${MUTED}" font-family="Inter,sans-serif">5</text><text x="${o - 4}" y="${o - 5 * c + 4}" font-size="10" text-anchor="end" fill="${MUTED}" font-family="Inter,sans-serif">5</text>`;
+  const dots = points.map(p => {
+    const X = o + p.x * c, Y = o - p.y * c, left = p.x < 0;
+    return `<circle cx="${X}" cy="${Y}" r="5" fill="${p.color || INK}"/><text x="${X + (left ? -8 : 8)}" y="${Y - 8}" font-size="13" font-weight="600" text-anchor="${left ? "end" : "start"}" fill="${INK}" font-family="Inter,sans-serif">${p.label}</text>`;
+  }).join("");
+  return `<svg ${NS} viewBox="0 0 ${size} ${size}" role="img" aria-label="Coordinate grid with ${points.map(p => p.label).join(" and ")}">${g}${ticks}${dots}</svg>`;
+}
+function svgCylinder(rLabel, hLabel, withSphere){
+  const cx = 130, rx = 90, ry = 22, top = 30, h = withSphere ? 180 : 46, bot = top + h;
+  const ball = withSphere ? `<circle cx="${cx}" cy="${(top + bot) / 2}" r="${rx}" fill="#FFF6D6" stroke="${INK}" stroke-width="2"/>
+      <ellipse cx="${cx}" cy="${(top + bot) / 2}" rx="${rx}" ry="${ry}" fill="none" stroke="${INK}" stroke-width="1" stroke-dasharray="4 4"/>` : "";
+  const fill = withSphere ? "none" : "#FFF6D6";
+  return `<svg ${NS} viewBox="0 0 260 ${bot + 40}" role="img" aria-label="${withSphere ? "A ball that just fits inside a can" : "A pizza drawn as a short cylinder"}">
+    <path d="M${cx - rx},${top} L${cx - rx},${bot} A${rx},${ry} 0 0 0 ${cx + rx},${bot} L${cx + rx},${top}" fill="${fill}" stroke="${INK}" stroke-width="2"/>
+    ${ball}
+    <ellipse cx="${cx}" cy="${top}" rx="${rx}" ry="${ry}" fill="${withSphere ? "none" : "#FFE9A8"}" stroke="${INK}" stroke-width="2"/>
+    <line x1="${cx}" y1="${top}" x2="${cx + rx}" y2="${top}" stroke="${INK}" stroke-width="2"/><circle cx="${cx}" cy="${top}" r="3" fill="${INK}"/>
+    <text x="${cx + rx / 2}" y="${top - 6}" text-anchor="middle" font-size="15" font-weight="600" fill="${INK}" font-family="Inter,sans-serif">${rLabel}</text>
+    <line x1="${cx + rx + 12}" y1="${top}" x2="${cx + rx + 12}" y2="${bot}" stroke="${MUTED}" stroke-width="1.5"/>
+    <line x1="${cx + rx + 7}" y1="${top}" x2="${cx + rx + 17}" y2="${top}" stroke="${MUTED}" stroke-width="1.5"/>
+    <line x1="${cx + rx + 7}" y1="${bot}" x2="${cx + rx + 17}" y2="${bot}" stroke="${MUTED}" stroke-width="1.5"/>
+    <text x="${cx + rx + 22}" y="${(top + bot) / 2 + 5}" font-size="15" font-weight="600" fill="${INK}" font-family="Inter,sans-serif">${hLabel}</text>
+  </svg>`;
+}
+function svgDoubling(days){                 // bar chart: cents on day n = 2^(n-1)
+  const vals = Array.from({length: days}, (_, k) => Math.pow(2, k));
+  const max = vals[vals.length - 1], W = 240, H = 150, bw = W / days;
+  const bars = vals.map((v, k) => {
+    const h = Math.max(1.5, v / max * (H - 20)), x = 10 + k * bw;
+    return `<rect x="${(x + 3).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${(bw - 6).toFixed(1)}" height="${h.toFixed(1)}" fill="${k === days - 1 ? GOLD : INK}" rx="2"/>
+      <text x="${(x + bw / 2).toFixed(1)}" y="${H + 16}" font-size="11" text-anchor="middle" fill="${MUTED}" font-family="Inter,sans-serif">${k + 1}</text>`;
+  }).join("");
+  return `<svg ${NS} viewBox="0 0 260 ${H + 40}" role="img" aria-label="Bar graph of pennies for days 1 to ${days}. The bars stay tiny, then shoot up.">
+    <line x1="10" y1="${H}" x2="250" y2="${H}" stroke="${MUTED}" stroke-width="1"/>${bars}
+    <text x="130" y="${H + 34}" font-size="12" text-anchor="middle" fill="${MUTED}" font-family="Inter,sans-serif">day</text>
+    <text x="246" y="${(H - (H - 20) - 6).toFixed(1)}" font-size="12" text-anchor="end" font-weight="600" fill="${INK}" font-family="Inter,sans-serif">${max} cents</text>
+  </svg>`;
+}
+const fig = (svg, cap) => `<figure class="fig" style="margin:0">${svg}${cap ? `<figcaption>${cap}</figcaption>` : ""}</figure>`;
+
+/* =====================================================================
+   FUN MATH FACTS
+   unit: real | exp | eq | ang | pyth | func | data | trans | vol
+   ask:  a question with one answer (value, or pair for points)
+   explore: try-your-own-number boxes
+   math: the worked arithmetic (shown after "Show the math")
+   Every number below was checked in code.
+   ===================================================================== */
+const UNITS = [
+  {key:"real",  label:"Real numbers",   unit:1},
+  {key:"exp",   label:"Exponents",      unit:2},
+  {key:"eq",    label:"Equations",      unit:3},
+  {key:"ang",   label:"Angles",         unit:4},
+  {key:"pyth",  label:"Pythagorean",    unit:5},
+  {key:"func",  label:"Functions",      unit:6},
+  {key:"data",  label:"Data",           unit:7},
+  {key:"trans", label:"Transformations",unit:8},
+  {key:"vol",   label:"Volume",         unit:9}
+];
+const YEAR = new Date().getFullYear();
+
+const FACTS = [
+/* ---------- Unit 1: Real numbers ---------- */
+{ id:"ones", unit:"real",
+  title:`111,111,111 × 111,111,111 = 12,345,678,987,654,321`,
+  body:`<p>Square a number made of nine 1s. The answer counts up from 1 to 9, then back down to 1.</p>`,
+  ask:{ q:`Try a smaller one. What is 1,111<sup>2</sup>?`, label:"1,111² =", ans:1234321,
+    mistakes:[[4444,"You multiplied 1,111 × 4. Squaring means 1,111 × 1,111."],[2222,"You doubled 1,111. Squaring means 1,111 × 1,111, not 1,111 × 2."]] },
+  math:`<ol><li><span class="eq">11<sup>2</sup> = 121</span></li><li><span class="eq">111<sup>2</sup> = 12,321</span></li><li><span class="eq">1,111<sup>2</sup> = 1,234,321</span></li><li><span class="eq">11,111<sup>2</sup> = 123,454,321</span></li><li>The pattern keeps going up to <span class="eq">111,111,111<sup>2</sup> = 12,345,678,987,654,321</span>.</li><li>With ten 1s the pattern breaks, because digits start to carry.</li></ol>` },
+
+{ id:"seventh", unit:"real",
+  title:`1 ÷ 7 = 0.142857142857…`,
+  body:`<p>The six digits 142857 repeat forever. And 2 ÷ 7 = 0.285714…, the same six digits starting in a new spot.</p><p>A decimal that repeats is a <b>rational number</b>: it can be written as a fraction.</p>`,
+  ask:{ q:`Round 1/7 to 3 decimal places.`, label:"1/7 ≈", ans:0.143,
+    mistakes:[[0.142,"You cut off the extra digits. The next digit is 8, so round up: 0.143."],[0.14,"Keep 3 decimal places, not 2."]] },
+  math:`<p>Long division of 1 ÷ 7. Watch the remainders:</p><ol>
+    <li><span class="eq">10 ÷ 7 = 1</span>, remainder 3</li><li><span class="eq">30 ÷ 7 = 4</span>, remainder 2</li>
+    <li><span class="eq">20 ÷ 7 = 2</span>, remainder 6</li><li><span class="eq">60 ÷ 7 = 8</span>, remainder 4</li>
+    <li><span class="eq">40 ÷ 7 = 5</span>, remainder 5</li><li><span class="eq">50 ÷ 7 = 7</span>, remainder 1</li>
+    <li>Remainder 1 is where we started. So the digits 1, 4, 2, 8, 5, 7 repeat forever.</li></ol>` },
+
+{ id:"root2", unit:"real",
+  title:`√2 never ends and never repeats`,
+  body:`<p>√2 = 1.41421356… The digits go on forever with no pattern. That makes √2 an <b>irrational number</b>.</p><p>No decimal you can write down is exactly √2.</p>`,
+  ask:{ q:`Is 1.414 exactly √2? Find 1.414 × 1.414.`, label:"1.414 × 1.414 =", ans:1.999396,
+    mistakes:[[2,"Close! But multiply all the digits. 1.414 × 1.414 = 1.999396. That is not exactly 2."],[2.828,"You doubled 1.414. Multiply 1.414 × 1.414 instead."]] },
+  math:`<ol><li><span class="eq">1.4 × 1.4 = 1.96</span></li><li><span class="eq">1.41 × 1.41 = 1.9881</span></li><li><span class="eq">1.414 × 1.414 = 1.999396</span></li><li><span class="eq">1.4142 × 1.4142 = 1.99996164</span></li><li>Each one gets closer to 2. None of them is exactly 2.</li></ol>` },
+
+{ id:"nines", unit:"real",
+  title:`0.999… is exactly 1`,
+  body:`<p>If the 9s never stop, 0.999… is not just close to 1. It is equal to 1.</p>`,
+  ask:{ q:`What is 3 × 1/3?`, label:"3 × 1/3 =", ans:1,
+    mistakes:[[0.999,"Look at the fraction: 3 × 1/3 = 3/3. What is 3/3?"],[9,"3 × 1/3 means 3 groups of one third. That is 3/3."]] },
+  math:`<ol><li><span class="eq">1/3 = 0.333…</span></li><li>Multiply both sides by 3.</li><li>Left side: <span class="eq">3 × 1/3 = 3/3 = 1</span></li><li>Right side: <span class="eq">3 × 0.333… = 0.999…</span></li><li>So <span class="eq">1 = 0.999…</span></li></ol>` },
+
+{ id:"taxicab", unit:"real",
+  title:`1729: the taxicab number`,
+  body:`<p>Mathematician G. H. Hardy rode in taxi number 1729 to visit Srinivasa Ramanujan. Hardy said it seemed like a dull number. Ramanujan said no: it is the smallest number you can write as a sum of two cubes in two different ways.</p>`,
+  ask:{ q:`Find 9<sup>3</sup> + 10<sup>3</sup>.`, label:"9³ + 10³ =", ans:1729,
+    mistakes:[[19,"You added 9 + 10. Cube each number first: 9 × 9 × 9 = 729."],[57,"You multiplied by 3. A cube means 9 × 9 × 9, not 9 × 3."],[181,"You squared. A cube uses the number three times: 9 × 9 × 9."]] },
+  math:`<ol><li><span class="eq">9<sup>3</sup> + 10<sup>3</sup> = 729 + 1,000 = 1,729</span></li><li><span class="eq">1<sup>3</sup> + 12<sup>3</sup> = 1 + 1,728 = 1,729</span></li><li>Two different ways. No smaller number can do this.</li></ol>` },
+
+/* ---------- Unit 2: Exponents & scientific notation ---------- */
+{ id:"weeks", unit:"exp",
+  title:`6 weeks = 10! seconds`,
+  body:`<p><b>10!</b> (say “10 factorial”) means 10 × 9 × 8 × 7 × 6 × 5 × 4 × 3 × 2 × 1. It equals 3,628,800.</p><p>That is exactly the number of seconds in 6 weeks.</p>`,
+  ask:{ q:`How many seconds are in 6 weeks? Multiply 6 × 7 × 24 × 60 × 60.`, label:"Seconds", ans:3628800,
+    mistakes:[[604800,"604,800 is the seconds in 1 week. Multiply by 6 for 6 weeks."],[86400,"86,400 is the seconds in 1 day. There are 6 × 7 = 42 days in 6 weeks."],[3600,"3,600 is the seconds in 1 hour. Keep multiplying."]] },
+  math:`<ol><li><span class="eq">6 weeks × 7 = 42 days</span></li><li><span class="eq">42 × 24 = 1,008 hours</span></li><li><span class="eq">1,008 × 60 = 60,480 minutes</span></li><li><span class="eq">60,480 × 60 = 3,628,800 seconds</span></li><li><span class="eq">10 × 9 × 8 × 7 × 6 × 5 × 4 × 3 × 2 × 1 = 3,628,800</span> ✓</li></ol>` },
+
+{ id:"deck", unit:"exp",
+  title:`A deck of cards can be shuffled into about 8.07 × 10<sup>67</sup> orders`,
+  body:`<p>That number is <b>52!</b> = 52 × 51 × 50 × … × 1. Written out, it has 68 digits.</p>`,
+  ask:{ q:`How many ways can you put 3 cards in order? (Hint: 3 × 2 × 1)`, label:"Ways", ans:6,
+    mistakes:[[3,"List them: ABC, ACB, BAC, BCA, CAB, CBA. That is 6 ways."],[9,"3 × 3 counts some orders twice. Use 3 × 2 × 1."],[27,"That lets a card be used more than once. Each card is used once: 3 × 2 × 1."]] },
+  math:() => `<ol><li>3 cards: <span class="eq">3 × 2 × 1 = 6</span> ways.</li><li>4 cards: <span class="eq">4 × 3 × 2 × 1 = 24</span> ways.</li><li>52 cards: <span class="eq">52 × 51 × … × 2 × 1 =</span><br><span class="wide-num">${factorialBig(52).toLocaleString("en-US")}</span></li><li>In scientific notation: about <span class="eq">8.07 × 10<sup>67</sup></span>.</li></ol>` },
+
+{ id:"fold", unit:"exp",
+  title:`Fold paper 42 times and it would reach past the Moon`,
+  body:`<p>Each fold doubles the thickness. Start with paper 0.1 mm thick. After 42 folds, it would be about 440,000 km thick. The Moon is about 384,400 km away.</p><p>Real paper can't fold that many times. The record is 12 folds. But the math is real.</p>`,
+  explore:{ q:`Pick a number of folds. See how thick the paper gets.`, inputs:[{label:"Folds (0 to 60)", ph:"42"}],
+    run:([n]) => {
+      if (!Number.isInteger(n) || n < 0 || n > 60) return {cls:"bad", html:"Type a whole number from 0 to 60."};
+      const mm = 0.1 * Math.pow(2, n);
+      const show = mm < 1000 ? fmt(mm, 1) + " mm" : mm < 1e6 ? fmt(mm / 1000, 1) + " m" : fmt(mm / 1e6, mm < 1e9 ? 1 : 0) + " km";
+      let cmp = "";
+      if (mm / 1e6 > 384400) cmp = "That is farther than the Moon!";
+      else if (mm / 1000 > 8849) cmp = "That is taller than Mount Everest (about 8,849 m).";
+      else if (mm >= 1000) cmp = "That is taller than you.";
+      return {cls:"info", html:`<b>${n} folds:</b> 0.1 mm × 2<sup>${n}</sup> = <span class="num">${show}</span>. ${cmp}`};
+    } },
+  math:`<ol><li>Each fold multiplies by 2. So 42 folds multiply by <span class="eq">2<sup>42</sup> = 4,398,046,511,104</span>.</li><li><span class="eq">0.1 mm × 4,398,046,511,104 ≈ 439,804,651,110 mm</span></li><li>1 km = 1,000,000 mm, so that is about <span class="eq">439,805 km</span>.</li><li><span class="eq">439,805 km &gt; 384,400 km</span>. Past the Moon!</li></ol>` },
+
+{ id:"googol", unit:"exp",
+  title:`A googol is 10<sup>100</sup>`,
+  body:`<p>That is a 1 followed by 100 zeros. Scientists estimate there are about 10<sup>80</sup> atoms in the whole observable universe. A googol is far bigger.</p>`,
+  ask:{ q:`How many times bigger is 10<sup>100</sup> than 10<sup>80</sup>? Write it as a power of 10. (To type an exponent, use the ^ key.)`, label:"Answer", ans:1e20,
+    mistakes:[[20,"20 is the exponent. The answer is 10 to that power: 10<sup>20</sup>."],[1.25,"Don't divide the exponents. When you divide powers of 10, subtract the exponents."],[1e180,"You added the exponents. For division, subtract: 100 − 80 = 20."]] },
+  math:`<ol><li>Divide: <span class="eq">10<sup>100</sup> ÷ 10<sup>80</sup></span></li><li>Same base, so subtract the exponents: <span class="eq">10<sup>100 − 80</sup> = 10<sup>20</sup></span></li><li><span class="eq">10<sup>20</sup> = 100,000,000,000,000,000,000</span></li></ol>` },
+
+{ id:"zero-exp", unit:"exp",
+  title:`2<sup>0</sup> = 1`,
+  body:`<p>Any number (except 0) to the zero power equals 1. Look at the pattern: each step down, divide by 2.</p><p class="pattern"><span>2<sup>3</sup> = 8</span> → <span>2<sup>2</sup> = 4</span> → <span>2<sup>1</sup> = 2</span> → <span><b>2<sup>0</sup> = 1</b></span> → <span>2<sup>−1</sup> = 1/2</span></p>`,
+  ask:{ q:`Keep the pattern going. What is 2<sup>−3</sup>? (A fraction or a decimal is fine.)`, label:"2⁻³ =", ans:0.125,
+    mistakes:[[-6,"You multiplied 2 × (−3). A negative exponent means divide: 1 ÷ 2<sup>3</sup>."],[-8,"A negative exponent does not make the number negative. 2<sup>−3</sup> = 1/2<sup>3</sup> = 1/8."],[-0.125,"A negative exponent does not make the number negative. It is 1/8, which is positive."]] },
+  math:`<ol><li><span class="eq">2<sup>0</sup> = 1</span></li><li><span class="eq">2<sup>−1</sup> = 1 ÷ 2 = 1/2</span></li><li><span class="eq">2<sup>−2</sup> = 1/2 ÷ 2 = 1/4</span></li><li><span class="eq">2<sup>−3</sup> = 1/4 ÷ 2 = 1/8 = 0.125</span></li></ol>` },
+
+{ id:"sunlight", unit:"exp",
+  title:`Sunlight takes about 8 minutes to reach you`,
+  body:`<p>The Sun is about 1.5 × 10<sup>8</sup> km away. Light travels about 3 × 10<sup>5</sup> km every second. So the sunlight you see left the Sun about 8 minutes and 20 seconds ago.</p>`,
+  ask:{ q:`Divide (1.5 × 10<sup>8</sup>) ÷ (3 × 10<sup>5</sup>). How many seconds?`, label:"Seconds", ans:500,
+    mistakes:[[0.5,"Good start: 1.5 ÷ 3 = 0.5. Now divide the powers of 10: 10<sup>8</sup> ÷ 10<sup>5</sup> = 10<sup>3</sup>. Then 0.5 × 1,000."],[5000,"Check the powers of 10. 10<sup>8</sup> ÷ 10<sup>5</sup> = 10<sup>3</sup> = 1,000. And 0.5 × 1,000 = 500."],[50,"Check the powers of 10. 10<sup>8</sup> ÷ 10<sup>5</sup> = 10<sup>3</sup> = 1,000. And 0.5 × 1,000 = 500."]] },
+  math:`<ol><li>Divide the front numbers: <span class="eq">1.5 ÷ 3 = 0.5</span></li><li>Divide the powers of 10: <span class="eq">10<sup>8</sup> ÷ 10<sup>5</sup> = 10<sup>3</sup></span></li><li><span class="eq">0.5 × 10<sup>3</sup> = 500 seconds</span></li><li><span class="eq">500 seconds = 8 minutes 20 seconds</span> (8 × 60 = 480, plus 20)</li></ol>` },
+
+/* ---------- Unit 3: Equations ---------- */
+{ id:"equals", unit:"eq",
+  title:`The = sign was invented in 1557`,
+  body:`<p>Robert Recorde, a Welsh math teacher, was tired of writing “is equal to” over and over. So he drew two parallel lines. He wrote that no two things could be more equal.</p>`,
+  ask:{ q:`It is ${YEAR}. How many years ago was 1557?`, label:"Years", ans:YEAR - 1557,
+    mistakes:[[YEAR + 1557,"You added. To find how long ago, subtract: " + YEAR + " − 1557."]] },
+  math:`<ol><li><span class="eq">${YEAR} − 1557 = ${YEAR - 1557}</span></li><li>The = sign is ${YEAR - 1557} years old. People still use it every day.</li></ol>` },
+
+{ id:"trick", unit:"eq",
+  title:`A number trick that always ends at 5`,
+  body:`<p>Think of any number. Double it. Add 10. Divide by 2. Subtract the number you started with. You get 5, every time!</p>`,
+  explore:{ q:`Type any number. Watch each step.`, inputs:[{label:"Your number", ph:"7"}],
+    run:([x]) => {
+      if (!Number.isFinite(x)) return {cls:"bad", html:"Type a number, like 7 or −3."};
+      const a = 2 * x, b = a + 10, c = b / 2, d = c - x, f = v => neg(fmt(v, 4)), fp = v => (v < 0 ? "(" + f(v) + ")" : f(v));
+      return {cls:"good", html:`<table><tr><td>Start</td><td class="e">${f(x)}</td></tr><tr><td>Double it</td><td class="e">${fp(x)} × 2 = ${f(a)}</td></tr><tr><td>Add 10</td><td class="e">${fp(a)} + 10 = ${f(b)}</td></tr><tr><td>Divide by 2</td><td class="e">${f(b)} ÷ 2 = ${f(c)}</td></tr><tr><td>Subtract ${f(x)}</td><td class="e">${f(c)} − ${fp(x)} = <b>${f(d)}</b></td></tr></table>`};
+    } },
+  math:`<p>Use <i>x</i> for any number:</p><ol><li>Double it: <span class="eq">2x</span></li><li>Add 10: <span class="eq">2x + 10</span></li><li>Divide by 2: <span class="eq">x + 5</span></li><li>Subtract x: <span class="eq">x + 5 − x = 5</span></li></ol><p>The <i>x</i> cancels out. So the start number never matters.</p>` },
+
+{ id:"sum100", unit:"eq",
+  title:`1 + 2 + 3 + … + 100 = 5,050`,
+  body:`<p>Pair the numbers from the two ends: 1 + 100, 2 + 99, 3 + 98, and so on. Every pair adds to 101. There are 50 pairs.</p><p>A famous story says a young Carl Friedrich Gauss used this trick in school.</p>`,
+  ask:{ q:`Use the same trick. What is 1 + 2 + 3 + … + 10?`, label:"Sum", ans:55,
+    mistakes:[[110,"110 counts 10 pairs of 11. But the numbers 1 to 10 make only 5 pairs: 5 × 11."],[50,"Check the pairs: 1 + 10 = 11, 2 + 9 = 11, … There are 5 pairs of 11."],[100,"Check the pairs: 1 + 10 = 11, 2 + 9 = 11, … There are 5 pairs of 11."]] },
+  math:`<ol><li>1 to 100: <span class="eq">50 pairs × 101 = 5,050</span></li><li>1 to 10: <span class="eq">5 pairs × 11 = 55</span></li><li>The rule for 1 to n: <span class="eq">n(n + 1) ÷ 2</span>. Check: <span class="eq">10 × 11 ÷ 2 = 55</span></li></ol>` },
+
+{ id:"algebra", unit:"eq",
+  title:`The word “algebra” is about 1,200 years old`,
+  body:`<p>It comes from the title of a book written around the year 820 by the Persian mathematician al-Khwarizmi. The book used the Arabic word <i>al-jabr</i>. The word “algorithm” comes from his name.</p>`,
+  ask:{ q:`Solve one like his: 3x + 4 = x + 10.`, label:"x =", ans:3,
+    wrong:v => `Check x = ${neg(fmt(v,3))}. Left side: 3(${neg(fmt(v,3))}) + 4 = ${neg(fmt(3 * v + 4, 3))}. Right side: ${neg(fmt(v,3))} + 10 = ${neg(fmt(v + 10, 3))}. They are not equal. Get the x terms on one side first.`,
+    mistakes:[[6,"You got 2x = 6. Now divide both sides by 2."],[1.5,"Check the subtraction: 3x − x = 2x, and 10 − 4 = 6. So 2x = 6."]] },
+  math:`<ol><li>Subtract x from both sides: <span class="eq">2x + 4 = 10</span></li><li>Subtract 4 from both sides: <span class="eq">2x = 6</span></li><li>Divide both sides by 2: <span class="eq">x = 3</span></li><li>Check: <span class="eq">3(3) + 4 = 13</span> and <span class="eq">3 + 10 = 13</span> ✓</li></ol>` },
+
+/* ---------- Unit 4: Angles ---------- */
+{ id:"tri180", unit:"ang",
+  title:`The angles of any triangle add to 180°`,
+  body:`<p>Tear the three corners off any paper triangle. Put them side by side. They always make a straight line, and a straight line is 180°.</p>`,
+  figure:() => fig(svgTriangle(50, 60), "50° + 60° + 70° = 180°"),
+  ask:{ q:`A triangle has angles of 35° and 85°. What is the third angle?`, label:"Third angle (°)", ans:60,
+    mistakes:[[120,"120° is the two angles added. Now subtract from 180°: 180 − 120."],[240,"Subtract from 180°, not 360°. The angles of a triangle add to 180°."]] },
+  math:() => `<ol><li>Add the two angles: <span class="eq">35° + 85° = 120°</span></li><li>Subtract from 180°: <span class="eq">180° − 120° = 60°</span></li><li>Check: <span class="eq">35° + 85° + 60° = 180°</span> ✓</li></ol>${fig(svgTriangle(35, 85), "35° + 85° + 60° = 180°")}` },
+
+{ id:"turns", unit:"ang",
+  title:`Walk around any shape and you turn 360°`,
+  body:`<p>Walk all the way around a shape with no dents. At each corner you turn. The turns always add up to one full turn: 360°. Each turn is an <b>exterior angle</b>.</p>`,
+  ask:{ q:`A regular pentagon has 5 equal turns. How many degrees is each turn?`, label:"Each turn (°)", ans:72,
+    mistakes:[[108,"108° is the inside angle. The turn is the outside angle: 180 − 108 = 72°."],[36,"The turns add to 360°, not 180°. Divide 360 by 5."]] },
+  math:`<ol><li>All the turns add to <span class="eq">360°</span>.</li><li>A pentagon has 5 equal turns: <span class="eq">360° ÷ 5 = 72°</span></li><li>A hexagon has 6: <span class="eq">360° ÷ 6 = 60°</span></li></ol>` },
+
+{ id:"clock", unit:"ang",
+  title:`Clock hands overlap 22 times a day, not 24`,
+  body:`<p>The hour hand and minute hand line up about every 1 hour 5 minutes. Between 11:00 and 1:00, they overlap only once, at 12:00.</p>`,
+  ask:{ q:`Clock numbers are 30° apart (360° ÷ 12). What is the smaller angle between the hands at 4:00?`, label:"Angle (°)", ans:120,
+    mistakes:[[240,"240° is the angle going the long way around. The smaller angle is 360 − 240 = 120°."],[4,"Count the spaces from 12 to 4: there are 4. Each space is 30°."],[90,"90° is the angle at 3:00. At 4:00 there is one more 30° space."]] },
+  math:`<ol><li>Each space between numbers: <span class="eq">360° ÷ 12 = 30°</span></li><li>At 4:00 the hands are 4 spaces apart: <span class="eq">4 × 30° = 120°</span></li><li>The hands overlap every <span class="eq">12/11</span> hours. In 24 hours: <span class="eq">24 ÷ 12/11 = 24 × 11/12 = 22</span> times.</li></ol>` },
+
+/* ---------- Unit 5: Pythagorean theorem ---------- */
+{ id:"345", unit:"pyth",
+  title:`Builders use a 3-4-5 triangle to check square corners`,
+  body:`<p>Measure 3 ft along one wall and 4 ft along the other. If the distance between the marks is 5 ft, the corner is a right angle (90°). This works because 3<sup>2</sup> + 4<sup>2</sup> = 5<sup>2</sup>.</p>`,
+  figure:() => fig(svgRightTri(3, 4, 5, "ft"), "3² + 4² = 9 + 16 = 25 = 5²"),
+  ask:{ q:`Builders also use a 6-8-10 triangle. The legs are 6 and 8. How long is the hypotenuse (the longest side)?`, label:"Hypotenuse", ans:10,
+    mistakes:[[14,"You added 6 + 8. Square each leg first: 36 + 64 = 100. Then take the square root."],[100,"100 is c<sup>2</sup>. Take the square root: √100 = 10."],[28,"You doubled each leg. Square them: 6 × 6 = 36 and 8 × 8 = 64."]] },
+  math:() => `<ol><li><span class="eq">a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></span></li><li><span class="eq">6<sup>2</sup> + 8<sup>2</sup> = 36 + 64 = 100</span></li><li><span class="eq">c = √100 = 10</span></li><li>It is the 3-4-5 triangle with every side doubled.</li></ol>${fig(svgRightTri(6, 8, 10, "ft"), "")}` },
+
+{ id:"tv", unit:"pyth",
+  title:`A “55-inch TV” is not 55 inches wide`,
+  body:`<p>TV sizes are measured on the diagonal, from one corner of the screen to the opposite corner.</p>`,
+  ask:{ q:`A TV screen is 48 in wide and 27 in tall. How long is the diagonal? Round to the nearest inch.`, label:"Diagonal (in)", ans:55.07, tol:0.55,
+    mistakes:[[75,"You added 48 + 27. Square each side first, add, then take the square root."],[3033,"3,033 is c<sup>2</sup>. Now take the square root: √3,033."],[150,"You doubled each side. Square them: 48 × 48 and 27 × 27."]] },
+  math:`<ol><li><span class="eq">48<sup>2</sup> + 27<sup>2</sup> = 2,304 + 729 = 3,033</span></li><li><span class="eq">c = √3,033 ≈ 55.07</span></li><li>Rounded: <span class="eq">55 in</span>. So this is a 55-inch TV.</li></ol>` },
+
+{ id:"garfield", unit:"pyth",
+  title:`A U.S. president proved the Pythagorean theorem`,
+  body:`<p>James A. Garfield found his own proof. He published it in 1876, while he was in Congress. Five years later he became president. His proof uses a trapezoid made of three right triangles.</p>`,
+  figure:() => fig(svgGarfield(3, 4), "Two triangles with legs a and b, and one with legs c and c"),
+  ask:{ q:`Let a = 3 and b = 4. The whole trapezoid has area ½(a + b)(a + b). Find it.`, label:"Area", ans:24.5,
+    mistakes:[[49,"(3 + 4)(3 + 4) = 49. Now take half: 49 ÷ 2."],[12.5,"12.5 is only the middle triangle (½ × 5 × 5). Find the area of the whole trapezoid."]] },
+  math:`<ol><li>Whole trapezoid: <span class="eq">½(3 + 4)(3 + 4) = ½ × 49 = 24.5</span></li><li>Two small triangles: <span class="eq">2 × ½ × 3 × 4 = 12</span></li><li>Middle triangle: <span class="eq">½ × 5 × 5 = 12.5</span></li><li>The parts match the whole: <span class="eq">12 + 12.5 = 24.5</span> ✓</li><li>With letters: <span class="eq">½(a + b)<sup>2</sup> = ab + ½c<sup>2</sup></span>. Multiply by 2 and simplify. You get <span class="eq">a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></span>.</li></ol>` },
+
+/* ---------- Unit 6: Functions ---------- */
+{ id:"penny", unit:"func",
+  title:`A penny doubled every day becomes millions in 30 days`,
+  body:`<p>Get 1 cent on day 1, 2 cents on day 2, 4 cents on day 3… On day 30 alone you get $5,368,709.12! Doubling makes a curve, not a straight line. It is a <b>nonlinear</b> function.</p>`,
+  figure:() => fig(svgDoubling(10), "Cents on days 1 to 10"),
+  ask:{ q:`How much money do you get on day 10?`, label:"Day 10 ($)", ans:5.12,
+    mistakes:[[0.1,"That is adding 1 cent each day. Here the amount doubles: 1, 2, 4, 8, … cents."],[10.24,"That is day 11. Day 1 is 2<sup>0</sup> = 1 cent, so day 10 is 2<sup>9</sup> cents."],[512,"512 cents is right! Now write it in dollars: 512 cents = $5.12."]] },
+  math:`<ol><li>Day n gets <span class="eq">2<sup>n − 1</sup></span> cents.</li><li>Day 10: <span class="eq">2<sup>9</sup> = 512 cents = $5.12</span></li><li>Day 30: <span class="eq">2<sup>29</sup> = 536,870,912 cents = $5,368,709.12</span></li></ol>` },
+
+{ id:"cricket", unit:"func",
+  title:`A cricket can be a thermometer`,
+  body:`<p>Crickets chirp faster when it is warm. A rule of thumb called Dolbear’s law says: count the chirps in 14 seconds, then add 40. The answer is close to the temperature in °F. It works best for snowy tree crickets.</p><p>The rule is a linear function: <span class="num">T = n + 40</span>.</p>`,
+  ask:{ q:`A cricket chirps 30 times in 14 seconds. About what is the temperature in °F?`, label:"Temperature (°F)", ans:70,
+    mistakes:[[1200,"You multiplied 30 × 40. The rule says add 40."],[-10,"You subtracted. The rule says add 40: 30 + 40."]] },
+  math:`<ol><li>The rule: <span class="eq">T = n + 40</span></li><li><span class="eq">T = 30 + 40 = 70°F</span></li><li>Slope = 1 (one more chirp, about one more degree). Y-intercept = 40.</li></ol>` },
+
+{ id:"minus40", unit:"func",
+  title:`At −40°, Celsius and Fahrenheit agree`,
+  body:`<p>The rule <span class="num">F = 1.8C + 32</span> turns °C into °F. It is a linear function. At exactly one temperature, both numbers are the same: −40°C = −40°F.</p>`,
+  ask:{ q:`Water boils at 100°C. Use F = 1.8C + 32. What is that in °F?`, label:"°F", ans:212,
+    mistakes:[[180,"You found 1.8 × 100 = 180. Now add 32."],[132,"Multiply first: 1.8 × 100 = 180. Then add 32."],[213.8,"Multiply 1.8 × 100 first. Then add 32."]] },
+  math:`<ol><li><span class="eq">F = 1.8(100) + 32 = 180 + 32 = 212°F</span></li><li>When are they equal? Set F = C: <span class="eq">C = 1.8C + 32</span></li><li>Subtract 1.8C: <span class="eq">−0.8C = 32</span></li><li>Divide by −0.8: <span class="eq">C = −40</span></li></ol>` },
+
+/* ---------- Unit 7: Data ---------- */
+{ id:"birthday", unit:"data",
+  title:`23 people: better than a 50% chance two share a birthday`,
+  body:`<p>It sounds like you would need lots more people. But with 23 people there are 253 different pairs to compare, so a match is likely.</p><p>(This ignores February 29 and treats every birthday as equally likely.)</p>`,
+  explore:{ q:`Pick a group size. See the chance of a shared birthday.`, inputs:[{label:"People (1 to 400)", ph:"23"}],
+    run:([n]) => {
+      if (!Number.isInteger(n) || n < 1 || n > 400) return {cls:"bad", html:"Type a whole number of people from 1 to 400."};
+      const p = birthdayChance(n) * 100;
+      const txt = p >= 99.995 ? (n > 365 ? "100%: a match is certain." : "more than 99.99%") : fmt(p, 2) + "%";
+      return {cls:"info", html:`<b>${n} ${n === 1 ? "person" : "people"}:</b> chance of a shared birthday is <span class="num">${txt}</span>
+        <div class="meter${p >= 50 ? " half" : ""}" aria-hidden="true"><span style="width:${Math.min(100, p).toFixed(1)}%"></span></div>`};
+    } },
+  math:`<p>Find the chance that <b>no one</b> matches, then subtract from 1.</p><ol><li>Person 2 misses person 1: <span class="eq">364/365</span></li><li>Person 3 misses both: <span class="eq">363/365</span>, and so on.</li><li>For 23 people: <span class="eq">365/365 × 364/365 × … × 343/365 ≈ 0.4927</span></li><li>Chance of a match: <span class="eq">1 − 0.4927 = 0.5073 ≈ 50.7%</span></li></ol>` },
+
+{ id:"mean", unit:"data",
+  title:`One huge number can fool the mean`,
+  body:`<p>Nine people each earn $50,000 a year. A billionaire who earns $1,000,000,000 walks in. The <b>mean</b> (average) jumps to over $100 million. The <b>median</b> (middle value) stays at $50,000.</p>`,
+  ask:{ q:`Find the mean of all 10 incomes.`, label:"Mean ($)", ans:100045000,
+    mistakes:[[50000,"$50,000 is the median (the middle). For the mean, add all 10 incomes and divide by 10."],[1000450000,"That is the total. Now divide by 10 people."],[111161111.11,"There are 10 people: the 9 workers plus the billionaire. Divide by 10."]] },
+  math:`<ol><li>Add all 10: <span class="eq">9 × 50,000 + 1,000,000,000 = 1,000,450,000</span></li><li>Divide by 10: <span class="eq">1,000,450,000 ÷ 10 = 100,045,000</span></li><li>Median: put the 10 numbers in order. The two middle values are both 50,000. So the median is <span class="eq">$50,000</span>.</li></ol>` },
+
+{ id:"coins", unit:"data",
+  title:`10 coin flips have 1,024 possible results`,
+  body:`<p>Each flip can be heads or tails. So every flip doubles the number of possible results. Ten flips give 2<sup>10</sup> = 1,024 results. Getting all heads is just 1 of them.</p>`,
+  ask:{ q:`How many possible results are there for 3 coin flips?`, label:"Results", ans:8,
+    mistakes:[[6,"List them: HHH, HHT, HTH, HTT, THH, THT, TTH, TTT. That is 8."],[9,"Each flip has 2 results, not 3. Use 2 × 2 × 2."],[3,"Each flip has 2 results. Multiply: 2 × 2 × 2."]] },
+  math:`<ol><li>3 flips: <span class="eq">2 × 2 × 2 = 2<sup>3</sup> = 8</span></li><li>HHH, HHT, HTH, HTT, THH, THT, TTH, TTT</li><li>10 flips: <span class="eq">2<sup>10</sup> = 1,024</span>. Chance of all heads: <span class="eq">1/1,024</span>, about 0.1%.</li></ol>` },
+
+/* ---------- Unit 8: Transformations ---------- */
+{ id:"ambulance", unit:"trans",
+  title:`Why “AMBULANCE” is often printed backwards`,
+  body:`<p>On the front of many ambulances, the word looks like this: <span class="mirror" aria-hidden="true">AMBULANCE</span>. A driver ahead sees it in a mirror. A mirror makes a <b>reflection</b>, which flips the word so it reads the right way.</p>`,
+  figure:() => fig(svgGrid([{x:3, y:4, label:"(3, 4)"}]), "The point (3, 4)"),
+  ask:{ q:`Reflect the point (3, 4) over the y-axis. What is the new point? Type it like (x, y).`, label:"New point", pair:[-3, 4],
+    mistakes:[[[3,-4],"That is a reflection over the x-axis. Over the y-axis, the x-value changes sign."],[[4,3],"You swapped x and y. That is a reflection over the line y = x."],[[-3,-4],"Only one sign changes. Over the y-axis, x changes sign and y stays the same."]] },
+  math:() => `<ol><li>Rule for a reflection over the y-axis: <span class="eq">(x, y) → (−x, y)</span></li><li><span class="eq">(3, 4) → (−3, 4)</span></li><li>The point is the same distance from the y-axis, on the other side.</li></ol>${fig(svgGrid([{x:3, y:4, label:"(3, 4)"}, {x:-3, y:4, label:"(−3, 4)", color:GOLD}]), "")}` },
+
+{ id:"scale", unit:"trans",
+  title:`Double the sides, and the area is 4 times as big`,
+  body:`<p>In a dilation, every length gets multiplied by the scale factor. Area grows by the scale factor <i>squared</i>. Volume grows by the scale factor <i>cubed</i>. Double a box’s sides and it holds 8 times as much.</p>`,
+  ask:{ q:`Triple every side of a cube. How many times bigger is its volume?`, label:"Times bigger", ans:27,
+    mistakes:[[3,"Each of the 3 directions triples: length, width, and height. Multiply 3 × 3 × 3."],[9,"9 is how much the area grows (3 × 3). Volume has one more direction: 3 × 3 × 3."]] },
+  math:`<ol><li>Scale factor 2: area <span class="eq">× 2<sup>2</sup> = × 4</span>, volume <span class="eq">× 2<sup>3</sup> = × 8</span></li><li>Scale factor 3: area <span class="eq">× 3<sup>2</sup> = × 9</span>, volume <span class="eq">× 3<sup>3</sup> = × 27</span></li></ol>` },
+
+{ id:"sos", unit:"trans",
+  title:`“SOS” reads the same upside down`,
+  body:`<p>Turn the word SOS halfway around (a 180° rotation). It still reads SOS. The capital letters H, I, N, O, S, X, and Z also look the same after a 180° turn.</p>`,
+  ask:{ q:`Rotate the point (2, 5) by 180° around the origin. What is the new point?`, label:"New point", pair:[-2, -5],
+    mistakes:[[[-2,5],"That is a reflection over the y-axis. A 180° turn changes the sign of both numbers."],[[2,-5],"That is a reflection over the x-axis. A 180° turn changes the sign of both numbers."],[[5,-2],"That is a 90° turn clockwise. Turn twice as far: change the sign of both numbers."],[[-5,2],"That is a 90° turn counterclockwise. Turn twice as far: change the sign of both numbers."]] },
+  math:`<ol><li>Rule for a 180° rotation: <span class="eq">(x, y) → (−x, −y)</span></li><li><span class="eq">(2, 5) → (−2, −5)</span></li></ol>` },
+
+/* ---------- Unit 9: Volume ---------- */
+{ id:"pizza", unit:"vol",
+  title:`A pizza’s volume is pi·z·z·a`,
+  body:`<p>A pizza is a short cylinder. The volume of a cylinder is π × radius × radius × height. Call the radius <i>z</i> and the thickness <i>a</i>. Then the volume is π × z × z × a, or “pi z z a.”</p>`,
+  figure:() => fig(svgCylinder("z", "a", false), "Radius z, thickness a"),
+  ask:{ q:`A pizza has z = 7 in and a = 0.5 in. Find the volume. Round to the nearest cubic inch.`, label:"Volume (in³)", ans:76.97, tol:0.55,
+    mistakes:[[10.996,"You used 7 only once. Square the radius: 7 × 7 = 49."],[21.991,"You doubled the radius. Square it instead: 7 × 7 = 49."],[24.5,"That is 49 × 0.5. Don't forget to multiply by π."]] },
+  math:`<ol><li><span class="eq">V = π × z × z × a</span></li><li><span class="eq">V = π × 7 × 7 × 0.5 = 24.5π</span></li><li><span class="eq">24.5 × 3.14159… ≈ 76.97</span></li><li>Rounded: about <span class="eq">77 in<sup>3</sup></span></li></ol>` },
+
+{ id:"archimedes", unit:"vol",
+  title:`A ball in a can fills exactly 2/3 of it`,
+  body:`<p>Put a ball in a can that fits it perfectly. The ball’s volume is exactly 2/3 of the can’s volume. Archimedes discovered this over 2,000 years ago. He was so proud that he asked for a sphere and a cylinder on his tomb.</p>`,
+  figure:() => fig(svgCylinder("r", "2r", true), "Same width, height = 2r"),
+  ask:{ q:`A sphere has radius 3. Use V = (4/3)πr<sup>3</sup>. Find the volume. Type it in terms of π (like 10pi), or round to the nearest tenth.`, label:"Volume", ans:36 * Math.PI, tol:0.06,
+    mistakes:[[12 * Math.PI,"You squared the radius. Cube it: 3 × 3 × 3 = 27."],[4 * Math.PI,"You multiplied by 3 instead of cubing. Cube the radius: 3 × 3 × 3 = 27."],[36,"36 is the number in front. The answer is 36π. Type 36pi, or multiply by π."],[27 * Math.PI,"You forgot the 4/3. Multiply: (4/3) × 27 = 36."],[113,"So close! Round to the nearest tenth: 113.1. Or type 36pi."]] },
+  math:`<ol><li>Sphere: <span class="eq">(4/3) × π × 3<sup>3</sup> = (4/3) × 27π = 36π ≈ 113.1</span></li><li>Can: radius 3, height 6. <span class="eq">π × 3<sup>2</sup> × 6 = 54π</span></li><li>Compare: <span class="eq">36π ÷ 54π = 36/54 = 2/3</span> ✓</li></ol>` },
+
+{ id:"cone", unit:"vol",
+  title:`It takes exactly 3 cones to fill a cylinder`,
+  body:`<p>Fill a cone with water and pour it into a cylinder with the same base and the same height. It takes 3 full cones. That is why the cone formula has a 1/3: <span class="num">V = (1/3)πr<sup>2</sup>h</span>.</p>`,
+  ask:{ q:`A cylinder holds 90 cm<sup>3</sup>. How much does a cone with the same base and height hold?`, label:"Cone (cm³)", ans:30,
+    mistakes:[[270,"The cone is smaller. Divide by 3. Don't multiply."],[45,"45 is half. A cone holds one third: 90 ÷ 3."]] },
+  math:`<ol><li>Cone = <span class="eq">1/3</span> of the cylinder</li><li><span class="eq">90 ÷ 3 = 30 cm<sup>3</sup></span></li></ol>` }
+];
+
+function factorialBig(n){ let f = 1n; for (let i = 2n; i <= BigInt(n); i++) f *= i; return f; }
+function birthdayChance(n){ if (n > 365) return 1; let p = 1; for (let i = 0; i < n; i++) p *= (365 - i) / 365; return 1 - p; }
+
+/* =====================================================================
+   DECK
+   ===================================================================== */
+const state = { filter: "all", order: FACTS.map((_, i) => i), pos: 0 };
+const $ = id => document.getElementById(id);
+
+function listFor(filter){ return FACTS.map((f, i) => i).filter(i => filter === "all" || FACTS[i].unit === filter); }
+
+function renderFilters(){
+  const chips = [{key:"all", label:"All facts"}].concat(UNITS.map(u => ({key:u.key, label:u.label})));
+  $("filters").innerHTML = chips.map(c => {
+    const n = listFor(c.key).length;
+    return `<button type="button" class="chip" data-f="${c.key}" aria-pressed="${state.filter === c.key}">${c.label}<span class="c">${n}</span></button>`;
+  }).join("");
+}
+function unitLabel(key){ const u = UNITS.find(u => u.key === key); return `Unit ${u.unit} · ${u.label}`; }
+function val(x){ return typeof x === "function" ? x() : x; }
+
+function renderFact(){
+  const idx = state.order[state.pos], f = FACTS[idx];
+  $("count").innerHTML = `Fact <b>${state.pos + 1}</b> of ${state.order.length}`;
+  const figure = f.figure ? f.figure() : "";
+  let check = "";
+  if (f.ask){
+    check = `<p class="q">${f.ask.q}</p>
+      <div class="row"><div class="field"><label for="ans">${f.ask.label}</label><input id="ans" type="text" inputmode="text" autocomplete="off" spellcheck="false"></div>
+      <button class="btn btn-primary" id="check-btn" type="button">Check</button></div>
+      <div class="fb" id="fb" role="status"></div>`;
+  } else if (f.explore){
+    check = `<p class="q">${f.explore.q}</p>
+      <div class="row">${f.explore.inputs.map((inp, k) => `<div class="field"><label for="ex${k}">${inp.label}</label><input id="ex${k}" type="text" inputmode="decimal" autocomplete="off" placeholder="${inp.ph}"></div>`).join("")}
+      <button class="btn btn-primary" id="try-btn" type="button">Try it</button></div>
+      <div class="fb" id="fb" role="status"></div>`;
+  }
+  $("fact").innerHTML = `
+    <div class="fact-head"><span class="unit-tag">${unitLabel(f.unit)}</span></div>
+    <div class="fact-main"><div><h3>${f.title}</h3><div class="body">${f.body}</div></div>${figure}</div>
+    <div class="check"><h4>Check it yourself</h4>${check}
+      <button class="btn btn-quiet show-math" id="math-btn" type="button" aria-expanded="false" aria-controls="steps">Show the math</button>
+      <div class="steps" id="steps" hidden>${val(f.math)}</div>
+    </div>`;
+  $("fact").dataset.id = f.id;
+  $("math-btn").addEventListener("click", () => {
+    const st = $("steps"), open = st.hidden;
+    st.hidden = !open;
+    $("math-btn").setAttribute("aria-expanded", String(open));
+    $("math-btn").textContent = open ? "Hide the math" : "Show the math";
+  });
+  if (f.ask){
+    $("check-btn").addEventListener("click", () => checkAnswer(f));
+    $("ans").addEventListener("keydown", e => { if (e.key === "Enter") checkAnswer(f); });
+  } else if (f.explore){
+    const go = () => runExplore(f);
+    $("try-btn").addEventListener("click", go);
+    f.explore.inputs.forEach((_, k) => $("ex" + k).addEventListener("keydown", e => { if (e.key === "Enter") go(); }));
+  }
+}
+function showFb(cls, html){ const fb = $("fb"); fb.className = "fb show " + cls; fb.innerHTML = html; }
+
+function checkAnswer(f){
+  const raw = $("ans").value, a = f.ask;
+  if (!raw.trim()){ showFb("info", "Type your answer in the box first."); return; }
+  if (a.pair){
+    const p = parsePair(raw);
+    if (!p){ showFb("bad", "Type the point like this: (−3, 4). Use a comma between x and y."); return; }
+    if (p[0] === a.pair[0] && p[1] === a.pair[1]){ showFb("good", `<b>Yes!</b> (${neg(a.pair[0])}, ${neg(a.pair[1])}) is right.`); return; }
+    const m = (a.mistakes || []).find(([v]) => v[0] === p[0] && v[1] === p[1]);
+    showFb("bad", `<b>Not yet.</b> ${m ? m[1] : "Look at the rule in “Show the math,” then try again."}`);
+    return;
+  }
+  const v = parseValue(raw);
+  if (Number.isNaN(v)){ showFb("bad", "I could not read that as a number. Try something like 55, 3.5, 7/2, or 36pi."); return; }
+  if (near(v, a.ans, a.tol)){ showFb("good", `<b>Yes!</b> That's right. Tap “Show the math” to see each step.`); return; }
+  const m = (a.mistakes || []).find(([w]) => near(v, w, a.tol != null ? a.tol : Math.max(1e-6, Math.abs(w) * 1e-6)));
+  if (m){ showFb("bad", `<b>Not yet.</b> ${m[1]}`); return; }
+  showFb("bad", `<b>Not yet.</b> ${a.wrong ? a.wrong(v) : "Check each step and try again. Tap “Show the math” if you get stuck."}`);
+}
+function runExplore(f){
+  const vals = f.explore.inputs.map((_, k) => parseValue($("ex" + k).value));
+  if (vals.some(Number.isNaN)){ showFb("bad", "Type a number in the box first."); return; }
+  const r = f.explore.run(vals);
+  showFb(r.cls, r.html);
+}
+
+function go(delta){
+  const n = state.order.length;
+  state.pos = (state.pos + delta + n) % n;
+  renderFact();
+}
+function setFilter(key){
+  state.filter = key;
+  state.order = listFor(key);
+  state.pos = 0;
+  renderFilters();
+  renderFact();
+}
+function shuffle(){
+  const a = state.order.slice(), cur = a[state.pos];
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  if (a.length > 1 && a[0] === cur){ const j = 1 + Math.floor(Math.random() * (a.length - 1)); [a[0], a[j]] = [a[j], a[0]]; }
+  state.order = a; state.pos = 0;
+  renderFact();
+}
+
+$("filters").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) setFilter(b.dataset.f); });
+$("next").addEventListener("click", () => go(1));
+$("prev").addEventListener("click", () => go(-1));
+$("shuffle").addEventListener("click", shuffle);
+
+/* ---------- start ---------- */
+const NOW = new Date();
+const H = renderToday(NOW);
+renderMonths(NOW, H);
+renderFilters();
+renderFact();
+
+/* for automated checks only */
+window.__mf = { HISTORY, FACTS, historyFor, parseValue, parsePair, birthdayChance, factorialBig, state };
+</script>
+</body>
+</html>

@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drone Shortcut · Unit 5 Pythagorean Theorem</title>
+<meta name="description" content="A route puzzle for the Pythagorean Theorem. Plan drone deliveries on a coordinate grid, find each straight flight, and save battery.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F7F4;--card:#FFFFFF;--line:#E3E5EA;--line2:#C9CED8;--ink:#1E2D4F;--text:#27324A;--muted:#5B6475;
+  --gold:#FFC107;--gold2:#E0A800;--goldt:#7A5600;--goldbg:#FFF8E1;
+  --ok:#15803D;--okbg:#EEF7F0;--err:#B42318;--errbg:#FDF1EF;--info:#1D4ED8;--infobg:#EFF4FE;
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+  --sans:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--sans)}
+.wrap{max-width:1120px;margin:0 auto;padding:8px 16px 64px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;color:var(--ink);margin:0}
+h1{font-size:clamp(32px,6vw,46px);line-height:1.1;letter-spacing:-.01em}
+h2{font-size:22px;line-height:1.25}
+h3{font-size:18px;line-height:1.3}
+p{margin:0 0 10px}
+sup{font-size:.7em;line-height:0;vertical-align:.55em}
+a{color:var(--info)}
+:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+[hidden]{display:none !important}
+.backs{display:flex;flex-wrap:wrap;gap:4px 18px}
+.back{display:inline-flex;align-items:center;min-height:44px;color:var(--ink);font-weight:500;text-decoration:none}
+.back:hover{text-decoration:underline}
+.eyebrow{font:600 12px/1.3 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.lede{font-size:18px;max-width:620px;margin:12px 0 0}
+.n{font-family:var(--mono);font-weight:600;color:var(--ink);white-space:nowrap}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 2px rgba(30,45,79,.04)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border-radius:8px;border:1px solid var(--ink);background:var(--ink);color:#fff;font:600 16px/1.2 var(--sans);cursor:pointer;text-decoration:none}
+.btn:hover{background:#2A3D66}
+.btn.sec{background:#fff;color:var(--ink);border-color:var(--line2)}
+.btn.sec:hover{background:#F2F4F7}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.linkbtn{background:none;border:0;color:var(--muted);font:500 15px var(--sans);text-decoration:underline;cursor:pointer;min-height:44px;padding:0 4px}
+.label{display:flex;align-items:center;gap:12px;font:600 12px/1 var(--sans);letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:32px 0 12px}
+.label::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* home */
+.hero{display:grid;gap:24px;align-items:center;margin-top:8px}
+@media(min-width:880px){.hero{grid-template-columns:1.05fr 1fr}}
+.hero-art{padding:12px}
+.hero-art svg{display:block;width:100%;height:auto}
+.formula{display:inline-flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;margin-top:16px;padding:8px 14px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold2);border-radius:0 8px 8px 0}
+.formula b{font:600 19px var(--mono);color:var(--ink)}
+.formula span{color:var(--muted);font-size:15px}
+.howto{display:grid;gap:12px;padding:0;margin:0;list-style:none;counter-reset:h}
+@media(min-width:760px){.howto{grid-template-columns:repeat(3,1fr)}}
+.howto li{padding:16px;counter-increment:h}
+.howto li::before{content:counter(h);display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font:600 14px var(--sans);margin-bottom:8px}
+.howto b{color:var(--ink)}
+.levels{display:grid;gap:12px}
+@media(min-width:760px){.levels{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1040px){.levels{grid-template-columns:repeat(3,1fr)}}
+.lv{padding:16px;display:flex;flex-direction:column;gap:6px}
+.lv .tag{font:600 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lv p{color:var(--muted);margin:0 0 6px;font-size:15px}
+.lv .row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;flex-wrap:wrap}
+.lv .best{font-size:14px;color:var(--muted)}
+.lv .best b{color:var(--ink)}
+.std{font-size:14px;color:var(--muted);margin-top:20px}
+
+/* intro */
+.intro{max-width:880px;margin:8px auto 0;padding:20px}
+.intro-grid{display:grid;gap:20px;margin-top:14px}
+@media(min-width:760px){.intro-grid{grid-template-columns:1fr 1fr;align-items:start}}
+.intro svg{display:block;width:100%;height:auto;max-width:440px;margin:0 auto}
+.ex{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ex li{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line)}
+.ex li:first-child{border-top:0}
+.ex .k{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ex .v{font-family:var(--mono);color:var(--ink);font-size:16px}
+.ex .v small{font-family:var(--sans);color:var(--muted);font-size:14px;display:block}
+.vocab{margin:14px 0 0;padding:12px 14px;background:var(--goldbg);border-radius:8px;font-size:15px}
+.vocab b{color:var(--ink)}
+.intro .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* hud */
+.hud{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin:4px 0 12px}
+.hud h2{font-size:24px}
+.stats{display:grid;grid-template-columns:repeat(3,auto) minmax(150px,220px);gap:8px 18px;align-items:end}
+.stat span{display:block;font:600 11px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.stat b{font:600 18px var(--mono);color:var(--ink)}
+.bat .bar{height:10px;border-radius:5px;background:#E9ECF1;overflow:hidden;margin:5px 0 3px}
+.bat .bar i{display:block;height:100%;background:var(--ink);border-radius:5px;transition:width .6s ease}
+.bat.low .bar i{background:var(--err)}
+.bat b{font-size:15px}
+.bat small{font:400 13px var(--sans);color:var(--muted)}
+@media(max-width:620px){.stats{grid-template-columns:repeat(3,1fr);width:100%}.bat{grid-column:1/-1}}
+
+/* board */
+.board{display:grid;gap:14px}
+@media(min-width:900px){.board{grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);align-items:start}.stagecard{position:sticky;top:8px}}
+.stagecard{padding:10px}
+#stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.cap{font-size:14px;color:var(--muted);margin:8px 4px 2px}
+.work{padding:16px}
+.work h3{margin-bottom:6px}
+.prompt{color:var(--text);margin-bottom:12px}
+.given{display:flex;flex-wrap:wrap;gap:6px 10px;margin:0 0 12px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;font-size:14px;background:#FAFBFC}
+.chip b{font-family:var(--mono);color:var(--ink)}
+.offers{display:grid;gap:8px}
+.offer{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 14px;border:1px solid var(--line2);border-radius:8px;background:#fff;color:var(--ink);font:500 16px var(--sans);cursor:pointer;text-align:left}
+.offer:hover{border-color:var(--ink);background:#F7F8FA}
+.offer .pin{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;border:2px solid var(--ink);font-weight:700;flex:none}
+.offer .co{font-family:var(--mono);font-weight:600}
+.offer .note{margin-left:auto;font-size:13px;color:var(--muted)}
+.offer[disabled]{opacity:.5;cursor:not-allowed;border-style:dashed}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.step{position:relative;padding:12px 0 12px 40px;border-top:1px solid var(--line)}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:12px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font:600 13px var(--sans);background:#EEF0F4;color:var(--muted)}
+.step.active::before{background:var(--gold);color:var(--ink)}
+.step.done::before{content:"✓";background:var(--ok);color:#fff}
+.step.locked{color:#8A93A5}
+.step.locked .q{color:#8A93A5}
+.step .q{font-weight:500;color:var(--ink)}
+.step .q .sub{font-weight:400;color:var(--muted);font-size:14px}
+.step .note{font-size:14px;color:var(--muted);margin:2px 0 0}
+.step .done-v{font-family:var(--mono);font-weight:600;color:var(--ok);margin-left:6px}
+.ans{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.ans label{font:600 17px var(--mono);color:var(--ink)}
+.ans input{font:600 18px var(--mono);color:var(--ink);width:8.5em;max-width:100%;min-height:44px;padding:6px 10px;border:1px solid var(--line2);border-radius:8px;background:#fff}
+.ans input:focus{border-color:var(--info);outline:2px solid rgba(29,78,216,.25);outline-offset:0}
+.hintbtn{background:none;border:0;color:var(--info);font:500 15px var(--sans);min-height:44px;padding:0 6px;cursor:pointer;text-decoration:underline}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.choice{min-height:44px;padding:8px 14px;border:1px solid var(--line2);border-radius:8px;background:#fff;color:var(--ink);font:600 16px var(--sans);cursor:pointer}
+.choice:hover{border-color:var(--ink)}
+.choice .n{font-weight:600}
+.fb{margin-top:8px;padding:8px 12px;border-radius:8px;font-size:15px}
+.fb.ok{background:var(--okbg);color:#0F5A2B}
+.fb.err{background:var(--errbg);color:#8F1C12}
+.fb.info{background:var(--infobg);color:#1B3A8F}
+.hint{margin-top:8px;padding:8px 12px;border-left:3px solid var(--gold2);background:var(--goldbg);border-radius:0 8px 8px 0;font-size:15px}
+.result{padding:14px 16px;border:1px solid var(--line);border-left:3px solid var(--ok);border-radius:0 10px 10px 0;margin-bottom:14px;background:#FBFDFB}
+.result.warn{border-left-color:var(--err);background:#FFFBFA}
+.result h3{margin-bottom:6px}
+.result .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.result ul{margin:6px 0 0;padding-left:20px}
+.flying{font-weight:600;color:var(--ink)}
+.foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+
+/* end */
+.endc{max-width:620px;margin:16px auto 0;padding:24px}
+.endc dl{display:grid;grid-template-columns:1fr auto;gap:10px 16px;margin:16px 0}
+.endc dt{color:var(--muted)}
+.endc dd{margin:0;font:600 18px var(--mono);color:var(--ink);text-align:right}
+.endc .acts{display:flex;flex-wrap:wrap;gap:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg text{font-family:var(--sans)}
+svg .mono{font-family:var(--mono)}
+@media(prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<div class="wrap">
+  <nav class="backs" aria-label="Back links"><a class="back" href="unit5.html">← Unit 5</a><a class="back" href="arcade.html">Arcade</a></nav>
+
+  <main id="app">
+    <!-- HOME -->
+    <section id="home">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">Unit 5 · Pythagorean Theorem · Route puzzle</p>
+          <h1>Drone Shortcut</h1>
+          <p class="lede">You fly a delivery drone over a city grid. Streets go only across and up, but the drone flies straight — find the shortcut.</p>
+          <div class="formula"><b>a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></b><span>a and b are the legs. c is the hypotenuse, the straight flight.</span></div>
+        </div>
+        <div class="card hero-art" id="heroArt" aria-hidden="true"></div>
+      </div>
+
+      <div class="label">How to play</div>
+      <ol class="howto">
+        <li class="card"><b>Pick a delivery.</b> Three drop-offs wait on the map. Estimate which flight is shortest. A good guess earns a bonus.</li>
+        <li class="card"><b>Find the flight.</b> Find the legs. Square them and add. Then take the square root to get c.</li>
+        <li class="card"><b>Save battery.</b> Each flight uses battery equal to its length. Short flights let you finish all five deliveries.</li>
+      </ol>
+
+      <div class="label">Levels</div>
+      <div class="levels" id="levels"></div>
+      <p class="std">Standards: NC.8.G.6 (explain the theorem and its converse), NC.8.G.7 (find unknown sides in 2D and 3D), NC.8.G.8 (distance between two points).</p>
+    </section>
+
+    <!-- INTRO -->
+    <section id="intro" hidden></section>
+
+    <!-- PLAY -->
+    <section id="play" hidden>
+      <div class="hud">
+        <div><p class="eyebrow" id="hudLevel">Level 1</p><h2 id="hudName">Level</h2></div>
+        <div class="stats">
+          <div class="stat"><span id="hudDelLabel">Deliveries</span><b id="hudDel">0 / 5</b></div>
+          <div class="stat"><span>Streak</span><b id="hudStreak">0</b></div>
+          <div class="stat"><span>Score</span><b id="hudScore">0</b></div>
+          <div class="stat bat" id="hudBat"><span>Battery</span><div class="bar"><i id="hudBatFill"></i></div><b id="hudBatNum">40.0</b> <small>blocks left</small></div>
+        </div>
+      </div>
+      <div class="board">
+        <div class="card stagecard"><div id="stage"></div><p class="cap" id="cap"></p></div>
+        <div class="card work" id="work" aria-live="polite"></div>
+      </div>
+      <div class="foot"><button type="button" class="linkbtn" id="quitBtn">Leave this level</button><span class="std" style="margin:0">1 grid square = 1 city block</span></div>
+    </section>
+
+    <!-- END -->
+    <section id="end" hidden></section>
+  </main>
+</div>
+<noscript><p style="padding:16px">This game needs JavaScript turned on.</p></noscript>
+
+<script>
+(function(){
+"use strict";
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const M=n=>n<0?'−'+Math.abs(n):String(n);          // true minus sign
+const Pp=n=>n<0?'('+M(n)+')':String(n);            // parenthesize negatives
+const pt=(x,y)=>'('+M(x)+', '+M(y)+')';
+const t1=v=>(Math.round(v*10+1e-9)/10).toFixed(1);
+const isSq=n=>{const r=Math.round(Math.sqrt(n));return r*r===n;};
+const S2=n=>n+'<sup>2</sup>';
+const N=s=>'<span class="n">'+s+'</span>';
+const REDUCED=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C={ink:'#1E2D4F',muted:'#5B6475',line:'#E3E5EA',line2:'#C9CED8',gold:'#E0A800',gold2:'#FFC107',ok:'#15803D',err:'#B42318',info:'#1D4ED8'};
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* Parse what a student types. Returns a number or NaN. */
+function parseNum(raw){
+  if(raw==null)return NaN;
+  let s=String(raw).trim().toLowerCase();
+  if(!s)return NaN;
+  s=s.replace(/[−–—]/g,'-').replace(/ /g,' ').replace(/\s+/g,' ');
+  s=s.replace(/^[a-z]\s*(²|\^\s*2)?\s*(=|≈)\s*/,'');   // "c = 10", "c² = 100", "b≈6.4"
+  s=s.replace(/^(≈|=|about|approx\.?|approximately)\s*/,'');
+  s=s.replace(/\s*(square\s+)?(units?|blocks?|ft|feet|foot|inches|inch|in|meters?|m|cm|yd|yards?)\.?(\^?2|²)?$/,'');
+  s=s.replace(/(\d),(\d{3})(?!\d)/g,'$1$2');
+  s=s.replace(/\s+/g,' ').trim();
+  let m;
+  if((m=s.match(/^(?:√|sqrt)\s*\(?\s*(\d+(?:\.\d+)?)\s*\)?$/)))return Math.sqrt(parseFloat(m[1]));
+  if((m=s.match(/^(-?\d+) (\d+)\/(\d+)$/))){const w=parseInt(m[1],10),f=parseInt(m[2],10)/parseInt(m[3],10);return w<0?w-f:w+f;}
+  if((m=s.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)$/))){const d=parseFloat(m[2]);return d?parseFloat(m[1])/d:NaN;}
+  if(/^-?(\d+\.?\d*|\.\d+)$/.test(s))return parseFloat(s);
+  return NaN;
+}
+
+/* ============ levels ============ */
+const LEVELS=[
+  {id:1,kind:'map',name:'Whole-Block Shortcuts',blurb:'Pythagorean triples in Quadrant I. Every flight is a whole number.',grid:[0,16,0,16],pos:[0,16],n:5,battery:40,std:'NC.8.G.6 · NC.8.G.8'},
+  {id:2,kind:'map',name:'Between the Squares',blurb:'Flights that are not whole numbers. Estimate, then round to the nearest tenth.',grid:[0,12,0,12],pos:[0,12],n:5,battery:32.5,std:'NC.8.G.8'},
+  {id:3,kind:'map',name:'Four Quadrants',blurb:'Drop-offs across the axes. Count carefully with |x₂ − x₁|.',grid:[-8,8,-8,8],pos:[-6,6],n:5,battery:42.5,std:'NC.8.G.8'},
+  {id:4,kind:'corner',name:'Corner Inspector',blurb:'A builder needs square corners. Use the converse to test each one.',n:5,std:'NC.8.G.6'},
+  {id:5,kind:'mix',name:'Range Limit and 3D',blurb:'Find a missing leg. Then find the longest rod that fits in a box.',n:6,std:'NC.8.G.7'}
+];
+const TRIPLE_LEGS=new Set(['3,4','4,3','6,8','8,6','5,12','12,5','8,15','15,8','9,12','12,9']);
+
+/* ============ best scores (optional) ============ */
+let BEST={};
+try{BEST=JSON.parse(localStorage.getItem('droneShortcutBest')||'{}')||{};}catch(e){BEST={};}
+function saveBest(id,score){
+  if(!(BEST[id]>=score))BEST[id]=score;
+  try{localStorage.setItem('droneShortcutBest',JSON.stringify(BEST));}catch(e){}
+}
+
+/* ============ map offers ============ */
+function candidates(L,A){
+  const [lo,hi]=L.pos,out=[];
+  for(let x=lo;x<=hi;x++)for(let y=lo;y<=hi;y++){
+    if(L.id===3&&(x===0||y===0))continue;
+    const dx=Math.abs(x-A.x),dy=Math.abs(y-A.y);
+    if(!dx||!dy)continue;
+    const c2=dx*dx+dy*dy,c=Math.sqrt(c2);
+    if(L.id===1){if(!TRIPLE_LEGS.has(dx+','+dy))continue;}
+    else if(L.id===2){if(isSq(c2)||dx<2||dy<2||c>10.5)continue;}
+    else{if(!(x*A.x<0||y*A.y<0)||c>12.5||c<2.2)continue;}
+    out.push({x,y,dx,dy,c2,c});
+  }
+  return out;
+}
+function genOffers(L,A){
+  const cand=candidates(L,A);
+  if(!cand.length)return null;
+  const minC=Math.min(...cand.map(o=>o.c));
+  const cap=L.id===3?Math.max(5.5,minC+0.6):5.0001;
+  const far=(o,list,g)=>list.every(p=>Math.hypot(o.x-p.x,o.y-p.y)>=g);
+  const name=list=>shuffle(list).map((o,i)=>Object.assign({},o,{name:'BCD'[i],tooFar:false}));
+  const sPool=cand.filter(o=>o.c<=cap);
+  for(let t=0;t<400;t++){
+    const gap=t<200?3:2;
+    const S=pick(sPool.length?sPool:cand.slice().sort((a,b)=>a.c-b.c).slice(0,1));
+    const p2=cand.filter(o=>o.c>=S.c+1.2&&far(o,[S],gap)).sort((a,b)=>a.c-b.c);
+    if(!p2.length)continue;
+    const Mo=pick(p2.slice(0,Math.max(1,Math.ceil(p2.length/2))));
+    let p3=cand.filter(o=>o.c>=Mo.c+1.2&&far(o,[S,Mo],gap));
+    if(!p3.length&&L.id===1)p3=cand.filter(o=>o.c>=Mo.c-1e-9&&far(o,[S,Mo],gap));
+    if(!p3.length)continue;
+    return name([S,Mo,pick(p3)]);
+  }
+  // fallback: the shortest point plus two longer ones (shortest stays unique)
+  const sorted=cand.slice().sort((a,b)=>a.c-b.c),S=sorted[0],res=[S];
+  for(const o of shuffle(sorted.slice(1)))if(res.length<3&&o.c>S.c+0.5&&far(o,res,2))res.push(o);
+  return res.length===3?name(res):null;
+}
+
+/* ============ mistake detectors ============ */
+function legMis(v,ans,other,c1,c2,axis){
+  if(v<0&&-v===ans)return 'A distance is never negative. Drop the minus sign.';
+  if(c1*c2<0&&v===Math.abs(Math.abs(c1)-Math.abs(c2))&&v!==ans)
+    return 'Sign slip. '+M(c1)+' and '+M(c2)+' are on opposite sides of 0. Count from '+M(c1)+' to 0, then from 0 to '+M(c2)+'. Add the two parts.';
+  if(v===other&&other!==ans)return axis==='x'?'That is the up-or-down distance. Across uses the x-coordinates.':'That is the across distance. Up or down uses the y-coordinates.';
+  if((v===Math.abs(c1)||v===Math.abs(c2))&&v!==ans)return 'That is a coordinate, not a distance. Subtract the two '+axis+'-coordinates.';
+  if(c1*c2>0&&v===Math.abs(c1+c2))return 'You added the coordinates. Subtract them to find the distance.';
+  if(Math.abs(v-ans)===1)return 'Off by one. Count the jumps between grid lines, not the lines.';
+  return null;
+}
+function sqMis(v,n){
+  if(n!==2&&v===2*n)return 'You doubled '+n+'. Squaring means '+n+' × '+n+', not '+n+' × 2.';
+  if(n!==1&&v===n)return 'That is '+n+'. The small ² means multiply: '+n+' × '+n+'.';
+  if(v===n+2)return 'You added 2. The small ² means '+n+' × '+n+'.';
+  return null;
+}
+function addMis(v,a,b){
+  if(v===a+b)return 'You added the legs: '+a+' + '+b+'. Add the squares instead: '+(a*a)+' + '+(b*b)+'.';
+  if(v===(a+b)*(a+b))return 'You added first, then squared. Square each leg first, then add.';
+  if(v===2*a+2*b)return 'You doubled the legs. Square them instead: '+a+' × '+a+' and '+b+' × '+b+'.';
+  if(v===Math.abs(a*a-b*b)&&a!==b)return 'You subtracted. To find the hypotenuse, add the squares.';
+  return null;
+}
+function rootMis(v,c2,exact,walk){
+  const c=Math.sqrt(c2);
+  if(v===c2)return 'That is c², not c. Take the square root: √'+c2+'.';
+  if(walk!=null&&v===walk&&Math.abs(v-c)>0.05)return walk+' is the walk along the streets (a + b). The straight flight is shorter. Find √'+c2+'.';
+  if(v===c2/2&&c2>4)return 'Half of '+c2+' is not its square root. Find the number that times itself makes '+c2+'.';
+  if(!exact){
+    if(Number.isInteger(v)&&Math.abs(v-c)<1)return 'Give one decimal place. √'+c2+' is between '+Math.floor(c)+' and '+Math.ceil(c)+', so the answer looks like '+Math.floor(c)+'.something.';
+    if(Math.abs(v-c)<0.2)return 'Close. Round to the nearest tenth. Look at the hundredths digit: 5 or more rounds up.';
+  }
+  return null;
+}
+
+/* ============ step builders ============ */
+function withHint(o){const t=o.hint||'';o.hint=false;o.hint_t=()=>t;return o;}
+function numStep(o){return withHint(Object.assign({kind:'num',tries:0,done:false,fb:'',fbt:'',tol:0},o));}
+function choiceStep(o){return withHint(Object.assign({kind:'choice',tries:0,done:false,fb:'',fbt:''},o));}
+function rootSteps(c2,exact,walk,sym,what){
+  const c=Math.sqrt(c2),steps=[];
+  if(!exact){
+    const n=Math.floor(c),pairs=[[n-1,n],[n,n+1],[n+1,n+2]].filter(p=>p[0]>=0);
+    steps.push(choiceStep({
+      pre:'Estimate: between which two whole numbers?',
+      label:'Estimate first. √'+c2+' is between which two whole numbers?',
+      opts:pairs.map(p=>{
+        const ok=p[0]===n;
+        let msg;
+        if(ok)msg='Yes. '+S2(n)+' = '+n*n+' and '+S2(n+1)+' = '+(n+1)*(n+1)+'. '+c2+' is between them.';
+        else if(p[1]<=n)msg=S2(p[1])+' = '+p[1]*p[1]+'. That is less than '+c2+', so √'+c2+' is more than '+p[1]+'.';
+        else msg=S2(p[0])+' = '+p[0]*p[0]+'. That is more than '+c2+', so √'+c2+' is less than '+p[0]+'.';
+        return {t:p[0]+' and '+p[1],ok,msg};
+      }),
+      hint:'List perfect squares: 1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144. Find the two that '+c2+' sits between.'
+    }));
+  }
+  steps.push(numStep({
+    pre:'Find '+what+' <span class="sub">(take the square root)</span>',
+    label:exact?('Find '+what+'. '+sym+' = √'+c2+' ='):('Find '+what+'. '+sym+' = √'+c2+' ≈ <span class="sub">(round to the nearest tenth)</span>'),
+    sym:sym+' =',ans:c,tol:exact?0:0.05,
+    mis:v=>rootMis(v,c2,exact,walk),
+    gen:exact?('Not yet. Which whole number times itself makes '+c2+'?'):('Not yet. Find √'+c2+' with a calculator, then round to one decimal place.'),
+    ok:v=>exact?('Yes. '+S2(c)+' = '+c2+', so '+sym+' = '+c+'.'):(Math.abs(v-Math.round(c*10)/10)<1e-9||Math.abs(v-c)<1e-9?('Yes. √'+c2+' = '+c.toFixed(3)+'… ≈ '+t1(c)+'.'):('Accepted. √'+c2+' = '+c.toFixed(3)+'…, which rounds to '+t1(c)+'.')),
+    hint:exact?('Which whole number times itself makes '+c2+'? Try a few: 5 × 5 = 25, 6 × 6 = 36, 7 × 7 = 49, and so on.'):('Use a calculator for √'+c2+'. Then round to one decimal place.')
+  }));
+  return steps;
+}
+
+/* ---- delivery flight ---- */
+function flightProb(L,A,B){
+  const a=Math.abs(B.x-A.x),b=Math.abs(B.y-A.y),c2=a*a+b*b,exact=isSq(c2),c=Math.sqrt(c2);
+  const P={type:'flight',A:{x:A.x,y:A.y},B,a,b,c2,c,exact,si:0};
+  const crossX=A.x*B.x<0,crossY=A.y*B.y<0;
+  const ud=B.y>A.y?'up':'down';
+  P.steps=[
+    numStep({key:'a',pre:'How far across? <span class="sub">(leg a, the x-distance)</span>',
+      label:'How far across? <span class="sub">(leg a, the x-distance)</span>',
+      note:'A is at x = '+M(A.x)+'. '+B.name+' is at x = '+M(B.x)+'.',sym:'a =',ans:a,
+      mis:v=>legMis(v,a,b,A.x,B.x,'x'),
+      gen:'Not yet. Subtract the x-coordinates: |'+M(B.x)+' − '+Pp(A.x)+'|.',
+      ok:()=> 'Yes. |'+M(B.x)+' − '+Pp(A.x)+'| = '+a+'. Leg a is '+a+' block'+(a===1?'':'s')+'.',
+      hint:crossX?('From x = '+M(A.x)+' to x = '+M(B.x)+' crosses the y-axis. Count to 0, then keep going.'):('Count the blocks from x = '+M(Math.min(A.x,B.x))+' to x = '+M(Math.max(A.x,B.x))+'. Or subtract: '+M(Math.max(A.x,B.x))+' − '+M(Math.min(A.x,B.x))+'.')}),
+    numStep({key:'b',pre:'How far up or down? <span class="sub">(leg b, the y-distance)</span>',
+      label:'How far '+ud+'? <span class="sub">(leg b, the y-distance)</span>',
+      note:'A is at y = '+M(A.y)+'. '+B.name+' is at y = '+M(B.y)+'.',sym:'b =',ans:b,
+      mis:v=>legMis(v,b,a,A.y,B.y,'y'),
+      gen:'Not yet. Subtract the y-coordinates: |'+M(B.y)+' − '+Pp(A.y)+'|.',
+      ok:()=> 'Yes. |'+M(B.y)+' − '+Pp(A.y)+'| = '+b+'. Leg b is '+b+' block'+(b===1?'':'s')+'.',
+      hint:crossY?('From y = '+M(A.y)+' to y = '+M(B.y)+' crosses the x-axis. Count to 0, then keep going.'):('Count the blocks from y = '+M(Math.min(A.y,B.y))+' to y = '+M(Math.max(A.y,B.y))+'. Or subtract: '+M(Math.max(A.y,B.y))+' − '+M(Math.min(A.y,B.y))+'.')}),
+    numStep({pre:'Square leg a: a² = ?',label:'Square leg a. a² = '+S2(a)+' =',sym:'a² =',ans:a*a,
+      mis:v=>sqMis(v,a),gen:'Not yet. '+S2(a)+' means '+a+' × '+a+'.',ok:()=> 'Yes. '+a+' × '+a+' = '+a*a+'.',
+      hint:'Squaring means multiply the number by itself: '+a+' × '+a+'.'}),
+    numStep({pre:'Square leg b: b² = ?',label:'Square leg b. b² = '+S2(b)+' =',sym:'b² =',ans:b*b,
+      mis:v=>sqMis(v,b),gen:'Not yet. '+S2(b)+' means '+b+' × '+b+'.',ok:()=> 'Yes. '+b+' × '+b+' = '+b*b+'.',
+      hint:'Squaring means multiply the number by itself: '+b+' × '+b+'.'}),
+    numStep({pre:'Add the squares: c² = a² + b² = ?',label:'Add the squares. c² = a² + b² = '+a*a+' + '+b*b+' =',sym:'c² =',ans:c2,
+      mis:v=>addMis(v,a,b),gen:'Not yet. Add '+a*a+' + '+b*b+'.',ok:()=> 'Yes. '+a*a+' + '+b*b+' = '+c2+'. So c² = '+c2+'.',
+      hint:'Add the two squares you found: '+a*a+' + '+b*b+'.'})
+  ].concat(rootSteps(c2,exact,a+b,'c','the flight c'));
+  return P;
+}
+
+/* ---- corner (converse) ---- */
+const RIGHT_SETS=[[3,4,5],[6,8,10],[9,12,15],[12,16,20],[15,20,25],[5,12,13],[10,24,26],[8,15,17],[7,24,25],[20,21,29]];
+function genCorners(n){
+  const kinds=shuffle([true,true,false,false,Math.random()<0.5]).slice(0,n);
+  const used=new Set(),out=[];
+  for(const right of kinds){
+    let s;
+    for(let t=0;t<500;t++){
+      if(right)s=pick(RIGHT_SETS).slice();
+      else{
+        const a=rnd(4,20),b=rnd(a+1,24),h=Math.sqrt(a*a+b*b);
+        const c=Math.random()<0.6?pick([Math.floor(h),Math.ceil(h)]):Math.round(h)+pick([-2,-1,1,2]);
+        if(!(c>b&&c<a+b&&a*a+b*b!==c*c&&c<=30))continue;
+        s=[a,b,c];
+      }
+      if(!used.has(s.join()))break;
+    }
+    used.add(s.join());
+    out.push(s);
+  }
+  return out;
+}
+function cornerProb(s,unit){
+  const [a,b,c]=s.slice().sort((x,y)=>x-y),shown=shuffle(s),sum=a*a+b*b,right=sum===c*c;
+  const ang=Math.acos((a*a+b*b-c*c)/(2*a*b))*180/Math.PI;
+  const P={type:'corner',a,b,c,shown,sum,right,ang,unit,si:0,decided:false};
+  P.steps=[
+    choiceStep({pre:'Which side is the longest?',label:'Which side is the longest? That side is c.',
+      opts:shown.map(v=>({t:v+' '+unit,ok:v===c,msg:v===c?('Yes. '+c+' is the longest side, so c = '+c+'. The two shorter sides are '+a+' and '+b+'.'):('c must be the longest side. '+Math.max(...shown)+' is longer than '+v+'.')})),
+      hint:'The longest side sits across from the corner you are testing.'}),
+    numStep({pre:'Square the two shorter sides and add: a² + b² = ?',label:'Square the two shorter sides and add. '+S2(a)+' + '+S2(b)+' =',sym:'a² + b² =',ans:sum,
+      mis:v=>{
+        if(v===a*a+c*c||v===b*b+c*c)return 'You used the longest side. Use the two shorter sides: '+a+' and '+b+'.';
+        return addMis(v,a,b)||((v===a*a||v===b*b)?'Add both squares: '+a*a+' + '+b*b+'.':null);
+      },
+      gen:'Not yet. '+S2(a)+' = '+a*a+' and '+S2(b)+' = ?. Then add.',ok:()=> 'Yes. '+a*a+' + '+b*b+' = '+sum+'.',
+      hint:'Find '+a+' × '+a+' and '+b+' × '+b+'. Then add them.'}),
+    numStep({pre:'Square the longest side: c² = ?',label:'Square the longest side. c² = '+S2(c)+' =',sym:'c² =',ans:c*c,
+      mis:v=>sqMis(v,c),gen:'Not yet. '+S2(c)+' means '+c+' × '+c+'.',ok:()=> 'Yes. '+c+' × '+c+' = '+c*c+'.',
+      hint:'Multiply '+c+' × '+c+'.'}),
+    choiceStep({pre:'Right angle or not?',label:'Compare. Is '+sum+' equal to '+c*c+'? Decide.',
+      opts:[{t:'Right angle',ok:right,msg:right?('Yes. '+sum+' = '+c*c+'. When a² + b² = c², the corner is a right angle.'):('Look again. '+sum+' ≠ '+c*c+'. Only an exact match makes a right angle. Even a miss of 1 means the corner is not square.')},
+            {t:'Not a right angle',ok:!right,msg:!right?('Yes. '+sum+' ≠ '+c*c+', so the corner is not a right angle.'):('Look again. '+sum+' = '+c*c+'. The numbers match, so the corner is a right angle.')}],
+      hint:'If a² + b² is exactly equal to c², it is a right angle. If not, it is not.'})
+  ];
+  return P;
+}
+
+/* ---- range limit (find a leg) ---- */
+const RANGE_EXACT=[[3,4,5],[4,3,5],[6,8,10],[8,6,10],[5,12,13],[12,5,13],[9,12,15],[12,9,15]];
+function rangeProb(exact){
+  let a,b2,c;
+  if(exact){const t=pick(RANGE_EXACT);a=t[0];c=t[2];b2=c*c-a*a;}
+  else{for(;;){c=rnd(6,14);a=rnd(2,c-2);b2=c*c-a*a;if(!isSq(b2))break;}}
+  const P={type:'range',a,c,b2,b:Math.sqrt(b2),exact:isSq(b2),si:0};
+  P.steps=[
+    numStep({pre:'Square the range: c² = ?',label:'Square the range (the hypotenuse). c² = '+S2(c)+' =',sym:'c² =',ans:c*c,
+      mis:v=>sqMis(v,c),gen:'Not yet. '+S2(c)+' means '+c+' × '+c+'.',ok:()=> 'Yes. '+c+' × '+c+' = '+c*c+'.',hint:'Multiply '+c+' × '+c+'.'}),
+    numStep({pre:'Square the east leg: a² = ?',label:'Square the east leg. a² = '+S2(a)+' =',sym:'a² =',ans:a*a,
+      mis:v=>sqMis(v,a),gen:'Not yet. '+S2(a)+' means '+a+' × '+a+'.',ok:()=> 'Yes. '+a+' × '+a+' = '+a*a+'.',hint:'Multiply '+a+' × '+a+'.'}),
+    numStep({pre:'Subtract to find b² = ?',label:'Finding a leg? Subtract. b² = c² − a² = '+c*c+' − '+a*a+' =',sym:'b² =',ans:b2,
+      mis:v=>{
+        if(v===c*c+a*a)return 'You added the squares. To find a leg, subtract: c² − a².';
+        if(v===c-a)return 'You subtracted the sides. Subtract the squares: '+c*c+' − '+a*a+'.';
+        if(v===c*c)return 'That is c². Now take away a²: '+c*c+' − '+a*a+'.';
+        return null;},
+      gen:'Not yet. Subtract: '+c*c+' − '+a*a+'.',ok:()=> 'Yes. '+c*c+' − '+a*a+' = '+b2+'.',
+      hint:'Hypotenuse? Add. Leg? Subtract. Here you need a leg, so find '+c*c+' − '+a*a+'.'})
+  ].concat(rootSteps(b2,isSq(b2),null,'b','the north leg b'));
+  // a leg answer: replace walk-mistake with sum mistake
+  const last=P.steps[P.steps.length-1],old=last.mis;
+  last.mis=v=>{if(v===c-a&&Math.abs(v-P.b)>0.05)return 'You subtracted the sides. Use b² = '+b2+' and take its square root.';if(v===c+a)return 'You added the sides. Take the square root of b² = '+b2+'.';return old(v);};
+  return P;
+}
+
+/* ---- box diagonal (3D) ---- */
+const BOX_EXACT=[[1,2,2],[2,3,6],[1,4,8],[4,4,7],[2,6,9],[6,6,7],[3,4,12],[2,4,4],[3,6,6],[4,8,8],[2,10,11],[8,9,12],[6,10,15]];
+function boxProb(exact){
+  let l,w,h;
+  if(exact){
+    const t=shuffle(pick(BOX_EXACT));[l,w,h]=t;
+    if(w>l)[l,w]=[w,l];
+  }else{for(;;){l=rnd(4,12);w=rnd(2,Math.min(l,9));h=rnd(2,10);if(!isSq(l*l+w*w+h*h))break;}}
+  const d2=l*l+w*w,r2=d2+h*h,dEx=isSq(d2),rEx=isSq(r2);
+  const P={type:'box',l,w,h,d2,d:Math.sqrt(d2),r2,r:Math.sqrt(r2),dEx,rEx,si:0};
+  const dSteps=rootSteps(d2,dEx,null,'d','the floor diagonal d').filter(s=>s.kind==='num');
+  const rSteps=rootSteps(r2,rEx,l+w+h,'r','the rod r').filter(s=>s.kind==='num');
+  const rr=rSteps[0],oldR=rr.mis;
+  rr.mis=v=>{if(v===l+w+h)return l+' + '+w+' + '+h+' = '+(l+w+h)+' is the path along the edges. The rod goes straight through. Find √'+r2+'.';return oldR(v);};
+  P.steps=[
+    numStep({pre:'Floor first: d² = l² + w² = ?',label:'Floor diagonal first. d² = '+S2(l)+' + '+S2(w)+' =',sym:'d² =',ans:d2,
+      mis:v=>addMis(v,l,w),gen:'Not yet. Find '+l*l+' + '+w*w+'.',ok:()=> 'Yes. '+l*l+' + '+w*w+' = '+d2+'.',
+      hint:'The floor is a rectangle. Its diagonal is the hypotenuse of a right triangle with legs '+l+' and '+w+'.'}),
+    dSteps[0],
+    numStep({pre:'Now the rod: r² = d² + h² = ?',label:'Now the rod. Use d² = '+d2+' (no rounding). r² = d² + h² = '+d2+' + '+S2(h)+' =',sym:'r² =',ans:r2,
+      mis:v=>{
+        const dr=Math.round(Math.sqrt(d2)*10)/10;
+        if(!dEx&&Math.abs(v-(dr*dr+h*h))<0.6&&v!==r2)return 'You used the rounded d. Use d² = '+d2+' exactly: '+d2+' + '+h*h+'.';
+        if(v===d2+h)return 'Square h first: '+S2(h)+' = '+h*h+'. Then add.';
+        if(v===Math.round(Math.sqrt(d2))+h||v===d2+2*h)return 'Add the squares: d² + h² = '+d2+' + '+h*h+'.';
+        return null;},
+      gen:'Not yet. Add '+d2+' + '+h*h+'.',ok:()=> 'Yes. '+d2+' + '+h*h+' = '+r2+'.',
+      hint:'The rod is the hypotenuse of a standing right triangle. Its legs are d (on the floor) and h (straight up).'}),
+    rr
+  ];
+  return P;
+}
+
+/* ============ SVG drawing ============ */
+function droneSVG(x,y,id,scale){
+  const s=scale||1;
+  return '<g'+(id?' id="'+id+'"':'')+' transform="translate('+x.toFixed(1)+','+y.toFixed(1)+') scale('+s+')" aria-hidden="true">'+
+    '<line x1="-9" y1="-9" x2="9" y2="9" stroke="'+C.ink+'" stroke-width="2.4"/><line x1="-9" y1="9" x2="9" y2="-9" stroke="'+C.ink+'" stroke-width="2.4"/>'+
+    [[-9,-9],[9,-9],[-9,9],[9,9]].map(p=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5.2" fill="#fff" stroke="'+C.ink+'" stroke-width="1.8"/>').join('')+
+    '<rect x="-5.5" y="-5.5" width="11" height="11" rx="3" fill="'+C.ink+'"/><circle r="2" fill="'+C.gold2+'"/></g>';
+}
+function txt(x,y,s,o){
+  o=o||{};
+  return '<text x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" font-size="'+(o.fs||13)+'"'+(o.anchor?' text-anchor="'+o.anchor+'"':'')+' fill="'+(o.fill||C.ink)+'" font-weight="'+(o.fw||600)+'"'+(o.cls?' class="'+o.cls+'"':'')+(o.halo!==false?' stroke="#fff" stroke-width="4" stroke-linejoin="round" paint-order="stroke"':'')+(o.italic?' font-style="italic"':'')+'>'+s+'</text>';
+}
+/* Label placer: avoids points, drawn segments, other labels and the edges */
+function Labeler(Wd,Ht){this.W=Wd;this.H=Ht;this.boxes=[];}
+Labeler.prototype.pt=function(x,y,r){this.boxes.push({x0:x-r,y0:y-r,x1:x+r,y1:y+r});};
+Labeler.prototype.seg=function(x1,y1,x2,y2,r){
+  r=r||3;const n=Math.max(1,Math.ceil(Math.hypot(x2-x1,y2-y1)/6));
+  for(let i=0;i<=n;i++){const t=i/n;this.pt(x1+(x2-x1)*t,y1+(y2-y1)*t,r);}
+};
+Labeler.prototype.place=function(px,py,label,o){
+  o=o||{};const fs=o.fs||13,plain=label.replace(/<[^>]+>/g,''),w=plain.length*fs*0.62+4;
+  const dirs=o.dirs||[[1,-1],[-1,-1],[1,1],[-1,1],[0,-1],[0,1],[1,0],[-1,0]];
+  const dists=o.dists||[12,18,26,36,48];
+  let first=null;
+  for(const d of dists)for(const v of dirs){
+    const ax=px+v[0]*d,ay=py+v[1]*d,an=v[0]>0.3?'start':v[0]<-0.3?'end':'middle';
+    const y=v[1]>0.3?ay+fs*0.8:v[1]<-0.3?ay:ay+fs*0.35;
+    const x0=an==='start'?ax:an==='end'?ax-w:ax-w/2,b={x0,y0:y-fs*0.82,x1:x0+w,y1:y+fs*0.22};
+    const cand={x:ax,y,an,b};
+    if(!first)first=cand;
+    if(b.x0<2||b.x1>this.W-2||b.y0<2||b.y1>this.H-2)continue;
+    if(this.boxes.some(q=>!(b.x1<q.x0||b.x0>q.x1||b.y1<q.y0||b.y0>q.y1)))continue;
+    this.boxes.push(b);return cand;
+  }
+  this.boxes.push(first.b);return first;
+};
+Labeler.prototype.text=function(px,py,label,o){
+  o=o||{};const L=this.place(px,py,label,o);
+  return txt(L.x,L.y,label,Object.assign({},o,{anchor:L.an}));
+};
+const unit2=(x,y)=>{const l=Math.hypot(x,y)||1;return [x/l,y/l];};
+
+/* the city map */
+function mapGeom(grid,W){
+  const [x0,x1,y0,y1]=grid,padL=30,padR=22,padT=22,padB=30;
+  const u=Math.min((W-padL-padR)/(x1-x0),46);
+  const gw=u*(x1-x0),gh=u*(y1-y0);
+  return {u,gw,gh,padL,padT,Wd:padL+gw+padR,Ht:padT+gh+padB,X:x=>padL+(x-x0)*u,Y:y=>padT+(y1-y)*u};
+}
+function drawMap(o){
+  const [x0,x1,y0,y1]=o.grid,g=mapGeom(o.grid,o.W),{u,gw,gh,padL,padT,Wd,Ht,X,Y}=g;
+  const step=u>=27?1:2;
+  let s='<svg viewBox="0 0 '+Wd.toFixed(1)+' '+Ht.toFixed(1)+'" width="'+Wd.toFixed(0)+'" role="img" aria-label="'+esc(o.aria||'City grid')+'">';
+  s+='<rect x="'+padL+'" y="'+padT+'" width="'+gw.toFixed(1)+'" height="'+gh.toFixed(1)+'" fill="#FBFBFC"/>';
+  for(let x=x0;x<=x1;x++){const c=x===0?C.ink:(x%5===0?'#D3D8E0':'#E6E8ED');s+='<line x1="'+X(x).toFixed(1)+'" y1="'+padT+'" x2="'+X(x).toFixed(1)+'" y2="'+(padT+gh).toFixed(1)+'" stroke="'+c+'" stroke-width="'+(x===0?1.6:1)+'"/>';}
+  for(let y=y0;y<=y1;y++){const c=y===0?C.ink:(y%5===0?'#D3D8E0':'#E6E8ED');s+='<line x1="'+padL+'" y1="'+Y(y).toFixed(1)+'" x2="'+(padL+gw).toFixed(1)+'" y2="'+Y(y).toFixed(1)+'" stroke="'+c+'" stroke-width="'+(y===0?1.6:1)+'"/>';}
+  for(let x=x0;x<=x1;x++)if(x%step===0)s+=txt(X(x),padT+gh+17,M(x),{fs:11,anchor:'middle',fill:C.muted,fw:500,halo:false});
+  for(let y=y0;y<=y1;y++)if(y%step===0)s+=txt(padL-6,Y(y)+4,M(y),{fs:11,anchor:'end',fill:C.muted,fw:500,halo:false});
+  s+=txt(padL+gw+8,padT+gh+4,'x',{fs:13,anchor:'start',fill:C.muted,italic:true,halo:false});
+  s+=txt(padL+5,padT-7,'y',{fs:13,anchor:'start',fill:C.muted,italic:true,halo:false});
+  const lab=new Labeler(Wd,Ht);
+  const A=o.A,B=o.chosen,dp=o.dronePos||A;
+  [A].concat(o.offers||[]).forEach(p=>lab.pt(X(p.x),Y(p.y),15));
+  let top='';   // labels drawn last
+  (o.trail||[]).forEach(t=>{s+='<line x1="'+X(t[0].x)+'" y1="'+Y(t[0].y)+'" x2="'+X(t[1].x)+'" y2="'+Y(t[1].y)+'" stroke="#C9CED8" stroke-width="2" stroke-linecap="round"/>';lab.seg(X(t[0].x),Y(t[0].y),X(t[1].x),Y(t[1].y),2);});
+  (o.reveal||[]).forEach(r=>{s+='<line x1="'+X(A.x)+'" y1="'+Y(A.y)+'" x2="'+X(r.x)+'" y2="'+Y(r.y)+'" stroke="'+C.muted+'" stroke-width="1.5" stroke-dasharray="2 4"/>';lab.seg(X(A.x),Y(A.y),X(r.x),Y(r.y),3);});
+  if(B){
+    const K={x:B.x,y:A.y},ax=X(A.x),ay=Y(A.y),bx=X(B.x),by=Y(B.y),kx=X(K.x),ky=Y(K.y);
+    lab.seg(ax,ay,bx,by,4);
+    if(o.legA){s+='<line x1="'+ax+'" y1="'+ay+'" x2="'+kx+'" y2="'+ky+'" stroke="'+C.info+'" stroke-width="2.6" stroke-dasharray="7 5"/>';lab.seg(ax,ay,kx,ky,4);}
+    if(o.legB){s+='<line x1="'+kx+'" y1="'+ky+'" x2="'+bx+'" y2="'+by+'" stroke="'+C.info+'" stroke-width="2.6" stroke-dasharray="7 5"/>';lab.seg(kx,ky,bx,by,4);}
+    if(o.legA&&o.legB){
+      const sx=B.x>A.x?-1:1,sy=B.y>A.y?-1:1,q=Math.min(11,u*0.45);
+      s+='<path d="M'+(kx+sx*q)+' '+ky+' L'+(kx+sx*q)+' '+(ky+sy*q)+' L'+kx+' '+(ky+sy*q)+'" fill="none" stroke="'+C.info+'" stroke-width="1.5"/>';
+    }
+    if(o.flightP==null){
+      if(o.showQ)s+='<line x1="'+ax+'" y1="'+ay+'" x2="'+bx+'" y2="'+by+'" stroke="'+C.gold+'" stroke-width="2.4" stroke-dasharray="3 5" stroke-linecap="round"/>';
+    }else{
+      const p=o.flightP;
+      s+='<line id="flightLine" x1="'+ax+'" y1="'+ay+'" x2="'+(ax+(bx-ax)*p).toFixed(1)+'" y2="'+(ay+(by-ay)*p).toFixed(1)+'" stroke="'+C.gold+'" stroke-width="4" stroke-linecap="round"/>';
+    }
+    // leg labels: a on the side away from B, b on the side away from A
+    if(o.legA)top+=lab.text((ax+kx)/2,ky,'a = '+o.a,{fs:13,fill:C.info,cls:'mono',dirs:B.y>A.y?[[0,1],[0,-1],[1,1],[-1,1]]:[[0,-1],[0,1],[1,-1],[-1,-1]],dists:[6,12,20,30,42]});
+    if(o.legB)top+=lab.text(kx,(ky+by)/2,'b = '+o.b,{fs:13,fill:C.info,cls:'mono',dirs:B.x>A.x?[[1,0],[-1,0],[1,1],[1,-1]]:[[-1,0],[1,0],[-1,1],[-1,-1]],dists:[6,12,20,30,42]});
+    if(o.cLabel){
+      const mx=(ax+bx)/2,my=(ay+by)/2;let n=unit2(-(by-ay),bx-ax);
+      if(n[0]*(kx-mx)+n[1]*(ky-my)>0)n=[-n[0],-n[1]];
+      const L=lab.place(mx,my,o.cLabel,{fs:14,dirs:[n,[n[0]*0.7+0.3,n[1]],[n[0],n[1]*0.7-0.3]],dists:[8,14,22,32,44]});
+      top+='<g id="cLab"'+(o.flightP!=null&&o.flightP<1?' opacity="0"':'')+'>'+txt(L.x,L.y,o.cLabel,{fs:14,anchor:L.an,fill:C.ink,cls:'mono',fw:700})+'</g>';
+    }
+  }
+  (o.reveal||[]).forEach(r=>{top+=lab.text((X(A.x)+X(r.x))/2,(Y(A.y)+Y(r.y))/2,r.label,{fs:12,fill:C.muted,cls:'mono',dists:[6,12,20,30]});});
+  (o.offers||[]).forEach(p=>{
+    const isC=B&&p===B,faded=(B&&!isC)||p.tooFar,cx=X(p.x),cy=Y(p.y),under=isC&&dp===p;
+    s+='<g opacity="'+(faded?(p.tooFar?0.45:0.3):1)+'">';
+    if(isC)s+='<circle cx="'+cx+'" cy="'+cy+'" r="15.5" fill="none" stroke="'+C.gold+'" stroke-width="3"/>';
+    if(!under){
+      s+='<circle cx="'+cx+'" cy="'+cy+'" r="11" fill="'+(isC?C.ink:'#fff')+'" stroke="'+C.ink+'" stroke-width="2"'+(p.tooFar?' stroke-dasharray="3 3"':'')+'/>';
+      s+='<text x="'+cx+'" y="'+(cy+4.5)+'" font-size="13" text-anchor="middle" font-weight="700" fill="'+(isC?'#fff':C.ink)+'">'+p.name+'</text>';
+    }
+    s+='</g>';
+  });
+  s+=droneSVG(X(dp.x),Y(dp.y),'droneG',u<24?0.9:1);
+  if(o.labelA!==false)top+=lab.text(X(A.x),Y(A.y),'A '+pt(A.x,A.y),{cls:'mono'});
+  (o.offers||[]).forEach(p=>{
+    const isC=B&&p===B;if(B&&!isC&&!o.labelAll)return;
+    top+=lab.text(X(p.x),Y(p.y),p.name+' '+pt(p.x,p.y),{cls:'mono',fill:p.tooFar?C.muted:C.ink});
+  });
+  s+=top+'</svg>';
+  return {svg:s,X,Y,u};
+}
+
+/* builder's corner, drawn to scale */
+function drawCorner(P,W,revealed){
+  const {a,b,c}=P,th=P.ang*Math.PI/180;
+  const pts=[[0,0],[a,0],[b*Math.cos(th),b*Math.sin(th)]];
+  const minx=Math.min(0,pts[2][0]),maxx=Math.max(a,pts[2][0]),maxy=pts[2][1];
+  const padX=70,padY=40,k=Math.min((W-2*padX)/(maxx-minx),200/maxy);
+  const Ht=maxy*k+2*padY+10,ox=padX+(W-2*padX-(maxx-minx)*k)/2-minx*k,oy=Ht-padY;
+  const T=p=>[ox+p[0]*k,oy-p[1]*k];
+  const O=T(pts[0]),Pa=T(pts[1]),Q=T(pts[2]);
+  const lab=new Labeler(W,Ht);
+  let s='<svg viewBox="0 0 '+W+' '+Ht.toFixed(0)+'" width="'+W+'" role="img" aria-label="Corner with sides '+a+', '+b+' and '+c+' '+P.unit+'">';
+  const board=(p,q,col)=>'<line x1="'+p[0].toFixed(1)+'" y1="'+p[1].toFixed(1)+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" stroke="'+col+'" stroke-width="7" stroke-linecap="round"/>';
+  s+=board(O,Pa,'#8A6A3B')+board(O,Q,'#8A6A3B');
+  s+='<line x1="'+Pa[0]+'" y1="'+Pa[1]+'" x2="'+Q[0]+'" y2="'+Q[1]+'" stroke="'+C.ink+'" stroke-width="2.4" stroke-dasharray="8 5"/>';
+  [O,Pa,Q].forEach(p=>{s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3.5" fill="'+C.ink+'"/>';});
+  lab.seg(O[0],O[1],Pa[0],Pa[1],6);lab.seg(O[0],O[1],Q[0],Q[1],6);lab.seg(Pa[0],Pa[1],Q[0],Q[1],4);
+  lab.pt(O[0]+16,O[1]-16,18);
+  const out=(m,from)=>{let n=unit2(m[0]-from[0],m[1]-from[1]);return n;};
+  const mA=[(O[0]+Pa[0])/2,O[1]],mB=[(O[0]+Q[0])/2,(O[1]+Q[1])/2],mC=[(Pa[0]+Q[0])/2,(Pa[1]+Q[1])/2];
+  const cen=[(O[0]+Pa[0]+Q[0])/3,(O[1]+Pa[1]+Q[1])/3];
+  let t='';
+  t+=lab.text(mA[0],mA[1],a+' '+P.unit,{fs:14,cls:'mono',dirs:[[0,1]],dists:[10,16,24]});
+  t+=lab.text(mB[0],mB[1],b+' '+P.unit,{fs:14,cls:'mono',dirs:[out(mB,cen),[-1,0]],dists:[10,16,24,34]});
+  t+=lab.text(mC[0],mC[1],c+' '+P.unit,{fs:14,cls:'mono',dirs:[out(mC,cen),[1,0],[1,-1]],dists:[10,16,24,34]});
+  const r=24;
+  if(!revealed){
+    s+='<path d="M'+(O[0]+r)+' '+O[1]+' A'+r+' '+r+' 0 0 0 '+(O[0]+r*Math.cos(th))+' '+(O[1]-r*Math.sin(th))+'" fill="none" stroke="'+C.gold+'" stroke-width="2.5"/>';
+    t+=txt(O[0]+(r+10)*Math.cos(th/2),O[1]-(r+10)*Math.sin(th/2)+5,'?',{fs:16,fill:'#7A5600',fw:700,anchor:'middle'});
+  }else if(P.right){
+    const q=16;
+    s+='<path d="M'+(O[0]+q)+' '+O[1]+' L'+(O[0]+q)+' '+(O[1]-q)+' L'+O[0]+' '+(O[1]-q)+'" fill="none" stroke="'+C.ok+'" stroke-width="2.4"/>';
+    t+=txt(O[0]+22,O[1]-22,'90°',{fs:14,fill:C.ok,fw:700});
+  }else{
+    s+='<path d="M'+(O[0]+r)+' '+O[1]+' A'+r+' '+r+' 0 0 0 '+(O[0]+r*Math.cos(th))+' '+(O[1]-r*Math.sin(th))+'" fill="none" stroke="'+C.err+'" stroke-width="2.4"/>';
+    const shown=Math.abs(P.ang-90)<0.05?P.ang.toFixed(2):P.ang.toFixed(1);
+    t+=txt(O[0]+r+8,O[1]-r-2,'≈ '+shown+'°',{fs:14,fill:C.err,fw:700});
+  }
+  return s+t+'</svg>';
+}
+
+/* range limit picture, to scale */
+function drawRange(P,W,done){
+  const {a,c}=P,b=P.b;
+  const padL=36,padR=40,k=Math.min((W-padL-padR)/c,250/c),Ht=c*k+80;
+  const X=x=>padL+x*k,Y=y=>Ht-36-y*k;
+  const lab=new Labeler(W,Ht);
+  let s='<svg viewBox="0 0 '+W+' '+Ht.toFixed(0)+'" width="'+W+'" role="img" aria-label="Range circle of radius '+c+' and an east leg of '+a+'">';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+(X(c)+16)+'" y2="'+Y(0)+'" stroke="'+C.line2+'" stroke-width="1.2"/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+(Y(c)-14)+'" stroke="'+C.line2+'" stroke-width="1.2"/>';
+  let t=txt(X(c)+20,Y(0)+4,'E',{fs:12,fill:C.muted})+txt(X(0),Y(c)-18,'N',{fs:12,fill:C.muted,anchor:'middle'});
+  s+='<path d="M'+X(c)+' '+Y(0)+' A'+(c*k)+' '+(c*k)+' 0 0 0 '+X(0)+' '+Y(c)+'" fill="none" stroke="'+C.gold+'" stroke-width="2" stroke-dasharray="6 5"/>';
+  for(let i=0;i<=24;i++){const an=i/24*Math.PI/2;lab.pt(X(c*Math.cos(an)),Y(c*Math.sin(an)),4);}
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(a)+'" y2="'+Y(0)+'" stroke="'+C.info+'" stroke-width="3"/>';
+  s+='<line x1="'+X(a)+'" y1="'+Y(0)+'" x2="'+X(a)+'" y2="'+Y(b)+'" stroke="'+C.info+'" stroke-width="2.6"'+(done?'':' stroke-dasharray="7 5"')+'/>';
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(a)+'" y2="'+Y(b)+'" stroke="'+C.gold+'" stroke-width="'+(done?4:2.4)+'"'+(done?'':' stroke-dasharray="3 5"')+' stroke-linecap="round"/>';
+  lab.seg(X(0),Y(0),X(a),Y(0),5);lab.seg(X(a),Y(0),X(a),Y(b),5);lab.seg(X(0),Y(0),X(a),Y(b),5);lab.pt(X(0),Y(0),15);
+  const q=10;s+='<path d="M'+(X(a)-q)+' '+Y(0)+' L'+(X(a)-q)+' '+(Y(0)-q)+' L'+X(a)+' '+(Y(0)-q)+'" fill="none" stroke="'+C.info+'" stroke-width="1.4"/>';
+  if(done)s+='<circle cx="'+X(a)+'" cy="'+Y(b)+'" r="6" fill="'+C.ink+'"/>';
+  t+=lab.text((X(0)+X(a))/2,Y(0),'a = '+a+' east',{fs:13,fill:C.info,cls:'mono',dirs:[[0,1]],dists:[8,14]});
+  t+=lab.text(X(a),(Y(0)+Y(b))/2,done?(P.exact?'b = '+b:'b ≈ '+t1(b)):'b = ?',{fs:13,fill:C.info,cls:'mono',dirs:[[1,0],[-1,0]],dists:[8,14,22,32]});
+  t+=lab.text((X(0)+X(a))/2,(Y(0)+Y(b))/2,'flight c = '+c,{fs:13,cls:'mono',dirs:[[-1,-1],[-1,0],[0,-1]],dists:[8,14,22,32]});
+  const ra=Math.PI*0.42;
+  t+=lab.text(X(c*Math.cos(ra)),Y(c*Math.sin(ra)),'range '+c,{fs:13,fill:'#7A5600',cls:'mono',dirs:[[1,-1],[0,-1],[1,0]],dists:[6,12,18]});
+  s+=droneSVG(X(0),Y(0),'',0.9);
+  return s+t+'</svg>';
+}
+
+/* box, oblique view, to scale */
+function drawBox(P,W,stage){
+  const {l,w,h}=P,ca=Math.cos(Math.PI/6)*0.55,sa=Math.sin(Math.PI/6)*0.55;
+  const spanX=l+w*ca,spanY=h+w*sa,padX=74,padY=36,k=Math.min((W-2*padX)/spanX,240/spanY);
+  const Ht=spanY*k+2*padY+10,ox=padX+(W-2*padX-spanX*k)/2,oy=Ht-padY;
+  const T=(x,y,z)=>[ox+(x+y*ca)*k,oy-(z+y*sa)*k];
+  const V=[[0,0,0],[l,0,0],[l,w,0],[0,w,0],[0,0,h],[l,0,h],[l,w,h],[0,w,h]].map(p=>T(p[0],p[1],p[2]));
+  const ln=(i,j,st)=>'<line x1="'+V[i][0].toFixed(1)+'" y1="'+V[i][1].toFixed(1)+'" x2="'+V[j][0].toFixed(1)+'" y2="'+V[j][1].toFixed(1)+'" '+st+'/>';
+  const lab=new Labeler(W,Ht);
+  [[0,1],[1,2],[0,4],[1,5],[2,6],[4,5],[5,6],[6,7],[7,4],[0,3],[3,2],[3,7],[0,6],[0,2]].forEach(e=>lab.seg(V[e[0]][0],V[e[0]][1],V[e[1]][0],V[e[1]][1],3));
+  let s='<svg viewBox="0 0 '+W+' '+Ht.toFixed(0)+'" width="'+W+'" role="img" aria-label="Box '+l+' by '+w+' by '+h+'">';
+  s+='<polygon points="'+[0,1,5,4].map(i=>V[i].join(',')).join(' ')+'" fill="#F3F5F9"/>';
+  s+='<polygon points="'+[1,2,6,5].map(i=>V[i].join(',')).join(' ')+'" fill="#E9EDF4"/>';
+  s+='<polygon points="'+[4,5,6,7].map(i=>V[i].join(',')).join(' ')+'" fill="#F7F8FB"/>';
+  const hid='stroke="'+C.line2+'" stroke-width="1.4" stroke-dasharray="5 4"';
+  s+=ln(0,3,hid)+ln(3,2,hid)+ln(3,7,hid);
+  let t='';
+  t+=lab.text((V[0][0]+V[1][0])/2,V[0][1],'l = '+l,{fs:13,cls:'mono',dirs:[[0,1]],dists:[8,14]});
+  t+=lab.text(V[0][0],(V[0][1]+V[4][1])/2,'h = '+h,{fs:13,cls:'mono',dirs:[[-1,0]],dists:[8,14,22]});
+  t+=lab.text((V[1][0]+V[2][0])/2,(V[1][1]+V[2][1])/2,'w = '+w,{fs:13,cls:'mono',dirs:[[1,0.4],[1,1],[1,0]],dists:[8,14,22]});
+  if(stage>=1){
+    s+=ln(0,2,'stroke="'+C.info+'" stroke-width="2.6"'+(stage>=2?'':' stroke-dasharray="7 5"'));
+    // floor-diagonal label sits in a callout to the right of the box
+    t+=lab.text(V[2][0],V[2][1],stage>=2?('d '+(P.dEx?'= '+P.d:'≈ '+t1(P.d))):('d² = '+P.d2),{fs:13,fill:C.info,cls:'mono',dirs:[[1,0.6],[1,1],[1,0]],dists:[10,16,24,34]});
+  }
+  if(stage>=3)s+='<polygon points="'+[0,2,6].map(i=>V[i].join(',')).join(' ')+'" fill="rgba(224,168,0,.14)"/>';
+  const vis='stroke="'+C.ink+'" stroke-width="2"';
+  s+=ln(0,1,vis)+ln(1,2,vis)+ln(0,4,vis)+ln(1,5,vis)+ln(2,6,vis)+ln(4,5,vis)+ln(5,6,vis)+ln(6,7,vis)+ln(7,4,vis);
+  s+=ln(0,6,'stroke="'+C.gold+'" stroke-width="'+(stage>=4?4.5:2.6)+'"'+(stage>=4?'':' stroke-dasharray="3 5"')+' stroke-linecap="round"');
+  t+=lab.text(V[6][0],V[6][1],stage>=4?('rod r '+(P.rEx?'= '+P.r:'≈ '+t1(P.r))):'rod r = ?',{fs:14,fw:700,cls:'mono',dirs:[[1,-1],[0,-1],[1,0],[-1,-1]],dists:[8,14,22]});
+  return s+t+'</svg>';
+}
+
+/* ============ game state ============ */
+let G=null,animId=0;
+const screens=['home','intro','play','end'];
+function show(id){screens.forEach(s=>$('#'+s).hidden=s!==id);window.scrollTo(0,0);}
+
+function newGame(L){
+  return {L,done:0,score:0,streak:0,best:0,first:0,steps:0,bonus:0,rounds:0,
+    battery:L.battery||0,bat0:L.battery||0,phase:'intro',A:null,offers:null,chosen:null,prob:null,trail:[],queue:null,ended:null};
+}
+function startLevel(id){
+  cancelAnimationFrame(animId);
+  G=newGame(LEVELS.find(l=>l.id===id));
+  showIntro();
+}
+
+/* ============ intros (one worked example each) ============ */
+function exampleRows(rows){return '<ul class="ex">'+rows.map(r=>'<li><span class="k">'+r[0]+'</span><span class="v">'+r[1]+'</span></li>').join('')+'</ul>';}
+function showIntro(){
+  const L=G.L;let art='',body='',vocab='';
+  if(L.id===1){
+    const A={x:1,y:2},B={x:4,y:6,name:'B'};
+    art=drawMap({W:360,grid:[0,7,0,7],A,offers:[B],chosen:B,legA:true,legB:true,a:3,b:4,flightP:1,cLabel:'c = 5',dronePos:B,labelA:true}).svg;
+    vocab='<b>Words to know.</b> The streets make a right angle, a square corner. The two sides that make the right angle are the <b>legs</b> (a and b). The straight flight is the <b>hypotenuse</b> (c). It is the longest side. It sits across from the right angle.';
+    body=exampleRows([['Across','|4 − 1| = 3<small>leg a = 3</small>'],['Up','|6 − 2| = 4<small>leg b = 4</small>'],['Square',S2(3)+' + '+S2(4)+' = 9 + 16'],['Add','c² = 25'],['Root','c = √25 = 5<small>The flight is 5 blocks. The streets take 3 + 4 = 7.</small>']]);
+  }else if(L.id===2){
+    const A={x:2,y:1},B={x:6,y:6,name:'B'};
+    art=drawMap({W:360,grid:[0,8,0,8],A,offers:[B],chosen:B,legA:true,legB:true,a:4,b:5,flightP:1,cLabel:'c ≈ 6.4',dronePos:B}).svg;
+    vocab='<b>New idea.</b> Most flights are not whole numbers. First estimate: find the two perfect squares around c². Then use a calculator and <b>round to the nearest tenth</b> (one decimal place).';
+    body=exampleRows([['Legs','a = 4, b = 5'],['Add squares','16 + 25 = 41<small>c² = 41</small>'],['Estimate','36 < 41 < 49<small>so √41 is between 6 and 7</small>'],['Root','√41 = 6.403… ≈ 6.4']]);
+  }else if(L.id===3){
+    const A={x:-3,y:2},B={x:4,y:-2,name:'B'};
+    art=drawMap({W:360,grid:[-5,5,-4,4],A,offers:[B],chosen:B,legA:true,legB:true,a:7,b:4,flightP:1,cLabel:'c ≈ 8.1',dronePos:B}).svg;
+    vocab='<b>New idea.</b> Now points sit in all four quadrants. A leg can cross an axis. Use |x₂ − x₁|: subtract, then drop any minus sign. Subtracting a negative means adding: 4 − (−3) = 4 + 3 = 7, not 1.';
+    body=exampleRows([['Across','|4 − (−3)| = 7<small>count 3 to reach 0, then 4 more</small>'],['Down','|−2 − 2| = |−4| = 4'],['Add squares','49 + 16 = 65'],['Root','√65 = 8.062… ≈ 8.1']]);
+  }else if(L.id===4){
+    const P=cornerProb([9,12,15],'ft');
+    art=drawCorner(P,360,true);
+    vocab='<b>The converse.</b> The converse runs the theorem backward. If the two shorter sides give a² + b² = c², the corner is a right angle. If the numbers do not match, it is not. Eyes are not enough. Some corners miss by less than one degree.';
+    body=exampleRows([['Order','9 < 12 < 15<small>the longest side is c = 15</small>'],['Shorter two',S2(9)+' + '+S2(12)+' = 81 + 144 = 225'],['Longest',S2(15)+' = 225'],['Compare','225 = 225<small>Right angle. Sides 6, 7, 10 give 85 and 100: not a right angle.</small>']]);
+  }else{
+    const P=boxProb(true);P.l=4;P.w=3;P.h=12;P.d2=25;P.d=5;P.dEx=true;P.r2=169;P.r=13;P.rEx=true;
+    art=drawBox(P,360,4);
+    vocab='<b>Two new jobs.</b> <b>Range limit:</b> you know the hypotenuse and one leg. To find a leg, <b>subtract</b>: b² = c² − a². <b>Box:</b> the longest rod goes corner to corner. Find the floor diagonal first. Then use it as a leg of a standing triangle.';
+    body=exampleRows([['Range','c = 13, a = 5<small>b² = 169 − 25 = 144, so b = 12</small>'],['Box floor','d² = '+S2(4)+' + '+S2(3)+' = 25, d = 5'],['Box rod','r² = 25 + '+S2(12)+' = 169'],['Root','r = √169 = 13']]);
+  }
+  $('#intro').innerHTML='<div class="card intro"><p class="eyebrow">Level '+L.id+' · Worked example</p><h2>'+L.name+'</h2>'+
+    '<div class="intro-grid"><div>'+art+'</div><div>'+body+'</div></div><p class="vocab">'+vocab+'</p>'+
+    (L.kind==='map'?'<p class="std" style="margin-top:12px">Battery: '+L.battery+' blocks for '+L.n+' deliveries. Each flight uses its length in battery.</p>':'')+
+    '<div class="acts"><button type="button" class="btn" id="goBtn">Start level '+L.id+'</button><button type="button" class="btn sec" id="introBack">All levels</button></div></div>';
+  show('intro');
+  $('#goBtn').addEventListener('click',beginPlay);
+  $('#introBack').addEventListener('click',goHome);
+  $('#goBtn').focus({preventScroll:true});
+}
+
+function beginPlay(){
+  const L=G.L;
+  show('play');
+  $('#hudLevel').textContent='Level '+L.id+' of 5';
+  $('#hudName').textContent=L.name;
+  $('#hudDelLabel').textContent=L.kind==='map'?'Deliveries':L.kind==='corner'?'Corners':'Jobs';
+  $('#hudBat').hidden=L.kind!=='map';
+  if(L.kind==='map'){
+    const [lo,hi]=L.pos;
+    let A;
+    if(L.id===3){do{A={x:rnd(lo,hi),y:rnd(lo,hi)};}while(!A.x||!A.y);}
+    else A={x:rnd(lo,Math.floor(hi/3)),y:rnd(lo,Math.floor(hi/3))};
+    G.A=A;newRound();
+  }else{
+    if(L.kind==='corner'){const unit=pick(['ft','in']);G.queue=genCorners(L.n).map(s=>()=>cornerProb(s,unit));}
+    else{const ex=[true,true].concat(shuffle([true,false,false,false]));G.queue=[0,1,2,3,4,5].map(i=>i%2===0?()=>rangeProb(ex[i]):()=>boxProb(ex[i]));}
+    nextItem();
+  }
+}
+function newRound(){
+  G.offers=genOffers(G.L,G.A);
+  G.chosen=null;G.prob=null;G.firstPick=null;
+  if(!G.offers){endLevel('stuck');return;}
+  const minC=Math.min(...G.offers.map(o=>o.c));
+  if(minC>G.battery+1e-9){endLevel('battery');return;}
+  G.phase='plan';render(true);
+}
+function nextItem(){
+  if(G.done>=G.L.n){endLevel('done');return;}
+  G.prob=G.queue[G.done]();G.phase='solve';render(true);
+}
+function pickOffer(i){
+  const o=G.offers[i];if(o.tooFar)return;
+  if(!G.firstPick)G.firstPick=o;
+  G.chosen=o;G.prob=flightProb(G.L,G.A,o);G.phase='solve';render(true);
+}
+
+/* ============ HUD ============ */
+function hud(){
+  const L=G.L;
+  $('#hudDel').textContent=G.done+' / '+L.n;
+  $('#hudStreak').textContent=G.streak;
+  $('#hudScore').textContent=G.score;
+  if(L.kind==='map'){
+    const pc=Math.max(0,G.battery/G.bat0*100);
+    $('#hudBatFill').style.width=pc.toFixed(1)+'%';
+    $('#hudBatNum').textContent=t1(Math.max(0,G.battery));
+    $('#hudBat').classList.toggle('low',pc<25);
+  }
+}
+
+/* ============ render ============ */
+function stageW(){const el=$('#stage');return Math.max(280,Math.floor(el.getBoundingClientRect().width||340));}
+let lastW=0;
+function renderStage(){
+  const W=stageW();lastW=W;const L=G.L,P=G.prob;let svg='',cap='';
+  if(L.kind==='map'){
+    const ph=G.phase;
+    if(ph==='plan'){
+      svg=drawMap({W,grid:L.grid,A:G.A,offers:G.offers,trail:G.trail,aria:'Drone at A. Three drop-offs.'}).svg;
+      cap='The drone is at A. Three drop-offs wait: '+G.offers.map(o=>o.name+' '+pt(o.x,o.y)).join(', ')+'.';
+    }else{
+      const done=P.steps.filter(s=>s.done).length,all=done===P.steps.length;
+      const o={W,grid:L.grid,A:P.A,offers:G.offers,chosen:G.chosen,trail:G.trail,legA:P.steps[0].done,legB:P.steps[1].done,a:P.a,b:P.b,showQ:true,
+        cLabel:all?('c '+(P.exact?'= '+P.c:'≈ '+t1(P.c))):'c = ?'};
+      if(ph==='fly'){o.flightP=0;}
+      if(ph==='result'||ph==='toofar'){o.flightP=ph==='result'?1:null;o.dronePos=ph==='result'?G.chosen:P.A;}
+      if(ph==='result'){o.labelAll=true;o.reveal=G.offers.filter(x=>x!==G.chosen).map(x=>({x:x.x,y:x.y,label:x.name+' '+(isSq(x.c2)?'= '+x.c:'≈ '+t1(x.c))}));}
+      svg=drawMap(o).svg;
+      cap='Flight from A '+pt(P.A.x,P.A.y)+' to '+G.chosen.name+' '+pt(G.chosen.x,G.chosen.y)+'. The dashed blue legs follow the streets. The gold line is the straight flight.';
+    }
+  }else if(P.type==='corner'){
+    svg=drawCorner(P,W,P.decided);
+    cap='A builder joined two boards. The sides are '+P.shown.join(', ')+' '+P.unit+'. Drawn to scale. Can you tell by looking? Test it with numbers.';
+  }else if(P.type==='range'){
+    svg=drawRange(P,W,P.steps.every(s=>s.done));
+    cap='The drone can fly '+P.c+' blocks in a straight line. It must end up '+P.a+' blocks east. How far north can it reach?';
+  }else{
+    const st=P.steps;const stage=st[3].done?4:st[2].done?3:st[1].done?2:st[0].done?1:0;
+    svg=drawBox(P,W,stage);
+    cap='A warehouse box is '+P.l+' × '+P.w+' × '+P.h+' blocks. What is the longest rod that fits, corner to corner?';
+  }
+  $('#stage').innerHTML=svg;$('#cap').textContent=cap;
+}
+
+function stepHTML(st,i,P){
+  const state=st.done?'done':i===P.si&&G.phase==='solve'?'active':i<P.si?'done':'locked';
+  let h='<li class="step '+state+'" data-i="'+i+'">';
+  if(state==='locked'){h+='<div class="q">'+st.pre+'</div></li>';return h;}
+  h+='<div class="q">'+st.label+(st.done&&st.kind==='num'?'<span class="done-v">'+esc(st.given)+'</span>':'')+(st.done&&st.kind==='choice'?'<span class="done-v">'+esc(st.given)+'</span>':'')+'</div>';
+  if(st.note&&!st.done)h+='<p class="note">'+st.note+'</p>';
+  if(state==='active'){
+    if(st.kind==='num'){
+      h+='<div class="ans"><label for="in'+i+'">'+st.sym+'</label><input id="in'+i+'" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">'+
+        '<button type="button" class="btn" data-act="check" data-i="'+i+'">Check</button><button type="button" class="hintbtn" data-act="hint" data-i="'+i+'" aria-expanded="'+st.hint+'">Hint</button></div>';
+    }else{
+      h+='<div class="choices" role="group" aria-label="Choices">'+st.opts.map((o,k)=>'<button type="button" class="choice" data-act="opt" data-i="'+i+'" data-k="'+k+'">'+o.t+'</button>').join('')+
+        '<button type="button" class="hintbtn" data-act="hint" data-i="'+i+'" aria-expanded="'+st.hint+'">Hint</button></div>';
+    }
+    if(st.hint)h+='<div class="hint">'+st.hint_t()+'</div>';
+  }
+  if(st.fb)h+='<div class="fb '+st.fbt+'">'+st.fb+'</div>';
+  h+='</li>';
+  return h;
+}
+
+function renderWork(){
+  const L=G.L,P=G.prob,ph=G.phase;let h='';
+  if(L.kind==='map'&&ph==='plan'){
+    const left=G.L.n-G.done;
+    h+='<h3>Delivery '+(G.done+1)+' of '+L.n+': pick a drop-off</h3>';
+    h+='<p class="prompt">Estimate first. Which drop-off is the <b>shortest flight</b> from A? Pick it to save battery. If your pick is the shortest, you earn a +5 bonus.</p>';
+    h+='<div class="offers">'+G.offers.map((o,i)=>'<button type="button" class="offer" data-act="offer" data-k="'+i+'"'+(o.tooFar?' disabled':'')+'><span class="pin">'+o.name+'</span><span class="co">'+pt(o.x,o.y)+'</span>'+(o.tooFar?'<span class="note">Too far: '+(isSq(o.c2)?o.c:t1(o.c))+' blocks</span>':'')+'</button>').join('')+'</div>';
+    h+='<p class="note" style="margin-top:12px;color:var(--muted);font-size:14px">Tip: short legs make a short flight. Battery left: '+t1(G.battery)+' blocks for '+left+' more deliver'+(left===1?'y':'ies')+'.</p>';
+  }else{
+    // result box first
+    if(ph==='result'||ph==='toofar')h+=resultHTML();
+    if(ph==='fly')h+='<p class="flying" role="status">Flying the shortcut…</p>';
+    if(P){
+      h+=headHTML();
+      h+='<ol class="steps">'+P.steps.map((s,i)=>stepHTML(s,i,P)).join('')+'</ol>';
+    }
+  }
+  $('#work').innerHTML=h;
+}
+function headHTML(){
+  const P=G.prob,L=G.L;
+  if(P.type==='flight')return '<h3>Fly from A to '+G.chosen.name+'</h3><div class="given"><span class="chip">A <b>'+pt(P.A.x,P.A.y)+'</b></span><span class="chip">'+G.chosen.name+' <b>'+pt(G.chosen.x,G.chosen.y)+'</b></span></div>';
+  if(P.type==='corner')return '<h3>Corner '+(G.done+1)+' of '+L.n+'</h3><p class="prompt">Is this corner a right angle? Sides: '+P.shown.map(v=>N(v)).join(', ')+' '+P.unit+'.</p>';
+  if(P.type==='range')return '<h3>Job '+(G.done+1)+' of '+L.n+': range limit</h3><p class="prompt">The battery allows a straight flight of '+N(P.c)+' blocks. The drop-off is '+N(P.a)+' blocks east. How far north can it be? The flight is the hypotenuse.</p>';
+  return '<h3>Job '+(G.done+1)+' of '+L.n+': longest rod</h3><p class="prompt">The box is '+N(P.l)+' long, '+N(P.w)+' wide and '+N(P.h)+' high. Find the longest rod that fits, corner to corner.</p>';
+}
+function resultHTML(){
+  const P=G.prob,L=G.L;
+  if(G.phase==='toofar'){
+    return '<div class="result warn" role="status"><h3>Not enough battery</h3><p>The flight to '+G.chosen.name+' is '+(P.exact?P.c:'about '+t1(P.c))+' blocks. '+(t1(P.c)===t1(G.battery)?'That is just a little more than the battery has left.':'The battery has '+t1(G.battery)+' blocks left.')+' Your math still counts. Pick a shorter delivery.</p><div class="acts"><button type="button" class="btn" data-act="replan">Pick another drop-off</button></div></div>';
+  }
+  if(L.kind==='map'){
+    const shortest=G.offers.reduce((m,o)=>o.c<m.c?o:m,G.offers[0]);
+    const est=G.firstPick===shortest;
+    const last=G.done>=L.n;
+    let h='<div class="result" role="status"><h3>Delivered to '+G.chosen.name+'</h3><p>The flight was '+(P.exact?P.c:'about '+t1(P.c))+' blocks. The streets would take '+(P.a+P.b)+'. Battery left: '+t1(G.battery)+' blocks.</p>';
+    h+='<p>'+(est?'<b>Estimate bonus +5.</b> '+shortest.name+' was the shortest flight.':'Estimate check: '+shortest.name+' was the shortest flight (legs '+shortest.dx+' and '+shortest.dy+'). No bonus this time.')+'</p>';
+    h+='<p class="note" style="color:var(--muted);font-size:14px">All three flights: '+G.offers.map(o=>o.name+' '+(isSq(o.c2)?'= '+o.c:'≈ '+t1(o.c))).join(' · ')+'</p>';
+    h+='<div class="acts"><button type="button" class="btn" data-act="next">'+(last?'See results':'Next delivery')+'</button></div></div>';
+    return h;
+  }
+  let msg='';
+  if(P.type==='corner')msg=P.right?('Right angle. '+P.sum+' = '+(P.c*P.c)+', so the corner is exactly 90°.'):('Not a right angle. '+P.sum+' ≠ '+(P.c*P.c)+'. The corner is about '+(Math.abs(P.ang-90)<0.05?P.ang.toFixed(2):P.ang.toFixed(1))+'°.'+(Math.abs(P.ang-90)<2?' Close enough to fool your eyes, but not square.':''));
+  else if(P.type==='range')msg='The drop-off can be '+(P.exact?P.b:'about '+t1(P.b))+' blocks north.';
+  else msg='The longest rod is '+(P.rEx?P.r:'about '+t1(P.r))+' blocks. The path along the edges would be '+(P.l+P.w+P.h)+'.';
+  return '<div class="result" role="status"><h3>'+(P.type==='corner'?'Inspection done':'Job done')+'</h3><p>'+msg+'</p><div class="acts"><button type="button" class="btn" data-act="next">'+(G.done>=L.n?'See results':'Next')+'</button></div></div>';
+}
+
+function render(focus){
+  hud();renderStage();renderWork();
+  if(focus)focusActive();
+}
+function focusActive(){
+  const P=G.prob;
+  let el=null;
+  if(G.phase==='solve'&&P){el=$('#in'+P.si)||document.querySelector('.step.active .choice');}
+  else if(G.phase==='plan')el=document.querySelector('.offer:not([disabled])');
+  else el=document.querySelector('.result .btn');
+  if(el){el.focus({preventScroll:true});
+    const r=el.getBoundingClientRect();
+    if(r.bottom>window.innerHeight-20||r.top<0)el.scrollIntoView({block:'center',behavior:REDUCED?'auto':'smooth'});}
+}
+
+/* ============ checking ============ */
+function record(st,ok){
+  if(st.tries===0){
+    G.steps++;
+    if(ok){G.first++;G.streak++;G.best=Math.max(G.best,G.streak);G.score+=Math.min(G.streak,5);}
+    else G.streak=0;
+  }else if(!ok)G.streak=0;
+  st.tries++;
+}
+function checkNum(i){
+  const P=G.prob,st=P.steps[i],inp=$('#in'+i),raw=inp?inp.value:'';
+  const v=parseNum(raw);
+  if(!isFinite(v)){st.fb='Type a number, like 6 or 6.4.';st.fbt='info';renderWork();focusActive();return;}
+  const ok=st.tol?Math.abs(v-st.ans)<=st.tol+1e-9:Math.abs(v-st.ans)<1e-9;
+  record(st,ok);
+  if(ok){
+    st.done=true;st.given=raw.trim();st.fb=st.ok(v);st.fbt='ok';st.hint=false;P.si++;
+    afterStep();
+  }else{
+    st.fb=st.mis(v)||st.gen;st.fbt='err';
+    hud();renderWork();
+    const inp2=$('#in'+i);if(inp2){inp2.value=raw;inp2.select();}
+    focusActive();
+  }
+}
+function checkOpt(i,k){
+  const P=G.prob,st=P.steps[i],o=st.opts[k];
+  record(st,o.ok);
+  st.fb=o.msg;st.fbt=o.ok?'ok':'err';
+  if(o.ok){st.done=true;st.given=o.t;st.hint=false;P.si++;if(P.type==='corner'&&i===P.steps.length-1)P.decided=true;afterStep();}
+  else{hud();renderWork();focusActive();}
+}
+function afterStep(){
+  const P=G.prob;
+  if(P.si<P.steps.length){render(true);return;}
+  // problem complete
+  if(G.L.kind==='map'){
+    if(P.c>G.battery+1e-9){G.chosen.tooFar=true;G.phase='toofar';render(true);return;}
+    G.phase='fly';render(false);flyAnim();
+  }else{
+    G.done++;G.score+=10;G.phase='result';render(true);
+  }
+}
+function flyAnim(){
+  const P=G.prob,B=G.chosen;
+  const fin=()=>{
+    G.battery-=P.c;G.done++;G.score+=10;
+    const shortest=G.offers.reduce((m,o)=>o.c<m.c?o:m,G.offers[0]);
+    if(G.firstPick===shortest){G.bonus++;G.score+=5;}
+    G.rounds++;
+    G.phase='result';render(true);
+  };
+  const line=$('#flightLine'),dr=$('#droneG'),lab=$('#cLab');
+  if(REDUCED||!line||!dr){fin();return;}
+  const x1=+line.getAttribute('x1'),y1=+line.getAttribute('y1');
+  const m=drawMapCoords(B);const x2=m[0],y2=m[1];
+  const sc=dr.getAttribute('transform').match(/scale\(([^)]+)\)/);const scale=sc?sc[1]:1;
+  const t0=performance.now(),dur=1300;
+  const tick=now=>{
+    let p=Math.min(1,(now-t0)/dur);const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+    const x=x1+(x2-x1)*e,y=y1+(y2-y1)*e;
+    line.setAttribute('x2',x.toFixed(1));line.setAttribute('y2',y.toFixed(1));
+    dr.setAttribute('transform','translate('+x.toFixed(1)+','+y.toFixed(1)+') scale('+scale+')');
+    if(p>=1){if(lab)lab.setAttribute('opacity','1');setTimeout(fin,350);return;}
+    animId=requestAnimationFrame(tick);
+  };
+  animId=requestAnimationFrame(tick);
+}
+function drawMapCoords(p){const g=mapGeom(G.L.grid,lastW);return [g.X(p.x),g.Y(p.y)];}
+
+/* ============ events ============ */
+$('#work').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||!G)return;
+  const act=b.dataset.act,i=+b.dataset.i;
+  if(act==='check')checkNum(i);
+  else if(act==='opt')checkOpt(i,+b.dataset.k);
+  else if(act==='hint'){const st=G.prob.steps[i];st.hint=!st.hint;renderWork();const nb=document.querySelector('[data-act=hint][data-i="'+i+'"]');if(nb)nb.focus();}
+  else if(act==='offer')pickOffer(+b.dataset.k);
+  else if(act==='replan'){G.phase='plan';G.chosen=null;G.prob=null;render(true);}
+  else if(act==='next'){
+    if(G.L.kind==='map'){
+      if(G.phase==='result'){G.trail.push([{x:G.A.x,y:G.A.y},{x:G.chosen.x,y:G.chosen.y}]);G.A={x:G.chosen.x,y:G.chosen.y};}
+      if(G.done>=G.L.n)endLevel('done');else newRound();
+    }else nextItem();
+  }
+});
+$('#work').addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();checkNum(+e.target.id.slice(2));}
+});
+$('#quitBtn').addEventListener('click',goHome);
+let rz=null;
+window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
+  if(G&&!$('#play').hidden&&G.phase!=='fly'&&stageW()!==lastW)renderStage();
+  if(!$('#home').hidden)drawHero();
+},150);});
+
+/* ============ end screen ============ */
+function endLevel(reason){
+  cancelAnimationFrame(animId);
+  const L=G.L,acc=G.steps?Math.round(G.first/G.steps*100):0;
+  saveBest(L.id,G.score);
+  const next=LEVELS.find(l=>l.id===L.id+1);
+  let msg;
+  if(acc>=90)msg='Sharp work. You found every shortcut with care.';
+  else if(acc>=70)msg='Strong work. You caught your slips and fixed them.';
+  else if(acc>=50)msg='Good effort. Each fix makes the next problem easier.';
+  else msg='You kept going, and that is how this gets easier. Try the level again.';
+  let head='Level complete';
+  if(reason==='battery')head='Battery empty';
+  const what=L.kind==='map'?'Deliveries made':L.kind==='corner'?'Corners checked':'Jobs done';
+  let note='';
+  if(reason==='battery')note='<p>The battery is too low for any drop-off. Next time, pick the shortest flights first.</p>';
+  $('#end').innerHTML='<div class="card endc"><p class="eyebrow">Level '+L.id+' · '+L.name+'</p><h2>'+head+'</h2>'+note+
+    '<dl><dt>'+what+'</dt><dd>'+G.done+' of '+L.n+'</dd><dt>Accuracy (right on the first try)</dt><dd>'+acc+'%</dd><dt>Best streak</dt><dd>'+G.best+'</dd>'+
+    (L.kind==='map'?'<dt>Estimate bonuses</dt><dd>'+G.bonus+' of '+G.rounds+'</dd><dt>Battery left</dt><dd>'+t1(Math.max(0,G.battery))+'</dd>':'')+
+    '<dt>Score</dt><dd>'+G.score+'</dd></dl><p>'+msg+'</p>'+
+    '<div class="acts"><button type="button" class="btn sec" id="againBtn">Play again</button>'+(next?'<button type="button" class="btn" id="nextBtn">Next level</button>':'')+'<button type="button" class="btn sec" id="allBtn">All levels</button></div></div>';
+  show('end');
+  $('#againBtn').addEventListener('click',()=>startLevel(L.id));
+  if(next)$('#nextBtn').addEventListener('click',()=>startLevel(next.id));
+  $('#allBtn').addEventListener('click',goHome);
+  ($('#nextBtn')||$('#againBtn')).focus({preventScroll:true});
+}
+
+/* ============ home ============ */
+function goHome(){cancelAnimationFrame(animId);G=null;renderHome();show('home');}
+function drawHero(){
+  const el=$('#heroArt');if(!el)return;
+  const W=Math.max(280,Math.min(520,Math.floor(el.getBoundingClientRect().width-24)||340));
+  const pairs=[[3,4],[6,8],[5,12],[4,3],[8,6]];
+  const p=pick(pairs.filter(q=>q[0]<=9&&q[1]<=9));
+  const A={x:rnd(1,2),y:rnd(1,2)},B={x:A.x+p[0],y:A.y+p[1],name:'B'};
+  const c=Math.sqrt(p[0]*p[0]+p[1]*p[1]);
+  el.innerHTML=drawMap({W,grid:[0,11,0,11],A,offers:[B],chosen:B,legA:true,legB:true,a:p[0],b:p[1],flightP:1,cLabel:'c = '+c,dronePos:B,aria:'Example flight'}).svg;
+}
+function renderHome(){
+  $('#levels').innerHTML=LEVELS.map(L=>'<div class="card lv"><span class="tag">Level '+L.id+' · '+L.std+'</span><h3>'+L.name+'</h3><p>'+L.blurb+'</p><div class="row"><span class="best">'+(BEST[L.id]!=null?'Best score <b>'+BEST[L.id]+'</b>':'Not played yet')+'</span><button type="button" class="btn" data-lv="'+L.id+'">Play</button></div></div>').join('');
+  drawHero();
+}
+$('#levels').addEventListener('click',e=>{const b=e.target.closest('button[data-lv]');if(b)startLevel(+b.dataset.lv);});
+
+renderHome();
+window.__ds={get G(){return G;},parseNum,genOffers,LEVELS,flightProb,cornerProb,rangeProb,boxProb,genCorners};
+})();
+</script>
+</body>
+</html>
