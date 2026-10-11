@@ -59,6 +59,7 @@
   /* synthwave horizon grid, sits at bottom of hub screen only */
   .horizon{
     position: absolute; left:0; right:0; bottom:0; height: 42%;
+    z-index: 0; pointer-events: none;   /* decoration only: never blocks the mission cards */
     background: linear-gradient(180deg, transparent 0%, rgba(255,46,151,0.10) 100%);
     overflow: hidden;
     -webkit-mask-image: linear-gradient(180deg, transparent, black 25%);
@@ -98,7 +99,9 @@
   .screen.active{ display: flex; }
 
   /* ---------- HUB ---------- */
-  #hub{ justify-content: flex-start; padding: 40px 20px 20px; }
+  #hub{ justify-content: flex-start; padding: 40px 20px 240px; }
+  /* hub content sits above the horizon art; extra bottom padding keeps the sun below the cards */
+  #hub > .hub-title, #hub > .hub-subtitle, #hub > .mission-grid, #hub > .rocket-dock{ position: relative; z-index: 1; }
   .hub-title{
     font-size: clamp(20px, 4vw, 34px);
     color: var(--neon-cyan);

@@ -1040,11 +1040,11 @@ h3.sub{
 <section class="topic">
   <h2><span class="num">B</span> Estimate Each Square Root (nearest tenth)</h2>
   <p>Find the perfect squares just below and just above, then estimate. A leading − just flips the sign.</p>
-  <table class="rules-table" style="max-width:420px">
+  <table class="rules-table" id="estB" style="max-width:420px">
     <tr><th>#</th><th>Estimate</th></tr>
     <tr><td style="text-align:left">1. &nbsp;√5</td><td>≈ <span class="blank" data-ans="2.2" onclick="rb(this)">?</span></td></tr>
-<tr><td style="text-align:left">2. &nbsp;√10</td><td>≈ <span class="blank" data-ans="3.2" onclick="rb(this)">?</span></td></tr>
-<tr><td style="text-align:left">3. &nbsp;√20</td><td>≈ <span class="blank" data-ans="4.5" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">2. &nbsp;√10</td><td>≈ <span class="blank" data-ans="3.1 or 3.2" onclick="rb(this)">?</span></td></tr>
+<tr><td style="text-align:left">3. &nbsp;√20</td><td>≈ <span class="blank" data-ans="4.4 or 4.5" onclick="rb(this)">?</span></td></tr>
 <tr><td style="text-align:left">4. &nbsp;√30</td><td>≈ <span class="blank" data-ans="5.5" onclick="rb(this)">?</span></td></tr>
 <tr><td style="text-align:left">5. &nbsp;√50</td><td>≈ <span class="blank" data-ans="7.1" onclick="rb(this)">?</span></td></tr>
 <tr><td style="text-align:left">6. &nbsp;√8</td><td>≈ <span class="blank" data-ans="2.8" onclick="rb(this)">?</span></td></tr>
@@ -1055,6 +1055,7 @@ h3.sub{
 <tr><td style="text-align:left">11. &nbsp;−√50</td><td>≈ <span class="blank" data-ans="−7.1" onclick="rb(this)">?</span></td></tr>
 
   </table>
+  <div class="note" id="estB-note" style="display:none"><strong>💡 TWO ANSWERS CAN BE RIGHT:</strong> The estimating algorithm from Section 4 and a calculator can land on different tenths. On #2 the algorithm gives 3 + 1/7 ≈ 3.1, and a calculator gives 3.16 → 3.2. On #3 the algorithm gives 4 + 4/9 ≈ 4.4, and a calculator gives 4.47 → 4.5. Both answers are correct.</div>
 </section>
 
 <section class="topic">
@@ -1175,11 +1176,17 @@ function formatNum(n){
 function rb(el){
   el.classList.add('revealed');
   if(el.dataset.ans!==undefined) el.textContent=el.dataset.ans;
+  showEstNote(el);
+}
+// Part 2 B: once an answer is shown, explain why #2 and #3 accept two answers.
+function showEstNote(el){
+  if(el && el.closest && el.closest('#estB')){const n=document.getElementById('estB-note'); if(n) n.style.display='';}
 }
 function rbAll(id){
   document.querySelectorAll('#'+id+' .blank').forEach(b=>{
     b.classList.add('revealed');
     if(b.dataset.ans!==undefined) b.textContent=b.dataset.ans;
+    showEstNote(b);
   });
 }
 // ── Short-answer / error-analysis reveal ──────────

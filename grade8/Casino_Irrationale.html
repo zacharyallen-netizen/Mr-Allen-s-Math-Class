@@ -113,7 +113,7 @@
   .face.front .pip{position:absolute;font-family:'Special Elite',monospace;font-size:11px;letter-spacing:.1em;color:var(--gold-dp)}
   .face.front .pip.tl{top:10px;left:12px}
   .face.front .pip.br{bottom:10px;right:12px;transform:rotate(180deg)}
-  .expr{font-family:'Cinzel',serif;font-weight:700;color:#16130d;font-size:40px;text-align:center;line-height:1.1}
+  .expr{font-family:'Cinzel',serif;font-weight:700;color:#16130d;font-size:40px;text-align:center;line-height:1.1;max-width:100%}
 
   /* math typography */
   .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1;margin:0 .06em;font-size:.78em}
@@ -383,9 +383,25 @@
     sDeal();
     setTimeout(function(){
       $('expr').innerHTML=c.h;
+      fitExpr();
       card.classList.add('flipped');
     },180);
   }
+
+  // Shrink a long expression (like 0.1010010001…) so it always fits on the card face
+  function fitExpr(){
+    var el=$('expr'); if(!el) return;
+    el.style.fontSize='';
+    var face=el.parentElement, cs=getComputedStyle(face);
+    var room=face.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    var w=el.scrollWidth;
+    if(room>0 && w>room){
+      var fs=parseFloat(getComputedStyle(el).fontSize);
+      el.style.fontSize=Math.max(16,Math.floor(fs*room/w))+'px';
+    }
+  }
+  window.addEventListener('resize',fitExpr);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(fitExpr);
 
   function enableSpots(on){
     $('spotRat').disabled=!on; $('spotIrr').disabled=!on;

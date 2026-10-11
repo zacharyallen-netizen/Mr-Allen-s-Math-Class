@@ -87,7 +87,7 @@ header p{color:#b8c8e8;font-size:.9rem;margin-top:.5rem;max-width:600px;margin-l
 </head>
 <body>
 <script src="../site-bar.js"></script>
-<nav class="sb-local" aria-label="On this page"><a href="unit6.html">← Back to Unit 6</a></nav>
+<nav class="sb-local" aria-label="On this page"><a href="unit6.html">← Unit 6</a></nav>
 
 <style>
 .back-to-unit6{position:fixed;top:12px;left:12px;z-index:9999;display:inline-block;padding:8px 14px;background:linear-gradient(135deg,#1E2D4F,#0d1f3f);color:#FFC107;font-family:'Arvo',Georgia,serif;font-weight:bold;font-size:13px;border-radius:8px;border:2px solid #FFC107;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:all .2s}
@@ -129,7 +129,7 @@ header p{color:#b8c8e8;font-size:.9rem;margin-top:.5rem;max-width:600px;margin-l
   <h2>🔍 Detective Clues</h2>
   <div class="locked-msg" id="lockedMsg"><strong>🔒 Graph all 8 lines</strong> to unlock the detective clues!</div>
   <div id="cluesList" style="display:none">
-    <p>Use your graph above to crack each case. Type the letter(s) of the matching line(s). For multiple lines, separate with commas (e.g. "A, C").</p>
+    <p>Use your graph above to crack each case. Type the letter(s) of the matching line(s). For more than one line, use commas or spaces (e.g. "A, C" or "A C").</p>
     <div id="clues"></div>
     <div class="scoreboard">
       <h3>🏆 Cases Solved</h3>
@@ -364,7 +364,7 @@ CLUES.forEach(function(clue) {
   var div = document.createElement('div');
   div.className = 'clue';
   div.id = 'clue-' + clue.id;
-  var ph = clue.type === 'point' ? 'x, y' : 'Letter(s)';
+  var ph = clue.type === 'point' ? 'x, y' : 'e.g. C, H';
   div.innerHTML = '<div><span class="clue-num">' + clue.id + '</span><span class="clue-text">' + clue.text + '</span></div>' +
     '<div class="input-row"><input type="text" id="ans-' + clue.id + '" placeholder="' + ph + '">' +
     '<button class="btn btn-navy btn-sm" onclick="checkClue(' + clue.id + ')">Check</button>' +
@@ -384,10 +384,18 @@ function checkClue(id) {
   var el = document.getElementById('clue-'+id);
   var correct = false;
   if (clue.type === 'point') {
-    var clean = input.replace(/[() ]/g,'');
+    var clean = input.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[()\s]/g,'');
     correct = clean === clue.answer;
   } else {
-    var norm = input.toUpperCase().replace(/[^A-H,]/g,'').split(',').map(function(s){return s.trim();}).filter(Boolean).sort().join(',');
+    // Accept "A, D", "A D", "AD", "D,A", "A and D", "Lines A & D" ...
+    var words = input.toUpperCase().match(/[A-Z]+/g) || [];
+    var letters = [], bad = false;
+    words.forEach(function(w){
+      if (w === 'AND' || w === 'LINE' || w === 'LINES') return;
+      if (/^[A-H]+$/.test(w)) letters = letters.concat(w.split(''));
+      else bad = true;
+    });
+    var norm = bad ? '' : letters.filter(function(l,i){return letters.indexOf(l)===i;}).sort().join(',');
     correct = norm === clue.answer.split(',').sort().join(',');
   }
   if (correct) {

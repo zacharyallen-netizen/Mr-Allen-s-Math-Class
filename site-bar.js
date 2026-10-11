@@ -109,10 +109,14 @@
 
   // Some pages pad, center or flex their <body>. Stretch the bar (and the slim
   // row of page links, if any) to the full width of the window and pull it up to
-  // the very top, whatever the page's own layout is.
+  // the very top, whatever the page's own layout is. The top space the page had
+  // (its body padding and margin) is then given back UNDER the bar / slim row,
+  // so the page's first line keeps its own breathing room.
+  function px(v) { return parseFloat(v) || 0; }
   function fit() {
     var w = document.documentElement.clientWidth;
     var local = document.querySelector("body > .sb-local");
+    var last = local || host;
     [host, local].forEach(function (el, i) {
       if (!el) return;
       el.style.alignSelf = "stretch"; el.style.flex = "none"; el.style.boxSizing = "border-box";
@@ -120,7 +124,25 @@
       if (i === 0) el.style.marginTop = "0px";
       var r = el.getBoundingClientRect();
       el.style.marginLeft = -(r.left + window.scrollX) + "px";
-      if (i === 0) el.style.marginTop = -(r.top + window.scrollY) + "px";
+      if (i === 0) {
+        var off = Math.max(0, r.top + window.scrollY);
+        el.style.marginTop = -off + "px";
+        // What the page itself put above its content (not any centering offset).
+        var b = getComputedStyle(document.body), h = getComputedStyle(document.documentElement);
+        var pad = px(b.paddingTop) + px(b.borderTopWidth) + px(h.paddingTop) + px(h.borderTopWidth);
+        var mar = px(b.marginTop) + px(h.marginTop);
+        pad = Math.min(pad, off); mar = Math.min(mar, off - pad);
+        host.style.paddingBottom = "0px"; host.style.marginBottom = "0px";
+        if (local) local.style.marginBottom = "0px";
+        if (last === host) {
+          // padding keeps the page's own padding exactly; margin still collapses
+          // with the first element's margin, as the body margin used to.
+          host.style.paddingBottom = pad + "px";
+          host.style.marginBottom = mar + "px";
+        } else {
+          last.style.marginBottom = (pad + mar) + "px";
+        }
+      }
     });
   }
   function mount() {

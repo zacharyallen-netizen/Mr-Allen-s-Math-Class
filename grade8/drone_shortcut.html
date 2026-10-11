@@ -260,13 +260,15 @@ function parseNum(raw){
 
 /* ============ levels ============ */
 const LEVELS=[
-  {id:1,kind:'map',name:'Whole-Block Shortcuts',blurb:'Pythagorean triples in Quadrant I. Every flight is a whole number.',grid:[0,16,0,16],pos:[0,16],n:5,battery:40,std:'NC.8.G.6 · NC.8.G.8'},
-  {id:2,kind:'map',name:'Between the Squares',blurb:'Flights that are not whole numbers. Estimate, then round to the nearest tenth.',grid:[0,12,0,12],pos:[0,12],n:5,battery:32.5,std:'NC.8.G.8'},
+  {id:1,kind:'map',name:'Whole-Block Shortcuts',blurb:'Pythagorean triples in Quadrant I. Every flight is a whole number.',grid:[0,20,0,20],pos:[0,20],n:5,battery:66,
+    plan:[5,10,13,15,17],std:'NC.8.G.6 · NC.8.G.8'},
+  {id:2,kind:'map',name:'Between the Squares',blurb:'Flights that are not whole numbers. Estimate, then round to the nearest tenth.',grid:[0,12,0,12],pos:[0,12],n:5,battery:36,
+    plan:[13,20,29,41,52].map(Math.sqrt),std:'NC.8.G.8'},
   {id:3,kind:'map',name:'Four Quadrants',blurb:'Drop-offs across the axes. Count carefully with |x₂ − x₁|.',grid:[-8,8,-8,8],pos:[-6,6],n:5,battery:42.5,std:'NC.8.G.8'},
   {id:4,kind:'corner',name:'Corner Inspector',blurb:'A builder needs square corners. Use the converse to test each one.',n:5,std:'NC.8.G.6'},
   {id:5,kind:'mix',name:'Range Limit and 3D',blurb:'Find a missing leg. Then find the longest rod that fits in a box.',n:6,std:'NC.8.G.7'}
 ];
-const TRIPLE_LEGS=new Set(['3,4','4,3','6,8','8,6','5,12','12,5','8,15','15,8','9,12','12,9']);
+const TRIPLE_LEGS=new Set(['3,4','4,3','6,8','8,6','5,12','12,5','8,15','15,8','9,12','12,9','12,16','16,12']);
 
 /* ============ best scores (optional) ============ */
 let BEST={};
@@ -295,10 +297,40 @@ function genOffers(L,A){
   const cand=candidates(L,A);
   if(!cand.length)return null;
   const minC=Math.min(...cand.map(o=>o.c));
-  const cap=L.id===3?Math.max(5.5,minC+0.6):5.0001;
   const far=(o,list,g)=>list.every(p=>Math.hypot(o.x-p.x,o.y-p.y)>=g);
   const name=list=>shuffle(list).map((o,i)=>Object.assign({},o,{name:'BCD'[i],tooFar:false}));
-  const sPool=cand.filter(o=>o.c<=cap);
+  let sPool;
+  if(L.plan){
+    // Levels 1-2: each round aims the SHORTEST drop-off at one size from the level's plan, so a
+    // student who plays well meets many different triangles. The shortest flight is never longer
+    // than its planned size, so picking the shortest every time always finishes the level.
+    const g=G&&G.L===L?G:null,rem=g&&g.plan&&g.plan.length?g.plan:L.plan.slice();
+    const win=L.id===2?0.6:1e-9;
+    const viableAt=(cs)=>cs.filter(o=>cs.some(p=>p.c>=o.c+1.2&&far(p,[o],2)));
+    const fitsIn=(vs,t)=>vs.filter(o=>o.c<=t+1e-9&&o.c>=t-win);
+    const viable=viableAt(cand);
+    const ready=rem.filter(t=>fitsIn(viable,t).length);
+    let T;
+    if(ready.length){
+      // the largest planned size fits in the fewest places, so use it whenever it is possible
+      const big=Math.max(...rem);
+      T=ready.includes(big)&&Math.random()<0.75?big:pick(ready);sPool=fitsIn(viable,T);
+    }
+    else{T=Math.max(...rem);const below=viable.filter(o=>o.c<=T+1e-9);const top=Math.max(...below.map(o=>o.c));sPool=below.filter(o=>o.c>=top-1e-9);}
+    if(g&&g.plan){
+      const i=g.plan.indexOf(T);if(i>=0)g.plan.splice(i,1);
+      // look ahead: prefer drop-offs from which the next planned sizes are still possible
+      if(g.plan.length&&sPool.length>1){
+        const big=Math.max(...g.plan);
+        const score=o=>{const v=viableAt(candidates(L,o));return new Set(g.plan.filter(t=>fitsIn(v,t).length)).size+(fitsIn(v,big).length?10:0);};
+        const sc=sPool.map(score),best=Math.max(...sc);
+        sPool=sPool.filter((o,k)=>sc[k]===best);
+      }
+    }
+  }else{
+    const cap=Math.max(5.5,minC+0.6);
+    sPool=cand.filter(o=>o.c<=cap);
+  }
   for(let t=0;t<400;t++){
     const gap=t<200?3:2;
     const S=pick(sPool.length?sPool:cand.slice().sort((a,b)=>a.c-b.c).slice(0,1));
@@ -747,7 +779,7 @@ function show(id){screens.forEach(s=>$('#'+s).hidden=s!==id);window.scrollTo(0,0
 
 function newGame(L){
   return {L,done:0,score:0,streak:0,best:0,first:0,steps:0,bonus:0,rounds:0,
-    battery:L.battery||0,bat0:L.battery||0,phase:'intro',A:null,offers:null,chosen:null,prob:null,trail:[],queue:null,ended:null};
+    battery:L.battery||0,bat0:L.battery||0,plan:L.plan?L.plan.slice():null,phase:'intro',A:null,offers:null,chosen:null,prob:null,trail:[],queue:null,ended:null};
 }
 function startLevel(id){
   cancelAnimationFrame(animId);

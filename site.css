@@ -5,7 +5,7 @@
    their own styles; every page shares the top bar from site-bar.js.
    ========================================================================== */
 :root{
-  --navy:#1E2D4F; --navy-2:#2B3B60; --ink:#1B2333; --muted:#5B6475; --faint:#8A93A3;
+  --navy:#1E2D4F; --navy-2:#2B3B60; --ink:#1B2333; --muted:#5B6475; --faint:#687082;
   --gold:#FFC107; --gold-line:#E0A800; --gold-text:#8A6100;
   --bg:#F7F7F4; --card:#FFFFFF; --line:#E3E5EA; --line-2:#D5D9E0;
   --link:#1D4ED8; --ok:#15803D;
@@ -34,7 +34,7 @@ a{color:var(--link)}
   margin:0 0 12px;letter-spacing:-.01em}
 .hero p,.home-header p,.page-hdr p{color:var(--muted);margin:0;max-width:62ch;font-size:17px}
 .page-hdr p+p{margin-top:4px}
-.stds{font:500 12.5px/1.4 var(--mono)!important;color:var(--faint)!important;letter-spacing:.02em;margin-top:10px!important}
+.stds{font:500 12.5px/1.4 var(--mono)!important;color:var(--faint)!important;letter-spacing:.02em;margin-top:10px!important;max-width:none!important}
 .school-badge,.eyebrow{display:block;order:-1;background:none;color:var(--gold-text);padding:0;border-radius:0;
   font:600 12.5px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
 .hero{display:flex;flex-direction:column}
@@ -84,7 +84,13 @@ a{color:var(--link)}
 .unit-card{border-top:1px solid var(--line)!important}
 .unit-num{font:600 13px/1 var(--mono);color:var(--gold-text);letter-spacing:.06em;text-transform:uppercase}
 .unit-icon{display:none}
-.unit-card-title{font:600 20px/1.25 var(--serif);color:var(--navy);margin:10px 0 6px}
+.unit-card-title{display:block;font:600 20px/1.25 var(--serif);color:var(--navy);margin:10px 0 6px;text-decoration:none}
+.unit-card > .unit-icon:first-child + .unit-card-title,.unit-card > .unit-card-title:first-child{margin-top:0}
+/* a card that holds its own small links: the title link covers the card, the small links sit on top */
+.unit-card.has-links .card-main::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.unit-card.has-links .card-main:focus-visible{outline:0}
+.unit-card.has-links:has(.card-main:focus-visible){outline:2px solid var(--gold-line);outline-offset:3px}
+.unit-card.has-links .practice-row{position:relative;z-index:1}
 .unit-desc{font-size:15px;color:var(--muted)}
 .unit-std{display:inline-block;background:none;border:0;color:var(--faint);font:500 12px/1 var(--mono);padding:0;margin-top:14px}
 
@@ -116,19 +122,21 @@ th{background:var(--navy);color:#fff;font-weight:600;text-align:left;padding:9px
 td{border:1px solid var(--line);padding:9px 12px;font-size:15px}
 
 /* ---------- small links ---------- */
-.practice-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.practice-row{margin-top:16px;display:flex;gap:8px;flex-wrap:wrap}
 .plink{font:600 13px/1 var(--sans);text-decoration:none;color:var(--navy);background:#F2F3F6;border:1px solid var(--line);padding:8px 11px;border-radius:6px}
-.plink:hover{border-color:var(--line-2)} .plink.gold{background:var(--navy);color:#fff;border-color:var(--navy)}
+.plink:hover{border-color:var(--navy);background:#fff} .plink.gold{background:var(--navy);color:#fff;border-color:var(--navy)}
 
 /* ---------- footer ---------- */
-.site-footer{max-width:var(--maxw);margin:0 auto;color:var(--faint);font-size:13.5px;padding:28px 20px 40px;border-top:1px solid var(--line);text-align:left}
+/* the rule lines up with the content column (page-wrap minus its side padding) */
+.site-footer{width:calc(100% - 40px);max-width:calc(var(--maxw) - 40px);margin:0 auto;color:var(--faint);font-size:13.5px;padding:28px 0 40px;border-top:1px solid var(--line);text-align:left}
 
 @media (max-width:640px){
   .wrap,.page-wrap{padding:28px 16px 72px}
   .hero,.page-hdr{padding-bottom:22px;margin-bottom:24px}
   .feature-card{padding:14px 14px}
   .feature-card .kind{font-size:11px}
-  .topic-nav{width:100%;display:grid;grid-template-columns:repeat(9,1fr)}
+  .topic-nav{width:100%;display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
+  .site-footer{width:calc(100% - 32px)}
   .topic-nav a,.topic-nav .nb{padding:12px 0;min-width:0;font-size:12.5px}
   .units-grid{grid-template-columns:1fr}
 }

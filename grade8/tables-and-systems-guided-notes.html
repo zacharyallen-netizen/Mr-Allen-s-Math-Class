@@ -569,7 +569,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 </head>
 <body>
 <script src="../site-bar.js"></script>
-<nav class="sb-local" aria-label="On this page"><a href="unit6.html">&#8592; Unit 6</a></nav>
+<nav class="sb-local" aria-label="On this page"><a href="unit6.html">← Unit 6</a></nav>
 
 
 
@@ -1308,30 +1308,57 @@ function checkEq(prefix, correctM, correctB) {
   }
 }
 
+// Read a typed number: accepts the true minus (−), dashes, spaces, "x = 2" and simple fractions like 1/2.
+function readNum(raw) {
+  let t = String(raw || '').replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/^[xy]=/i, '');
+  const f = t.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)$/);
+  if (f) return parseFloat(f[1]) / parseFloat(f[2]);
+  return /^-?\d*\.?\d+$/.test(t) ? parseFloat(t) : NaN;
+}
+function fmtNum(n) { return n < 0 ? '−' + Math.abs(n) : String(n); }
+
 function checkPoint(prefix, correctX, correctY) {
-  const x = parseFloat(document.getElementById(prefix + 'x').value);
-  const y = parseFloat(document.getElementById(prefix + 'y').value);
   const xEl = document.getElementById(prefix + 'x');
   const yEl = document.getElementById(prefix + 'y');
+  const x = readNum(xEl.value);
+  const y = readNum(yEl.value);
   const fb = document.getElementById(prefix + 'fb');
 
   xEl.classList.remove('correct', 'incorrect');
   yEl.classList.remove('correct', 'incorrect');
   fb.classList.remove('ok', 'no', 'show');
 
-  const xOk = !isNaN(x) && Math.abs(x - correctX) < 0.001;
-  const yOk = !isNaN(y) && Math.abs(y - correctY) < 0.001;
+  const near = (a, b) => !isNaN(a) && Math.abs(a - b) < 0.001;
+  const xOk = near(x, correctX);
+  const yOk = near(y, correctY);
 
   xEl.classList.add(xOk ? 'correct' : 'incorrect');
   yEl.classList.add(yOk ? 'correct' : 'incorrect');
 
   fb.classList.add('show');
+  const pair = '(' + fmtNum(correctX) + ', ' + fmtNum(correctY) + ')';
+  // Graph items (g…, pg…, pd…) are read from a graph; s… items are solved with algebra.
+  const isGraph = !/^s\d/.test(prefix);
   if (xOk && yOk) {
     fb.classList.add('ok');
-    fb.innerHTML = '✓ Correct! The solution is (' + correctX + ', ' + correctY + ').';
+    fb.innerHTML = '✓ Correct! The solution is ' + pair + '.';
   } else {
     fb.classList.add('no');
-    fb.innerHTML = '✗ Not quite. Re-check your algebra — make sure you substituted and solved carefully.';
+    let msg;
+    if (isNaN(x) || isNaN(y)) {
+      msg = 'Type a number in both boxes, like 2 or −1.';
+    } else if (correctX !== correctY && near(x, correctY) && near(y, correctX)) {
+      msg = 'You swapped x and y. Write (x, y): across first, then up.';
+    } else if (isGraph) {
+      msg = 'Find where the two lines cross. Then read straight down to the x-axis for x, and across to the y-axis for y.';
+      if (xOk) msg = 'x is right. ' + msg;
+      else if (yOk) msg = 'y is right. ' + msg;
+    } else {
+      msg = 'Re-check your algebra — make sure you substituted and solved carefully.';
+      if (xOk) msg = 'x is right. Put it back into one equation to find y.';
+      else if (yOk) msg = 'y is right. Check your x.';
+    }
+    fb.innerHTML = '✗ Not quite. ' + msg;
   }
 }
 

@@ -928,32 +928,32 @@ h3.sub{
   <div class="two-col">
 <div class="chk" id="pB1" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">1) 2x + 3 = 2x + 3</div>
-  <div class="val-chk"><input type="text" id="pB1-in" placeholder="answer"><button onclick="chkVal('pB1',[&quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB1-in" placeholder="answer"><button onclick="chkVal('pB1',[&quot;infinitely many solutions&quot;, &quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB1"></div>
 </div>
 <div class="chk" id="pB2" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">2) 4x + 1 = 4x − 5</div>
-  <div class="val-chk"><input type="text" id="pB2-in" placeholder="answer"><button onclick="chkVal('pB2',[&quot;no solution&quot;, &quot;none&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB2-in" placeholder="answer"><button onclick="chkVal('pB2',[&quot;no solution&quot;, &quot;no solutions&quot;, &quot;none&quot;, &quot;0 solutions&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB2"></div>
 </div>
 <div class="chk" id="pB3" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">3) 3(x + 2) = 3x + 6</div>
-  <div class="val-chk"><input type="text" id="pB3-in" placeholder="answer"><button onclick="chkVal('pB3',[&quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB3-in" placeholder="answer"><button onclick="chkVal('pB3',[&quot;infinitely many solutions&quot;, &quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB3"></div>
 </div>
 <div class="chk" id="pB4" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">4) 5x − 5 = 5(x + 1)</div>
-  <div class="val-chk"><input type="text" id="pB4-in" placeholder="answer"><button onclick="chkVal('pB4',[&quot;no solution&quot;, &quot;none&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB4-in" placeholder="answer"><button onclick="chkVal('pB4',[&quot;no solution&quot;, &quot;no solutions&quot;, &quot;none&quot;, &quot;0 solutions&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB4"></div>
 </div>
 <div class="chk" id="pB5" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">5) 7x + 2 = 7x + 2</div>
-  <div class="val-chk"><input type="text" id="pB5-in" placeholder="answer"><button onclick="chkVal('pB5',[&quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB5-in" placeholder="answer"><button onclick="chkVal('pB5',[&quot;infinitely many solutions&quot;, &quot;infinite&quot;, &quot;infinite solutions&quot;, &quot;infinitely many&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB5"></div>
 </div>
 <div class="chk" id="pB6" style="margin-bottom:10px">
   <div class="chk-q" style="font-size:0.92em">6) x + 4 = x − 1</div>
-  <div class="val-chk"><input type="text" id="pB6-in" placeholder="answer"><button onclick="chkVal('pB6',[&quot;no solution&quot;, &quot;none&quot;])">Check</button></div>
+  <div class="val-chk"><input type="text" id="pB6-in" placeholder="answer"><button onclick="chkVal('pB6',[&quot;no solution&quot;, &quot;no solutions&quot;, &quot;none&quot;, &quot;0 solutions&quot;])">Check</button></div>
   <div class="chk-fb" id="fb-pB6"></div>
 </div>
   </div>
@@ -1128,15 +1128,49 @@ function chkVal(qid,answers){
   const v=inp.value.trim();
   fb.classList.remove('c','w'); fb.classList.add('show');
   const norm=s=>String(s).toLowerCase().replace(/[−–—]/g,'-')
-        .replace(/\s+/g,'').replace(/×/g,'*').replace(/·/g,'*');
+        .replace(/\s+/g,'').replace(/×/g,'*').replace(/·/g,'*')
+        .replace(/≤|=</g,'<=').replace(/≥|=>/g,'>=').replace(/\.$/,'');
+  // "infinite solutions", "infinitely many solutions", "no solutions", "0 solutions" ... all count
+  const special=s=>{
+    if(/^(infinite|infinitely|allrealnumbers|allreals|manysolutions|∞)/.test(s)) return 'INF';
+    if(/^(no|none|zero|0)(solutions?|answers?)?$/.test(s)||s==='nosolution') return 'NONE';
+    return s;
+  };
+  // Inequalities: x>3 and 3<x are the same answer
+  const flipOp={'<':'>','>':'<','<=':'>=','>=':'<='};
+  const ineq=s=>{
+    let m=s.match(/^x(<=|>=|<|>)(-?\d+(?:\.\d+)?)$/); if(m) return {op:m[1],n:parseFloat(m[2])};
+    m=s.match(/^(-?\d+(?:\.\d+)?)(<=|>=|<|>)x$/); if(m) return {op:flipOp[m[2]],n:parseFloat(m[1])};
+    return null;
+  };
+  const canon=s=>{const n=special(norm(s));const q=ineq(n);return q?('x'+q.op+q.n):n;};
+  const pretty=s=>String(s).replace(/<=/g,'≤').replace(/>=/g,'≥').replace(/-/g,'−');
   const list=Array.isArray(answers)?answers:[answers];
   if(v===''){fb.classList.add('w');fb.innerHTML='Type your answer first.';return;}
-  if(list.some(a=>norm(a)===norm(v))){
-    fb.classList.add('c'); fb.innerHTML='✓ Correct! '+list[0];
-  }else{
-    fb.classList.add('w');
-    fb.innerHTML='✗ Not quite — the answer is '+list[0]+'.';
+  const cv=canon(v);
+  if(list.some(a=>canon(a)===cv)){
+    fb.classList.add('c'); fb.innerHTML='✓ Correct! '+pretty(list[0]);
+    return;
   }
+  fb.classList.add('w');
+  const key=ineq(norm(list[0])), got=ineq(special(norm(v)));
+  let tip='';
+  if(key&&got&&got.n===key.n){
+    const sameStrict=(got.op.length===key.op.length);
+    if(got.op===flipOp[key.op]){
+      const q=(document.querySelector('#'+qid+' .chk-q')||{}).textContent||'';
+      tip=/flip/i.test(q)
+        ? 'You divided by a negative number, so the sign must flip. '
+        : 'Check the direction of the sign. Only flip it when you multiply or divide by a negative number. ';
+    }else if(!sameStrict){
+      tip='Close! Check if the sign should include “or equal to” (≤ or ≥). ';
+    }
+  }else if(key&&got&&got.n===-key.n){
+    tip='Check the sign of the number. ';
+  }else if(['INF','NONE'].includes(canon(list[0]))){
+    tip='When the x’s cancel, look at what is left. TRUE (like 3 = 3) means infinitely many solutions. FALSE (like 1 = −5) means no solution. ';
+  }
+  fb.innerHTML='✗ Not quite. '+tip+'The answer is '+pretty(list[0])+'.';
 }
 // ── Matching game ─────────────────────────────────
 const _msel={};

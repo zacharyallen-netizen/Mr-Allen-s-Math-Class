@@ -56,8 +56,8 @@ header.top p{margin:4px 0 0;color:var(--muted);font-size:.9rem}
 .hud .combo{color:var(--cyan)}
 .hud .spacer{flex:1}
 canvas{display:block;width:100%;height:auto;background:#060a16;border-left:1px solid var(--border);border-right:1px solid var(--border)}
-.overlay{position:absolute;inset:52px 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
-  background:rgba(6,10,22,.86);backdrop-filter:blur(2px);border-radius:0;padding:20px}
+.overlay{position:absolute;inset:var(--hud-h,52px) 0 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;justify-content:safe center;text-align:center;
+  background:rgba(6,10,22,.86);backdrop-filter:blur(2px);border-radius:0;padding:20px;overflow-y:auto}
 .overlay h2{font-family:'Georgia',serif;font-size:2rem;margin:0 0 6px;color:var(--gold)}
 .overlay p{margin:4px 0;color:#cdd7f0;max-width:460px}
 .overlay .how{color:var(--muted);font-size:.9rem;margin:12px 0 18px;max-width:480px}
@@ -73,7 +73,11 @@ canvas{display:block;width:100%;height:auto;background:#060a16;border-left:1px s
 .keypad .del{background:#3a2740}
 .note{color:var(--muted);font-size:.85rem;text-align:center;margin-top:8px}
 .note kbd{background:#1a2647;border:1px solid var(--border);border-radius:5px;padding:1px 7px;font-family:inherit;color:#fff}
-@media(max-width:560px){.hud{font-size:.82rem;gap:8px 12px}.overlay h2{font-size:1.5rem}}
+@media(max-width:560px){.hud{font-size:.82rem;gap:8px 12px}.overlay h2{font-size:1.5rem}
+  .overlay{padding:8px 12px}.overlay .big{font-size:1.1rem}.overlay .how{font-size:.82rem;line-height:1.35;margin:6px 0 10px}
+  .play-btn{padding:10px 28px;font-size:1.05rem}}
+/* phones: sound buttons get their own row so they never cover the title */
+@media(max-width:640px){.audio-ctrl{position:static;justify-content:flex-end;margin:0 0 4px}}
 </style>
 </head>
 <body>
@@ -639,6 +643,19 @@ var CM=(function(){
         if(pcur.expr.indexOf('\u00b3')>=0){ var base=parseInt(pcur.expr,10); if(base*base*base!==parseInt(pcur.val,10))bad++; }
         else { var cube=parseInt(pcur.expr.replace('\u221b',''),10); if(Math.round(Math.cbrt(cube))!==parseInt(pcur.val,10))bad++; }
         if(fset[pcur.expr]||fset[pcur.val])bad++; fset[pcur.expr]=1; fset[pcur.val]=1; } } return bad; } };
+})();
+// Overlays start just below each game's HUD, even when the HUD wraps to two rows on phones
+(function(){
+  function syncHud(){
+    document.querySelectorAll('.arena').forEach(function(a){
+      var hud=a.querySelector('.hud'); if(!hud||!hud.offsetHeight) return;
+      a.style.setProperty('--hud-h', hud.offsetHeight+'px');
+    });
+  }
+  syncHud();
+  window.addEventListener('resize', syncHud);
+  if (window.ResizeObserver) { var ro=new ResizeObserver(syncHud); document.querySelectorAll('.arena .hud').forEach(function(h){ ro.observe(h); }); }
+  document.querySelectorAll('.rm').forEach(function(b){ b.addEventListener('click', function(){ setTimeout(syncHud,0); }); });
 })();
 </script>
 </body>

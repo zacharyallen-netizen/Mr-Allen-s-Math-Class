@@ -1087,11 +1087,16 @@ function planUse(r){const keys=r.shuffle(Object.keys(USE)).slice(0,4); return {k
 function makeUse(r,i,plan){
   const key=plan.keys[i], u=USE[key], c=LIN[u.lin];
   let m,b,x0,y0,pts;
-  for(let t=0;t<60;t++){
+  // The given line must really fit its dots: about as many dots above as below (within 2 : 1),
+  // and its mean miss no more than 1.2 times the least-squares line's (Station 3 would rate it 3 stars).
+  const fitsWell=(ps,m,b)=>{let up=0,dn=0; ps.forEach(p=>{const d=p.y-(m*p.x+b); if(d>1e-9)up++; else if(d<-1e-9)dn++;});
+    const L=lsq(ps); return Math.max(up,dn)<=2*Math.max(1,Math.min(up,dn)) && mae(ps,m,b)<=1.2*mae(ps,L.m,L.b)+1e-9;};
+  for(let t=0;t<400;t++){
     m=r.pick(u.m); b=r.pick(u.b); if(Math.abs(Math.abs(m)-Math.abs(b))<1e-9) continue;
     const lo=u.xr[0], hi=u.xr[1];
     if(m*lo+b>u.cap[1]||m*hi+b<u.cap[0]||m*hi+b>u.cap[1]) continue;
     const g=genLinear(Object.assign({},c,{xr:[lo,hi]}),r,{m,b,n:r.int(11,14),sd:0.8}); pts=g.pts;
+    if(!fitsWell(pts,m,b)) continue;
     const step=c.dx>=1?Math.max(1,Math.round((hi-lo)/10)):1;
     const cands=[]; for(let x=Math.ceil(lo+(hi-lo)*0.2);x<=hi-(hi-lo)*0.15;x+=step){const y=m*x+b; if(Math.abs(y*100-Math.round(y*100))<1e-6&&y>u.cap[0]) cands.push(x);}
     if(!cands.length) continue;
@@ -1375,8 +1380,11 @@ function exTable(){
   const t=h('table',{class:'tw'},
     h('tr',{},h('th',{}),h('th',{},'Likes art'),h('th',{},'Does not'),h('th',{},'Total')),
     h('tr',{},h('th',{class:'rowh'},'7th grade'),h('td',{},'24 (60%)'),h('td',{},'16 (40%)'),h('td',{class:'tot'},'40')),
-    h('tr',{},h('th',{class:'rowh'},'8th grade'),h('td',{},'15 (25%)'),h('td',{},'45 (75%)'),h('td',{class:'tot'},'60')));
+    h('tr',{},h('th',{class:'rowh'},'8th grade'),h('td',{},'15 (25%)'),h('td',{},'45 (75%)'),h('td',{class:'tot'},'60')),
+    h('tr',{},h('th',{class:'rowh'},'Total'),h('td',{class:'tot'},'39'),h('td',{class:'tot'},'61'),h('td',{class:'tot'},'100')));
   return {title:'Grade level and liking art class',visual:h('div',{class:'tablewrap'},t),steps:[
+    '<b>Totals first.</b> Add across each row: 24 + 16 = 40 and 15 + 45 = 60. Add down each column: 24 + 15 = 39 and 16 + 45 = 61.',
+    'The bottom-right box is everyone in the survey: 40 + 60 = 100. Check it another way: 39 + 61 = 100.',
     'A <b>row percent</b> is a count ÷ its row total.',
     '7th grade: 24 ÷ 40 = 0.6 = 60% like art.',
     '8th grade: 15 ÷ 60 = 0.25 = 25% like art.',
