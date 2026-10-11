@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Mr. Allen's Math Class — site.css
+   The look of the hub pages (home, class info, course homes, unit pages,
+   arcade, EOG hub, materials index). Notes, practice pages and games keep
+   their own styles; every page shares the top bar from site-bar.js.
+   ========================================================================== */
+:root{
+  --navy:#1E2D4F; --navy-2:#2B3B60; --ink:#1B2333; --muted:#5B6475; --faint:#8A93A3;
+  --gold:#FFC107; --gold-line:#E0A800; --gold-text:#8A6100;
+  --bg:#F7F7F4; --card:#FFFFFF; --line:#E3E5EA; --line-2:#D5D9E0;
+  --link:#1D4ED8; --ok:#15803D;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --radius:10px; --maxw:1120px;
+  /* kept so older inline styles that name them still resolve */
+  --royal:#1D4ED8; --green:#15803D; --border:#E3E5EA; --font-head:var(--serif); --font-body:var(--sans); --font-mono:var(--mono);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--gold-line);outline-offset:3px}
+
+/* ---------- layout ---------- */
+.wrap,.page-wrap{max-width:var(--maxw);margin:0 auto;padding:40px 20px 96px}
+.page-wrap.wide{max-width:var(--maxw)}
+.top-nav{display:none!important}               /* replaced by the shared top bar */
+
+/* ---------- page headers ---------- */
+.hero,.home-header,.page-hdr{background:none;border:0;border-radius:0;padding:0 0 28px;margin:0 0 32px;
+  text-align:left;border-bottom:1px solid var(--line)}
+.hero h1,.home-header h1,.page-hdr h1{font:600 clamp(30px,4.2vw,44px)/1.12 var(--serif);color:var(--navy);
+  margin:0 0 12px;letter-spacing:-.01em}
+.hero p,.home-header p,.page-hdr p{color:var(--muted);margin:0;max-width:62ch;font-size:17px}
+.page-hdr p+p{margin-top:4px}
+.stds{font:500 12.5px/1.4 var(--mono)!important;color:var(--faint)!important;letter-spacing:.02em;margin-top:10px!important}
+.school-badge,.eyebrow{display:block;order:-1;background:none;color:var(--gold-text);padding:0;border-radius:0;
+  font:600 12.5px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;margin:0 0 14px}
+.hero{display:flex;flex-direction:column}
+.back-link{display:inline-flex;gap:6px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;margin:0 0 20px}
+.back-link:hover{color:var(--navy)}
+
+/* ---------- section labels ---------- */
+.section-label{font:600 12.5px/1 var(--sans);color:var(--muted);letter-spacing:.12em;text-transform:uppercase;
+  margin:44px 0 14px;padding:0 0 10px;border:0;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:10px}
+.section-label:first-of-type{margin-top:8px}
+.section-label span{letter-spacing:0;text-transform:none}
+
+/* ---------- intro / notes ---------- */
+.intro{background:none;border:0;padding:0;margin:-8px 0 28px;font-size:17px;color:var(--muted);max-width:68ch}
+.intro p{margin:0}
+
+/* ---------- unit switcher ---------- */
+.topic-nav{display:flex;flex-wrap:wrap;gap:0;margin:0 0 32px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);width:max-content;max-width:100%;overflow:hidden}
+.topic-nav a,.topic-nav .nb{font:600 13.5px/1 var(--mono);color:var(--muted);text-decoration:none;background:none;border:0;
+  border-right:1px solid var(--line);border-radius:0;padding:11px 14px;min-width:44px;text-align:center}
+.topic-nav a:last-child{border-right:0}
+.topic-nav a:hover{color:var(--navy);background:#F2F3F6}
+.topic-nav a.active{background:var(--navy);color:#fff}
+
+/* ---------- list rows (materials, quick links) ---------- */
+.feature-card{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:0;
+  margin:-1px 0 0;padding:15px 18px;text-decoration:none;color:inherit;transition:background .12s}
+.feature-card:hover{background:#FAFAF7;position:relative;z-index:1;border-color:var(--line-2)}
+.section-label+.feature-card,.feature-card:first-child{border-top-left-radius:var(--radius);border-top-right-radius:var(--radius)}
+.feature-card:has(+ :not(.feature-card)),.feature-card:last-child{border-bottom-left-radius:var(--radius);border-bottom-right-radius:var(--radius)}
+.feature-card .fi{display:none}
+.feature-card>div{flex:1;min-width:0}
+.feature-card .ft{font:600 16px/1.35 var(--sans);color:var(--navy)}
+.feature-card .fd{font-size:14.5px;color:var(--muted);margin-top:2px}
+.feature-card .kind{flex:none;font:500 12px/1 var(--mono);color:var(--faint);letter-spacing:.03em;text-transform:uppercase}
+.feature-card .kind.key{color:var(--ok)}
+.feature-card::after{content:"";flex:none;width:7px;height:7px;border-right:1.5px solid var(--faint);border-top:1.5px solid var(--faint);
+  transform:rotate(45deg);margin:0 4px 0 2px}
+.feature-card:hover::after{border-color:var(--navy)}
+
+/* ---------- cards (units, courses) ---------- */
+.units-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.unit-card,.course-card,.card-link{display:block;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 22px 20px;text-decoration:none;color:inherit;position:relative;transition:border-color .15s,box-shadow .15s,transform .15s}
+.unit-card:hover,.course-card:hover,.card-link:hover{border-color:var(--line-2);box-shadow:0 8px 24px rgba(30,45,79,.08);transform:translateY(-2px)}
+.unit-card{border-top:1px solid var(--line)!important}
+.unit-num{font:600 13px/1 var(--mono);color:var(--gold-text);letter-spacing:.06em;text-transform:uppercase}
+.unit-icon{display:none}
+.unit-card-title{font:600 20px/1.25 var(--serif);color:var(--navy);margin:10px 0 6px}
+.unit-desc{font-size:15px;color:var(--muted)}
+.unit-std{display:inline-block;background:none;border:0;color:var(--faint);font:500 12px/1 var(--mono);padding:0;margin-top:14px}
+
+
+/* ---------- course cards (home) ---------- */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin:0 0 8px}
+.course-card{padding:28px 26px 24px;text-align:left}
+.course-icon{display:none}
+.course-title{font:600 26px/1.2 var(--serif);color:var(--navy);margin:0 0 10px}
+.course-desc{color:var(--muted);font-size:15.5px;margin:0 0 22px;max-width:52ch}
+.course-cta{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--sans);color:var(--navy);
+  padding:0 0 6px;border-bottom:2px solid var(--gold-line)}
+.course-card:hover .course-cta{color:var(--ink)}
+
+/* ---------- class info ---------- */
+.section{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin:0 0 20px}
+.section-title{font:600 22px/1.3 var(--serif);color:var(--navy);margin:0 0 14px}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin:14px 0}
+.doc-card{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:16px 18px;text-decoration:none;color:inherit}
+.doc-card:hover{border-color:var(--line-2);box-shadow:0 6px 18px rgba(30,45,79,.07)}
+.doc-ic{display:none}
+.doc-title{font:600 16px/1.35 var(--sans);color:var(--navy);margin:0 0 4px}
+.doc-desc{font-size:14.5px;color:var(--muted);margin:0 0 8px}
+.doc-status{font:600 13px/1 var(--sans);color:var(--link)}
+.doc-fname{font:12px var(--mono);color:var(--faint);margin-top:6px}
+table{border-collapse:collapse;width:100%}
+th{background:var(--navy);color:#fff;font-weight:600;text-align:left;padding:9px 12px;font-size:14px}
+td{border:1px solid var(--line);padding:9px 12px;font-size:15px}
+
+/* ---------- small links ---------- */
+.practice-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.plink{font:600 13px/1 var(--sans);text-decoration:none;color:var(--navy);background:#F2F3F6;border:1px solid var(--line);padding:8px 11px;border-radius:6px}
+.plink:hover{border-color:var(--line-2)} .plink.gold{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ---------- footer ---------- */
+.site-footer{max-width:var(--maxw);margin:0 auto;color:var(--faint);font-size:13.5px;padding:28px 20px 40px;border-top:1px solid var(--line);text-align:left}
+
+@media (max-width:640px){
+  .wrap,.page-wrap{padding:28px 16px 72px}
+  .hero,.page-hdr{padding-bottom:22px;margin-bottom:24px}
+  .feature-card{padding:14px 14px}
+  .feature-card .kind{font-size:11px}
+  .topic-nav{width:100%;display:grid;grid-template-columns:repeat(9,1fr)}
+  .topic-nav a,.topic-nav .nb{padding:12px 0;min-width:0;font-size:12.5px}
+  .units-grid{grid-template-columns:1fr}
+}
+@media print{.site-footer,.topic-nav,.back-link{display:none!important}}
