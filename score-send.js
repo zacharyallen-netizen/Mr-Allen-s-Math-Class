@@ -16,6 +16,7 @@
      ScoreSend.record('q3', true|false, { std:'NC.8.SP.2', band:4 });  // every time an answer is checked
      ScoreSend.reset();          // pre-test "Reset" — start a fresh attempt
      ScoreSend.revealed();       // answers were shown before checking (flagged in the Sheet)
+   Options: theme:'dark' (Fluency Lab colors), noun:'problem' (wording in the panel).
 
    If tracker-config.js has no ENDPOINT, nothing appears and the page
    works exactly as before.
@@ -34,6 +35,16 @@
   function newSession() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   }
+
+  // panel colors: light (site pages) or dark (Fluency Lab)
+  var THEMES = {
+    light: { bg:'#fff', edge:'#E3E5EA', ink:'#1B2333', head:'#1E2D4F', muted:'#5B6475', inBg:'#fff', inEdge:'#D5D9E0',
+             btn:'#1E2D4F', btnInk:'#fff', ok:'#15803D', warn:'#B42318', font:"'Source Serif 4',Georgia,serif" },
+    dark:  { bg:'#1b1e38', edge:'#33396b', ink:'#f1f3ff', head:'#f1f3ff', muted:'#9aa0cf', inBg:'#222749', inEdge:'#454c86',
+             btn:'#39d99a', btnInk:'#12132a', ok:'#39d99a', warn:'#ff7a70', font:'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif' }
+  };
+  function T() { return THEMES[(S.opts && S.opts.theme) === 'dark' ? 'dark' : 'light']; }
+  function noun(n) { var w = (S.opts && S.opts.noun) || 'question'; return n === 1 ? w : w + 's'; }
 
   var S = {
     opts: null, items: {}, order: [], session: newSession(), wasRevealed: false, box: null,
@@ -86,18 +97,19 @@
       var box = document.createElement('section');
       box.id = 'scoresend';
       box.setAttribute('aria-label', 'Send my work to Mr. Allen');
+      var c = T();
       box.style.cssText =
         'box-sizing:border-box;max-width:720px;margin:28px auto;padding:18px 20px;border-radius:10px;' +
-        'background:#fff;border:1px solid #E3E5EA;box-shadow:0 1px 2px rgba(30,45,79,.06);' +
-        'font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1B2333;text-align:left';
+        'background:' + c.bg + ';border:1px solid ' + c.edge + ';box-shadow:0 1px 2px rgba(30,45,79,.06);' +
+        'font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:' + c.ink + ';text-align:left';
       box.innerHTML =
-        '<div style="font:600 17px/1.3 \'Source Serif 4\',Georgia,serif;color:#1E2D4F;margin-bottom:4px">Send my work to Mr. Allen</div>' +
-        '<div id="ssmsg" style="color:#5B6475;font-size:14px;margin-bottom:12px"></div>' +
+        '<div style="font:600 17px/1.3 ' + c.font + ';color:' + c.head + ';margin-bottom:4px">Send my work to Mr. Allen</div>' +
+        '<div id="ssmsg" style="color:' + c.muted + ';font-size:14px;margin-bottom:12px"></div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
           '<label for="ssname" style="position:absolute;left:-9999px">Your first and last name</label>' +
           '<input id="ssname" type="text" autocomplete="name" placeholder="First and last name" ' +
-            'style="flex:1 1 200px;min-width:0;font:inherit;padding:11px 13px;border-radius:8px;border:1px solid #D5D9E0;background:#fff;color:#1B2333">' +
-          '<button id="ssbtn" type="button" style="font:600 15px Inter,system-ui,sans-serif;color:#fff;background:#1E2D4F;' +
+            'style="flex:1 1 200px;min-width:0;font:inherit;padding:11px 13px;border-radius:8px;border:1px solid ' + c.inEdge + ';background:' + c.inBg + ';color:' + c.ink + '">' +
+          '<button id="ssbtn" type="button" style="font:600 15px Inter,system-ui,sans-serif;color:' + c.btnInk + ';background:' + c.btn + ';' +
             'border:0;border-radius:8px;padding:11px 20px;cursor:pointer;min-height:44px">Send my work</button>' +
         '</div>';
       if (host) host.appendChild(box);
@@ -115,7 +127,7 @@
       var c = S.count(), btn = document.getElementById('ssbtn');
       if (S.sending) return;
       if (!c.n) {
-        msg('Answer some questions first. Then type your first and last name and tap Send.', 'muted');
+        msg('Answer some ' + noun(2) + ' first. Then type your first and last name and tap Send.', 'muted');
         btn.disabled = true; btn.style.opacity = '.5'; btn.textContent = 'Send my work';
         return;
       }
@@ -130,7 +142,7 @@
         msg('You have new work since you sent. Tap Send again so Mr. Allen sees it.', 'muted');
         return;
       }
-      msg('You checked ' + c.n + (c.n === 1 ? ' question' : ' questions') + '. ' + c.first +
+      msg('You checked ' + c.n + ' ' + noun(c.n) + '. ' + c.first +
           ' right on the first try. Type your first and last name, then tap Send.', 'muted');
     },
 
@@ -184,7 +196,7 @@
     var el = document.getElementById('ssmsg');
     if (!el) return;
     el.textContent = t;
-    el.style.color = kind === 'ok' ? '#15803D' : kind === 'warn' ? '#B42318' : '#5B6475';
+    var c = T(); el.style.color = kind === 'ok' ? c.ok : kind === 'warn' ? c.warn : c.muted;
   }
 
   window.ScoreSend = S;

@@ -29,6 +29,7 @@ Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in 
 - `node eog3/play.js eog_math_review_game.html g 900` (and `play2.js` with N=60 / 45) — plays the EOG games end to end.
 - `node verify_lab.js` (Fluency Lab), `node pt_grade.js` (pre-test keys), `node send_repro.js` (Send panel).
 - `node fluency_sweep.js` solves every level of all 8 Fluency Labs at phone and desktop widths (page errors, sideways scroll).
+  `node fluency_progress_test.js` plays a set of 10 on every lab, sends (to a fake address), reloads, and checks the saved level.
   `node fluency_typetest.js <lab> <levels> <count>` types answers key by key, with a wrong answer every 5th problem, e.g. `node fluency_typetest.js decimals 1,2,3 30`.
 
 ## Briefs
