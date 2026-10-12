@@ -74,6 +74,20 @@
   .flip{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber);border:1px dashed var(--amber);
     border-radius:999px;padding:3px 9px;margin-left:2px}
   .pair{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 14px}
+  .mstrip{margin:6px auto 2px;max-width:440px;text-align:center}
+  .mlab{font-family:var(--sans);font-size:13.5px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+  .mlab b{color:var(--amber)}
+  .mrow{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+  .mult{font:700 20px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);background:var(--bg2);
+    border:2px solid var(--line);border-radius:10px;min-width:50px;height:42px;padding:0 8px;cursor:pointer;position:relative}
+  .mult:hover,.mult:focus{border-color:var(--sky);outline:none}
+  .mult.yes{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .mult.no{border-color:var(--coral);color:var(--muted);text-decoration:line-through;text-decoration-color:var(--coral)}
+  .mult .mk{position:absolute;top:-9px;right:-7px;font:700 11px var(--sans);background:var(--bg);border-radius:999px;padding:1px 4px}
+  .mult.yes .mk{color:var(--mint)} .mult.no .mk{color:var(--coral)}
+  .lcdline{margin-top:10px}
+  .fbx.nudge{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .verdict.nudge{color:var(--amber)}
   .fbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:58px;height:42px;padding:0;text-align:center;
     font-size:24px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
     outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
@@ -160,14 +174,14 @@
     <div class="sub">Fractions · Module 4</div>
     <div class="how">
       Make fractions simpler, then add, subtract, multiply, and divide them, one step at a time.
-      To add or subtract, <b>the bottom numbers have to match</b>. To multiply, go <b>straight across</b>.
+      To add or subtract, <b>the bottom numbers have to match</b>. Use the <b>lowest common denominator</b>. To multiply, go <b>straight across</b>.
       To divide, <b>flip the second fraction</b> and multiply. You are only racing <b>your own best score</b>.
     </div>
     <div class="example">
       <div class="ttl">Here is one worked out</div>
-      <div class="ttl2">1/4 + 2/3 &mdash; the arrows show what you do to the top and the bottom</div>
+      <div class="ttl2">5/6 &minus; 1/4 &mdash; find the lowest common denominator first</div>
       <div id="exPaper"></div>
-      <div class="excap">Multiply each fraction by the <b style="color:var(--amber)">other bottom</b>, top and bottom. Now both are over 12, so add the tops.</div>
+      <div class="excap">Count by 6s: 6, 12. 4 goes into 12 evenly, so the <b style="color:var(--amber)">LCD is 12</b> (not 24). 6 × 2 = 12, so multiply the top by 2 too. 4 × 3 = 12, so multiply the top by 3. Then subtract the tops: 10 − 3 = 7.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -219,6 +233,10 @@ let levelReachedThisSet=1, sessionBest=0, current=null, answered=false, results=
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+// lowest common denominator: count by the bigger bottom until the smaller one goes in evenly
+function lcdInfo(p){ const big=Math.max(p.b1,p.b2), small=Math.min(p.b1,p.b2), L=p.b1*p.b2/gcd(p.b1,p.b2);
+  const mults=[]; for(let m=big;m<=p.b1*p.b2;m+=big) mults.push(m);
+  return {big,small,L,mults,k1:L/p.b1,k2:L/p.b2,t1:p.a1*(L/p.b1),t2:p.a2*(L/p.b2)}; }
 function red(n,d){const g=gcd(n,d);return [n/g,d/g];}
 const $=id=>document.getElementById(id);
 
@@ -286,16 +304,24 @@ function buildSteps(p){
      info:`${p.a} ${p.op} ${p.b} = ${rawN}; the bottom stays ${p.d}.`, line:`= ${frac(rawN,p.d)}`},
     lowestStep(rawN,p.d,p.ansN,p.ansD)
   ];}
-  if(p.type==='addunlike'){ const den=p.b1*p.b2, t1=p.a1*p.b2, t2=p.a2*p.b1, rawN=p.op==='+'?t1+t2:t1-t2; return [
-    {lab:'Step 1 · common denominator', q:`The bottoms are different. Make a common denominator: <b>${p.b1} × ${p.b2}</b>.`,
-     boxes:[{bl:`${p.b1} × ${p.b2}`,expect:den}], info:`Multiplying the two bottoms always gives a common denominator: ${den}.`, line:`common bottom = ${den}`},
-    {lab:'Step 2 · rewrite each top', q:`Rewrite each fraction over ${den}. Multiply each top by the <b>other</b> bottom: <b>${p.a1}×${p.b2}</b> and <b>${p.a2}×${p.b1}</b>.`,
-     boxes:[{bl:`${p.a1} × ${p.b2}`,expect:t1},{bl:`${p.a2} × ${p.b1}`,expect:t2,connector:'&'}],
-     info:`${p.a1}×${p.b2}=${t1} and ${p.a2}×${p.b1}=${t2}.`, line:`= ${frac(t1,den)} ${p.op} ${frac(t2,den)}`},
-    {lab:'Step 3 · combine the tops', q:`Now ${p.op==='+'?'add':'subtract'} the new tops over ${den}: <b>${t1} ${p.op} ${t2}</b>.`,
-     boxes:[{bl:`${t1} ${p.op} ${t2}`,expect:rawN},{bl:'over',expect:den,connector:'/'}],
-     info:`${t1} ${p.op} ${t2} = ${rawN}, over ${den}.`, line:`= ${frac(rawN,den)}`},
-    lowestStep(rawN,den,p.ansN,p.ansD)
+  if(p.type==='addunlike'){ const u=lcdInfo(p), L=u.L, rawN=p.op==='+'?u.t1+u.t2:u.t1-u.t2; return [
+    {lab:'Step 1 · lowest common denominator',
+     q:`The bottoms are different (<b>${p.b1}</b> and <b>${p.b2}</b>). Find the <b>lowest common denominator</b> (LCD): the smallest number both bottoms go into. Count by <b>${u.big}s</b> until <b>${u.small}</b> goes in evenly.`,
+     boxes:[{bl:'LCD',expect:L,nudge:v=>{ const n=+v; return (v!==''&&n>L&&n%p.b1===0&&n%p.b2===0)
+        ? `${n} works as a common denominator, but there is a smaller one. Check the multiples of ${u.big} again.` : ''; }}],
+     info:`Multiples of ${u.big}: ${u.mults.slice(0,u.mults.indexOf(L)+1).join(', ')}. ${L} is the first one ${u.small} goes into (${L} ÷ ${u.small} = ${L/u.small}). So the LCD is ${L}.`,
+     line:`LCD = ${L}`},
+    {lab:'Step 2 · rewrite each fraction over the LCD',
+     q:`Rewrite each fraction over <b>${L}</b>. Ask: what times the bottom makes ${L}? Then multiply the top by the <b>same number</b>.`,
+     boxes:[{bl:`${p.b1} × ? = ${L}`,expect:u.k1},{bl:`${p.a1} × ${u.k1===1?'1':'it'}`,expect:u.t1,connector:'→'},
+            {bl:`${p.b2} × ? = ${L}`,expect:u.k2,connector:'&'},{bl:`${p.a2} × ${u.k2===1?'1':'it'}`,expect:u.t2,connector:'→'}],
+     info:`${p.b1} × ${u.k1} = ${L}, so the top is ${p.a1} × ${u.k1} = ${u.t1}. ${p.b2} × ${u.k2} = ${L}, so the top is ${p.a2} × ${u.k2} = ${u.t2}.`
+        +(u.k1===1||u.k2===1?` Times 1 changes nothing: that fraction was already over ${L}.`:``),
+     line:`= ${frac(u.t1,L)} ${p.op} ${frac(u.t2,L)}`},
+    {lab:'Step 3 · combine the tops', q:`Now ${p.op==='+'?'add':'subtract'} the new tops over ${L}: <b>${u.t1} ${p.op} ${u.t2}</b>.`,
+     boxes:[{bl:`${u.t1} ${p.op} ${u.t2}`,expect:rawN},{bl:'over',expect:L,connector:'/'}],
+     info:`${u.t1} ${p.op} ${u.t2} = ${rawN}, over ${L}. Keep the bottom: never add the bottoms.`, line:`= ${frac(rawN,L)}`},
+    lowestStep(rawN,L,p.ansN,p.ansD)
   ];}
   if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2; return [
     {lab:'Step 1 · multiply straight across', q:`Multiply <b>tops together</b> and <b>bottoms together</b> — no common denominator needed for ×.`,
@@ -356,12 +382,20 @@ function drawWork(p,steps,done,el){
   } else if(p.type==='addlike'){ const rawN=p.op==='+'?p.a+p.b:p.a-p.b;
     L.push(`<div class="wline${done>=1?' pastline':''}">${frac(p.a,p.d)}${OPX(p.op)}${frac(p.b,p.d)}${EQ}${done===0?FR(box(0),box(1)):frac(rawN,p.d)}</div>`);
     if(done>=1) L.push(lowestSC(rawN,p.d,p.ansN,p.ansD,1,done,box));
-  } else if(p.type==='addunlike'){ const den=p.b1*p.b2, t1=p.a1*p.b2, t2=p.a2*p.b1, rawN=p.op==='+'?t1+t2:t1-t2;
-    const A=SC(p.a1,p.b1,AR('×',p.b2),AR('×',p.b2), done===0?GQ:done===1?box(0):t1, done===0?box(0):den);
-    const B=SC(p.a2,p.b2,AR('×',p.b1),AR('×',p.b1), done===0?GQ:done===1?box(1):t2, done===0?MIR(0):den);
+  } else if(p.type==='addunlike'){ const u=lcdInfo(p), D=u.L, rawN=p.op==='+'?u.t1+u.t2:u.t1-u.t2;
+    if(done===0){
+      // count by the bigger bottom; tap a multiple to test it
+      L.push(`<div class="mstrip"><div class="mlab">Count by ${u.big}s. Tap a number to test it: does <b>${u.small}</b> go in evenly?</div>`
+        +`<div class="mrow">${u.mults.map(m=>`<button type="button" class="mult" data-m="${m}">${m}</button>`).join('')}</div>`
+        +`<div class="wline lcdline">LCD ${EQ} ${box(0)}</div></div>`);
+    } else L.push(`<div class="wline pastline">LCD ${EQ} <span style="color:var(--amber)">${D}</span></div>`);
+    const kA = done===1?box(0):(done>1?u.k1:'?'), kAm = done===1?MIR(0):(done>1?u.k1:'?');
+    const kB = done===1?box(2):(done>1?u.k2:'?'), kBm = done===1?MIR(2):(done>1?u.k2:'?');
+    const A=SC(p.a1,p.b1,AR('×',kAm),AR('×',kA), done===0?GQ:done===1?box(1):u.t1, done===0?MIR(0):D);
+    const B=SC(p.a2,p.b2,AR('×',kBm),AR('×',kB), done===0?GQ:done===1?box(3):u.t2, done===0?MIR(0):D);
     L.push(`<div class="wline${done>=2?' pastline':''}"><div class="pair">${A}${OPX(p.op)}${B}</div></div>`);
-    if(done>=2) L.push(`<div class="wline${done>=3?' pastline':''}">${frac(t1,den)}${OPX(p.op)}${frac(t2,den)}${EQ}${done===2?FR(box(0),box(1)):frac(rawN,den)}</div>`);
-    if(done>=3) L.push(lowestSC(rawN,den,p.ansN,p.ansD,3,done,box));
+    if(done>=2) L.push(`<div class="wline${done>=3?' pastline':''}">${frac(u.t1,D)}${OPX(p.op)}${frac(u.t2,D)}${EQ}${done===2?FR(box(0),box(1)):frac(rawN,D)}</div>`);
+    if(done>=3) L.push(lowestSC(rawN,D,p.ansN,p.ansD,3,done,box));
   } else if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2;
     L.push(`<div class="wline${done>=1?' pastline':''}">${EQ}${FR(`${p.a1}×${p.a2}`,`${p.b1}×${p.b2}`,'expr')}${EQ}${done===0?FR(box(0),box(1)):frac(tn,td)}</div>`);
     if(done>=1) L.push(lowestSC(tn,td,p.ansN,p.ansD,1,done,box));
@@ -405,6 +439,13 @@ function renderStep(){
 }
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
+  // a common denominator that is not the lowest one: nudge only (no miss, streak safe)
+  for(let i=0;i<st.boxes.length;i++){ const bx=st.boxes[i]; if(!bx.nudge) continue;
+    const msg=bx.nudge(boxVal(i)); if(!msg) continue;
+    grpInputs(i).forEach(e=>{e.classList.remove('ok','bad'); e.classList.add('nudge');});
+    const gv=$('gverdict'); gv.textContent=msg; gv.className='verdict nudge';
+    const e=grpInputs(i)[0]; if(e){e.focus(); e.select&&e.select();}
+    return; }
   st.boxes.forEach((bx,i)=>{
     const ok=boxOk(bx,i);
     markGroup(i,ok);
@@ -482,8 +523,20 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('input',e=>{
   const t=e.target; if(!t.matches || !t.matches('input.fbx')) return;
   t.value=t.value.replace(/[^0-9]/g,'');
-  t.classList.remove('bad');
+  t.classList.remove('bad','nudge');
   mirror(t.dataset.g);
+});
+// multiples strip: tap a multiple to test whether the smaller bottom goes in evenly
+document.addEventListener('click',e=>{
+  const t=e.target.closest && e.target.closest('.mult'); if(!t || !current || current.type!=='addunlike' || G.si!==0) return;
+  if($('stepbtn').textContent!=='Check') return;
+  const u=lcdInfo(current), m=+t.dataset.m, ok=m%u.small===0;
+  t.classList.remove('yes','no'); t.classList.add(ok?'yes':'no');
+  if(!t.querySelector('.mk')) t.insertAdjacentHTML('beforeend',`<span class="mk">${ok?'✓':'✗'}</span>`);
+  t.setAttribute('aria-label',`${m}: ${u.small} ${ok?'goes in evenly':'does not go in evenly'}`);
+  const b=grpInputs(0)[0];
+  if(ok && b && b.value===''){ b.value=String(m); b.classList.remove('bad','nudge'); mirror(0); }
+  if(b) b.focus();
 });
 // light up the matching tile for the box you are in
 document.addEventListener('focusin',e=>{
@@ -492,7 +545,7 @@ document.addEventListener('focusin',e=>{
   const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
 });
 // worked example on the start screen: the same written work, finished
-(function(){ const ex={type:'addunlike',a1:1,b1:4,a2:2,b2:3,op:'+',den:12,ansN:11,ansD:12};
+(function(){ const ex={type:'addunlike',a1:5,b1:6,a2:1,b2:4,op:'-',den:24,ansN:7,ansD:12};
   const st=buildSteps(ex); drawWork(ex,st,st.length,$('exPaper')); })();
 </script>
 </body>
