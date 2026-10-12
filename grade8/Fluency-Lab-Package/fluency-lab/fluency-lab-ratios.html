@@ -43,6 +43,31 @@
   .fline{font-size:23px;color:var(--muted);margin:6px 0}
   .fline:last-child{color:var(--ink)}
   @media(max-width:430px){.fline{font-size:18px}}
+  /* ratio table and tape diagram, drawn from the problem's numbers and filled in as steps finish */
+  .rvis{display:flex;justify-content:center;margin:8px 0 4px}
+  .rt{display:flex;align-items:stretch;gap:0}
+  .rt .rlab{display:flex;flex-direction:column;justify-content:space-around;padding-right:8px;font-size:13px;color:var(--muted);font-weight:600;text-align:right}
+  .rt .col{display:flex;flex-direction:column;gap:6px}
+  .rt .cell{min-width:56px;height:44px;padding:0 8px;display:flex;align-items:center;justify-content:center;
+    font:700 22px var(--mono);font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:9px;background:var(--bg2);color:var(--ink)}
+  .rt .cell.q{color:var(--amber);border-style:dashed;border-color:var(--amber)}
+  .rt .cell.new{color:var(--mint);border-color:var(--mint)}
+  .rt .arr{display:flex;flex-direction:column;justify-content:space-around;padding:0 6px;color:var(--amber);font:700 14px var(--sans);white-space:nowrap;text-align:center}
+  .rt .arr.unk{color:#5b6190}
+  .tape{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+  .tape .tr{display:flex;align-items:center;gap:8px}
+  .tape .tl{width:84px;text-align:right;font-size:13px;color:var(--muted);font-weight:600;white-space:nowrap}
+  .tape .bars{display:flex}
+  .tape .u{width:42px;height:40px;border:2px solid var(--sky);margin-left:-2px;display:flex;align-items:center;justify-content:center;
+    font:700 18px var(--mono);color:var(--sky);background:#1b2550}
+  .tape .tr.second .u{border-color:var(--muted);color:var(--muted);background:var(--bg2)}
+  .tape .u.q{color:var(--amber)}
+  .tape .tt{font:700 15px var(--sans);color:var(--muted);margin-left:4px}
+  .tape .tt.new{color:var(--mint)}
+  .tape .tot{font-size:13px;color:var(--muted);margin-left:86px}
+  .tape .tot b{color:var(--amber)}
+  @media(max-width:430px){.rt .cell{min-width:48px;height:40px;font-size:19px;padding:0 6px}.rt .arr{font-size:12px;padding:0 4px}
+    .tape .u{width:32px;height:34px;font-size:15px}.tape .tl{width:74px;font-size:12px}.tape .tot{margin-left:82px}}
 
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
@@ -117,6 +142,7 @@
     <div class="dots" id="dots"></div>
     <section class="stage">
       <div class="exprline" id="prob"></div>
+      <div class="rvis" id="rvis"></div>
       <div class="fwork" id="fwork"></div>
       <div class="steplead" id="steplead"></div>
       <div class="stepcard">
@@ -232,6 +258,33 @@ function renderProblem(){
 function renderWork(){
   const done=G.steps.slice(0,G.si).filter(s=>s.line);
   $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  drawRatio(current,G.si,G.steps.length,$('rvis'));
+}
+/* ratio table: columns of [top, bottom] with the same × or ÷ on both rows between them */
+function RT(labels,cols,arrows){
+  const cell=c=>`<span class="cell${c.q?' q':''}${c.n?' new':''}">${c.v}</span>`;
+  let h=`<div class="rt">`+(labels?`<div class="rlab"><span>${labels[0]}</span><span>${labels[1]}</span></div>`:'');
+  cols.forEach((col,i)=>{ h+=`<div class="col">${cell(col[0])}${cell(col[1])}</div>`;
+    if(i<arrows.length){ const a=arrows[i]; h+=`<div class="arr${a.unk?' unk':''}"><span>${a.t} →</span><span>${a.t} →</span></div>`; } });
+  return h+`</div>`;
+}
+const K=v=>({v}), Q={v:'?',q:true}, NW=v=>({v,n:true});
+function drawRatio(p,done,n,el){
+  let h='';
+  if(p.kind==='simp')  h=RT(null,[[K(p.N),K(p.D)],[done>=2?NW(p.bn):Q,done>=2?NW(p.bd):Q]],[{t:`÷ ${done>=1?p.k:'GCF'}`,unk:done<1}]);
+  if(p.kind==='equiv') h=RT(null,[[K(p.bn),K(p.bd)],[done>=2?NW(p.bn*p.k):Q,K(p.bd*p.k)]],[{t:`× ${done>=1?p.k:'?'}`,unk:done<1}]);
+  if(p.kind==='unit')  h=RT(['miles','hours'],[[K(p.total),K(p.time)],[done>=1?NW(p.rate):Q,K(1)]],[{t:`÷ ${p.time}`}]);
+  if(p.kind==='prop')  h=RT(['top','bottom'],[[K(p.c),K(p.d)],[done>=2?NW(p.x):Q,K(p.b)]],[{t:`÷ ${done>=1?p.m:'?'}`,unk:done<1}]);
+  if(p.kind==='cost')  h=RT(['items','cost $'],[[K(p.q),K(p.p)],[K(1),done>=1?NW(p.unit):Q],[K(p.n),done>=2?NW(p.ans):Q]],[{t:`÷ ${p.q}`},{t:`× ${p.n}`}]);
+  if(p.kind==='split'){
+    const unit=done>=2?p.u:'?', bar=(k,cls)=>Array.from({length:k},()=>`<span class="u${done<2?' q':''}">${unit}</span>`).join('');
+    h=`<div class="tape">`
+      +`<div class="tr first"><span class="tl">first (${p.bn})</span><span class="bars">${bar(p.bn)}</span>`
+      +(done>=3?`<span class="tt new">= ${p.first}</span>`:'')+`</div>`
+      +`<div class="tr second"><span class="tl">second (${p.bd})</span><span class="bars">${bar(p.bd)}</span></div>`
+      +`<div class="tot">${done>=1?`${p.bn+p.bd} equal boxes`:`how many boxes?`} make <b>${p.total}</b> in all</div></div>`;
+  }
+  el.innerHTML=h;
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;

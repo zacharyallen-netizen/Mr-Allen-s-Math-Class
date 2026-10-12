@@ -221,7 +221,21 @@ const NAMES=['ones','tens','hundreds','thousands'];
 /* ---------- guided steps ---------- */
 let G=null;
 function WDof(p){ return Math.max(String(p.a).length,String(p.b).length,String(p.answer).length); }
-function buildSteps(p){ return p.op==='+'?stepsAdd(p):stepsSub(p); }
+// round to the number's biggest place (58 → 60, 485 → 500)
+function frontRound(n){ const pl=10**(String(n).length-1); return Math.round(n/pl)*pl; }
+function buildSteps(p){ const st=p.op==='+'?stepsAdd(p):stepsSub(p); st.push(checkStepFor(p)); return st; }
+// last step: does the answer make sense?
+function checkStepFor(p){
+  if(p.op==='+'){ const ra=frontRound(p.a), rb=frontRound(p.b);
+    return {est:true, lab:'Check · estimate', write:null,
+      q:`Does <b>${p.answer}</b> make sense? Round each number to its biggest place, then add: <b>${p.a} ≈ ?</b> and <b>${p.b} ≈ ?</b>. Your answer should be close.`,
+      boxes:[{bl:`${p.a} ≈`,expect:ra},{bl:`${p.b} ≈`,expect:rb,connector:'·'},{bl:`${'estimate'} =`,expect:ra+rb,connector:'→'}],
+      info:`${p.a} rounds to ${ra}. ${p.b} rounds to ${rb}. ${ra} + ${rb} = ${ra+rb}, and ${p.answer} is close to that, so it makes sense.`}; }
+  return {est:true, lab:'Check · add back', write:null,
+    q:`Check your answer by <b>adding back</b>: answer + the number you took away should give the top number. <b>${p.answer} + ${p.b}</b> should be <b>${p.a}</b>.`,
+    boxes:[{bl:`${p.answer} + ${p.b} =`,expect:p.a,wide:true}],
+    info:`${p.answer} + ${p.b} = ${p.a}. Adding undoes subtracting, so the answer checks out.`};
+}
 
 function stepsAdd(p){
   const WD=WDof(p), numCols=Math.max(String(p.a).length,String(p.b).length);
@@ -318,6 +332,7 @@ function rowHTML(cls,opTxt,arr,row,pm,boxed,classes){
   }).join('')}</div>`;
 }
 function drawCols(p,steps,done,el,boxed){
+  steps=steps.filter(x=>!x.est); done=Math.min(done,steps.length);   // the check step is not a column
   const WD=WDof(p); const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
   const ansArr=Array(WD).fill(' '), carryArr=Array(WD).fill(' '), brwArr=Array(WD).fill(' ');
   const topCls=Array(WD).fill(''), botCls=Array(WD).fill('');
@@ -357,13 +372,15 @@ function markGroup(g,ok){
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
-  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — work right to left`;
+  $('steplead').textContent=st.est?`Last step — does your answer make sense?`:`Step ${G.si+1} of ${G.steps.length} — work right to left`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
   const hasCarry=st.boxes.some(bx=>bx.row==='carry'), hasBrw=st.boxes.some(bx=>bx.row==='brw');
   $('papernote').innerHTML=`Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. A tile with <b>↑</b> points up to it.`
     +(hasCarry?` The small box on top is the <b>carry</b>. If there is nothing to carry, leave it empty.`:``)
     +(hasBrw?` The small box on top is what the <b>top digit is worth now</b>.`:``);
+  if(st.est) $('papernote').innerHTML=current.op==='+'?`An estimate is a quick, rounded answer. If your real answer is far from it, look for a mistake.`
+    :`Subtracting and adding undo each other. If your answer is right, adding back gives the top number.`;
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
     if(bx.where==='paper')

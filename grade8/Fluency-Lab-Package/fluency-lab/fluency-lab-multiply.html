@@ -270,10 +270,23 @@ const EMPTYOP='<span class="op"></span>';
 
 /* ---------- build guided steps ---------- */
 let G=null; // {steps, si, tries}
+function frontRound(n){ const pl=10**(String(n).length-1); return Math.round(n/pl)*pl; }
 function buildSteps(p){
   const {a,b}=p;
-  if(b<10) return stepsN1(a,b);
-  return steps2x2(a,b);
+  const st = b<10 ? stepsN1(a,b) : steps2x2(a,b);
+  st.push(estStep(a,b));
+  return st;
+}
+// last step: does the answer make sense? round, multiply, compare
+function estStep(a,b){
+  const ra=frontRound(a), rb=b<10?b:frontRound(b), est=ra*rb, ans=a*b;
+  const boxes=[{bl:`${a} ≈`,expect:ra}];
+  if(b>=10) boxes.push({bl:`${b} ≈`,expect:rb,connector:'·'});
+  boxes.push({bl:`${ra} × ${b>=10?'?':b} =`,expect:est,wide:true,connector:'→'});
+  boxes[boxes.length-1].bl=b>=10?'estimate =':`${ra} × ${b} =`;
+  return {est:true, lab:'Check · estimate',
+    q:`Does <b>${ans}</b> make sense? Round ${b>=10?'each number':`<b>${a}</b>`} to its biggest place, then multiply. Your answer should be close.`,
+    boxes, info:`${a} rounds to ${ra}${b>=10?` and ${b} rounds to ${rb}`:``}. ${ra} × ${rb} = ${est}, and ${ans} is close to that, so it makes sense.`};
 }
 // n-digit × 1-digit, column by column (right to left)
 function stepsN1(a,b){
@@ -388,6 +401,7 @@ function rowHTML(cls,lead,arr,row,pm,boxed,hot){
   }).join('')}</div>`;
 }
 function renderWorkN1(p,steps,done,el,boxed){
+  steps=steps.filter(x=>!x.est); done=Math.min(done,steps.length);   // the estimate step is not a column
   const {a,b}=p; const ansStr=String(a*b); const W=ansStr.length;
   const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
   // carries row: the carry from each finished column sits above the NEXT column to the left
@@ -408,6 +422,7 @@ function renderWorkN1(p,steps,done,el,boxed){
   el.innerHTML=h;
 }
 function renderWork2(p,steps,done,el,boxed){
+  steps=steps.filter(x=>!x.est); done=Math.min(done,steps.length);
   const {a,b}=p; const ob=b%10, tb=Math.floor(b/10);
   const p1=a*ob, p2s=a*tb*10, sum=a*b;
   const W=String(sum).length; const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
@@ -444,11 +459,12 @@ function markGroup(g,ok){
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
-  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
+  $('steplead').textContent=st.est?`Last step — does your answer make sense?`:`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
   const hasCarry=st.boxes.some(bx=>bx.row==='carry');
-  $('papernote').innerHTML=st.boxes.some(bx=>bx.where==='paper')
+  $('papernote').innerHTML=st.est?`An estimate is a quick, rounded answer. If your real answer is far from it, look for a mistake.`
+    : st.boxes.some(bx=>bx.where==='paper')
     ? `Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. A tile with <b>↑</b> points up to it.`
       +(hasCarry?` The small box on top is the <b>carry</b>. If there is nothing to carry, leave it empty.`:``)
     : '';

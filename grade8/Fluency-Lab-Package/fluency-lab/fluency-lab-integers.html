@@ -43,6 +43,14 @@
   .fline{font-size:24px;color:var(--muted);margin:6px 0}
   .fline:last-child{color:var(--ink)}
   @media(max-width:430px){.fline{font-size:19px}}
+  /* number line: start point, one hop, landing shown once you have solved it */
+  .nl{margin:4px auto 2px;max-width:460px}
+  .nl svg{display:block;width:100%;height:auto}
+  .nlcap{font-size:13px;color:var(--muted);text-align:center;margin:0 0 4px;line-height:1.4}
+  .nlcap b{color:var(--amber)}
+  .example{max-width:400px;margin:0 auto 24px}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:4px}
 
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
@@ -104,6 +112,11 @@
       Add, subtract, multiply, and divide positive and negative numbers, one step at a time.
       First work out <b>the number</b>. Then work out <b>the sign</b> &mdash; positive or negative. You are only racing <b>your own best score</b>.
     </div>
+    <div class="example">
+      <div class="ttl">See it on a number line</div>
+      <div class="ttl2">&minus;3 + 8: start at &minus;3, then move 8 to the right</div>
+      <div class="nl" id="exLine"></div>
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
 
@@ -116,6 +129,7 @@
     <div class="dots" id="dots"></div>
     <section class="stage">
       <div class="exprline" id="prob"></div>
+      <div class="nl" id="nline"></div>
       <div class="fwork" id="fwork"></div>
       <div class="steplead" id="steplead"></div>
       <div class="stepcard">
@@ -219,6 +233,8 @@ function buildSteps(p){
 }
 
 /* ---------- render ---------- */
+// worked example on the start screen
+document.addEventListener('DOMContentLoaded',()=>{ const ex=mk(-3,'+',8); drawLine(ex,2,2,$('exLine')); });
 function renderProblem(){
   $('prob').innerHTML=current.display;
   $('fwork').innerHTML='';
@@ -228,6 +244,41 @@ function renderProblem(){
 function renderWork(){
   const done=G.steps.slice(0,G.si).filter(s=>s.line);
   $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  drawLine(current,G.si,G.steps.length,$('nline'));
+}
+/* number line drawn from this problem's own numbers.
+   + : start at a, hop b.   − : once you know the opposite, start at a and hop by the opposite. */
+function drawLine(p,done,n,el){
+  if(p.op!=='+' && p.op!=='−'){ el.innerHTML=''; return; }
+  const a=p.a, hop = p.op==='+' ? p.b : (done>=1 ? -p.b : null), fin=done>=n, land=p.ans;
+  const lo=Math.min(0,a,land)-1, hi=Math.max(0,a,land)+1;
+  const W=340, pad=18, Y=80, X=v=>pad+(v-lo)*(W-2*pad)/(hi-lo);
+  let g=`<line x1="${pad-6}" y1="${Y}" x2="${W-pad+6}" y2="${Y}" stroke="#9aa0cf" stroke-width="2"/>`
+       +`<path d="M${pad-10},${Y} l7,-5 v10z M${W-pad+10},${Y} l-7,-5 v10z" fill="#9aa0cf"/>`;
+  const keep=[0,a].concat(fin?[land]:[]);
+  for(let v=lo;v<=hi;v++){ const big=v%5===0;
+    g+=`<line x1="${X(v)}" y1="${Y-(big?7:4)}" x2="${X(v)}" y2="${Y+(big?7:4)}" stroke="${v===0?'#f1f3ff':'#5b6190'}" stroke-width="${v===0?2.5:1.5}"/>`;
+    if((big && keep.every(k=>Math.abs(k-v)>=2)) || v===0)
+      g+=`<text x="${X(v)}" y="${Y+27}" text-anchor="middle" font-size="15" fill="${v===0?'#f1f3ff':'#9aa0cf'}" font-family="ui-monospace,Menlo,monospace">${S(v)}</text>`;
+  }
+  // start point
+  g+=`<circle cx="${X(a)}" cy="${Y}" r="6" fill="#63a8ef"/>`
+    +`<text x="${X(a)}" y="${Y+27}" text-anchor="middle" font-size="17" font-weight="700" fill="#63a8ef" font-family="ui-monospace,Menlo,monospace">${S(a)}</text>`;
+  if(hop!==null){
+    const x1=X(a), x2=X(a+hop), h=Math.min(44,14+Math.abs(x2-x1)*0.28), mx=(x1+x2)/2, dir=Math.sign(x2-x1)||1;
+    g+=`<path d="M${x1},${Y-8} Q${mx},${Y-8-h*2} ${x2},${Y-8}" fill="none" stroke="#ffbb4d" stroke-width="2.5"/>`
+      +`<path d="M${x2},${Y-7} l${-dir*9},-6 l${dir*2},9 z" fill="#ffbb4d"/>`
+      +`<text x="${mx}" y="${Math.max(17,Y-8-h-8)}" text-anchor="middle" font-size="16" font-weight="700" fill="#ffbb4d" font-family="system-ui,sans-serif">${hop<0?'−':'+'}${Math.abs(hop)} (${Math.abs(hop)} ${hop<0?'left':'right'})</text>`;
+    if(fin) g+=`<circle cx="${x2}" cy="${Y}" r="6" fill="#39d99a"/>`
+      +`<text x="${x2}" y="${Y+27}" text-anchor="middle" font-size="17" font-weight="700" fill="#39d99a" font-family="ui-monospace,Menlo,monospace">${S(land)}</text>`;
+    else g+=`<text x="${x2}" y="${Y+27}" text-anchor="middle" font-size="18" font-weight="700" fill="#ffbb4d" font-family="system-ui,sans-serif">?</text>`;
+  }
+  let cap;
+  if(p.op==='+') cap = `Start at <b>${S(a)}</b>. Adding a ${p.b<0?'negative number moves <b>left</b>':'positive number moves <b>right</b>'}.`;
+  else cap = hop===null ? `Start at <b>${S(a)}</b>. Subtracting means adding the opposite. Find the opposite to see which way to move.`
+                        : `Add the opposite: move <b>${Math.abs(hop)} ${hop<0?'left':'right'}</b> from ${S(a)}.`;
+  if(fin) cap = `${S(a)} ${p.op} ${P(p.b)} = <b style="color:#39d99a">${S(land)}</b>. You landed on ${S(land)}.`;
+  el.innerHTML=`<svg viewBox="0 0 ${W} 116" role="img" aria-label="number line from ${S(lo)} to ${S(hi)}">${g}</svg><div class="nlcap">${cap}</div>`;
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;

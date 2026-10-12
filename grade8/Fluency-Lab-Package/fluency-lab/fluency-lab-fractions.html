@@ -88,6 +88,20 @@
   .lcdline{margin-top:10px}
   .fbx.nudge{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
   .verdict.nudge{color:var(--amber)}
+  .hintbtn{margin-top:8px;font:700 13px var(--sans);color:var(--amber);background:transparent;border:1px dashed var(--amber);
+    border-radius:999px;padding:5px 12px;cursor:pointer}
+  .xo{display:inline-flex;align-items:baseline;gap:3px}
+  .xo s{color:var(--muted);text-decoration-color:var(--coral);text-decoration-thickness:3px}
+  .xo i{font-style:normal;color:var(--amber);font-size:.8em}
+  .wline.cancel{font-size:26px}
+  .fbcap{font-family:var(--sans);font-size:13px;color:var(--muted);text-align:center;margin:-2px 0 6px;line-height:1.4}
+  .fbars{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;margin:8px auto 6px;max-width:440px}
+  .fbar{display:inline-flex;border:2px solid var(--ink);border-radius:4px;overflow:hidden}
+  .fbar i{width:16px;height:22px;border-right:1px solid #454c86;background:transparent}
+  .fbar i:last-child{border-right:0}
+  .fbar i.on{background:var(--sky)}
+  .wline .whole{margin-right:6px}
+  .wline .whole.res{color:var(--mint)}
   .fbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:58px;height:42px;padding:0;text-align:center;
     font-size:24px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
     outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
@@ -265,7 +279,11 @@ function genMul(){ const [a1,b1]=coprimeProper(),[a2,b2]=coprimeProper(); const 
   return {type:'mul',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}<span class="op">×</span>${frac(a2,b2)}`};}
 function genDiv(){ const [a1,b1]=coprimeProper(),[a2,b2]=coprimeProper(); const [rn,rd]=red(a1*b2,b1*a2);
   return {type:'div',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}<span class="op">÷</span>${frac(a2,b2)}`};}
-const GEN={1:genSimplify,2:genEquiv,3:genAddLike,4:genAddUnlike,5:genMul,6:genDiv};
+function mixedHTML(W,n,d,cls){ return `<span class="whole ${cls||''}">${W}</span>${frac(n,d,cls)}`; }
+function genMixed(){ const W=rnd(1,5), d=rnd(2,9), n=rnd(1,d-1), N=W*d+n;
+  if(Math.random()<0.5) return {type:'m2i',W,n,d,N,ansN:N,ansD:d,display:`<span class="lbl">Improper</span>${mixedHTML(W,n,d)}`};
+  return {type:'i2m',W,n,d,N,ansN:N,ansD:d,ansText:`${W} ${n}/${d}`,display:`<span class="lbl">Mixed</span>${frac(N,d)}`}; }
+const GEN={1:()=>Math.random()<0.35?genMixed():genSimplify(),2:genEquiv,3:genAddLike,4:genAddUnlike,5:genMul,6:genDiv};
 
 function nextProblem(){
   let useLevel=level;
@@ -283,7 +301,32 @@ function lowestStep(rawN,rawD,ansN,ansD){
              :`The GCF is 1, so ${frac(rawN,rawD)} is already in lowest terms — write it as is.`,
     line:`= ${frac(ansN,ansD,'res')}`, last:true};
 }
-function buildSteps(p){
+// improper answer: also write it as a mixed number
+function mixedStep(N,D){ const W=Math.floor(N/D), R=N%D;
+  return {lab:'Last step · mixed number', mixed:true,
+    q:`${frac(N,D)} is more than 1 whole. Write it as a <b>mixed number</b>: how many wholes (<b>${N} ÷ ${D}</b>), and how much is left over?`,
+    boxes:[{bl:'wholes',expect:W},{bl:'left over',expect:R,connector:' '},{bl:'bottom',expect:D,connector:'/'}],
+    info:`${N} ÷ ${D} = ${W} with ${R} left over. So ${frac(N,D)} = ${W} and ${R}/${D}. The bottom stays ${D}.`};
+}
+// cross-cancel before multiplying n1/d1 × n2/d2: a top and the OTHER bottom may share a factor
+function cancelInfo(n1,d1,n2,d2){ const g1=gcd(n1,d2), g2=gcd(n2,d1);
+  return {g1,g2,k:g1*g2,n1,d1,n2,d2,cn1:n1/g1,cd2:d2/g1,cn2:n2/g2,cd1:d1/g2}; }
+function buildSteps(p){ const st=buildSteps0(p);
+  if(['addlike','addunlike','div'].includes(p.type) && p.ansN>p.ansD && p.ansD>1) st.push(mixedStep(p.ansN,p.ansD));
+  return st; }
+function buildSteps0(p){
+  if(p.type==='m2i'){ const wd=p.W*p.d; return [
+    {lab:'Step 1 · wholes into pieces', q:`Each whole has <b>${p.d}</b> pieces of size 1/${p.d}. How many pieces are in <b>${p.W}</b> wholes? <b>${p.W} × ${p.d}</b>.`,
+     boxes:[{bl:`${p.W} × ${p.d}`,expect:wd}], info:`${p.W} wholes × ${p.d} pieces each = ${wd} pieces.`},
+    {lab:'Step 2 · add the extra pieces', q:`Add the <b>${p.n}</b> extra pieces: <b>${wd} + ${p.n}</b>. The bottom stays <b>${p.d}</b>.`,
+     boxes:[{bl:`${wd} + ${p.n}`,expect:p.N},{bl:'bottom',expect:p.d,connector:'/'}], info:`${wd} + ${p.n} = ${p.N}, so ${p.W} ${p.n}/${p.d} = ${p.N}/${p.d}.`}
+  ];}
+  if(p.type==='i2m'){ return [
+    {lab:'Step 1 · how many wholes?', q:`Divide: <b>${p.N} ÷ ${p.d}</b>. How many whole groups of ${p.d}, and how many left over?`,
+     boxes:[{bl:`${p.N} ÷ ${p.d}`,expect:p.W},{bl:'remainder',expect:p.n,connector:'r'}], info:`${p.d} × ${p.W} = ${p.W*p.d}, and ${p.N} − ${p.W*p.d} = ${p.n} left over.`},
+    {lab:'Step 2 · write the mixed number', q:`The wholes go in front. The left over goes on top. The bottom stays <b>${p.d}</b>.`,
+     boxes:[{bl:'wholes',expect:p.W},{bl:'top',expect:p.n,connector:' '},{bl:'bottom',expect:p.d,connector:'/'}], info:`${p.N}/${p.d} = ${p.W} ${p.n}/${p.d}.`}
+  ];}
   if(p.type==='simplify'){ const g=gcd(p.N,p.D); return [
     {lab:'Step 1 · greatest common factor', q:`Find the <b>GCF</b> of ${p.N} and ${p.D} — the biggest number that divides into both.`,
      boxes:[{bl:`GCF of ${p.N} & ${p.D}`,expect:g}], info:`${g} is the largest number that divides both ${p.N} and ${p.D}.`, line:`GCF = ${g}`},
@@ -325,6 +368,7 @@ function buildSteps(p){
   ];}
   if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2; return [
     {lab:'Step 1 · multiply straight across', q:`Multiply <b>tops together</b> and <b>bottoms together</b> — no common denominator needed for ×.`,
+     pair:{tn,td,ci:cancelInfo(p.a1,p.b1,p.a2,p.b2),next:1},
      boxes:[{bl:`${p.a1} × ${p.a2}`,expect:tn},{bl:`${p.b1} × ${p.b2}`,expect:td,connector:'/'}],
      info:`${p.a1}×${p.a2}=${tn} over ${p.b1}×${p.b2}=${td}.`, line:`= ${frac(tn,td)}`},
     lowestStep(tn,td,p.ansN,p.ansD)
@@ -335,6 +379,7 @@ function buildSteps(p){
      boxes:[{bl:'new top',expect:p.b2},{bl:'new bottom',expect:p.a2,connector:'/'}],
      info:`The reciprocal of ${p.a2}/${p.b2} is ${p.b2}/${p.a2}. Flipping undoes the division.`, line:`= ${frac(p.a1,p.b1)} × ${frac(p.b2,p.a2)}`},
     {lab:'Step 2 · multiply straight across', q:`Now multiply across: <b>${p.a1}×${p.b2}</b> over <b>${p.b1}×${p.a2}</b>.`,
+     pair:{tn,td,ci:cancelInfo(p.a1,p.b1,p.b2,p.a2),next:2},
      boxes:[{bl:`${p.a1} × ${p.b2}`,expect:tn},{bl:`${p.b1} × ${p.a2}`,expect:td,connector:'/'}],
      info:`${p.a1}×${p.b2}=${tn} over ${p.b1}×${p.a2}=${td}.`, line:`= ${frac(tn,td)}`},
     lowestStep(tn,td,p.ansN,p.ansD)
@@ -396,17 +441,42 @@ function drawWork(p,steps,done,el){
     L.push(`<div class="wline${done>=2?' pastline':''}"><div class="pair">${A}${OPX(p.op)}${B}</div></div>`);
     if(done>=2) L.push(`<div class="wline${done>=3?' pastline':''}">${frac(u.t1,D)}${OPX(p.op)}${frac(u.t2,D)}${EQ}${done===2?FR(box(0),box(1)):frac(rawN,D)}</div>`);
     if(done>=3) L.push(lowestSC(rawN,D,p.ansN,p.ansD,3,done,box));
-  } else if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2;
+  } else if(p.type==='mul'){ const tn=p._tn||p.a1*p.a2, td=p._td||p.b1*p.b2;
+    if(done===0 && G && G.showCancel) L.push(cancelLine(steps[0].pair.ci));
     L.push(`<div class="wline${done>=1?' pastline':''}">${EQ}${FR(`${p.a1}×${p.a2}`,`${p.b1}×${p.b2}`,'expr')}${EQ}${done===0?FR(box(0),box(1)):frac(tn,td)}</div>`);
     if(done>=1) L.push(lowestSC(tn,td,p.ansN,p.ansD,1,done,box));
-  } else { // div
-    const tn=p.a1*p.b2, td=p.b1*p.a2;
+  } else if(p.type==='div'){
+    const tn=p._tn||p.a1*p.b2, td=p._td||p.b1*p.a2;
     L.push(`<div class="wline${done>=1?' pastline':''}">${EQ}${frac(p.a1,p.b1)}${OPX('×')}${done===0?FR(box(0),box(1))+`<span class="flip">↻ flip ${p.a2}/${p.b2}</span>`:FR(p.b2,p.a2)}</div>`);
+    if(done===1 && G && G.showCancel) L.push(cancelLine(steps[1].pair.ci));
     if(done>=1) L.push(`<div class="wline${done>=2?' pastline':''}">${EQ}${FR(`${p.a1}×${p.b2}`,`${p.b1}×${p.a2}`,'expr')}${EQ}${done===1?FR(box(0),box(1)):frac(tn,td)}</div>`);
     if(done>=2) L.push(lowestSC(tn,td,p.ansN,p.ansD,2,done,box));
+  } else if(p.type==='m2i'){ const wd=p.W*p.d;
+    L.push(barsHTML(p.N,p.d));
+    L.push(`<div class="wline">${mixedHTML(p.W,p.n,p.d)}${EQ}${FR(`${p.W}×${p.d} + ${p.n}`,`${p.d}`,'expr')}${EQ}`
+      +(done===0?FR(`${box(0)} + ${p.n}`,p.d):done===1?FR(box(0),box(1)):FR(p.N,p.d,'res'))+`</div>`);
+  } else if(p.type==='i2m'){
+    L.push(barsHTML(p.N,p.d));
+    L.push(`<div class="wline${done>=1?' pastline':''}">${p.N} ÷ ${p.d} ${EQ} ${done===0?box(0):p.W} <span class="opx">r</span> ${done===0?box(1):p.n}</div>`);
+    if(done>=1) L.push(`<div class="wline">${frac(p.N,p.d)}${EQ}`+(done===1?`<span class="whole">${box(0)}</span>${FR(box(1),box(2))}`:mixedHTML(p.W,p.n,p.d,'res'))+`</div>`);
   }
+  // improper answer → mixed number (last step)
+  const mi=steps.findIndex(x=>x.mixed);
+  if(mi>=0 && done>=mi){ const W=Math.floor(p.ansN/p.ansD), R=p.ansN%p.ansD;
+    L.push(`<div class="wline">${frac(p.ansN,p.ansD)}${EQ}`+(done===mi?`<span class="whole">${box(0)}</span>${FR(box(1),box(2))}`:mixedHTML(W,R,p.ansD,'res'))+`</div>`); }
   el.innerHTML=L.join('');
 }
+
+// fraction bars: N pieces of size 1/d, d pieces to a whole
+function barsHTML(N,d){ const bars=Math.ceil(N/d); let h='<div class="fbars">';
+  for(let b=0;b<bars;b++){ h+='<span class="fbar">'; for(let k=0;k<d;k++){ h+=`<i class="${b*d+k<N?'on':''}"></i>`; } h+='</span>'; }
+  return h+`</div><div class="fbcap">Each bar is 1 whole cut into ${d} pieces. ${N} pieces are shaded.</div>`; }
+// simplify-first picture: cross out a top and the other bottom that share a factor
+function cancelLine(ci){ const X=(o,n,g)=>g>1?`<span class="xo"><s>${o}</s><i>${n}</i></span>`:`${o}`;
+  return `<div class="wline cancel">${FR(X(ci.n1,ci.cn1,ci.g1),X(ci.d1,ci.cd1,ci.g2))}${OPX('×')}${FR(X(ci.n2,ci.cn2,ci.g2),X(ci.d2,ci.cd2,ci.g1))}</div>`
+    +`<div class="fbcap">`+[ci.g1>1?`${ci.n1} and ${ci.d2} share ${ci.g1}`:'',ci.g2>1?`${ci.n2} and ${ci.d1} share ${ci.g2}`:''].filter(Boolean).join('. ')
+    +`. Divide both by it, then multiply the smaller numbers.</div>`; }
+function showCancel(){ G.showCancel=true; renderWork(); const f=stepInputs()[0]; if(f) f.focus(); }
 
 /* ---------- the boxes of one step (all of them sit in the written work) ---------- */
 const grpInputs=g=>Array.from(document.querySelectorAll(`#fwork input[data-g="${g}"]`));
@@ -426,7 +496,8 @@ function renderStep(){
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
-  $('papernote').innerHTML=`Type in the <b>boxes in the work</b> above. Each one sits right where its number goes: top or bottom of the fraction. A tile with <b>↑</b> points up to it.`;
+  $('papernote').innerHTML=`Type in the <b>boxes in the work</b> above. Each one sits right where its number goes: top or bottom of the fraction. A tile with <b>↑</b> points up to it.`
+    +(st.pair && st.pair.ci.k>1 ? `<br><button type="button" class="hintbtn" onclick="showCancel()">Shortcut: simplify first?</button>` : ``);
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     const conn=bx.connector?`<span class="conn">${bx.connector==='&'?'and':bx.connector}</span>`:'';
     return `${i>0?conn:''}<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
@@ -439,6 +510,7 @@ function renderStep(){
 }
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
+  if(st.pair && checkPair(st)) return;
   // a common denominator that is not the lowest one: nudge only (no miss, streak safe)
   for(let i=0;i<st.boxes.length;i++){ const bx=st.boxes[i]; if(!bx.nudge) continue;
     const msg=bx.nudge(boxVal(i)); if(!msg) continue;
@@ -466,9 +538,25 @@ function checkStep(){
   G.si++; renderWork();
   if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
 }
+// multiply straight across: plain products are right, and so are products after simplifying first
+function checkPair(st){
+  const P=st.pair, ci=P.ci, n=+boxVal(0), d=+boxVal(1);
+  const ks=[...new Set([1,ci.g1,ci.g2,ci.k])];
+  const k=ks.find(k=>n===P.tn/k && d===P.td/k);
+  if(k===undefined || boxVal(0)==='' || boxVal(1)==='') return false;     // let the normal check mark the mistake
+  markGroup(0,true); markGroup(1,true);
+  current._tn=n; current._td=d;
+  G.steps[P.next]=lowestStep(n,d,current.ansN,current.ansD);
+  const nudge = (k===1 && ci.k>1) ? `Right! Shortcut for next time: ${[ci.g1>1?`${ci.n1} and ${ci.d2} share ${ci.g1}`:'',ci.g2>1?`${ci.n2} and ${ci.d1} share ${ci.g2}`:''].filter(Boolean).join(', and ')}. Simplify first and the numbers stay small.`
+              : (k>1 ? 'You simplified first. Smart move!' : '');
+  G.si++; G.showCancel=false; renderWork();
+  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
+  if(nudge && G.si<G.steps.length){ const gv=$('gverdict'); gv.textContent=nudge; gv.className='verdict nudge'; }
+  return true;
+}
 function finishGuided(){
   const right=!current._hadError;
-  const ans = current.numeric?`${current.ansN}`:`${current.ansN}/${current.ansD}`;
+  const ans = current.ansText ? current.ansText : current.numeric?`${current.ansN}`:`${current.ansN}/${current.ansD}`;
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — the answer is ${ans}.`;
   gv.className='verdict good pop';

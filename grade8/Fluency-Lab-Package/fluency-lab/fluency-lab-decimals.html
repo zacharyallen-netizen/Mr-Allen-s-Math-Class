@@ -54,6 +54,10 @@
   .opc{width:40px;height:50px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:34px}
   .gp.hot,.dg.hot{color:var(--amber)}
   .gp.dropped{color:var(--coral);opacity:.4}
+  .dg.ph{color:var(--amber)}
+  .dg.vinc,.gp.vinc{border-top:4px solid var(--ink)}
+  .vincrow .opc{color:var(--ink);font-size:36px;justify-content:flex-end;padding-right:2px}
+  .drow.qrow{margin-bottom:2px}
   .dg.dp{box-shadow:inset 0 -4px 0 var(--amber)}
   .drow.ans .dg{color:var(--mint)} .drow.ans .gp{color:var(--mint)}
   .drow.ans .dg.plain{color:var(--ink)}
@@ -209,7 +213,31 @@ const pick=a=>a[Math.floor(Math.random()*a.length)];
 const $=id=>document.getElementById(id);
 function sp(t){return `<span class="op">${t}</span>`;}
 
+// new variants (mixed in): placeholder zeros, decimal × decimal, dividing decimals, repeating decimals
+function genVariant(L){
+  if(L===1){ const shortA=Math.random()<0.5;
+    const a=shortA?rnd(11,99)/10:rnd(15,995)/100, b=shortA?rnd(15,995)/100:rnd(11,99)/10, ans=Math.round((a+b)*100)/100;
+    return {kind:'add',a,b,ans,short:shortA?'a':'b',display:`${a.toFixed(shortA?1:2)}${sp('+')}${b.toFixed(shortA?2:1)}`}; }
+  if(L===2){ let a,b,short;
+    if(Math.random()<0.5){ a=rnd(200,999)/100; b=rnd(2,Math.floor(a*10)-1)/10; short='b'; }
+    else { a=rnd(20,99)/10; b=rnd(15,Math.round(a*100)-1)/100; short='a'; }
+    const ans=Math.round((a-b)*100)/100;
+    return {kind:'sub',a,b,ans,short,display:`${a.toFixed(short==='a'?1:2)}${sp('−')}${b.toFixed(short==='b'?1:2)}`}; }
+  if(L===3){ const r=Math.random();
+    if(r<0.34){ const a=rnd(11,99)/10, b=rnd(2,9)/10, ans=Math.round(a*b*100)/100;
+      return {kind:'mul',a,b,ans,pb:1,display:`${a.toFixed(1)}${sp('×')}${b.toFixed(1)}`}; }
+    if(r<0.67){ const d=rnd(2,9), qi=rnd(11,99), N=qi*d/10, q=qi/10;
+      return {kind:'divw',N,d,q,ans:q,display:`${N.toFixed(1)}${sp('÷')}${d}`}; }
+    const b=rnd(2,9)/10, q=rnd(2,12), a=Math.round(q*b*10)/10;
+    return {kind:'divd',a,b,q,ans:q,display:`${a.toFixed(1)}${sp('÷')}${b.toFixed(1)}`}; }
+  // L5: a fraction whose decimal repeats
+  const fr=pick([[1,3],[2,3],[1,6],[5,6],[1,9],[2,9],[4,9],[5,9],[7,9]]);
+  return {kind:'f2r',fn:fr[0],fd:fr[1],display:`${fr[0]} / ${fr[1]}  as a decimal`};
+}
 function gen(L){
+  if((L===1||L===2) && Math.random()<0.4) return genVariant(L);
+  if(L===3 && Math.random()<0.6) return genVariant(L);
+  if(L===5 && Math.random()<0.4) return genVariant(L);
   if(L===1){const a=rnd(15,995)/100,b=rnd(15,995)/100; const ans=Math.round((a+b)*100)/100;
     return {kind:'add',a,b,ans,display:`${a.toFixed(2)}${sp('+')}${b.toFixed(2)}`};}
   if(L===2){const a=rnd(200,999)/100,b=rnd(15,Math.round(a*100)-1)/100; const ans=Math.round((a-b)*100)/100;
@@ -227,7 +255,45 @@ function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;curr
 
 /* ---------- guided steps ---------- */
 let G=null;
-function buildSteps(p){
+// long division of fn ÷ fd until a remainder comes back
+function repTrace(fn,fd){ const seen={}, rows=[]; let r=fn;
+  while(!(r in seen) && rows.length<4){ seen[r]=rows.length; const w=r*10, dig=Math.floor(w/fd), rem=w%fd; rows.push({w,dig,rem}); r=rem; }
+  const start=seen[r];   // the digits from here on repeat
+  return {rows,start,lead:rows.slice(0,start).map(x=>x.dig).join(''),rep:rows.slice(start).map(x=>x.dig).join('')}; }
+const OL=t=>`<span style="text-decoration:overline;text-decoration-thickness:2px">${t}</span>`;
+function buildSteps(p){ const st=buildSteps0(p);
+  if(p.short){ const x=p.short==='a'?p.a:p.b;
+    st.unshift({lab:'Step 1 · placeholder zero', q:`<b>${x.toFixed(1)}</b> has only 1 decimal place. The other number has 2. Put a <b>0</b> on the end so both have 2 places. A zero on the end does not change the value: ${x.toFixed(1)} = ${x.toFixed(2)}.`,
+      boxes:[{bl:'placeholder',expect:0,where:'paper',digits:true}], info:`${x.toFixed(1)} = ${x.toFixed(2)}. Write 0 in the empty hundredths place.`, line:`${x.toFixed(1)} → ${x.toFixed(2)}`});
+    st.forEach((x,i)=>{ x.lab=x.lab.replace(/^Step \d+/,'Step '+(i+1)); }); }
+  return st; }
+function buildSteps0(p){
+  if(p.kind==='divw'){ const qi=Math.round(p.q*10), Ni=Math.round(p.N*10);
+    return [
+      {lab:'Step 1 · divide like whole numbers', q:`Ignore the point for now and divide: <b>${Ni} ÷ ${p.d}</b>. Write the answer above the number you are dividing.`,
+       boxes:[{bl:`${Ni} ÷ ${p.d}`,expect:qi,where:'paper',digits:true}], info:`${Ni} ÷ ${p.d} = ${qi}.`},
+      {lab:'Step 2 · point goes straight up', q:`When you divide by a whole number, the point in the answer goes <b>straight up</b> from the point in ${p.N.toFixed(1)}.`,
+       boxes:[{bl:'answer',expect:p.q,dec:true,where:'paper',pt:true}], info:`The point goes right above the point: ${p.q}.`}
+    ]; }
+  if(p.kind==='divd'){ const ai=Math.round(p.a*10), bi=Math.round(p.b*10);
+    return [
+      {lab:'Step 1 · make the divisor whole', q:`You cannot easily divide by <b>${p.b.toFixed(1)}</b>. Move the point <b>1 place right</b> in <b>both</b> numbers (multiply both by 10). The answer stays the same.`,
+       boxes:[{bl:`${p.b.toFixed(1)} × 10`,expect:bi},{bl:`${p.a.toFixed(1)} × 10`,expect:ai,connector:'·'}],
+       info:`${p.b.toFixed(1)} × 10 = ${bi} and ${p.a.toFixed(1)} × 10 = ${ai}. So ${p.a.toFixed(1)} ÷ ${p.b.toFixed(1)} is the same as ${ai} ÷ ${bi}.`, line:`${p.a.toFixed(1)} ÷ ${p.b.toFixed(1)} = ${ai} ÷ ${bi}`},
+      {lab:'Step 2 · divide', q:`Now divide whole numbers: <b>${ai} ÷ ${bi}</b>.`,
+       boxes:[{bl:`${ai} ÷ ${bi}`,expect:p.q}], info:`${ai} ÷ ${bi} = ${p.q}.`, line:`= ${p.q}`, last:true}
+    ]; }
+  if(p.kind==='f2r'){ const t=repTrace(p.fn,p.fd); p._t=t;
+    p.ans=`0.${t.lead}${t.rep}${t.rep}… (0.${t.lead}${t.rep} with a bar over ${t.rep})`;
+    const st=t.rows.map((r,i)=>({lab:`Step ${i+1} · ${i===0?'start dividing':'keep dividing'}`,
+      q:(i===0?`A fraction means top ÷ bottom: <b>${p.fn} ÷ ${p.fd}</b>. ${p.fd} does not go into ${p.fn}, so write <b>0.</b> and add a zero: `:`Bring down another 0: `)
+        +`<b>${r.w} ÷ ${p.fd}</b>. What is the digit, and what is left over?`,
+      boxes:[{bl:`${r.w} ÷ ${p.fd}`,expect:r.dig},{bl:'left over',expect:r.rem,connector:'r'}],
+      info:`${p.fd} × ${r.dig} = ${p.fd*r.dig}, and ${r.w} − ${p.fd*r.dig} = ${r.rem} left over.`, row:i}));
+    st.push({lab:`Step ${t.rows.length+1} · it repeats!`,
+      q:`The left over <b>${t.rows[t.rows.length-1].rem}</b> came back, so the same digits will come back <b>forever</b>. Which digit repeats? We draw a <b>bar</b> over it.`,
+      boxes:[{bl:'repeating digit',expect:+t.rep}], info:`After 0.${t.lead}, the digit ${t.rep} repeats forever: 0.${t.lead}${t.rep}${t.rep}${t.rep}… We write it 0.${t.lead}${t.rep} with a bar over the ${t.rep}.`});
+    return st; }
   if(p.kind==='add'||p.kind==='sub'){
     const ai=Math.round(p.a*100), bi=Math.round(p.b*100);
     const si=p.kind==='add'?ai+bi:ai-bi; const op=p.kind==='add'?'+':'−';
@@ -238,12 +304,15 @@ function buildSteps(p){
        boxes:[{bl:'answer',expect:p.ans,dec:true,where:'paper',pt:true}], info:`${si} hundredths = ${p.ans.toFixed(2)}.`, line:`= ${p.ans.toFixed(2)}`, last:true}
     ];
   }
-  if(p.kind==='mul'){ const ai=Math.round(p.a*10), prod=ai*p.b;
+  if(p.kind==='mul'){ const pb=p.pb||0, ai=Math.round(p.a*10), bi=Math.round(p.b*10**pb), prod=ai*bi, P=1+pb;
+    const bTxt=pb?p.b.toFixed(1):String(p.b);
     return [
-      {lab:'Step 1 · ignore the point', q:`Drop the decimal point and multiply whole numbers: <b>${ai} × ${p.b}</b>.`,
-       boxes:[{bl:`${ai} × ${p.b}`,expect:prod,where:'paper',digits:true}], info:`${ai} × ${p.b} = ${prod}.`, line:`${ai} × ${p.b} = ${prod}`},
-      {lab:'Step 2 · count decimal places', q:`<b>${p.a.toFixed(1)}</b> has <b>1 decimal place</b>, so the answer has 1. Put the point back.`,
-       boxes:[{bl:'answer',expect:p.ans,dec:true,where:'paper',pt:true}], info:`${prod} with 1 decimal place = ${p.ans.toFixed(1)}.`, line:`= ${p.ans.toFixed(1)}`, last:true}
+      {lab:'Step 1 · ignore the point', q:`Drop the decimal point${pb?'s':''} and multiply whole numbers: <b>${ai} × ${bi}</b>.`,
+       boxes:[{bl:`${ai} × ${bi}`,expect:prod,where:'paper',digits:true}], info:`${ai} × ${bi} = ${prod}.`, line:`${ai} × ${bi} = ${prod}`},
+      {lab:'Step 2 · count decimal places', q:pb
+        ? `<b>${p.a.toFixed(1)}</b> has <b>1 decimal place</b> and <b>${bTxt}</b> has <b>1</b>. That is <b>2 in all</b>, so the answer has 2. Put the point back.`
+        : `<b>${p.a.toFixed(1)}</b> has <b>1 decimal place</b>, so the answer has 1. Put the point back.`,
+       boxes:[{bl:'answer',expect:p.ans,dec:true,where:'paper',pt:true}], info:`${prod} with ${P} decimal place${P>1?'s':''} = ${p.ans.toFixed(P)}.`, line:`= ${p.ans.toFixed(P)}`, last:true}
     ];
   }
   if(p.kind==='d2p'){
@@ -275,16 +344,36 @@ function renderProblem(){
   G={steps:buildSteps(current), si:0, tries:0};
   renderWork(); renderStep(); paintDots();
 }
-const PAPER=p=>p.kind==='add'||p.kind==='sub'||p.kind==='mul';
+const PAPER=p=>p.kind==='add'||p.kind==='sub'||p.kind==='mul'||p.kind==='divw';
 function renderWork(){
   if(PAPER(current)){ drawDec(current,G.steps,G.si,$('fwork')); return; }
   const done=G.steps.slice(0,G.si).filter(s=>s.line);
-  $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  let h=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  if(current.kind==='divd') h=divdVis(current,G.si)+h;
+  if(current.kind==='f2r') h=repVis(current,G.si,G.steps.length);
+  $('fwork').innerHTML=h;
 }
+// ÷ decimal: move both points the same number of places
+function divdVis(p,done){ const ai=Math.round(p.a*10), bi=Math.round(p.b*10);
+  const v=(x,k)=>done>=1?`<b style="color:var(--mint)">${x}</b>`:`<span style="color:var(--amber)">?</span>`;
+  return `<div class="fline" style="color:var(--ink)">${p.a.toFixed(1)} ÷ ${p.b.toFixed(1)} <span style="color:var(--amber);font-size:.7em">× 10 both →</span> ${v(ai)} ÷ ${v(bi)}</div>`
+    +`<div class="dtag">Moving both points the same way keeps the answer the same.</div>`; }
+// repeating decimal: the answer grows one digit per step; the remainders show when it repeats
+function repVis(p,done,n){ const t=p._t; const k=Math.min(done,t.rows.length);
+  const digs=t.rows.slice(0,k).map(r=>r.dig).join('');
+  let ans = done>=n ? `0.${t.lead}${OL(t.rep)}` : `0.${digs}<span style="color:var(--amber)">${k<t.rows.length?'?':''}</span>${k===t.rows.length?'…':''}`;
+  const rems=[p.fn].concat(t.rows.slice(0,k).map(r=>r.rem));
+  const repR=t.rows[t.rows.length-1].rem;
+  const remTxt=rems.map((r,i)=>`<span style="${i>0&&r===repR&&k===t.rows.length?'color:var(--amber);font-weight:700':''}">${r}</span>`).join(' → ');
+  return `<div class="fline" style="color:var(--ink);font-size:30px">${p.fn} ÷ ${p.fd} = <span style="color:${done>=n?'var(--mint)':'var(--ink)'}">${ans}</span></div>`
+    +`<div class="dtag" style="color:var(--muted)">left over each time: ${remTxt}${k===t.rows.length?` &nbsp;<b style="color:var(--amber)">← came back, so it repeats</b>`:''}</div>`; }
 // place-value frame: n digit columns with a gap column between each pair; the point lives in gap ptGap
 function decLayout(p){
-  if(p.kind==='mul'){ const ai=Math.round(p.a*10), prod=ai*p.b; const n=String(prod).length;
-    return {n, ptGap:n-2, ai, whole:prod, places:1}; }
+  if(p.kind==='mul'){ const pb=p.pb||0, ai=Math.round(p.a*10), bi=Math.round(p.b*10**pb), prod=ai*bi, P=1+pb;
+    const n=Math.max(String(prod).length,P+1,String(ai).length,String(bi).length);
+    return {n, ptGap:n-1-P, ai, bi, pb, whole:prod, places:P}; }
+  if(p.kind==='divw'){ const Ni=Math.round(p.N*10), qi=Math.round(p.q*10), n=String(Ni).length;
+    return {n, ptGap:n-2, Ni, whole:qi, places:1}; }
   const ai=Math.round(p.a*100), bi=Math.round(p.b*100), si=p.kind==='add'?ai+bi:ai-bi;
   const I=Math.max(String(Math.floor(p.a)).length,String(Math.floor(p.b)).length,String(Math.floor(p.ans)).length);
   return {n:I+2, ptGap:I-1, ai, bi, whole:si, places:2};
@@ -293,41 +382,56 @@ function dRow(cls,lead,cells,gaps){ let h=`<div class="drow${cls?' '+cls:''}"><s
   cells.forEach((c,i)=>{ h+=c; if(i<cells.length-1) h+=gaps[i]; }); return h+'</div>'; }
 const DG=(d,cls)=>`<span class="dg${cls?' '+cls:''}">${d===' '?'':d}</span>`;
 const GP=(t,cls)=>`<span class="gp${cls?' '+cls:''}">${t||''}</span>`;
+const DBX=(g,k,label)=>`<span class="dg"><input class="dbx" data-g="${g}" data-k="${k}" maxlength="1" inputmode="numeric" autocomplete="off" aria-label="${label}"></span>`;
 function numCells(str,n,clsFn){ return str.padStart(n,' ').split('').map((d,i)=>DG(d,clsFn?clsFn(i,d):'')); }
+// answer row: digit boxes (st 0), then tap-a-gap slots (st 1), then the finished number
+function ansRow(L,n,st,clsLast){
+  if(st<0) return dRow('ans','',Array.from({length:n},()=>DG(' ')),Array(n-1).fill(GP('')));
+  if(st===0) return dRow('ans','',Array.from({length:n},(_,k)=>DBX(0,k,`answer digit ${k+1}`)),Array(n-1).fill(GP('')));
+  const str=String(L.whole).padStart(n,'0');
+  const cells=str.split('').map((d,i)=>DG(d,st===1?'plain':(clsLast&&i>=n-L.places?'dp':'')));
+  const gaps = st===1 ? Array.from({length:n-1},(_,i)=>`<span class="gp"><button type="button" class="ptslot" data-g="0" data-k="${i}" aria-label="put the point after digit ${i+1}"></button></span>`)
+                      : Array.from({length:n-1},(_,i)=>i===L.ptGap?GP('.'):GP(''));
+  return dRow('ans','',cells,gaps);
+}
 function drawDec(p,steps,done,el){
-  const L=decLayout(p), n=L.n, live=done<steps.length?steps[done]:null;
-  const gapsWithPt=(cls)=>Array.from({length:n-1},(_,i)=>i===L.ptGap?GP('.',cls):GP(''));
+  const L=decLayout(p), n=L.n;
+  const off=p.short?1:0, st=done-off;           // with a placeholder-zero step first, the rest shift by one
+  const ptAt=(gap,cls)=>Array.from({length:n-1},(_,i)=>i===gap?GP('.',cls):GP(''));
   let h='';
+  if(p.kind==='divw'){
+    // answer on top, divisor ) number below
+    h+=ansRow(L,n,st,false).replace('class="drow ans"','class="drow ans qrow"');
+    const cells=numCells(String(L.Ni),n).map(c=>c.replace('class="dg','class="dg vinc'));
+    h+=dRow('vincrow', `${p.d})`, cells, ptAt(L.ptGap, st===1?'hot':'').map(g=>g.replace('class="gp','class="gp vinc')));
+    if(st===0) h+=`<div class="dtag coral">Ignore the point for now: ${p.N.toFixed(1)} → ${L.Ni}</div>`;
+    if(st===1) h+=`<div class="dtag">Tap the gap right above the point in ${p.N.toFixed(1)}.</div>`;
+    el.innerHTML=h; return;
+  }
   if(p.kind==='mul'){
-    const aStr=String(L.ai);
-    const ptCls=done===0?'dropped':(done===1?'hot':'');
-    h+=dRow('', '', numCells(aStr,n,(i)=>done===1&&i===n-1?'dp':''), gapsWithPt(ptCls));
-    h+=dRow('', '×', numCells(String(p.b),n), Array(n-1).fill(GP('')));
+    const ptCls=st===0?'dropped':(st===1?'hot':'');
+    const aPl=1, bPl=L.pb;
+    h+=dRow('', '', numCells(String(L.ai),n,(i)=>st===1&&i>=n-aPl?'dp':''), ptAt(n-1-aPl,ptCls));
+    h+=dRow('', '×', numCells(String(L.bi).padStart(bPl+1,'0'),n,(i)=>st===1&&bPl&&i>=n-bPl?'dp':''), bPl?ptAt(n-1-bPl,ptCls):Array(n-1).fill(GP('')));
   } else {
     const fmt=x=>{ const [w,f]=x.toFixed(2).split('.'); return w+f; };
-    const ptCls=done===1?'hot':'';
-    h+=dRow('', '', numCells(fmt(p.a),n), gapsWithPt(ptCls));
-    h+=dRow('', p.kind==='add'?'+':'−', numCells(fmt(p.b),n), gapsWithPt(ptCls));
+    const ptCls=st===1?'hot':'';
+    // the short number's empty hundredths place: a box first, then an amber 0
+    const row=(x,who,lead)=>{ let cells=numCells(fmt(x),n);
+      if(p.short===who){ cells[n-1] = done===0 ? DBX(0,0,'placeholder zero') : DG('0','ph'); }
+      return dRow('', lead, cells, ptAt(L.ptGap,ptCls)); };
+    h+=row(p.a,'a','');
+    h+=row(p.b,'b',p.kind==='add'?'+':'−');
   }
   h+=`<div class="drule"></div>`;
-  // answer row
-  if(done===0){
-    const cells=Array.from({length:n},(_,k)=>`<span class="dg"><input class="dbx" data-g="0" data-k="${k}" maxlength="1" inputmode="numeric" autocomplete="off" aria-label="answer digit ${k+1}"></span>`);
-    h+=dRow('ans','',cells,Array(n-1).fill(GP('')));
-  } else {
-    const str=String(L.whole).padStart(n,'0');
-    const cells=str.split('').map((d,i)=>DG(d,done===1?'plain':(p.kind==='mul'&&i===n-1?'dp':'')));
-    let gaps;
-    if(done===1) gaps=Array.from({length:n-1},(_,i)=>`<span class="gp"><button type="button" class="ptslot" data-g="0" data-k="${i}" aria-label="put the point after digit ${i+1}"></button></span>`);
-    else gaps=Array.from({length:n-1},(_,i)=>i===L.ptGap?GP('.'):GP(''));
-    h+=dRow('ans','',cells,gaps);
-  }
+  h+=ansRow(L,n,st,p.kind==='mul');
+  if(done===0 && p.short) h+=`<div class="dtag">Fill the empty place with a 0 so both numbers have 2 decimal places.</div>`;
   if(p.kind==='mul'){
-    if(done===0) h+=`<div class="dtag coral">Ignore the point for now: ${p.a.toFixed(1)} → ${L.ai}</div>`;
-    if(done===1) h+=`<div class="dtag">${p.a.toFixed(1)} has 1 decimal place (underlined). Tap the gap where the point goes.</div>`;
+    if(st===0) h+=`<div class="dtag coral">Ignore the point${L.pb?'s':''} for now: ${p.a.toFixed(1)} → ${L.ai}${L.pb?`, ${p.b.toFixed(1)} → ${L.bi}`:''}</div>`;
+    if(st===1) h+=`<div class="dtag">${L.pb?`${p.a.toFixed(1)} and ${p.b.toFixed(1)} each have 1 decimal place (underlined): 2 in all.`:`${p.a.toFixed(1)} has 1 decimal place (underlined).`} Tap the gap where the point goes.</div>`;
   } else {
-    if(done===0) h+=`<div class="dtag">Points lined up. ${p.kind==='add'?'Add':'Subtract'} the digits like whole numbers.</div>`;
-    if(done===1) h+=`<div class="dtag">Tap the gap where the point goes, right under the other points.</div>`;
+    if(st===0) h+=`<div class="dtag">Points lined up. ${p.kind==='add'?'Add':'Subtract'} the digits like whole numbers.</div>`;
+    if(st===1) h+=`<div class="dtag">Tap the gap where the point goes, right under the other points.</div>`;
   }
   el.innerHTML=h;
 }
@@ -364,7 +468,7 @@ function renderStep(){
   const paper=st.boxes.some(bx=>bx.where==='paper'), pt=st.boxes.some(bx=>bx.pt);
   $('papernote').innerHTML=!paper?'':pt
     ? `<b>Tap the gap</b> in the answer where the decimal point belongs. Tap a different gap to move it.`
-    : `Type in the <b>boxes in the work</b> above, one digit in each box. A tile with <b>↑</b> points up to it.`;
+    : `Type in the <b>boxes in the work</b> above, one digit in each box. Line the number up on the <b>right</b>; a front box can stay empty. A tile with <b>↑</b> points up to it.`;
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     if(bx.where==='paper')
       return `<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`

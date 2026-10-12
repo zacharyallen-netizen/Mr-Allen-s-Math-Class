@@ -45,6 +45,12 @@
   .fline{font-size:24px;color:var(--muted);margin:6px 0}
   .fline:last-child{color:var(--ink)}
   @media(max-width:430px){.fline{font-size:19px}}
+  .fline.ord{color:var(--ink);display:flex;justify-content:center;gap:10px;margin:8px 0 2px}
+  .fline.ord span{display:inline-flex;flex-direction:column;align-items:center;padding:0 4px 2px}
+  .fline.ord .u1{border-bottom:3px solid var(--amber)} .fline.ord .u2{border-bottom:3px dashed var(--muted)}
+  .fline.ord i{font:700 12px var(--sans);font-style:normal;margin-top:4px}
+  .fline.ord .u1 i{color:var(--amber)} .fline.ord .u2 i{color:var(--muted)}
+  .ordcap{font-size:13px;color:var(--muted);text-align:center;margin-bottom:4px}
 
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
@@ -158,7 +164,15 @@ function sp(t){return `<span class="op">${t}</span>`;}
 function pw(b,e){return `${b}<sup>${e}</sup>`;}
 function lbl(t){return `<span class="lbl">${t}</span>`;}
 
+// new variant (mixed into level 2): partners go left to right — ÷ before × when ÷ comes first, − before + when − comes first
+function genLTR(){
+  if(Math.random()<0.5){ const b=rnd(2,9),k=rnd(2,9),a=b*k,c=rnd(2,6);
+    return {kind:'ltr',a,o1:'÷',b,o2:'×',c,r1:k,ans:k*c,display:`${a}${sp('÷')}${b}${sp('×')}${c}`}; }
+  const a=rnd(10,20),b=rnd(2,9),c=rnd(2,9);
+  return {kind:'ltr',a,o1:'−',b,o2:'+',c,r1:a-b,ans:a-b+c,display:`${a}${sp('−')}${b}${sp('+')}${c}`};
+}
 function gen(L){
+  if(L===2 && Math.random()<0.4) return genLTR();
   if(L===1){const b=rnd(2,9),e=pick([2,2,2,3]); return {kind:'pow',b,e,ans:Math.pow(b,e),display:pw(b,e)};}
   if(L===2){const a=rnd(2,9),b=rnd(2,9),c=rnd(2,9),o=pick(['+','−']); const ans=o==='+'?a+b*c:a-b*c;
     return {kind:'md',a,o,b,c,ans,display:`${a}${sp(o)}${b}${sp('×')}${c}`};}
@@ -176,6 +190,13 @@ function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;curr
 /* ---------- guided steps ---------- */
 let G=null;
 function buildSteps(p){
+  if(p.kind==='ltr'){ const team=p.o1==='÷'?'× and ÷':'+ and −', o2w=p.o2==='×'?'multiply':'add';
+    return [
+      {lab:'Step 1 · left to right', q:`<b>${team}</b> are partners. Neither one always goes first: work <b>left to right</b>. The first one is: <b>${p.a} ${p.o1} ${p.b}</b>.`,
+       boxes:[{bl:`${p.a} ${p.o1} ${p.b}`,expect:p.r1}], info:`${p.a} ${p.o1} ${p.b} = ${p.r1}. Doing the ${p.o2} first would give a different (wrong) answer.`, line:`= ${p.r1} ${p.o2} ${p.c}`},
+      {lab:`Step 2 · then ${o2w}`, q:`Now ${o2w}: <b>${p.r1} ${p.o2} ${p.c}</b>.`,
+       boxes:[{bl:`${p.r1} ${p.o2} ${p.c}`,expect:p.ans}], info:`${p.r1} ${p.o2} ${p.c} = ${p.ans}.`, line:`= ${p.ans}`, last:true}
+    ]; }
   if(p.kind==='pow'){
     if(p.e===2) return [{lab:'Step 1 · square it', q:`<b>${p.b}²</b> means ${p.b} × ${p.b}.`,
       boxes:[{bl:`${p.b} × ${p.b}`,expect:p.b*p.b}], info:`${p.b}×${p.b}=${p.ans}.`, line:`= ${p.ans}`, last:true}];
@@ -239,7 +260,12 @@ function renderProblem(){
 }
 function renderWork(){
   const done=G.steps.slice(0,G.si).filter(s=>s.line);
-  $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  let h=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+  // left to right: number the two partner operations in the order you do them
+  if(current.kind==='ltr' && G.si===0){ const p=current;
+    h=`<div class="fline ord"><span class="u1">${p.a} ${p.o1} ${p.b}<i>① first</i></span> <span class="u2">${p.o2} ${p.c}<i>② next</i></span></div>`
+     +`<div class="ordcap">Same team, so read it like a sentence: left to right.</div>`+h; }
+  $('fwork').innerHTML=h;
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
