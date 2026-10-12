@@ -53,6 +53,29 @@
   .ddlad{color:var(--muted)}
   .ddlad.rem{color:var(--ink)}
   @media (max-width:430px){.ddinner{font-size:25px}}
+  .ldiv{display:inline-flex;flex-direction:column;align-items:flex-start;font-family:var(--mono);
+    font-variant-numeric:tabular-nums;font-weight:700;line-height:1}
+  .ldiv .lr{display:flex}
+  .ldiv .dc{width:42px;height:50px;display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;color:var(--ink)}
+  .ldiv .dc.q{color:var(--mint)}
+  .ldiv .dc.dvd{border-top:4px solid var(--ink)}
+  .ldiv .dc.brk{border-left:4px solid var(--ink)}
+  .ldiv .dc.ul{border-bottom:3px solid var(--muted)}
+  .ldiv .dc.past{color:var(--muted)}
+  .ldiv .dc.hot{color:var(--amber)}
+  .ldiv .dc.mn::before{content:'−';position:absolute;left:-12px;color:var(--muted);font-size:28px}
+  .ldiv .dc.rr{width:auto;padding-left:10px;color:var(--mint);font-size:28px;justify-content:flex-start}
+  .pbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:38px;height:44px;padding:0;text-align:center;
+    font-size:28px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
+    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
+  .pbx::placeholder{color:#5b6190}
+  .pbx:focus,.pbx.on{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .pbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .sbx{display:flex;align-items:center;justify-content:center;width:38px;height:44px;font-size:28px;
+    border:2px solid var(--mint);border-radius:8px;color:var(--mint);background:#16342a}
+  @media (max-width:430px){.ldiv .dc{width:36px;height:46px;font-size:30px}.pbx,.sbx{width:32px;height:40px;font-size:24px}
+    .ldiv .dc.rr{font-size:24px}}
 
   .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
   #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
@@ -92,6 +115,24 @@
   .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
   .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
   .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  /* the four moves; the one you are on lights up */
+  .moves{display:flex;flex-wrap:wrap;gap:7px;margin:-2px 0 10px}
+  .moves span{font-family:var(--sans);font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--muted);
+    border:1px solid var(--panel-edge);border-radius:999px;padding:6px 12px;cursor:pointer}
+  .moves span i{font-style:normal;font-weight:500;opacity:.85}
+  .moves span.on{color:#12132a;background:var(--amber);border-color:var(--amber)}
+  .moves span.ok{color:var(--mint);border-color:var(--mint)}
+  .moves span.bad{color:var(--coral);border-color:var(--coral)}
+  /* a box that lives in the problem shows up in the card as a labelled tile pointing up to it */
+  .chip{cursor:pointer}
+  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
+    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
+  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
+  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
+  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
+  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
+  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 10px;line-height:1.45}
+  .papernote b{color:var(--sky)}
   .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
     border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
   .ginfo.show{display:block} .ginfo b{color:var(--amber)}
@@ -122,6 +163,8 @@
     text-align:center;font-size:23px;font-weight:700;color:var(--mint);
     background:#15172b;border:1px solid var(--panel-edge);border-radius:10px;
     padding:5px 9px;display:block}
+  .example .exwrap{text-align:center;margin:2px 0 6px}
+  .example .excap{font-size:13px;color:var(--muted);text-align:center;margin-bottom:4px}
   .example .ansline{margin-top:12px;text-align:center;font-size:15px;color:#cfd3f5}
   .example .ansline b{color:var(--mint);font-family:var(--mono);font-size:18px}
 
@@ -146,7 +189,9 @@
     <div class="example">
       <div class="ttl">Here is one worked out</div>
       <div class="ttl2">128 &divide; 4 &mdash; every step is the same three boxes</div>
-      <div class="stepcard"><div class="lab">Step 1 &middot; divide 12 by 4</div><div class="q">How many times does <b>4</b> fit into <b>12</b>? Then multiply, then subtract.</div><div class="boxrow"><div class="bx"><span class="bl">how many times</span><span class="bxv">3</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">multiply by 4</span><span class="bxv">12</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">subtract from 12</span><span class="bxv">0</span></div></div></div>
+      <div class="exwrap"><div class="ldiv" id="exPaper"></div></div>
+      <div class="excap">Each box sits right in the problem: the answer digit <b style="color:var(--mint)">on top</b>, then multiply, subtract and bring down <b style="color:var(--sky)">underneath</b>.</div>
+      <div class="stepcard"><div class="lab">Step 1 &middot; divide 12 by 4</div><div class="q">How many times does <b>4</b> fit into <b>12</b>? Then multiply, then subtract. Then bring down the next digit.</div><div class="boxrow"><div class="bx"><span class="bl">how many times</span><span class="bxv">3</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">multiply by 4</span><span class="bxv">12</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">subtract from 12</span><span class="bxv">0</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">bring down</span><span class="bxv">8</span></div></div></div>
       <div class="stepcard"><div class="lab">Step 2 &middot; bring down, then divide 8</div><div class="q">How many times does <b>4</b> fit into <b>8</b>? Then multiply, then subtract.</div><div class="boxrow"><div class="bx"><span class="bl">how many times</span><span class="bxv">2</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">multiply by 4</span><span class="bxv">8</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">subtract from 8</span><span class="bxv">0</span></div></div></div>
       <div class="ansline">128 &divide; 4 = <b>32</b></div>
     </div>
@@ -176,11 +221,13 @@
 
       <!-- GUIDED MODE -->
       <div id="guided" class="hide">
-        <div class="ddwrap"><div class="ddinner" id="ladder"></div></div>
+        <div class="ddwrap"><div class="ldiv" id="ladder"></div></div>
         <div class="steplead" id="steplead"></div>
         <div class="stepcard">
           <div class="lab" id="steplab"></div>
           <div class="q" id="stepq"></div>
+          <div class="moves" id="moves"></div>
+          <div class="papernote" id="papernote"></div>
           <div class="boxrow" id="boxrow"></div>
           <div class="ginfo" id="ginfo"></div>
           <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
@@ -257,12 +304,13 @@ function buildSteps(p){
   const d=p.d;
   return t.cyc.map((c,idx)=>({
     lab:`Step ${idx+1} · ${idx===0?`divide ${c.workingBefore} by ${d}`:`bring down, then divide ${c.workingBefore}`}`,
-    q:`How many times does <b>${d}</b> fit into <b>${c.workingBefore}</b>? Then multiply, then subtract.`,
+    q:`How many times does <b>${d}</b> fit into <b>${c.workingBefore}</b>? Then multiply, then subtract.`
+      +(c.nextDigit!==null?` Then bring down the next digit.`:``),
     boxes:[
-      {bl:`how many times`, expect:c.qd},
-      {bl:`multiply by ${d}`, expect:c.prod, connector:'→'},
-      {bl:`subtract from ${c.workingBefore}`, expect:c.rem, connector:'→'}
-    ],
+      {bl:`how many times`, expect:c.qd, where:'paper', row:'q', move:'Divide'},
+      {bl:`multiply by ${d}`, expect:c.prod, connector:'→', where:'paper', row:'prod', move:'Multiply'},
+      {bl:`subtract from ${c.workingBefore}`, expect:c.rem, connector:'→', where:'paper', row:'rem', move:'Subtract'}
+    ].concat(c.nextDigit!==null?[{bl:'bring down', expect:+c.nextDigit, connector:'→', where:'paper', row:'bd', move:'Bring down'}]:[]),
     info:`<b>Divide:</b> ${d} fits into ${c.workingBefore} <b>${c.qd}</b> times, because ${d} × ${c.qd} = ${c.prod}, `
         +`and that is as close to ${c.workingBefore} as you can get without going over. `
         +`<b>Multiply:</b> ${c.qd} × ${d} = ${c.prod}. `
@@ -294,48 +342,90 @@ function renderProblem(){
 }
 
 function place(s,endCol){ s=String(s); const start=endCol-s.length+1; return ' '.repeat(Math.max(0,start))+s; }
-function renderLadder(){
-  const {N,d}=current; const t=current._trace; const s=String(N); const W=s.length;
-  const left=`${d} )`; const L=left.length; const done=G.si;
-  // quotient digits for completed cycles
-  const qarr=Array(L+W).fill(' ');
-  for(let c=0;c<done;c++){ const cc=t.cyc[c]; qarr[L+cc.i]=cc.qd; }
-  let qline=qarr.join(''); qline=qline.replace(/\s+$/,''); if(qline==='') qline=' ';
-  let h='';
-  h+=`<div class="ddq">${qline.replace(/ /g,'&nbsp;')}</div>`;
-  h+=`<div class="ddrow"><span class="dvs">${left.replace(/ /g,'&nbsp;')}</span><span class="dvd">${s}</span></div>`;
-  for(let c=0;c<done;c++){
-    const cc=t.cyc[c]; const endCol=L+cc.i;
-    h+=`<div class="ddlad">${place('-'+cc.prod,endCol).replace(/ /g,'&nbsp;')}</div>`;
-    h+=`<div class="ddlad">${place('—'.repeat(String(cc.prod).length),endCol).replace(/ /g,'&nbsp;')}</div>`;
-    let rs=String(cc.rem), endR=endCol;
-    if(cc.nextDigit!==null){ rs=String(cc.rem)+cc.nextDigit; endR=endCol+1; }
-    h+=`<div class="ddlad rem">${place(rs,endR).replace(/ /g,'&nbsp;')}</div>`;
+// Long division drawn on a place-value grid. The boxes for the step you are on sit
+// right where those digits go: answer digit on top, product under, difference, bring-down.
+function renderLadder(){ drawDiv(current,G.steps,G.si,$('ladder'),false); }
+function pbxHTML(g,k,label){
+  return `<input class="pbx" data-g="${g}" data-k="${k}" maxlength="1" inputmode="numeric" autocomplete="off" aria-label="${label}">`;
+}
+function drawDiv(p,steps,done,el,boxed){
+  const {N,d,r}=p; const t=p._trace; const s=String(N); const W=s.length; const L=String(d).length;
+  const C=L+W; const cur=(!boxed&&done<steps.length)?done:-1;
+  const blank=()=>Array.from({length:C},()=>({t:'',c:[]}));
+  const putDigits=(row,str,endCol,cls)=>{ str=String(str); for(let k=0;k<str.length;k++){ const c=row[endCol-str.length+1+k]; c.t=str[k]; if(cls) c.c.push(cls);} };
+  const putBoxes=(row,g,str,endCol,label)=>{ str=String(str); for(let k=0;k<str.length;k++){
+      const c=row[endCol-str.length+1+k]; c.box=pbxHTML(g,k,label+(str.length>1?` digit ${k+1}`:'')); } };
+  const show=(row,str,endCol,cls)=>{ if(boxed){ str=String(str); for(let k=0;k<str.length;k++){ row[endCol-str.length+1+k].sbx=str[k]; } } else putDigits(row,str,endCol,cls); };
+  const rows=[];
+  // answer (quotient) row
+  const qr=blank(); qr.forEach(c=>c.c.push('q'));
+  t.cyc.forEach((cc,ci)=>{ if(ci<done) show(qr,cc.qd,L+cc.i); else if(ci===cur) putBoxes(qr,0,cc.qd,L+cc.i,'how many times'); });
+  rows.push(qr);
+  // divisor ) dividend
+  const dr=blank(); putDigits(dr,d,L-1);
+  for(let j=0;j<W;j++){ dr[L+j].t=s[j]; dr[L+j].c.push('dvd'); if(j===0) dr[L].c.push('brk'); }
+  if(cur>=0){ const cc=t.cyc[cur]; const wl=String(cc.workingBefore).length;
+    if(cur===0){ for(let j=cc.i-wl+1;j<=cc.i;j++) dr[L+j].c.push('hot'); }
+    dr.slice(0,L).forEach(c=>c.c.push('hot')); }
+  rows.push(dr);
+  // one block per cycle: product (with minus and line), then difference + bring-down
+  const last=Math.min(done,steps.length-1);
+  for(let ci=0;ci<=last && (ci<done||ci===cur);ci++){
+    const cc=t.cyc[ci]; const e=L+cc.i; const live=(ci===cur);
+    const pl=String(cc.prod).length; const fr=blank();
+    if(live) putBoxes(fr,1,cc.prod,e,`multiply by ${d}`); else show(fr,cc.prod,e,'past');
+    for(let k=e-pl+1;k<=e;k++) fr[k].c.push('ul');
+    fr[e-pl+1].c.push('mn');
+    rows.push(fr);
+    const rr=blank();
+    if(live){ putBoxes(rr,2,cc.rem,e,'subtract');
+      if(cc.nextDigit!==null) putBoxes(rr,3,cc.nextDigit,e+1,'bring down'); }
+    else { show(rr,cc.rem,e, ci===done-1?'':'past');
+      if(cc.nextDigit!==null) show(rr,cc.nextDigit,e+1, ci===done-1?'':'past'); }
+    // the number the NEXT step divides is lit up
+    if(ci===done-1 && cur===done){ rr[e].c.push('hot'); if(cc.nextDigit!==null) rr[e+1].c.push('hot'); }
+    rows.push(rr);
   }
-  $('ladder').innerHTML=h;
+  const rtxt=(done>=steps.length&&r>0)?` r ${r}`:'';
+  el.innerHTML=rows.map((row,ri)=>`<div class="lr">${row.map(c=>{
+      const inner=c.box?c.box:(c.sbx?`<span class="sbx">${c.sbx}</span>`:c.t);
+      return `<span class="dc ${c.c.join(' ')}">${inner}</span>`;
+    }).join('')}${ri===0&&rtxt?`<span class="dc rr">${rtxt}</span>`:''}</div>`).join('');
+}
+
+/* ---------- the boxes of one step (all of them sit in the problem) ---------- */
+const grpInputs=g=>Array.from(document.querySelectorAll(`#ladder input[data-g="${g}"]`));
+function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
+function boxVal(g){ return grpInputs(g).map(e=>clean(e.value)).join(''); }
+function boxOk(bx,g){ const raw=boxVal(g); return raw!=='' && !isNaN(+raw) && (+raw)===bx.expect; }
+function focusG(g){ const ins=grpInputs(g); const e=ins.find(x=>x.value==='')||ins[0]; if(e){e.focus(); e.select&&e.select();} }
+function mirror(g){ const t=$('tile'+g); if(!t) return; const v=boxVal(g);
+  t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
+function markGroup(g,ok){
+  grpInputs(g).forEach(e=>{e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
+  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
+  const m=document.querySelector(`#moves span[data-g="${g}"]`); if(m){m.classList.toggle('ok',ok); m.classList.toggle('bad',!ok);}
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — divide, multiply, subtract`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
-  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
-    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
-    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
-  }).join('');
+  const say={Divide:'how many times',Multiply:`× ${current.d}`,Subtract:'',['Bring down']:''};
+  $('moves').innerHTML=st.boxes.map((bx,i)=>`<span data-g="${i}" onclick="focusG(${i})">${i+1}. ${bx.move}${say[bx.move]?` <i>${say[bx.move]}</i>`:''}</span>`).join('');
+  $('papernote').innerHTML=`Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. Tap a step to jump to its box.`;
+  $('boxrow').innerHTML='';
   $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
   $('gverdict').textContent=''; $('gverdict').className='verdict';
   const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+  const f=stepInputs()[0]; if(f) f.focus();
 }
 function checkStep(){
   const st=G.steps[G.si];
   let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    const ok=boxOk(bx,i);
+    markGroup(i,ok);
     if(!ok) allOk=false;
   });
   const gv=$('gverdict');
@@ -344,9 +434,10 @@ function checkStep(){
     gv.textContent = G.tries>=2 ? 'Check the highlighted box — the hint below shows the work.' : 'Not quite — fix the red box and check again.';
     gv.className='verdict help';
     if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect) el.placeholder=String(bx.expect);}); }
-    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return;
+        String(bx.expect).split('').forEach((dg,k)=>{ const e=grpInputs(i)[k]; if(e) e.placeholder=dg; }); }); }
+    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
+    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
     return;
   }
   gv.textContent=''; gv.className='verdict';
@@ -361,6 +452,7 @@ function finishGuided(){
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — ${N} ÷ ${d} = ${ansTxt}.`;
   gv.className='verdict good pop';
+  document.querySelectorAll('.chip.on,#moves span.on').forEach(x=>x.classList.remove('on'));
   concludeProblem(right, $('stepbtn'));
 }
 
@@ -423,9 +515,37 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if($('play').classList.contains('hide'))return;
   e.preventDefault();
-  if(!$('guided').classList.contains('hide')){ $('stepbtn').click(); return; }
+  if(!$('guided').classList.contains('hide')){
+    const a=document.activeElement;
+    if(a && a.matches && a.matches('input[data-g]') && G && G.si<G.steps.length){
+      const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1];
+      if(nx){ nx.focus(); return; }
+    }
+    $('stepbtn').click(); return;
+  }
   if(!answered)submitAnswer();else $('submit').click();
 });
+// typing in a box inside the problem: one digit per box, then hop to the next box
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.matches || !t.matches('input.pbx')) return;
+  const v=t.value.replace(/[^0-9]/g,''); t.value=v.slice(-1);
+  if(t.value!==''){ const ins=stepInputs(); const nx=ins[ins.indexOf(t)+1]; if(nx) nx.focus(); }
+  t.classList.remove('bad');
+  mirror(t.dataset.g);
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target; if(e.key!=='Backspace' || !t.matches || !t.matches('input.pbx') || t.value!=='') return;
+  const ins=stepInputs(); const pv=ins[ins.indexOf(t)-1]; if(pv){ e.preventDefault(); pv.focus(); pv.value=''; mirror(pv.dataset.g); }
+});
+// light up the matching move, tile and boxes for the box you are in
+document.addEventListener('focusin',e=>{
+  document.querySelectorAll('.chip.on,#moves span.on').forEach(x=>x.classList.remove('on'));
+  const t=e.target; if(!t.matches || !t.matches('input.pbx')) return;
+  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
+  const m=document.querySelector(`#moves span[data-g="${t.dataset.g}"]`); if(m) m.classList.add('on');
+});
+// worked example on the start screen: the same written frame, every box filled in
+(function(){ const ex=mkD(128,4,32,0,false); const st=buildSteps(ex); drawDiv(ex,st,st.length,$('exPaper'),true); })();
 </script>
 </body>
 </html>

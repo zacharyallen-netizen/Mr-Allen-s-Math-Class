@@ -45,10 +45,24 @@
   .partial .cell{font-size:34px;color:var(--sky)}
   .ans .cell{color:var(--mint)}
   /* carries + progressive fill */
-  .carry .cell{height:26px;font-size:20px;color:var(--amber);font-weight:700}
+  .carry .cell{height:38px;font-size:20px;color:var(--amber);font-weight:700}
+  .cell.hot{color:var(--amber)}
+  /* boxes that sit right inside the written problem, in the column where the digit goes */
+  .pbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:40px;height:46px;padding:0;text-align:center;
+    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
+    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
+  .pbx::placeholder{color:#5b6190}
+  .carry .pbx{width:30px;height:32px;font-size:18px;border-radius:6px;border-color:var(--amber)}
+  .pbx:focus,.pbx.on{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .pbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .sbx{display:flex;align-items:center;justify-content:center;width:40px;height:46px;font-size:30px;
+    border:2px solid var(--mint);border-radius:8px;color:var(--mint);background:#16342a}
+  .carry .sbx{width:30px;height:32px;font-size:18px;border-radius:6px;color:var(--amber);border-color:var(--amber);background:#3a2f1a}
   .cell.ghost{color:#3b4178}
   .cell.just{color:var(--mint)}
-  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.partial .cell{font-size:28px}.carry .cell{font-size:17px}}
+  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.partial .cell{font-size:28px}.carry .cell{font-size:17px}
+    .pbx,.sbx{width:34px;height:42px;font-size:26px}.carry .pbx,.carry .sbx{width:28px;height:30px;font-size:17px}}
 
   /* facts: big horizontal equation */
   .factline{font-family:var(--mono);font-variant-numeric:tabular-nums;
@@ -94,6 +108,16 @@
   .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
   .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
   .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  /* a box that lives in the problem shows up in the card as a labelled tile pointing up to it */
+  .chip{cursor:pointer}
+  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
+    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
+  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
+  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
+  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
+  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
+  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}
+  .papernote b{color:var(--sky)}
   .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
     border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
   .ginfo.show{display:block} .ginfo b{color:var(--amber)}
@@ -124,6 +148,10 @@
     text-align:center;font-size:23px;font-weight:700;color:var(--mint);
     background:#15172b;border:1px solid var(--panel-edge);border-radius:10px;
     padding:5px 9px;display:block}
+  .example .algo{margin:2px 0 4px}
+  .example .algo .cell,.example .algo .op{width:40px;height:50px}.example .algo .cell{font-size:34px}
+  .example .carry .cell{height:38px}
+  .example .excap{font-size:13px;color:var(--muted);text-align:center;margin-bottom:4px}
   .example .ansline{margin-top:12px;text-align:center;font-size:15px;color:#cfd3f5}
   .example .ansline b{color:var(--mint);font-family:var(--mono);font-size:18px}
 
@@ -148,6 +176,8 @@
     <div class="example">
       <div class="ttl">Here is one worked out</div>
       <div class="ttl2">47 &times; 3 &mdash; the boxes say the same thing every time</div>
+      <div class="algo" id="exPaper"></div>
+      <div class="excap">The boxes sit right in the problem: the answer digit <b style="color:var(--mint)">below</b> its column, the carry <b style="color:var(--amber)">above</b> the next column.</div>
       <div class="stepcard"><div class="lab">Step 1 &middot; ones column</div><div class="q">Multiply the <b>ones</b> digit: <b>3 &times; 7</b>. Write the last digit below. Carry the rest above.</div><div class="boxrow"><div class="bx"><span class="bl">3 &times; 7 =</span><span class="bxv">21</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">write below</span><span class="bxv">1</span></div><span class="conn">&middot;</span><div class="bx"><span class="bl">carry above</span><span class="bxv">2</span></div></div></div>
       <div class="stepcard"><div class="lab">Step 2 &middot; tens column</div><div class="q">Multiply the <b>tens</b> digit: <b>3 &times; 4 + 2</b>. The <b>2</b> is what you carried. Last column: write the whole answer below.</div><div class="boxrow"><div class="bx"><span class="bl">3 &times; 4 + 2 =</span><span class="bxv">14</span></div><span class="conn">&rarr;</span><div class="bx"><span class="bl">write below</span><span class="bxv">14</span></div></div></div>
       <div class="ansline">47 &times; 3 = <b>141</b></div>
@@ -179,6 +209,7 @@
         <div class="stepcard">
           <div class="lab" id="steplab"></div>
           <div class="q" id="stepq"></div>
+          <div class="papernote" id="papernote"></div>
           <div class="boxrow" id="boxrow"></div>
           <div class="ginfo" id="ginfo"></div>
           <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
@@ -258,9 +289,12 @@ function stepsN1(a,b){
     const carryOut=isLast?0:Math.floor(val/10);
     const colName=['ones','tens','hundreds','thousands'][ad.length-1-k]||'next';
     const prodTxt=`${b} × ${digit}`+(carryIn?` + ${carryIn}`:'');
+    const gi=ad.length-1-k;                 // place from the right (0 = ones)
     const boxes=[{bl:prodTxt+' =', expect:val, wide:(val>=100)}];
-    if(isLast){ boxes.push({bl:'write below', expect:write, wide:(write>=10), connector:'→'}); }
-    else { boxes.push({bl:'write below', expect:write, connector:'→'}); boxes.push({bl:'carry above', expect:carryOut, connector:'·'}); }
+    if(isLast){ boxes.push({bl:'write below', expect:write, wide:(write>=10), connector:'→',
+                  where:'paper', row:'ans', cols:[...Array(String(write).length).keys()]}); }
+    else { boxes.push({bl:'write below', expect:write, connector:'→', where:'paper', row:'ans', cols:[W-1-gi]});
+           boxes.push({bl:'carry above', expect:carryOut, connector:'·', where:'paper', row:'carry', cols:[W-2-gi], blank0:true}); }
     steps.push({
       lab:`Step ${steps.length+1} · ${colName} column`,
       q:`Multiply the <b>${colName}</b> digit: <b>${prodTxt}</b>.`
@@ -279,16 +313,24 @@ function stepsN1(a,b){
 function steps2x2(a,b){
   const ob=b%10, tb=Math.floor(b/10);
   const p1=a*ob, p2=a*tb, p2s=p2*10, sum=a*b;
+  const W=String(sum).length, ao=a%10;
+  const right=n=>{const L=String(n).length; return [...Array(L).keys()].map(k=>W-L+k);};
+  const c1=Math.floor(ao*ob/10), c2=Math.floor(ao*tb/10);
   return [
     {lab:'Step 1 · multiply by the ones digit',
      q:`The <b>ones</b> digit of ${b} is <b>${ob}</b>. Multiply <b>${a} × ${ob}</b>.`,
-     boxes:[{bl:`${a} × ${ob} =`, expect:p1, wide:true}], info:colHint(a,ob), kind:'p1'},
+     boxes:[{bl:'carry above', expect:c1, where:'paper', row:'carry', cols:[W-2], blank0:true},
+            {bl:`${a} × ${ob} =`, expect:p1, wide:true, connector:'→', where:'paper', row:'p1', cols:right(p1)}],
+     info:colHint(a,ob), kind:'p1', mult:'o', carry:c1},
     {lab:'Step 2 · multiply by the tens digit',
      q:`The <b>tens</b> digit of ${b} is <b>${tb}</b>. Multiply <b>${a} × ${tb}</b>. Then put a <b>0</b> on the end, because that digit is really worth ${tb*10}.`,
-     boxes:[{bl:`${a} × ${tb} =`, expect:p2}, {bl:'put a 0 on the end', expect:p2s, wide:true, connector:'→'}], info:colHint(a,tb), kind:'p2'},
+     boxes:[{bl:`${a} × ${tb} =`, expect:p2},
+            {bl:'carry above', expect:c2, connector:'·', where:'paper', row:'carry', cols:[W-2], blank0:true},
+            {bl:'put a 0 on the end', expect:p2s, wide:true, connector:'→', where:'paper', row:'p2', cols:right(p2s)}],
+     info:colHint(a,tb), kind:'p2', mult:'t', carry:c2},
     {lab:'Step 3 · add your two answers',
      q:`Add your two answers: <b>${p1} + ${p2s}</b>.`,
-     boxes:[{bl:`${p1} + ${p2s} =`, expect:sum, wide:true}],
+     boxes:[{bl:`${p1} + ${p2s} =`, expect:sum, wide:true, where:'paper', row:'sum', cols:right(sum)}],
      info:`<b>Add them up:</b> ${p1} + ${p2s} = ${sum}. That is ${a} × ${b}.`, kind:'sum'}
   ];
 }
@@ -320,68 +362,116 @@ function renderProblem(){
 }
 
 // worktable reflecting steps completed so far (G.si = next step index)
+// The boxes for the step you are on sit right inside the written problem.
 function renderWork(){
-  const {a,b}=current;
-  if(b<10){ renderWorkN1(); } else { renderWork2(); }
+  const {b}=current;
+  if(b<10) renderWorkN1(current,G.steps,G.si,$('algo'),false);
+  else renderWork2(current,G.steps,G.si,$('algo'),false);
 }
-function renderWorkN1(){
-  const {a,b}=current; const ansStr=String(a*b); const W=ansStr.length;
-  const steps=G.steps; const done=G.si;
-  // carries row: show carryOut of each completed non-last step at gi+1
+function pbxHTML(g,k,label){
+  return `<input class="pbx" data-g="${g}" data-k="${k}" maxlength="1" inputmode="numeric" autocomplete="off" aria-label="${label}">`;
+}
+// {row:{col:html}} for the step's boxes that sit in the problem
+function paperMap(st){
+  const m={}; if(!st) return m;
+  st.boxes.forEach((bx,g)=>{ if(bx.where!=='paper') return;
+    (m[bx.row]=m[bx.row]||{});
+    bx.cols.forEach((c,k)=>{ m[bx.row][c]=pbxHTML(g,k,bx.bl+(bx.cols.length>1?` digit ${k+1}`:'')); });
+  });
+  return m;
+}
+function rowHTML(cls,lead,arr,row,pm,boxed,hot){
+  return `<div class="row${cls?' '+cls:''}">${lead}${arr.map((d,i)=>{
+    if(pm[row]&&pm[row][i]!==undefined) return `<span class="cell">${pm[row][i]}</span>`;
+    if(boxed&&d!==' ') return `<span class="cell"><span class="sbx">${d}</span></span>`;
+    return cellHTML(d,(hot&&hot.includes(i))?'hot':(d===' '?'ghost':''));
+  }).join('')}</div>`;
+}
+function renderWorkN1(p,steps,done,el,boxed){
+  const {a,b}=p; const ansStr=String(a*b); const W=ansStr.length;
+  const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
+  // carries row: the carry from each finished column sits above the NEXT column to the left
   const carryArr=Array(W).fill(' ');
-  for(let s=0;s<done;s++){ const st=steps[s]; if(!st.isLast && st.carryOut>0){ carryArr[st.gi+1]=st.carryOut; } }
-  // product row: reveal answer digits from the right for completed columns
-  const completedNonLast=steps.slice(0,done).filter(s=>!s.isLast).length;
-  const lastDone=steps.slice(0,done).some(s=>s.isLast);
-  let shown = lastDone ? ansStr : ansStr.slice(ansStr.length-completedNonLast);
+  for(let s=0;s<done;s++){ const st=steps[s]; if(!st.isLast && st.carryOut>0){ carryArr[W-2-st.gi]=st.carryOut; } }
+  // answer row: digits written so far, each under its own column
   const prodArr=Array(W).fill(' ');
-  for(let i=0;i<shown.length;i++){ prodArr[W-1-i]=shown[shown.length-1-i]; }
+  for(let s=0;s<done;s++){ const st=steps[s];
+    if(st.isLast){ const v=String(st.write); for(let k=0;k<v.length;k++) prodArr[k]=v[k]; }
+    else prodArr[W-1-st.gi]=String(st.write); }
+  const hotTop=cur?[W-1-cur.gi]:[], hotB=cur?[W-1]:[], hotC=cur?[W-1-cur.gi]:[];
   let h='';
-  h+=`<div class="row carry">${carryArr.map(d=>cellHTML(d,'')).join('')}</div>`;
-  h+=`<div class="row">${EMPTYOP}${digitsOf(a,W).map(d=>cellHTML(d)).join('')}</div>`;
-  h+=`<div class="row"><span class="op">×</span>${digitsOf(b,W).map(d=>cellHTML(d)).join('')}</div>`;
+  h+=rowHTML('carry','',carryArr,'carry',pm,boxed,hotC);
+  h+=rowHTML('',EMPTYOP,digitsOf(a,W),'top',{},false,hotTop);
+  h+=rowHTML('','<span class="op">×</span>',digitsOf(b,W),'bot',{},false,hotB);
   h+=`<div class="ruleline"></div>`;
-  h+=`<div class="row ans">${EMPTYOP}${prodArr.map((d,i)=>cellHTML(d, d===' '?'ghost':'')).join('')}</div>`;
-  $('algo').innerHTML=h;
+  h+=rowHTML('ans',EMPTYOP,prodArr,'ans',pm,boxed);
+  el.innerHTML=h;
 }
-function renderWork2(){
-  const {a,b}=current; const ob=b%10, tb=Math.floor(b/10);
-  const p1=a*ob, p2s=a*tb*10, sum=a*b; const done=G.si;
-  const W=String(sum).length; const o=d=>digitsOf(d,W).map(x=>cellHTML(x)).join('');
-  const blank=`${EMPTYOP}${digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}`;
+function renderWork2(p,steps,done,el,boxed){
+  const {a,b}=p; const ob=b%10, tb=Math.floor(b/10);
+  const p1=a*ob, p2s=a*tb*10, sum=a*b;
+  const W=String(sum).length; const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
+  const fill=(n,show)=>show?digitsOf(n,W):Array(W).fill(' ');
+  const carryArr=Array(W).fill(' ');
+  const lastC=done>=2?steps[1].carry:(done>=1?steps[0].carry:0);   // newest carry only, like crossing out on paper
+  if(lastC>0) carryArr[W-2]=lastC;                                   // a carry box for this step covers it
+  const hotB=cur&&cur.mult==='o'?[W-1]:(cur&&cur.mult==='t'?[W-2]:[]);
   let h='';
-  h+=`<div class="row">${EMPTYOP}${o(a)}</div>`;
-  h+=`<div class="row"><span class="op">×</span>${o(b)}</div>`;
+  h+=rowHTML('carry','',carryArr,'carry',pm,boxed);
+  h+=rowHTML('',EMPTYOP,digitsOf(a,W),'top',{},false,cur&&cur.mult?[W-2,W-1]:[]);
+  h+=rowHTML('','<span class="op">×</span>',digitsOf(b,W),'bot',{},false,hotB);
   h+=`<div class="ruleline"></div>`;
-  h+=`<div class="row partial">${EMPTYOP}${done>=1?o(p1):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
-  h+=`<div class="row partial">${EMPTYOP}${done>=2?o(p2s):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
+  h+=rowHTML('partial',EMPTYOP,fill(p1,done>=1),'p1',pm,boxed);
+  h+=rowHTML('partial',EMPTYOP,fill(p2s,done>=2),'p2',pm,boxed);
   h+=`<div class="ruleline"></div>`;
-  h+=`<div class="row ans">${EMPTYOP}${done>=3?o(sum):digitsOf('',W).map(()=>cellHTML(' ','ghost')).join('')}</div>`;
-  $('algo').innerHTML=h;
+  h+=rowHTML('ans',EMPTYOP,fill(sum,done>=3),'sum',pm,boxed);
+  el.innerHTML=h;
+}
+
+/* ---------- the boxes of one step (in the card or in the problem) ---------- */
+const grpInputs=g=>Array.from(document.querySelectorAll(`input[data-g="${g}"]`));
+function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
+function boxVal(g){ return grpInputs(g).map(e=>clean(e.value)).join(''); }
+function boxOk(bx,g){ const raw=boxVal(g);
+  if(raw==='') return !!bx.blank0 && bx.expect===0;     // nothing to carry: an empty box is fine
+  return !isNaN(+raw) && (+raw)===bx.expect; }
+function focusG(g){ const ins=grpInputs(g); const e=ins.find(x=>x.value==='')||ins[0]; if(e){e.focus(); e.select&&e.select();} }
+function mirror(g){ const t=$('tile'+g); if(!t) return; const v=boxVal(g);
+  t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
+function markGroup(g,ok){
+  grpInputs(g).forEach(e=>{e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
+  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
+  const hasCarry=st.boxes.some(bx=>bx.row==='carry');
+  $('papernote').innerHTML=st.boxes.some(bx=>bx.where==='paper')
+    ? `Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. A tile with <b>↑</b> points up to it.`
+      +(hasCarry?` The small box on top is the <b>carry</b>. If there is nothing to carry, leave it empty.`:``)
+    : '';
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    if(bx.where==='paper')
+      return `${i>0?conn:''}<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
+        +`<span class="tile empty" id="tile${i}" title="This box is in the problem above">↑</span></div>`;
     return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+      +`<input id="bx${i}" data-g="${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
   }).join('');
   const gi=$('ginfo'); if(st.info){gi.innerHTML=st.info; gi.classList.remove('show');} else {gi.innerHTML=''; gi.classList.remove('show');}
   $('gverdict').textContent=''; $('gverdict').className='verdict';
   const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+  const f=stepInputs()[0]; if(f) f.focus();
 }
 
 function checkStep(){
   const st=G.steps[G.si];
   let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok = raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    const ok=boxOk(bx,i);
+    markGroup(i,ok);
     if(!ok) allOk=false;
   });
   const gv=$('gverdict');
@@ -392,10 +482,12 @@ function checkStep(){
     gv.className='verdict help';
     if(G.tries>=2 && st.info){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show'); }
     if(G.tries>=2){ // reveal expected values as placeholders to unstick
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect){el.placeholder=String(bx.expect);}});
+      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return; const ins=grpInputs(i);
+        if(ins.length===1) ins[0].placeholder=String(bx.expect);
+        else String(bx.expect).split('').forEach((d,k)=>{ if(ins[k]) ins[k].placeholder=d; }); });
     }
-    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
+    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
     return;
   }
   // step complete
@@ -411,6 +503,7 @@ function finishGuided(){
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — ${current.a} × ${current.b} = ${current.answer}.`;
   gv.className='verdict good pop';
+  document.querySelectorAll('.chip.on,#moves span.on').forEach(x=>x.classList.remove('on'));
   concludeProblem(right, $('stepbtn'));
 }
 
@@ -483,9 +576,38 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Enter') return;
   if($('play').classList.contains('hide')) return;
   e.preventDefault();
-  if(!$('guided').classList.contains('hide')){ $('stepbtn').click(); return; }
+  if(!$('guided').classList.contains('hide')){
+    const a=document.activeElement;
+    if(a && a.matches && a.matches('input[data-g]') && G && G.si<G.steps.length){
+      const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1];
+      if(nx){ nx.focus(); return; }
+    }
+    $('stepbtn').click(); return;
+  }
   if(!answered) submitAnswer(); else $('submit').click();
 });
+// typing in a box inside the problem: one digit per box, then hop to the next box
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  if(t.classList.contains('pbx')){
+    const v=t.value.replace(/[^0-9]/g,''); t.value=v.slice(-1);
+    if(t.value!==''){ const ins=stepInputs(); const nx=ins[ins.indexOf(t)+1]; if(nx && nx.classList.contains('pbx')) nx.focus(); }
+  }
+  t.classList.remove('bad');
+  mirror(t.dataset.g);
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target; if(e.key!=='Backspace' || !t.matches || !t.matches('input.pbx') || t.value!=='') return;
+  const ins=stepInputs(); const pv=ins[ins.indexOf(t)-1]; if(pv && pv.classList.contains('pbx')){ e.preventDefault(); pv.focus(); pv.value=''; mirror(pv.dataset.g); }
+});
+// light up the matching tile and boxes for the box you are in
+document.addEventListener('focusin',e=>{
+  document.querySelectorAll('.chip.on,.pbx.on').forEach(x=>x.classList.remove('on'));
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
+});
+// worked example on the start screen: the same written frame, every box filled in
+(function(){ const ex={a:47,b:3}; const st=stepsN1(47,3); renderWorkN1(ex,st,st.length,$('exPaper'),true); })();
 </script>
 </body>
 </html>
