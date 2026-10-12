@@ -40,11 +40,29 @@
   .algo .row{display:flex;justify-content:flex-end}
   .algo .cell{width:46px;height:52px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600}
   .algo .op{width:46px;height:52px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
-  .carryrow .cell{height:26px;font-size:20px;color:var(--amber);font-weight:700}
+  .carryrow .cell,.carryrow .op,.brwrow .cell,.brwrow .op{height:38px;font-size:20px;color:var(--amber);font-weight:700}
+  .cell.hot{color:var(--amber)}
+  /* a top digit that was borrowed from: crossed out, its new value sits in the row above */
+  .cell.struck{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--coral);text-decoration-thickness:3px}
+  /* boxes that sit right inside the written problem, in the column where the digit goes */
+  .pbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:40px;height:46px;padding:0;text-align:center;
+    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
+    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
+  .pbx::placeholder{color:#5b6190}
+  .carryrow .pbx,.brwrow .pbx{width:30px;height:32px;font-size:18px;border-radius:6px;border-color:var(--amber)}
+  .brwrow .pbx.w2{width:42px}
+  .pbx:focus,.pbx.on{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .pbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  .sbx{display:flex;align-items:center;justify-content:center;min-width:40px;height:46px;padding:0 3px;font-size:30px;
+    border:2px solid var(--mint);border-radius:8px;color:var(--mint);background:#16342a}
+  .carryrow .sbx,.brwrow .sbx{min-width:30px;height:32px;font-size:18px;border-radius:6px;color:var(--amber);border-color:var(--amber);background:#3a2f1a}
   .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:8px 0 6px;opacity:.9}
   .ans .cell{color:var(--mint)}
   .cell.ghost{color:#3b4178}
-  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.carryrow .cell{font-size:17px}}
+  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.carryrow .cell,.brwrow .cell{font-size:17px}
+    .pbx{width:34px;height:42px;font-size:26px}.sbx{min-width:34px;height:42px;font-size:26px}
+    .carryrow .pbx,.brwrow .pbx{width:28px;height:30px;font-size:17px}.brwrow .pbx.w2{width:37px}.brwrow .sbx{min-width:28px;height:30px;font-size:16px}}
 
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:16px;cursor:pointer;
@@ -72,6 +90,22 @@
   .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
   .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
   .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  /* a box that lives in the problem shows up in the card as a labelled tile pointing up to it */
+  .chip{cursor:pointer}
+  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
+    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
+  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
+  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
+  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
+  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
+  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}
+  .papernote b{color:var(--sky)}
+  .example{max-width:390px;margin:0 auto 24px}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .example .algo .cell,.example .algo .op{width:40px;height:50px}.example .algo .cell{font-size:34px}
+  .example .carryrow .cell,.example .brwrow .cell,.example .brwrow .op{height:38px}
+  .example .excap{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
   .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
     border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
   .ginfo.show{display:block} .ginfo b{color:var(--amber)}
@@ -109,6 +143,12 @@
       borrowing when you need to. You have to get a column right before the next one opens, so you
       learn the real way to do it. You are only racing <b>your own best score</b>.
     </div>
+    <div class="example">
+      <div class="ttl">Here is one worked out</div>
+      <div class="ttl2">52 &minus; 27 &mdash; the boxes sit right in the problem</div>
+      <div class="algo" id="exPaper"></div>
+      <div class="excap">2 is smaller than 7, so the 5 lends 1 ten. Cross out the <b style="color:var(--coral)">5</b> and write <b style="color:var(--amber)">4</b> above it. The 2 becomes <b style="color:var(--amber)">12</b>. Then 12 &minus; 7 = 5 and 4 &minus; 2 = 2.</div>
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
 
@@ -125,6 +165,7 @@
       <div class="stepcard">
         <div class="lab" id="steplab"></div>
         <div class="q" id="stepq"></div>
+        <div class="papernote" id="papernote"></div>
         <div class="boxrow" id="boxrow"></div>
         <div class="ginfo" id="ginfo"></div>
         <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
@@ -195,7 +236,9 @@ function stepsAdd(p){
         +`${carry?` The <b>${carry}</b> is what you carried.`:``}`
         +` Write the last digit below. Carry the rest above.`,
       info:`${da} + ${db}${carry?` + ${carry}`:''} = ${val}; write ${write}${carryOut?`, carry ${carryOut}`:' (nothing to carry)'}.`,
-      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},{bl:'write below',expect:write,connector:'→'},{bl:'carry above',expect:carryOut,connector:'·'}],
+      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},
+             {bl:'write below',expect:write,connector:'→',where:'paper',row:'ans',cols:[gi]},
+             {bl:'carry above',expect:carryOut,connector:'·',where:'paper',row:'carry',cols:[gi-1],blank0:true}],
       grid:gi, write, carryOut
     });
     carry=carryOut;
@@ -204,7 +247,7 @@ function stepsAdd(p){
     steps.push({lab:`Step ${numCols+1} · final carry`,
       q:`There is still a <b>${carry}</b> carried. Write it at the front of the answer.`,
       info:`Nothing is left to add it to, so the carried ${carry} becomes the first digit of the answer.`,
-      boxes:[{bl:'front digit',expect:carry}], grid:gi, write:carry, carryOut:0});
+      boxes:[{bl:'front digit',expect:carry,where:'paper',row:'ans',cols:[gi]}], grid:gi, write:carry, carryOut:0});
   }
   return steps;
 }
@@ -218,7 +261,8 @@ function stepsSub(p){
     let diff,outgoing,boxes,q,info;
     if(avail<bot){
       const bt=avail+10; diff=bt-bot; outgoing=1;
-      boxes=[{bl:'the top is now',expect:bt},{bl:`− ${bot} =`,expect:diff,connector:'→'}];
+      boxes=[{bl:'the top is now',expect:bt,where:'paper',row:'brw',cols:[gi],w2:true},
+             {bl:`− ${bot} =`,expect:diff,connector:'→',where:'paper',row:'ans',cols:[gi]}];
       if(borrowIn && top===0){
         // borrowing across a zero: it has nothing to give, so it borrows first
         q=`This top digit is <b>0</b>, so it had nothing to give the column on its right. It borrows 10 from the left first and becomes 10. Then it gives 1 away, so now it is <b>9</b>. Subtract: <b>9 − ${bot}</b>.`;
@@ -232,12 +276,14 @@ function stepsSub(p){
       }
     } else {
       diff=avail-bot; outgoing=0;
-      boxes=[{bl:`${avail} − ${bot} =`,expect:diff}];
+      boxes=[{bl:`${avail} − ${bot} =`,expect:diff,where:'paper',row:'ans',cols:[gi]}];
       q=borrowIn?`This top digit gave 1 to the right, so now it is <b>${avail}</b>. Subtract: <b>${avail} − ${bot}</b>.`
                :`Subtract the <b>${NAMES[c]}</b> column: <b>${top} − ${bot}</b>.`;
       info=`${avail} − ${bot} = ${diff}.`;
     }
-    steps.push({lab:`Step ${c+1} · ${NAMES[c]} column`, q, info, boxes, grid:gi, write:diff});
+    // newTop: what the top digit of this column is worth now (shown above it, the old digit crossed out)
+    steps.push({lab:`Step ${c+1} · ${NAMES[c]} column`, q, info, boxes, grid:gi, write:diff,
+                newTop:(avail<bot)?avail+10:(borrowIn?avail:null)});
     borrowIn=outgoing;
   }
   return steps;
@@ -248,40 +294,94 @@ function renderProblem(){
   G={steps:buildSteps(current), si:0, tries:0};
   renderWork(); renderStep(); paintDots();
 }
-function renderWork(){
-  const p=current, WD=WDof(p), done=G.si;
-  const ansArr=Array(WD).fill(' '), carryArr=Array(WD).fill(' ');
-  for(let s=0;s<done;s++){ const st=G.steps[s]; ansArr[st.grid]=st.write;
-    if(p.op==='+' && st.carryOut>0 && st.grid-1>=0) carryArr[st.grid-1]=st.carryOut; }
+function renderWork(){ drawCols(current,G.steps,G.si,$('algo'),false); }
+function pbxHTML(g,k,label,w2){
+  return `<input class="pbx${w2?' w2':''}" data-g="${g}" data-k="${k}" maxlength="${w2?2:1}" inputmode="numeric" autocomplete="off" aria-label="${label}">`;
+}
+// {row:{col:html}} for the step's boxes that sit in the problem (col -1 = the space left of the numbers)
+function paperMap(st){
+  const m={}; if(!st) return m;
+  st.boxes.forEach((bx,g)=>{ if(bx.where!=='paper') return;
+    (m[bx.row]=m[bx.row]||{});
+    bx.cols.forEach((c,k)=>{ m[bx.row][c]=pbxHTML(g,k,bx.bl,bx.w2); });
+  });
+  return m;
+}
+function rowHTML(cls,opTxt,arr,row,pm,boxed,classes){
+  const slot=(pm[row]||{});
+  const lead=slot[-1]!==undefined?`<span class="op">${slot[-1]}</span>`:`<span class="op">${opTxt}</span>`;
+  return `<div class="row${cls?' '+cls:''}">${lead}${arr.map((d,i)=>{
+    if(slot[i]!==undefined) return `<span class="cell">${slot[i]}</span>`;
+    if(boxed&&d!==' '&&d!=='') return `<span class="cell"><span class="sbx">${d}</span></span>`;
+    const c=(classes&&classes[i])||(d===' '?'ghost':'');
+    return cellHTML(d,c);
+  }).join('')}</div>`;
+}
+function drawCols(p,steps,done,el,boxed){
+  const WD=WDof(p); const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
+  const ansArr=Array(WD).fill(' '), carryArr=Array(WD).fill(' '), brwArr=Array(WD).fill(' ');
+  const topCls=Array(WD).fill(''), botCls=Array(WD).fill('');
+  for(let s=0;s<done;s++){ const st=steps[s]; ansArr[st.grid]=st.write;
+    if(p.op==='+' && st.carryOut>0 && st.grid-1>=0) carryArr[st.grid-1]=st.carryOut;
+    if(p.op==='-' && st.newTop!==null){ brwArr[st.grid]=st.newTop; topCls[st.grid]='struck'; } }
+  if(cur){
+    topCls[cur.grid]=topCls[cur.grid]||'hot'; botCls[cur.grid]='hot';
+    if(p.op==='-' && cur.newTop!==null){ topCls[cur.grid]='struck';
+      // gave 1 to the right but needs no borrow: show what it is worth now
+      if(!pm.brw) brwArr[cur.grid]=cur.newTop; }
+  }
+  // a later column's lend shows as the next column's step; nothing else changes
   let h='';
-  if(p.op==='+') h+=`<div class="row carryrow">${carryArr.map(d=>cellHTML(d)).join('')}</div>`;
-  h+=`<div class="row">${EMPTYOP}${digitsOf(p.a,WD).map(d=>cellHTML(d)).join('')}</div>`;
-  h+=`<div class="row"><span class="op">${p.op==='+'?'+':'−'}</span>${digitsOf(p.b,WD).map(d=>cellHTML(d)).join('')}</div>`;
+  if(p.op==='+') h+=rowHTML('carryrow','',carryArr,'carry',pm,boxed);
+  else h+=rowHTML('brwrow','',brwArr,'brw',pm,boxed);
+  h+=rowHTML('','',digitsOf(p.a,WD),'top',{},false,topCls);
+  h+=rowHTML('',p.op==='+'?'+':'−',digitsOf(p.b,WD),'bot',{},false,botCls);
   h+=`<div class="ruleline"></div>`;
-  h+=`<div class="row ans">${EMPTYOP}${ansArr.map(d=>cellHTML(d,d===' '?'ghost':'')).join('')}</div>`;
-  $('algo').innerHTML=h;
+  h+=rowHTML('ans','',ansArr,'ans',pm,boxed);
+  el.innerHTML=h;
+}
+
+/* ---------- the boxes of one step (in the card or in the problem) ---------- */
+const grpInputs=g=>Array.from(document.querySelectorAll(`input[data-g="${g}"]`));
+function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
+function boxVal(g){ return grpInputs(g).map(e=>clean(e.value)).join(''); }
+function boxOk(bx,g){ const raw=boxVal(g);
+  if(raw==='') return !!bx.blank0 && bx.expect===0;     // nothing to carry: an empty box is fine
+  return !isNaN(+raw) && (+raw)===bx.expect; }
+function focusG(g){ const ins=grpInputs(g); const e=ins.find(x=>x.value==='')||ins[0]; if(e){e.focus(); e.select&&e.select();} }
+function mirror(g){ const t=$('tile'+g); if(!t) return; const v=boxVal(g);
+  t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
+function markGroup(g,ok){
+  grpInputs(g).forEach(e=>{e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
+  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — work right to left`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
+  const hasCarry=st.boxes.some(bx=>bx.row==='carry'), hasBrw=st.boxes.some(bx=>bx.row==='brw');
+  $('papernote').innerHTML=`Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. A tile with <b>↑</b> points up to it.`
+    +(hasCarry?` The small box on top is the <b>carry</b>. If there is nothing to carry, leave it empty.`:``)
+    +(hasBrw?` The small box on top is what the <b>top digit is worth now</b>.`:``);
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
+    if(bx.where==='paper')
+      return `${i>0?conn:''}<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
+        +`<span class="tile empty" id="tile${i}" title="This box is in the problem above">↑</span></div>`;
     return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+      +`<input id="bx${i}" data-g="${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
   }).join('');
   $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
   $('gverdict').textContent=''; $('gverdict').className='verdict';
   const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+  const f=stepInputs()[0]; if(f) f.focus();
 }
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    const ok=boxOk(bx,i);
+    markGroup(i,ok);
     if(!ok) allOk=false;
   });
   const gv=$('gverdict');
@@ -290,9 +390,11 @@ function checkStep(){
     gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
     gv.className='verdict help';
     if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect) el.placeholder=String(bx.expect);}); }
-    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return; const ins=grpInputs(i);
+        if(ins.length===1) ins[0].placeholder=String(bx.expect);
+        else String(bx.expect).split('').forEach((d,k)=>{ if(ins[k]) ins[k].placeholder=d; }); }); }
+    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
+    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
     return;
   }
   gv.textContent=''; gv.className='verdict';
@@ -304,6 +406,7 @@ function finishGuided(){
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every column correct!' : `✓ Done — ${current.a} ${current.op==='+'?'+':'−'} ${current.b} = ${current.answer}.`;
   gv.className='verdict good pop';
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
   concludeProblem(right, $('stepbtn'));
 }
 
@@ -343,8 +446,36 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if($('play').classList.contains('hide'))return;
   e.preventDefault();
+  const a=document.activeElement;
+  if(a && a.matches && a.matches('input[data-g]') && G && G.si<G.steps.length){
+    const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1];
+    if(nx){ nx.focus(); return; }
+  }
   $('stepbtn').click();
 });
+// typing in a box inside the problem: one digit per box (two for "the top is now"), then hop to the next box
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  if(t.classList.contains('pbx')){
+    const max=t.classList.contains('w2')?2:1;
+    t.value=t.value.replace(/[^0-9]/g,'').slice(-max);
+    if(t.value.length===max){ const ins=stepInputs(); const nx=ins[ins.indexOf(t)+1]; if(nx && nx.classList.contains('pbx')) nx.focus(); }
+  }
+  t.classList.remove('bad');
+  mirror(t.dataset.g);
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target; if(e.key!=='Backspace' || !t.matches || !t.matches('input.pbx') || t.value!=='') return;
+  const ins=stepInputs(); const pv=ins[ins.indexOf(t)-1]; if(pv && pv.classList.contains('pbx')){ e.preventDefault(); pv.focus(); }
+});
+// light up the matching tile for the box you are in
+document.addEventListener('focusin',e=>{
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
+});
+// worked example on the start screen: the same written frame, every box filled in
+(function(){ const ex=mk(52,27,'-'); const st=buildSteps(ex); drawCols(ex,st,st.length,$('exPaper'),true); })();
 </script>
 </body>
 </html>

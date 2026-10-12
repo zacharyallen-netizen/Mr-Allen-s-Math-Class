@@ -52,6 +52,40 @@
   .fline:last-child{color:var(--ink)} .fline:last-child .frac .n{border-bottom-color:var(--ink)}
   @media(max-width:430px){.fline{font-size:20px}}
 
+  /* written work: each step's boxes sit inside real stacked fractions */
+  .wline{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;margin:10px 0;
+    font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;font-weight:600;color:var(--ink)}
+  .wline .eq,.wline .opx{color:var(--muted)}
+  .wline .frac .n,.wline .frac .d{display:flex;align-items:center;justify-content:center;min-height:44px}
+  .wline .frac.expr{font-size:22px;color:var(--sky)} .wline .frac.expr .n{border-bottom-color:var(--sky)}
+  .wline .frac.past{color:var(--muted)} .wline .frac.past .n{border-bottom-color:var(--muted)}
+  .wline.pastline{opacity:.75}
+  /* same thing to the top and the bottom: arrows labelled × or ÷ */
+  .sc{display:inline-grid;grid-template-columns:auto auto auto;align-items:center;column-gap:4px}
+  .sc>.n{border-bottom:3px solid var(--ink);padding:0 8px 3px;text-align:center;min-height:47px;display:flex;align-items:center;justify-content:center}
+  .sc>.d{padding:3px 8px 0;text-align:center;min-height:47px;display:flex;align-items:center;justify-content:center}
+  .sc>.n.res{color:var(--mint);border-bottom-color:var(--mint)} .sc>.d.res{color:var(--mint)}
+  .sc .ar{display:flex;align-items:center;gap:4px;font-family:var(--sans);font-size:16px;font-weight:700;color:var(--amber);
+    white-space:nowrap;padding:0 4px}
+  .sc .ar .ah{font-size:22px;line-height:1;margin-left:2px}
+  .sc .ar .fbx{width:46px;height:34px;font-size:18px;border-color:var(--amber)}
+  .mir{display:inline-block;min-width:14px;text-align:center}
+  .ghostq{color:#4a5190}
+  .flip{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber);border:1px dashed var(--amber);
+    border-radius:999px;padding:3px 9px;margin-left:2px}
+  .pair{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 14px}
+  .fbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:58px;height:42px;padding:0;text-align:center;
+    font-size:24px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
+    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
+  .fbx::placeholder{color:#5b6190}
+  .fbx:focus,.fbx.on{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .fbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .fbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  @media(max-width:430px){.wline{font-size:23px;gap:4px 6px}.wline .frac.expr{font-size:17px}
+    .fbx{width:48px;height:38px;font-size:20px}.sc .ar{font-size:14px}.sc .ar .ah{font-size:18px}
+    .sc .ar .fbx{width:40px;height:30px;font-size:16px}.sc>.n,.sc>.d{min-height:42px;padding-left:5px;padding-right:5px}
+    .pair{flex-direction:column;gap:2px}}
+
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
     transition:transform .12s,filter .15s;min-width:150px}
@@ -78,6 +112,20 @@
   .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
   .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
   .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  /* a box that lives in the work shows up in the card as a labelled tile pointing up to it */
+  .chip{cursor:pointer}
+  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
+    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
+  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
+  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
+  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
+  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
+  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}
+  .papernote b{color:var(--sky)}
+  .example{max-width:400px;margin:0 auto 24px}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:4px}
+  .example .excap{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.45}
   .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
     border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
   .ginfo.show{display:block} .ginfo b{color:var(--amber)}
@@ -115,6 +163,12 @@
       To add or subtract, <b>the bottom numbers have to match</b>. To multiply, go <b>straight across</b>.
       To divide, <b>flip the second fraction</b> and multiply. You are only racing <b>your own best score</b>.
     </div>
+    <div class="example">
+      <div class="ttl">Here is one worked out</div>
+      <div class="ttl2">1/4 + 2/3 &mdash; the arrows show what you do to the top and the bottom</div>
+      <div id="exPaper"></div>
+      <div class="excap">Multiply each fraction by the <b style="color:var(--amber)">other bottom</b>, top and bottom. Now both are over 12, so add the tops.</div>
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
 
@@ -132,6 +186,7 @@
       <div class="stepcard">
         <div class="lab" id="steplab"></div>
         <div class="q" id="stepq"></div>
+        <div class="papernote" id="papernote"></div>
         <div class="boxrow" id="boxrow"></div>
         <div class="ginfo" id="ginfo"></div>
         <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
@@ -268,31 +323,91 @@ function renderProblem(){
   renderWork(); renderStep();
   paintDots();
 }
-function renderWork(){
-  const done=G.steps.slice(0,G.si).filter(s=>s.line);
-  $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+function renderWork(){ drawWork(current,G.steps,G.si,$('fwork')); }
+
+/* written work, drawn from the steps done so far; the boxes for the step you are on sit in place */
+function IB(g,label){ return `<input class="fbx" data-g="${g}" maxlength="3" inputmode="numeric" autocomplete="off" aria-label="${label}">`; }
+function MIR(g){ return `<span class="mir" data-m="${g}">?</span>`; }
+const GQ='<span class="ghostq">?</span>';
+function FR(n,d,cls){ return `<span class="frac ${cls||''}"><span class="n">${n}</span><span class="d">${d}</span></span>`; }
+function AR(op,x){ return `<span class="ar">${op} ${x}<span class="ah">→</span></span>`; }
+// left fraction, arrow labels (top, bottom), right fraction
+function SC(ln,ld,tl,bl,rn,rd,res){ const r=res?' res':'';
+  return `<div class="sc"><span class="n">${ln}</span>${tl}<span class="n${r}">${rn}</span>`
+        +`<span class="d">${ld}</span>${bl}<span class="d${r}">${rd}</span></div>`; }
+const EQ='<span class="eq">=</span>';
+const OPX=o=>`<span class="opx">${o==='-'?'−':o}</span>`;
+function lowestSC(rawN,rawD,ansN,ansD,k,done,box){   // k = index of the lowest-terms step
+  const g=gcd(rawN,rawD), live=done===k, fin=done>k;
+  const lab=live?'GCF':g;
+  return `<div class="wline">${SC(rawN,rawD,AR('÷',lab),AR('÷',lab),live?box(0):ansN,live?box(1):ansD,fin)}</div>`;
+}
+function drawWork(p,steps,done,el){
+  const box=g=>IB(g,steps[done].boxes[g].bl);
+  const L=[];
+  if(p.type==='simplify'){ const g=gcd(p.N,p.D);
+    const lt=done===0?box(0):g, lb=done===0?MIR(0):g;
+    L.push(`<div class="wline">${SC(p.N,p.D,AR('÷',lt),AR('÷',lb),
+      done===0?GQ:done===1?box(0):p.ansN, done===0?GQ:done===1?box(1):p.ansD, done>=2)}</div>`);
+  } else if(p.type==='equiv'){
+    const lt=done===0?MIR(0):p.k, lb=done===0?box(0):p.k;
+    L.push(`<div class="wline">${SC(p.n,p.d,AR('×',lt),AR('×',lb),
+      done===0?GQ:done===1?box(0):p.ansN, p.D, done>=2)}</div>`);
+  } else if(p.type==='addlike'){ const rawN=p.op==='+'?p.a+p.b:p.a-p.b;
+    L.push(`<div class="wline${done>=1?' pastline':''}">${frac(p.a,p.d)}${OPX(p.op)}${frac(p.b,p.d)}${EQ}${done===0?FR(box(0),box(1)):frac(rawN,p.d)}</div>`);
+    if(done>=1) L.push(lowestSC(rawN,p.d,p.ansN,p.ansD,1,done,box));
+  } else if(p.type==='addunlike'){ const den=p.b1*p.b2, t1=p.a1*p.b2, t2=p.a2*p.b1, rawN=p.op==='+'?t1+t2:t1-t2;
+    const A=SC(p.a1,p.b1,AR('×',p.b2),AR('×',p.b2), done===0?GQ:done===1?box(0):t1, done===0?box(0):den);
+    const B=SC(p.a2,p.b2,AR('×',p.b1),AR('×',p.b1), done===0?GQ:done===1?box(1):t2, done===0?MIR(0):den);
+    L.push(`<div class="wline${done>=2?' pastline':''}"><div class="pair">${A}${OPX(p.op)}${B}</div></div>`);
+    if(done>=2) L.push(`<div class="wline${done>=3?' pastline':''}">${frac(t1,den)}${OPX(p.op)}${frac(t2,den)}${EQ}${done===2?FR(box(0),box(1)):frac(rawN,den)}</div>`);
+    if(done>=3) L.push(lowestSC(rawN,den,p.ansN,p.ansD,3,done,box));
+  } else if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2;
+    L.push(`<div class="wline${done>=1?' pastline':''}">${EQ}${FR(`${p.a1}×${p.a2}`,`${p.b1}×${p.b2}`,'expr')}${EQ}${done===0?FR(box(0),box(1)):frac(tn,td)}</div>`);
+    if(done>=1) L.push(lowestSC(tn,td,p.ansN,p.ansD,1,done,box));
+  } else { // div
+    const tn=p.a1*p.b2, td=p.b1*p.a2;
+    L.push(`<div class="wline${done>=1?' pastline':''}">${EQ}${frac(p.a1,p.b1)}${OPX('×')}${done===0?FR(box(0),box(1))+`<span class="flip">↻ flip ${p.a2}/${p.b2}</span>`:FR(p.b2,p.a2)}</div>`);
+    if(done>=1) L.push(`<div class="wline${done>=2?' pastline':''}">${EQ}${FR(`${p.a1}×${p.b2}`,`${p.b1}×${p.a2}`,'expr')}${EQ}${done===1?FR(box(0),box(1)):frac(tn,td)}</div>`);
+    if(done>=2) L.push(lowestSC(tn,td,p.ansN,p.ansD,2,done,box));
+  }
+  el.innerHTML=L.join('');
+}
+
+/* ---------- the boxes of one step (all of them sit in the written work) ---------- */
+const grpInputs=g=>Array.from(document.querySelectorAll(`#fwork input[data-g="${g}"]`));
+function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
+function boxVal(g){ return grpInputs(g).map(e=>clean(e.value)).join(''); }
+function boxOk(bx,g){ const raw=boxVal(g); return raw!=='' && !isNaN(+raw) && (+raw)===bx.expect; }
+function focusG(g){ const e=grpInputs(g)[0]; if(e){e.focus(); e.select&&e.select();} }
+function mirror(g){ const v=boxVal(g);
+  const t=$('tile'+g); if(t){ t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
+  document.querySelectorAll(`#fwork .mir[data-m="${g}"]`).forEach(m=>m.textContent=v===''?'?':v); }
+function markGroup(g,ok){
+  grpInputs(g).forEach(e=>{e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
+  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill each box, then Check`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
+  $('papernote').innerHTML=`Type in the <b>boxes in the work</b> above. Each one sits right where its number goes: top or bottom of the fraction. A tile with <b>↑</b> points up to it.`;
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
     const conn=bx.connector?`<span class="conn">${bx.connector==='&'?'and':bx.connector}</span>`:'';
-    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
+    return `${i>0?conn:''}<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
+      +`<span class="tile empty" id="tile${i}" title="This box is in the work above">↑</span></div>`;
   }).join('');
   $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
   $('gverdict').textContent=''; $('gverdict').className='verdict';
   const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+  const f=stepInputs()[0]; if(f) f.focus();
 }
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    const ok=boxOk(bx,i);
+    markGroup(i,ok);
     if(!ok) allOk=false;
   });
   const gv=$('gverdict');
@@ -301,9 +416,9 @@ function checkStep(){
     gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
     gv.className='verdict help';
     if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); if((+el.value||NaN)!==bx.expect) el.placeholder=String(bx.expect);}); }
-    const bad=st.boxes.findIndex((bx,i)=>(+($('bx'+i).value||NaN))!==bx.expect);
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return; const e=grpInputs(i)[0]; if(e) e.placeholder=String(bx.expect); }); }
+    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
+    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
     return;
   }
   gv.textContent=''; gv.className='verdict';
@@ -316,6 +431,7 @@ function finishGuided(){
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — the answer is ${ans}.`;
   gv.className='verdict good pop';
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
   concludeProblem(right, $('stepbtn'));
 }
 
@@ -356,8 +472,28 @@ document.addEventListener('keydown',e=>{
   if(e.key!=='Enter')return;
   if($('play').classList.contains('hide'))return;
   e.preventDefault();
+  const a=document.activeElement;
+  if(a && a.matches && a.matches('input[data-g]') && G && G.si<G.steps.length){
+    const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1];
+    if(nx){ nx.focus(); return; }
+  }
   $('stepbtn').click();
 });
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.matches || !t.matches('input.fbx')) return;
+  t.value=t.value.replace(/[^0-9]/g,'');
+  t.classList.remove('bad');
+  mirror(t.dataset.g);
+});
+// light up the matching tile for the box you are in
+document.addEventListener('focusin',e=>{
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
+});
+// worked example on the start screen: the same written work, finished
+(function(){ const ex={type:'addunlike',a1:1,b1:4,a2:2,b2:3,op:'+',den:12,ansN:11,ansD:12};
+  const st=buildSteps(ex); drawWork(ex,st,st.length,$('exPaper')); })();
 </script>
 </body>
 </html>

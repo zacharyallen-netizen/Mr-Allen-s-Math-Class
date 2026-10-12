@@ -44,6 +44,40 @@
   .fline:last-child{color:var(--ink)}
   @media(max-width:430px){.fline{font-size:19px}}
 
+  /* written work: digits in place-value columns, with a narrow gap column between each pair of digits.
+     The decimal point lives in a gap, so points line up in one column. */
+  .dwork{display:flex;flex-direction:column;align-items:center;margin:6px 0 4px;font-family:var(--mono);
+    font-variant-numeric:tabular-nums;font-weight:600;line-height:1}
+  .drow{display:flex;justify-content:flex-end;align-items:center}
+  .dg{width:40px;height:50px;display:flex;align-items:center;justify-content:center;font-size:40px}
+  .gp{width:18px;height:50px;display:flex;align-items:center;justify-content:center;font-size:40px;color:var(--ink)}
+  .opc{width:40px;height:50px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:34px}
+  .gp.hot,.dg.hot{color:var(--amber)}
+  .gp.dropped{color:var(--coral);opacity:.4}
+  .dg.dp{box-shadow:inset 0 -4px 0 var(--amber)}
+  .drow.ans .dg{color:var(--mint)} .drow.ans .gp{color:var(--mint)}
+  .drow.ans .dg.plain{color:var(--ink)}
+  .drule{align-self:stretch;height:4px;background:var(--ink);border-radius:2px;margin:6px 0 6px;opacity:.9}
+  .dtag{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--amber);margin:2px 0 0}
+  .dtag.coral{color:var(--coral)}
+  .dbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:36px;height:44px;padding:0;text-align:center;
+    font-size:28px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
+    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
+  .dbx::placeholder{color:#5b6190}
+  .dbx:focus{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
+  .dbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .dbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
+  /* tap a gap to put the point there */
+  .ptslot{width:16px;height:44px;padding:0;border:2px dashed var(--line);border-radius:6px;background:transparent;
+    color:var(--muted);font:700 30px var(--mono);line-height:1;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+  .ptslot:hover,.ptslot:focus{border-color:var(--sky);outline:none}
+  .ptslot.sel{border-style:solid;border-color:var(--amber);color:var(--amber);background:#3a2f1a}
+  .ptslot.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .ptslot.bad{border-color:var(--coral);color:var(--coral)}
+  .ptslot.hint{border-color:var(--sky);border-style:solid}
+  @media(max-width:430px){.dg,.opc{width:34px}.dg{font-size:32px}.gp{width:15px;font-size:32px}.dbx{width:31px;height:40px;font-size:24px}
+    .ptslot{width:14px;height:40px;font-size:26px}}
+
   .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
     transition:transform .12s,filter .15s;min-width:150px}
@@ -68,6 +102,20 @@
   .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
   .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
   .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
+  /* a box that lives in the work shows up in the card as a labelled tile pointing up to it */
+  .chip{cursor:pointer}
+  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
+    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
+  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
+  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
+  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
+  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
+  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}
+  .papernote b{color:var(--sky)}
+  .example{max-width:390px;margin:0 auto 24px}
+  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px}
+  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:6px}
+  .example .excap{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
   .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
     border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
   .ginfo.show{display:block} .ginfo b{color:var(--amber)}
@@ -105,6 +153,12 @@
       To add or subtract, <b>line up the dots</b>. To multiply, <b>ignore the dot</b> and put it back at the end.
       You are only racing <b>your own best score</b>.
     </div>
+    <div class="example">
+      <div class="ttl">Here is one worked out</div>
+      <div class="ttl2">4.56 + 2.39 &mdash; the points stay in one column</div>
+      <div class="dwork" id="exPaper"></div>
+      <div class="excap">Stack the numbers so the <b style="color:var(--amber)">points line up</b>. Add 456 + 239 = 695 like whole numbers. Then the point drops straight down: <b style="color:var(--mint)">6.95</b>.</div>
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
 
@@ -122,6 +176,7 @@
       <div class="stepcard">
         <div class="lab" id="steplab"></div>
         <div class="q" id="stepq"></div>
+        <div class="papernote" id="papernote"></div>
         <div class="boxrow" id="boxrow"></div>
         <div class="ginfo" id="ginfo"></div>
         <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
@@ -178,17 +233,17 @@ function buildSteps(p){
     const si=p.kind==='add'?ai+bi:ai-bi; const op=p.kind==='add'?'+':'−';
     return [
       {lab:'Step 1 · line up & combine', q:`Line up the decimal points, then ${p.kind==='add'?'add':'subtract'} as if there were no point: <b>${ai} ${op} ${bi}</b>.`,
-       boxes:[{bl:`${ai} ${op} ${bi}`,expect:si}], info:`${p.a.toFixed(2)} is ${ai} hundredths, ${p.b.toFixed(2)} is ${bi}. ${ai} ${op} ${bi} = ${si}.`, line:`${ai} ${op} ${bi} = ${si}`},
+       boxes:[{bl:`${ai} ${op} ${bi}`,expect:si,where:'paper',digits:true}], info:`${p.a.toFixed(2)} is ${ai} hundredths, ${p.b.toFixed(2)} is ${bi}. ${ai} ${op} ${bi} = ${si}.`, line:`${ai} ${op} ${bi} = ${si}`},
       {lab:'Step 2 · put the point back', q:`Both numbers had <b>2 decimal places</b>, so put the point back 2 places from the right.`,
-       boxes:[{bl:'answer',expect:p.ans,dec:true}], info:`${si} hundredths = ${p.ans.toFixed(2)}.`, line:`= ${p.ans.toFixed(2)}`, last:true}
+       boxes:[{bl:'answer',expect:p.ans,dec:true,where:'paper',pt:true}], info:`${si} hundredths = ${p.ans.toFixed(2)}.`, line:`= ${p.ans.toFixed(2)}`, last:true}
     ];
   }
   if(p.kind==='mul'){ const ai=Math.round(p.a*10), prod=ai*p.b;
     return [
       {lab:'Step 1 · ignore the point', q:`Drop the decimal point and multiply whole numbers: <b>${ai} × ${p.b}</b>.`,
-       boxes:[{bl:`${ai} × ${p.b}`,expect:prod}], info:`${ai} × ${p.b} = ${prod}.`, line:`${ai} × ${p.b} = ${prod}`},
+       boxes:[{bl:`${ai} × ${p.b}`,expect:prod,where:'paper',digits:true}], info:`${ai} × ${p.b} = ${prod}.`, line:`${ai} × ${p.b} = ${prod}`},
       {lab:'Step 2 · count decimal places', q:`<b>${p.a.toFixed(1)}</b> has <b>1 decimal place</b>, so the answer has 1. Put the point back.`,
-       boxes:[{bl:'answer',expect:p.ans,dec:true}], info:`${prod} with 1 decimal place = ${p.ans.toFixed(1)}.`, line:`= ${p.ans.toFixed(1)}`, last:true}
+       boxes:[{bl:'answer',expect:p.ans,dec:true,where:'paper',pt:true}], info:`${prod} with 1 decimal place = ${p.ans.toFixed(1)}.`, line:`= ${p.ans.toFixed(1)}`, last:true}
     ];
   }
   if(p.kind==='d2p'){
@@ -220,31 +275,114 @@ function renderProblem(){
   G={steps:buildSteps(current), si:0, tries:0};
   renderWork(); renderStep(); paintDots();
 }
+const PAPER=p=>p.kind==='add'||p.kind==='sub'||p.kind==='mul';
 function renderWork(){
+  if(PAPER(current)){ drawDec(current,G.steps,G.si,$('fwork')); return; }
   const done=G.steps.slice(0,G.si).filter(s=>s.line);
   $('fwork').innerHTML=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
+}
+// place-value frame: n digit columns with a gap column between each pair; the point lives in gap ptGap
+function decLayout(p){
+  if(p.kind==='mul'){ const ai=Math.round(p.a*10), prod=ai*p.b; const n=String(prod).length;
+    return {n, ptGap:n-2, ai, whole:prod, places:1}; }
+  const ai=Math.round(p.a*100), bi=Math.round(p.b*100), si=p.kind==='add'?ai+bi:ai-bi;
+  const I=Math.max(String(Math.floor(p.a)).length,String(Math.floor(p.b)).length,String(Math.floor(p.ans)).length);
+  return {n:I+2, ptGap:I-1, ai, bi, whole:si, places:2};
+}
+function dRow(cls,lead,cells,gaps){ let h=`<div class="drow${cls?' '+cls:''}"><span class="opc">${lead}</span>`;
+  cells.forEach((c,i)=>{ h+=c; if(i<cells.length-1) h+=gaps[i]; }); return h+'</div>'; }
+const DG=(d,cls)=>`<span class="dg${cls?' '+cls:''}">${d===' '?'':d}</span>`;
+const GP=(t,cls)=>`<span class="gp${cls?' '+cls:''}">${t||''}</span>`;
+function numCells(str,n,clsFn){ return str.padStart(n,' ').split('').map((d,i)=>DG(d,clsFn?clsFn(i,d):'')); }
+function drawDec(p,steps,done,el){
+  const L=decLayout(p), n=L.n, live=done<steps.length?steps[done]:null;
+  const gapsWithPt=(cls)=>Array.from({length:n-1},(_,i)=>i===L.ptGap?GP('.',cls):GP(''));
+  let h='';
+  if(p.kind==='mul'){
+    const aStr=String(L.ai);
+    const ptCls=done===0?'dropped':(done===1?'hot':'');
+    h+=dRow('', '', numCells(aStr,n,(i)=>done===1&&i===n-1?'dp':''), gapsWithPt(ptCls));
+    h+=dRow('', '×', numCells(String(p.b),n), Array(n-1).fill(GP('')));
+  } else {
+    const fmt=x=>{ const [w,f]=x.toFixed(2).split('.'); return w+f; };
+    const ptCls=done===1?'hot':'';
+    h+=dRow('', '', numCells(fmt(p.a),n), gapsWithPt(ptCls));
+    h+=dRow('', p.kind==='add'?'+':'−', numCells(fmt(p.b),n), gapsWithPt(ptCls));
+  }
+  h+=`<div class="drule"></div>`;
+  // answer row
+  if(done===0){
+    const cells=Array.from({length:n},(_,k)=>`<span class="dg"><input class="dbx" data-g="0" data-k="${k}" maxlength="1" inputmode="numeric" autocomplete="off" aria-label="answer digit ${k+1}"></span>`);
+    h+=dRow('ans','',cells,Array(n-1).fill(GP('')));
+  } else {
+    const str=String(L.whole).padStart(n,'0');
+    const cells=str.split('').map((d,i)=>DG(d,done===1?'plain':(p.kind==='mul'&&i===n-1?'dp':'')));
+    let gaps;
+    if(done===1) gaps=Array.from({length:n-1},(_,i)=>`<span class="gp"><button type="button" class="ptslot" data-g="0" data-k="${i}" aria-label="put the point after digit ${i+1}"></button></span>`);
+    else gaps=Array.from({length:n-1},(_,i)=>i===L.ptGap?GP('.'):GP(''));
+    h+=dRow('ans','',cells,gaps);
+  }
+  if(p.kind==='mul'){
+    if(done===0) h+=`<div class="dtag coral">Ignore the point for now: ${p.a.toFixed(1)} → ${L.ai}</div>`;
+    if(done===1) h+=`<div class="dtag">${p.a.toFixed(1)} has 1 decimal place (underlined). Tap the gap where the point goes.</div>`;
+  } else {
+    if(done===0) h+=`<div class="dtag">Points lined up. ${p.kind==='add'?'Add':'Subtract'} the digits like whole numbers.</div>`;
+    if(done===1) h+=`<div class="dtag">Tap the gap where the point goes, right under the other points.</div>`;
+  }
+  el.innerHTML=h;
+}
+
+/* ---------- the boxes of one step (in the card, or in the written work) ---------- */
+const grpInputs=g=>Array.from(document.querySelectorAll(`#fwork [data-g="${g}"], #boxrow input[data-g="${g}"]`));
+function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
+function ptValue(g){ const sel=document.querySelector(`#fwork .ptslot.sel[data-g="${g}"]`); if(!sel) return '';
+  const str=String(decLayout(current).whole).padStart(decLayout(current).n,'0'); const k=+sel.dataset.k;
+  return String(+(str.slice(0,k+1)+'.'+str.slice(k+1))); }
+function boxVal(g){ const bx=G.steps[G.si].boxes[g];
+  if(bx.pt) return ptValue(g);
+  return grpInputs(g).map(e=>clean(e.value)).join(''); }
+function boxOk(bx,g){
+  if(bx.digits){ const vals=grpInputs(g).map(e=>clean(e.value)); const first=vals.findIndex(v=>v!=='');
+    if(first<0 || vals.slice(first).some(v=>v==='')) return false;          // only leading boxes may stay empty
+    return +vals.join('')===bx.expect; }
+  const raw=bx.pt?ptValue(g):clean(boxVal(g));
+  return raw!=='' && isFinite(+raw) && Math.abs(+raw-bx.expect)<1e-9; }
+function focusG(g){ const ins=grpInputs(g); const e=ins.find(x=>x.tagName==='INPUT'&&x.value==='')||ins[0]; if(e){e.focus(); e.select&&e.select();} }
+function mirror(g){ const t=$('tile'+g); if(!t) return; const v=boxVal(g);
+  t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
+function markGroup(g,ok){
+  const bx=G.steps[G.si].boxes[g];
+  grpInputs(g).forEach(e=>{ if(bx.pt && !e.classList.contains('sel')){ e.classList.remove('ok','bad'); return; }
+    e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
+  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
 }
 function renderStep(){
   const st=G.steps[G.si]; G.tries=0;
   $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — fill the box, then Check`;
   $('steplab').textContent=st.lab;
   $('stepq').innerHTML=st.q;
+  const paper=st.boxes.some(bx=>bx.where==='paper'), pt=st.boxes.some(bx=>bx.pt);
+  $('papernote').innerHTML=!paper?'':pt
+    ? `<b>Tap the gap</b> in the answer where the decimal point belongs. Tap a different gap to move it.`
+    : `Type in the <b>boxes in the work</b> above, one digit in each box. A tile with <b>↑</b> points up to it.`;
   $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
+    if(bx.where==='paper')
+      return `<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
+        +`<span class="tile empty" id="tile${i}" title="This box is in the work above">↑</span></div>`;
     const mode=bx.dec?'decimal':'numeric';
     return `<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" inputmode="${mode}" autocomplete="off" aria-label="${bx.bl}"></div>`;
+      +`<input id="bx${i}" data-g="${i}" inputmode="${mode}" autocomplete="off" aria-label="${bx.bl}"></div>`;
   }).join('');
   $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
   $('gverdict').textContent=''; $('gverdict').className='verdict';
   const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+  const f=stepInputs()[0]; if(f) f.focus();
 }
 function checkStep(){
   const st=G.steps[G.si]; let allOk=true;
   st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok=raw!=='' && isFinite(+raw) && Math.abs(+raw - bx.expect)<1e-9;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
+    const ok=boxOk(bx,i);
+    markGroup(i,ok);
     if(!ok) allOk=false;
   });
   const gv=$('gverdict');
@@ -253,9 +391,12 @@ function checkStep(){
     gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
     gv.className='verdict help';
     if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); const raw=clean(el.value); if(!(isFinite(+raw)&&Math.abs(+raw-bx.expect)<1e-9)) el.placeholder=String(bx.expect);}); }
-    const bad=st.boxes.findIndex((bx,i)=>{const raw=($('bx'+i).value||'').trim().replace('−','-'); return !(isFinite(+raw)&&Math.abs(+raw-bx.expect)<1e-9);});
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return; const ins=grpInputs(i);
+        if(bx.pt){ const k=decLayout(current).ptGap; ins.forEach(e=>e.classList.toggle('hint',+e.dataset.k===k)); }
+        else if(bx.digits){ const str=String(bx.expect).padStart(ins.length,' '); ins.forEach((e,k)=>{ if(str[k]!==' ') e.placeholder=str[k]; }); }
+        else if(ins[0]) ins[0].placeholder=String(bx.expect); }); }
+    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
+    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
     return;
   }
   gv.textContent=''; gv.className='verdict';
@@ -267,6 +408,7 @@ function finishGuided(){
   const gv=$('gverdict');
   gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — the answer is ${current.ans}.`;
   gv.className='verdict good pop';
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
   concludeProblem(right, $('stepbtn'));
 }
 
@@ -289,7 +431,35 @@ function endSet(){$('play').classList.add('hide');$('summary').classList.remove(
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
   $('s-note').textContent=correctCount>=9?'Excellent control — the point lands in the right place every time.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. Count the decimal places — that’s where points hide.':'Every step showed the method. Run it again.';}
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();$('stepbtn').click();});
+document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();
+  const a=document.activeElement;
+  if(a && a.matches && a.matches('input.dbx') && G && G.si<G.steps.length){
+    const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1]; if(nx){ nx.focus(); return; } }
+  $('stepbtn').click();});
+// one digit per box in the work, then hop to the next box
+document.addEventListener('input',e=>{
+  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
+  if(t.classList.contains('dbx')){ t.value=t.value.replace(/[^0-9]/g,'').slice(-1);
+    if(t.value!==''){ const ins=stepInputs(); const nx=ins[ins.indexOf(t)+1]; if(nx) nx.focus(); } }
+  t.classList.remove('bad'); mirror(t.dataset.g);
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target; if(e.key!=='Backspace' || !t.matches || !t.matches('input.dbx') || t.value!=='') return;
+  const ins=stepInputs(); const pv=ins[ins.indexOf(t)-1]; if(pv){ e.preventDefault(); pv.focus(); }
+});
+// tap a gap to put the decimal point there
+document.addEventListener('click',e=>{
+  const t=e.target.closest && e.target.closest('.ptslot'); if(!t || $('stepbtn').textContent!=='Check') return;
+  document.querySelectorAll(`#fwork .ptslot[data-g="${t.dataset.g}"]`).forEach(x=>{x.classList.remove('sel','ok','bad'); x.textContent='';});
+  t.classList.add('sel'); t.textContent='.'; mirror(t.dataset.g);
+});
+document.addEventListener('focusin',e=>{
+  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
+  const t=e.target; if(!t.matches || !t.matches('[data-g]')) return;
+  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
+});
+// worked example on the start screen: the same frame, finished
+(function(){ const ex={kind:'add',a:4.56,b:2.39,ans:6.95}; const st=buildSteps(ex); drawDec(ex,st,st.length,$('exPaper')); })();
 </script>
 </body>
 </html>

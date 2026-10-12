@@ -45,7 +45,10 @@ const NOISE=/fonts\.googleapis|fonts\.gstatic|ERR_TUNNEL|Failed to load resource
       // a box can be one input in the step card, or several one-digit boxes sitting in the written problem
       await p.evaluate(exp=>{exp.forEach((v,i)=>{
         const ins=typeof grpInputs==='function'?grpInputs(i):[];
-        if(ins.length>1) String(v).split('').forEach((d,k)=>{ if(ins[k]) ins[k].value=d; });
+        const bx=G.steps[G.si].boxes[i];
+        if(bx && bx.pt && typeof decLayout==='function'){ const k=decLayout(current).ptGap;
+          const t=document.querySelector(`#fwork .ptslot[data-g="${i}"][data-k="${k}"]`); if(t) t.click(); return; }
+        if(ins.length>1) String(v).padStart(ins.length,'0').split('').forEach((d,k)=>{ if(ins[k]) ins[k].value=d; });
         else if(ins.length===1) ins[0].value=String(v);
         else { const el=document.getElementById('bx'+i); if(el) el.value=String(v); } });},st.exp);
       await p.click('#stepbtn'); await p.waitForTimeout(170);
