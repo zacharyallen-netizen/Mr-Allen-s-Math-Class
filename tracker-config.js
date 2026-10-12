@@ -7,6 +7,6 @@
    paste its /exec address in BOTH files.
    ─────────────────────────────────────────────────────────────── */
 window.TRACKER_CONFIG = {
-  ENDPOINT:   'https://script.google.com/macros/s/AKfycbzggKEOOvFji1bPdDEkLrD4ZZSXqXCEQh4bmyrvMW9vROyK3znFwarJKffiNp3avoz5pw/exec',
+  ENDPOINT:   'https://script.google.com/macros/s/AKfycbwrH07x_DoAPr9_WrGsq57Jk6D38xor3Jbr9Al06cNmao9MfpoXP76Kh-JIwzza-xZHQA/exec',
   CLASS_CODE: 'allen-8th'
 };
