@@ -643,19 +643,26 @@ function vw(eq,o){var s={eq:eq};o=o||{};Object.keys(o).forEach(function(k){s[k]=
    both sides (red) · ['d','left divisor','right divisor'] divide both sides · ['a',[left],[right],rel] answer (green box). */
 function hwX(t){return '<span class="vw-x on">'+t+'</span>';}
 function hwFr(a,b){return '<span class="vw-fr"><span>'+a+'</span><span>'+b+'</span></span>';}
-function hw(rows,note){var NL=1,NR=1,h='',g=0,n=0,prev=null;
-  rows.forEach(function(r){if(r[0]==='e'||r[0]==='a'){NL=Math.max(NL,r[1].length);NR=Math.max(NR,r[2].length);}});
-  function cell(cls,col,html){return '<div class="vw-c'+cls+'" style="grid-row:'+g+';grid-column:'+col+'">'+html+'</div>';}
-  rows.forEach(function(r){g++;var t=r[0];
-    if(t==='l'){n++;h+='<div class="vw-c vw-lab" style="grid-row:'+g+'"><i>'+n+'</i>'+r[1]+'</div>';return;}
-    if(t==='e'||t==='a'){var all=[];r[1].forEach(function(c,i){all.push([NL-r[1].length+i+2,c]);});all.push([NL+2,r[3]||'=',1]);
-      r[2].forEach(function(c,i){all.push([NL+3+i,c]);});
-      all.forEach(function(a,j){h+=cell((a[2]?' vw-rel':'')+(t==='a'?' vw-ansc'+(j===0?' vw-first':'')+(j===all.length-1?' vw-last':''):''),a[0],a[1]);});prev=r;return;}
-    if(t==='o'){var used={};r[1].forEach(function(c,i){var col=NL-r[1].length+i+2;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
-      r[2].forEach(function(c,i){var col=NL+3+i;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
-      for(var c=2;c<=NL+2+NR;c++) if(!used[c]) h+=cell(' vw-op',c,'&nbsp;');return;}
-    if(t==='d'){h+=cell(' vw-div',(NL-prev[1].length+2)+'/'+(NL+2),r[1]);h+=cell(' vw-div',(NL+3)+'/'+(NL+3+prev[2].length),r[2]);}});
-  return '<div class="vw vw-hand" role="group" aria-label="step by step work"><div class="vw-box"><div class="vw-g" style="grid-template-columns:minmax(0,1fr) repeat('+NL+',auto) auto repeat('+NR+',auto) minmax(0,1fr)">'+h+'</div></div>'+(note?'<div class="vw-cap">'+note+'</div>':'')+'</div>';}
+function hw(rows,note){
+  /* rows → step boxes (same look as vwork.js): the first 'e' row is the start; each 'l' label starts a step;
+     BEFORE = the line above, DO IT = that line with the red move written in ('o') or as fractions ('d'), AFTER = next line. */
+  function sd(a,keep){var t=a.filter(function(x){return x!==''&&x!=null;}).join(' ');return keep?t:t.replace(/<span class="vw-x on">([\s\S]*?)<\/span>/g,'$1');}
+  function rw(lb,L,rel,R,ans){var c=ans?' vw-ans':'';return '<div class="vw-lb">'+lb+'</div><div class="vw-L'+c+'">'+L+'</div><div class="vw-rel'+c+'">'+rel+'</div><div class="vw-R'+c+'">'+R+'</div>';}
+  var start=null,prev=null,steps=[],cur=null;
+  rows.forEach(function(r){var t=r[0];
+    if(t==='e'||t==='a'){if(!start){start=r;prev=r;return;} if(cur){cur.after=r;cur.ans=t==='a';cur=null;} prev=r;return;}
+    if(t==='l'){cur={label:r[1],before:prev};steps.push(cur);return;}
+    if(t==='o'&&cur){var ins=function(terms,ops){var o=terms.slice(),off=terms.length-ops.length;
+        for(var i=ops.length-1;i>=0;i--){if(ops[i]&&String(ops[i]).replace(/&nbsp;/g,'').trim()){var at=Math.max(0,Math.min(o.length,off+i+1));o.splice(at,0,'<span class="vw-red">'+ops[i]+'</span>');}}return o;};
+      cur.doit=[sd(ins(prev[1],r[1]),1),prev[3]||'=',sd(ins(prev[2],r[2]),1)];return;}
+    if(t==='d'&&cur){var fr=function(a,b){return '<span class="vw-bigfr"><span>'+a+'</span><span><span class="vw-red">'+b+'</span></span></span>';};
+      cur.doit=[fr(sd(prev[1],1),r[1]),prev[3]||'=',fr(sd(prev[2],1),r[2])];}});
+  var h='<div class="vw-box"><div class="vw-start"><small>Solve</small>'+sd(start[1])+' '+(start[3]||'=')+' '+sd(start[2])+'</div>';
+  steps.forEach(function(s,i){var fin=i===steps.length-1;
+    h+='<div class="vw-step'+(fin?' final':'')+'"><div class="vw-st"><i>'+(i+1)+'</i>Step '+(i+1)+'</div><div class="vw-ex">'+s.label+'</div><div class="vw-rows">'+
+      rw('Before',sd(s.before[1]),s.before[3]||'=',sd(s.before[2]))+(s.doit?rw('Do it',s.doit[0],s.doit[1],s.doit[2]):'')+
+      (s.after?rw('After',sd(s.after[1]),s.after[3]||'=',sd(s.after[2]),s.ans):'')+'</div></div>';});
+  return '<div class="vw vw-hand" role="group" aria-label="step by step work">'+h+'</div>'+(note?'<div class="vw-cap">'+note+'</div>':'')+'</div>';}
 /* "Reveal all answers" (answer key) also shows every step of the vertical work */
 if(typeof window!=='undefined'&&typeof window.revealPage==='function'&&!window.revealPage._vw){var _rp=window.revealPage;
   window.revealPage=function(){_rp.apply(this,arguments);document.querySelectorAll('.vw .vw-all').forEach(function(b){b.click();});};window.revealPage._vw=1;}
