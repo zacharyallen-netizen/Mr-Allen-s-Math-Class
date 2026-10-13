@@ -1,6 +1,6 @@
 // Bell ringer — Scientific Notation (Unit 2).  node _build/bellringers/sci_notation_br1.js
-// Writes grade8/Unit2_SciNotation_BellRinger.pdf (LANDSCAPE: two half-sheets side by side, cut on the dashed line)
-// and grade8/Unit2_SciNotation_BellRinger_AnswerKey.pdf (one copy, answers in green).
+// Writes grade8/Unit2_SciNotation_BellRinger.pdf (one full landscape page)
+// and grade8/Unit2_SciNotation_BellRinger_AnswerKey.pdf (separate page, answers in green).
 const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');
 const OUT = '/home/claude/mr-allen-s-math-class/grade8/';
 const sup = n => '<sup>' + String(n).replace('-', '−') + '</sup>';
@@ -47,37 +47,35 @@ const CSS = `
 @page{size:Letter landscape;margin:0}
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;color:#1E2D4F}
-.page{width:11in;height:8.5in;padding:.35in .3in;display:flex;flex-direction:row;justify-content:space-between}
-.half{width:5.05in;height:7.8in;display:flex;flex-direction:column}
-.cut{border-left:1.5px dashed #8A94A8;width:0;position:relative}
-.cut span{position:absolute;top:50%;left:-7px;transform:rotate(90deg);transform-origin:left top;background:#fff;color:#8A94A8;font-size:9px;white-space:nowrap;padding:0 6px}
-.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5px solid #1E2D4F;padding-bottom:3px}
-.title{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:15.5px}
-.top{flex-wrap:wrap}.nm{font-size:11px;font-weight:600;width:100%;margin-top:6px}.nm span{display:inline-block;width:2.6in;border-bottom:1.2px solid #1E2D4F;margin:0 8px 0 4px}.nm span.s{width:1.15in;margin-right:0}
-.keytag{background:#15803D;color:#fff;font-weight:800;font-size:11px;padding:3px 10px;border-radius:5px;letter-spacing:.06em}
-.rule{font-size:10.5px;line-height:1.35;background:#F4F7FC;border:1px solid #D7DCE6;border-left:4px solid #0056B3;border-radius:5px;padding:4px 8px;margin:6px 0 5px}
-.part{font-size:11.5px;font-weight:700;margin:5px 0 3px}
-.gridA{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
-.gridB{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-flow:column;grid-template-rows:repeat(3,1fr);gap:6px;flex:1}
-.cell{border:1.2px solid #C9D0DD;border-radius:6px;padding:5px 7px}
-.q{font-size:15px;font-weight:600;white-space:nowrap}
+.page{width:11in;height:8.5in;padding:.45in .5in}
+.half{width:100%;height:100%;display:flex;flex-direction:column}
+.top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #1E2D4F;padding-bottom:5px}
+.title{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:24px}
+.nm{font-size:15px;font-weight:600}.nm span{display:inline-block;width:2.6in;border-bottom:1.5px solid #1E2D4F;margin:0 14px 0 6px}.nm span.s{width:1.3in;margin-right:0}
+.keytag{background:#15803D;color:#fff;font-weight:800;font-size:15px;padding:4px 14px;border-radius:6px;letter-spacing:.06em}
+.rule{font-size:14px;line-height:1.4;background:#F4F7FC;border:1px solid #D7DCE6;border-left:5px solid #0056B3;border-radius:6px;padding:6px 12px;margin:10px 0 8px}
+.part{font-size:16px;font-weight:700;margin:8px 0 5px}
+.gridA{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gridB{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:10px;flex:1}
+.cell{border:1.5px solid #C9D0DD;border-radius:8px;padding:8px 11px}
+.q{font-size:21px;font-weight:600;white-space:nowrap}
 sup{font-size:.68em;vertical-align:.62em;line-height:0}
-.yn{display:flex;gap:10px;margin:5px 0 3px}.yn .o{font-size:11.5px;font-weight:700;border:1.5px solid #1E2D4F;border-radius:12px;padding:1px 9px}
+.yn{display:flex;gap:14px;margin:8px 0 5px}.yn .o{font-size:15px;font-weight:700;border:2px solid #1E2D4F;border-radius:14px;padding:2px 14px}
 .yn .o.on{background:#15803D;border-color:#15803D;color:#fff}
-.why{font-size:10px;font-weight:600;color:#4a5570}
-.why .ln{display:block;border-bottom:1px solid #8A94A8;height:22px;margin-top:2px}
-.dir{font-size:9.5px;font-weight:700;color:#0056B3;text-transform:uppercase;letter-spacing:.03em}
+.why{font-size:13px;font-weight:600;color:#4a5570}
+.why .ln{display:block;border-bottom:1.2px solid #8A94A8;height:30px;margin-top:2px}
+.dir{font-size:12.5px;font-weight:700;color:#0056B3;text-transform:uppercase;letter-spacing:.03em}
 .cell.b{display:flex;flex-direction:column}.work{flex:1}
-.aline{font-size:13px;font-weight:700}.aline .ln{display:inline-block;width:83%;border-bottom:1.3px solid #1E2D4F;min-height:18px}
-.ans{color:#15803D;font-weight:700;font-size:12px}
-.why .ans{font-size:10.5px;position:relative;top:4px}
+.aline{font-size:18px;font-weight:700}.aline .ln{display:inline-block;width:85%;border-bottom:1.6px solid #1E2D4F;min-height:24px}
+.ans{color:#15803D;font-weight:700;font-size:18px}
+.why .ans{font-size:14px;position:relative;top:9px}
 `;
 function doc(body) { return '<!doctype html><html><head><meta charset="utf-8"><style>' + CSS + '</style></head><body>' + body + '</body></html>'; }
 (async () => {
   const b = await chromium.launch(), p = await b.newPage();
-  await p.setContent(doc('<div class="page">' + sheet(false) + '<div class="cut"><span>✂ cut here</span></div>' + sheet(false) + '</div>'));
+  await p.setContent(doc('<div class="page">' + sheet(false) + '</div>'));
   await p.pdf({ path: OUT + 'Unit2_SciNotation_BellRinger.pdf', format: 'Letter', landscape: true, printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } });
-  await p.setContent(doc('<div class="page">' + sheet(true) + '<div></div></div>'));
+  await p.setContent(doc('<div class="page">' + sheet(true) + '</div>'));
   await p.pdf({ path: OUT + 'Unit2_SciNotation_BellRinger_AnswerKey.pdf', format: 'Letter', landscape: true, printBackground: true, margin: { top: 0, bottom: 0, left: 0, right: 0 } });
   await b.close(); console.log('wrote bell ringer + key');
 })();
