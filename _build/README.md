@@ -35,3 +35,4 @@ Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in 
 ## Briefs
 `BUILD_BRIEF.md`, `final/*.md`, `m1/M1_BRIEF.md`, `tracker/WIRE_BRIEF.md` record the house rules
 (language level, notation, visuals drawn from each problem's own numbers, verification) used for every build.
+- `node u9_pdfs.js` rebuilds the Unit 9 worksheet and answer key PDFs from volume_practice.html (pictures come from grade8/u9shapes.js).
