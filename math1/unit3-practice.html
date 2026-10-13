@@ -163,8 +163,8 @@
 
 <div class="keyhdr"><h2>Part D · Graphing Inequalities</h2><p>Use the shaded graph to answer Questions 1–3.</p></div>
 <section class="topic"><h2><span class="num">D</span> Reading a Shaded Region</h2>
-  <div class="diagram"><div class="viz" data-v="dg" data-static></div><div class="diagram-cap">Solid boundary line, shaded below</div></div>
-  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> Which inequality matches the shaded graph?</div><div class="chk-opts">
+  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> Which inequality matches the shaded graph?</div>
+    <div class="diagram"><div class="viz" data-v="dg" data-static></div><div class="diagram-cap">Solid boundary line, shaded below</div></div><div class="chk-opts">
     <button class="chk-btn" data-o="a" onclick="M1.pick('d1',this,'a')">y ≤ −x + 4</button>
     <button class="chk-btn" data-o="b" onclick="M1.pick('d1',this,'b')">y ≥ −x + 4</button>
     <button class="chk-btn" data-o="c" onclick="M1.pick('d1',this,'c')">y ≤ x + 4</button>
@@ -222,6 +222,7 @@
     <div class="sa" style="border:0;padding:6px 0 0;margin:6px 0 0;background:none"><button class="sa-btn" onclick="sa(this);M1.show('e3')">Reveal</button><div class="sa-ans">Different slopes (2 vs −1), so exactly <strong>one solution</strong>.<br>2x + 3 = −x + 9 → 3x = 6 → x = 2, y = 2(2) + 3 = 7 → <strong>(2, 7)</strong>.</div></div></div>
   <div class="fix" id="e4"><h5><span class="badge">4</span> 🔍 Find the mistake</h5>
     <p class="who">Nia solves 2x + y = 4 and 4x + 2y = 8. Click the step with the mistake.</p>
+    <div class="viz" data-v="e4p" data-static></div>
     <button class="fix-step" data-o="1" onclick="M1.pick('e4',this,1)"><span class="sn">Step 1</span> Multiply 2x + y = 4 by −2: −4x − 2y = −8</button>
     <button class="fix-step" data-o="2" onclick="M1.pick('e4',this,2)"><span class="sn">Step 2</span> Add to 4x + 2y = 8: 0 = 0</button>
     <button class="fix-step" data-o="3" onclick="M1.pick('e4',this,3)"><span class="sn">Step 3</span> 0 = 0, so x = 0 and y = 0. The answer is (0, 0).</button>
@@ -275,13 +276,14 @@ var M1 = (function () {
     push(cur, 'n');
     return out;
   }
-  function tw(s, fs) { var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
+  var MINF = 12.5; /* smallest label size: about 12 px on a phone */
+  function tw(s, fs) { fs = Math.max(fs || 11, MINF); var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
   function text(x, y, s, o) {
-    o = o || {}; var fs = o.fs || 11, parts = rich(s), h = '', base = 0;
+    o = o || {}; var fs = Math.max(o.fs || 11, MINF), parts = rich(s), h = '', base = 0;
     parts.forEach(function (p) {
       var dy = 0, size = '';
-      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
-      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.8) + '"'; }
+      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.8) + '"'; }
       else { dy = -base; base = 0; }
       h += '<tspan' + (dy ? ' dy="' + r1(dy) + '"' : '') + size + '>' + esc(p.t) + '</tspan>';
     });
@@ -291,7 +293,7 @@ var M1 = (function () {
       (o.cls ? ' class="' + o.cls + '"' : '') + '>' + h + '</text>';
   }
   function pill(cx, cy, s, o) {
-    o = o || {}; var fs = o.fs || 11, w = tw(s, fs) + 10, h = fs + 6;
+    o = o || {}; var fs = Math.max(o.fs || 11, MINF), w = tw(s, fs) + 10, h = fs + 6;
     return '<rect x="' + r1(cx - w / 2) + '" y="' + r1(cy - h / 2) + '" width="' + r1(w) + '" height="' + r1(h) + '" rx="' + r1(h / 2) +
       '" fill="' + (o.bg || C.gold) + '" stroke="' + (o.st || '#b38600') + '" stroke-width="1"/>' +
       text(cx, cy + fs * 0.36, s, { fs: fs, c: o.c || C.ink, b: true, halo: false });
@@ -367,7 +369,7 @@ var M1 = (function () {
 
   /* ---------- coordinate plane ---------- */
   function plane(o) {
-    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, fs = o.fs || 11;
+    var W = o.w || 300, H = o.h || W, tfs = Math.max(o.tfs || 10, MINF), fs = Math.max(o.fs || 11, MINF);
     var x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
     var xs = o.xs || 1, ys = o.ys || 1, xl = o.xl || xs, yl = o.yl || ys;
     var tick = o.tick || function (v) { return fmt(v); };
@@ -375,9 +377,9 @@ var M1 = (function () {
     for (v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) ylabs.push(+v.toFixed(6));
     var maxYW = 0; ylabs.forEach(function (q) { maxYW = Math.max(maxYW, tw(tick(q), tfs)); });
     var yEdge = x0 >= 0, xEdge = y0 >= 0;
-    var L = (yEdge ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0);
-    var B = H - ((xEdge ? 17 : 10) + (o.xtitle ? 15 : 0));
-    var T = 10, R = W - 10;
+    var L = (yEdge ? maxYW + 9 : 10);
+    var B = H - ((xEdge ? tfs + 8 : 10) + (o.xtitle ? 17 : 0));
+    var T = o.ytitle ? 30 : 10, R = W - 10;
     function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
     function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
     var id = 'cp' + (++uid), mk = 'mk' + uid;
@@ -429,8 +431,8 @@ var M1 = (function () {
     var xn = o.xname == null ? 'x' : o.xname, yn = o.yname == null ? 'y' : o.yname;
     if (xn) { s += text(R - 2, sy(ax) - 5, xn, { fs: 11, c: C.axis, a: 'end', it: true }); both({ x: R - 2 - tw(xn, 11), y: sy(ax) - 16, w: tw(xn, 11), h: 12 }); }
     if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
-    if (o.xtitle) s += text((L + R) / 2, H - 4, o.xtitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' });
-    if (o.ytitle) s += '<g transform="rotate(-90 11 ' + r1((T + B) / 2) + ')">' + text(11, (T + B) / 2 + 4, o.ytitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' }) + '</g>';
+    if (o.xtitle) s += text((L + R) / 2, H - 5, o.xtitle + ' →', { fs: 12.5, c: C.axis, fam: 'Inter,system-ui,sans-serif', b: true });
+    if (o.ytitle) s += text(4, 17, '↑ ' + o.ytitle, { fs: 12.5, c: C.axis, a: 'start', fam: 'Inter,system-ui,sans-serif', b: true });
     // lines, curves, segments (clipped)
     var cl = '', labels = [];
     items.forEach(function (it) {
@@ -534,7 +536,7 @@ var M1 = (function () {
     s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
     var body = '';
     (o.rows || []).forEach(function (row, ri) {
-      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st && /box|tgt|gold|q/.test(it.st) ? 8 : 0); });
+      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st === 'q' ? 16 : it.st && /box|tgt|gold/.test(it.st) ? 8 : 0); });
       var total = ws.reduce(function (a, b) { return a + b; }, 0), x = row.x != null ? row.x : (W - total) / 2;
       row.items.forEach(function (it, ii) {
         var w = ws[ii], f2 = it.fs || f, cx, left;
@@ -1001,10 +1003,10 @@ var M1 = (function () {
   }
   // pixel <-> data for a plane with default padding (mirror of plane())
   function planeMap(o) {
-    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var W = o.w || 300, H = o.h || W, tfs = Math.max(o.tfs || 10, MINF), x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
     var yl = o.yl || o.ys || 1, maxYW = 0, tick = o.tick || function (v) { return fmt(v); };
     for (var v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) maxYW = Math.max(maxYW, tw(tick(+v.toFixed(6)), tfs));
-    var L = (x0 >= 0 ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0), B = H - ((y0 >= 0 ? 17 : 10) + (o.xtitle ? 15 : 0)), T = 10, R = W - 10;
+    var L = (x0 >= 0 ? maxYW + 9 : 10), B = H - ((y0 >= 0 ? tfs + 8 : 10) + (o.xtitle ? 17 : 0)), T = o.ytitle ? 30 : 10, R = W - 10;
     return function (px, py) { return [x0 + (px - L) / (R - L) * (x1 - x0), y0 + (B - py) / (B - T) * (y1 - y0)]; };
   }
 
@@ -1090,6 +1092,20 @@ var M1 = (function () {
   V.e3 = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 2x + 3', 'y = −x + 9'], [2, -1], [3, 9]], hide: [[1, 0], [1, 1]], done: d, label: 'compare slopes' }); };
   V.e3g = function (d) { return after(d, S({ w: 240, x: [-1, 6], y: [0, 11], yl: 2, lines: [L(2, 3, 'y = 2x + 3'), L(-1, 9, 'y = −x + 9')], sol: e3s, done: true, label: 'one solution' })); };
   R('e3', { kind: 'pt', ans: e3s, viz: ['e3', 'e3g'], ok: 'Different slopes, so one solution. 2x + 3 = −x + 9 → 3x = 6 → x = 2, y = 7.', hint: 'Set 2x + 3 equal to −x + 9. Solve for x. Then find y.' });
+  /* Nia's elimination, built from her two equations: every term cancels */
+  V.e4p = function () {
+    var e = [[2, 1, 4], [4, 2, 8]], k = -2, m = e[0].map(function (v) { return k * v; }), sum = [m[0] + e[1][0], m[1] + e[1][1], m[2] + e[1][2]];
+    function row(y, A, B, Cc, st, lead) {   /* lined up: x-terms | sign | y-terms | = | number */
+      var it = [{ s: M1.term(A, 'x', true), x: 112, a: 'end', st: st }, { s: B < 0 ? '−' : '+', x: 130, a: 'middle' }, { s: M1.term(Math.abs(B), 'y', false), x: 170, a: 'end', st: st }, { s: '=', x: 190, a: 'middle' }, { s: f(Cc), x: 232, a: 'end' }];
+      if (lead) it.push({ s: lead, x: 46, a: 'middle' });
+      return { y: y, items: it };
+    }
+    var rows = [row(26, e[0][0], e[0][1], e[0][2]), row(80, m[0], m[1], m[2]), row(110, e[1][0], e[1][1], e[1][2], null, '+'),
+      { y: 150, items: [{ s: f(sum[0]) + 'x', x: 112, a: 'end', st: 'x' }, { s: '+', x: 130, a: 'middle' }, { s: f(sum[1]) + 'y', x: 170, a: 'end', st: 'x' }, { s: '=', x: 190, a: 'middle' }, { s: f(sum[2]), x: 232, a: 'end' }] },
+      { y: 186, items: [{ s: '0 = 0', st: 'ans' }] }];
+    rows[0].items.push({ s: '×(' + f(k) + ')', x: 240, a: 'start', st: 'tag', fs: 13 });
+    return M1.eqrows({ w: 300, h: 220, rows: rows, rules: [{ x1: 40, x2: 250, y: 122 }], notes: [{ x: 150, y: 52, s: 'multiply every term ↓', c: C.goldTx, fs: 12.5 }, { x: 150, y: 208, s: 'All the x, y and number terms cancel.', c: C.red, fs: 12.5 }], label: 'elimination for 2x + y = 4 and 4x + 2y = 8: every term cancels' });
+  };
   V.e4 = function (d) { return after(d, S({ x: [-2, 4], y: [-3, 7], lines: [L(-2, 4, '2x + y = 4', { at: 0.2 }), { A: 4, B: 2, C: 8, label: '4x + 2y = 8', dash: '8 6', at: 0.85 }], label: 'the same line' })); };
   R('e4', { kind: 'fix', ans: 3, viz: 'e4', ok: 'Step 3 is the mistake. 0 = 0 is ALWAYS true. It means both equations are the same line, so there are infinitely many solutions — not just (0, 0).',
     why: { 1: 'Step 1 is right. Every term was multiplied by −2.', 2: 'Step 2 is right: everything cancels and you get 0 = 0.' } });

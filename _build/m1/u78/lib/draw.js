@@ -2,7 +2,7 @@
 (function (root) {
   var C = { navy: '#1E2D4F', gold: '#E0A800', goldT: '#8A6400', green: '#15803D', grid: '#E1E6EE',
     axis: '#5A6680', blue: '#0056B3', bg: '#FAFCFF', muted: '#5A6680', white: '#FFFFFF' };
-  var G = { C: C, prefix: 'g', n: 0 };
+  var G = { C: C, prefix: 'g', n: 0, FMIN: 13 };
   function nid() { G.n++; return G.prefix + G.n; }
   function r2(n) { return Math.round(n * 100) / 100; }
   function fmt(n) {
@@ -20,7 +20,26 @@
     /* text in pixel coords, clamped inside the viewBox */
     textPx: function (px, py, str, op) {
       op = op || {};
-      var fs = op.fs || 12, txt = String(str);
+      var fs = Math.max(op.fs || 12, G.FMIN), txt = String(str);
+      var VUL = { '½': '¹⁄₂', '⅓': '¹⁄₃', '⅔': '²⁄₃', '¼': '¹⁄₄', '¾': '³⁄₄', '⅕': '¹⁄₅', '⅖': '²⁄₅', '⅗': '³⁄₅', '⅘': '⁴⁄₅', '⅙': '¹⁄₆', '⅚': '⁵⁄₆', '⅛': '¹⁄₈' };
+      var fm = /^(.*?)([⁰¹²³⁴⁵⁶⁷⁸⁹]+)⁄([₀₁₂₃₄₅₆₇₈₉]+)(.*)$/.exec(txt.replace(/[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛]/, function (c) { return VUL[c]; }));
+      if (fm) {                               /* stacked fraction inside a label, e.g. m = −⁵⁄₄ */
+        var SUPS = '⁰¹²³⁴⁵⁶⁷⁸⁹', SUBS = '₀₁₂₃₄₅₆₇₈₉', cw = fs * (op.mono === false ? 0.56 : 0.62);
+        var nu = fm[2].split('').map(function (c) { return SUPS.indexOf(c); }).join(''), de = fm[3].split('').map(function (c) { return SUBS.indexOf(c); }).join('');
+        var pw = fm[1].length * cw, fw = Math.max(nu.length, de.length) * cw + 6, sw = fm[4].length * cw, tw = pw + fw + sw;
+        var an = op.anchor || 'start', lx = an === 'start' ? px : an === 'end' ? px - tw : px - tw / 2;
+        if (lx < 2) lx = 2; if (lx + tw > this.W - 2) lx = this.W - 2 - tw;
+        var bar = py - fs * 0.33;
+        if (bar - fs - 3 < 2) bar = fs + 5; if (bar + fs + 4 > this.H - 2) bar = this.H - fs - 6;
+        var base = bar + fs * 0.33, o2 = Object.assign({}, op, { anchor: 'start' });
+        var self = this, put = function (x, y, t, an2) { var q = Object.assign({}, o2, { anchor: an2 }); self.parts.push(self._t(x, y, t, fs, q)); };
+        if (fm[1]) put(lx, base, fm[1], 'start');
+        put(lx + pw + fw / 2, bar - 3, nu, 'middle');
+        put(lx + pw + fw / 2, bar + fs * 0.82 + 2, de, 'middle');
+        this.parts.push('<line x1="' + f1(lx + pw + 2) + '" y1="' + f1(bar) + '" x2="' + f1(lx + pw + fw - 2) + '" y2="' + f1(bar) + '" stroke="' + (op.c || C.navy) + '" stroke-width="1.8" stroke-linecap="round"/>');
+        if (fm[4]) put(lx + pw + fw, base, fm[4], 'start');
+        return this;
+      }
       var w = txt.length * fs * (op.mono === false ? 0.56 : 0.62) + (op.halo !== false ? 3 : 0);
       var anchor = op.anchor || 'start';
       var left = anchor === 'start' ? px : anchor === 'end' ? px - w : px - w / 2;
@@ -37,6 +56,13 @@
       if (op.halo !== false) a += ' paint-order="stroke" stroke="#FFFFFF" stroke-width="' + (fs >= 11 ? 4 : 3) + '" stroke-linejoin="round"';
       this.parts.push(a + '>' + esc(txt) + '</text>');
       return this;
+    },
+    _t: function (x, y, t, fs, op) {
+      var a = '<text x="' + f1(x) + '" y="' + f1(y) + '" font-size="' + fs + '" fill="' + (op.c || C.navy) + '" text-anchor="' + (op.anchor || 'start') + '"';
+      a += ' font-family="' + (op.mono === false ? 'Inter, system-ui, sans-serif' : 'JetBrains Mono, ui-monospace, Menlo, Consolas, monospace') + '"';
+      if (op.bold) a += ' font-weight="700"';
+      if (op.halo !== false) a += ' paint-order="stroke" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"';
+      return a + '>' + esc(t) + '</text>';
     },
     text: function (x, y, str, op) {
       op = op || {};
@@ -194,7 +220,7 @@
       o.cols.forEach(function (c, i) {
         var cw = c.w / tot * w;
         P.rectPx(cx, y0, cw, h, { fill: c.fill || '#E8EEF8', c: C.navy, w: 2 });
-        if (c.inside) P.textPx(cx + cw / 2, y0 + h / 2 + 5, c.inside, { fs: c.fs || 14, anchor: 'middle', bold: true, c: c.ic || C.navy });
+        if (c.inside) String(c.inside).split('\n').forEach(function (ln, k, all) { P.textPx(cx + cw / 2, y0 + h / 2 + 5 + (k - (all.length - 1) / 2) * 19, ln, { fs: c.fs || 14, anchor: 'middle', bold: true, c: c.ic || C.navy }); });
         P.textPx(cx + cw / 2, y0 + h + 18, c.lab, { fs: 12, anchor: 'middle', bold: true, c: c.lc || C.navy });
         cx += cw;
       });

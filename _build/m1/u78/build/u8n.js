@@ -1,6 +1,7 @@
 const L = require('../lib/common.js');
+const F = require('../lib/figs.js');
 const { G, C, fmt, pt, fr, rad, fig, figHtml, two, vocab, howto, example, q, mc, mistake, widget, yt, page } = L;
-const { gp, labPts, ftxt, fhtml, slopeND, dist, sideLab } = require('./u8common.js');
+const { gp, labPts, ftxt, fhtml, slopeND, dist, sideLab, gcd } = require('./u8common.js');
 G.prefix = 'u8n'; G.n = 0;
 const S = [];
 const sec = (id, n, title, html) => S.push(`<section class="topic" id="${id}">\n  <h2><span class="num">${n}</span> ${title}</h2>\n${html}\n</section>`);
@@ -119,7 +120,8 @@ ${q('n81c', { n: 3, text: 'A(0, 0) and B(6, 9). Find P so that AP : PB = 1 : 2.'
     R.seg(A[0], A[1], B[0], B[1], { c: C.navy, w: 2.6 });
     const dx = Math.abs(B[0] - A[0]), dy = Math.abs(B[1] - A[1]);
     const col = known ? C.green : C.goldT;
-    R.text((A[0] + B[0]) / 2, A[1], 'Δx = ' + (known ? dx : '?'), { c: col, fs: 11, bold: true, anchor: 'middle', dy: B[1] > A[1] ? 16 : -6 });
+    let mx = (A[0] + B[0]) / 2; const lo = Math.min(A[0], B[0]), hi = Math.max(A[0], B[0]); if (lo < 0 && hi > 0 && Math.abs(mx) < 1.3) mx = hi >= -lo ? hi / 2 : lo / 2;
+  R.text(mx, A[1], 'Δx = ' + (known ? dx : '?'), { c: col, fs: 11, bold: true, anchor: 'middle', dy: B[1] > A[1] ? (A[1] === 0 ? 27 : 16) : -6 });
     R.text(B[0], (A[1] + B[1]) / 2, 'Δy = ' + (known ? dy : '?'), { c: col, fs: 11, bold: true, anchor: B[0] > A[0] ? 'start' : 'end', dx: B[0] > A[0] ? 7 : -7, dy: 4 });
     if (known) { const d = Math.hypot(dx, dy); R.text((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, 'd = ' + (Math.abs(d - Math.round(d)) < 1e-9 ? d : '√' + (dx * dx + dy * dy)), { c: C.green, fs: 12, bold: true, anchor: 'end', dx: -8, dy: -4 }); }
     R.dot(A[0], A[1]); R.dot(B[0], B[1]);
@@ -154,9 +156,9 @@ ${q('n82a', { n: 1, text: 'Find the distance between (−3, −2) and (3, 6).', 
 ${q('n82b', { n: 2, text: 'Find the distance between (2, −1) and (5, 3).', fig: fig(tri([2, -1], [5, 3], false, { v: [0, 7, -2, 4] })), t: 'num', a: 5, sq: true, ph: 'd = ?',
   traps: [{ v: Math.sqrt(13), m: 'Check Δy: 3 − (−1) = 4, not 2.' }],
   sol: 'Δx = 3, Δy = 4. d = √(9 + 16) = √25 = <b>5</b>', after: fig(tri([2, -1], [5, 3], true, { v: [0, 7, -2, 4] })) })}
-${q('n82c', { n: 3, text: 'Find the distance between (0, 0) and (2, 3). Give the exact answer (like sqrt(13)) or round to 2 decimals.', fig: fig(tri([0, 0], [2, 3], false, { v: [-1, 4, -1, 4], W: 240 })), t: 'num', a: Math.sqrt(13), tol: 0.002, sq: true, ph: 'd = ?',
+${q('n82c', { n: 3, text: 'Find the distance between (0, 0) and (2, 3). Give the exact answer (like sqrt(13)) or round to 2 decimals.', fig: fig(tri([0, 0], [2, 3], false, { v: [-1, 4, -1, 4], W: 240, pa: 'nw' })), t: 'num', a: Math.sqrt(13), tol: 0.002, sq: true, ph: 'd = ?',
   traps: [{ v: 5, m: 'You added 2 + 3. Square first: 2² + 3² = 4 + 9 = 13. Then take √.' }],
-  sol: 'd = √(2² + 3²) = √(4 + 9) = <b>√13 ≈ 3.61</b>', after: fig(tri([0, 0], [2, 3], true, { v: [-1, 4, -1, 4], W: 240 })) })}
+  sol: 'd = √(2² + 3²) = √(4 + 9) = <b>√13 ≈ 3.61</b>', after: fig(tri([0, 0], [2, 3], true, { v: [-1, 4, -1, 4], W: 240, pa: 'nw' })) })}
 `);
 }
 
@@ -235,8 +237,16 @@ ${q('n83d', { n: 4, text: 'Find the area of triangle ABC.', t: 'num', a: 6, ph: 
     return R.out('slope triangle');
   };
   const sv = (m, v) => { const R = gp(v); R.line(m[0] / m[1], 0, { c: C.navy }); R.seg(0, 0, m[1], 0, { c: C.navy, w: 1.6, dash: '4 3' }); R.seg(m[1], 0, m[1], m[0], { c: C.navy, w: 1.6, dash: '4 3' }); R.text(m[1] / 2, 0, 'run ' + m[1], { fs: 11, bold: true, anchor: 'middle', dy: 16 }); R.text(m[1], m[0] / 2, 'rise ' + m[0], { fs: 11, bold: true, dx: 6 }); return R; };
+  const nb = slopeND([-2, 1], [2, 3]), nbm = nb[0] / nb[1];
+  const rq = F.recipe({ a: 'm', b: '?', c: '?', foot: 'Start with your slope from Question 1', aria: 'flip the slope, then change its sign' });
+  const fs2 = (n, d) => { const g = Math.abs(gcd(n, d)); n /= g; d /= g; if (d < 0) { n = -n; d = -d; } return d === 1 ? fmt(n) : (n < 0 ? '−' : '') + Math.abs(n) + '/' + d; };
+  const rqA = F.recipe({ a: fs2(nb[0], nb[1]), b: fs2(nb[1], nb[0]), c: fs2(-nb[1], nb[0]), foot: 'perpendicular slope = ' + fs2(-nb[1], nb[0]), aria: 'perpendicular slope steps' });
+  const pc = { m: -3, b: 5 };
+  const dc = F.decoder([{ t: 'y = ' }, { t: '−3x', lab: 'm = ?', c: 'gold' }, { t: ' + 5', lab: 'b = 5' }], { aria: 'equation y = −3x + 5' });
+  const gc = gp([-3, 4, -2, 7]); gc.line(pc.m, pc.b, { c: C.navy }); gc.line(pc.m, 1, { c: C.green, dash: '7 5' });
+  gc.text(1.1, 2.1, 'y = −3x + 5', { c: C.navy, fs: 12, bold: true, anchor: 'start', dx: 4 }); gc.text(-2.8, -1.45, 'same slope ' + fmt(pc.m), { c: C.green, fs: 12, bold: true, anchor: 'start' });
   const m1 = sv([3, 4], [-5, 5, -5, 5]);
-  const m1a = sv([3, 4], [-5, 5, -5, 5]); m1a.line(-4 / 3, 0, { c: C.green }); m1a.right(0, 0, 4, 3, -3, 4, { c: C.green }); m1a.text(-3.4, 4.5, 'm = −⁴⁄₃', { c: C.green, fs: 12, bold: true, anchor: 'start' });
+  const m1a = sv([3, 4], [-5, 5, -5, 5]); m1a.line(-4 / 3, 0, { c: C.green }); m1a.right(0, 0, 4, 3, -3, 4, { c: C.green }); m1a.text(-4.8, 1.6, 'm = −⁴⁄₃', { c: C.green, fs: 12, bold: true, anchor: 'start' });
   sec('t4', 4, 'Parallel &amp; Perpendicular Slopes', `
 ${vocab([
   ['slope (m)', 'how steep a line is: rise ÷ run. ' + SF + '.'],
@@ -262,20 +272,27 @@ ${q('n84a', { n: 1, text: 'Find the slope of the line through (−2, 1) and (2, 
   sol: `${fr('3 − 1', '2 − (−2)')} = ${fr('2', '4')} = <b>½</b>`, after: fig(rr([-2, 1], [2, 3], true, [-3, 3, -1, 4])) })}
 ${q('n84b', { n: 2, text: 'What is the slope of a line perpendicular to that line?', t: 'num', a: -2, ph: 'm = ?',
   traps: [{ v: 2, m: 'You flipped ½ to 2. Now change the sign too.' }, { v: -0.5, m: 'You changed the sign. Now flip the fraction too.' }, { v: 0.5, m: '½ is the parallel slope. Perpendicular: flip and change the sign.' }],
-  sol: 'Flip ½ → 2. Change sign → <b>−2</b>. Check: ½ × (−2) = −1 ✓' })}
+  fig: fig(rq, 'Perpendicular: flip the fraction, then change the sign.'),
+  sol: 'Flip ½ → 2. Change sign → <b>−2</b>. Check: ½ × (−2) = −1 ✓', after: fig(rqA, `${fr('1', '2')} → 2 → −2. Check: ${fr('1', '2')} × (−2) = −1`) })}
 ${q('n84c', { n: 3, text: 'What is the slope of a line parallel to y = −3x + 5?', t: 'num', a: -3, ph: 'm = ?',
   traps: [{ v: 5, m: '5 is the y-intercept b. The slope is the number in front of x.' }, { v: 1 / 3, m: '⅓ is the perpendicular slope. Parallel keeps the SAME slope.' }],
-  sol: 'Same slope: <b>−3</b>' })}
+  fig: fig(dc, 'In y = mx + b, m is the slope.'),
+  sol: 'Same slope: <b>−3</b>', after: fig(gc.out('two parallel lines with slope −3'), 'Parallel lines: same slope, they never meet') })}
 `);
 }
 
 /* ============ 5. Equations ============ */
 {
   const g = (lines, pts, v) => { const R = gp(v); lines.forEach(l => R.line(l.m, l.b, { c: l.c, w: l.w || 2.6, dash: l.dash })); (pts || []).forEach(p => { R.dot(p[0], p[1], { c: p[3] || C.navy }); R.lab(p[0], p[1], p[2], p[4] || 'e', { c: p[3] === C.green ? C.green : C.navy, fs: 11 }); }); return R; };
-  const a = g([{ m: 2, b: -5, c: C.navy }, { m: 2, b: 1, c: C.green }], [[0, 1, '(0, 1)', C.navy, 'w']], [-4, 5, -6, 6]);
+  const a = g([{ m: 2, b: -5, c: C.navy }, { m: 2, b: 1, c: C.green }], [[0, 1, '(0, 1)', C.navy, 'se']], [-4, 5, -6, 6]);
   a.text(3.8, 1.6, 'given', { c: C.navy, fs: 11, bold: true, anchor: 'start' }); a.text(2.4, 5.2, 'y = 2x + 1', { c: C.green, fs: 12, bold: true, anchor: 'start', dx: 6 });
-  const b = g([{ m: 2, b: -5, c: C.navy }, { m: -0.5, b: 1, c: C.green }], [[0, 1, '(0, 1)', C.navy, 'n']], [-4, 5, -6, 6]);
+  const b = g([{ m: 2, b: -5, c: C.navy }, { m: -0.5, b: 1, c: C.green }], [[0, 1, '(0, 1)', C.navy, 'ne']], [-4, 5, -6, 6]);
   b.right(2.4, -0.2, 0, -5, 0, 1, { c: C.green }); b.text(-3.8, 3.6, 'y = −½x + 1', { c: C.green, fs: 12, bold: true, anchor: 'start' });
+  const a0 = g([{ m: 2, b: -5, c: C.navy }], [[0, 1, '(0, 1)', C.gold, 'se']], [-4, 5, -6, 6]);
+  a0.seg(0.5, -4, 1.5, -4, { c: C.navy, w: 1.8, dash: '4 3' }); a0.seg(1.5, -4, 1.5, -2, { c: C.navy, w: 1.8, dash: '4 3' });
+  a0.text(1.2, -4, 'run 1', { fs: 12, bold: true, anchor: 'middle', dy: 17 }); a0.text(1.5, -3, 'rise 2', { fs: 12, bold: true, dx: 6, dy: 4 });
+  a0.text(3.8, 4.4, 'y = 2x − 5', { c: C.navy, fs: 12, bold: true, anchor: 'end', dx: -8 });
+  const rb = F.recipe({ a: '2', b: '?', c: '?', foot: 'slope of the new line', aria: 'flip 2 and change its sign' });
   const c0 = g([{ m: 2, b: -5, c: C.navy }], [[2, 3, '(2, 3)', C.navy, 'w']], [-2, 6, -2, 6]);
   const c1 = g([{ m: 2, b: -5, c: C.navy }, { m: -0.5, b: 4, c: C.green }], [[2, 3, '(2, 3)', C.navy, 'ne']], [-2, 6, -2, 6]);
   c1.text(5.8, -1.4, 'y = −½x + 4', { c: C.green, fs: 12, bold: true, anchor: 'end' });
@@ -291,6 +308,7 @@ ${vocab([['y = mx + b', 'slope-intercept form. m is the slope. b is the y-interc
 ${howto('How to write the equation', ['Find the slope of the given line (the number in front of x).', 'Parallel: keep it. Perpendicular: flip it and change the sign.', 'Put the point (x, y) and the new slope into y = mx + b.', 'Solve for b.', 'Write y = mx + b with your m and b.'])}
   <div class="example">
     <h4>Line through (0, 1) parallel to y = 2x − 5</h4>
+    ${fig(a0.out('the line y = 2x − 5 and the point (0, 1)'), 'Given line (slope 2) and the point (0, 1) the new line must go through')}
     <div class="steps" data-example="e85">
       <div class="step final" onclick="reveal(this)"><strong>Parallel → same slope m = 2; through (0,1) → b = 1:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 2x + 1</span></div>
     </div>
@@ -299,6 +317,7 @@ ${howto('How to write the equation', ['Find the slope of the given line (the num
   </div>
   <div class="example">
     <h4>Line through (0, 1) perpendicular to y = 2x − 5</h4>
+    ${fig(rb, 'The given slope is 2 (the number in front of x). Flip it and change the sign.')}
     <div class="steps" data-example="e85b">
       <div class="step final" onclick="reveal(this)"><strong>Perpendicular → slope = −½; through (0,1):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = −½x + 1</span></div>
     </div>

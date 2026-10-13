@@ -27,10 +27,12 @@ function tri(A, B, known, v, o = {}) {
   R.right(B[0], A[1], A[0], A[1], B[0], B[1], { c: col });
   R.seg(A[0], A[1], B[0], B[1], { c: C.navy, w: 2.6 });
   const dx = Math.abs(B[0] - A[0]), dy = Math.abs(B[1] - A[1]);
-  R.text((A[0] + B[0]) / 2, A[1], 'Δx = ' + (known ? dx : '?'), { c: tcol, fs: 11, bold: true, anchor: 'middle', dy: B[1] > A[1] ? (A[1] === 0 ? 27 : 16) : -6 });
+  let mx = (A[0] + B[0]) / 2; const lo = Math.min(A[0], B[0]), hi = Math.max(A[0], B[0]); if (lo < 0 && hi > 0 && Math.abs(mx) < 1.3) mx = hi >= -lo ? hi / 2 : lo / 2;
+  R.text(mx, A[1], 'Δx = ' + (known ? dx : '?'), { c: tcol, fs: 11, bold: true, anchor: 'middle', dy: B[1] > A[1] ? (A[1] === 0 ? 27 : 16) : -6 });
   R.text(B[0], (A[1] + B[1]) / 2, 'Δy = ' + (known ? dy : '?'), { c: tcol, fs: 11, bold: true, anchor: B[0] > A[0] ? 'start' : 'end', dx: B[0] > A[0] ? 7 : -7, dy: 4 });
   const d = Math.hypot(dx, dy);
-  R.text((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, 'd = ' + (known ? (Math.abs(d - Math.round(d)) < 1e-9 ? d : '√' + (dx * dx + dy * dy)) : '?'), { c: tcol, fs: 12, bold: true, anchor: 'end', dx: -8, dy: -4 });
+  const neg = (B[1] - A[1]) * (B[0] - A[0]) < 0;
+  R.text((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, 'd = ' + (known ? (Math.abs(d - Math.round(d)) < 1e-9 ? d : '√' + (dx * dx + dy * dy)) : '?'), { c: tcol, fs: 12, bold: true, anchor: neg ? 'start' : 'end', dx: neg ? 8 : -8, dy: -4 });
   R.dot(A[0], A[1]); R.dot(B[0], B[1]);
   R.lab(A[0], A[1], pt(A[0], A[1]), o.pa || 'w'); R.lab(B[0], B[1], pt(B[0], B[1]), o.pb || 'nw');
   return R.out('distance');
@@ -102,19 +104,19 @@ ${mistake('a6', { n: 6, who: 'Rae found the midpoint of (1, 7) and (5, −3):', 
 ${q('b1', { n: 1, text: 'Find the distance between the two points shown, (1, 1) and (4, 5).', fig: fig(tri([1, 1], [4, 5], false, [0, 6, 0, 6])), t: 'num', a: 5, sq: true, ph: 'distance = ?',
   traps: [{ v: 7, m: 'You added the legs 3 + 4. Square them first, add, then take the square root.' }],
   sol: 'd = √[(4−1)² + (5−1)²] = √[9 + 16] = √25 → <strong>d = 5</strong> (a 3-4-5 right triangle)', after: fig(tri([1, 1], [4, 5], true, [0, 6, 0, 6])) })}
-${q('b2', { n: 2, text: 'Find the distance between (0, 0) and (6, 8).', fig: fig(tri([0, 0], [6, 8], false, [-1, 8, -1.6, 9], { W: 260, pa: 'sw' })), t: 'num', a: 10, sq: true, ph: 'distance = ?',
+${q('b2', { n: 2, text: 'Find the distance between (0, 0) and (6, 8).', fig: fig(tri([0, 0], [6, 8], false, [-2.5, 8, -1.6, 9], { W: 260, pa: 'nw' })), t: 'num', a: 10, sq: true, ph: 'distance = ?',
   traps: [{ v: 14, m: 'You added 6 + 8. Square them first: 36 + 64.' }],
-  sol: 'd = √[(6−0)² + (8−0)²] = √[36 + 64] = √100 → <strong>d = 10</strong>', after: fig(tri([0, 0], [6, 8], true, [-1, 8, -1.6, 9], { W: 260, pa: 'sw' })) })}
-${q('b3', { n: 3, text: 'Find the distance between (−2, 3) and (2, 0).', fig: fig(tri([-2, 3], [2, 0], false, [-3, 4, -1, 4], { pa: 'n', pb: 'se' })), t: 'num', a: 5, sq: true, ph: 'distance = ?',
+  sol: 'd = √[(6−0)² + (8−0)²] = √[36 + 64] = √100 → <strong>d = 10</strong>', after: fig(tri([0, 0], [6, 8], true, [-2.5, 8, -1.6, 9], { W: 260, pa: 'nw' })) })}
+${q('b3', { n: 3, text: 'Find the distance between (−2, 3) and (2, 0).', fig: fig(tri([-2, 3], [2, 0], false, [-3, 4, -1, 4], { pa: 'n', pb: 'ne' })), t: 'num', a: 5, sq: true, ph: 'distance = ?',
   traps: [{ v: 3, m: 'Check Δx: 2 − (−2) = 4, not 0.' }, { v: 7, m: 'You added 4 + 3. Square, add, then take the square root.' }],
-  sol: 'd = √[(2−(−2))² + (0−3)²] = √[16 + 9] = √25 → <strong>d = 5</strong>', after: fig(tri([-2, 3], [2, 0], true, [-3, 4, -1, 4], { pa: 'n', pb: 'se' })) })}
+  sol: 'd = √[(2−(−2))² + (0−3)²] = √[16 + 9] = √25 → <strong>d = 5</strong>', after: fig(tri([-2, 3], [2, 0], true, [-3, 4, -1, 4], { pa: 'n', pb: 'ne' })) })}
 ${q('b4', { n: 4, text: 'Find the distance between (1, −2) and (4, 4). Give the exact answer, like sqrt(45), or round to 2 decimals.', fig: fig(tri([1, -2], [4, 4], false, [0, 6, -3, 5], { W: 260, pa: 'w' })), t: 'num', a: B4d, tol: 0.003, sq: true, ph: 'distance = ?',
   traps: [{ v: 9, m: 'You added 3 + 6. Square first: 9 + 36 = 45. Then take √.' }, { v: Math.sqrt(13), m: 'Check Δy: 4 − (−2) = 6, not 2.' }],
   sol: 'Δx = 3, Δy = 4 − (−2) = 6. d = √(9 + 36) = <b>√45 ≈ 6.71</b>', after: fig(tri([1, -2], [4, 4], true, [0, 6, -3, 5], { W: 260, pa: 'w' })) })}
-${mistake('b5', { n: 5, who: 'Jon found the distance from (−1, −1) to (5, 7):', fig: fig(tri([-1, -1], [5, 7], false, [-2, 7, -2, 8], { W: 260, pa: 'sw' })),
+${mistake('b5', { n: 5, who: 'Jon found the distance from (−1, −1) to (5, 7):', fig: fig(tri([-1, -1], [5, 7], false, [-2, 7, -2, 8], { W: 260, pa: 'w' })),
   work: ['Δx = 5 − (−1) = 6, Δy = 7 − (−1) = 8', '6² + 8² = 36 + 64 = 100', 'd = 100'], bad: 2,
   fbs: ['Step 1 is right: subtracting a negative adds.', 'Step 2 is right.', ''],
-  why: 'He forgot the last step: take the square root. d = √100 = 10.', after: fig(tri([-1, -1], [5, 7], true, [-2, 7, -2, 8], { W: 260, pa: 'sw' }), 'd = √100 = 10') })}
+  why: 'He forgot the last step: take the square root. d = √100 = 10.', after: fig(tri([-1, -1], [5, 7], true, [-2, 7, -2, 8], { W: 260, pa: 'w' }), 'd = √100 = 10') })}
 `);
 }
 
@@ -130,11 +132,11 @@ ${mistake('b5', { n: 5, who: 'Jon found the distance from (−1, −1) to (5, 7)
   const c1a = { m: 3, b: 1, t: 'y = 3x + 1', lx: -2.9, ly: 3.2 }, c1b = { m: 3, b: -4, t: 'y = 3x − 4', lx: 2.6, ly: -1.2 };
   const c2a = { m: 2, b: -1, t: 'y = 2x − 1', lx: 2.7, ly: 5.4, an: 'end' }, c2b = { m: -0.5, b: 3, t: 'y = −½x + 3', lx: 4.9, ly: -1.3, an: 'end' };
   // intersection of c2 lines: 2x − 1 = −½x + 3 → x = 1.6, y = 2.2
-  const sv = (n, d, v, extra) => { const R = gp(v); R.line(n / d, 0, { c: C.navy }); R.seg(0, 0, d, 0, { c: C.navy, w: 1.6, dash: '4 3' }); R.seg(d, 0, d, n, { c: C.navy, w: 1.6, dash: '4 3' }); R.text(d / 2, 0, 'run ' + fmt(d), { fs: 11, bold: true, anchor: 'middle', dy: n > 0 ? 16 : -6 }); R.text(d, n / 2, 'rise ' + fmt(n), { fs: 11, bold: true, dx: 6 }); if (extra) extra(R); return R.out('line with its slope triangle'); };
-  const c3 = sv(4, 5, [-6, 6, -5, 6], R => R.text(-5.7, 5.2, 'perpendicular m = ?', { c: C.goldT, fs: 12, bold: true }));
-  const c3a = sv(4, 5, [-6, 6, -5, 6], R => { R.line(-5 / 4, 0, { c: C.green }); R.right(0, 0, 5, 4, -4, 5, { c: C.green }); R.text(-5.7, 5.2, 'm = −⁵⁄₄', { c: C.green, fs: 12, bold: true }); });
-  const c4 = sv(-2, 3, [-4, 5, -4, 4], R => R.text(-3.8, -3.3, 'parallel m = ?', { c: C.goldT, fs: 12, bold: true }));
-  const c4a = sv(-2, 3, [-4, 5, -4, 4], R => { R.line(-2 / 3, 3, { c: C.green }); R.text(-3.8, -3.3, 'parallel: m = −⅔', { c: C.green, fs: 12, bold: true }); });
+  const sv = (n, d, v, extra) => { const R = gp(v); R.line(n / d, 0, { c: C.navy }); R.seg(0, 0, d, 0, { c: C.navy, w: 1.6, dash: '4 3' }); R.seg(d, 0, d, n, { c: C.navy, w: 1.6, dash: '4 3' }); R.text(d / 2, 0, 'run ' + fmt(d), { fs: 11, bold: true, anchor: 'middle', dy: -6 }); R.text(d, n / 2, 'rise ' + fmt(n), { fs: 11, bold: true, dx: 6 }); if (extra) extra(R); return R.out('line with its slope triangle'); };
+  const c3 = sv(4, 5, [-6, 6, -5, 6], R => { R.text(-5.7, 4.9, 'perpendicular', { c: C.goldT, fs: 12, bold: true }); R.text(-5.7, 4.0, 'm = ?', { c: C.goldT, fs: 12, bold: true }); });
+  const c3a = sv(4, 5, [-6, 6, -5, 6], R => { R.line(-5 / 4, 0, { c: C.green }); R.right(0, 0, 5, 4, -4, 5, { c: C.green }); R.text(-5.8, 2.6, 'm = −⁵⁄₄', { c: C.green, fs: 12, bold: true }); });
+  const c4 = sv(-2, 3, [-4, 5, -4, 4], R => R.text(0.4, 3.1, 'parallel m = ?', { c: C.goldT, fs: 12, bold: true }));
+  const c4a = sv(-2, 3, [-4, 5, -4, 4], R => { R.line(-2 / 3, 3, { c: C.green }); R.text(0.9, 3.4, 'parallel: m = −⅔', { c: C.green, fs: 12, bold: true }); });
   const g = (lines, pts, v, labs) => { const R = gp(v); lines.forEach(l => R.line(l[0], l[1], { c: l[2] })); pts.forEach(p => { R.dot(p[0], p[1]); R.lab(p[0], p[1], pt(p[0], p[1]), p[2] || 'w', { fs: 11 }); }); (labs || []).forEach(t => R.text(t[0], t[1], t[2], { c: t[3], fs: 12, bold: true, anchor: t[4] || 'start' })); return R.out('lines'); };
   part('Part C · Slope: Parallel &amp; Perpendicular', `Use each graph to answer the question, then apply the rule yourself. Slope m = ${fr('rise', 'run')} = ${fr('y₂ − y₁', 'x₂ − x₁')}.`);
   sec('C', 'Comparing Slopes', `

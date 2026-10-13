@@ -260,7 +260,7 @@
     </div>
     <button class="reveal-all" onclick="revealAll('e65b')">Reveal all steps</button>
   </div>
-  <div class="sa"><div class="chk-q"><span class="badge">WHO IS RIGHT?</span> To solve (x − 4)² − 25 = 0, Jeff takes square roots and Maria factors. Who is correct?</div><button class="sa-btn" onclick="sa(this)">Reveal</button><div class="sa-ans"><strong>Both work.</strong> Square roots: (x−4)² = 25 → x − 4 = ±5 → x = 9 or −1. Factoring (difference of squares): (x−4+5)(x−4−5) = (x+1)(x−9) → x = −1 or 9. Same answers.<div class="viz sm" data-fig="jeff" data-cap="y = (x − 4)² − 25 crosses the x-axis at −1 and 9"></div></div></div>
+  <div class="sa"><div class="chk-q"><span class="badge">WHO IS RIGHT?</span> To solve (x − 4)² − 25 = 0, Jeff takes square roots and Maria factors. Who is correct?</div><div class="viz sm" data-fig="jm" data-cap="Two ways to start. Finish each one: do they give the same answers?"></div><button class="sa-btn" onclick="sa(this)">Reveal</button><div class="sa-ans"><strong>Both work.</strong> Square roots: (x−4)² = 25 → x − 4 = ±5 → x = 9 or −1. Factoring (difference of squares): (x−4+5)(x−4−5) = (x+1)(x−9) → x = −1 or 9. Same answers.<div class="viz sm" data-fig="jeff" data-cap="y = (x − 4)² − 25 crosses the x-axis at −1 and 9"></div></div></div>
   <div class="howto"><h4>How to solve by square roots</h4><ol>
     <li>Get the squared part alone on one side (like x² = 49).</li><li>Take the square root of both sides.</li>
     <li>Write ± in front. There are two answers.</li><li>Check both answers.</li></ol></div>
@@ -423,11 +423,13 @@ function boxModel(top,left,o){o=o||{};var cells=left.map(function(l,i){return to
       L=left.map(function(t,i){var st=o.side?o.side('l',i):'g';return st==='w'?w():st==='a'?an(t):g(t);});
   return M.areaModel({top:T,left:L,cells:cells,foot:o.foot,cw:o.cw,label:o.label||'area model'});}
 /* ---------- topic 1 ---------- */
-FIG.tiles=function(){var s='';s+=rc(14,20,70,70,C.navyL,C.navy,1.6)+tx(49,60,'x²',{size:15,mono:true,bold:true})+tx(49,108,'x by x',{size:10.5,fill:C.muted});
-  s+=rc(112,20,18,70,'#C9D3E6',C.navy,1.6)+tx(121,108,'x by 1',{size:10.5,fill:C.muted})+tx(121,60,'x',{size:12,mono:true,bold:true});
-  s+=rc(160,64,18,18,'#9FB0CF',C.navy,1.4)+tx(169,108,'1 by 1',{size:10.5,fill:C.muted})+tx(169,58,'1',{size:12,mono:true,bold:true});
-  s+=rc(214,20,18,70,C.redL,C.red,1.6)+tx(223,60,'−x',{size:11,mono:true,bold:true,fill:C.red})+rc(258,64,18,18,C.redL,C.red,1.4)+tx(267,58,'−1',{size:11,mono:true,bold:true,fill:C.red});
-  s+=tx(245,108,'negative tiles',{size:10.5,fill:C.red});return M.svg(300,120,s,'algebra tiles legend');};
+FIG.tiles=function(){var s='',sw=24;
+  s+=rc(14,14,60,60,C.navyL,C.navy,1.6)+tx(44,50,'x²',{size:15,mono:true,bold:true})+tx(44,96,'x by x',{size:10.5,fill:C.muted});
+  s+=rc(125,14,sw,60,'#C9D3E6',C.navy,1.6)+tx(137,49,'x',{size:12,mono:true,bold:true})+tx(137,96,'x by 1',{size:10.5,fill:C.muted});
+  s+=rc(211,50,sw,sw,'#9FB0CF',C.navy,1.4)+tx(223,67,'1',{size:12,mono:true,bold:true})+tx(223,96,'1 by 1',{size:10.5,fill:C.muted});
+  s+=tx(8,156,'negative tiles:',{size:10.5,fill:C.red,anchor:'start',bold:true});
+  s+=rc(125,118,sw,60,C.redL,C.red,1.6)+tx(137,153,'−x',{size:11,mono:true,bold:true,fill:C.red})+rc(211,154,sw,sw,C.redL,C.red,1.4)+tx(223,171,'−1',{size:11,mono:true,bold:true,fill:C.red});
+  return M.svg(260,190,s,'algebra tiles legend');};
 FIG.am1=function(){return boxModel(['x','+3'],['x','+2'],{label:'area model (x + 3)(x + 2)'});};
 EX.e61={viz:function(st){var s=st==='solved'?3:(st||0);return M.tileRect(3,2,{label:'tiles for (x + 3)(x + 2)',foot:s>=3?{t:'= '+mulStr('x+3','x+2'),k:'ans'}:(s>=2?{t:'1 x² + 5 x + 6 ones',k:'ans'}:{t:'area = ?',k:'want'})});}};
 EX.e61b={viz:function(st){var A=P('2x^2+3x-1'),B=P('x^2+4x-2'),R=A.map(function(v,i){return v-(B[i]||0);}),s=st==='solved'?2:(st||0),o='',cols=['x²','x','number'],X0=112,cw=76;
@@ -498,6 +500,11 @@ EX.e65a={viz:function(st){return sqArea(49,st==='solved'?'solved':'q',{max:8,lab
 EX.e65b={viz:function(st){var s=st==='solved'?2:(st||0);var out=boxModel(['x','+3'],['x','+2'],{cell:function(i,j){return i===j?'g':(s>=1?'a':'g');},side:function(){return s>=1?'a':'w';},label:'area model x² + 5x + 6'});
   if(s>=2)out+=parab(function(x){return x*x+5*x+6;},{xmin:-6,xmax:2,ymin:-2,ymax:6,lab:1,w:300,pts:[{x:-3,y:0,color:C.green,label:'−3',anchor:'end',dx:-8,dy:-9},{x:-2,y:0,color:C.green,label:'−2',dx:8,dy:-9}],label:'zeros −3 and −2'});
   return out;}};
+FIG.jm=function(){var h=4,k=25,r=Math.sqrt(k),s='',col=[[10,'Jeff: square roots',['(x − '+h+')² = '+k,'x − '+h+' = ±?','x = ? or ?']],[186,'Maria: factor',['(x − '+h+')² − '+r+'² = 0','(x−'+h+'+?)(x−'+h+'−?) = 0','x = ? or ?']]];
+  col.forEach(function(c){var x=c[0],w=164;s+=rc(x,8,w,30,C.navy,null,0,6)+tx(x+w/2,28,c[1],{size:12,bold:true,fill:'#fff'});
+    c[2].forEach(function(t,i){var y=50+i*44,last=i===2;s+=rc(x,y,w,32,last?C.goldL:'#F3F6FB',last?C.gold:C.navy,1.5,6)+tx(x+w/2,y+21,t,{size:t.length>15?11:12,mono:true,bold:true,fill:last?C.goldD:C.navy});
+      if(i<2)s+=M.arrow(x+w/2,y+32,x+w/2,y+43,C.navy,1.8);});});
+  return M.svg(360,190,s,'two ways to solve (x − 4)² − 25 = 0');};
 FIG.jeff=function(){return parab(function(x){return (x-4)*(x-4)-25;},{xmin:-2,xmax:10,ymin:-26,ymax:6,lab:2,w:300,h:280,ygrid:2,ylab:10,pts:[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-6,dy:-9},{x:9,y:0,color:C.green,label:'9',dx:6,dy:-9}],label:'graph of (x − 4)² − 25'});};
 SP.fm65={type:'mc',ans:'2',ok:'Taking the square root needs ±. Both 6 · 6 and (−6)(−6) are 36, so x = ±6.',fb:{'1':'Line 1 is just the problem.','3':'√36 = 6 is true, but a step was already missing.'},viz:function(st){return sqArea(36,st,{max:8,lab:4});}};
 SP.fm65b={hint:'What number times itself is 36? There are two of them.',type:'set',ans:[6,-6],fb:[[[6],'Don’t forget the negative answer: (−6)(−6) = 36 too.']]};

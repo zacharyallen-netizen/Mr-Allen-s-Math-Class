@@ -268,6 +268,7 @@
     <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">ŷ = 4 + 1.5(6) = 4 + 9 = <strong>13</strong>.</div></div>
   </div>
   <div class="chk" id="yt54b"><div class="chk-q">The data used x-values from 0 to 8. Predicting y at x = 20 is…</div>
+    <div class="viz sm" id="v-yt54b"></div>
     <div class="chk-opts row"><button class="chk-btn" data-v="i" onclick="M.mc('yt54b',this)">interpolation</button><button class="chk-btn" data-v="e" onclick="M.mc('yt54b',this)">extrapolation</button></div><div class="chk-fb" id="fb-yt54b"></div></div>
 </section>
 
@@ -322,6 +323,7 @@
     <div style="margin-top:6px"><button class="sa-btn" onclick="sa(this)">Show answer</button><div class="sa-ans">9 − 11.5 = <strong>−2.5</strong>. The dot is 2.5 below the line.</div></div>
   </div>
   <div class="chk" id="yt55b"><div class="chk-q">Which words describe r = −0.85?</div>
+    <div class="viz sm" id="v-yt55b"></div>
     <div class="chk-opts"><button class="chk-btn" data-v="sn" onclick="M.mc('yt55b',this)">strong negative</button><button class="chk-btn" data-v="wn" onclick="M.mc('yt55b',this)">weak negative</button><button class="chk-btn" data-v="sp" onclick="M.mc('yt55b',this)">strong positive</button><button class="chk-btn" data-v="no" onclick="M.mc('yt55b',this)">no correlation</button></div><div class="chk-fb" id="fb-yt55b"></div></div>
 </section>
 
@@ -435,7 +437,7 @@ EX.e52s={viz:function(st){var s=st==='solved'?4:(st||0),W0=360,X=M.sc(0,18,22,33
   out+=ln(X(m52),12,X(m52),ay,C.navy,2,'4 3')+tag(X(m52),22,'mean 8',{size:11,fill:C.navy});
   D52.forEach(function(v){out+=ci(X(v),ay,5.5,C.navy,'#fff',1.2);});
   var A2=M.axisX({x0:22,x1:338,y:ay,min:0,max:18,step:1,lab:2});
-  var foot=s>=4?'SD = √(100 ÷ 5) = √20 ≈ '+f(St.sd(D52)):(s>=3?'mean of squares = 100 ÷ 5 = 20':'each square: side = distance, area = distance²');
+  var foot=s>=4?'SD = √(100 ÷ 5) = √20 ≈ '+f(St.sd(D52)):(s>=3?'mean of squares = 100 ÷ 5 = 20':'side = distance, area = distance²');
   return M.svg(W0,ay+50,out+A2.s+tag(180,ay+42,foot,{size:11.5,mono:true,fill:s>=3?C.green:C.navy}),'squared distances picture');}};
 FIG.cmp=function(){var A=[60,70,78,85,95],B=[50,65,80,88,100];
   return M.boxPlots([{f:A,name:'Class A',parts:[null,null,{t:'median '+A[2]},null,null]},{f:B,name:'Class B',parts:[null,null,{t:'median '+B[2]},null,null]}],{min:50,max:100,step:5,lab:10,grid:5,rowH:76,title:'Test score',label:'two box plots'});};
@@ -451,13 +453,13 @@ SP.yt52={type:'multi',ok:'The gold gaps are the distances from the mean.',viz:fu
     {k:'mad',label:'MAD',type:'num',hint:'Distances from the mean 5: 3, 1, 1, 1, 4. Find their average.',ans:St.mad(D52y),fb:[[0,'Use distances (no negative signs).'],[10,'10 is the total distance. Divide by 5.']]}]};
 /* ---------- topic 3 ---------- */
 var D53=[4,6,7,8,9,10,11,25],F53=St.five(D53),IQR53=F53[3]-F53[1],UF53=F53[3]+1.5*IQR53,LF53=F53[1]-1.5*IQR53;
-FIG.pull=function(){var a=D53.slice(0,7),X=M.sc(0,26,22,338),s='',rows=[{d:a,y:70,name:'Without 25'},{d:D53,y:160,name:'With 25'}];
-  rows.forEach(function(r){var m=St.mean(r.d),md=St.median(r.d);s+=tx(22,r.y-48,r.name,{size:12,bold:true,anchor:'start'});
+FIG.pull=function(){var a=D53.slice(0,7),X=M.sc(0,26,22,338),s='',rows=[{d:a,y:86,name:'Without 25'},{d:D53,y:196,name:'With 25'}];
+  rows.forEach(function(r){var m=St.mean(r.d),md=St.median(r.d);s+=tx(22,r.y-62,r.name,{size:12,bold:true,anchor:'start'});
     s+=ln(22,r.y,338,r.y,C.axis,1.4);r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});
-    var mr=m>md;s+=ln(X(m),r.y-34,X(m),r.y,C.gold,2.2,'4 3')+tag(X(m)+(mr?3:-3),r.y-36,'mean '+f(m),{size:10.5,mono:true,fill:C.goldD,anchor:mr?'start':'end'});
-    s+=ln(X(md),r.y-34,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-36,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});});
-  var A2=M.axisX({x0:22,x1:338,y:186,min:0,max:26,step:1,lab:2});
-  return M.svg(360,215,s+A2.s,'mean versus median with an outlier');};
+    var mr=m>md;s+=ln(X(m),r.y-30,X(m),r.y,C.gold,2.2,'4 3')+tag(X(m)+(mr?3:-3),r.y-34,'mean '+f(m),{size:10.5,mono:true,fill:C.goldD,anchor:mr?'start':'end'});
+    s+=ln(X(md),r.y-30,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-34,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});});
+  var A2=M.axisX({x0:22,x1:338,y:222,min:0,max:26,step:1,lab:2});
+  return M.svg(360,252,s+A2.s,'mean versus median with an outlier');};
 function fenceViz(d,st,o){var F=St.five(d),I=F[3]-F[1],uf=F[3]+1.5*I,lf=F[1]-1.5*I;o=o||{};
   return M.dotPlot(d,{min:o.min,max:o.max,lab:o.lab||2,label:'dot plot with fences',color:function(v){return st==='solved'&&(v>uf||v<lf)?C.gold:C.navy;},
     marks:st==='solved'?[{v:uf,label:'fence '+f(uf),color:C.green,row:1}].concat(lf>=o.min?[{v:lf,label:'fence '+f(lf),color:C.green,row:0,anchor:'start'}]:[]):(o.qm||[]),
@@ -505,7 +507,7 @@ SP.fm54b={hint:'Multiply first: 2 × 6. Then add 5.',type:'num',ans:5+2*6,fb:[[4
 SP.yt54={hint:'Put 6 in for x: 4 + 1.5(6). Multiply first.',type:'num',ans:4+1.5*6,fb:[[33,'Multiply first: 1.5 × 6 = 9. Then add 4.'],[11.5,'1.5x means 1.5 × 6, not 1.5 + 6.'],[9,'9 is 1.5 × 6. Now add the 4.']],ok:'',
   viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',lx:0.4,anchor:'start',ly:-10},
     guides:[{x:6,y:y,toY:st==='solved',color:st==='solved'?C.green:C.gold}],marks:[{x:6,y:y,color:st==='solved'?C.green:C.gold,label:st==='solved'?'(6, 13)':'(6, ?)',dx:8,dy:14}],label:'prediction at x = 6'});}};
-SP.yt54b={type:'mc',ans:'e',ok:'20 is outside 0 to 8, so it is extrapolation. The prediction is risky.',fb:{i:'Interpolation means inside the data (0 to 8). Is 20 inside?'}};
+SP.yt54b={type:'mc',ans:'e',cap:'Shaded: the x-values in the data. Gold: the x we want to predict for.',viz:function(){var lo=0,hi=8,xq=20;return M.pointsLine({min:0,max:22,step:1,lab:4,y:66,title:'x-value',label:'data x-values 0 to 8 and the new x = 20',pts:[{v:xq,t:'x = '+xq,c:C.gold}],after:function(X,y){return rc(X(lo),y-24,X(hi)-X(lo),24,'rgba(30,45,79,0.12)',C.navy,1.2,3)+tag((X(lo)+X(hi))/2,y-32,'data: '+lo+' to '+hi,{size:11,fill:C.navy});}});},ok:'20 is outside 0 to 8, so it is extrapolation. The prediction is risky.',fb:{i:'Interpolation means inside the data (0 to 8). Is 20 inside?'}};
 /* ---------- topic 5 ---------- */
 FIG.res1=function(){return M.scatter(BK,o(BKO,{line:{a:FIT.a,b:FIT.b,label:eqn(FIT.a,FIT.b),at:[0.3,11]},resid:true,residLabel:function(p,i,e){return {t:M.sgn(e)};},label:'residuals'}));};
 FIG.resplot=function(){var r=BK.map(function(p){return [p[0],p[1]-(FIT.a+FIT.b*p[0])];});
@@ -522,7 +524,7 @@ EX.e55={viz:function(st){var sv=st==='solved';return M.scatter([[5,14]],{xmin:0,
   after:function(X,Y){return ln(X(5),Y(14),X(5),Y(12),sv?C.green:C.gold,3)+tag(X(5)+9,Y(13)+4,sv?'+2':'?',{size:11.5,mono:true,fill:sv?C.green:C.goldD,anchor:'start'})+tag(X(5)-10,Y(14)-2,'actual 14',{size:10.5,mono:true,anchor:'end'});},label:'residual picture'});}};
 var R_BK=St.r(BK);
 EX.e55b={viz:function(st){var sv=st==='solved'||st>=2;return M.scatter(BK,o(BKO,{h:270,label:'basket data',after:function(X,Y){return tag(X(0.4),Y(11),'r = '+f(R_BK),{size:12,mono:true,fill:C.navy,anchor:'start'})+tag(X(0.4),Y(9.6),sv?rWords(R_BK):'strength? direction?',{size:11,fill:sv?C.green:C.goldD,anchor:'start'});}}));}};
-INT.drag=function(el){var P=BK.map(function(p){return p.slice();}),w=360,h=300,L=46,R=14,T=14,B=44,X0=0,X1=8,Y0=0,Y1=12,dragI=-1;
+INT.drag=function(el){var P=BK.map(function(p){return p.slice();}),w=360,h=320,L=46,R=14,T=34,B=44,X0=0,X1=8,Y0=0,Y1=12,dragI=-1;
   el.className='viz drag-area';
   var box=document.createElement('div');el.appendChild(box);var rd=document.createElement('div');rd.className='ctrl read';rd.style.textAlign='center';el.appendChild(rd);
   function draw(){var F=St.lsrl(P),r=St.r(P);box.innerHTML=M.scatter(P,o(BKO,{line:{a:F.a,b:F.b},ptColor:function(i){return i===dragI?C.gold:C.navy;},r:6.5,label:'drag a dot'}));
@@ -541,7 +543,7 @@ function resViz(act,pred,st,x){var sv=st==='solved',lo=Math.min(act,pred),hi=Mat
 SP.fm55={type:'mc',ans:'1',ok:'The order is backwards. Residual = actual − predicted = 20 − 23 = −3. The dot is below the line.',fb:{'2':'23 − 20 is 3 — the subtraction is fine, but look at the rule it used.','3':'Line 3 is wrong too, but it comes from an earlier mistake.'},viz:function(st){return resViz(20,23,st,4);}};
 SP.fm55b={hint:'Residual = actual − predicted = 20 − 23.',type:'num',ans:20-23,fb:[[3,'That is predicted − actual. Do actual − predicted: 20 − 23.']]};
 SP.yt55={hint:'Residual = actual − predicted = 9 − 11.5.',type:'num',ans:9-11.5,fb:[[2.5,'Actual − predicted = 9 − 11.5. The dot is below the line, so the residual is negative.'],[20.5,'Subtract, don’t add.']],viz:function(st){return resViz(9,11.5,st,3);}};
-SP.yt55b={type:'mc',ans:'sn',ok:'Negative sign → as x goes up, y goes down. 0.85 is close to 1 → strong.',fb:{wn:'0.85 is close to 1, so it is strong, not weak.',sp:'The minus sign means negative.',no:'No correlation would be r near 0.'}};
+SP.yt55b={type:'mc',ans:'sn',cap:'r is always between −1 and 1. Where is −0.85?',viz:function(){var r=-0.85;return M.pointsLine({min:-1,max:1,step:0.25,lab:0.5,y:52,title:'correlation r',label:'r = −0.85 on the scale from −1 to 1',pts:[{v:r,t:'r = '+f(r),c:C.gold}]});},ok:'Negative sign → as x goes up, y goes down. 0.85 is close to 1 → strong.',fb:{wn:'0.85 is close to 1, so it is strong, not weak.',sp:'The minus sign means negative.',no:'No correlation would be r near 0.'}};
 /* ---------- topic 6 ---------- */
 function lurk(top,l,r,st){var s='',col=st==='solved'?C.green:st==='q'?C.gold:C.navy;
   s+=rc(105,10,150,40,st==='q'?C.goldL:(st==='solved'?C.greenL:C.navyL),col,2,8)+tx(180,35,top,{size:12.5,bold:true,fill:st==='q'?C.goldD:(st==='solved'?C.green:C.navy)});

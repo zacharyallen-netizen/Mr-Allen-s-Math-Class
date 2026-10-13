@@ -35,7 +35,7 @@ function feats(P, q, s) {
   }
   if (s.vertex) {
     P.dot(q.h, q.k, { c: s.vertex.c, r: 5.5 });
-    if (s.vertex.text !== false) P.lab(q.h, q.k, s.vertex.text || ('vertex (' + fmt(q.h) + ', ' + fmt(q.k) + ')'), (s.vertex.pos && s.vertex.pos !== 'e' ? s.vertex.pos : (q.a > 0 ? ((q.k - P.o.ymin) * P.uy < 26 ? 'se' : 's') : ((P.o.ymax - q.k) * P.uy < 26 ? 'ne' : 'n'))), { c: s.vertex.c === C.gold ? C.goldT : s.vertex.c, fs: 12 });
+    if (s.vertex.text !== false) P.lab(q.h, q.k, s.vertex.text || ('vertex (' + fmt(q.h) + ', ' + fmt(q.k) + ')'), (s.vertex.pos && s.vertex.pos !== 'e' ? s.vertex.pos : (q.a > 0 ? 'se' : 'ne')), { c: s.vertex.c === C.gold ? C.goldT : s.vertex.c, fs: 12 });
   }
   return P;
 }

@@ -19,12 +19,12 @@ function decoder(parts, o = {}) {
     const col = m.p.c === 'gold' ? C.goldT : m.p.c === 'green' ? C.green : C.navy;
     const stroke = m.p.c === 'gold' ? C.gold : col;
     const lx = m.x + m.w / 2;
-    const labW = m.p.lab.length * 12 * 0.62;
-    row = (lx - labW / 2 < lastEnd + 6) ? (row + 1) % 2 : 0;
-    const ly = 72 + row * 22;
+    const labW = m.p.lab.length * 13 * 0.62;
+    row = (lx - labW / 2 < lastEnd + 12) ? (row + 1) % 2 : 0;
+    const ly = 74 + row * 22;
     P.add(`<path d="M${(m.x + 2).toFixed(1)} 47 v6 h${(m.w - 4).toFixed(1)} v-6" fill="none" stroke="${stroke}" stroke-width="2"/>`);
     P.add(`<line x1="${lx.toFixed(1)}" y1="53" x2="${lx.toFixed(1)}" y2="${ly - 13}" stroke="${stroke}" stroke-width="1.5"/>`);
-    P.textPx(lx, ly, m.p.lab, { fs: 12, anchor: 'middle', bold: true, c: col });
+    P.textPx(lx, ly, m.p.lab, { fs: 13, anchor: 'middle', bold: true, c: col });
     lastEnd = lx + labW / 2;
   });
   return P.out(o.aria || ('equation ' + text));
@@ -93,36 +93,94 @@ function tree(o) {
 
 /* projectile sketch (not to scale). hi: which label is gold ('start','max','tmax','land') */
 function scene(o) {
-  const W = o.W || 300, H = 224, P = G.canvas(W, H);
-  const gy = 200, cliffW = 50, cliffTop = 134;
-  P.rectPx(10, cliffTop, cliffW, gy - cliffTop, { fill: '#D9DEE7', c: C.navy, w: 1.5 });
+  const W = o.W || 300, H = 232, P = G.canvas(W, H);
+  const gy = 196, cx0 = 84, cliffW = 40, cliffTop = 134;
+  if (!o.ground) P.rectPx(cx0, cliffTop, cliffW, gy - cliffTop, { fill: '#D9DEE7', c: C.navy, w: 1.5 });
   P.add(`<line x1="4" y1="${gy}" x2="${W - 4}" y2="${gy}" stroke="${C.axis}" stroke-width="2"/>`);
-  const sx = 10 + cliffW, sy = cliffTop, px = 140, py = 58, ex = W - 30;
-  // quadratic bezier through start->peak->end approximations
-  P.add(`<path d="M${sx} ${sy} Q ${px - 40} ${py - 22} ${px} ${py} Q ${px + 70} ${py - 6} ${ex} ${gy}" fill="none" stroke="${C.navy}" stroke-width="2.4" stroke-dasharray="6 5"/>`);
+  const sx = o.ground ? 40 : cx0 + cliffW, sy = o.ground ? gy : cliffTop, px = o.ground ? 150 : 166, py = 64, ex = W - 40;
+  P.add(`<path d="M${sx} ${sy} Q ${o.ground ? sx + 30 : sx + 12} ${py - 2} ${px} ${py} Q ${ex - 30} ${py + 2} ${ex} ${gy}" fill="none" stroke="${C.navy}" stroke-width="2.4" stroke-dasharray="6 5"/>`);
   P.add(`<circle cx="${sx}" cy="${sy}" r="5" fill="${C.navy}" stroke="#fff" stroke-width="1.5"/>`);
-  const col = k => (o.hi === k ? C.goldT : '#7C869B');
+  const col = k => (o.hi === k ? C.goldT : '#5A6680');
   const dotc = k => (o.hi === k ? C.gold : '#9AA3B5');
   P.add(`<circle cx="${px}" cy="${py}" r="5" fill="${dotc('max')}" stroke="#fff" stroke-width="1.5"/>`);
   P.add(`<circle cx="${ex}" cy="${gy}" r="5" fill="${dotc('land')}" stroke="#fff" stroke-width="1.5"/>`);
-  P.add(`<line x1="${sx - 30}" y1="${sy}" x2="${sx - 30}" y2="${gy}" stroke="${o.hi === 'start' ? C.gold : '#9AA3B5'}" stroke-width="2" stroke-dasharray="3 3"/>`);
-  P.textPx(sx - 26, (sy + gy) / 2 + 4, 'h(0) = ?', { fs: 12, bold: true, c: col('start') });
-  P.textPx(px, py - 12, 'max height = ?', { fs: 12, bold: true, anchor: 'middle', c: col('max') });
+  const hx = cx0 - 10;
+  if (!o.ground) {
+  P.add(`<line x1="${hx}" y1="${sy}" x2="${hx}" y2="${gy}" stroke="${o.hi === 'start' ? C.gold : '#9AA3B5'}" stroke-width="2" stroke-dasharray="3 3"/>`);
+  P.add(`<line x1="${hx - 5}" y1="${sy}" x2="${hx + 5}" y2="${sy}" stroke="${o.hi === 'start' ? C.gold : '#9AA3B5'}" stroke-width="2"/>`);
+  P.textPx(hx - 6, (sy + gy) / 2 + 4, 'h(0) = ?', { fs: 13, bold: true, anchor: 'end', c: col('start') });
+  } else P.textPx(sx, gy + 17, 'kicked at t = 0', { fs: 13, bold: true, anchor: 'start', c: '#5A6680' });
+  P.textPx(px, py - 13, 'max height = ?', { fs: 13, bold: true, anchor: 'middle', c: col('max') });
   P.add(`<line x1="${px}" y1="${py + 6}" x2="${px}" y2="${gy}" stroke="${o.hi === 'tmax' ? C.gold : '#C3CAD6'}" stroke-width="1.5" stroke-dasharray="3 3"/>`);
-  P.textPx(px, gy + 15, 't = ?', { fs: 12, bold: true, anchor: 'middle', c: col('tmax') });
-  P.textPx(ex - 10, gy - 10, 'lands: t = ?', { fs: 12, bold: true, anchor: 'end', c: col('land') });
-  P.textPx(W / 2, 16, o.eq, { fs: 12, bold: true, anchor: 'middle', c: C.navy });
+  if (!o.ground) P.textPx(px, gy + 17, 't = ?', { fs: 13, bold: true, anchor: 'middle', c: col('tmax') });
+  P.textPx(W - 4, gy + 17, 'lands: t = ?', { fs: 13, bold: true, anchor: 'end', c: col('land') });
+  P.textPx(W / 2, 18, o.eq, { fs: 13, bold: true, anchor: 'middle', c: C.navy });
   return P.out(o.aria || 'sketch of a thrown ball');
 }
 
 /* value table (HTML). cells containing '?' are gold; cls 'g' marks answer cells green */
 function vt(head, rows, o = {}) {
   const td = (v, isHead) => {
-    const s = String(v);
+    const s = typeof v === 'number' ? G.fmt(v) : String(v).replace(/^-(?=\d)/, '−');
     const cls = s.indexOf('?') >= 0 ? ' class="u"' : (o.green && o.green(s) ? ' class="ok"' : '');
     return isHead ? `<th${cls}>${s}</th>` : `<td${cls}>${s}</td>`;
   };
   return `<table class="vt">` + rows.map((r, i) => `<tr>${td(head[i], true)}${r.map(v => td(v)).join('')}</tr>`).join('') + `</table>`;
 }
 
-module.exports = { decoder, boxMethod, machine, tree, scene, vt, areaModel: G.areaModel };
+
+/* not-to-scale parabola sketch: vertex + range arrow. o: {up:true|false, eq, vlab, rlab} */
+function sketch(o) {
+  const W = o.W || 300, H = 196, P = G.canvas(W, H), up = o.up !== false;
+  const vx = 120, vy = up ? 150 : 46, top = up ? 34 : 162, k = (top - vy) / (78 * 78);
+  let d = '';
+  for (let i = 0; i <= 60; i++) { const x = vx - 78 + i * 156 / 60, y = vy + k * (x - vx) * (x - vx); d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' '; }
+  P.add(`<path d="${d}" fill="none" stroke="${C.navy}" stroke-width="2.6"/>`);
+  P.add(`<circle cx="${vx}" cy="${vy}" r="5.5" fill="${C.gold}" stroke="#fff" stroke-width="1.5"/>`);
+  P.textPx(vx, up ? vy + 24 : vy - 12, o.vlab || 'vertex (?, ?)', { fs: 13, anchor: 'middle', bold: true, c: C.goldT });
+  const rx = 246;
+  P.add(`<line x1="${vx + 8}" y1="${vy}" x2="${rx}" y2="${vy}" stroke="${C.gold}" stroke-width="1.6" stroke-dasharray="4 4"/>`);
+  P.add(`<line x1="${rx}" y1="${vy}" x2="${rx}" y2="${top + 8}" stroke="${C.gold}" stroke-width="5" stroke-linecap="round"/>`);
+  P.add(`<path d="M${rx - 7} ${top + 12 * (up ? 1 : -1)} L${rx} ${top} L${rx + 7} ${top + 12 * (up ? 1 : -1)}" fill="none" stroke="${C.gold}" stroke-width="3" stroke-linejoin="round"/>`);
+  P.textPx(rx, up ? vy + 24 : vy - 12, o.rlab || (up ? 'y ≥ ?' : 'y ≤ ?'), { fs: 13, anchor: 'middle', bold: true, c: C.goldT });
+  P.textPx(8, up ? 20 : H - 10, o.eq, { fs: 13, anchor: 'start', bold: true, c: C.navy });
+  return P.out(o.aria || 'sketch of the parabola and its range (not to scale)');
+}
+
+/* cup or hill? two tiny sketches and the equation with a = ? */
+function cupHill(o) {
+  const W = 300, H = 178, P = G.canvas(W, H);
+  P.textPx(W / 2, 22, o.eq, { fs: 15, anchor: 'middle', bold: true, c: C.navy });
+  P.textPx(W / 2, 44, o.ask || 'a = ?', { fs: 13, anchor: 'middle', bold: true, c: C.goldT });
+  const cup = (cx, up) => { let d = ''; for (let i = 0; i <= 40; i++) { const t = -1 + i / 20, x = cx + 44 * t, y = up ? 128 - 60 * t * t : 68 + 60 * t * t; d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1) + ' '; } return d; };
+  [[78, true, 'opens up', 'a > 0'], [222, false, 'opens down', 'a < 0']].forEach(([cx, up, t1, t2]) => {
+    P.rectPx(cx - 66, 56, 132, 112, { fill: '#F4F7FC', c: '#C9D3E6', w: 1.2, rx: 8 });
+    P.add(`<path d="${cup(cx, up)}" fill="none" stroke="${C.navy}" stroke-width="2.6"/>`);
+    P.textPx(cx, 146, t1, { fs: 13, anchor: 'middle', bold: true, c: C.navy, mono: false });
+    P.textPx(cx, 162, t2, { fs: 13, anchor: 'middle', bold: true, c: C.blue });
+  });
+  return P.out(o.aria || 'which way does it open');
+}
+
+/* slope recipe: given slope -> flip -> change sign (values or ?) */
+function recipe(o) {
+  const W = 300, H = 120, P = G.canvas(W, H);
+  const bx = [[50, o.a, 'given', C.navy, '#E8EEF8'], [150, o.b, 'flip it', o.b === '?' ? C.gold : C.green, o.b === '?' ? '#FFF6D6' : '#E9F7EE'], [250, o.c, 'change sign', o.c === '?' ? C.gold : C.green, o.c === '?' ? '#FFF6D6' : '#E9F7EE']];
+  bx.forEach(([cx, t, lab, col, fill], i) => {
+    const tc = col === C.gold ? C.goldT : col;
+    P.rectPx(cx - 36, 14, 72, 58, { fill, c: col, w: 2, rx: 8 });
+    const m = /^(−?)(\d+)\/(\d+)$/.exec(String(t));
+    if (m) {                                    // stacked fraction
+      if (m[1]) P.textPx(cx - 14, 49, '−', { fs: 17, anchor: 'end', bold: true, c: tc, halo: false });
+      P.textPx(cx + (m[1] ? 4 : 0), 38, m[2], { fs: 16, anchor: 'middle', bold: true, c: tc, halo: false });
+      P.add(`<line x1="${cx - 9 + (m[1] ? 4 : 0)}" y1="44" x2="${cx + 9 + (m[1] ? 4 : 0)}" y2="44" stroke="${tc}" stroke-width="2"/>`);
+      P.textPx(cx + (m[1] ? 4 : 0), 62, m[3], { fs: 16, anchor: 'middle', bold: true, c: tc, halo: false });
+    } else P.textPx(cx, 49, t, { fs: 18, anchor: 'middle', bold: true, c: tc, halo: false });
+    P.textPx(cx, 90, lab, { fs: 13, anchor: 'middle', bold: true, c: C.muted, mono: false });
+    if (i) P.add(`<line x1="${cx - 62}" y1="43" x2="${cx - 40}" y2="43" stroke="${C.navy}" stroke-width="2.2"/><path d="M${cx - 46} 37 L${cx - 39} 43 L${cx - 46} 49" fill="none" stroke="${C.navy}" stroke-width="2.2" stroke-linejoin="round"/>`);
+  });
+  P.textPx(W / 2, 114, o.foot || 'perpendicular slope', { fs: 13, anchor: 'middle', bold: true, c: C.navy, mono: false });
+  return P.out(o.aria || 'flip the slope and change its sign');
+}
+
+module.exports = { sketch, cupHill, recipe, decoder, boxMethod, machine, tree, scene, vt, areaModel: G.areaModel };

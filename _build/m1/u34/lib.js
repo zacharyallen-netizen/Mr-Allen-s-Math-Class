@@ -40,13 +40,14 @@ var M1 = (function () {
     push(cur, 'n');
     return out;
   }
-  function tw(s, fs) { var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
+  var MINF = 12.5; /* smallest label size: about 12 px on a phone */
+  function tw(s, fs) { fs = Math.max(fs || 11, MINF); var w = 0; rich(s).forEach(function (p) { w += p.t.length * (p.k === 'n' ? 0.6 : 0.45) * fs; }); return w; }
   function text(x, y, s, o) {
-    o = o || {}; var fs = o.fs || 11, parts = rich(s), h = '', base = 0;
+    o = o || {}; var fs = Math.max(o.fs || 11, MINF), parts = rich(s), h = '', base = 0;
     parts.forEach(function (p) {
       var dy = 0, size = '';
-      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
-      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.75) + '"'; }
+      if (p.k === 'sup') { dy = -0.42 * fs - base; base = -0.42 * fs; size = ' font-size="' + r1(fs * 0.8) + '"'; }
+      else if (p.k === 'sub') { dy = 0.25 * fs - base; base = 0.25 * fs; size = ' font-size="' + r1(fs * 0.8) + '"'; }
       else { dy = -base; base = 0; }
       h += '<tspan' + (dy ? ' dy="' + r1(dy) + '"' : '') + size + '>' + esc(p.t) + '</tspan>';
     });
@@ -56,7 +57,7 @@ var M1 = (function () {
       (o.cls ? ' class="' + o.cls + '"' : '') + '>' + h + '</text>';
   }
   function pill(cx, cy, s, o) {
-    o = o || {}; var fs = o.fs || 11, w = tw(s, fs) + 10, h = fs + 6;
+    o = o || {}; var fs = Math.max(o.fs || 11, MINF), w = tw(s, fs) + 10, h = fs + 6;
     return '<rect x="' + r1(cx - w / 2) + '" y="' + r1(cy - h / 2) + '" width="' + r1(w) + '" height="' + r1(h) + '" rx="' + r1(h / 2) +
       '" fill="' + (o.bg || C.gold) + '" stroke="' + (o.st || '#b38600') + '" stroke-width="1"/>' +
       text(cx, cy + fs * 0.36, s, { fs: fs, c: o.c || C.ink, b: true, halo: false });
@@ -132,7 +133,7 @@ var M1 = (function () {
 
   /* ---------- coordinate plane ---------- */
   function plane(o) {
-    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, fs = o.fs || 11;
+    var W = o.w || 300, H = o.h || W, tfs = Math.max(o.tfs || 10, MINF), fs = Math.max(o.fs || 11, MINF);
     var x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
     var xs = o.xs || 1, ys = o.ys || 1, xl = o.xl || xs, yl = o.yl || ys;
     var tick = o.tick || function (v) { return fmt(v); };
@@ -140,9 +141,9 @@ var M1 = (function () {
     for (v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) ylabs.push(+v.toFixed(6));
     var maxYW = 0; ylabs.forEach(function (q) { maxYW = Math.max(maxYW, tw(tick(q), tfs)); });
     var yEdge = x0 >= 0, xEdge = y0 >= 0;
-    var L = (yEdge ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0);
-    var B = H - ((xEdge ? 17 : 10) + (o.xtitle ? 15 : 0));
-    var T = 10, R = W - 10;
+    var L = (yEdge ? maxYW + 9 : 10);
+    var B = H - ((xEdge ? tfs + 8 : 10) + (o.xtitle ? 17 : 0));
+    var T = o.ytitle ? 30 : 10, R = W - 10;
     function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
     function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
     var id = 'cp' + (++uid), mk = 'mk' + uid;
@@ -194,8 +195,8 @@ var M1 = (function () {
     var xn = o.xname == null ? 'x' : o.xname, yn = o.yname == null ? 'y' : o.yname;
     if (xn) { s += text(R - 2, sy(ax) - 5, xn, { fs: 11, c: C.axis, a: 'end', it: true }); both({ x: R - 2 - tw(xn, 11), y: sy(ax) - 16, w: tw(xn, 11), h: 12 }); }
     if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
-    if (o.xtitle) s += text((L + R) / 2, H - 4, o.xtitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' });
-    if (o.ytitle) s += '<g transform="rotate(-90 11 ' + r1((T + B) / 2) + ')">' + text(11, (T + B) / 2 + 4, o.ytitle, { fs: 10.5, c: C.axis, fam: 'Inter,system-ui,sans-serif' }) + '</g>';
+    if (o.xtitle) s += text((L + R) / 2, H - 5, o.xtitle + ' →', { fs: 12.5, c: C.axis, fam: 'Inter,system-ui,sans-serif', b: true });
+    if (o.ytitle) s += text(4, 17, '↑ ' + o.ytitle, { fs: 12.5, c: C.axis, a: 'start', fam: 'Inter,system-ui,sans-serif', b: true });
     // lines, curves, segments (clipped)
     var cl = '', labels = [];
     items.forEach(function (it) {
@@ -299,7 +300,7 @@ var M1 = (function () {
     s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
     var body = '';
     (o.rows || []).forEach(function (row, ri) {
-      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st && /box|tgt|gold|q/.test(it.st) ? 8 : 0); });
+      var f = row.fs || fs, ws = row.items.map(function (it) { return tw(it.s, it.fs || f) + (it.st === 'q' ? 16 : it.st && /box|tgt|gold/.test(it.st) ? 8 : 0); });
       var total = ws.reduce(function (a, b) { return a + b; }, 0), x = row.x != null ? row.x : (W - total) / 2;
       row.items.forEach(function (it, ii) {
         var w = ws[ii], f2 = it.fs || f, cx, left;
@@ -766,10 +767,10 @@ var M1 = (function () {
   }
   // pixel <-> data for a plane with default padding (mirror of plane())
   function planeMap(o) {
-    var W = o.w || 300, H = o.h || W, tfs = o.tfs || 10, x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
+    var W = o.w || 300, H = o.h || W, tfs = Math.max(o.tfs || 10, MINF), x0 = o.x[0], x1 = o.x[1], y0 = o.y[0], y1 = o.y[1];
     var yl = o.yl || o.ys || 1, maxYW = 0, tick = o.tick || function (v) { return fmt(v); };
     for (var v = Math.ceil(y0 / yl - 1e-9) * yl; v <= y1 + 1e-9; v += yl) maxYW = Math.max(maxYW, tw(tick(+v.toFixed(6)), tfs));
-    var L = (x0 >= 0 ? maxYW + 9 : 10) + (o.ytitle ? 16 : 0), B = H - ((y0 >= 0 ? 17 : 10) + (o.xtitle ? 15 : 0)), T = 10, R = W - 10;
+    var L = (x0 >= 0 ? maxYW + 9 : 10), B = H - ((y0 >= 0 ? tfs + 8 : 10) + (o.xtitle ? 17 : 0)), T = o.ytitle ? 30 : 10, R = W - 10;
     return function (px, py) { return [x0 + (px - L) / (R - L) * (x1 - x0), y0 + (B - py) / (B - T) * (y1 - y0)]; };
   }
 

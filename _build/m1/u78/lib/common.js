@@ -122,6 +122,7 @@ const CSS = `
 .flow .ar{text-align:center;color:var(--navy);font-weight:700;line-height:1.3;font-size:.8rem;padding:2px 0}
 .flow .row{display:flex;gap:8px}.flow .row>*{flex:1 1 0;min-width:0}
 @media print{.widget,.legend{display:none!important}.after.show{display:block}}
+@media (max-width:520px){.task,.mc:has(.widget){padding:10px 8px}.task .widget,.mc .widget{padding:8px 6px}.w-svg{flex-basis:100%;max-width:none}}
 `;
 
 function readLib(name) { return fs.readFileSync(path.join(LIB, name), 'utf8'); }

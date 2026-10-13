@@ -114,8 +114,8 @@
 
 <div class="keyhdr"><h2>Part D · Graphing Inequalities</h2><p>Use the shaded graph to answer Questions 1–3.</p></div>
 <section class="topic"><h2><span class="num">D</span> Reading a Shaded Region</h2>
-  <div class="diagram"><div class="viz" data-v="dg" data-static></div><div class="diagram-cap">Solid boundary line, shaded below</div></div>
-  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> Which inequality matches the shaded graph?</div><div class="chk-opts">
+  <div class="chk" id="d1"><div class="chk-q"><span class="badge">1</span> Which inequality matches the shaded graph?</div>
+    <div class="diagram"><div class="viz" data-v="dg" data-static></div><div class="diagram-cap">Solid boundary line, shaded below</div></div><div class="chk-opts">
     <button class="chk-btn" data-o="a" onclick="M1.pick('d1',this,'a')">y ≤ −x + 4</button>
     <button class="chk-btn" data-o="b" onclick="M1.pick('d1',this,'b')">y ≥ −x + 4</button>
     <button class="chk-btn" data-o="c" onclick="M1.pick('d1',this,'c')">y ≤ x + 4</button>
@@ -173,6 +173,7 @@
     <div class="sa" style="border:0;padding:6px 0 0;margin:6px 0 0;background:none"><button class="sa-btn" onclick="sa(this);M1.show('e3')">Reveal</button><div class="sa-ans">Different slopes (2 vs −1), so exactly <strong>one solution</strong>.<br>2x + 3 = −x + 9 → 3x = 6 → x = 2, y = 2(2) + 3 = 7 → <strong>(2, 7)</strong>.</div></div></div>
   <div class="fix" id="e4"><h5><span class="badge">4</span> 🔍 Find the mistake</h5>
     <p class="who">Nia solves 2x + y = 4 and 4x + 2y = 8. Click the step with the mistake.</p>
+    <div class="viz" data-v="e4p" data-static></div>
     <button class="fix-step" data-o="1" onclick="M1.pick('e4',this,1)"><span class="sn">Step 1</span> Multiply 2x + y = 4 by −2: −4x − 2y = −8</button>
     <button class="fix-step" data-o="2" onclick="M1.pick('e4',this,2)"><span class="sn">Step 2</span> Add to 4x + 2y = 8: 0 = 0</button>
     <button class="fix-step" data-o="3" onclick="M1.pick('e4',this,3)"><span class="sn">Step 3</span> 0 = 0, so x = 0 and y = 0. The answer is (0, 0).</button>
@@ -260,6 +261,20 @@
   V.e3 = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 2x + 3', 'y = −x + 9'], [2, -1], [3, 9]], hide: [[1, 0], [1, 1]], done: d, label: 'compare slopes' }); };
   V.e3g = function (d) { return after(d, S({ w: 240, x: [-1, 6], y: [0, 11], yl: 2, lines: [L(2, 3, 'y = 2x + 3'), L(-1, 9, 'y = −x + 9')], sol: e3s, done: true, label: 'one solution' })); };
   R('e3', { kind: 'pt', ans: e3s, viz: ['e3', 'e3g'], ok: 'Different slopes, so one solution. 2x + 3 = −x + 9 → 3x = 6 → x = 2, y = 7.', hint: 'Set 2x + 3 equal to −x + 9. Solve for x. Then find y.' });
+  /* Nia's elimination, built from her two equations: every term cancels */
+  V.e4p = function () {
+    var e = [[2, 1, 4], [4, 2, 8]], k = -2, m = e[0].map(function (v) { return k * v; }), sum = [m[0] + e[1][0], m[1] + e[1][1], m[2] + e[1][2]];
+    function row(y, A, B, Cc, st, lead) {   /* lined up: x-terms | sign | y-terms | = | number */
+      var it = [{ s: M1.term(A, 'x', true), x: 112, a: 'end', st: st }, { s: B < 0 ? '−' : '+', x: 130, a: 'middle' }, { s: M1.term(Math.abs(B), 'y', false), x: 170, a: 'end', st: st }, { s: '=', x: 190, a: 'middle' }, { s: f(Cc), x: 232, a: 'end' }];
+      if (lead) it.push({ s: lead, x: 46, a: 'middle' });
+      return { y: y, items: it };
+    }
+    var rows = [row(26, e[0][0], e[0][1], e[0][2]), row(80, m[0], m[1], m[2]), row(110, e[1][0], e[1][1], e[1][2], null, '+'),
+      { y: 150, items: [{ s: f(sum[0]) + 'x', x: 112, a: 'end', st: 'x' }, { s: '+', x: 130, a: 'middle' }, { s: f(sum[1]) + 'y', x: 170, a: 'end', st: 'x' }, { s: '=', x: 190, a: 'middle' }, { s: f(sum[2]), x: 232, a: 'end' }] },
+      { y: 186, items: [{ s: '0 = 0', st: 'ans' }] }];
+    rows[0].items.push({ s: '×(' + f(k) + ')', x: 240, a: 'start', st: 'tag', fs: 13 });
+    return M1.eqrows({ w: 300, h: 220, rows: rows, rules: [{ x1: 40, x2: 250, y: 122 }], notes: [{ x: 150, y: 52, s: 'multiply every term ↓', c: C.goldTx, fs: 12.5 }, { x: 150, y: 208, s: 'All the x, y and number terms cancel.', c: C.red, fs: 12.5 }], label: 'elimination for 2x + y = 4 and 4x + 2y = 8: every term cancels' });
+  };
   V.e4 = function (d) { return after(d, S({ x: [-2, 4], y: [-3, 7], lines: [L(-2, 4, '2x + y = 4', { at: 0.2 }), { A: 4, B: 2, C: 8, label: '4x + 2y = 8', dash: '8 6', at: 0.85 }], label: 'the same line' })); };
   R('e4', { kind: 'fix', ans: 3, viz: 'e4', ok: 'Step 3 is the mistake. 0 = 0 is ALWAYS true. It means both equations are the same line, so there are infinitely many solutions — not just (0, 0).',
     why: { 1: 'Step 1 is right. Every term was multiplied by −2.', 2: 'Step 2 is right: everything cancels and you get 0 = 0.' } });

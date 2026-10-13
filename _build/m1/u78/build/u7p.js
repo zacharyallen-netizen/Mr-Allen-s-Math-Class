@@ -15,9 +15,9 @@ const ring = (P, x, y, lab, pos) => { P.add(`<circle cx="${P.X(x).toFixed(1)}" c
   const v = [-2, 6, -4, 6];
   const g = () => pgraph(A.f, v, { H: 280 });
   const g1 = g();
-  const g2 = ring(g(), 2, 5, 'vertex = ?', 'e');
-  const g3 = g(); g3.text(-1.8, -3.4, 'axis: x = ?', { c: C.goldT, fs: 12, bold: true });
-  const g4 = ring(g(), 2, 5, 'max or min?', 'e');
+  const g2 = ring(g(), 2, 5, 'vertex = ?', 'ne');
+  const g3 = g(); g3.text(2.6, 5.5, 'axis: x = ?', { c: C.goldT, fs: 12, bold: true, anchor: 'start' });
+  const g4 = ring(g(), 2, 5, 'max or min?', 'ne');
   const a2 = g(); feats(a2, A, { vertex: { c: C.green, text: '(2, 5)', pos: 'e' } });
   const a3 = g(); feats(a3, A, { axis: { c: C.green, text: 'x = 2', y: -3.4 }, vertex: { c: C.green, text: false } });
   const a4 = g(); feats(a4, A, { vertex: { c: C.green, text: 'maximum 5', pos: 'e' } });
@@ -46,7 +46,7 @@ ${mc('a4', { n: 4, text: 'Is the vertex a maximum or minimum?', fig: fig(g4.out(
   const b2 = g();
   const box = F.boxMethod({ top: ['x', '+3'], left: ['x', '−1'], cells: [['?', '?'], ['?', '?']] });
   const boxA = F.boxMethod({ top: ['x', '+3'], left: ['x', '−1'], cells: [['x²', '3x'], ['−x', '−3']], green: true });
-  const b4 = ring(g(), B.h, B.k, 'vertex = ?', 'e');
+  const b4 = ring(g(), B.h, B.k, 'vertex = ?', 'sw');
   const b4a = g(); feats(b4a, B, { axis: { c: C.green, text: 'x = −1', y: 4.3 }, vertex: { c: C.green, text: '(−1, −4)', pos: 'e' }, zeros: { c: C.navy, text: false } });
   part('Part B · Factored Form &amp; the Graph', 'Use the graph shown to answer Questions 1–4. Part B uses standard and factored form. Vertex form gets its own practice in Part E.');
   sec('B', 'Factored Form ↔ Graph', `
@@ -109,7 +109,7 @@ ${q('d1', { n: 1, text: 'A rectangle has length L(x) = x + 5 and width W(x) = x.
 ${q('d2', { n: 2, text: 'Let f(x) = x² − 3 and g(x) = 2x + 1. Find (f + g)(x).', fig: figHtml(tw(tb), 'Add the outputs down each column'), t: 'expr', a: 'x^2+2x-2', ph: 'x^2 + ...',
   traps: [{ v: 'x^2+2x-4', m: 'Check the numbers: −3 + 1 = −2.' }, { v: 'x^2+2x+4', m: 'Check the numbers: −3 + 1 = −2.' }, { v: '2x^3-6x+x^2-3', m: 'That multiplies. (f + g) means ADD the two functions.' }],
   sol: '(f+g)(x) = (x² − 3) + (2x + 1) = <strong>x² + 2x − 2</strong>', after: figHtml(tw(tbA), 'Check x = 2: 4 + 4 − 2 = 6 ✓') })}
-  <div class="sa"><div class="chk-q"><span class="badge">MODEL</span> A dropped ball's height from gravity alone is g(t) = −16t². Wind resistance adds a small constant upward drift, w(t) = 3t. Combine these to build the actual height function h(t) = g(t) + w(t).</div><button class="sa-btn" onclick="K78.sol(this)">Reveal</button><div class="sa-ans">h(t) = g(t) + w(t) = −16t² + 3t.<br><strong>h(t) = −16t² + 3t</strong> — adding the two functions builds a single model for the ball's real height over time (measured from where it was dropped).</div>${L.after(fig(gh.out('graph of h(t)'), 'h(t) = −16t² + 3t: the drift adds a tiny rise before the fall'))}</div>
+  <div class="sa"><div class="chk-q"><span class="badge">MODEL</span> A dropped ball's height from gravity alone is g(t) = −16t². Wind resistance adds a small constant upward drift, w(t) = 3t. Combine these to build the actual height function h(t) = g(t) + w(t).</div>${figHtml(tw(F.vt(['t', 'g(t) = −16t²', 'w(t) = 3t', 'h(t) = g(t) + w(t)'], [[0, 1, 2], [0, 1, 2].map(t => fmt(-16 * t * t)), [0, 1, 2].map(t => fmt(3 * t)), ['?', '?', '?']])), 'Add the two outputs in each column')}<button class="sa-btn" onclick="K78.sol(this)">Reveal</button><div class="sa-ans">h(t) = g(t) + w(t) = −16t² + 3t.<br><strong>h(t) = −16t² + 3t</strong> — adding the two functions builds a single model for the ball's real height over time (measured from where it was dropped).</div>${L.after(fig(gh.out('graph of h(t)'), 'h(t) = −16t² + 3t: the drift adds a tiny rise before the fall'))}</div>
 `);
 }
 
@@ -141,7 +141,7 @@ ${q('e1', { n: 2, text: 'What is the vertex of y = (x − 4)² − 1?', fig: fig
 ${q('e2', { n: 3, text: 'What is the vertex of y = −2(x + 1)² + 8?', fig: fig(d2), t: 'pt', a: [E2.h, E2.k], ph: '(h, k)',
   traps: [{ v: [1, 8], m: '(x + 1) means h = −1. The sign flips.' }, { v: [-2, 8], m: '−2 is a (it tells the direction). h comes from inside the parentheses.' }],
   sol: '(x + 1) = (x − (−1)) so h = −1, k = 8 → <b>(−1, 8)</b>', after: fig(g2.out('vertex'), 'vertex (−1, 8)') })}
-${mc('e3', { n: 4, text: 'For y = −2(x + 1)² + 8, is the vertex a maximum or a minimum?', fig: fig(d2), opts: [
+${mc('e3', { n: 4, text: 'For y = −2(x + 1)² + 8, is the vertex a maximum or a minimum?', fig: fig(F.cupHill({ eq: 'y = −2(x + 1)² + 8', ask: 'a = ' + fmt(E2.a) + ' → which shape?' }), 'A hill has a highest point. A cup has a lowest point.'), opts: [
   { t: 'Maximum, because a = −2 is negative', ok: 1 }, { t: 'Minimum, because a = −2 is negative', fb: 'Negative a opens DOWN, like a hill. The vertex is the top.' },
   { t: 'Maximum, because k = 8 is positive', fb: 'The direction comes from a, not k. k only tells the height of the vertex.' }, { t: 'Minimum, because h = −1', fb: 'h only moves the graph left or right. Look at a.' }],
   why: 'a = −2 &lt; 0 opens down, so the vertex (−1, 8) is a maximum: the max value is 8.', after: fig(g2.out('max'), 'opens down, max 8') })}
@@ -151,7 +151,7 @@ ${q('e4', { n: 5, text: 'Write y = (x − 4)² − 1 in standard form.', fig: fi
 ${q('e5', { n: 6, text: 'Find the zeros of y = (x − 4)² − 1. (Set y = 0: (x − 4)² = 1.)', fig: fig(tr, 'A square of 1 can come from +1 or −1'), t: 'set', a: E1.zeros, ph: 'x = ?, ?',
   traps: [{ v: [5], m: 'Don’t forget the negative square root: x − 4 = −1 also works.' }, { v: [-5, -3], m: 'x − 4 = 1 means x = 5 (add 4). Check your signs.' }],
   sol: 'x − 4 = 1 → x = 5, and x − 4 = −1 → x = 3. <b>x = 3 and x = 5</b>.', after: fig(trA) + fig(g5.out('zeros'), 'zeros 3 and 5 — the same as factoring x² − 8x + 15 = (x − 3)(x − 5)') })}
-${mistake('e6', { n: 7, who: 'Sam found the vertex of y = 3(x − 2)² − 7:',
+${mistake('e6', { n: 7, who: 'Sam found the vertex of y = 3(x − 2)² − 7:', fig: fig(F.decoder([{ t: 'y = ' }, { t: '3', lab: 'a = 3' }, { t: '(x − 2)', lab: 'h = ?', c: 'gold' }, { t: '²' }, { t: ' − 7', lab: 'k = ?', c: 'gold' }], { aria: 'equation y = 3(x − 2)² − 7' }), 'Only one of h and k flips its sign.'),
   work: ['a = 3, so it opens up.', '(x − 2), so h = 2.', 'The end is − 7, so k = 7.', 'Vertex: (2, 7)'], bad: 2,
   fbs: ['Step 1 is right: a = 3 is positive.', 'Step 2 is right: (x − 2) means h = 2.', '', 'Step 4 uses k from Step 3. Find the first mistake.'],
   why: 'Only h flips sign. k keeps its sign: k = −7. The vertex is (2, −7).', after: fig(g6.out('vertex'), 'Fixed: vertex (2, −7)') })}
@@ -187,13 +187,13 @@ ${q('f3', { n: 3, text: 'What is the y-intercept?', fig: fig(mach, 'Put in x = 0
 ${q('f4', { n: 4, text: 'What are the zeros?', fig: fig(box, 'Two numbers that multiply to −5 and add to −4'), t: 'set', a: P.zeros, ph: 'x = ?, ?',
   traps: [{ v: [-5, 1], m: '(x − 5)(x + 1) = 0 gives x = 5 and x = −1. The zero has the opposite sign of the number in the factor.' }],
   sol: 'x² − 4x − 5 = (x − 5)(x + 1) → <b>x = −1 and x = 5</b>', after: fig(g4.out('zeros'), 'zeros −1 and 5 (and the axis x = 2 is halfway between them!)') })}
-${q('f5', { n: 5, text: 'What is the range? (y ≥ … or interval notation)', t: 'ineq', a: { op: '>=', v: P.k }, ph: 'y >= ?',
+${q('f5', { n: 5, text: 'What is the range? (y ≥ … or interval notation)', fig: fig(F.sketch({ up: P.a > 0, eq: 'y = x² − 4x − 5  (a = ' + fmt(P.a) + ')', vlab: 'vertex (?, ?)', rlab: 'y ≥ ?' }), 'Sketch (not to scale): it opens up from the vertex. Use your vertex from Question 2.'), t: 'ineq', a: { op: '>=', v: P.k }, ph: 'y >= ?',
   traps: [{ v: { op: '>=', v: 2 }, m: '2 is the x-value of the vertex. The range uses the y-value, −9.' }, { v: { op: '<=', v: -9 }, m: 'a = 1 is positive, so the graph opens up from −9: use ≥.' }],
   sol: 'Opens up from the vertex (2, −9): <b>y ≥ −9</b>, or <b>[−9, ∞)</b>', after: fig(g5.out('range'), 'range y ≥ −9') })}
 ${mc('f6', { n: 6, text: 'Use the a-slider. Which parabola is <b>narrower</b>: y = 3x² or y = ½x²?', fig: widget('aslide'), opts: [
   { t: 'y = 3x²', ok: 1 }, { t: 'y = ½x²', fb: 'Slide a to 0.5. The graph gets WIDER (flatter). Now try a = 3.' }, { t: 'They are the same width', fb: 'Different a-values give different widths. Try both on the slider.' }],
   why: '|a| = 3 is bigger than 1, so y = 3x² is narrower (steeper). |a| = ½ is less than 1, so y = ½x² is wider.' })}
-${mistake('f7', { n: 7, who: 'Marcus found the axis of symmetry of y = 2x² + 8x + 1:',
+${mistake('f7', { n: 7, who: 'Marcus found the axis of symmetry of y = 2x² + 8x + 1:', fig: fig(F.decoder([{ t: 'y = ' }, { t: '2x²', lab: 'a = ' + fmt(M.a) }, { t: ' + 8x', lab: 'b = ' + fmt(M.b) }, { t: ' + 1', lab: 'c = ' + fmt(M.c) }], { aria: 'equation y = 2x² + 8x + 1' }), 'axis: x = −b ÷ (2a). Watch the sign of −b.'),
   work: ['a = 2, b = 8', `x = ${fr('−b', '2a')}`, `x = ${fr('8', '4')}`, 'x = 2'], bad: 2,
   fbs: ['Step 1 is right.', 'Step 2 is the right formula.', '', 'Step 4 just divides Step 3. Find the first mistake.'],
   why: `He dropped the negative. −b = −8, so x = ${fr('−8', '4')} = −2.`, after: fig(gm.out('axis'), 'Fixed: axis x = −2, vertex (−2, −7)') })}
@@ -236,13 +236,13 @@ ${q('g4', { n: 4, text: 'When does the ball hit the ground? (seconds)', fig: fig
 ${mc('g5', { n: 5, text: 'A garden’s length is 3 m more than its width w. Its area is 54 m². Which equation models the garden?', fig: fig(am), opts: [
   { t: 'w(w + 3) = 54', ok: 1 }, { t: 'w + (w + 3) = 54', fb: 'That adds two sides. Area means length × width.' }, { t: '2w + 2(w + 3) = 54', fb: 'That is the perimeter (distance around). Area means length × width.' }, { t: 'w² + 3 = 54', fb: 'Distribute w to both terms: w · w + w · 3 = w² + 3w.' }],
   why: 'Area = width × length = w(w + 3).' })}
-${q('g6', { n: 6, text: 'Solve w(w + 3) = 54. What is the width of the garden? (m)', fig: fig(am), t: 'num', a: 6, ph: 'w = ?',
+${q('g6', { n: 6, text: 'Solve w(w + 3) = 54. What is the width of the garden? (m)', fig: fig(F.boxMethod({ top: ['w', '?'], left: ['w', '?'], cells: [['w²', '?'], ['?', '−54']], aria: 'box for w² + 3w − 54' }), 'w² + 3w − 54 = 0: two numbers that multiply to −54 and add to 3'), t: 'num', a: 6, ph: 'w = ?',
   traps: [{ v: -9, m: 'A width can’t be negative. Use your other answer.' }, { v: 9, m: '9 is the length (w + 3). The question asks for the width.' }, { v: 18, m: 'Area is not width × 3. Write w² + 3w − 54 = 0 and factor.' }],
   sol: 'w² + 3w − 54 = 0 → (w + 9)(w − 6) = 0 → <b>w = 6 m</b> (length 9 m)', after: fig(amA) })}
 ${q('g7', { n: 7, text: 'A pen has a perimeter of 40 m. Its area is A(x) = x(20 − x), where x is the width. What width gives the <b>largest</b> area? (m)', fig: fig(pen, 'width x, length 20 − x'), t: 'num', a: A.h, ph: 'x = ?',
   traps: [{ v: 20, m: 'At x = 20 the length is 0, so the area is 0. The max is halfway between the zeros 0 and 20.' }, { v: 100, m: '100 is the largest AREA. The question asks for the width.' }],
   sol: 'A(x) = −x² + 20x. Zeros: x = 0 and x = 20. Halfway: <b>x = 10 m</b>', after: fig(gp.out('area graph'), 'The top of the area graph is at x = 10') })}
-${q('g8', { n: 8, text: 'What is that largest area? (m²)', fig: fig(pen), t: 'num', a: A.k, ph: 'A = ?', traps: [{ v: 10, m: '10 is the width. Put x = 10 into A(x).' }],
+${q('g8', { n: 8, text: 'What is that largest area? (m²)', fig: fig(F.machine({ input: 'x = ? (from Q7)', rule: 'A(x) = x(20 − x)', output: '?', aria: 'put the best width into A(x)' }), 'Put your width from Question 7 into A(x).'), t: 'num', a: A.k, ph: 'A = ?', traps: [{ v: 10, m: '10 is the width. Put x = 10 into A(x).' }],
   sol: 'A(10) = 10(20 − 10) = 10 · 10 = <b>100 m²</b> (a 10 by 10 square)', after: fig(gp.out('area graph'), 'Max area 100 m²') })}
 ${mistake('g9', { n: 9, who: 'Lena solved: “A rectangle’s length is 2 more than its width. The area is 48. Find the width.”', fig: fig(mm),
   work: ['width = w, length = w + 2', 'w + (w + 2) = 48', '2w + 2 = 48', 'w = 23'], bad: 1,

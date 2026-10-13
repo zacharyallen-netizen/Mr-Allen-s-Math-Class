@@ -145,7 +145,7 @@
       P = G.plane({ xmin: -5, xmax: 5, ymin: -6, ymax: 6, W: 300 });
       P.curve(function (x) { return x * x; }, { c: '#B9C1CF', w: 1.8, dash: '4 4' });
       P.curve(function (x) { return st.a * x * x; }, { c: C.navy });
-      P.text(-4.8, 5.4, 'grey: y = x²', { fs: 11, c: C.muted, anchor: 'start' });
+      P.text(-4.8, st.a > 0 ? -5.4 : 5.4, 'grey: y = x²', { fs: 11, c: C.muted, anchor: 'start' });
       return P.out('y = a x squared');
     }
     var svg = mount(host, '🎛 Try it: slide a and watch the width', draw(), slider('a', -4, 4, 0.25, st.a, 'a') + '<div class="readout" aria-live="polite"></div>');

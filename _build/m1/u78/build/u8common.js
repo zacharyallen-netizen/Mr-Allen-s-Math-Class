@@ -11,7 +11,9 @@ function labPts(P, pts, names, o = {}) {
     let pos = (o.pos && o.pos[i]) || ((p[1] >= cy ? 'n' : 's') + (p[0] > cx + 0.01 ? 'e' : p[0] < cx - 0.01 ? 'w' : ''));
     if ((pos === 'n' || pos === 's') && pts.length === 2 && !(o.pos && o.pos[i])) pos = pos + (i ? 'e' : 'w');
     const txt = names[i] + (o.coords === false ? '' : '(' + fmt(p[0]) + ', ' + fmt(p[1]) + ')');
-    P.lab(p[0], p[1], txt, pos, { c: c === C.gold ? C.goldT : c, fs: o.fs || 12 });
+    const onX = p[1] === 0 && P.o.ymin < 0 && pos.indexOf('s') >= 0;            // keep clear of the x-axis numbers
+    if (p[0] === 0 && P.o.xmin < 0 && pos.indexOf('w') >= 0) pos = pos.replace('w', 'e');   // on the y-axis: keep clear of its numbers
+    P.lab(p[0], p[1], txt, pos, { c: c === C.gold ? C.goldT : c, fs: o.fs || 12, dy: onX ? 13 : 0 });
   });
   return P;
 }

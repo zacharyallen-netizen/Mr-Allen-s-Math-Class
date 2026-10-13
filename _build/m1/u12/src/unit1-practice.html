@@ -184,7 +184,9 @@ V.items('partB',[
 
 /* ================= PART C · inequalities ================= */
 function ineqPost(v,op,t){return function(){return V.numline({min:Math.round(v)-6,max:Math.round(v)+6,sol:{v:v,op:op},title:t,titleK:'ans',label:'solution '+t});};}
-function ineqPre(v){return function(){return V.numline({min:Math.round(v)-6,max:Math.round(v)+6,ask:'Where is the boundary? Open or closed? Which way?',label:'empty number line'});};}
+/* the empty line does not centre on the answer (that would give it away): it is centred on 0 */
+function nlWin(v,span){var a=Math.round(v),lo=-span/2,hi=span/2;if(a>hi-1){hi=a+2;lo=hi-span;}if(a<lo+1){lo=a-2;hi=lo+span;}return [lo,hi];}
+function ineqPre(v){return function(){var w=nlWin(v,12);return V.numline({min:w[0],max:w[1],ask:'Where is the boundary? Open or closed? Which way?',label:'empty number line'});};}
 V.items('partC',[
  {id:'c11',n:1,q:'Solve <span class="math">3x − 2 &gt; 10</span>',kind:'ineq',ph:'x ? value',op:'>',v:4,flip:false,
   wrong:[[8/3,'>','Undo − 2 by ADDING 2: 10 + 2 = 12. Then divide by 3.']],
@@ -232,7 +234,7 @@ V.items('partD',[
   hint:'Write 3 + 2m ≤ 20. Solve it. Then think about whole miles.',ok:'3 + 2m ≤ 20 → m ≤ 8.5 → at most 8 whole miles.',
   pre:function(){return V.tape({rows:[{segs:[{v:20,t:'$20 (at most)'}]},{segs:[{v:3,t:'$3'},{v:17,t:'$2 per mile · m = ?',k:'want'}]}],label:'bar model for the taxi'});},
   steps:'<b>Inequality:</b> 3 + 2m ≤ 20.<br><b>Step 1.</b> Subtract 3: 2m ≤ 17.<br><b>Step 2.</b> Divide by 2: m ≤ 8.5.<br>Only whole miles count, so <b>at most 8 miles</b>.',
-  post:function(){return V.numline({min:0,max:10,seg:{a:0,b:8.5,ia:true,ib:true},dots:[0,1,2,3,4,5,6,7,8].map(function(v){return {v:v};}),title:'m ≤ 8.5 → whole miles 0 to 8',titleK:'ans',label:'taxi solution'});}},
+  post:function(){var s=V.numline({min:0,max:10,dots:[0,1,2,3,4,5,6,7,8].map(function(v){return {v:v};}),title:'m ≤ 8.5 → whole miles 0 to 8',titleK:'ans',label:'taxi solution: whole miles 0 to 8, limit 8.5'}),bx=22+8.5/10*286,by=50;/* the 8.5 limit: a dashed gold mark, so it does not hide the dot at 8 */s.line(bx,by-12,bx,by+12,V.C.gold,2.5,'4 3');s.text(bx+3,by-16,'limit 8.5',{size:12,c:V.C.goldTx,weight:700,anchor:'middle',halo:true});return s;}},
  {id:'d13',n:'MODEL',q:'A phone repair costs $35 plus $25 per hour. The bill was $110. How many hours did the repair take?',kind:'num',ph:'hours',ans:3,
   wrong:[[5.8,'Subtract the $35 fee; do not add it.'],[4.4,'Take away the $35 fee first: 110 − 35 = 75.'],[75,'$75 is the cost of the hours. Divide by $25 per hour.']],
   hint:'Equation: 35 + 25h = 110.',ok:'35 + 25h = 110 → 25h = 75 → h = 3 hours.',
@@ -250,7 +252,7 @@ V.items('partD',[
   ok:'w = (P − 2l) / 2, which is the same as P/2 − l.',
   pre:function(){return V.rectP({l:'l',w:'w = ?',wK:'want',foot:'P = l + w + l + w = 2l + 2w',label:'rectangle with sides l and w'});},
   steps:'<b>Step 1.</b> Subtract 2l: P − 2l = 2w.<br><b>Step 2.</b> Divide by 2: <b>w = (P − 2l) / 2</b>.',
-  post:function(){return V.rectP({l:'l',w:'w',mid:'w = (P − 2l) ÷ 2',foot:'Take away the two l sides, then split in half',footK:'ans',label:'rectangle solved'});}},
+  post:function(){return V.rectP({l:'l',w:'w',mid:'w = (P − 2l) ÷ 2',foot:'Take away 2l, then split in half',footK:'ans',label:'rectangle solved'});}},
  {id:'d16',n:'FIND THE MISTAKE',kind:'pick',q:'Kim solved <span class="math">A = lw</span> for w. Click the line with the mistake.',
   lines:['A = lw','A − l = w'],ans:1,why:{0:'That is the formula. It is fine.'},
   ok:'Line 2. l is MULTIPLIED by w, so Kim should divide by l, not subtract: w = A / l.',

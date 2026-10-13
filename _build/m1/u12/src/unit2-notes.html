@@ -242,8 +242,8 @@ V.put({
  p5e:function(){return G({xmin:0,xmax:7,ymin:0,ymax:35,yl:5,gy:5,xTitle:'tickets n',yTitle:'cost C ($)',xName:'n',yName:'C',pts:[0,1,2,3,4,5,6].map(function(n){return {x:n,y:5*n,k:'given',rad:4.5};}),label:'ticket cost dots'});},
  p6a:function(){return G({xmin:0,xmax:8,ymin:0,ymax:20,yl:4,gy:2,lines:[{m:3,b:-1,xa:0.4,xb:6.9,arrows:false}],tri:{x1:2,y1:5,x2:6,y2:17,run:'Δx = 6 − 2',rise:'Δy = 17 − 5'},pts:[{x:2,y:5,lbl:'(2, 5)',pos:'nw'},{x:6,y:17,lbl:'(6, 17)',pos:'w'}],label:'rate of change triangle'});},
  p6b:function(){return V.tbl({xs:[0,3],ys:[4,10],names:['week','cm'],cw:70,dx:['Δx = ?'],dy:['Δy = ?'],label:'plant table'});},
- p6c:function(){return G({w:240,xmin:-3,xmax:3,ymin:-4,ymax:8,xl:1,yl:2,lines:[{m:2,b:1,lbl:'y = 2x + 1',lx:0.6},{m:2,b:4,k:'ans',lbl:'y = 2x + 4',lx:-0.6,lpos:'alt'}],label:'change b'});},
- p6d:function(){return G({w:240,xmin:-3,xmax:3,ymin:-4,ymax:8,xl:1,yl:2,lines:[{m:2,b:1,lbl:'y = 2x + 1',lx:1.5},{m:3,b:1,k:'ans',lbl:'y = 3x + 1',lx:1.4,lpos:'alt'}],label:'change m'});}
+ p6c:function(){return G({w:270,xmin:-3,xmax:3,ymin:-4,ymax:8,xl:1,yl:2,lines:[{m:2,b:1},{m:2,b:4,k:'ans'}],notes:[{x:0.55,y:-2.5,t:'y = 2x + 1',anchor:'start'},{x:-2.9,y:5.7,t:'y = 2x + 4',anchor:'start',k:'ans'}],label:'change b'});},
+ p6d:function(){return G({w:270,xmin:-3,xmax:3,ymin:-4,ymax:8,xl:1,yl:2,lines:[{m:2,b:1},{m:3,b:1,k:'ans'}],notes:[{x:0.55,y:-2.5,t:'y = 2x + 1',anchor:'start'},{x:-2.9,y:5.7,t:'y = 3x + 1',anchor:'start',k:'ans'}],label:'change m'});}
 });
 V.vltLab('p1lab',{start:-1});
 V.dragFn('p2lab',{xmin:-4,xmax:4,ymin:-8,ymax:10,m:2,b:1,f:function(x){return 2*x+1;},fname:'f',rule:'2x + 1',name:'f(x) = 2x + 1',start:2,lx:-3.6,yl:2});
@@ -295,7 +295,7 @@ V.items('t3-mis',[{id:'m23',n:'FIND THE MISTAKE',kind:'pick',q:'Max graphed <spa
   lines:['b = −2, so plot the point (−2, 0)','Slope 3: from there go up 3, right 1','Draw the line'],ans:0,why:{1:'Up 3, right 1 is the right way to use slope 3. The start point was wrong.',2:'Drawing the line is fine. The start point was wrong.'},
   ok:'Line 1. b is on the y-axis: plot (0, −2), not (−2, 0).',
   pre:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:6,lbl:'Max’s line',lx:-3.6}],pts:[{x:-2,y:0,lbl:'(−2, 0)',pos:'se'}],label:'Max graph'});},
-  post:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'1',rise:'3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
+  post:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'right 1',rise:'up 3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
 V.items('t3-try',[
  {id:'y27',n:1,q:'Find the slope of the line through (−1, −1) and (1, 3).',kind:'num',ph:'m = ?',ans:2,
   wrong:[[0.5,'You did run ÷ rise. Slope = rise ÷ run = 4 ÷ 2.'],[4,'4 is the rise. Divide by the run, 2.'],[1,'Subtract the coordinates: 3 − (−1) = 4 and 1 − (−1) = 2.']],ok:'rise 4 ÷ run 2 = 2.',
@@ -320,15 +320,15 @@ V.items('t4-mis',[{id:'m24',n:'FIND THE MISTAKE',kind:'pick',q:'Zoe found the x-
 V.items('t4-try',[
  {id:'y2a',n:1,q:'Find the y-intercept of <span class="math">y = −3x + 6</span>. Type a point.',kind:'point',ph:'(0, ?)',ans:[0,6],
   wrong:[[[2,0],'(2, 0) is the x-intercept. The y-intercept has x = 0.'],[[0,-3],'−3 is the slope. Put x = 0: y = 6.']],ok:'x = 0 → y = 6. The point is (0, 6).',
-  pre:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],vlines:[{x:0,k:'want',lbl:'x = 0'}],label:'graph'});},
+  pre:function(){return V.machine({inp:'0',rule:'−3x + 6',out:'?',name:'y =',label:'put x = 0 into y = −3x + 6'});},
   post:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],pts:[{x:0,y:6,k:'ans',lbl:'(0, 6)',pos:'e'}],label:'y-intercept'});}},
  {id:'y2b',n:2,q:'Find the x-intercept of <span class="math">y = −3x + 6</span>. Type a point.',kind:'point',ph:'(?, 0)',ans:[2,0],
   wrong:[[[0,6],'(0, 6) is the y-intercept. For the x-intercept put y = 0.'],[[-2,0],'0 = −3x + 6 → 3x = 6 → x = +2.']],ok:'0 = −3x + 6 → x = 2. The point is (2, 0).',
-  pre:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],hlines:[{y:0,k:'want',lbl:'y = 0'}],label:'graph'});},
+  pre:function(){return V.machine({inp:'?',inK:'want',rule:'−3x + 6',out:'0',outK:'given',name:'y =',label:'which x gives y = 0'});},
   post:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],pts:[{x:2,y:0,k:'ans',lbl:'(2, 0)',pos:'ne'}],label:'x-intercept'});}},
  {id:'y2c',n:3,q:'Is <span class="math">y = −3x + 6</span> increasing or decreasing?',kind:'mc',opts:[['dec','Decreasing'],['inc','Increasing'],['con','Constant']],ans:'dec',
   why:{inc:'The slope is −3, which is negative. Negative slope means the line goes down.',con:'Constant lines have slope 0. This slope is −3.'},ok:'Slope −3 &lt; 0, so the line goes down left to right.',
-  pre:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],label:'graph'});},
+  pre:function(){return V.numline({min:-5,max:5,dots:[{v:-3,k:'want',lbl:'m = −3'},{v:0,k:'navy'}],title:'The slope is −3. Is it above or below 0?',label:'slope negative 3 on a number line'});},
   post:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,k:'ans',lbl:'going down',lx:2.3}],label:'decreasing'});}}
 ]);
 
@@ -342,7 +342,7 @@ V.items('t5-mis',[{id:'m25',n:'FIND THE MISTAKE',kind:'pick',q:'Nate found the d
 V.items('t5-try',[
  {id:'y2d',n:1,q:'Find the <b>domain</b> of the graph. (The dot at (2, −3) is open.)',kind:'range',vr:'x',lo:-4,hi:2,il:true,ih:false,ph:'? <= x < ?',
   wrong:[[-3,3,'Those are y-values. Domain uses x-values (left to right).']],ok:'Domain: −4 ≤ x &lt; 2. The open dot means 2 is not included.',
-  pre:seg5({}),post:seg5({xBand:{a:-4,b:2,k:'ans'},notes:[{x:-1,y:-1.2,t:'−4 ≤ x < 2',k:'ans'}]})},
+  pre:seg5({}),post:seg5({xBand:{a:-4,b:2,k:'ans'},notes:[{x:-3.1,y:-1.5,t:'−4 ≤ x < 2',k:'ans'}]})},
  {id:'y2e',n:2,q:'Find the <b>range</b> of the same graph.',kind:'range',vr:'y',lo:-3,hi:3,il:false,ih:true,ph:'? < y <= ?',
   wrong:[[-4,2,'Those are x-values. Range uses y-values (bottom to top).']],ok:'Range: −3 &lt; y ≤ 3. The lowest point (open dot) is not included.',
   pre:seg5({}),post:seg5({yBand:{a:-3,b:3,k:'ans'},notes:[{x:1.6,y:2.4,t:'−3 < y ≤ 3',k:'ans'}]})},

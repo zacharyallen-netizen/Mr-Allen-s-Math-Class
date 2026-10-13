@@ -12,8 +12,8 @@ const sec = (id, n, title, html) => S.push(`<section class="topic" id="${id}">\n
   const q1 = QV(1, 1, -4); // y = (x−1)² − 4 = x² − 2x − 3
   const P = pgraph(q1.f, [-6, 6, -6, 4], { H: 260 });
   feats(P, q1, { axis: { c: C.blue, text: 'axis x = 1', y: 3.4 }, zeros: { c: C.blue, pos: ['nw', 'ne'] }, yint: { c: C.blue, text: 'y-int (0, −3)', pos: 'w' }, vertex: { c: C.blue, text: 'vertex (1, −4)', pos: 'e' } });
-  const up = pgraph(x => x * x, [-3, 3, -4, 4], { W: 240, H: 200 }); up.dot(0, 0, { c: C.blue }); up.text(0, 1.7, 'minimum', { c: C.blue, fs: 11, bold: true, anchor: 'middle' });
-  const dn = pgraph(x => -x * x, [-3, 3, -4, 4], { W: 240, H: 200 }); dn.dot(0, 0, { c: C.blue }); dn.text(0, -2.1, 'maximum', { c: C.blue, fs: 11, bold: true, anchor: 'middle' });
+  const up = pgraph(x => x * x, [-3, 3, -4, 4], { W: 240, H: 200 }); up.dot(0, 0, { c: C.blue }); up.text(0.25, -1.3, 'minimum', { c: C.blue, fs: 11, bold: true, anchor: 'start' });
+  const dn = pgraph(x => -x * x, [-3, 3, -4, 4], { W: 240, H: 200 }); dn.dot(0, 0, { c: C.blue }); dn.text(0.25, 1.3, 'maximum', { c: C.blue, fs: 11, bold: true, anchor: 'start', dy: 6 });
 
   const e = Q(-1, 2, 3); // y = −x² + 2x + 3
   const pe = pgraph(e.f, [-4, 6, -6, 6], { H: 260 });
@@ -101,6 +101,9 @@ ${q('n71d', { n: 4, text: 'What is the y-intercept?', t: 'num', a: t.c, yint: tr
   const pm = pgraph(mq.f, [-7, 2, -5, 6], { H: 250 });
   feats(pm, mq, { axis: { c: C.green, text: 'x = −3', y: 5.2 }, zeros: { c: C.green, pos: ['nw', 'ne'] }, vertex: { c: C.green, text: '(−3, −4)', pos: 'e' } });
 
+  const lp = 1, lq = 5; // Leo's factors (x + 1)(x + 5)
+  const sg = n => (n < 0 ? '−' : '+') + Math.abs(n);
+  const lbox = F.boxMethod({ top: ['x', sg(lp)], left: ['x', sg(lq)], cells: [['x²', (lp === 1 ? '' : lp) + 'x'], [lq + 'x', String(lp * lq)]] });
   const t = Q(1, -6, 8);
   const tbox = F.boxMethod({ top: ['x', '?'], left: ['x', '?'], cells: [['x²', '?'], ['?', '8']] });
   const tg = () => pgraph(t.f, [-1, 7, -3, 9], { H: 270 });
@@ -144,7 +147,7 @@ ${example('e72b', { title: 'Worked example: graph y = x² − 4x + 1 (it does no
     ['y-intercept and its mirror:', '(0, 1) is 2 left of the axis, so (4, 1) is 2 right'],
     ['Make a table and connect the dots:', 'x = 1 and x = 3 both give y = −2 (mirror pair)']],
   after: figHtml(`<div class="table-wrap">${tbl2}</div>`, 'Table of values') + fig(P2.out('graph of y = x² − 4x + 1'), 'Graph of y = x² − 4x + 1') })}
-${mistake('m72', { who: 'Leo is graphing y = x² + 6x + 5:', text: 'Which step has the <b>first</b> mistake?',
+${mistake('m72', { who: 'Leo is graphing y = x² + 6x + 5:', text: 'Which step has the <b>first</b> mistake?', fig: fig(lbox, `Leo’s factors in a box: (x + ${lp})(x + ${lq}) = x² + ${lp + lq}x + ${lp * lq}`),
   work: ['Factor: (x + 1)(x + 5)', 'Zeros: x = 1 and x = 5', `Axis: x = ${fr('1 + 5', '2')} = 3`, 'Vertex: 3² + 6(3) + 5 = 32 → (3, 32)'], bad: 1,
   fbs: ['Step 1 is right: 1 × 5 = 5 and 1 + 5 = 6.', '', 'Step 3 uses the zeros from Step 2. The method is right, but the numbers came from a mistake earlier.', 'Step 4 uses the axis from Step 3. Look for the FIRST mistake.'],
   why: 'If a factor is (x + 1), then x + 1 = 0, so x = −1. The zeros are −1 and −5. Then the axis is x = −3 and the vertex is (−3, −4).',
@@ -228,7 +231,7 @@ ${example('e73b', { title: 'Worked example: y = −(x + 2)² + 1', fig: fig(dec2
     ['Find k:', 'k = 1'],
     ['Vertex and max:', 'vertex (−2, 1). The maximum value is 1.']],
   after: fig(pe2.out('graph of y = −(x + 2)² + 1'), 'Opens down, max (−2, 1), axis x = −2') })}
-${mistake('m73', { who: 'Jada found the vertex of y = (x + 4)² − 2:',
+${mistake('m73', { who: 'Jada found the vertex of y = (x + 4)² − 2:', fig: fig(F.decoder([{ t: 'y = ' }, { t: '(x + 4)', lab: 'h = ?', c: 'gold' }, { t: '²' }, { t: ' − 2', lab: 'k = ?', c: 'gold' }], { aria: 'equation y = (x + 4)² − 2 with h and k to find' }), 'Vertex form y = a(x − h)² + k. Which numbers are h and k?'),
   work: ['Vertex form is y = a(x − h)² + k.', '(x + 4), so h = 4.', 'The number at the end is −2, so k = −2.', 'Vertex: (4, −2)'], bad: 1,
   fbs: ['Step 1 is right. That is the pattern for vertex form.', '', 'Step 3 is right: k = −2.', 'Step 4 uses h from Step 2. Look for the first mistake.'],
   why: '(x + 4) is the same as (x − (−4)). So h = −4 and the vertex is (−4, −2).',
@@ -236,7 +239,7 @@ ${mistake('m73', { who: 'Jada found the vertex of y = (x + 4)² − 2:',
 ${yt()}
 ${q('n73a', { n: 1, text: 'What is the vertex of y = (x − 3)² − 1?', fig: fig(tdec), t: 'pt', a: [t.h, t.k], ph: '(h, k)', traps: [{ v: [-3, -1], m: '(x − 3) means h = +3. Inside the parentheses, the sign flips.' }, { v: [3, 1], m: 'k keeps its sign. The number at the end is −1.' }],
   sol: 'h = 3 (flip the sign of −3), k = −1 → <b>(3, −1)</b>.', after: fig(gA.out('vertex'), 'vertex (3, −1)') })}
-${mc('n73b', { n: 2, text: 'Does y = (x − 3)² − 1 open up or down?', fig: '', opts: [
+${mc('n73b', { n: 2, text: 'Does y = (x − 3)² − 1 open up or down?', fig: fig(F.cupHill({ eq: 'y = (x − 3)² − 1', ask: 'a = ?' }), 'Find a, the number in front of the parentheses. Then pick the matching shape.'), opts: [
   { t: 'Up', ok: 1 }, { t: 'Down', fb: 'There is no minus sign in front, so a = 1. Positive a opens up.' }],
   why: 'a = 1 is positive, so the parabola opens up. The vertex (3, −1) is a minimum.' })}
 ${q('n73c', { n: 3, text: 'Write y = (x − 3)² − 1 in standard form.', fig: fig(tbox, 'Box for (x − 3)(x − 3)'), t: 'expr', form: 'std', a: polyA(t.a, t.b, t.c), ph: 'y = x^2 + ...',
@@ -269,8 +272,11 @@ ${q('n73c', { n: 3, text: 'Write y = (x − 3)² − 1 in standard form.', fig: 
   const pm = pgraph(mq.f, [-3, 6, -6, 5], { H: 250 });
   rangeBand(pm, mq, C.green); feats(pm, mq, { vertex: { c: C.green, text: 'min (2, −5)', pos: 'w' } });
 
+  const pm0 = pgraph(mq.f, [-3, 6, -6, 5], { H: 250 }); feats(pm0, mq, { vertex: { c: C.navy, text: `vertex (${fmt(mq.h)}, ${fmt(mq.k)})`, pos: 'e' } });
   const t = Q(1, 4, -1);
   const xs = [-5, -4, -3, -1, 0, 1];
+  const sk = F.sketch({ up: t.a > 0, eq: 'y = x² + 4x − 1  (a = 1)', vlab: 'vertex (?, ?)', rlab: 'y ≥ ?' });
+  const mach = F.machine({ input: 'x = ?', rule: 'y = x² + 4x − 1', output: '?', aria: 'function machine for y = x² + 4x − 1' });
   const tt = F.vt(['x', 'y'], [[-5, -4, -3, '?', -1, 0, 1], [...xs.slice(0, 3).map(x => fmt(t.f(x))), '?', ...xs.slice(3).map(x => fmt(t.f(x)))]]);
   const pt1 = pgraph(t.f, [-6, 2, -6, 5], { H: 250 });
   rangeBand(pt1, t, C.green); feats(pt1, t, { vertex: { c: C.green, text: 'min (−2, −5)', pos: 'e' } });
@@ -299,17 +305,17 @@ ${example('e74', { title: 'Worked example: y = −2(x − 1)² + 3', fig: fig(de
   steps: [['Domain:', 'all real numbers'], ['Vertex:', '(1, 3)'], ['Up or down?', 'a = −2 &lt; 0, so it opens down. 3 is the maximum.'],
     ['Range:', 'y ≤ 3, or (−∞, 3]'], ['End behavior:', 'both ends go down']],
   after: fig(pe.out('graph with range'), 'The green bar shows the range: 3 and below') })}
-${mistake('m74', { who: 'Marcus found the range of y = (x − 2)² − 5:',
+${mistake('m74', { who: 'Marcus found the range of y = (x − 2)² − 5:', fig: fig(pm0.out('graph of y = (x − 2)² − 5'), 'The graph of y = (x − 2)² − 5'),
   work: ['Domain: all real numbers', 'Vertex: (2, −5)', 'Opens up, because a = 1 &gt; 0', 'Range: y ≥ 2'], bad: 3,
   fbs: ['Step 1 is right.', 'Step 2 is right: h = 2, k = −5.', 'Step 3 is right.', ''],
   why: 'Range is about y-values. Use k = −5 (the y of the vertex), not h = 2. The range is y ≥ −5, or [−5, ∞).',
   after: fig(pm.out('range'), 'Fixed: range y ≥ −5') })}
 ${yt()}
 ${figHtml(`<div class="table-wrap">${tt}</div>`, 'Table for y = x² + 4x − 1. Use the mirror pattern to find the missing middle column.')}
-${q('n74a', { n: 1, text: 'What is the range of y = x² + 4x − 1? (Use y ≥ … or interval notation.)', t: 'ineq', a: { op: '>=', v: t.k }, ph: 'y >= ?',
+${q('n74a', { n: 1, text: 'What is the range of y = x² + 4x − 1? (Use y ≥ … or interval notation.)', fig: fig(sk, 'Sketch (not to scale): a = 1 &gt; 0, so it opens up from the vertex.'), t: 'ineq', a: { op: '>=', v: t.k }, ph: 'y >= ?',
   traps: [{ v: { op: '>=', v: -2 }, m: '−2 is the x-value of the vertex. The range uses the y-value: put x = −2 into the function.' }, { v: { op: '<=', v: -5 }, m: 'This parabola opens UP (a = 1), so the y-values go up from the minimum: use ≥.' }],
   sol: `Axis: x = ${fr('−4', '2(1)')} = −2. y = (−2)² + 4(−2) − 1 = 4 − 8 − 1 = −5. Opens up → <b>y ≥ −5</b>, or <b>[−5, ∞)</b>.`, after: fig(pt1.out('range'), 'range y ≥ −5') })}
-${mc('n74b', { n: 2, text: 'What is the domain of y = x² + 4x − 1?', opts: [
+${mc('n74b', { n: 2, text: 'What is the domain of y = x² + 4x − 1?', fig: fig(mach, 'Which x-values can go into this machine and give an answer?'), opts: [
   { t: 'All real numbers', ok: 1 }, { t: 'y ≥ −5', fb: 'That is the range (y-values). Domain is about x-values.' }, { t: 'x ≥ −2', fb: 'You can put in ANY x-value, even ones left of the vertex.' }, { t: 'x ≥ 0', fb: 'Negative x-values work too. Try x = −3: you get a real answer.' }],
   why: 'You can put any x into a quadratic, so the domain is all real numbers.' })}
 ${mc('n74c', { n: 3, text: 'Describe the end behavior of y = −3x² + x + 2.', fig: fig(tdec2), opts: [
@@ -379,9 +385,9 @@ ${q('n75a', { n: 1, text: 'A rectangle’s length is 4 more than its width. Its 
   traps: [{ v: -9, m: 'A width can’t be negative. Look at your other answer.' }, { v: 9, m: '9 is the length. The question asks for the width.' }, { v: 41, m: 'You can’t just subtract. Use w(w + 4) = 45 and factor.' }],
   sol: 'w(w + 4) = 45 → w² + 4w − 45 = 0 → (w + 9)(w − 5) = 0 → <b>w = 5</b> (length 9).', after: fig(tAA, 'Check: 5 × 9 = 45 ✓') })}
 ${figHtml(`<div class="table-wrap">${ktbl}</div>`, 'A ball is kicked from the ground: h(t) = −16t² + 64t. Use it for Questions 2–3.')}
-${q('n75b', { n: 2, text: 'When does the ball land? (t in seconds)', t: 'num', a: 4, ph: 't = ?', traps: [{ v: 0, m: 't = 0 is when it was kicked. Find the OTHER time when h = 0.' }, { v: 2, m: 't = 2 is when the ball is at the top. Find when h = 0 again.' }],
+${q('n75b', { n: 2, text: 'When does the ball land? (t in seconds)', fig: fig(F.scene({ eq: 'h(t) = −16t² + 64t', hi: 'land', ground: true, aria: 'sketch of a kicked ball landing' }), 'Sketch (not to scale): it lands when h(t) = 0 again.'), t: 'num', a: 4, ph: 't = ?', traps: [{ v: 0, m: 't = 0 is when it was kicked. Find the OTHER time when h = 0.' }, { v: 2, m: 't = 2 is when the ball is at the top. Find when h = 0 again.' }],
   sol: '−16t² + 64t = 0 → −16t(t − 4) = 0 → t = 0 or <b>t = 4 s</b>. It lands at 4 s.', after: fig(kg.out('ball graph'), 'Lands at t = 4') })}
-${q('n75c', { n: 3, text: 'What is the maximum height? (feet)', t: 'num', a: kq.k, ph: 'h = ?', traps: [{ v: 2, m: '2 is the TIME of the top. Put t = 2 into h(t) to get the height.' }],
+${q('n75c', { n: 3, text: 'What is the maximum height? (feet)', fig: fig(F.scene({ eq: 'h(t) = −16t² + 64t', hi: 'max', ground: true, aria: 'sketch of a kicked ball at its highest point' }), 'Sketch (not to scale): the top is halfway between the two times when h = 0.'), t: 'num', a: kq.k, ph: 'h = ?', traps: [{ v: 2, m: '2 is the TIME of the top. Put t = 2 into h(t) to get the height.' }],
   sol: `Top at t = ${fr('−64', '2(−16)')} = 2. h(2) = −16(4) + 64(2) = −64 + 128 = <b>64 ft</b>.`, after: fig(kg.out('ball graph'), 'Max 64 ft at t = 2') })}
 `);
 }
@@ -460,7 +466,7 @@ ${mc('n76b', { n: 2, text: 'Which function has the greater maximum?', opts: [
 
 /* ================= 7. Building ================= */
 {
-  const am = F.areaModel({ hLab: 'x', cols: [{ w: 4, lab: 'x', inside: 'x · x = ?', ic: C.goldT }, { w: 3, lab: '3', inside: '3 · x = ?', ic: C.goldT }] });
+  const am = F.areaModel({ hLab: 'x', cols: [{ w: 4, lab: 'x', inside: 'x · x\n= ?', ic: C.goldT }, { w: 3, lab: '3', inside: '3 · x\n= ?', ic: C.goldT }] });
   const amA = F.areaModel({ hLab: 'x', cols: [{ w: 4, lab: 'x', inside: 'x²', ic: C.green }, { w: 3, lab: '3', inside: '3x', ic: C.green }] });
   const Aq = Q(1, 3, 0);
   const pA = pgraph(Aq.f, [0, 5, 0, 40], { H: 220, gy: 5, ly: 10, xname: 'x', yname: 'A(x)' });
@@ -470,6 +476,7 @@ ${mc('n76b', { n: 2, text: 'Which function has the greater maximum?', opts: [
   const tb = F.vt(['x', 'f(x) = x² − 3', 'g(x) = 2x + 1', '(f + g)(x)'], [[0, 1, 2], [0, 1, 2].map(x => fmt(f(x))), [0, 1, 2].map(x => fmt(g(x))), ['?', '?', '?']]);
   const tbA = F.vt(['x', 'f(x) = x² − 3', 'g(x) = 2x + 1', '(f + g)(x)'], [[0, 1, 2], [0, 1, 2].map(x => fmt(f(x))), [0, 1, 2].map(x => fmt(g(x))), [0, 1, 2].map(x => fmt(f(x) + g(x)))], { green: s => false });
 
+  const mm0 = F.areaModel({ hLab: 'x', cols: [{ w: 3, lab: 'x', inside: 'x · x\n= ?', ic: C.goldT }, { w: 2, lab: '2', inside: '2 · x\n= ?', ic: C.goldT }], aria: 'area model for x by (x + 2)' });
   const mm = F.areaModel({ hLab: 'x', cols: [{ w: 4, lab: 'x', inside: 'x²', ic: C.green }, { w: 2, lab: '2', inside: '2x', ic: C.green }] });
   const tbox = F.boxMethod({ top: ['x', '+4'], left: ['x', '−1'], cells: [['?', '?'], ['?', '?']] });
   const tboxA = F.boxMethod({ top: ['x', '+4'], left: ['x', '−1'], cells: [['x²', '4x'], ['−x', '−4']], green: true });
@@ -503,7 +510,7 @@ ${howto('How to build a new function', [
 ${example('e77b', { title: 'Worked example: f(x) = x² − 3 and g(x) = 2x + 1. Find (f + g)(x).', fig: figHtml(`<div class="table-wrap">${tb}</div>`, 'Add the outputs in each column'),
   steps: [['Write it out:', '(x² − 3) + (2x + 1)'], ['Combine like terms:', 'x² + 2x + (−3 + 1)'], ['Answer:', '(f + g)(x) = x² + 2x − 2']],
   after: figHtml(`<div class="table-wrap">${tbA}</div>`, 'Check: x = 2 → 4 + 4 − 2 = 6 ✓') })}
-${mistake('m77', { who: 'Kai built A(x) for a rectangle with sides x + 2 and x:',
+${mistake('m77', { who: 'Kai built A(x) for a rectangle with sides x + 2 and x:', fig: fig(mm0, 'The rectangle has two parts. Each part needs its own area.'),
   work: ['A(x) = (x + 2) · x', '= x · x + 2', '= x² + 2'], bad: 1,
   fbs: ['Step 1 is right: length × width.', '', 'Step 3 follows Step 2. Find the first mistake.'],
   why: 'Distribute x to EVERY term: x · x + 2 · x = x² + 2x. So A(x) = x² + 2x.', after: fig(mm, 'Both parts of the rectangle: x² and 2x') })}

@@ -194,7 +194,7 @@ SP.b3={hint:'Read the max (right whisker) and the min (left whisker). Then subtr
 var BUF=BF[3]+1.5*(BF[3]-BF[1]);
 SP.b4={hint:'IQR = 9 − 5 = 4. Upper fence = 9 + 1.5 × 4.',type:'num',ans:BUF,fb:[[BF[3]+(BF[3]-BF[1]),'That is Q3 + IQR. Use 1.5 × IQR = 6.'],[1.5*(BF[3]-BF[1]),'6 is 1.5 × IQR. Now add it to Q3.']],
   viz:function(st){return M.boxPlots([{f:BF,parts:[null,null,null,null,{t:'max 14'}]}],{min:0,max:16,step:1,lab:2,grid:1,rowH:92,label:'box plot with fence',
-    after:function(X,ay,top){var x=X(sv(st)?BUF:15.6),c=sv(st)?C.green:C.gold;return ln(x,top,x,ay,c,2.4,'6 4')+tag(sv(st)?x-4:x,top+12,sv(st)?'fence '+f(BUF):'fence ?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'end'});}});}};
+    after:function(X,ay,top){var x=X(sv(st)?BUF:15.6),c=sv(st)?C.green:C.gold;return ln(x,top,x,ay,c,2.4,'6 4')+tag(x-4,ay-10,sv(st)?'fence '+f(BUF):'fence ?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'end'});}});}};
 SP.b4b={type:'mc',ans:BF[4]>BUF?'yes':'no',ok:'14 is less than the upper fence 15, so it is inside the fences.',fb:{yes:'Compare 14 to the fence, 15. Is 14 past the fence?'}};
 /* ---------- Part C: scatter ---------- */
 var SC=[[1,65],[2,70],[3,78],[4,82],[5,90]],SCO={xmin:0,xmax:6,xstep:1,ymin:60,ymax:100,ystep:5,ylab:10,h:280,xTitle:'Hours studied',yTitle:'Test score',line:{a:60,b:6,label:'y = 6x + 60',at:[0.2,97]}};
@@ -272,7 +272,7 @@ SP.h1b={hint:'Put the numbers in order. Average the 3rd and 4th values.',type:'n
 var H2Q1=12,H2Q3=20,H2UF=H2Q3+1.5*(H2Q3-H2Q1);
 SP.h2={type:'mc',ans:'2',ok:'The fence uses 1.5 × IQR = 12, not just the IQR. Upper fence = 20 + 12 = 32. So 30 is NOT an outlier.',fb:{'1':'20 − 12 = 8 is correct.','3':'Line 3 is wrong, but only because it used the wrong fence from the line before.'},
   viz:function(st){return M.boxPlots([{f:[10,H2Q1,15,H2Q3,30],parts:[null,{t:'Q1 12'},null,{t:'Q3 20'},null]}],{min:8,max:36,step:1,lab:4,label:'box plot with fence',
-    after:function(X,ay,top){var v=sv(st)?H2UF:28,c=sv(st)?C.green:C.gold;return ln(X(v),top,X(v),ay,c,2.4,'6 4')+tag(X(v)+4,top+12,sv(st)?'fence '+f(H2UF):'student: 28?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'start'});}});}};
+    after:function(X,ay,top){var v=sv(st)?H2UF:28,c=sv(st)?C.green:C.gold;return ln(X(v),top,X(v),ay,c,2.4,'6 4')+tag(sv(st)?X(v)-4:X(v)+4,top+12,sv(st)?'fence '+f(H2UF):'student: 28?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:sv(st)?'end':'start'});}});}};
 SP.h2b={hint:'Upper fence = Q3 + 1.5 × IQR = 20 + 1.5 × 8.',type:'num',ans:H2UF,fb:[[28,'That is Q3 + IQR. Use 1.5 × IQR = 12.'],[12,'12 is 1.5 × IQR. Add it to Q3 (20).']]};
 SP.h3={type:'mc',ans:'1',ok:'The order is backwards. Residual = actual − predicted = 50 − 46 = +4. The line under-predicted.',fb:{'2':'Line 2 is wrong too, but the first mistake is earlier.'},
   viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter([[3,50]],{xmin:0,xmax:6,xstep:1,ymin:40,ymax:56,ystep:2,ylab:4,h:230,xTitle:'x',yTitle:'y',label:'residual picture',marks:[{x:3,y:46,hollow:true,color:C.navy,tc:C.navy,label:'predicted 46',dx:9,dy:16}],
