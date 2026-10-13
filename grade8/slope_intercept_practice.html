@@ -81,6 +81,9 @@
   .celebration { text-align: center; padding: 16px; background: #1e2d4f; color: #ffc107; border-radius: 10px; margin-bottom: 16px; font-size: 18px; font-weight: 700; display: none; }
   .celebration.show { display: block; animation: pop 0.4s ease; }
   @keyframes pop { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .machine { margin: 2px auto 10px; max-width: 400px; }
+  .machine svg { display: block; margin: 0 auto; }
+  .machine-cap { font-size: 12.5px; color: #6B7488; text-align: center; font-weight: 600; margin-top: 3px; }
   @media (max-width: 520px) { .card-content { flex-direction: column; } .grid-wrap { max-width: 100%; } .header h1 { font-size: 20px; } }
 </style>
 <style id="u6-consistency">
@@ -112,6 +115,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   <div id="ss-mount"></div>
 </div>
 
+<script src="../geo-svg.js"></script>
 <script>
 const EQUATIONS = [
   { id:1, label:"y = 2x", desc:"2x", fn:x=>2*x, xVals:[-3,-2,-1,0,1,2,3],
@@ -127,6 +131,20 @@ const EQUATIONS = [
   { id:6, label:"y = −½x + 1", desc:"-½x+1", fn:x=>-x/2+1, xVals:[-4,-2,0,2,4,6,8],
     hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = −½·(${x}) + 1 = <strong>?</strong>` },
 ];
+
+// The rule of each equation as a machine: x goes in, the two steps run, y comes out.
+const MACHINES={1:['× 2',null],2:['× 2','+ 1'],3:['× (−2)','+ 5'],4:['× ⅓',null],5:['× ⅓','− 2'],6:['× (−½)','+ 1']};
+function machineSVG(eq){
+  if(!window.GEO)return'';
+  const F=new GEO.Fig(),C=GEO.colors,st=MACHINES[eq.id].filter(Boolean);
+  const box=(x,t,c,fill)=>{F.raw(`<rect x="${x}" y="0" width="78" height="48" rx="9" fill="${fill}" stroke="${C[c]}" stroke-width="2.5"/>`,[[x,0],[x+78,48]]);F.ctext(x+39,24,t,{size:18,c:c});};
+  const arr=(x0,x1)=>{F.line([x0,24],[x1-2,24],{w:2.5});F.arrowHead([x1,24],0,'navy',9);};
+  F.raw(`<circle cx="18" cy="24" r="18" fill="rgba(224,168,0,.24)" stroke="${C.gold}" stroke-width="2.5"/>`,[[0,6],[36,42]]);F.ctext(18,24,'x',{size:18,c:'gold',italic:true});
+  let x=36;st.forEach((t,i)=>{arr(x+4,x+30);box(x+32,t,i?'green':'blue',i?'rgba(21,128,61,.12)':'rgba(0,86,179,.10)');x+=110;});
+  arr(x+4,x+30);
+  F.raw(`<circle cx="${x+50}" cy="24" r="18" fill="rgba(21,128,61,.14)" stroke="${C.green}" stroke-width="2.5"/>`,[[x+32,6],[x+68,42]]);F.ctext(x+50,24,'y',{size:18,c:'green',italic:true});
+  return F.svg('function machine for '+eq.label+': x, then '+st.join(', then ')+', gives y',{maxW:st.length===1?240:340});
+}
 
 const RANGE=10, GPX=280, STEP=GPX/(RANGE*2);
 const toP=v=>GPX/2+v*STEP, fromP=p=>Math.round((p-GPX/2)/STEP);
@@ -146,14 +164,27 @@ function updateProgress(){
 
 function buildSVG(idx){
   const eq=EQUATIONS[idx],s=state[idx];
-  let svg=`<svg viewBox="0 0 ${GPX} ${GPX}" xmlns="http://www.w3.org/2000/svg" style="background:#faf8f2">`;
+  let svg=`<svg viewBox="0 0 ${GPX} ${GPX}" xmlns="http://www.w3.org/2000/svg" style="background:#faf8f2" role="img" aria-label="coordinate grid for ${eq.label}: click to plot points">`;
   for(let i=-RANGE;i<=RANGE;i++){const p=toP(i);if(i!==0){svg+=`<line x1="${p}" y1="0" x2="${p}" y2="${GPX}" stroke="#e0ddd5" stroke-width="0.5"/>`;svg+=`<line x1="0" y1="${p}" x2="${GPX}" y2="${p}" stroke="#e0ddd5" stroke-width="0.5"/>`;}}
   svg+=`<line x1="0" y1="${toP(0)}" x2="${GPX}" y2="${toP(0)}" stroke="#3a3631" stroke-width="1.2"/>`;
   svg+=`<line x1="${toP(0)}" y1="0" x2="${toP(0)}" y2="${GPX}" stroke="#3a3631" stroke-width="1.2"/>`;
-  svg+=`<text x="${GPX-4}" y="${toP(0)-5}" font-size="9" font-weight="bold" fill="#3a3631" text-anchor="end">x</text>`;
-  svg+=`<text x="${toP(0)+6}" y="10" font-size="9" font-weight="bold" fill="#3a3631">y</text>`;
-  for(let i=-RANGE;i<=RANGE;i+=5){if(i===0)continue;svg+=`<text x="${toP(i)}" y="${toP(0)+11}" text-anchor="middle" font-size="6" fill="#8a8578">${i}</text>`;svg+=`<text x="${toP(0)-4}" y="${toP(-i)+3}" text-anchor="end" font-size="6" fill="#8a8578">${i}</text>`;}
+  const LBL='font-family="Inter,system-ui,sans-serif" font-weight="600" paint-order="stroke" stroke="#faf8f2" stroke-width="3" stroke-linejoin="round"';
+  svg+=`<text x="${GPX-5}" y="${toP(0)-6}" font-size="13" ${LBL} fill="#1E2D4F" text-anchor="end" font-style="italic">x</text>`;
+  svg+=`<text x="${toP(0)+7}" y="14" font-size="13" ${LBL} fill="#1E2D4F" font-style="italic">y</text>`;
+  for(let i=-RANGE+2;i<=RANGE-2;i+=2){if(i===0)continue;const t=String(i).replace('-','−');svg+=`<text x="${toP(i)}" y="${toP(0)+13}" text-anchor="middle" font-size="12" ${LBL} fill="#5D6673">${t}</text>`;svg+=`<text x="${toP(0)-4}" y="${toP(-i)+4}" text-anchor="end" font-size="12" ${LBL} fill="#5D6673">${t}</text>`;}
   if(s.showLine){let pts=[];for(let gx=-RANGE;gx<=RANGE;gx+=0.25){const gy=eq.fn(gx);if(Math.abs(gy)<=RANGE)pts.push(`${toP(gx)},${toP(-gy)}`);}if(pts.length>1)svg+=`<polyline points="${pts.join(' ')}" fill="none" stroke="#c0785c" stroke-width="1.8" stroke-dasharray="6 3" opacity="0.6"/>`;}
+  if(s.showLine){ // after checking: mark b on the y-axis and one slope step (rise over run)
+    const b=eq.fn(0),m=eq.fn(1)-b;let d=1;while(d<12&&Math.abs(m*d-Math.round(m*d))>1e-6)d++;let r=Math.round(m*d);
+    if(Math.max(Math.abs(r),d)<=2){d*=2;r*=2;} // a bigger step is easier to see (same slope)
+    const LB='font-family="Inter,system-ui,sans-serif" font-weight="700" font-size="12" paint-order="stroke" stroke="#faf8f2" stroke-width="3.5" stroke-linejoin="round"';
+    svg+=`<line x1="${toP(0)}" y1="${toP(-b)}" x2="${toP(d)}" y2="${toP(-b)}" stroke="#15803D" stroke-width="2.2" stroke-dasharray="4 3"/>`;
+    svg+=`<line x1="${toP(d)}" y1="${toP(-b)}" x2="${toP(d)}" y2="${toP(-(b+r))}" stroke="#B45309" stroke-width="2.2" stroke-dasharray="4 3"/>`;
+    svg+=`<text x="${toP(d/2)}" y="${toP(-b)+(r>0?14:-6)}" text-anchor="middle" ${LB} fill="#15803D">run ${d}</text>`;
+    svg+=`<text x="${toP(d)+5}" y="${toP(-(b+r/2))+4}" ${LB} fill="#B45309">rise ${String(r).replace('-','−')}</text>`;
+    svg+=`<circle cx="${toP(0)}" cy="${toP(-b)}" r="5.5" fill="#B45309" stroke="#faf8f2" stroke-width="1.5"/>`;
+    if(r>0)svg+=`<text x="${toP(0)-8}" y="${toP(-b)-8}" text-anchor="end" ${LB} fill="#B45309">b = ${String(b).replace('-','−')}</text>`;
+    else svg+=`<text x="${toP(0)+6}" y="${toP(-b)-22}" ${LB} fill="#B45309">b = ${String(b).replace('-','−')}</text>`;
+  }
   if(s.points.length>=2){const sorted=[...s.points].sort((a,b)=>a.x-b.x);svg+=`<polyline points="${sorted.map(p=>`${toP(p.x)},${toP(-p.y)}`).join(' ')}" fill="none" stroke="#1e2d4f" stroke-width="1.5" opacity="0.5"/>`;}
   s.points.forEach(p=>{const correct=Math.abs(eq.fn(p.x)-p.y)<0.01;const color=s.showLine?(correct?'#4a7a42':'#c04040'):'#c0785c';svg+=`<circle cx="${toP(p.x)}" cy="${toP(-p.y)}" r="5" fill="${color}" stroke="#faf8f2" stroke-width="1.5"/>`;});
   svg+='</svg>';return svg;
@@ -199,6 +230,7 @@ function checkAnswers(idx){
   s.showLine=true;s.cellResults=results;s.stepPrompt=null;
   if(!allFilled)s.feedback={type:'warn',msg:'Fill in all y-values first!'};
   if(allFilled){try{if(window.ScoreSend)ScoreSend.record('eq'+eq.id,allCorrect&&s.revealed.size===0,{std:'NC.8.F.3',label:'Table of values for '+eq.label});}catch(e){}}
+  if(!allFilled){}
   else if(allCorrect){s.feedback={type:'success',msg:'✓ All correct! Great job!'};s.complete=true;updateProgress();}
   else{const wc=results.filter(r=>r==='wrong').length;s.feedback={type:'error',msg:`${wc} value${wc>1?'s':''} need${wc===1?'s':''} fixing.`+(s.attempts>=3?' Use "Show Answer" if you\'re stuck.':'')};} 
   render(idx);
@@ -245,7 +277,7 @@ function render(idx){
 function buildCard(idx){
   const eq=EQUATIONS[idx];
   let rows='';eq.xVals.forEach((xv,i)=>{rows+=`<tr><td class="x-cell">${xv}</td><td class="y-cell y-cell-${i}"><input type="text" class="y-input" data-idx="${idx}" data-i="${i}" value="" inputmode="text"></td></tr>`;});
-  return`<div class="card" id="card-${idx}"><div class="card-header"><div style="display:flex;align-items:center"><span class="eq-badge">${eq.id}</span><span class="eq-label">${eq.label}</span></div><div class="btn-group"><button class="btn btn-hint" onclick="getHint(${idx})">💡 Hint</button><button class="btn btn-check" onclick="checkAnswers(${idx})">Check</button><button class="btn btn-show" style="display:none" onclick="showAnswer(${idx})">Show Answer</button><button class="btn btn-reset" onclick="resetEq(${idx})">Reset</button></div></div><div class="feedback-area"></div><div class="card-content"><div><table class="eq-table"><thead><tr><th>Input (x)</th><th>${eq.label}</th></tr></thead><tbody>${rows}</tbody></table><div class="attempts"></div></div><div class="grid-wrap"><div class="grid-svg"></div><div class="grid-help">Click to plot points · click again to remove</div><div class="point-feedback"></div></div></div><div class="step-area"></div></div>`;
+  return`<div class="card" id="card-${idx}"><div class="card-header"><div style="display:flex;align-items:center"><span class="eq-badge">${eq.id}</span><span class="eq-label">${eq.label}</span></div><div class="btn-group"><button class="btn btn-hint" onclick="getHint(${idx})">💡 Hint</button><button class="btn btn-check" onclick="checkAnswers(${idx})">Check</button><button class="btn btn-show" style="display:none" onclick="showAnswer(${idx})">Show Answer</button><button class="btn btn-reset" onclick="resetEq(${idx})">Reset</button></div></div><div class="machine">${machineSVG(eq)}<div class="machine-cap">Each x in the table goes through the machine to make its y.</div></div><div class="feedback-area"></div><div class="card-content"><div><table class="eq-table"><thead><tr><th>Input (x)</th><th>${eq.label}</th></tr></thead><tbody>${rows}</tbody></table><div class="attempts"></div></div><div class="grid-wrap"><div class="grid-svg"></div><div class="grid-help">Click to plot points · click again to remove</div><div class="point-feedback"></div></div></div><div class="step-area"></div></div>`;
 }
 
 const cardsEl=document.getElementById('cards');
