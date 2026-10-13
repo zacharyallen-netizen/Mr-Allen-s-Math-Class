@@ -15,6 +15,8 @@
  *                 need a second look, and whether students are growing
  *    Settings     the numbers the reports use — you can change them
  *    Read Me      what every tab means, in plain words
+ *    How I Learn (answers / results)   the "How I Learn Math" student
+ *                 questionnaire from the Fluency Lab, compiled for you
  *
  *  UPDATE IT — about five minutes, the web address stays the same
  *   1. Open your existing Score Tracker project at script.google.com.
@@ -101,6 +103,7 @@ function setup() {
     styleHeader_(set, 3); set.setColumnWidth(1, 150); set.setColumnWidth(3, 620);
   }
   ensureTab_(ss, STD_TAB); ensureTab_(ss, STDL_TAB); ensureTab_(ss, STATS_TAB);
+  ensureHeader_(ss, SURVEY_TAB, SURVEY_HEAD_()); ensureTab_(ss, SURVEY_RES_TAB); rebuildSurvey_(ss);
   writeReadMe_(ss);
   var blank = ss.getSheetByName('Sheet1');
   if (blank && ss.getSheets().length > 1 && blank.getLastRow() === 0) ss.deleteSheet(blank);
@@ -123,6 +126,7 @@ function doPost(e) {
   try {
     var d = JSON.parse(e.postData.contents);
     if (String(d.code) !== CLASS_CODE) return json_({ ok: false, error: 'bad code' });
+    if (d.kind === 'survey') return handleSurvey_(d);
     if (d.v === 2) return handleEvidence_(d);
     return handleFluency_(d);
   } catch (err) {
@@ -638,6 +642,9 @@ function writeReadMe_(ss) {
     ['Standards (list) — the same numbers, one row per student and standard, ready to filter, sort or pivot.'],
     ['Statistics — 1. Is each pre-test trustworthy (reliability)? 2. Which questions need a second look? 3. Are students growing after the pre-test?'],
     ['Settings — the numbers above. Change a value and the reports use it at the next refresh.'],
+    ['How I Learn (answers) — every "How I Learn Math" questionnaire a student sent from the Fluency Lab (newest at the bottom).'],
+    ['How I Learn (results) — the class picture: Parts 1–2 as percents, the top picks in Parts 3–4, how students like to ask for help,'],
+    ['   a support profile for each student (with a few "check in" flags), and every written answer. Uses each student\'s newest form.'],
     [''],
     ['Reports refresh every hour. To refresh now: open the script, choose refreshReports, press Run.'],
     ['Privacy: this Sheet is yours alone. The website can only add rows; it cannot read anything back.']
@@ -655,3 +662,187 @@ function json_(o) {
 }
 /** Handy: print the link to your Sheet. */
 function openMySheet() { Logger.log(book_().getUrl()); }
+
+// ════════════════════════════════════════════════════════════════════
+//  "HOW I LEARN MATH" questionnaire (Fluency Lab → how-i-learn.html)
+//  The website sends one form per student. Nothing is graded.
+// ════════════════════════════════════════════════════════════════════
+var SURVEY_TAB     = 'How I Learn (answers)';
+var SURVEY_RES_TAB = 'How I Learn (results)';
+var SCALE = ['Never', 'Sometimes', 'Often', 'Always'];
+var SURVEY = {
+  think: [
+    ['m1', 'I can tell when I understand a math problem and when I don\'t.'],
+    ['m2', 'Before I start a problem, I think about what it is asking me to do.'],
+    ['m3', 'When I get stuck, I have a plan for what to try next.'],
+    ['m4', 'I check my work to see if my answer makes sense.'],
+    ['m5', 'I know which math skills are hardest for me right now.'],
+    ['m6', 'I can explain my thinking to someone else.']],
+  help: [
+    ['h7',  'When I don\'t understand, I ask my teacher for help.'],
+    ['h8',  'When I don\'t understand, I ask a classmate for help.'],
+    ['h9',  'I know what to say or ask when I need help.'],
+    ['h10', 'I wait until I am really lost before I ask for help.'],
+    ['h11', 'I worry about what others will think if I ask for help.']],
+  barriers: [
+    ['b1', 'I don\'t know what to ask.'], ['b2', 'I get frustrated and shut down.'],
+    ['b3', 'I don\'t want to look silly or embarrassed.'], ['b4', 'I would rather skip it than ask.'],
+    ['b5', 'The teacher looks busy.'], ['b6', 'I\'m not sure who to ask.'],
+    ['b7', 'I think I should figure it out on my own.'], ['b8', 'I don\'t think the help will make sense.'],
+    ['b9', 'I don\'t realize I\'m lost until a quiz or test.'], ['bo', 'Other']],
+  helps: [
+    ['s1', 'A step-by-step worked example'], ['s2', 'A checklist or steps to follow'],
+    ['s3', 'Drawings, diagrams, or number lines'], ['s4', 'Notes or a reference sheet'],
+    ['s5', 'Hands-on tools (tiles, counters, etc.)'], ['s6', 'Watching a video'],
+    ['s7', 'The teacher explaining it a different way'], ['s8', 'Practicing similar problems'],
+    ['s9', 'A classmate explaining it'], ['s10', 'Talking it out loud'],
+    ['s11', 'Working in a small group'], ['s12', 'Quiet space with fewer distractions'],
+    ['s13', 'Extra time'], ['s14', 'A quick check-in from the teacher'],
+    ['s15', 'Breaking a problem into smaller parts'], ['so', 'Other']],
+  ask: [['raise', 'Raise my hand'], ['card', 'Signal card or cup'], ['note', 'Private note'],
+        ['after', 'Talk after class'], ['friend', 'Ask a friend first']],
+  open: ['Think of a time in math when something clicked or went well. What helped?',
+         'When I get stuck on a problem, I usually…',
+         'The best way my teacher could help me is…']
+};
+/** Items where "Often / Always" is a worry, not a strength. */
+var SURVEY_REVERSED = { h10: 1, h11: 1 };
+
+function SURVEY_HEAD_() {
+  var h = ['When', 'Student', 'Period'];
+  SURVEY.think.concat(SURVEY.help).forEach(function (q, i) { h.push((i + 1) + '. ' + q[1]); });
+  return h.concat(['Part 3: hard to ask (3 picks)', 'Part 3: other', 'Part 4: helped me (3 picks)', 'Part 4: other',
+                   'Clicked when…', 'When stuck I…', 'Best way to help me…', 'Best way to ask for help']);
+}
+function label_(list, id) { for (var i = 0; i < list.length; i++) if (list[i][0] === id) return list[i][1]; return null; }
+function clip_(s, n) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n); }
+
+function handleSurvey_(d) {
+  var name = tidyName_(d.name), period = clip_(d.period, 12);
+  if (!name || name.indexOf(' ') < 0) return json_({ ok: false, error: 'first and last name' });
+  if (!period) return json_({ ok: false, error: 'no period' });
+  var L = d.likert || {}, row = [new Date(), name, period];
+  var items = SURVEY.think.concat(SURVEY.help);
+  for (var i = 0; i < items.length; i++) {
+    var v = Number(L[items[i][0]]);
+    if (!(v >= 1 && v <= 4)) return json_({ ok: false, error: 'missing answer ' + (i + 1) });
+    row.push(SCALE[v - 1]);
+  }
+  function picks(list, ids, other, part) {
+    ids = (ids || []).map(String).filter(function (x, k, a) { return a.indexOf(x) === k && label_(list, x); });
+    if (ids.length !== 3) throw new Error('pick exactly 3 in ' + part);
+    if (ids.indexOf(list[list.length - 1][0]) >= 0 && !clip_(other, 120)) throw new Error('write your "Other" in ' + part);
+    return ids;
+  }
+  var b, s;
+  try { b = picks(SURVEY.barriers, d.barriers, d.barrierOther, 'Part 3'); s = picks(SURVEY.helps, d.helps, d.helpOther, 'Part 4'); }
+  catch (err) { return json_({ ok: false, error: err.message }); }
+  var ask = label_(SURVEY.ask, String(d.ask || ''));
+  if (!ask) return json_({ ok: false, error: 'best way to ask' });
+  var open = (d.open || []).map(function (t) { return clip_(t, 600); });
+  row.push(b.map(function (x) { return label_(SURVEY.barriers, x); }).join(' | '), b.indexOf('bo') >= 0 ? clip_(d.barrierOther, 120) : '',
+           s.map(function (x) { return label_(SURVEY.helps, x); }).join(' | '), s.indexOf('so') >= 0 ? clip_(d.helpOther, 120) : '',
+           open[0] || '', open[1] || '', open[2] || '', ask);
+  var lock = LockService.getScriptLock(); lock.waitLock(25000);
+  try {
+    var ss = book_();
+    var sh = ensureHeader_(ss, SURVEY_TAB, SURVEY_HEAD_());
+    sh.appendRow(row);
+    rebuildSurvey_(ss);
+  } finally { lock.releaseLock(); }
+  return json_({ ok: true, name: name });
+}
+
+/** The results tab: class picture + one profile per student (newest form per student). */
+function rebuildSurvey_(ss) {
+  var src = ss.getSheetByName(SURVEY_TAB), sh = ensureTab_(ss, SURVEY_RES_TAB);
+  sh.clear();
+  var head = SURVEY_HEAD_(), W = head.length;
+  var data = src && src.getLastRow() > 1 ? src.getRange(2, 1, src.getLastRow() - 1, W).getValues() : [];
+  var newest = {};
+  data.forEach(function (r) { var k = String(r[1]).toLowerCase(); if (!newest[k] || new Date(r[0]) >= new Date(newest[k][0])) newest[k] = r; });
+  var rows = Object.keys(newest).map(function (k) { return newest[k]; })
+    .sort(function (a, b) { return String(a[2]).localeCompare(String(b[2])) || String(a[1]).localeCompare(String(b[1])); });
+  var n = rows.length, r0 = 1;
+  function put(vals, bold, bg, color) {
+    var w = Math.max.apply(null, vals.map(function (v) { return v.length; }));
+    var block = vals.map(function (v) { var x = v.slice(); while (x.length < w) x.push(''); return x; });
+    var rg = sh.getRange(r0, 1, block.length, w); rg.setValues(block);
+    if (bold) sh.getRange(r0, 1, 1, w).setFontWeight('bold');
+    if (bg) sh.getRange(r0, 1, 1, w).setBackground(bg).setFontColor(color || '#ffffff');
+    r0 += block.length; return r0 - block.length;
+  }
+  function title(t, note) {
+    r0++; sh.getRange(r0, 1).setValue(t).setFontWeight('bold').setFontSize(13).setFontColor(NAVY); r0++;
+    if (note) { sh.getRange(r0, 1).setValue(note).setFontStyle('italic').setFontColor('#6B7488'); r0++; }
+  }
+  function pct(c) { return n ? c / n : 0; }
+  function bar(p, col) { return '=SPARKLINE(' + (Math.round(p * 1000) / 1000) + ',{"charttype","bar";"max",1;"color1","' + col + '"})'; }
+
+  sh.getRange(1, 1).setValue('How I Learn Math — class results').setFontWeight('bold').setFontSize(15).setFontColor(NAVY);
+  sh.getRange(2, 1).setValue(n + ' student' + (n === 1 ? '' : 's') + ' (newest form for each). Updated ' + new Date().toLocaleString() + '.').setFontColor('#6B7488');
+  r0 = 3;
+  if (!n) { sh.getRange(4, 1).setValue('No forms yet. Students fill it in on the Fluency Lab page: "How I Learn Math".'); return; }
+
+  // Parts 1–2: agreement table
+  title('Parts 1–2 · How students see their learning', 'Percent of students choosing each answer. "Often + Always" is the strength column — except items 10 and 11, where Often/Always is a warning sign (red).');
+  var t = [['#', 'Statement', 'Never', 'Sometimes', 'Often', 'Always', 'Often + Always', '']];
+  SURVEY.think.concat(SURVEY.help).forEach(function (q, i) {
+    var cnt = [0, 0, 0, 0];
+    rows.forEach(function (r) { var k = SCALE.indexOf(String(r[3 + i])); if (k >= 0) cnt[k]++; });
+    var oa = pct(cnt[2] + cnt[3]);
+    t.push([i + 1, q[1] + (SURVEY_REVERSED[q[0]] ? '  ⚠' : ''), pct(cnt[0]), pct(cnt[1]), pct(cnt[2]), pct(cnt[3]), oa, bar(oa, SURVEY_REVERSED[q[0]] ? '#B42318' : '#15803D')]);
+  });
+  var at = put(t, true, NAVY);
+  sh.getRange(at + 1, 3, t.length - 1, 5).setNumberFormat('0%');
+
+  // Parts 3–4: ranked picks
+  function ranked(list, col, colOther, ttl, note, color) {
+    title(ttl, note);
+    var cnt = {}; list.forEach(function (x) { cnt[x[1]] = 0; });
+    var others = [];
+    rows.forEach(function (r) { String(r[col]).split(' | ').forEach(function (l) { if (cnt[l] != null) cnt[l]++; }); if (r[colOther]) others.push(r[1] + ': ' + r[colOther]); });
+    var tt = [['Choice', 'Students', 'Percent', '']];
+    list.map(function (x) { return x[1]; }).sort(function (a, b) { return cnt[b] - cnt[a]; })
+      .forEach(function (l) { tt.push([l, cnt[l], pct(cnt[l]), bar(pct(cnt[l]), color)]); });
+    var s0 = put(tt, true, NAVY);
+    sh.getRange(s0 + 1, 3, tt.length - 1, 1).setNumberFormat('0%');
+    if (others.length) { sh.getRange(r0, 1).setValue('"Other" answers: ' + others.join(' · ')).setWrap(true); r0++; }
+  }
+  var c3 = 3 + 11;
+  ranked(SURVEY.barriers, c3, c3 + 1, 'Part 3 · What makes it hard to ask for help', 'Each student picked 3. Highest first.', '#B45309');
+  ranked(SURVEY.helps, c3 + 2, c3 + 3, 'Part 4 · What has helped students learn math', 'Each student picked 3. Highest first.', '#0056B3');
+
+  // best way to ask
+  title('Best way to ask for help', null);
+  var ac = {}; SURVEY.ask.forEach(function (a) { ac[a[1]] = 0; });
+  rows.forEach(function (r) { if (ac[r[W - 1]] != null) ac[r[W - 1]]++; });
+  var tA = [['Way', 'Students', 'Percent', '']];
+  SURVEY.ask.map(function (a) { return a[1]; }).sort(function (a, b) { return ac[b] - ac[a]; }).forEach(function (l) { tA.push([l, ac[l], pct(ac[l]), bar(pct(ac[l]), '#6D28D9')]); });
+  var a0 = put(tA, true, NAVY); sh.getRange(a0 + 1, 3, tA.length - 1, 1).setNumberFormat('0%');
+
+  // student profiles
+  title('Student support profiles', 'Check-in flags: no plan when stuck (3 = Never/Sometimes) · rarely asks the teacher (7 = Never) · waits until lost (10 = Often/Always) · worries about asking (11 = Often/Always) · shuts down (picked in Part 3).');
+  var P = [['Period', 'Student', 'Check in?', 'Hard to ask (Part 3)', 'Helps me (Part 4)', 'Best way to ask']];
+  rows.forEach(function (r) {
+    var f = [];
+    if (/Never|Sometimes/.test(r[3 + 2])) f.push('no plan when stuck');
+    if (r[3 + 6] === 'Never') f.push('rarely asks teacher');
+    if (/Often|Always/.test(r[3 + 9])) f.push('waits until lost');
+    if (/Often|Always/.test(r[3 + 10])) f.push('worries about asking');
+    if (String(r[c3]).indexOf('I get frustrated and shut down.') >= 0) f.push('shuts down');
+    P.push([r[2], r[1], f.join(', '), String(r[c3]).replace(/ \| /g, '; ') + (r[c3 + 1] ? ' (' + r[c3 + 1] + ')' : ''),
+            String(r[c3 + 2]).replace(/ \| /g, '; ') + (r[c3 + 3] ? ' (' + r[c3 + 3] + ')' : ''), r[W - 1]]);
+  });
+  var p0 = put(P, true, NAVY);
+  for (var i = 1; i < P.length; i++) if (P[i][2]) sh.getRange(p0 + i, 3).setBackground('#FDECEC').setFontColor('#7F1D1D');
+
+  // written answers
+  title('Part 5 · In their own words', null);
+  var O = [['Period', 'Student'].concat(SURVEY.open)];
+  rows.forEach(function (r) { O.push([r[2], r[1], r[c3 + 4], r[c3 + 5], r[c3 + 6]]); });
+  put(O, true, NAVY);
+
+  sh.setColumnWidth(1, 70); sh.setColumnWidth(2, 360); [3, 4, 5, 6].forEach(function (c) { sh.setColumnWidth(c, 230); }); sh.setColumnWidth(7, 120); sh.setColumnWidth(8, 160);
+  sh.getRange(1, 1, r0, 8).setWrap(true).setVerticalAlignment('top');
+}

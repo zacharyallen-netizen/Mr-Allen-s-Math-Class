@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How I Learn Math</title>
+<style>
+  :root{
+    --bg:#15172b; --panel:#222749; --edge:#33396b; --ink:#f1f3ff; --muted:#9aa0cf;
+    --mint:#39d99a; --amber:#ffbb4d; --sky:#63a8ef; --rose:#ff7a8a;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);color:var(--ink);min-height:100dvh;
+    background:radial-gradient(1200px 620px at 50% -12%, #23285180 0%, transparent 60%),var(--bg);
+    padding:40px 16px 70px;-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:760px;margin:0 auto}
+  a.back{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600}
+  h1{font-size:32px;margin:14px 0 6px;letter-spacing:-.01em}
+  .lead{color:var(--muted);font-size:15.5px;margin-bottom:22px}
+  .card{background:linear-gradient(180deg,var(--panel),#20244a);border:1px solid var(--edge);border-radius:16px;padding:20px 20px 18px;margin-bottom:18px}
+  .card.miss{border-color:var(--rose);box-shadow:0 0 0 2px #ff7a8a44}
+  h2{font-size:18px;margin-bottom:4px}
+  h2 .n{color:var(--amber);margin-right:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:14px}
+  label.f{display:block;font-weight:650;font-size:14px;margin-bottom:5px}
+  input[type=text],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#181b35;border:1.5px solid var(--edge);border-radius:10px;padding:10px 12px}
+  input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
+  textarea{min-height:84px;resize:vertical}
+  .row2{display:grid;grid-template-columns:1fr 140px;gap:12px}
+  .q{padding:12px 0;border-top:1px solid #2c315c}
+  .q:first-of-type{border-top:0}
+  .q p{font-size:15.5px;margin-bottom:8px}
+  .q p b{color:var(--amber);margin-right:4px}
+  .q.miss p{color:#ffb3bd}
+  .pills{display:flex;flex-wrap:wrap;gap:8px}
+  .pills label{position:relative}
+  .pills input{position:absolute;opacity:0;pointer-events:none}
+  .pills span{display:inline-block;min-width:96px;text-align:center;padding:8px 12px;border-radius:999px;border:1.5px solid var(--edge);background:#1a1d3a;color:var(--ink);font-size:14.5px;font-weight:600;cursor:pointer;user-select:none;transition:background .12s,border-color .12s}
+  .pills input:focus-visible+span{outline:2px solid var(--sky);outline-offset:2px}
+  .pills input:checked+span{background:var(--sky);border-color:var(--sky);color:#0d1530}
+  .count{display:inline-block;font-size:13px;font-weight:700;color:var(--amber);background:#ffbb4d1a;border:1px solid #ffbb4d55;border-radius:999px;padding:2px 10px;margin-bottom:12px}
+  .count.done{color:var(--mint);background:#39d99a1a;border-color:#39d99a66}
+  .checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .checks label{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--edge);border-radius:11px;background:#1a1d3a;cursor:pointer;font-size:14.5px}
+  .checks input{width:19px;height:19px;margin-top:2px;accent-color:var(--mint);flex:none}
+  .checks label.on{border-color:var(--mint);background:#1c2f35}
+  .checks label.off{opacity:.45;cursor:not-allowed}
+  .other{margin-top:8px;display:none}.other.show{display:block}
+  .tq{margin-bottom:16px}.tq:last-child{margin-bottom:0}
+  .opt{color:var(--muted);font-weight:500;font-size:13px}
+  .send{display:block;width:100%;font:inherit;font-size:17px;font-weight:750;padding:14px;border:0;border-radius:13px;background:var(--mint);color:#0f2a1d;cursor:pointer;margin-top:4px}
+  .send:disabled{opacity:.6;cursor:default}
+  .msg{margin-top:12px;font-size:14.5px;min-height:1.2em}
+  .msg.warn{color:#ffb3bd}.msg.ok{color:var(--mint)}
+  .done-card{text-align:center;padding:34px 22px}
+  .done-card .big{font-size:44px}
+  .done-card h2{font-size:24px;margin:8px 0}
+  .done-card a{display:inline-block;margin-top:14px;color:#0f2a1d;background:var(--mint);text-decoration:none;font-weight:700;padding:11px 18px;border-radius:11px}
+  .note{color:var(--muted);font-size:12.5px;text-align:center;margin-top:16px}
+  @media(max-width:560px){.checks{grid-template-columns:1fr}.row2{grid-template-columns:1fr}.pills span{min-width:0;display:block}.pills label{flex:1 1 40%}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<div class="wrap">
+  <a class="back" href="index.html">← Fluency Lab</a>
+  <h1>How I Learn Math</h1>
+  <p class="lead">There are no right or wrong answers. Be honest — this helps Mr. Allen support you in the way that works best for you. It takes about 5 minutes. Only Mr. Allen sees your answers.</p>
+
+  <form id="f" novalidate>
+    <div class="card" id="c-me">
+      <div class="row2">
+        <div><label class="f" for="nm">First and last name</label><input type="text" id="nm" autocomplete="name" maxlength="60"></div>
+        <div><label class="f" for="pd">Period</label><input type="text" id="pd" maxlength="12" inputmode="text"></div>
+      </div>
+    </div>
+
+    <div class="card" id="c-p1"><h2><span class="n">Part 1</span>How I think about my learning</h2><p class="sub">Pick one answer for each statement.</p><div id="p1"></div></div>
+    <div class="card" id="c-p2"><h2><span class="n">Part 2</span>Asking for help</h2><p class="sub">Pick one answer for each statement.</p><div id="p2"></div></div>
+
+    <div class="card" id="c-p3"><h2><span class="n">Part 3</span>What makes it hard for me to ask for help?</h2>
+      <p class="sub">Pick the <b>3</b> that are most true for you.</p><span class="count" id="n3">0 of 3 picked</span>
+      <div class="checks" id="p3"></div><input type="text" class="other" id="o3" maxlength="120" placeholder="Write your other reason"></div>
+
+    <div class="card" id="c-p4"><h2><span class="n">Part 4</span>What has helped me learn math?</h2>
+      <p class="sub">Pick the <b>3</b> that have helped you the most.</p><span class="count" id="n4">0 of 3 picked</span>
+      <div class="checks" id="p4"></div><input type="text" class="other" id="o4" maxlength="120" placeholder="Write what else helped you"></div>
+
+    <div class="card" id="c-p5"><h2><span class="n">Part 5</span>In my own words <span class="opt">(optional, but it really helps)</span></h2>
+      <div class="tq"><label class="f" for="t1">1. Think of a time in math when something clicked or went well. What helped?</label><textarea id="t1" maxlength="600"></textarea></div>
+      <div class="tq"><label class="f" for="t2">2. When I get stuck on a problem, I usually…</label><textarea id="t2" maxlength="600"></textarea></div>
+      <div class="tq"><label class="f" for="t3">3. The best way my teacher could help me is…</label><textarea id="t3" maxlength="600"></textarea></div>
+    </div>
+
+    <div class="card" id="c-ask"><h2>Best way for me to ask for help</h2><p class="sub">Pick one.</p><div class="pills" id="ask"></div></div>
+
+    <button type="submit" class="send" id="go">Send to Mr. Allen</button>
+    <div class="msg" id="msg" role="status" aria-live="polite"></div>
+  </form>
+  <div class="card done-card" id="done" hidden>
+    <div class="big">🙌</div><h2>Thank you!</h2>
+    <p id="donemsg">Mr. Allen has your answers. He will use them to help you in the way that works best for you.</p>
+    <a href="index.html">Go to the Fluency Lab →</a>
+  </div>
+  <p class="note">Your answers go only to Mr. Allen's private Google Sheet. Nothing here is graded.</p>
+</div>
+
+<script src="fluency-config.js"></script>
+<script>
+(function () {
+  var SCALE = ['Never', 'Sometimes', 'Often', 'Always'];
+  var P1 = [['m1', 'I can tell when I understand a math problem and when I don\'t.'],
+            ['m2', 'Before I start a problem, I think about what it is asking me to do.'],
+            ['m3', 'When I get stuck, I have a plan for what to try next.'],
+            ['m4', 'I check my work to see if my answer makes sense.'],
+            ['m5', 'I know which math skills are hardest for me right now.'],
+            ['m6', 'I can explain my thinking to someone else.']];
+  var P2 = [['h7', 'When I don\'t understand, I ask my teacher for help.'],
+            ['h8', 'When I don\'t understand, I ask a classmate for help.'],
+            ['h9', 'I know what to say or ask when I need help.'],
+            ['h10', 'I wait until I am really lost before I ask for help.'],
+            ['h11', 'I worry about what others will think if I ask for help.']];
+  var P3 = [['b1', 'I don\'t know what to ask.'], ['b2', 'I get frustrated and shut down.'],
+            ['b3', 'I don\'t want to look silly or embarrassed.'], ['b4', 'I would rather skip it than ask.'],
+            ['b5', 'The teacher looks busy.'], ['b6', 'I\'m not sure who to ask.'],
+            ['b7', 'I think I should figure it out on my own.'], ['b8', 'I don\'t think the help will make sense.'],
+            ['b9', 'I don\'t realize I\'m lost until a quiz or test.'], ['bo', 'Other']];
+  var P4 = [['s1', 'A step-by-step worked example'], ['s2', 'A checklist or steps to follow'],
+            ['s3', 'Drawings, diagrams, or number lines'], ['s4', 'Notes or a reference sheet'],
+            ['s5', 'Hands-on tools (tiles, counters, etc.)'], ['s6', 'Watching a video'],
+            ['s7', 'The teacher explaining it a different way'], ['s8', 'Practicing similar problems'],
+            ['s9', 'A classmate explaining it'], ['s10', 'Talking it out loud'],
+            ['s11', 'Working in a small group'], ['s12', 'Quiet space with fewer distractions'],
+            ['s13', 'Extra time'], ['s14', 'A quick check-in from the teacher'],
+            ['s15', 'Breaking a problem into smaller parts'], ['so', 'Other']];
+  var ASK = [['raise', 'Raise my hand'], ['card', 'Signal card or cup'], ['note', 'Private note'],
+             ['after', 'Talk after class'], ['friend', 'Ask a friend first']];
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = 'hilm-draft', CFG = window.FLUENCY_CONFIG || {};
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+  function scaleBlock(box, list, start) {
+    box.innerHTML = list.map(function (q, i) {
+      return '<div class="q" id="q-' + q[0] + '"><p><b>' + (start + i) + '.</b>' + esc(q[1]) + '</p><div class="pills" role="radiogroup" aria-label="' + esc(q[1]) + '">' +
+        SCALE.map(function (s, k) { return '<label><input type="radio" name="' + q[0] + '" value="' + (k + 1) + '"><span>' + s + '</span></label>'; }).join('') + '</div></div>';
+    }).join('');
+  }
+  function checkBlock(box, list, name) {
+    box.innerHTML = list.map(function (q) { return '<label><input type="checkbox" name="' + name + '" value="' + q[0] + '"><span>' + esc(q[1]) + '</span></label>'; }).join('');
+  }
+  scaleBlock($('p1'), P1, 1); scaleBlock($('p2'), P2, 7);
+  checkBlock($('p3'), P3, 'p3'); checkBlock($('p4'), P4, 'p4');
+  $('ask').innerHTML = ASK.map(function (a) { return '<label><input type="radio" name="ask" value="' + a[0] + '"><span>' + a[1] + '</span></label>'; }).join('');
+
+  function picks(name) { return [].slice.call(document.querySelectorAll('input[name=' + name + ']:checked')).map(function (i) { return i.value; }); }
+  function limit(name, countId, otherId, otherVal) {
+    var on = picks(name), all = document.querySelectorAll('input[name=' + name + ']');
+    all.forEach(function (i) { var full = on.length >= 3 && !i.checked; i.disabled = full; i.parentNode.classList.toggle('off', full); i.parentNode.classList.toggle('on', i.checked); });
+    var c = $(countId); c.textContent = on.length + ' of 3 picked' + (on.length === 3 ? ' ✓' : ''); c.classList.toggle('done', on.length === 3);
+    $(otherId).classList.toggle('show', on.indexOf(otherVal) >= 0);
+  }
+  function refresh() { limit('p3', 'n3', 'o3', 'bo'); limit('p4', 'n4', 'o4', 'so'); }
+
+  // keep a draft in this browser so a refresh does not lose answers
+  function save() {
+    try {
+      var d = { nm: $('nm').value, pd: $('pd').value, o3: $('o3').value, o4: $('o4').value, t1: $('t1').value, t2: $('t2').value, t3: $('t3').value, r: {}, p3: picks('p3'), p4: picks('p4') };
+      document.querySelectorAll('input[type=radio]:checked').forEach(function (i) { d.r[i.name] = i.value; });
+      localStorage.setItem(KEY, JSON.stringify(d));
+    } catch (e) {}
+  }
+  function load() {
+    var d; try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; }
+    if (!d) { try { var n = localStorage.getItem('fluencyName'); if (n) $('nm').value = n; } catch (e) {} return; }
+    ['nm', 'pd', 'o3', 'o4', 't1', 't2', 't3'].forEach(function (k) { if (d[k]) $(k).value = d[k]; });
+    Object.keys(d.r || {}).forEach(function (n) { var i = document.querySelector('input[name="' + n + '"][value="' + d.r[n] + '"]'); if (i) i.checked = true; });
+    (d.p3 || []).forEach(function (v) { var i = document.querySelector('input[name=p3][value="' + v + '"]'); if (i) i.checked = true; });
+    (d.p4 || []).forEach(function (v) { var i = document.querySelector('input[name=p4][value="' + v + '"]'); if (i) i.checked = true; });
+  }
+  load(); refresh();
+  $('f').addEventListener('change', function () { refresh(); save(); clearMiss(); if (/warn/.test($('msg').className)) msg(''); });
+  $('f').addEventListener('input', save);
+
+  function clearMiss() { document.querySelectorAll('.miss').forEach(function (e) { if (e.dataset.fixed !== '0') e.classList.remove('miss'); }); }
+  function msg(t, cls) { var m = $('msg'); m.textContent = t; m.className = 'msg ' + (cls || ''); }
+
+  $('f').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    document.querySelectorAll('.miss').forEach(function (e) { e.classList.remove('miss'); });
+    var miss = [], first = null;
+    function flag(el, what) { el.classList.add('miss'); miss.push(what); if (!first) first = el; }
+    var name = $('nm').value.replace(/\s+/g, ' ').trim(), period = $('pd').value.trim();
+    if (name.length < 3 || name.indexOf(' ') < 0 || !period) flag($('c-me'), 'your first and last name and period');
+    var likert = {}, missP = { p1: 0, p2: 0 };
+    P1.concat(P2).forEach(function (q, i) {
+      var c = document.querySelector('input[name="' + q[0] + '"]:checked');
+      if (c) likert[q[0]] = +c.value; else { $('q-' + q[0]).classList.add('miss'); missP[i < 6 ? 'p1' : 'p2']++; if (!first) first = $('q-' + q[0]); }
+    });
+    if (missP.p1) { $('c-p1').classList.add('miss'); miss.push('Part 1 (' + missP.p1 + ' left)'); }
+    if (missP.p2) { $('c-p2').classList.add('miss'); miss.push('Part 2 (' + missP.p2 + ' left)'); }
+    var b = picks('p3'), s = picks('p4');
+    if (b.length !== 3 || (b.indexOf('bo') >= 0 && !$('o3').value.trim())) flag($('c-p3'), b.length !== 3 ? 'Part 3 (pick 3)' : 'Part 3 (write your "Other")');
+    if (s.length !== 3 || (s.indexOf('so') >= 0 && !$('o4').value.trim())) flag($('c-p4'), s.length !== 3 ? 'Part 4 (pick 3)' : 'Part 4 (write your "Other")');
+    var ask = document.querySelector('input[name=ask]:checked');
+    if (!ask) flag($('c-ask'), 'the best way for you to ask for help');
+    if (miss.length) { msg('Almost there! Still need: ' + miss.join(', ') + '.', 'warn'); (first || $('f')).scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (!CFG.ENDPOINT) { msg('Sending is not set up yet. Tell Mr. Allen.', 'warn'); return; }
+    var btn = $('go'); btn.disabled = true; btn.textContent = 'Sending…'; msg('');
+    try { localStorage.setItem('fluencyName', name); } catch (e) {}
+    fetch(CFG.ENDPOINT, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ code: CFG.CLASS_CODE, kind: 'survey', survey: 'how-i-learn', name: name, period: period, likert: likert,
+        barriers: b, barrierOther: $('o3').value.trim(), helps: s, helpOther: $('o4').value.trim(), ask: ask.value,
+        open: [$('t1').value.trim(), $('t2').value.trim(), $('t3').value.trim()] })
+    }).then(function (r) { return r.json(); }).then(function (res) {
+      if (res && res.ok) {
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        $('f').hidden = true; $('done').hidden = false;
+        $('donemsg').textContent = 'Got it, ' + res.name + '! Mr. Allen has your answers. He will use them to help you in the way that works best for you.';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        btn.disabled = false; btn.textContent = 'Try again';
+        msg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') + '. Tell Mr. Allen.', 'warn');
+      }
+    }).catch(function () { btn.disabled = false; btn.textContent = 'Try again'; msg('Could not reach Mr. Allen\'s Sheet. Check your internet and try again.', 'warn'); });
+  });
+})();
+</script>
+</body>
+</html>
