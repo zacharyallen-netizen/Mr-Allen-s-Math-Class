@@ -114,6 +114,7 @@
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script src="../vwork.js"></script>
 <script>
 /* ==========================================================
    M1 page helper: draws each problem's picture from its own
@@ -751,11 +752,37 @@ function items(cid,list){var box=document.getElementById(cid);if(!box) return;va
     var sb=card.querySelector('.sa-btn.sm');if(sb) sb.addEventListener('click',function(){sol(it.id);});
     if(it.kind==='lab'&&it.lab) it.lab(it.id+'-lab',it.id);});}
 
+/* ---------- vertical step-by-step work (drawn by ../vwork.js) ---------- */
+/* vw('2x + 5 = 17',{note:'…'}) → a .vw block; vwork.js computes every step. */
+function vw(eq,o){var s={eq:eq};o=o||{};Object.keys(o).forEach(function(k){s[k]=o[k];});
+  return '<div class="vw" data-vw=\''+JSON.stringify(s).replace(/'/g,'&#39;').replace(/</g,'&lt;')+'\'></div>';}
+/* hw(rows,note): the same look, written by hand (for formulas with several letters, which vwork.js cannot do).
+   rows: ['e',[left terms],[right terms],rel] equation · ['l','label'] step label · ['o',[left],[right]] what we do to
+   both sides (red) · ['d','left divisor','right divisor'] divide both sides · ['a',[left],[right],rel] answer (green box). */
+function hwX(t){return '<span class="vw-x on">'+t+'</span>';}
+function hwFr(a,b){return '<span class="vw-fr"><span>'+a+'</span><span>'+b+'</span></span>';}
+function hw(rows,note){var NL=1,NR=1,h='',g=0,n=0,prev=null;
+  rows.forEach(function(r){if(r[0]==='e'||r[0]==='a'){NL=Math.max(NL,r[1].length);NR=Math.max(NR,r[2].length);}});
+  function cell(cls,col,html){return '<div class="vw-c'+cls+'" style="grid-row:'+g+';grid-column:'+col+'">'+html+'</div>';}
+  rows.forEach(function(r){g++;var t=r[0];
+    if(t==='l'){n++;h+='<div class="vw-c vw-lab" style="grid-row:'+g+'"><i>'+n+'</i>'+r[1]+'</div>';return;}
+    if(t==='e'||t==='a'){var all=[];r[1].forEach(function(c,i){all.push([NL-r[1].length+i+2,c]);});all.push([NL+2,r[3]||'=',1]);
+      r[2].forEach(function(c,i){all.push([NL+3+i,c]);});
+      all.forEach(function(a,j){h+=cell((a[2]?' vw-rel':'')+(t==='a'?' vw-ansc'+(j===0?' vw-first':'')+(j===all.length-1?' vw-last':''):''),a[0],a[1]);});prev=r;return;}
+    if(t==='o'){var used={};r[1].forEach(function(c,i){var col=NL-r[1].length+i+2;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      r[2].forEach(function(c,i){var col=NL+3+i;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      for(var c=2;c<=NL+2+NR;c++) if(!used[c]) h+=cell(' vw-op',c,'&nbsp;');return;}
+    if(t==='d'){h+=cell(' vw-div',(NL-prev[1].length+2)+'/'+(NL+2),r[1]);h+=cell(' vw-div',(NL+3)+'/'+(NL+3+prev[2].length),r[2]);}});
+  return '<div class="vw vw-hand" role="group" aria-label="step by step work"><div class="vw-box"><div class="vw-g" style="grid-template-columns:minmax(0,1fr) repeat('+NL+',auto) auto repeat('+NR+',auto) minmax(0,1fr)">'+h+'</div></div>'+(note?'<div class="vw-cap">'+note+'</div>':'')+'</div>';}
+/* "Reveal all answers" (answer key) also shows every step of the vertical work */
+if(typeof window!=='undefined'&&typeof window.revealPage==='function'&&!window.revealPage._vw){var _rp=window.revealPage;
+  window.revealPage=function(){_rp.apply(this,arguments);document.querySelectorAll('.vw .vw-all').forEach(function(b){b.click();});};window.revealPage._vw=1;}
+
 return {items:items,vizRow:vizRow,C:C,fm:fm,sup:sup,Svg:Svg,grid:grid,numline:numline,balance:balance,tiles:tiles,tape:tape,chain:chain,mapping:mapping,tbl:tbl,machine:machine,
   chips:chips,fracChips:fracChips,ladder:ladder,square:square,cube:cube,areaModel:areaModel,terms:terms,rectP:rectP,bars:bars,proof:proof,
   slopeLab:slopeLab,balanceLab:balanceLab,ineqLab:ineqLab,dragFn:dragFn,vltLab:vltLab,matchLine:matchLine,
   clean:clean,evalStr:evalStr,parseNum:parseNum,parseIneq:parseIneq,parsePt:parsePt,exprEq:exprEq,grade:grade,
-  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q};
+  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q,vw:vw,hw:hw,hwX:hwX,hwFr:hwFr};
 })();
 </script>
 <script>
@@ -797,7 +824,7 @@ V.items('partA2',[
  {id:'a6',n:6,q:'<span class="math">g(x) = 2x + 1</span>. Find the input x so that <span class="math">g(x) = 11</span>.',kind:'num',ph:'x = ?',ans:5,
   wrong:[[23,'23 is g(11). Here 11 is the OUTPUT. Solve 2x + 1 = 11.'],[6,'Subtract 1 first: 2x = 10.'],[10,'10 is 2x. Divide by 2.']],ok:'2x + 1 = 11 → 2x = 10 → x = 5.',
   pre:function(){return V.machine({inp:'?',inK:'want',rule:'2x + 1',name:'g(x) =',out:'11',outK:'given',label:'function machine: which input gives 11?'});},preCap:'The output is 11. Work backward to find the input.',
-  steps:'Set the rule equal to 11: 2x + 1 = 11. Subtract 1: 2x = 10. Divide by 2: <b>x = 5</b>.',
+  steps:'Set the rule equal to 11: <b>2x + 1 = 11</b>.'+V.vw('2x + 1 = 11'),
   post:function(){return G({xmin:-2,xmax:7,ymin:-2,ymax:14,yl:2,lines:[{m:2,b:1,lbl:'g(x) = 2x + 1'}],guides:[{x:5,y:11}],pts:[{x:5,y:11,k:'ans',lbl:'(5, 11)',pos:'nw'}],label:'solved'});}},
  {id:'a7',n:7,q:'Is this relation a function?',kind:'mc',opts:[['no','No — the input 2 goes to two outputs'],['yes','Yes — every input has an arrow'],['no2','No — the outputs are all different']],ans:'no',
   why:{yes:'Every input has an arrow, but look at input 2. It has TWO arrows. A function allows only one output per input.',no2:'Different outputs are fine. The problem is one input (2) with two outputs.'},
@@ -851,7 +878,7 @@ V.items('partB',[
   wrong:[[0,100,'100 is the battery percent (an output). Domain is the HOURS. When does the battery reach 0?'],[-20,20,'Time cannot be negative. Start at h = 0.']],
   ok:'The battery is empty when 100 − 5h = 0, so h = 20. Domain: 0 ≤ h ≤ 20.',
   pre:function(){return G({xmin:0,xmax:28,ymin:0,ymax:110,xl:4,yl:20,gx:2,gy:10,xName:'h',yName:'B',xTitle:'hours h',yTitle:'battery %',lines:[{m:-5,b:100,xa:0,xb:20,arrows:false,lbl:'B(h) = 100 − 5h'}],label:'battery graph'});},
-  steps:'Time starts at h = 0. The battery is empty when 100 − 5h = 0 → 5h = 100 → h = 20. <b>0 ≤ h ≤ 20</b>.',
+  steps:'Time starts at h = 0. The battery is empty when <b>100 − 5h = 0</b>:'+V.vw('100 − 5h = 0')+'So the domain is <b>0 ≤ h ≤ 20</b>.',
   post:function(){return G({xmin:0,xmax:28,ymin:0,ymax:110,xl:4,yl:20,gx:2,gy:10,xName:'h',yName:'B',xTitle:'hours h',yTitle:'battery %',segs:[{pts:[[0,100],[20,0]]}],xBand:{a:0,b:20,k:'ans'},pts:[{x:20,y:0,k:'ans',lbl:'(20, 0)',pos:'ne'}],label:'battery domain'});}}
 ]);
 

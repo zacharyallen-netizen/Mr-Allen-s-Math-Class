@@ -91,9 +91,9 @@
     <div class="viz" id="p2d"></div>
     <div class="steps" data-example="e22b">
       <div class="step" onclick="reveal(this)"><strong>Set the rule equal to 7:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2x + 1 = 7</span></div>
-      <div class="step" onclick="reveal(this)"><strong>Subtract 1:</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 2x = 6</span></div>
-      <div class="step final" onclick="reveal(this)"><strong>✓ Divide by 2:</strong> x =<span class="placeholder"> click to reveal</span><span class="hidden-content"> 3 (the point (3, 7))</span></div>
-    </div><button class="reveal-all" onclick="revealAll('e22b')">Reveal all steps</button></div>
+    </div>
+    <div class="vw" data-vw='{"eq":"2x + 1 = 7","note":"x = 3, so the point (3, 7) is on the graph."}'></div>
+  </div>
 <p class="blank-tip">For f(x) = 2x + 1:</p><p>f(0) = <span class="blank" data-ans="1" onclick="rb(this)">?</span> &nbsp;·&nbsp; f(−2) = <span class="blank" data-ans="−3" onclick="rb(this)">?</span></p>
 <div id="t2-mis"></div>
 <div class="you-try"><h3>✏️ You try</h3><div id="t2-try"></div></div>
@@ -143,7 +143,7 @@
   <div class="viz" id="p4e"></div>
   <div class="steps" data-example="e24">
     <div class="step" onclick="reveal(this)"><strong>y-intercept (x = 0):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> y = 2(0) − 6 = −6 → (0, −6)</span></div>
-    <div class="step" onclick="reveal(this)"><strong>x-intercept (y = 0):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> 0 = 2x − 6 → 2x = 6 → x = 3 → (3, 0)</span></div>
+    <div class="step" onclick="reveal(this)"><strong>x-intercept (y = 0):</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> (3, 0). Solve 0 = 2x − 6:<div class="vw" data-vw='{"eq":"0 = 2x − 6","mode":"all"}'></div></span></div>
     <div class="step final" onclick="reveal(this)"><strong>✓ Increasing or decreasing?</strong><span class="placeholder"> click to reveal</span><span class="hidden-content"> slope 2 &gt; 0 → increasing</span></div>
   </div><button class="reveal-all" onclick="revealAll('e24')">Reveal all steps</button></div>
 <p class="blank-tip">For y = −x + 4:</p><p>y-intercept (0, <span class="blank" data-ans="4" onclick="rb(this)">?</span>) &nbsp;·&nbsp; x-intercept (<span class="blank" data-ans="4" onclick="rb(this)">?</span>, 0) &nbsp;·&nbsp; the line is <span class="blank" data-ans="decreasing" onclick="rb(this)">?</span></p>
@@ -210,6 +210,7 @@
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script src="../vwork.js"></script>
 <!--M1ENGINE-->
 <script>
 (function(){
@@ -286,6 +287,7 @@ V.items('t2-try',[
   post:function(){return V.tbl({xs:[0,1,2,3],ys:[2,5,8,11],names:['x','g(x)'],k:[null,null,'ans',null],label:'g of 2'});}},
  {id:'y26',n:3,q:'<span class="math">f(x) = 2x + 1</span>. Find x so that <span class="math">f(x) = 13</span>.',kind:'num',ph:'x = ?',ans:6,
   wrong:[[27,'27 is f(13). Here 13 is the OUTPUT. Solve 2x + 1 = 13.'],[7,'Subtract 1 first: 2x = 12.'],[12,'12 is 2x. Divide by 2.']],ok:'2x + 1 = 13 → 2x = 12 → x = 6.',
+  steps:'Set the rule equal to 13: <b>2x + 1 = 13</b>.'+V.vw('2x + 1 = 13'),
   pre:function(){return V.machine({inp:'?',inK:'want',rule:'2x + 1',name:'f(x) =',out:'13',outK:'given',label:'function machine: which input gives 13?'});},preCap:'The output is 13. Work backward to find the input.',
   post:function(){return G({xmin:-2,xmax:8,ymin:-2,ymax:16,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:3.6}],guides:[{x:6,y:13}],pts:[{x:6,y:13,k:'ans',lbl:'(6, 13)',pos:'nw'}],label:'solved'});}}
 ]);
@@ -315,6 +317,7 @@ V.items('t3-try',[
 V.items('t4-mis',[{id:'m24',n:'FIND THE MISTAKE',kind:'pick',q:'Zoe found the x-intercept of <span class="math">y = 2x − 6</span>. Click the line with the mistake.',
   lines:['Set y = 0: 0 = 2x − 6','x = 3','x-intercept: (0, 3)'],ans:2,why:{0:'Setting y = 0 is the right first step.',1:'2x = 6, so x = 3 is correct.'},
   ok:'Line 3. The x-intercept is on the x-axis, so y = 0: the point is (3, 0).',
+  steps:'Correct work:'+V.vw('0 = 2x − 6')+'x = 3 and y = 0, so the x-intercept is <b>(3, 0)</b>.',
   pre:function(){return G({xmin:-2,xmax:6,ymin:-8,ymax:4,yl:2,lines:[{m:2,b:-6,lbl:'y = 2x − 6',lx:3.6}],pts:[{x:0,y:3,k:'neg',lbl:'Zoe: (0, 3)',pos:'e'}],label:'Zoe point'});},
   post:function(){return G({xmin:-2,xmax:6,ymin:-8,ymax:4,yl:2,lines:[{m:2,b:-6,lbl:'y = 2x − 6',lx:3.6}],pts:[{x:3,y:0,k:'ans',lbl:'(3, 0)',pos:'nw'}],label:'correct point'});}}]);
 V.items('t4-try',[
@@ -324,6 +327,7 @@ V.items('t4-try',[
   post:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],pts:[{x:0,y:6,k:'ans',lbl:'(0, 6)',pos:'e'}],label:'y-intercept'});}},
  {id:'y2b',n:2,q:'Find the x-intercept of <span class="math">y = −3x + 6</span>. Type a point.',kind:'point',ph:'(?, 0)',ans:[2,0],
   wrong:[[[0,6],'(0, 6) is the y-intercept. For the x-intercept put y = 0.'],[[-2,0],'0 = −3x + 6 → 3x = 6 → x = +2.']],ok:'0 = −3x + 6 → x = 2. The point is (2, 0).',
+  steps:'Put y = 0: <b>0 = −3x + 6</b>.'+V.vw('0 = −3x + 6')+'The point is <b>(2, 0)</b>.',
   pre:function(){return V.machine({inp:'?',inK:'want',rule:'−3x + 6',out:'0',outK:'given',name:'y =',label:'which x gives y = 0'});},
   post:function(){return G({xmin:-2,xmax:4,ymin:-3,ymax:8,lines:[{m:-3,b:6,lbl:'y = −3x + 6',lx:2.3}],pts:[{x:2,y:0,k:'ans',lbl:'(2, 0)',pos:'ne'}],label:'x-intercept'});}},
  {id:'y2c',n:3,q:'Is <span class="math">y = −3x + 6</span> increasing or decreasing?',kind:'mc',opts:[['dec','Decreasing'],['inc','Increasing'],['con','Constant']],ans:'dec',

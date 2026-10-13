@@ -166,10 +166,18 @@
       L.forEach(function (t) { delete t.cx; delete t.cc; }); if (R) R.forEach(function (t) { delete t.cx; delete t.cc; });
     }
     if (!R) { cur.cls = 'vw-ans'; return { rows: rows, marks: marks, steps: step }; }
+    // the x's cancelled while combining (e.g. 2x − 2x + 8 = 8): nothing left to solve
+    var hasX = function (s) { return s.some(function (t) { return t.t === 'x'; }); };
+    if (!hasX(L) && !hasX(R)) {
+      var cs = function (s) { return s.filter(function (t) { return t.t === 'c'; }).reduce(function (a, t) { return add(a, t.k); }, ZERO); };
+      var a0 = val(cs(L)), b0 = val(cs(R)), ok0 = rel === '=' ? a0 === b0 : rel === '<' ? a0 < b0 : rel === '>' ? a0 > b0 : rel === '<=' ? a0 <= b0 : a0 >= b0;
+      rows.push({ kind: 'verdict', step: step, ok: ok0, text: 'The ' + v + '’s are gone. ' + num(cs(L), true) + ' ' + REL[rel] + ' ' + num(cs(R), true) + ' is <b>' + (ok0 ? 'TRUE' : 'FALSE') + '</b> → ' + (ok0 ? (rel === '=' ? '<b>Infinitely many solutions</b> (every number works)' : '<b>Every number works</b>') : '<b>No solution</b>') });
+      return { rows: rows, marks: marks, steps: step };
+    }
 
     var xi = function (s) { for (var j = 0; j < s.length; j++) if (s[j].t === 'x') return j; return -1; };
     var ci = function (s) { for (var j = 0; j < s.length; j++) if (s[j].t === 'c') return j; return -1; };
-    var T = spec.side || 'L';
+    var T = 'L';   // x's always collect on the LEFT (teacher's rule)
     if (xi(L) < 0 && xi(R) >= 0) T = 'R'; if (xi(R) < 0 && xi(L) >= 0) T = 'L';
     function sides() { return T === 'L' ? { t: L, o: R, tc: cur.L, oc: cur.R } : { t: R, o: L, tc: cur.R, oc: cur.L }; }
     function setS(t, o) { if (T === 'L') { L = t; R = o; } else { R = t; L = o; } }
@@ -191,7 +199,7 @@
       step++;
       var d = S.o[xi(S.o)].k, opTxt = (d.n > 0 ? MINUS + ' ' : '+ ') + num(abs(d)) + (eq(abs(d), ONE) ? '' : '') + v;
       opTxt = (d.n > 0 ? MINUS : '+') + ' ' + (eq(abs(d), ONE) ? '' : num(abs(d))) + v;
-      lab((d.n > 0 ? 'Subtract ' : 'Add ') + (eq(abs(d), ONE) ? '' : num(abs(d))) + v + (d.n > 0 ? ' from' : ' to') + ' both sides (gets the ' + v + '’s on one side)');
+      lab((d.n > 0 ? 'Subtract ' : 'Add ') + (eq(abs(d), ONE) ? '' : num(abs(d))) + v + (d.n > 0 ? ' from' : ' to') + ' both sides (moves the ' + v + '’s to the LEFT side)');
       var ti = xi(S.t), oi = xi(S.o);
       var ids = opRow(ti >= 0 ? ti : 0, oi, opTxt);
       marks.push({ step: step, type: 'x', id: S.oc[oi].ids.whole }); marks.push({ step: step, type: 'x', id: ids.o });

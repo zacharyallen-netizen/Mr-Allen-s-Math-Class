@@ -634,9 +634,35 @@ function items(cid,list){var box=document.getElementById(cid);if(!box) return;va
     var sb=card.querySelector('.sa-btn.sm');if(sb) sb.addEventListener('click',function(){sol(it.id);});
     if(it.kind==='lab'&&it.lab) it.lab(it.id+'-lab',it.id);});}
 
+/* ---------- vertical step-by-step work (drawn by ../vwork.js) ---------- */
+/* vw('2x + 5 = 17',{note:'…'}) → a .vw block; vwork.js computes every step. */
+function vw(eq,o){var s={eq:eq};o=o||{};Object.keys(o).forEach(function(k){s[k]=o[k];});
+  return '<div class="vw" data-vw=\''+JSON.stringify(s).replace(/'/g,'&#39;').replace(/</g,'&lt;')+'\'></div>';}
+/* hw(rows,note): the same look, written by hand (for formulas with several letters, which vwork.js cannot do).
+   rows: ['e',[left terms],[right terms],rel] equation · ['l','label'] step label · ['o',[left],[right]] what we do to
+   both sides (red) · ['d','left divisor','right divisor'] divide both sides · ['a',[left],[right],rel] answer (green box). */
+function hwX(t){return '<span class="vw-x on">'+t+'</span>';}
+function hwFr(a,b){return '<span class="vw-fr"><span>'+a+'</span><span>'+b+'</span></span>';}
+function hw(rows,note){var NL=1,NR=1,h='',g=0,n=0,prev=null;
+  rows.forEach(function(r){if(r[0]==='e'||r[0]==='a'){NL=Math.max(NL,r[1].length);NR=Math.max(NR,r[2].length);}});
+  function cell(cls,col,html){return '<div class="vw-c'+cls+'" style="grid-row:'+g+';grid-column:'+col+'">'+html+'</div>';}
+  rows.forEach(function(r){g++;var t=r[0];
+    if(t==='l'){n++;h+='<div class="vw-c vw-lab" style="grid-row:'+g+'"><i>'+n+'</i>'+r[1]+'</div>';return;}
+    if(t==='e'||t==='a'){var all=[];r[1].forEach(function(c,i){all.push([NL-r[1].length+i+2,c]);});all.push([NL+2,r[3]||'=',1]);
+      r[2].forEach(function(c,i){all.push([NL+3+i,c]);});
+      all.forEach(function(a,j){h+=cell((a[2]?' vw-rel':'')+(t==='a'?' vw-ansc'+(j===0?' vw-first':'')+(j===all.length-1?' vw-last':''):''),a[0],a[1]);});prev=r;return;}
+    if(t==='o'){var used={};r[1].forEach(function(c,i){var col=NL-r[1].length+i+2;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      r[2].forEach(function(c,i){var col=NL+3+i;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      for(var c=2;c<=NL+2+NR;c++) if(!used[c]) h+=cell(' vw-op',c,'&nbsp;');return;}
+    if(t==='d'){h+=cell(' vw-div',(NL-prev[1].length+2)+'/'+(NL+2),r[1]);h+=cell(' vw-div',(NL+3)+'/'+(NL+3+prev[2].length),r[2]);}});
+  return '<div class="vw vw-hand" role="group" aria-label="step by step work"><div class="vw-box"><div class="vw-g" style="grid-template-columns:minmax(0,1fr) repeat('+NL+',auto) auto repeat('+NR+',auto) minmax(0,1fr)">'+h+'</div></div>'+(note?'<div class="vw-cap">'+note+'</div>':'')+'</div>';}
+/* "Reveal all answers" (answer key) also shows every step of the vertical work */
+if(typeof window!=='undefined'&&typeof window.revealPage==='function'&&!window.revealPage._vw){var _rp=window.revealPage;
+  window.revealPage=function(){_rp.apply(this,arguments);document.querySelectorAll('.vw .vw-all').forEach(function(b){b.click();});};window.revealPage._vw=1;}
+
 return {items:items,vizRow:vizRow,C:C,fm:fm,sup:sup,Svg:Svg,grid:grid,numline:numline,balance:balance,tiles:tiles,tape:tape,chain:chain,mapping:mapping,tbl:tbl,machine:machine,
   chips:chips,fracChips:fracChips,ladder:ladder,square:square,cube:cube,areaModel:areaModel,terms:terms,rectP:rectP,bars:bars,proof:proof,
   slopeLab:slopeLab,balanceLab:balanceLab,ineqLab:ineqLab,dragFn:dragFn,vltLab:vltLab,matchLine:matchLine,
   clean:clean,evalStr:evalStr,parseNum:parseNum,parseIneq:parseIneq,parsePt:parsePt,exprEq:exprEq,grade:grade,
-  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q};
+  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q,vw:vw,hw:hw,hwX:hwX,hwFr:hwFr};
 })();

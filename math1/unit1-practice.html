@@ -85,7 +85,7 @@
   <p class="stds">Standards: A-SSE.1 · A-CED.1/4 · A-REI.1/3 · N-RN.2</p>
 </div>
 <div class="score-box" id="score">Score: <b>0</b> / 0</div>
-<div class="intro"><p>Every problem has a picture made from its own numbers. Gold boxes with <b>?</b> show what you are looking for. After you check, the solution picture shows the answer in green. Stuck? Press <b>📖 Show full solution</b> to see every step.</p></div>
+<div class="intro"><p>After you check an equation or inequality, the full solution shows the work one step per line: the <b style="color:#B42318">red row</b> is what we do to BOTH sides, crossed-out terms cancel, and the answer is in a green box. Inequalities also get a number line. The other parts have a picture made from each problem’s own numbers. Stuck? Press <b>📖 Show full solution</b> to see every step.</p></div>
 <p class="legend"><i class="g">navy = given</i> <i class="w">gold = what we want</i> <i class="a">green = answer</i></p>
 
 <div class="keyhdr"><h2>Part A · Solve Equations</h2><p>Type the value, e.g. <span class="coord">6</span> or <span class="coord">x=6</span>. Negatives can be typed as <span class="coord">-7</span>.</p></div>
@@ -123,6 +123,7 @@
 </div>
 <div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
+<script src="../vwork.js"></script>
 <script>
 /* ==========================================================
    M1 page helper: draws each problem's picture from its own
@@ -760,69 +761,79 @@ function items(cid,list){var box=document.getElementById(cid);if(!box) return;va
     var sb=card.querySelector('.sa-btn.sm');if(sb) sb.addEventListener('click',function(){sol(it.id);});
     if(it.kind==='lab'&&it.lab) it.lab(it.id+'-lab',it.id);});}
 
+/* ---------- vertical step-by-step work (drawn by ../vwork.js) ---------- */
+/* vw('2x + 5 = 17',{note:'…'}) → a .vw block; vwork.js computes every step. */
+function vw(eq,o){var s={eq:eq};o=o||{};Object.keys(o).forEach(function(k){s[k]=o[k];});
+  return '<div class="vw" data-vw=\''+JSON.stringify(s).replace(/'/g,'&#39;').replace(/</g,'&lt;')+'\'></div>';}
+/* hw(rows,note): the same look, written by hand (for formulas with several letters, which vwork.js cannot do).
+   rows: ['e',[left terms],[right terms],rel] equation · ['l','label'] step label · ['o',[left],[right]] what we do to
+   both sides (red) · ['d','left divisor','right divisor'] divide both sides · ['a',[left],[right],rel] answer (green box). */
+function hwX(t){return '<span class="vw-x on">'+t+'</span>';}
+function hwFr(a,b){return '<span class="vw-fr"><span>'+a+'</span><span>'+b+'</span></span>';}
+function hw(rows,note){var NL=1,NR=1,h='',g=0,n=0,prev=null;
+  rows.forEach(function(r){if(r[0]==='e'||r[0]==='a'){NL=Math.max(NL,r[1].length);NR=Math.max(NR,r[2].length);}});
+  function cell(cls,col,html){return '<div class="vw-c'+cls+'" style="grid-row:'+g+';grid-column:'+col+'">'+html+'</div>';}
+  rows.forEach(function(r){g++;var t=r[0];
+    if(t==='l'){n++;h+='<div class="vw-c vw-lab" style="grid-row:'+g+'"><i>'+n+'</i>'+r[1]+'</div>';return;}
+    if(t==='e'||t==='a'){var all=[];r[1].forEach(function(c,i){all.push([NL-r[1].length+i+2,c]);});all.push([NL+2,r[3]||'=',1]);
+      r[2].forEach(function(c,i){all.push([NL+3+i,c]);});
+      all.forEach(function(a,j){h+=cell((a[2]?' vw-rel':'')+(t==='a'?' vw-ansc'+(j===0?' vw-first':'')+(j===all.length-1?' vw-last':''):''),a[0],a[1]);});prev=r;return;}
+    if(t==='o'){var used={};r[1].forEach(function(c,i){var col=NL-r[1].length+i+2;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      r[2].forEach(function(c,i){var col=NL+3+i;used[col]=1;h+=cell(' vw-op',col,c||'&nbsp;');});
+      for(var c=2;c<=NL+2+NR;c++) if(!used[c]) h+=cell(' vw-op',c,'&nbsp;');return;}
+    if(t==='d'){h+=cell(' vw-div',(NL-prev[1].length+2)+'/'+(NL+2),r[1]);h+=cell(' vw-div',(NL+3)+'/'+(NL+3+prev[2].length),r[2]);}});
+  return '<div class="vw vw-hand" role="group" aria-label="step by step work"><div class="vw-box"><div class="vw-g" style="grid-template-columns:minmax(0,1fr) repeat('+NL+',auto) auto repeat('+NR+',auto) minmax(0,1fr)">'+h+'</div></div>'+(note?'<div class="vw-cap">'+note+'</div>':'')+'</div>';}
+/* "Reveal all answers" (answer key) also shows every step of the vertical work */
+if(typeof window!=='undefined'&&typeof window.revealPage==='function'&&!window.revealPage._vw){var _rp=window.revealPage;
+  window.revealPage=function(){_rp.apply(this,arguments);document.querySelectorAll('.vw .vw-all').forEach(function(b){b.click();});};window.revealPage._vw=1;}
+
 return {items:items,vizRow:vizRow,C:C,fm:fm,sup:sup,Svg:Svg,grid:grid,numline:numline,balance:balance,tiles:tiles,tape:tape,chain:chain,mapping:mapping,tbl:tbl,machine:machine,
   chips:chips,fracChips:fracChips,ladder:ladder,square:square,cube:cube,areaModel:areaModel,terms:terms,rectP:rectP,bars:bars,proof:proof,
   slopeLab:slopeLab,balanceLab:balanceLab,ineqLab:ineqLab,dragFn:dragFn,vltLab:vltLab,matchLine:matchLine,
   clean:clean,evalStr:evalStr,parseNum:parseNum,parseIneq:parseIneq,parsePt:parsePt,exprEq:exprEq,grade:grade,
-  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q};
+  q:q,check:check,mc:mc,pick:pick,sol:sol,put:put,Q:Q,vw:vw,hw:hw,hwX:hwX,hwFr:hwFr};
 })();
 </script>
 <script>
 (function(){
-var V=M1;
+var V=M1,X=V.hwX,FR=V.hwFr;
 function xs(n,l){return Array(n).fill(l||'x');}
 function F(a,b){return '<span class="frac"><span>'+a+'</span><span>'+b+'</span></span>';}
 
 /* ================= PART A · equations ================= */
 V.items('partA',[
  {id:'a11',n:1,q:'Solve <span class="math">2x + 5 = 17</span>',kind:'num',ph:'x = ?',ans:6,
-  pre:function(){return V.balance({L:[{x:2},{n:5}],R:[{n:17}],lblL:'2x + 5',lblR:'17',note:'Each gold box is one x.',label:'balance: 2x + 5 = 17'});},
   wrong:[[11,'It looks like you added 5. To undo + 5, SUBTRACT 5 from both sides: 17 − 5 = 12.'],[12,'Good start: 2x = 12. Now divide both sides by 2 to find one x.'],[8.5,'Undo the + 5 first. Then divide by 2.']],
   hint:'Take 5 off both sides first. Then split what is left into 2 equal x’s.',ok:'x = 6. Check: 2(6) + 5 = 17.',
-  steps:'<b>Step 1.</b> Subtract 5 from both sides: 2x = 12.<br><b>Step 2.</b> Divide both sides by 2: <b>x = 6</b>.<br><b>Check:</b> 2(6) + 5 = 12 + 5 = 17 ✓',
-  post:function(){return V.balance({L:[{x:2,v:6},{n:5}],R:[{n:17}],lblL:'6 + 6 + 5',lblR:'17',note:'Balanced: x = 6',noteK:'ans',label:'balance check x = 6'});}},
+  steps:V.vw('2x + 5 = 17',{note:'Check: 2(6) + 5 = 12 + 5 = 17 ✓'})},
  {id:'a12',n:2,q:'Solve <span class="math">4(x − 1) = 20</span>',kind:'num',ph:'x = ?',ans:6,
-  pre:function(){return V.tape({rows:[{segs:[{v:20,t:'20'}]},{segs:[{v:5,t:'x − 1',k:'want'},{v:5,t:'x − 1',k:'want'},{v:5,t:'x − 1',k:'want'},{v:5,t:'x − 1',k:'want'}]}],foot:'4 equal groups of (x − 1) make 20',label:'bar model 4(x − 1) = 20'});},
   wrong:[[5,'5 is the value of x − 1. Add 1 to get x.'],[5.25,'Distribute to BOTH terms: 4(x − 1) = 4x − 4, not 4x − 1.'],[4,'You subtracted 1. To undo − 1, ADD 1.']],
   hint:'Divide 20 into 4 equal groups. Each group is x − 1.',ok:'x = 6. Check: 4(6 − 1) = 4(5) = 20.',
-  steps:'<b>Step 1.</b> Divide both sides by 4: x − 1 = 5.<br><b>Step 2.</b> Add 1 to both sides: <b>x = 6</b>.<br><i>Or</i> distribute: 4x − 4 = 20 → 4x = 24 → x = 6.',
-  post:function(){return V.tape({rows:[{segs:[{v:20,t:'20'}]},{segs:[{v:5,t:'5',k:'ans'},{v:5,t:'5',k:'ans'},{v:5,t:'5',k:'ans'},{v:5,t:'5',k:'ans'}]}],foot:'x − 1 = 5, so x = 6',footK:'ans',label:'bar model solved'});}},
+  steps:V.vw('4(x − 1) = 20',{note:'Another way: divide both sides by 4 first. Then x − 1 = 5, so x = 6.'})},
  {id:'a13',n:3,q:'Solve <span class="math">5x − 3 = 2x + 12</span>',kind:'num',ph:'x = ?',ans:5,
-  pre:function(){return V.tiles({L:{x:5,u:-3},R:{x:2,u:12},eL:'5x − 3',eR:'2x + 12',label:'tiles 5x − 3 = 2x + 12'});},
   wrong:[[3,'Check the −3. To undo − 3, ADD 3 to both sides: 12 + 3 = 15.'],[15/7,'Get the x’s on one side by SUBTRACTING 2x, not adding it.'],[15,'15 is 3x. Divide by 3.'],[9/7,'Subtract 2x from both sides (5x − 2x = 3x), then add 3.']],
-  hint:'First take 2 x-tiles off both sides. Then add 3 to both sides.',ok:'x = 5. Check: 5(5) − 3 = 22 and 2(5) + 12 = 22.',
-  steps:'<b>Step 1.</b> Subtract 2x from both sides: 3x − 3 = 12.<br><b>Step 2.</b> Add 3 to both sides: 3x = 15.<br><b>Step 3.</b> Divide by 3: <b>x = 5</b>.<br><b>Check:</b> 25 − 3 = 22 and 10 + 12 = 22 ✓',
-  post:function(){return V.tiles({L:{x:3},R:{u:15},eL:'3x',eR:'15',xVal:5,label:'tiles after moving: 3x = 15'});},postCap:'After removing 2x and adding 3: three x-tiles match 15 ones, so each x = 5.'},
+  hint:'First subtract 2x from both sides. Then add 3 to both sides.',ok:'x = 5. Check: 5(5) − 3 = 22 and 2(5) + 12 = 22.',
+  steps:V.vw('5x − 3 = 2x + 12',{note:'Check: 25 − 3 = 22 and 10 + 12 = 22 ✓'})},
  {id:'a14',n:4,q:'Solve <span class="math">−2(x + 3) = 8</span>',kind:'num',ph:'x = ?',ans:-7,
-  pre:function(){return V.chain({start:'x',ops:[{f:'+3',u:'−3'},{f:'×(−2)',u:'÷(−2)'}],end:'8',top:'Build it: x → add 3 → times −2',label:'inverse operations for −2(x + 3) = 8'});},
   wrong:[[-1,'Distribute the negative to BOTH terms: −2 · 3 = −6, so −2x − 6 = 8.'],[-2.5,'Multiply −2 by both terms: −2(x + 3) = −2x − 6.'],[1,'Divide by −2, not 2: 8 ÷ (−2) = −4.'],[-4,'−4 is x + 3. Subtract 3 to get x.']],
   hint:'Undo in reverse order: first divide by −2, then subtract 3.',ok:'x = −7. Check: −2(−7 + 3) = −2(−4) = 8.',
-  steps:'<b>Step 1.</b> Divide both sides by −2: x + 3 = −4.<br><b>Step 2.</b> Subtract 3: <b>x = −7</b>.<br><b>Check:</b> −2(−7 + 3) = −2(−4) = 8 ✓',
-  post:function(){return V.chain({start:'x',ops:[{f:'+3',u:'−3'},{f:'×(−2)',u:'÷(−2)'}],end:'8',back:['−7','−4'],top:'Build it: x → add 3 → times −2',label:'inverse operations solved'});}},
+  steps:V.vw('−2(x + 3) = 8',{note:'Another way: divide both sides by −2 first. Then x + 3 = −4, so x = −7. Check: −2(−7 + 3) = −2(−4) = 8 ✓'})},
  {id:'a15',n:5,q:'Solve <span class="math">3x + 7 = x − 5</span>',kind:'num',ph:'x = ?',ans:-6,
-  pre:function(){return V.tiles({L:{x:3,u:7},R:{x:1,u:-5},eL:'3x + 7',eR:'x − 5',label:'tiles 3x + 7 = x − 5'});},
   wrong:[[-1,'Subtract 7 from BOTH sides: −5 − 7 = −12, not −2.'],[-3,'Subtract x from both sides: 3x − x = 2x, not 4x.'],[-12,'−12 is 2x. Divide by 2.'],[1,'Check the sign on the 5: x − 5 means −5.']],
-  hint:'Take 1 x-tile off both sides. Then take 7 off both sides.',ok:'x = −6. Check: 3(−6) + 7 = −11 and −6 − 5 = −11.',
-  steps:'<b>Step 1.</b> Subtract x from both sides: 2x + 7 = −5.<br><b>Step 2.</b> Subtract 7: 2x = −12.<br><b>Step 3.</b> Divide by 2: <b>x = −6</b>.<br><b>Check:</b> −18 + 7 = −11 and −6 − 5 = −11 ✓',
-  post:function(){return V.tiles({L:{x:2},R:{u:-12},eL:'2x',eR:'−12',xVal:-6,label:'tiles after moving: 2x = −12'});},postCap:'Two x-tiles match twelve −1 tiles, so each x = −6.'},
+  hint:'First subtract x from both sides. Then subtract 7 from both sides.',ok:'x = −6. Check: 3(−6) + 7 = −11 and −6 − 5 = −11.',
+  steps:V.vw('3x + 7 = x − 5',{note:'Check: −18 + 7 = −11 and −6 − 5 = −11 ✓'})},
  {id:'a16',n:6,q:'Solve <span class="math">'+F('x','3')+' + 4 = 9</span>',kind:'num',ph:'x = ?',ans:15,
-  pre:function(){return V.tape({rows:[{segs:[{v:9,t:'9'}]},{segs:[{v:5,t:'x ÷ 3',k:'want'},{v:4,t:'4'}]}],foot:'One third of x, plus 4, makes 9',label:'bar model x/3 + 4 = 9'});},
   wrong:[[5/3,'You divided by 3. To undo ÷ 3, MULTIPLY by 3.'],[39,'Subtract 4 from 9; do not add it.'],[23,'Undo in reverse order: subtract 4 FIRST, then multiply by 3.'],[5,'5 is x ÷ 3. Multiply by 3 to get x.']],
   hint:'Take away 4 first. Then remember x is 3 times bigger than x ÷ 3.',ok:'x = 15. Check: 15 ÷ 3 + 4 = 5 + 4 = 9.',
-  steps:'<b>Step 1.</b> Subtract 4 from both sides: x ÷ 3 = 5.<br><b>Step 2.</b> Multiply both sides by 3: <b>x = 15</b>.',
-  post:function(){return V.tape({rows:[{lbl:'',segs:[{v:5,t:'5',k:'ans'},{v:5,t:'5',k:'ans'},{v:5,t:'5',k:'ans'}]}],foot:'x is 3 groups of 5, so x = 15',footK:'ans',label:'bar model x = 15'});}},
+  steps:V.vw('x/3 + 4 = 9',{note:'Check: 15 ÷ 3 + 4 = 5 + 4 = 9 ✓'})},
  {id:'a17',n:'FIND THE MISTAKE',kind:'pick',q:'Ava solved <span class="math">3(x + 2) = 21</span>. Click the first line with a mistake.',
   lines:['3(x + 2) = 21','3x + 2 = 21','3x = 19','x = 19/3'],ans:1,
   why:{0:'Line 1 is just the problem copied. It is fine.',2:'Line 3 follows from line 2 correctly. The mistake happened earlier.',3:'Line 4 follows from line 3 correctly. Look earlier.'},
   ok:'Line 2 is wrong. Ava did not multiply the 3 by the 2. It should be 3x + 6 = 21, so 3x = 15 and x = 5.',
-  pre:function(){return V.areaModel({outer:'3',parts:[{lbl:'x',w:3},{lbl:'+2',w:1.6}],foot:'3(x + 2) = ? + ?',label:'area model 3(x + 2)'});},
-  steps:'Correct work: 3(x + 2) = 21 → <b>3x + 6 = 21</b> → 3x = 15 → <b>x = 5</b>.',
-  post:function(){return V.areaModel({outer:'3',parts:[{lbl:'x',w:3},{lbl:'+2',w:1.6}],prods:['3x','6'],foot:'3(x + 2) = 3x + 6',footK:'ans',label:'area model 3x + 6'});}},
+  steps:'Correct work:'+V.vw('3(x + 2) = 21')},
  {id:'a18',n:7,q:'Now you fix it: solve <span class="math">3(x + 2) = 21</span>.',kind:'num',ph:'x = ?',ans:5,
-  pre:function(){return V.tape({rows:[{segs:[{v:21,t:'21'}]},{segs:[{v:7,t:'x + 2',k:'want'},{v:7,t:'x + 2',k:'want'},{v:7,t:'x + 2',k:'want'}]}],label:'bar model 3(x + 2) = 21'});},
   wrong:[[19/3,'That is Ava’s mistake. Multiply 3 by the 2 as well: 3x + 6 = 21.'],[7,'7 is x + 2. Subtract 2 to get x.'],[23/3,'Check the +2: 3 · 2 = +6, so subtract 6.']],
-  ok:'x = 5. Check: 3(5 + 2) = 3(7) = 21.',steps:'21 ÷ 3 = 7, so x + 2 = 7 and <b>x = 5</b>.',
-  post:function(){return V.tape({rows:[{segs:[{v:21,t:'21'}]},{segs:[{v:7,t:'7',k:'ans'},{v:7,t:'7',k:'ans'},{v:7,t:'7',k:'ans'}]}],foot:'x + 2 = 7, so x = 5',footK:'ans',label:'bar model solved'});}}
+  ok:'x = 5. Check: 3(5 + 2) = 3(7) = 21.',steps:V.vw('3(x + 2) = 21',{note:'Another way: 21 ÷ 3 = 7, so x + 2 = 7 and x = 5.'})}
 ]);
 
 /* ================= PART B · exponents ================= */
@@ -888,25 +899,25 @@ V.items('partC',[
  {id:'c11',n:1,q:'Solve <span class="math">3x − 2 &gt; 10</span>',kind:'ineq',ph:'x ? value',op:'>',v:4,flip:false,
   wrong:[[8/3,'>','Undo − 2 by ADDING 2: 10 + 2 = 12. Then divide by 3.']],
   hint:'Undo the steps in reverse: add 2, then divide by 3.',ok:'x > 4. Open circle at 4 (4 itself does not work), shade right.',
-  pre:[function(){return V.chain({start:'x',ops:[{f:'×3',u:'÷3'},{f:'−2',u:'+2'}],end:'10',top:'Build it (3x − 2):',label:'inverse operations'});},ineqPre(4)],
-  steps:'<b>Step 1.</b> Add 2 to both sides: 3x &gt; 12.<br><b>Step 2.</b> Divide by 3 (positive, no flip): <b>x &gt; 4</b>.<br><b>Graph:</b> open circle at 4, shade to the right.',
-  post:[function(){return V.chain({start:'x',ops:[{f:'×3',u:'÷3'},{f:'−2',u:'+2'}],end:'10',back:['4','12'],top:'Build it (3x − 2):',label:'inverse operations solved'});},ineqPost(4,'>','x > 4')]},
+  pre:ineqPre(4),
+  steps:V.vw('3x − 2 > 10',{labels:{'2':'Divide both sides by 3 (3 is positive, so NO flip)'}})+'<b>Graph:</b> open circle at 4, shade to the right.',
+  post:ineqPost(4,'>','x > 4')},
  {id:'c12',n:2,q:'Solve <span class="math">−4x ≥ 12</span>',kind:'ineq',ph:'x ? value',op:'<=',v:-3,flip:true,
   hint:'Divide both sides by −4. Dividing by a negative means FLIP the sign.',ok:'x ≤ −3. Closed circle at −3, shade left.',
-  pre:[function(){return V.chain({start:'x',ops:[{f:'×(−4)',u:'÷(−4)',flip:true}],end:'12',w:300,top:'Build it (−4x):',label:'inverse operation with flip'});},ineqPre(-3)],
-  steps:'Divide both sides by −4. Because −4 is negative, flip ≥ to ≤: <b>x ≤ −3</b>.<br><b>Test:</b> x = −4 → −4(−4) = 16 ≥ 12 ✓.',
-  post:[function(){return V.chain({start:'x',ops:[{f:'×(−4)',u:'÷(−4)',flip:true}],end:'12',back:['−3'],w:300,top:'Build it (−4x):',label:'solved'});},ineqPost(-3,'<=','x ≤ −3')]},
+  pre:ineqPre(-3),
+  steps:V.vw('−4x ≥ 12')+'<b>Test:</b> x = −4 → −4(−4) = 16 ≥ 12 ✓.',
+  post:ineqPost(-3,'<=','x ≤ −3')},
  {id:'c13',n:3,q:'Solve <span class="math">2(x + 1) ≤ 10</span>',kind:'ineq',ph:'x ? value',op:'<=',v:4,flip:false,
   wrong:[[4.5,'<=','Distribute to both terms: 2(x + 1) = 2x + 2.'],[5,'<=','5 is x + 1. Subtract 1.']],
   hint:'Divide both sides by 2 first. Then subtract 1.',ok:'x ≤ 4. Closed circle at 4, shade left.',
-  pre:[function(){return V.chain({start:'x',ops:[{f:'+1',u:'−1'},{f:'×2',u:'÷2'}],end:'10',top:'Build it (2(x + 1)):',label:'inverse operations'});},ineqPre(4)],
-  steps:'<b>Step 1.</b> Divide by 2: x + 1 ≤ 5.<br><b>Step 2.</b> Subtract 1: <b>x ≤ 4</b>.',
-  post:[function(){return V.chain({start:'x',ops:[{f:'+1',u:'−1'},{f:'×2',u:'÷2'}],end:'10',back:['4','5'],top:'Build it (2(x + 1)):',label:'solved'});},ineqPost(4,'<=','x ≤ 4')]},
+  pre:ineqPre(4),
+  steps:V.vw('2(x + 1) ≤ 10',{note:'Another way: divide both sides by 2 first. Then x + 1 ≤ 5, so x ≤ 4.'}),
+  post:ineqPost(4,'<=','x ≤ 4')},
  {id:'c14',n:4,q:'Solve <span class="math">5 − x &lt; 8</span>',kind:'ineq',ph:'x ? value',op:'>',v:-3,flip:true,
   hint:'Subtract 5. Then divide by −1 — and flip!',ok:'x > −3. Open circle at −3, shade right.',
-  pre:[function(){return V.chain({start:'x',ops:[{f:'×(−1)',u:'÷(−1)',flip:true},{f:'+5',u:'−5'}],end:'8',top:'Build it (−x + 5):',label:'inverse operations'});},ineqPre(-3)],
-  steps:'<b>Step 1.</b> Subtract 5: −x &lt; 3.<br><b>Step 2.</b> Divide by −1 and FLIP: <b>x &gt; −3</b>.<br><b>Test:</b> x = 0 → 5 − 0 = 5 &lt; 8 ✓.',
-  post:[function(){return V.chain({start:'x',ops:[{f:'×(−1)',u:'÷(−1)',flip:true},{f:'+5',u:'−5'}],end:'8',back:['−3','3'],top:'Build it (−x + 5):',label:'solved'});},ineqPost(-3,'>','x > −3')]},
+  pre:ineqPre(-3),
+  steps:V.vw('5 − x < 8')+'<b>Test:</b> x = 0 → 5 − 0 = 5 &lt; 8 ✓.',
+  post:ineqPost(-3,'>','x > −3')},
  {id:'c15',n:'EXPLORE',kind:'lab',q:'Test values for <span class="math">−4x ≥ 12</span>. Slide x. Which values make it true?',
   lab:function(el){V.ineqLab(el,{min:-8,max:4,start:1,test:function(x){return -4*x>=12;},text:function(x){return '−4('+V.fm(x)+') = '+V.fm(-4*x)+(-4*x>=12?' ≥ 12.':' is less than 12.');}});}},
  {id:'c16',n:'FIND THE MISTAKE',kind:'pick',q:'Marcus solved <span class="math">−3x + 4 ≥ 13</span>. Click the line with the mistake.',
@@ -914,7 +925,7 @@ V.items('partC',[
   why:{0:'That is the problem. It is fine.',1:'Subtracting 4 from both sides is correct: 13 − 4 = 9.'},
   ok:'Line 3. Marcus divided by −3 but did not flip the sign. The answer is x ≤ −3.',
   pre:function(){return V.numline({min:-8,max:4,sol:{v:-3,op:'>=',k:'navy'},title:'Marcus’s graph: x ≥ −3',label:'Marcus graph'});},
-  steps:'Dividing by −3 flips the sign: −3x ≥ 9 → <b>x ≤ −3</b>. Test x = −4: −3(−4) + 4 = 16 ≥ 13 ✓. Marcus’s answer x = 0 gives 4, which is NOT ≥ 13.',
+  steps:'Correct work:'+V.vw('−3x + 4 ≥ 13')+'Test x = −4: −3(−4) + 4 = 16 ≥ 13 ✓. A number from Marcus’s answer, x = 0, gives 4, which is NOT ≥ 13.',
   post:ineqPost(-3,'<=','Correct: x ≤ −3')}
 ]);
 
@@ -923,39 +934,28 @@ V.items('partD',[
  {id:'d11',n:'LITERAL',q:'Solve <span class="math">y = mx + b</span> for x.',kind:'expr',vars:['y','m','b'],ans:'(y-b)/m',ph:'x = ...',
   wrong:[['y/m-b','Undo in reverse order. Subtract b FIRST, then divide by m.'],['(y+b)/m','To undo + b, SUBTRACT b.'],['y-b/m','Put parentheses around (y − b). All of it is divided by m.'],['m*(y-b)','To undo × m, DIVIDE by m.']],
   hint:'x is multiplied by m, then b is added. Undo: subtract b, then divide by m.',ok:'x = (y − b) / m.',
-  pre:function(){return V.chain({start:'x',ops:[{f:'×m',u:'÷m'},{f:'+b',u:'−b'}],end:'y',bw:76,w:330,top:'Build it (mx + b):',label:'inverse operations for y = mx + b'});},
-  steps:'<b>Step 1.</b> Subtract b from both sides: y − b = mx.<br><b>Step 2.</b> Divide both sides by m: <b>x = (y − b) / m</b>.',
-  post:function(){return V.chain({start:'x',ops:[{f:'×m',u:'÷m'},{f:'+b',u:'−b'}],end:'y',back:['(y−b)÷m','y − b'],bw:76,w:330,top:'Build it (mx + b):',label:'solved'});}},
+  steps:V.hw([['e',['y'],['mx',X('+ b')]],['l','Subtract b from both sides (undo the + b)'],['o',['− b'],['',X('− b')]],['e',['y − b'],[X('m')+'x']],['l','Divide both sides by m (undo the × m)'],['d','m',X('m')],['e',[FR('y − b','m')],['x']],['l','Read it with x first'],['a',['x'],[FR('y − b','m')]]])},
  {id:'d12',n:'TAXI',q:'A taxi charges $3 plus $2 per mile. You have at most $20. How many whole miles can you ride?',kind:'num',ph:'miles',ans:8,
   wrong:[[8.5,'8.5 is the boundary. The question asks for WHOLE miles, so round DOWN to 8.'],[11.5,'Subtract the $3 fee; do not add it.'],[10,'Take out the $3 fee first: 20 − 3 = 17.'],[9,'9 miles costs 3 + 2(9) = $21. That is more than $20.']],
   hint:'Write 3 + 2m ≤ 20. Solve it. Then think about whole miles.',ok:'3 + 2m ≤ 20 → m ≤ 8.5 → at most 8 whole miles.',
-  pre:function(){return V.tape({rows:[{segs:[{v:20,t:'$20 (at most)'}]},{segs:[{v:3,t:'$3'},{v:17,t:'$2 per mile · m = ?',k:'want'}]}],label:'bar model for the taxi'});},
-  steps:'<b>Inequality:</b> 3 + 2m ≤ 20.<br><b>Step 1.</b> Subtract 3: 2m ≤ 17.<br><b>Step 2.</b> Divide by 2: m ≤ 8.5.<br>Only whole miles count, so <b>at most 8 miles</b>.',
+  steps:'<b>Inequality:</b> 3 + 2m ≤ 20.'+V.vw('3 + 2m ≤ 20')+'Only whole miles count, so <b>at most 8 miles</b>.',
   post:function(){var s=V.numline({min:0,max:10,dots:[0,1,2,3,4,5,6,7,8].map(function(v){return {v:v};}),title:'m ≤ 8.5 → whole miles 0 to 8',titleK:'ans',label:'taxi solution: whole miles 0 to 8, limit 8.5'}),bx=22+8.5/10*286,by=50;/* the 8.5 limit: a dashed gold mark, so it does not hide the dot at 8 */s.line(bx,by-12,bx,by+12,V.C.gold,2.5,'4 3');s.text(bx+3,by-16,'limit 8.5',{size:12,c:V.C.goldTx,weight:700,anchor:'middle',halo:true});return s;}},
  {id:'d13',n:'MODEL',q:'A phone repair costs $35 plus $25 per hour. The bill was $110. How many hours did the repair take?',kind:'num',ph:'hours',ans:3,
   wrong:[[5.8,'Subtract the $35 fee; do not add it.'],[4.4,'Take away the $35 fee first: 110 − 35 = 75.'],[75,'$75 is the cost of the hours. Divide by $25 per hour.']],
   hint:'Equation: 35 + 25h = 110.',ok:'35 + 25h = 110 → 25h = 75 → h = 3 hours.',
-  pre:function(){return V.tape({rows:[{segs:[{v:110,t:'$110 total'}]},{segs:[{v:35,t:'$35 fee'},{v:75,t:'$25 per hour · h = ?',k:'want'}]}],label:'bar model for the repair'});},
-  steps:'<b>Equation:</b> 35 + 25h = 110.<br><b>Step 1.</b> Subtract 35: 25h = 75.<br><b>Step 2.</b> Divide by 25: <b>h = 3</b>.',
-  post:function(){return V.tape({rows:[{segs:[{v:110,t:'$110 total'}]},{segs:[{v:35,t:'$35 fee'},{v:25,t:'25',k:'ans'},{v:25,t:'25',k:'ans'},{v:25,t:'25',k:'ans'}]}],foot:'3 hours of $25',footK:'ans',label:'bar model solved'});}},
+  steps:'<b>Equation:</b> 35 + 25h = 110.'+V.vw('35 + 25h = 110')},
  {id:'d14',n:'LITERAL',q:'Solve <span class="math">d = rt</span> for t. (d = distance, r = rate, t = time)',kind:'expr',vars:['d','r'],ans:'d/r',ph:'t = ...',
   wrong:[['d*r','t is multiplied by r. To undo, DIVIDE by r.'],['r/d','Flip it: d goes on top. t = d ÷ r.'],['d-r','r multiplies t, so divide. Do not subtract.']],
   ok:'t = d / r.',
-  pre:function(){return V.chain({start:'t',ops:[{f:'×r',u:'÷r'}],end:'d',w:300,bw:62,top:'Build it (rt):',label:'inverse operation for d = rt'});},
-  steps:'t is multiplied by r. Divide both sides by r: <b>t = d / r</b>.<br>Example: 120 miles at 60 mph takes 120 ÷ 60 = 2 hours.',
-  post:function(){return V.chain({start:'t',ops:[{f:'×r',u:'÷r'}],end:'d',back:['d ÷ r'],w:300,bw:62,top:'Build it (rt):',label:'solved'});}},
+  steps:V.hw([['e',['d'],[X('r')+'&#8202;t']],['l','t is multiplied by r. Divide both sides by r (undo the × r)'],['d','r',X('r')],['e',[FR('d','r')],['t']],['l','Read it with t first'],['a',['t'],[FR('d','r')]]])+'Example: 120 miles at 60 mph takes 120 ÷ 60 = 2 hours.'},
  {id:'d15',n:'LITERAL',q:'The perimeter of a rectangle is <span class="math">P = 2l + 2w</span>. Solve for w.',kind:'expr',vars:['p','l'],ans:'(p-2l)/2',ph:'w = ...',
   wrong:[['p-l*2/2','Divide ALL of P − 2l by 2. Use parentheses: (P − 2l) / 2.'],['(p-l)/2','Both l sides must go: subtract 2l, not l.'],['(p+2l)/2','To undo + 2l, SUBTRACT 2l.'],['p/2-2l','If you divide by 2 first, the 2l becomes l: w = P/2 − l.']],
   ok:'w = (P − 2l) / 2, which is the same as P/2 − l.',
-  pre:function(){return V.rectP({l:'l',w:'w = ?',wK:'want',foot:'P = l + w + l + w = 2l + 2w',label:'rectangle with sides l and w'});},
-  steps:'<b>Step 1.</b> Subtract 2l: P − 2l = 2w.<br><b>Step 2.</b> Divide by 2: <b>w = (P − 2l) / 2</b>.',
-  post:function(){return V.rectP({l:'l',w:'w',mid:'w = (P − 2l) ÷ 2',foot:'Take away 2l, then split in half',footK:'ans',label:'rectangle solved'});}},
+  steps:V.hw([['e',['P'],[X('2l'),'+ 2w']],['l','Subtract 2l from both sides (undo the + 2l)'],['o',['− 2l'],[X('− 2l'),'']],['e',['P − 2l'],[X('2')+'w']],['l','Divide both sides by 2 (undo the × 2)'],['d','2',X('2')],['e',[FR('P − 2l','2')],['w']],['l','Read it with w first'],['a',['w'],[FR('P − 2l','2')]]])},
  {id:'d16',n:'FIND THE MISTAKE',kind:'pick',q:'Kim solved <span class="math">A = lw</span> for w. Click the line with the mistake.',
   lines:['A = lw','A − l = w'],ans:1,why:{0:'That is the formula. It is fine.'},
   ok:'Line 2. l is MULTIPLIED by w, so Kim should divide by l, not subtract: w = A / l.',
-  pre:function(){return V.rectP({l:'l',w:'w',mid:'area A = l · w',label:'rectangle area'});},
-  steps:'Undo × l by dividing: <b>w = A / l</b>. Check: l = 5, w = 3 → A = 15, and 15 ÷ 5 = 3 ✓ (but 15 − 5 = 10 ✗).',
-  post:function(){return V.rectP({l:'l = 5',w:'w = 3',mid:'A = 15',foot:'w = A ÷ l = 15 ÷ 5 = 3',footK:'ans',label:'rectangle example'});}}
+  steps:'Undo × l by dividing:'+V.hw([['e',['A'],[X('l')+'&#8202;w']],['l','Divide both sides by l (undo the × l)'],['d','l',X('l')],['e',[FR('A','l')],['w']],['l','Read it with w first'],['a',['w'],[FR('A','l')]]])+'Check: l = 5, w = 3 → A = 15, and 15 ÷ 5 = 3 ✓ (but 15 − 5 = 10 ✗).'}
 ]);
 
 /* ================= PART E · parts of expressions ================= */
@@ -993,20 +993,17 @@ V.items('partF',[
   opts:[['add','Addition Property of Equality'],['sub','Subtraction Property of Equality'],['dist','Distributive Property'],['comb','Combining like terms']],ans:'add',
   why:{sub:'The −4 was undone by ADDING 4 to both sides, so it is the Addition Property.',dist:'There are no parentheses to multiply out here.',comb:'No like terms were combined. 4 was added to both sides.'},
   ok:'4 was added to both sides: the Addition Property of Equality.',
-  pre:function(){return V.proof({steps:[{s:'3x − 4 = 11'},{s:'3x = 15',r:'?'}],label:'step with missing reason'});},
-  post:function(){return V.proof({steps:[{s:'3x − 4 = 11'},{s:'3x = 15',r:'Add 4 (Addition Prop.)',k:'ans'}],label:'step with reason'});}},
+  steps:V.vw('3x − 4 = 11',{labels:{'1':'Addition Property of Equality: add 4 to both sides','2':'Division Property of Equality: divide both sides by 3'}})},
  {id:'f12',n:2,q:'Step: <span class="math">6(x + 2) = 30</span> → <span class="math">6x + 12 = 30</span>. Which property was used?',kind:'mc',
   opts:[['dist','Distributive Property'],['mult','Multiplication Property of Equality'],['add','Addition Property of Equality'],['comb','Combining like terms']],ans:'dist',
   why:{mult:'Only the left side changed, so nothing was done to both sides.',add:'Nothing was added to both sides. The 6 was multiplied into the parentheses.',comb:'Combining like terms joins terms like 2x + 3x. Here the 6 was multiplied into (x + 2).'},
   ok:'The 6 was multiplied by each term inside: the Distributive Property.',
-  pre:function(){return V.areaModel({outer:'6',parts:[{lbl:'x',w:3},{lbl:'+2',w:1.6}],foot:'6(x + 2) = ? + ?',label:'area model 6(x + 2)'});},
-  post:function(){return V.areaModel({outer:'6',parts:[{lbl:'x',w:3},{lbl:'+2',w:1.6}],prods:['6x','12'],foot:'6(x + 2) = 6x + 12',footK:'ans',label:'area model 6x + 12'});}},
+  steps:V.vw('6(x + 2) = 30',{labels:{'1':'Distributive Property: multiply 6 by EACH term inside the ( )','2':'Subtraction Property of Equality: subtract 12 from both sides','3':'Division Property of Equality: divide both sides by 6'}})},
  {id:'f13',n:3,q:'Step: <span class="math">5x = 35</span> → <span class="math">x = 7</span>. Which property was used?',kind:'mc',
   opts:[['div','Division Property of Equality'],['sub','Subtraction Property of Equality'],['mult','Multiplication Property of Equality'],['dist','Distributive Property']],ans:'div',
   why:{sub:'Subtracting 5 would give 5x − 5. Here both sides were divided by 5.',mult:'x was multiplied by 5. To undo it, both sides were DIVIDED by 5.',dist:'There are no parentheses here.'},
   ok:'Both sides were divided by 5: the Division Property of Equality.',
-  pre:function(){return V.balance({L:[{x:5}],R:[{n:35}],lblL:'5x',lblR:'35',note:'How do you get one x alone?',label:'balance 5x = 35'});},
-  post:function(){return V.balance({L:[{x:5,v:7}],R:[{n:7},{n:7},{n:7},{n:7},{n:7}],lblL:'5 groups of x',lblR:'5 groups of 7',note:'÷ 5 on both sides → x = 7',noteK:'ans',label:'balance divided'});}}
+  steps:V.vw('5x = 35',{labels:{'1':'Division Property of Equality: divide both sides by 5'}})}
 ]);
 })();
 </script>
