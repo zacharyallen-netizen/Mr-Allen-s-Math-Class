@@ -467,6 +467,16 @@ function dotPlot(data,o){o=o||{};var w=o.w||360,min=o.min,max=o.max,step=o.step|
     var col=o.color?o.color(v,i):C.navy;s+=ci(cx,cy,r,col,'#fff',1.2);});
   if(o.after)s+=o.after(X,ay);
   return svg(w,h,s+A.s,o.label||'dot plot');}
+/* box plot row with five-number labels; labels go above or below the box, placed by width so they never overlap */
+function boxRow(X,F,cy,o){o=o||{};var s='',bh=24,nm=['min','Q1','med','Q3','max'],kn=o.known||[1,1,1,1,1],all=kn.every(Boolean),W=o.w||360,col=o.color||C.green;
+  if(all){s+=ln(X(F[0]),cy,X(F[1]),cy,C.navy,2.2)+ln(X(F[3]),cy,X(F[4]),cy,C.navy,2.2)+rc(X(F[1]),cy-bh/2,X(F[3])-X(F[1]),bh,'#EEF1F8',C.navy,2.2)+ln(X(F[2]),cy-bh/2,X(F[2]),cy+bh/2,C.green,3)
+    +ln(X(F[0]),cy-8,X(F[0]),cy+8,C.navy,2.4)+ln(X(F[4]),cy-8,X(F[4]),cy+8,C.navy,2.4);}
+  var endA=-99,endB=-99;
+  for(var p=0;p<5;p++){if(!kn[p])continue;var x=X(F[p]),t=nm[p]+' '+fmt(F[p]),hw=tw(t,fz(10.5),true)/2+4,x2=Math.min(Math.max(x,hw+2),W-hw-2);
+    if(!all)s+=ln(x,cy-14,x,cy+14,col,2.4,'4 3');
+    var up=x2-hw>endA+4||!(x2-hw>endB+4);if(up)endA=x2+hw;else endB=x2+hw;
+    s+=tag(x2,up?cy-bh/2-8:cy+bh/2+21,t,{size:10.5,mono:true,fill:col});}
+  return s;}
 /* ---------- histogram ---------- */
 function histogram(labels,freqs,o){o=o||{};var w=o.w||360,h=(o.h||236)+18,L=48,R=10,T=40,B=50,n=freqs.length;
   var yMax=o.yMax||Math.max.apply(null,freqs),ys=o.ystep||(yMax>10?2:1),Y=sc(0,yMax,h-B,T),bw=(w-L-R)/n,s='';while(Y(0)-Y(ys)<22&&ys<yMax)ys*=2;
@@ -484,7 +494,7 @@ function boxPlots(rows,o){o=o||{};var w=o.w||360,rowH=o.rowH||70,top=o.top||8,n=
   if(o.grid)for(var g=o.min;g<=o.max+1e-9;g+=o.grid)s+=ln(X(g),top,X(g),ay,C.grid,1);
   rows.forEach(function(r,k){var f=r.f,cy=top+k*rowH+(r.name?44:40),bh=26,hl=r.hl||{},col=function(p){return hl[p]||C.navy;};
     if(r.name)s+=tx(X(o.min),cy-30,r.name,{size:12,bold:true,anchor:'start'});
-    if(hl.box)s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,C.goldL);
+    if(hl.box)s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,hl.boxFill||C.goldL);
     s+=ln(X(f[0]),cy,X(f[1]),cy,col('lw'),2.2)+ln(X(f[3]),cy,X(f[4]),cy,col('rw'),2.2);
     s+=ln(X(f[0]),cy-9,X(f[0]),cy+9,col('min'),2.4)+ln(X(f[4]),cy-9,X(f[4]),cy+9,col('max'),2.4);
     s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,hl.box?'none':'#EEF1F8',hl.box||C.navy,2.2);
@@ -525,8 +535,15 @@ function plane(o){var w=o.w||340,pad=o.pad||22,u=(w-2*pad)/(o.xmax-o.xmin),h=o.h
   var ax0=Math.min(Math.max(0,o.ymin),o.ymax),ay0=Math.min(Math.max(0,o.xmin),o.xmax);
   s+=ln(pad-6,Y(ax0),w-pad+6,Y(ax0),C.axis,1.7)+ln(X(ay0),pad-6,X(ay0),h-pad+6,C.axis,1.7);
   s+=tx(w-pad+2,Y(ax0)-7,'x',{size:12,italic:true,fill:C.axis,anchor:'end'})+tx(X(ay0)+8,pad-8+12,'y',{size:12,italic:true,fill:C.axis,anchor:'start'});
-  var labs='';for(v=Math.ceil(o.xmin);v<=o.xmax;v++){if(v===0||!onStep(v,lab)||v===o.xmax)continue;labs+=tx(X(v),Y(ax0)+15,fmt(v),{size:10.5,mono:true,fill:C.axis,halo:1});}
-  for(v=Math.ceil(o.ymin);v<=o.ymax;v++){if(v===0||!onStep(v,ylab)||v===o.ymax)continue;labs+=tx(X(ay0)-5,Y(v)+4,fmt(v),{size:10.5,mono:true,fill:C.axis,anchor:'end',halo:1});}
+  var lfs=fz(10.5);
+  function hits(x0,x1,y0,y1){var k,F,i,xx,yy;for(k=0;k<(o.fns||[]).length;k++){F=o.fns[k];for(i=0;i<=12;i++){xx=x0-2+(x1-x0+4)*i/12;yy=Y(F.f(o.xmin+(xx-pad)/u));if(yy>=y0-2&&yy<=y1+2)return true;}}
+    return (o.pts||[]).some(function(p){var px=X(p.x),py=Y(p.y),r=(p.r||5)+2;return px+r>x0&&px-r<x1&&py+r>y0&&py-r<y1;});}
+  var labs='';for(v=Math.ceil(o.xmin);v<=o.xmax;v++){if(v===0||!onStep(v,lab)||v===o.xmax)continue;var t1=fmt(v),hw1=tw(t1,lfs,true)/2;
+    if(!hits(X(v)-hw1,X(v)+hw1,Y(ax0)+15-lfs*0.8,Y(ax0)+17))labs+=tx(X(v),Y(ax0)+15,t1,{size:10.5,mono:true,fill:C.axis,halo:1});
+    else if(!hits(X(v)-hw1,X(v)+hw1,Y(ax0)-7-lfs*0.8,Y(ax0)-5))labs+=tx(X(v),Y(ax0)-7,t1,{size:10.5,mono:true,fill:C.axis,halo:1});}
+  for(v=Math.ceil(o.ymin);v<=o.ymax;v++){if(v===0||!onStep(v,ylab)||v===o.ymax)continue;var t2=fmt(v),ww=tw(t2,lfs,true);
+    if(!hits(X(ay0)-5-ww,X(ay0)-5,Y(v)+4-lfs*0.8,Y(v)+6))labs+=tx(X(ay0)-5,Y(v)+4,t2,{size:10.5,mono:true,fill:C.axis,anchor:'end',halo:1});
+    else if(!hits(X(ay0)+5,X(ay0)+5+ww,Y(v)+4-lfs*0.8,Y(v)+6))labs+=tx(X(ay0)+5,Y(v)+4,t2,{size:10.5,mono:true,fill:C.axis,anchor:'start',halo:1});}
   (o.vlines||[]).forEach(function(l){s+=ln(X(l.x),pad,X(l.x),h-pad,l.color||C.gold,2,l.dash||'6 4');if(l.label)s+=tag(X(l.x)+(l.dx||0),pad+12,l.label,{size:11,mono:true,fill:l.tc||C.goldD,anchor:l.anchor||'middle'});});
   (o.fns||[]).forEach(function(F){var seg=[],out='',N=360,prev=null;
     for(var i=0;i<=N;i++){var x=o.xmin+(o.xmax-o.xmin)*i/N,y=F.f(x),inr=y>=o.ymin&&y<=o.ymax;
@@ -576,16 +593,33 @@ function dosPic(a,b,o){o=o||{};var A=112,Bs=42,s='',L=34,T=30,solved=o.solved,lb
   s+=ln(L,T+A-Bs,L+A-Bs,T+A-Bs,C.navy,1.2,'3 3');
   s+=tx(L+A/2,T-9,a,{size:13,mono:true,bold:true})+tx(L-8,T+A/2+5,a,{size:13,mono:true,bold:true,anchor:'end'});
   var sq=function(t){return /^([a-z]|\d+)$/i.test(t)?t:'('+t+')';},al=sq(a)+'² − '+sq(b)+'²';
-  s+=tx(L+(A-Bs)/2,T+(A-Bs)/2+5,al,{size:al.length>8?11:12,mono:true,bold:true});
+  if(al.length>8){var al1=sq(a)+'²',al2='− '+sq(b)+'²';s+=tx(L+(A-Bs)/2,T+(A-Bs)/2-4,al1,{size:12,mono:true,bold:true})+tx(L+(A-Bs)/2,T+(A-Bs)/2+16,al2,{size:12,mono:true,bold:true});}
+  else s+=tx(L+(A-Bs)/2,T+(A-Bs)/2+5,al,{size:12,mono:true,bold:true});
   s+=arrow(L+A+10,T+A/2,L+A+42,T+A/2,C.navy,2);
   var x2=L+A+52,R=A-Bs;
   s+=rc(x2,T+10,A,R,C.navyL,C.navy,1.8)+rc(x2+A,T+10,Bs,R,'#C9D3E6',C.navy,1.8);
-  s+=tx(x2+(A+Bs)/2,T+2,solved?'('+a+' + '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
-  s+=tx(x2+(A+Bs)/2,T+10+R+20,solved?'('+a+' − '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
+  s+=tx(x2+(A+Bs)/2,T+2,solved?'width ('+a+' + '+b+')':'width ?',{size:13,mono:true,bold:true,fill:lb});
+  /* height of the new rectangle: a double arrow on its right side, label written level underneath */
+  var hx=x2+A+Bs+9;s+=arrow(hx,T+10+R/2,hx,T+12,lb,1.6)+arrow(hx,T+10+R/2,hx,T+8+R,lb,1.6);
+  s+=tx(hx+4,T+10+R+20,solved?'height ('+a+' − '+b+')':'height ?',{size:12,mono:true,bold:true,fill:lb,anchor:'end'});
   s+=tx(x2+A+Bs/2,T+10+R/2+4,'moved',{size:9.5,fill:C.navy,rot:-90});
-  var w=Math.max(x2+A+Bs+10,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
+  var w=Math.max(x2+A+Bs+16,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
   if(o.foot)s+=tag(w/2,h-10,o.foot.t,{size:12.5,mono:true,fill:o.foot.k==='ans'?C.green:C.goldD});
   return svg(w,h,s,o.label||'difference of squares picture');}
+/* ---------- quadratic formula card: the item's own equation on top, then a, b, c, the discriminant and the formula ----------
+   s: 0 = all unknown, 1 = a, b, c found (step answer), 'given' = a, b, c shown as givens, 'sub' = givens put in the formula,
+      2 = discriminant found, 3 = formula with numbers, 4 = solutions */
+function fcard(a,b,c,s){var gv=s==='sub'||s==='given',o='',k=gv?1:s,Tp=34,ok1=k>=1,ok2=k>=2&&!gv;
+  var eq=pstr([c,b,a])+' = 0';o+=tx(180,20,eq,{size:14,mono:true,bold:true});
+  /* gv: a, b, c are read straight from the equation (given, navy); otherwise a revealed step shows green */
+  [['a',a],['b',b],['c',c]].forEach(function(q,i){var x=20+i*82;o+=rc(x,Tp,70,40,gv?C.navyL:ok1?C.greenL:C.goldL,gv?C.navy:ok1?C.green:C.gold,1.8,6)+tx(x+35,Tp+26,q[0]+' = '+(ok1?fmt(q[1]):'?'),{size:13,mono:true,bold:true,fill:gv?C.navy:ok1?C.green:C.goldD});});
+  var d=b*b-4*a*c;o+=rc(270,Tp,80,40,ok2?C.greenL:C.goldL,ok2?C.green:C.gold,1.8,6)+tx(310,Tp+16,'b² − 4ac',{size:10.5,mono:true,fill:ok2?C.green:C.goldD})+tx(310,Tp+33,ok2?fmt(d):'?',{size:13,mono:true,bold:true,fill:ok2?C.green:C.goldD});
+  var p=function(v){return v<0?'('+fmt(v)+')':fmt(v);},y=Tp+80;
+  var num=s==='sub'?'−('+fmt(b)+') ± √('+p(b)+'² − 4('+fmt(a)+')('+fmt(c)+'))':k>=3?'−('+fmt(b)+') ± √'+fmt(d):'−b ± √(b² − 4ac)',den=s==='sub'||k>=3?'2('+fmt(a)+')':'2a';
+  var nf=num.length>18?12.5:14,bw=Math.max(150,tw(num,fz(nf),true)+12),cx=Math.max(200,96+bw/2);
+  o+=tx(cx-bw/2-12,y+8,'x =',{size:15,mono:true,bold:true,anchor:'end'})+tx(cx,y-4,num,{size:nf,mono:true,bold:true,fill:k>=3?C.green:C.navy})+ln(cx-bw/2,y+4,cx+bw/2,y+4,C.navy,2)+tx(cx,y+24,den,{size:14,mono:true,bold:true,fill:k>=3?C.green:C.navy});
+  if(k>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+fmt((-b+r)/(2*a))+'  or  x = '+fmt((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
+  return svg(360,k>=4?y+68:y+40,o,'quadratic formula card for '+eq);}
 /* ---------- number line with marked points ---------- */
 function pointsLine(o){var w=o.w||360,y=o.y||58,A=axisX({x0:22,x1:w-22,y:y,min:o.min,max:o.max,step:o.step||1,lab:o.lab||1,title:o.title}),s='',X=A.X;
   (o.pts||[]).forEach(function(p,i){var col=p.c||C.navy;s+=ci(X(p.v),y,6,p.hollow?'#fff':col,col,2.2);
@@ -771,8 +805,8 @@ function init(){
   hook();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 return {C:C,svg:svg,ln:ln,tx:tx,rc:rc,ci:ci,pg:pg,pl:pl,arrow:arrow,tag:tag,fmt:fmt,sgn:sgn,sc:sc,esc:esc,axisX:axisX,
-  dotPlot:dotPlot,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
-  dosPic:dosPic,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
+  dotPlot:dotPlot,boxRow:boxRow,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
+  dosPic:dosPic,fcard:fcard,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
   judge:judge,check:check,mc:mc,SPEC:SPEC,EX:EX,FIG:FIG,INT:INT,render:render,drawEx:drawEx,uid:function(){return ++uid;}};
 })();
 </script>
@@ -783,19 +817,14 @@ function G(t){return {t:t};} function W(t){return {t:t||'?',c:C.goldD};} functio
 /* dot plot with a box plot drawn under the number line; known = which of the 5 parts are shown */
 function dotBox(data,o){var five=St.five(data),kn=o.known||[0,0,0,0,0],all=kn.every(Boolean);
   return M.dotPlot(data,{min:o.min,max:o.max,step:o.step||1,lab:o.lab,below:78,label:o.label||'dot plot and box plot',color:o.color,marks:o.marks,dist:o.dist,
-    after:function(X,ay){var cy=ay+58,s='',nm=['min','Q1','med','Q3','max'];
-      if(all){s+=ln(X(five[0]),cy,X(five[1]),cy,C.navy,2.2)+ln(X(five[3]),cy,X(five[4]),cy,C.navy,2.2)+rc(X(five[1]),cy-12,X(five[3])-X(five[1]),24,'#EEF1F8',C.navy,2.2)+ln(X(five[2]),cy-12,X(five[2]),cy+12,C.green,3)
-        +ln(X(five[0]),cy-8,X(five[0]),cy+8,C.navy,2.4)+ln(X(five[4]),cy-8,X(five[4]),cy+8,C.navy,2.4);}
-      else{s+=tx((X(o.min)+X(o.max))/2,cy+4,o.qtext||'box plot: finish the steps to build it',{size:11,fill:C.goldD});}
-      var lastX=-99;
-      for(var p=0;p<5;p++){if(!kn[p])continue;var x=X(five[p]);if(!all)s+=ln(x,cy-14,x,cy+14,C.green,2.4,'4 3');
-        var up=x-lastX>40;if(up)lastX=x;s+=tag(x,up?cy-17:cy+27,nm[p]+' '+f(five[p]),{size:10.5,mono:true,fill:C.green});}
-      return s;}});}
+    after:function(X,ay){var cy=ay+58;
+      if(!kn.some(Boolean))return tx((X(o.min)+X(o.max))/2,cy+4,o.qtext||'box plot: finish the steps to build it',{size:11,fill:C.goldD});
+      return M.boxRow(X,five,cy,{known:kn});}});}
 /* ---------- topic 1 figures ---------- */
 var QUIZ=[7,4,9,5,7,10,6,8,5,7];
 FIG.dot1=function(){return M.dotPlot(QUIZ,{min:3,max:11,title:'Quiz score',label:'dot plot of quiz scores'});};
 FIG.hist1=function(){return M.histogram(['0–9','10–19','20–29','30–39','40–49'],[2,5,8,4,1],{xTitle:'Minutes of reading',yTitle:'Number of students',label:'histogram'});};
-FIG.box1=function(){var F=[2,5,8,12,18];return M.boxPlots([{f:F,parts:F.map(function(v,i){return {t:['min ','Q1 ','med ','Q3 ','max '][i]+v};})}],{min:0,max:20,step:1,lab:2,label:'box plot'});};
+FIG.box1=function(){var F=[2,5,8,12,18];return M.boxPlots([{f:F,parts:F.map(function(v,i){return {t:['min ','Q1 ','med ','Q3 ','max '][i]+v};})}],{min:0,max:20,step:1,lab:2,rowH:86,label:'box plot'});};
 EX.e51a={viz:function(st){var k=[0,0,0,0,0];if(st==='solved')k=[1,1,1,1,1];else{if(st>=2){k[0]=1;k[4]=1;}if(st>=3)k[2]=1;if(st>=4)k[1]=1;}
   return dotBox(QUIZ,{min:3,max:11,known:k,label:'quiz scores: dot plot and box plot'});}};
 var AGES=[12,15,18,21,22,25,27,28,33,36,38,41],BINS=['10–19','20–29','30–39','40–49'];
@@ -827,7 +856,7 @@ function distViz(d,st,o){var m=St.mean(d);o=o||{};var cnt={},mx=0;d.forEach(func
   return M.dotPlot(d,{min:o.min||0,max:o.max||18,lab:o.lab||2,label:o.label||'distances from the mean',extraTop:n*17+8,
   marks:[{v:m,label:'mean '+f(m),color:C.navy,dash:'3 3'}],
   after:function(X,ay){var s='',seen={},base=ay-8-(mx-1)*14-6-12;
-    d.forEach(function(v,i){seen[v]=(seen[v]||0)+1;if(v===m)return;var k=idx.indexOf(i),y=base-k*17,cy=ay-8-(seen[v]-1)*14,dd=Math.abs(v-m),sv=st==='solved',col=sv?C.green:C.gold;
+    d.forEach(function(v,i){seen[v]=(seen[v]||0)+1;if(v===m)return;var k=idx.indexOf(i),y=base-k*17,cy=ay-8-(cnt[v]-1)*14,dd=Math.abs(v-m),sv=st==='solved',col=sv?C.green:C.gold;
       s+=ln(X(v),cy-6,X(v),y,C.grid,1.2,'2 2')+ln(X(v),y,X(m),y,col,2.6)+ln(X(v),y-4,X(v),y+4,col,2);
       var t=sv?(o.signed?M.sgn(v-m):f(dd)):(o.q?'?':'');if(t)s+=tag(v<m?X(v)-5:X(v)+5,y+4,t,{size:10.5,mono:true,fill:sv?C.green:C.goldD,anchor:v<m?'end':'start'});});
     return s;}});}
@@ -858,9 +887,10 @@ SP.yt52={type:'multi',ok:'The gold gaps are the distances from the mean.',viz:fu
 var D53=[4,6,7,8,9,10,11,25],F53=St.five(D53),IQR53=F53[3]-F53[1],UF53=F53[3]+1.5*IQR53,LF53=F53[1]-1.5*IQR53;
 FIG.pull=function(){var a=D53.slice(0,7),X=M.sc(0,26,22,338),s='',rows=[{d:a,y:86,name:'Without 25'},{d:D53,y:196,name:'With 25'}];
   rows.forEach(function(r){var m=St.mean(r.d),md=St.median(r.d);s+=tx(22,r.y-62,r.name,{size:12,bold:true,anchor:'start'});
-    s+=ln(22,r.y,338,r.y,C.axis,1.4);r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});
+    s+=ln(22,r.y,338,r.y,C.axis,1.4);
     var mr=m>md;s+=ln(X(m),r.y-30,X(m),r.y,C.gold,2.2,'4 3')+tag(X(m)+(mr?3:-3),r.y-34,'mean '+f(m),{size:10.5,mono:true,fill:C.goldD,anchor:mr?'start':'end'});
-    s+=ln(X(md),r.y-30,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-34,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});});
+    s+=ln(X(md),r.y-30,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-34,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});
+    r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});});
   var A2=M.axisX({x0:22,x1:338,y:222,min:0,max:26,step:1,lab:2});
   return M.svg(360,252,s+A2.s,'mean versus median with an outlier');};
 function fenceViz(d,st,o){var F=St.five(d),I=F[3]-F[1],uf=F[3]+1.5*I,lf=F[1]-1.5*I;o=o||{};
@@ -901,14 +931,14 @@ EX.e54={viz:function(st){var s=st==='solved'?2:(st||0),y=2+3*4;
 EX.e54b={viz:function(st){var s=st==='solved'?3:(st||0);
   return M.scatter(BK,o(BKO,{h:270,line:{a:FIT.a,b:FIT.b},label:'slope and intercept',
     after:function(X,Y){var q='',x0=5.5,x1=6.5,y0=FIT.a+FIT.b*x0,y1=FIT.a+FIT.b*x1,c1=s>=1?C.green:C.gold;q+=ln(X(x0),Y(y0),X(x1),Y(y0),c1,2.6)+ln(X(x1),Y(y0),X(x1),Y(y1),c1,2.6);
-      q+=tag(X(6),Y(y0)+16,'run 1',{size:10.5,fill:C.navy})+tag(X(x1)+5,Y((y0+y1)/2)+4,s>=1?'rise '+f(FIT.b):'rise ?',{size:10.5,mono:true,fill:s>=1?C.green:C.goldD,anchor:'start'});
+      q+=tag(X(6)+5,Y(y0)+19,'run 1',{size:10.5,fill:C.navy})+tag(X(x1)+5,Y((y0+y1)/2)+4,s>=1?'rise '+f(FIT.b):'rise ?',{size:10.5,mono:true,fill:s>=1?C.green:C.goldD,anchor:'start'});
       q+=ci(X(0),Y(FIT.a),5.5,s>=2?C.green:C.gold)+tag(X(0)+8,Y(FIT.a)+18,s>=2?'(0, '+f(FIT.a)+')':'(0, ?)',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD,anchor:'start'});return q;}}));}};
 SP.fm54={type:'mc',ans:'2',ok:'Mia added 5 + 2 before multiplying. Multiply first: 2(6) = 12. Then 5 + 12 = 17.',fb:{'1':'Putting 6 in for x is right.','3':'7 × 6 really is 42 — the mistake happened before this line.'},
-  viz:function(st){var y=5+2*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:44,ystep:4,ylab:8,h:250,xTitle:'x',yTitle:'ŷ',line:{a:5,b:2,label:'ŷ = 5 + 2x',lx:7.6,anchor:'end',ly:-8},
+  viz:function(st){var y=5+2*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:44,ystep:4,ylab:8,h:250,xTitle:'x',yTitle:'ŷ',line:{a:5,b:2,label:'ŷ = 5 + 2x',at:[0.3,12.5]},
     guides:[{x:6,y:st==='solved'?y:42,toY:true,color:st==='solved'?C.green:C.gold}],marks:[st==='solved'?{x:6,y:y,color:C.green,label:'(6, 17)',anchor:'end',dx:-8}:{x:6,y:42,color:C.gold,label:'Mia: 42?',anchor:'end',dx:-8,dy:14}],label:'Mia’s prediction'});}};
 SP.fm54b={hint:'Multiply first: 2 × 6. Then add 5.',type:'num',ans:5+2*6,fb:[[42,'Multiply before you add: 2(6) first.'],[13,'2(6) means 2 × 6 = 12, not 2 + 6.']]};
 SP.yt54={hint:'Put 6 in for x: 4 + 1.5(6). Multiply first.',type:'num',ans:4+1.5*6,fb:[[33,'Multiply first: 1.5 × 6 = 9. Then add 4.'],[11.5,'1.5x means 1.5 × 6, not 1.5 + 6.'],[9,'9 is 1.5 × 6. Now add the 4.']],ok:'',
-  viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',lx:0.4,anchor:'start',ly:-10},
+  viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',at:[0.3,10.4]},
     guides:[{x:6,y:y,toY:st==='solved',color:st==='solved'?C.green:C.gold}],marks:[{x:6,y:y,color:st==='solved'?C.green:C.gold,label:st==='solved'?'(6, 13)':'(6, ?)',dx:8,dy:14}],label:'prediction at x = 6'});}};
 SP.yt54b={type:'mc',ans:'e',cap:'Shaded: the x-values in the data. Gold: the x we want to predict for.',viz:function(){var lo=0,hi=8,xq=20;return M.pointsLine({min:0,max:22,step:1,lab:4,y:66,title:'x-value',label:'data x-values 0 to 8 and the new x = 20',pts:[{v:xq,t:'x = '+xq,c:C.gold}],after:function(X,y){return rc(X(lo),y-24,X(hi)-X(lo),24,'rgba(30,45,79,0.12)',C.navy,1.2,3)+tag((X(lo)+X(hi))/2,y-32,'data: '+lo+' to '+hi,{size:11,fill:C.navy});}});},ok:'20 is outside 0 to 8, so it is extrapolation. The prediction is risky.',fb:{i:'Interpolation means inside the data (0 to 8). Is 20 inside?'}};
 /* ---------- topic 5 ---------- */

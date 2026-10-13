@@ -212,7 +212,7 @@
 <div class="key"><strong>📌</strong> <strong>Domain</strong> = all inputs (x-values). <strong>Range</strong> = all outputs (y-values). <strong>Discrete</strong> = separate points; <strong>continuous</strong> = unbroken line.</div>
 <div class="viz" id="p5a"></div><div class="viz-cap">The gold bar on the x-axis is the domain. The gold bar on the y-axis is the range. Closed dots mean the ends are included.</div>
 <div class="viz-row"><div class="viz" id="p5b"></div><div class="viz" id="p5c"></div></div>
-<div class="viz-cap">Left: discrete (whole tickets only). Right: continuous (any amount of gas).</div>
+<div class="viz-cap">Tickets: discrete (whole tickets only, so separate dots). Gas: continuous (any amount of gas, so a solid line).</div>
 <div class="note">In context, pick a <strong>reasonable</strong> domain — for example, time can’t be negative, and people must be whole numbers.</div>
 <p class="howto-h">How to find domain and range from a graph</p>
 <ol class="howto"><li>Domain: find the leftmost x and the rightmost x.</li><li>Range: find the lowest y and the highest y.</li><li>Closed dot → use ≤. Open dot → use &lt;.</li><li>An arrow means the graph keeps going forever in that direction.</li><li>Write smallest first: a ≤ x ≤ b.</li></ol>
@@ -349,16 +349,20 @@ function grid(o){
   (o.xBand?[].concat(o.xBand):[]).forEach(function(b){var c=b.k==='ans'?C.green:C.gold;s.add('<rect x="'+r(X(b.a))+'" y="'+r(Y(ax)-5)+'" width="'+r(X(b.b)-X(b.a))+'" height="10" rx="4" fill="'+c+'" opacity="0.6"/>');});
   (o.yBand?[].concat(o.yBand):[]).forEach(function(b){var c=b.k==='ans'?C.green:C.gold;s.add('<rect x="'+r(X(ay)-5)+'" y="'+r(Y(b.b))+'" width="10" height="'+r(Y(b.a)-Y(b.b))+'" rx="4" fill="'+c+'" opacity="0.6"/>');});
   s.line(L,Y(ax),W-R,Y(ax),C.axis,1.7); s.line(X(ay),T,X(ay),H-B,C.axis,1.7);
-  seg(L,Y(ax),W-R,Y(ax)); seg(X(ay),T,X(ay),H-B);
+  seg(L,Y(ax),W-R,Y(ax)); seg(X(ay),T,X(ay),H-B); var under=s.p.length;
   var xl=o.xl||gx*Math.max(1,Math.ceil((x1-x0)/gx/10)), yl=o.yl||gy*Math.max(1,Math.ceil((y1-y0)/gy/10)), lastR=-1e9;
   for(x=Math.ceil(x0/xl-1e-9)*xl;x<=x1+1e-9;x+=xl){ if(Math.abs(x-ay)<1e-9&&inner) continue;
     var xt=fm(Math.round(x*100)/100),xr=rectOf(X(x),Y(ax)+15,xt,MINF,'middle');
-    s.line(X(x),Y(ax)-3,X(x),Y(ax)+3,C.axis,1.2); if(xr.x<lastR+2) continue; lastR=xr.x+xr.w; xr.tick=s.p.length; occupy(xr); s.text(X(x),Y(ax)+15,xt,{size:10.5,c:C.muted,halo:true}); }
+    s.line(X(x),Y(ax)-3,X(x),Y(ax)+3,C.axis,1.2); if(xr.x<lastR+2) continue; lastR=xr.x+xr.w; xr.tick=1; xr.t=[X(x),Y(ax)+15,xt,'middle']; xr.alt=[X(x),Y(ax)-6,'middle']; occupy(xr); }
   var lastB=1e9;
   for(y=Math.ceil(y0/yl-1e-9)*yl;y<=y1+1e-9;y+=yl){ if(Math.abs(y-ax)<1e-9&&(inner||(ay===x0&&ax===y0))) continue;
     var yt=fm(Math.round(y*100)/100),yr=rectOf(X(ay)-5,Y(y)+4.5,yt,MINF,'end');
-    s.line(X(ay)-3,Y(y),X(ay)+3,Y(y),C.axis,1.2); if(yr.y+yr.h>lastB-1) continue; lastB=yr.y; yr.tick=s.p.length; occupy(yr); s.text(X(ay)-5,Y(y)+4.5,yt,{size:10.5,c:C.muted,anchor:'end',halo:true}); }
-  if(inner){ var zr=rectOf(X(0)-5,Y(0)+15,'0',MINF,'end'); if(free(zr,2)){ s.text(X(0)-5,Y(0)+15,'0',{size:10.5,c:C.muted,anchor:'end',halo:true}); occupy(zr);} }
+    s.line(X(ay)-3,Y(y),X(ay)+3,Y(y),C.axis,1.2); if(yr.y+yr.h>lastB-1) continue; lastB=yr.y; yr.tick=1; yr.t=[X(ay)-5,Y(y)+4.5,yt,'end']; yr.alt=[X(ay)+5,Y(y)+4.5,'start']; occupy(yr); }
+  if(inner){ /* the origin 0 sits below-left of the origin; if that crowds the −1 tick it goes above-left, else it is left out */
+    var tk=function(q){return occ.some(function(p){return p.tick&&q.x<p.x+p.w+3&&q.x+q.w+3>p.x&&q.y<p.y+p.h&&q.y+q.h>p.y;});};
+    var zr=rectOf(X(0)-5,Y(0)+15,'0',MINF,'end'),za=rectOf(X(0)-5,Y(0)-6,'0',MINF,'end');
+    if(!tk(zr)){ zr.tick=1; zr.t=[X(0)-5,Y(0)+15,'0','end']; zr.alt=[X(0)-5,Y(0)-6,'end']; occupy(zr);}
+    else if(!tk(za)){ za.tick=1; za.t=[X(0)-5,Y(0)-6,'0','end']; za.alt=[X(0)-5,Y(0)+15,'end']; occupy(za);} }
   s.text(W-R-3,Y(ax)-6,o.xName||'x',{size:12,c:C.muted,italic:true,anchor:'end',halo:true}); occupy(rectOf(W-R-3,Y(ax)-6,o.xName||'x',MINF,'end'));
   s.text(X(ay)+6,T+12,o.yName||'y',{size:12,c:C.muted,italic:true,anchor:'start',halo:true}); occupy(rectOf(X(ay)+6,T+12,o.yName||'y',MINF,'start'));
   if(o.title) s.text(W/2,17,o.title,{size:12.5,font:'sans',weight:700});
@@ -442,8 +446,23 @@ function grid(o){
     var c0=place(cands,p.lbl,fs);
     s.text(c0[0],c0[1],p.lbl,{size:p.size||12,c:tcol(c),weight:700,halo:true,anchor:c0[2]});});
   later.forEach(function(f){f();});
-  /* a tick number that ended up under a label or a point steps aside (it is hidden) */
-  occ.forEach(function(t){if(!t.tick) return;if(occ.some(function(p){return !p.tick&&t.x<p.x+p.w-1&&t.x+t.w>p.x+1&&t.y<p.y+p.h-1&&t.y+t.h>p.y+1;})) s.p[t.tick]='';});
+  /* tick numbers go on last, on top. A tick number under a label or a point is left out (the label says it). A tick number
+     that a line crosses moves to the other side of its axis (x numbers above the x-axis, y numbers right of the y-axis);
+     if a line crosses there too, it stays where it is, drawn UNDER the lines so it never cuts a line. A number that a
+     straight level or upright line runs right through (like y = 3 through the 3) is left out: it could not be read. */
+  function thru(q){var cx=q.x+q.w/2,cy=q.y+q.h/2;for(var k=2;k<segs.length;k++){var g=segs[k];
+    if(Math.abs(g[1]-g[3])<0.5&&Math.abs(g[1]-cy)<4&&Math.min(g[0],g[2])<cx&&Math.max(g[0],g[2])>cx) return true;
+    if(Math.abs(g[0]-g[2])<0.5&&Math.abs(g[0]-cx)<4&&Math.min(g[1],g[3])<cy&&Math.max(g[1],g[3])>cy) return true;}return false;}
+  var low=[];
+  function hitL(q,pd){pd=pd||-1;return occ.some(function(p){return !p.tick&&q.x<p.x+p.w+pd&&q.x+q.w+pd>p.x&&q.y<p.y+p.h+pd&&q.y+q.h+pd>p.y;});}
+  function hitS(q){for(var k=2;k<segs.length;k++) if(segHit(segs[k],q)) return true;return false;}
+  occ.forEach(function(t){if(!t.tick) return;var a=t.t,bl=hitL(t),bs=!bl&&hitS(t);
+    if(bs){var q=rectOf(t.alt[0],t.alt[1],a[2],MINF,t.alt[2]);
+      if(q.x>=2&&q.y>=2&&q.x+q.w<=W-2&&q.y+q.h<=H-2&&!hitL(q,5)&&!hitS(q)&&!occ.some(function(p){return p!==t&&p.tick&&q.x<p.x+p.w&&q.x+q.w>p.x&&q.y<p.y+p.h&&q.y+q.h>p.y;})){
+        t.x=q.x;t.y=q.y;t.w=q.w;t.h=q.h;a=[t.alt[0],t.alt[1],a[2],t.alt[2]];bl=bs=false;}}
+    if(bl||(bs&&thru(t))) return; var n0=s.p.length; s.text(a[0],a[1],a[2],{size:10.5,c:C.muted,anchor:a[3],halo:true});
+    if(bs) low.push(s.p.splice(n0,1)[0]);});
+  if(low.length) s.p.splice.apply(s.p,[under,0].concat(low));
   s.X=X;s.Y=Y;s.box2=[L,T,W-R,H-B];
   return s;
 }
@@ -471,9 +490,9 @@ function numline(o){
 
 /* ---------- balance scale ---------- */
 function balance(o){
-  var W=330,H=184,cx=165,by=36,half=104,s=new Svg(W,H,o.label||'balance model'),t=(o.tilt||0)*Math.PI/180;
+  var W=330,H=o.note?194:184,cx=165,by=36,half=104,s=new Svg(W,H,o.label||'balance model'),t=(o.tilt||0)*Math.PI/180,base=160;
   var ends=[[cx-half*Math.cos(t),by+half*Math.sin(t)],[cx+half*Math.cos(t),by-half*Math.sin(t)]];
-  s.poly([[cx,by+4],[cx-16,H-24],[cx+16,H-24]],C.navyBg,C.navy,1.5); s.rect(cx-46,H-24,92,8,C.navy,null,0,3);
+  s.poly([[cx,by+4],[cx-16,base],[cx+16,base]],C.navyBg,C.navy,1.5); s.rect(cx-46,base,92,8,C.navy,null,0,3);
   s.line(ends[0][0],ends[0][1],ends[1][0],ends[1][1],C.navy,5); s.circ(cx,by,5,C.gold,C.navy,1.5);
   [o.L,o.R].forEach(function(items,side){var ex=ends[side][0],ey=ends[side][1],py=ey+74;
     s.line(ex,ey,ex-52,py,C.muted,1.2);s.line(ex,ey,ex+52,py,C.muted,1.2);
@@ -484,7 +503,7 @@ function balance(o){
     rows.forEach(function(row,ri){var tw=row.reduce(function(a,b){return a+b.w+3;},-3),xx=ex-tw/2,yy=py-2-26*(ri+1);
       row.forEach(function(b){s.box(xx,yy,b.w,24,b.t,b.k,12.5,4);xx+=b.w+3;});});
     var lbl=side?o.lblR:o.lblL;if(lbl) s.text(ex,py+28,lbl,{size:13,weight:700,c:C.navy});});
-  if(o.note) s.text(cx,H-4,o.note,{size:11.5,font:'sans',c:o.noteK==='ans'?C.green:C.muted,weight:600});
+  if(o.note) s.text(cx,H-5,o.note,{size:11.5,font:'sans',c:o.noteK==='ans'?C.green:C.muted,weight:600});
   return s;
 }
 
@@ -523,7 +542,7 @@ function tape(o){
 
 /* ---------- inverse-operation chain ---------- */
 function chain(o){
-  var n=o.ops.length+1,bw=o.bw||46,W=o.w||Math.max(300,n*bw+(n-1)*58+16),m=8,aw=(W-2*m-n*bw)/(n-1),H=152,s=new Svg(W,H,o.label||'inverse operations');
+  var n=o.ops.length+1,bw=o.bw||46,W=o.w||Math.max(300,n*bw+(n-1)*58+16),m=8,aw=(W-2*m-n*bw)/(n-1),fl=o.ops.some(function(q){return q.flip;}),H=fl?168:152,s=new Svg(W,H,o.label||'inverse operations');
   function bx(i){return m+i*(bw+aw);}
   s.text(4,13,o.top||'Build it:',{size:11,font:'sans',anchor:'start',c:C.muted,weight:600});
   s.text(4,78,o.bottom||'Undo it (work backward):',{size:11,font:'sans',anchor:'start',c:C.muted,weight:600});
@@ -533,7 +552,7 @@ function chain(o){
     if(i<n-1){var op=o.ops[i];s.arrow(bx(i)+bw+3,y1+15,bx(i+1)-3,y1+15,C.navy,1.6,7);s.text((bx(i)+bw+bx(i+1))/2,y1+8,op.f,{size:12,weight:700});
       s.arrow(bx(i+1)-3,y2+15,bx(i)+bw+3,y2+15,op.flip?C.neg:C.navy,1.6,7);
       s.text((bx(i)+bw+bx(i+1))/2,y2+47,op.u,{size:12,weight:700,c:op.flip?C.neg:C.navy});
-      if(op.flip) s.text((bx(i)+bw+bx(i+1))/2,y2-4,'FLIP!',{size:10.5,weight:700,c:C.neg,font:'sans'});}}
+      if(op.flip) s.text((bx(i)+bw+bx(i+1))/2,y2+64,'FLIP the sign!',{size:10.5,weight:700,c:C.neg,font:'sans'});}}
   return s;
 }
 
@@ -656,7 +675,7 @@ function rectP(o){
   s.rect(x0,y0,w,h,C.navyBg,C.navy,2,2);
   s.text(x0+w/2,y0-8,o.l,{size:13,weight:700,c:o.lK==='want'?C.goldTx:C.navy});s.text(x0+w/2,y0+h+18,o.l,{size:13,weight:700,c:o.lK==='want'?C.goldTx:C.navy});
   s.text(x0-8,y0+h/2+5,o.w,{size:13,weight:700,anchor:'end',c:o.wK==='want'?C.goldTx:C.navy});s.text(x0+w+8,y0+h/2+5,o.w,{size:13,weight:700,anchor:'start',c:o.wK==='want'?C.goldTx:C.navy});
-  if(o.mid) s.text(x0+w/2,y0+h/2+5,o.mid,{size:12,font:'sans',weight:600});
+  if(o.mid) s.text(x0+w/2,y0+h/2+5,o.mid,{size:12,weight:700});
   if(o.foot) s.text(W/2,H-6,o.foot,{size:12,weight:700,c:o.footK==='ans'?C.green:C.navy});
   return s;
 }
@@ -900,7 +919,7 @@ V.put({
  p1a:function(){return V.machine({inp:'3',rule:'2x + 1',out:'7',outK:'ans',name:'f(x) =',label:'function machine'});},
  p1b:function(){return V.mapping({w:240,ins:[1,2,3],outs:[5,8],pairs:[[0,0],[1,0],[2,1]],hl:[0,1,2],hlK:'ans',label:'function mapping'});},
  p1c:function(){return V.mapping({w:240,ins:[1,2,3],outs:[4,6,9],pairs:[[0,0],[1,1],[1,2],[2,2]],hl:[1,2],label:'not a function mapping'});},
- p1d:function(){return V.mapping({ins:[1,2],outs:[3,5,7],pairs:[[0,0],[1,1],[0,2]],label:'mapping for (1,3),(2,5),(1,7)'});},
+ p1d:function(){return V.mapping({ins:[1,2],outs:[3,5,7],pairs:[[0,0],[1,1],[0,2]],hl:[0,2],label:'mapping for (1,3),(2,5),(1,7): input 1 has two arrows'});},
  p2a:function(){return V.machine({inp:'4',rule:'2x + 1',out:'9',outK:'ans',name:'f(x) =',label:'f of 4 is 9'});},
  p2b:function(){return G({w:260,xmin:-1,xmax:6,ymin:-1,ymax:12,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:2}],guides:[{x:4,y:9}],pts:[{x:4,y:9,k:'ans',lbl:'(4, 9)',pos:'se'}],label:'point 4, 9'});},
  p2c:function(){return V.tbl({xs:['x','2x','2x + 1'],ys:['4','2(4) = 8','8 + 1 = ?'],names:['step','value'],cw:84,k:['given','given','want'],label:'substitution table'});},
@@ -940,8 +959,8 @@ V.items('t1-try',[
   post:function(){return V.mapping({ins:[1,2,3],outs:[5,6,7,8],pairs:[[0,0],[1,1],[2,2],[1,3]],hl:[1,3],label:'mapping of the table'});}},
  {id:'y22',n:2,q:'Is the graph of <span class="math">y = 3</span> (a flat line) a function?',kind:'mc',opts:[['yes','Yes'],['no','No']],ans:'yes',
   why:{no:'Try the vertical line test: any vertical line crosses a flat line only ONCE.'},ok:'Every vertical line crosses it once. Each x has the single output 3.',
-  pre:function(){return G({xmin:-4,xmax:4,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],label:'flat line with vertical test line'});},
-  post:function(){return G({xmin:-4,xmax:4,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],pts:[{x:1.5,y:3,k:'ans',lbl:'1 crossing',pos:'ne'}],label:'one crossing'});}},
+  pre:function(){return G({xmin:-4,xmax:6,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],label:'flat line with vertical test line'});},
+  post:function(){return G({xmin:-4,xmax:6,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],pts:[{x:1.5,y:3,k:'ans',lbl:'1 crossing',pos:'ne'}],label:'one crossing'});}},
  {id:'y23',n:3,q:'Is this mapping a function?',kind:'mc',opts:[['yes','Yes'],['no','No']],ans:'yes',
   why:{no:'Check each INPUT: −1, 0 and 4 each have exactly one arrow. Sharing an output is fine.'},ok:'Every input has exactly one arrow.',
   pre:function(){return V.mapping({ins:[-1,0,4],outs:[2,7],pairs:[[0,0],[1,1],[2,0]],label:'mapping'});},
@@ -964,7 +983,7 @@ V.items('t2-try',[
   post:function(){return V.tbl({xs:[0,1,2,3],ys:[2,5,8,11],names:['x','g(x)'],k:[null,null,'ans',null],label:'g of 2'});}},
  {id:'y26',n:3,q:'<span class="math">f(x) = 2x + 1</span>. Find x so that <span class="math">f(x) = 13</span>.',kind:'num',ph:'x = ?',ans:6,
   wrong:[[27,'27 is f(13). Here 13 is the OUTPUT. Solve 2x + 1 = 13.'],[7,'Subtract 1 first: 2x = 12.'],[12,'12 is 2x. Divide by 2.']],ok:'2x + 1 = 13 → 2x = 12 → x = 6.',
-  pre:function(){return G({xmin:-2,xmax:8,ymin:-2,ymax:16,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:3.6}],hlines:[{y:13,k:'want',lbl:'output 13'}],label:'solve f(x) = 13'});},
+  pre:function(){return V.machine({inp:'?',inK:'want',rule:'2x + 1',name:'f(x) =',out:'13',outK:'given',label:'function machine: which input gives 13?'});},preCap:'The output is 13. Work backward to find the input.',
   post:function(){return G({xmin:-2,xmax:8,ymin:-2,ymax:16,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:3.6}],guides:[{x:6,y:13}],pts:[{x:6,y:13,k:'ans',lbl:'(6, 13)',pos:'nw'}],label:'solved'});}}
 ]);
 
@@ -972,8 +991,8 @@ V.items('t2-try',[
 V.items('t3-mis',[{id:'m23',n:'FIND THE MISTAKE',kind:'pick',q:'Max graphed <span class="math">y = 3x − 2</span>. Click the line with the mistake.',
   lines:['b = −2, so plot the point (−2, 0)','Slope 3: from there go up 3, right 1','Draw the line'],ans:0,why:{1:'Up 3, right 1 is the right way to use slope 3. The start point was wrong.',2:'Drawing the line is fine. The start point was wrong.'},
   ok:'Line 1. b is on the y-axis: plot (0, −2), not (−2, 0).',
-  pre:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:6,lbl:'Max’s line',lx:-3.6}],pts:[{x:-2,y:0,lbl:'(−2, 0)',pos:'se'}],label:'Max graph'});},
-  post:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'right 1',rise:'up 3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
+  pre:function(){return G({xmin:-3,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:6,lbl:'Max’s line',lx:-2.9}],pts:[{x:-2,y:0,lbl:'(−2, 0)',pos:'se'}],label:'Max graph'});},
+  post:function(){return G({xmin:-3,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'right 1',rise:'up 3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
 V.items('t3-try',[
  {id:'y27',n:1,q:'Find the slope of the line through (−1, −1) and (1, 3).',kind:'num',ph:'m = ?',ans:2,
   wrong:[[0.5,'You did run ÷ rise. Slope = rise ÷ run = 4 ÷ 2.'],[4,'4 is the rise. Divide by the run, 2.'],[1,'Subtract the coordinates: 3 − (−1) = 4 and 1 − (−1) = 2.']],ok:'rise 4 ÷ run 2 = 2.',

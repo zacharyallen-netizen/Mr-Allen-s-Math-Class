@@ -143,7 +143,7 @@ var M1 = (function () {
     var yEdge = x0 >= 0, xEdge = y0 >= 0;
     var L = (yEdge ? maxYW + 9 : 10);
     var B = H - ((xEdge ? tfs + 8 : 10) + (o.xtitle ? 17 : 0));
-    var T = o.ytitle ? 30 : 10, R = W - 10;
+    var T = o.ytitle ? 30 : o.banner ? 36 : 10, R = W - 10;
     function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
     function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
     var id = 'cp' + (++uid), mk = 'mk' + uid;
@@ -197,6 +197,7 @@ var M1 = (function () {
     if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
     if (o.xtitle) s += text((L + R) / 2, H - 5, o.xtitle + ' →', { fs: 12.5, c: C.axis, fam: 'Inter,system-ui,sans-serif', b: true });
     if (o.ytitle) s += text(4, 17, '↑ ' + o.ytitle, { fs: 12.5, c: C.axis, a: 'start', fam: 'Inter,system-ui,sans-serif', b: true });
+    if (o.banner) s += pill(W / 2, 18, o.banner, { fs: 12.5 }); /* a note above the grid, clear of every tick label */
     // lines, curves, segments (clipped)
     var cl = '', labels = [];
     items.forEach(function (it) {
@@ -223,6 +224,7 @@ var M1 = (function () {
       } else if (it.t === 'seg') {
         var cc = it.c || C.navy, mkr = it.arrow ? ' marker-end="url(#' + mk + (cc === C.gold ? 'g' : cc === C.green ? 'G' : 'n') + ')"' : '';
         cl += '<line x1="' + r1(sx(it.x1)) + '" y1="' + r1(sy(it.y1)) + '" x2="' + r1(sx(it.x2)) + '" y2="' + r1(sy(it.y2)) + '" stroke="' + cc + '" stroke-width="' + (it.w || 2) + '"' + (it.dash ? ' stroke-dasharray="4 4"' : '') + mkr + '/>';
+        P.segs.push([sx(it.x1), sy(it.y1), sx(it.x2), sy(it.y2)]); /* labels keep off guide lines too */
       }
     });
     s += '<g clip-path="url(#' + id + ')">' + cl + '</g>';
@@ -241,7 +243,7 @@ var M1 = (function () {
     items.forEach(function (it) {
       if (it.t !== 'pt') return;
       var X = sx(it.x), Y = sy(it.y), col = it.c || C.navy, r = it.r || 4.5;
-      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
+      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.ring ? 'none' : it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
       both({ x: X - r - 1, y: Y - r - 1, w: 2 * r + 2, h: 2 * r + 2 });
       if (it.label) labels.unshift({ s: it.label, c: it.lc || col, at: [X, Y], pill: it.pill, pt: true, id: it.lid });
     });
@@ -251,21 +253,26 @@ var M1 = (function () {
     labels.forEach(function (lb) {
       var lfs = lb.fs || fs, w = tw(lb.s, lfs) + (lb.pill ? 10 : 2), h = lfs + (lb.pill ? 6 : 3), cands = [], pos;
       if (lb.pt) {
-        var X = lb.at[0], Y = lb.at[1], ox = w / 2 + 8, oy = h / 2 + 6;
-        cands = [[X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]];
+        var X = lb.at[0], Y = lb.at[1];
+        /* rings of spots around the point: the nearest spot that touches no line, curve or other label wins */
+        for (var ring = 0; ring < 4; ring++) {
+          var ox = w / 2 + 8 + ring * 12, oy = h / 2 + 6 + ring * 10;
+          cands.push([X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]);
+        }
         pos = PV.pick(cands, w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else if (lb.fixed) {
         pos = PV.pick([lb.fixed], w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else {
         var fr = lb.fr != null ? [lb.fr] : [], base = [0.86, 0.14, 0.7, 0.3, 0.5, 0.94, 0.06, 0.6, 0.4];
         fr = fr.concat(base);
-        fr.forEach(function (f) {
+        for (var fi = 0.04; fi < 0.99; fi += 0.04) fr.push(+fi.toFixed(2)); /* finer spots if the usual ones are taken */
+        [0, 12].forEach(function (extra) { fr.forEach(function (f) {
           var A, Bp, ux, uy;
           if (lb.seg) { A = lb.seg[0]; Bp = lb.seg[1]; ux = Bp[0] - A[0]; uy = Bp[1] - A[1]; var px = A[0] + ux * f, py = A[1] + uy * f; }
           else { var n = lb.pts.length, ii = Math.min(n - 2, Math.max(1, Math.round(f * (n - 1)))); px = lb.pts[ii][0]; py = lb.pts[ii][1]; ux = lb.pts[ii + 1][0] - lb.pts[ii - 1][0]; uy = lb.pts[ii + 1][1] - lb.pts[ii - 1][1]; }
-          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5;
+          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5 + extra;
           cands.push([px + nx * dd, py + ny * dd]); cands.push([px - nx * dd, py - ny * dd]);
-        });
+        }); });
         pos = P.pick(cands, w, h); PV.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       }
       if (lb.pill) lt += pill(pos[0], pos[1], lb.s, { fs: lfs });
@@ -469,30 +476,44 @@ var M1 = (function () {
   }
 
   /* ---------- number-line hops ---------- */
+  // When the jumps are too narrow to draw one by one (less than 24 px each), every term is a small dot on the line,
+  // the first jump gets its arc and +d label, and a bracket over the whole trip says how many jumps there are.
   function hops(o) {
-    var W = o.w || 300, H = o.h || (o.note ? 134 : 116), L = 16, R = W - 16, y = H - (o.note ? 44 : 30), id = 'hp' + (++uid);
+    var W = o.w || 300, L = 16, R = W - 16, id = 'hp' + (++uid);
     function X(v) { return L + (v - o.min) / (o.max - o.min) * (R - L); }
-    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    var end = o.start + o.step * o.count, jw = Math.abs(X(o.start + o.step) - X(o.start)), squeeze = jw < 24 && o.count > 4;
+    var H = o.h || ((o.note ? 134 : 116) + (squeeze ? 16 : 0)), y = H - (o.note ? 44 : 30);
+    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, o.c || C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
     s += '<line x1="' + L + '" y1="' + y + '" x2="' + R + '" y2="' + y + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
     for (var v = o.min; v <= o.max + 1e-9; v += o.tick) {
       var big = Math.abs(v / o.lab - Math.round(v / o.lab)) < 1e-9;
       s += '<line x1="' + r1(X(v)) + '" y1="' + (y - (big ? 6 : 3)) + '" x2="' + r1(X(v)) + '" y2="' + (y + (big ? 6 : 3)) + '" stroke="' + C.axis + '" stroke-width="1.2"/>';
       if (big) s += text(X(v), y + 19, fmt(v), { fs: 10, c: C.axis });
     }
-    var cur = o.start, hopC = o.c || C.navy;
-    for (var i = 0; i < o.count; i++) {
-      var a = X(cur), b = X(cur + o.step), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
-      s += '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
-      if (o.every || i === 0) s += text((a + b) / 2, y - h / 2 - 8, (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step)), { fs: 10, c: hopC, b: true });
-      cur += o.step;
+    if (squeeze) s = s.replace(/<line x1="[^"]*" y1="[^"]*" x2="[^"]*" y2="[^"]*" stroke="#5a6680" stroke-width="1.2"\/>/g, function (m) { return /y1="(\d+)"/.exec(m)[1] == y - 6 ? m : ''; }); /* keep only the numbered ticks */
+    var hopC = o.c || C.navy, stepTx = (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step));
+    function hop(i, lab) {
+      var a = X(o.start + o.step * i), b = X(o.start + o.step * (i + 1)), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
+      var t = '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
+      if (lab) t += text((a + b) / 2, y - h / 2 - 9, stepTx, { fs: 10, c: hopC, b: true });
+      return t;
+    }
+    if (!squeeze) { for (var i = 0; i < o.count; i++) s += hop(i, o.every || i === 0); }
+    else {
+      for (var k = 1; k < o.count; k++) s += '<circle cx="' + r1(X(o.start + o.step * k)) + '" cy="' + y + '" r="2.6" fill="' + hopC + '"/>';
+      var a0 = X(o.start), a1 = X(o.start + o.step);
+      s += '<path d="M' + r1(a0) + ',' + (y - 4) + ' Q' + r1((a0 + a1) / 2) + ',' + (y - 22) + ' ' + r1(a1) + ',' + (y - 4) + '" fill="none" stroke="' + hopC + '" stroke-width="1.8"/>';
+      s += text(a1 + 3, y - 20, stepTx + ' each jump', { fs: 10, c: hopC, b: true, a: 'start' });
+      var ya = 42, xa = X(o.start), xb = X(end);
+      s += '<path d="M' + r1(xa) + ',' + (ya + 8) + ' L' + r1(xa) + ',' + ya + ' L' + r1(xb) + ',' + ya + ' L' + r1(xb) + ',' + (ya + 8) + '" fill="none" stroke="' + C.muted + '" stroke-width="1.4"/>';
+      s += text((xa + xb) / 2, ya - 6, o.done ? o.count + ' jumps × ' + fmt(Math.abs(o.step)) + ' = ' + fmt(Math.abs(o.step) * o.count) : o.count + ' jumps of ' + stepTx, { fs: 12.5, c: C.navy, b: true, fam: 'Inter,system-ui,sans-serif' });
     }
     s += '<circle cx="' + r1(X(o.start)) + '" cy="' + y + '" r="5" fill="' + C.navy + '"/>';
     var sl = o.startLab || fmt(o.start), sw = tw(sl, 11) / 2 + 2;
     s += text(Math.min(Math.max(X(o.start), sw), W - sw), 14, sl, { fs: 11, c: C.navy, b: true });
-    var end = o.start + o.step * o.count;
     s += '<circle cx="' + r1(X(end)) + '" cy="' + y + '" r="5" fill="' + (o.done ? C.green : C.gold) + '" stroke="#8a6500" stroke-width="1"/>';
-    var ex = Math.min(Math.max(X(end), 30), W - 30);
-    if (o.done) s += text(ex, 14, o.endLab || fmt(end), { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, o.endQ || '?', { fs: 11 });
+    var el = o.done ? (o.endLab || fmt(end)) : (o.endQ || '?'), ew = tw(el, 11) / 2 + 8, ex = Math.min(Math.max(X(end), ew), W - ew);
+    if (o.done) s += text(ex, 14, el, { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, el, { fs: 11 });
     if (o.note) s += text(W / 2, H - 6, o.note, { fs: 10.5, c: C.muted, fam: 'Inter,system-ui,sans-serif', halo: false });
     return s + '</svg>';
   }

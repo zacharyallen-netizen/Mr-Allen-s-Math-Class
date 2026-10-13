@@ -181,12 +181,28 @@ function dosPic(a,b,o){o=o||{};var A=112,Bs=42,s='',L=34,T=30,solved=o.solved,lb
   s+=arrow(L+A+10,T+A/2,L+A+42,T+A/2,C.navy,2);
   var x2=L+A+52,R=A-Bs;
   s+=rc(x2,T+10,A,R,C.navyL,C.navy,1.8)+rc(x2+A,T+10,Bs,R,'#C9D3E6',C.navy,1.8);
-  s+=tx(x2+(A+Bs)/2,T+2,solved?'('+a+' + '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
-  s+=tx(x2+A+Bs+16,T+10+R/2,solved?'('+a+' − '+b+')':'?',{size:13,mono:true,bold:true,fill:lb,rot:solved?90:0});
+  s+=tx(x2+(A+Bs)/2,T+2,solved?'width ('+a+' + '+b+')':'width ?',{size:13,mono:true,bold:true,fill:lb});
+  /* height of the new rectangle: a double arrow on its right side, label written level underneath */
+  var hx=x2+A+Bs+9;s+=arrow(hx,T+10+R/2,hx,T+12,lb,1.6)+arrow(hx,T+10+R/2,hx,T+8+R,lb,1.6);
+  s+=tx(hx+4,T+10+R+20,solved?'height ('+a+' − '+b+')':'height ?',{size:12,mono:true,bold:true,fill:lb,anchor:'end'});
   s+=tx(x2+A+Bs/2,T+10+R/2+4,'moved',{size:9.5,fill:C.navy,rot:-90});
-  var w=Math.max(x2+A+Bs+32,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
+  var w=Math.max(x2+A+Bs+16,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
   if(o.foot)s+=tag(w/2,h-10,o.foot.t,{size:12.5,mono:true,fill:o.foot.k==='ans'?C.green:C.goldD});
   return svg(w,h,s,o.label||'difference of squares picture');}
+/* ---------- quadratic formula card: the item's own equation on top, then a, b, c, the discriminant and the formula ----------
+   s: 0 = all unknown, 1 = a, b, c found (step answer), 'given' = a, b, c shown as givens, 'sub' = givens put in the formula,
+      2 = discriminant found, 3 = formula with numbers, 4 = solutions */
+function fcard(a,b,c,s){var gv=s==='sub'||s==='given',o='',k=gv?1:s,Tp=34,ok1=k>=1,ok2=k>=2&&!gv;
+  var eq=pstr([c,b,a])+' = 0';o+=tx(180,20,eq,{size:14,mono:true,bold:true});
+  /* gv: a, b, c are read straight from the equation (given, navy); otherwise a revealed step shows green */
+  [['a',a],['b',b],['c',c]].forEach(function(q,i){var x=20+i*82;o+=rc(x,Tp,70,40,gv?C.navyL:ok1?C.greenL:C.goldL,gv?C.navy:ok1?C.green:C.gold,1.8,6)+tx(x+35,Tp+26,q[0]+' = '+(ok1?fmt(q[1]):'?'),{size:13,mono:true,bold:true,fill:gv?C.navy:ok1?C.green:C.goldD});});
+  var d=b*b-4*a*c;o+=rc(270,Tp,80,40,ok2?C.greenL:C.goldL,ok2?C.green:C.gold,1.8,6)+tx(310,Tp+16,'b² − 4ac',{size:10.5,mono:true,fill:ok2?C.green:C.goldD})+tx(310,Tp+33,ok2?fmt(d):'?',{size:13,mono:true,bold:true,fill:ok2?C.green:C.goldD});
+  var p=function(v){return v<0?'('+fmt(v)+')':fmt(v);},y=Tp+80;
+  var num=s==='sub'?'−('+fmt(b)+') ± √('+p(b)+'² − 4('+fmt(a)+')('+fmt(c)+'))':k>=3?'−('+fmt(b)+') ± √'+fmt(d):'−b ± √(b² − 4ac)',den=s==='sub'||k>=3?'2('+fmt(a)+')':'2a';
+  var nf=num.length>18?12.5:14,bw=Math.max(150,tw(num,fz(nf),true)+12),cx=Math.max(200,96+bw/2);
+  o+=tx(cx-bw/2-12,y+8,'x =',{size:15,mono:true,bold:true,anchor:'end'})+tx(cx,y-4,num,{size:nf,mono:true,bold:true,fill:k>=3?C.green:C.navy})+ln(cx-bw/2,y+4,cx+bw/2,y+4,C.navy,2)+tx(cx,y+24,den,{size:14,mono:true,bold:true,fill:k>=3?C.green:C.navy});
+  if(k>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+fmt((-b+r)/(2*a))+'  or  x = '+fmt((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
+  return svg(360,k>=4?y+68:y+40,o,'quadratic formula card for '+eq);}
 /* ---------- number line with marked points ---------- */
 function pointsLine(o){var w=o.w||360,y=o.y||58,A=axisX({x0:22,x1:w-22,y:y,min:o.min,max:o.max,step:o.step||1,lab:o.lab||1,title:o.title}),s='',X=A.X;
   (o.pts||[]).forEach(function(p,i){var col=p.c||C.navy;s+=ci(X(p.v),y,6,p.hollow?'#fff':col,col,2.2);
@@ -373,6 +389,6 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 return {C:C,svg:svg,ln:ln,tx:tx,rc:rc,ci:ci,pg:pg,pl:pl,arrow:arrow,tag:tag,fmt:fmt,sgn:sgn,sc:sc,esc:esc,axisX:axisX,
   dotPlot:dotPlot,boxRow:boxRow,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
-  dosPic:dosPic,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
+  dosPic:dosPic,fcard:fcard,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
   judge:judge,check:check,mc:mc,SPEC:SPEC,EX:EX,FIG:FIG,INT:INT,render:render,drawEx:drawEx,uid:function(){return ++uid;}};
 })();

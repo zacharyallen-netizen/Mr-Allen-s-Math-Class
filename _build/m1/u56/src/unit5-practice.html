@@ -193,24 +193,29 @@ SP.b3={hint:'Read the max (right whisker) and the min (left whisker). Then subtr
   viz:function(st){return bp({min:sv(st)?C.green:C.gold,max:sv(st)?C.green:C.gold},sv(st)?[{t:'min '+BF[0],c:C.green},null,null,null,{t:'max '+BF[4],c:C.green}]:[{t:'min',c:C.goldD},null,null,null,{t:'max',c:C.goldD}]);}};
 var BUF=BF[3]+1.5*(BF[3]-BF[1]);
 SP.b4={hint:'IQR = 9 − 5 = 4. Upper fence = 9 + 1.5 × 4.',type:'num',ans:BUF,fb:[[BF[3]+(BF[3]-BF[1]),'That is Q3 + IQR. Use 1.5 × IQR = 6.'],[1.5*(BF[3]-BF[1]),'6 is 1.5 × IQR. Now add it to Q3.']],
-  viz:function(st){return M.boxPlots([{f:BF,parts:[null,null,null,null,{t:'max 14'}]}],{min:0,max:16,step:1,lab:2,grid:1,rowH:92,label:'box plot with fence',
-    after:function(X,ay,top){var x=X(sv(st)?BUF:15.6),c=sv(st)?C.green:C.gold;return ln(x,top,x,ay,c,2.4,'6 4')+tag(x-4,ay-10,sv(st)?'fence '+f(BUF):'fence ?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'end'});}});}};
+  viz:function(st){return M.boxPlots([{f:BF,extra:function(X,cy){return tag(X(BF[4])+4,cy+31,'max '+BF[4],{size:11,mono:true,fill:C.navy,anchor:'end'});}}],{min:0,max:16,step:1,lab:2,grid:1,rowH:92,top:26,label:'box plot with fence',
+    after:function(X,ay,top){if(sv(st)){var x=X(BUF);return ln(x,6,x,ay,C.green,2.4,'6 4')+tag(x-4,18,'fence '+f(BUF),{size:11,mono:true,fill:C.green,anchor:'end'});}
+      return tag(180,16,'fence = Q3 + 1.5 × IQR = ?',{size:11,mono:true,fill:C.goldD})+M.arrow(X(BF[3]),top+6,X(16),top+6,C.gold,2.2,'6 4')+ln(X(BF[3]),top+1,X(BF[3]),top+11,C.gold,2.2);}});}};
 SP.b4b={type:'mc',ans:BF[4]>BUF?'yes':'no',ok:'14 is less than the upper fence 15, so it is inside the fences.',fb:{yes:'Compare 14 to the fence, 15. Is 14 past the fence?'}};
 /* ---------- Part C: scatter ---------- */
 var SC=[[1,65],[2,70],[3,78],[4,82],[5,90]],SCO={xmin:0,xmax:6,xstep:1,ymin:60,ymax:100,ystep:5,ylab:10,h:280,xTitle:'Hours studied',yTitle:'Test score',line:{a:60,b:6,label:'y = 6x + 60',at:[0.2,97]}};
 function scx(e){var r={},k;for(k in SCO)r[k]=SCO[k];for(k in e)r[k]=e[k];return r;}
 SP.c1={type:'mc',ans:'positive',ok:'As hours studied increases, test score tends to increase.',fb:{negative:'Negative means one goes up while the other goes down. Here both go up.',none:'The dots follow a clear upward path, so there is a correlation.',constant:'Constant would mean the score never changes. The scores go up.'},
-  viz:function(st){return M.scatter(SC,scx({line:null,label:'hours studied and test score',after:function(X,Y){return sv(st)?M.arrow(X(1),Y(62),X(5),Y(86),C.green,2.4,'6 4')+tag(X(3.6),Y(72),'up and up = positive',{size:11,fill:C.green}):'';}}));}};
+  viz:function(st){return M.scatter(SC,scx({line:null,label:'hours studied and test score',after:function(X,Y){return sv(st)?M.arrow(X(1),Y(62),X(5),Y(86),C.green,2.4,'6 4')+tag(X(3.2),Y(68),'up and up = positive',{size:11,fill:C.green,anchor:'start'}):'';}}));}};
 var P35=6*3.5+60;
 SP.c2={hint:'Put 3.5 in for x: 6(3.5) + 60. Multiply first, then add.',type:'num',ans:P35,fb:[[21,'21 is 6 × 3.5. Now add the 60.'],[6*3+60,'That is for 3 hours. Use 3.5.'],[6*4+60,'That is for 4 hours. Use 3.5.']],
   viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter(SC,scx({guides:[{x:3.5,y:P35,toY:sv(st),color:c}],marks:[{x:3.5,y:P35,color:c,label:sv(st)?'(3.5, '+P35+')':'(3.5, ?)',anchor:'end',dx:-8,dy:-10}]}));}};
 SP.c3={hint:'The slope is the number multiplied by x in y = 6x + 60.',type:'num',ans:6,fb:[[60,'60 is the starting score (the y-intercept). The slope is the number multiplied by x.'],[66,'66 is the predicted score for 1 hour. The question asks how much it goes up each hour.']],
-  viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter(SC,scx({after:function(X,Y){return ln(X(1),Y(66),X(2),Y(66),c,2.6)+ln(X(2),Y(66),X(2),Y(72),c,2.6)+tag(X(1.5),Y(66)+16,'1 hour',{size:10.5,fill:C.navy})+tag(X(2)+6,Y(69)+4,sv(st)?'+6':'+ ?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'start'});}}));}};
+  viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter(SC,scx({after:function(X,Y){return ln(X(1),Y(66),X(2),Y(66),c,2.6)+ln(X(2),Y(66),X(2),Y(72),c,2.6)+tag(X(1.5)+8,Y(66)+19,'1 hour',{size:10.5,fill:C.navy})+tag(X(2)+6,Y(69)+4,sv(st)?'+6':'+ ?',{size:11,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'start'});}}));}};
 SP.c4={hint:'Put 0 in for x: 6(0) + 60.',type:'num',ans:60,fb:[[6,'6 is the slope. The y-intercept is the number added at the end.'],[66,'Plug in x = 0, not x = 1.']],
-  viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter(SC,scx({marks:[{x:0,y:60,color:c,label:sv(st)?'(0, 60)':'(0, ?)',dx:8,dy:-10}]}));}};
+  viz:function(st){var c=sv(st)?C.green:C.gold;return M.scatter(SC,scx({ymin:50,marks:[{x:0,y:60,color:c,label:sv(st)?'(0, 60)':'(0, ?)',dx:10,dy:20}]}));}};
 /* ---------- Part D ---------- */
-function resv(x,act,st){var pred=6*x+60,c=sv(st)?C.green:C.gold;return M.scatter([[x,act]],scx({label:'residual picture',marks:[{x:x,y:pred,hollow:true,color:C.navy,tc:C.navy,label:'predicted '+pred,anchor:'start',dx:9,dy:act>pred?16:-6}],
-  after:function(X,Y){return ln(X(x),Y(act),X(x),Y(pred),c,3)+tag(X(x)-9,Y((act+pred)/2)+4,sv(st)?M.sgn(act-pred):'?',{size:11.5,mono:true,fill:sv(st)?C.green:C.goldD,anchor:'end'})+tag(X(x)+9,Y(act)+(act>pred?-6:16),'actual '+act,{size:10.5,mono:true,anchor:'start'});}}));}
+function resv(x,act,st){var pred=6*x+60,c=sv(st)?C.green:C.gold,lo=Math.floor((Math.min(act,pred)-8)/2)*2,hi=lo+16,up=act>pred;
+  /* the line rises to the right, so the space above-left and below-right of it is empty: labels go there */
+  return M.scatter([[x,act]],scx({ymin:lo,ymax:hi,ystep:1,ylab:2,line:{a:60,b:6,label:'y = 6x + 60',at:[0.2,hi-1]},label:'residual picture',
+    marks:[{x:x,y:pred,hollow:true,color:C.navy,tc:C.navy,label:'predicted '+pred,anchor:up?'start':'end',dx:up?9:-9,dy:up?16:-8}],
+  after:function(X,Y){return ln(X(x),Y(act),X(x),Y(pred),c,3)+tag(X(x)+(up?-9:9),Y((act+pred)/2)+4,sv(st)?M.sgn(act-pred):'?',{size:11.5,mono:true,fill:sv(st)?C.green:C.goldD,anchor:up?'end':'start'})
+    +tag(X(x)+(up?-9:9),Y(act)+(up?-8:16),'actual '+act,{size:10.5,mono:true,anchor:up?'end':'start'});}}));}
 SP.d1={hint:'Residual = actual − predicted = 82 − 84.',type:'num',ans:82-(6*4+60),fb:[[2,'That is predicted − actual. Do actual − predicted: 82 − 84.'],[84,'84 is the predicted score. Subtract it from the actual score.']],viz:function(st){return resv(4,82,st);}};
 function lurk(st){var s='',q=!sv(st);s+=rc(105,10,150,40,q?C.goldL:C.greenL,q?C.gold:C.green,2,8)+tx(180,35,q?'Lurking variable ?':'Warm weather',{size:12.5,bold:true,fill:q?C.goldD:C.green});
   s+=rc(8,120,150,40,'#fff',C.navy,1.8,8)+tx(83,145,'Ice-cream sales',{size:12,bold:true})+rc(202,120,150,40,'#fff',C.navy,1.8,8)+tx(277,145,'Drownings',{size:12,bold:true});
@@ -222,7 +227,7 @@ SP.d3b={type:'mc',ans:'under',ok:'The residual is positive. The real score is ab
 var EA=[4,6,6,7,8,8,8,9],EB=[2,4,6,7,8,9,10,10],EM=St.mean(EA);
 function dist(d,st,mark){var m=St.mean(d),cnt={},mx=0;d.forEach(function(v){cnt[v]=(cnt[v]||0)+1;mx=Math.max(mx,cnt[v]);});var nz=d.filter(function(v){return v!==m;}).length;
   return M.dotPlot(d,{min:0,max:12,label:'distances from the mean',extraTop:nz*15+6,marks:[{v:m,label:'mean '+f(m),color:C.navy,dash:'3 3'}],
-    after:function(X,ay){var s='',seen={},k=0,base=ay-8-(mx-1)*14-18;d.forEach(function(v){seen[v]=(seen[v]||0)+1;if(v===m)return;var y=base-(k++)*15,cy=ay-8-(seen[v]-1)*14,c=sv(st)?C.green:C.gold;
+    after:function(X,ay){var s='',seen={},k=0,base=ay-8-(mx-1)*14-18;d.forEach(function(v){seen[v]=(seen[v]||0)+1;if(v===m)return;var y=base-(k++)*15,cy=ay-8-(cnt[v]-1)*14,c=sv(st)?C.green:C.gold;
       s+=ln(X(v),cy-6,X(v),y,C.grid,1.2,'2 2')+ln(X(v),y,X(m),y,c,2.4);s+=tag(v<m?X(v)-4:X(v)+4,y+4,sv(st)?f(Math.abs(v-m)):'?',{size:10,mono:true,fill:sv(st)?C.green:C.goldD,anchor:v<m?'end':'start'});});return s;}});}
 SP.e1={hint:'Add all 8 scores, then divide by 8.',type:'num',ans:EM,fb:[[8,'8 is the mode (most common). Mean = add all, then ÷ 8.'],[7.5,'7.5 is the median. Mean = add all, then ÷ 8.'],[56,'56 is the total. Divide by 8 games.']],
   viz:function(st){return M.dotPlot(EA,{min:0,max:12,title:'Points per game',label:'dot plot',marks:sv(st)?[{v:EM,label:'mean '+f(EM)+' (balance point)',color:C.green}]:[]});}};
@@ -234,11 +239,10 @@ SP.e4={type:'mc',ans:St.mad(EA)<St.mad(EB)?'A':'B',ok:'Player A’s dots huddle 
   viz:function(st){return '<div class="partlbl">Player A</div>'+M.dotPlot(EA,{min:0,max:12,label:'player A',marks:[{v:7,label:'mean 7',color:C.navy,dash:'3 3'}]})+'<div class="partlbl">Player B</div>'+M.dotPlot(EB,{min:0,max:12,label:'player B',marks:[{v:7,label:'mean 7',color:C.navy,dash:'3 3'}]})+(sv(st)?'<div class="diagram-cap">MAD: A = '+f(St.mad(EA))+', B = '+f(St.mad(EB))+'</div>':'');}};
 /* ---------- Part F ---------- */
 var FD=[12,5,18,9,30,14,10,8,16,11,7],FF=St.five(FD),FI=FF[3]-FF[1],FUF=FF[3]+1.5*FI;
-function fbox(st,known,extra){var all=known.every(Boolean);return M.dotPlot(FD,{min:0,max:32,lab:4,below:76,label:'travel times',color:function(v){return sv(st)&&extra&&v>FUF?C.gold:C.navy;},
+function fbox(st,known,extra){var all=known.every(Boolean);return M.dotPlot(FD,{min:0,max:32,lab:4,below:82,label:'travel times',color:function(v){return sv(st)&&extra&&v>FUF?C.gold:C.navy;},
   after:function(X,ay){var cy=ay+56,s='',nm=['min','Q1','med','Q3','max'];
-    if(all){s+=ln(X(FF[0]),cy,X(FF[1]),cy,C.navy,2.2)+ln(X(FF[3]),cy,X(FF[4]),cy,C.navy,2.2)+rc(X(FF[1]),cy-12,X(FF[3])-X(FF[1]),24,'#EEF1F8',C.navy,2.2)+ln(X(FF[2]),cy-12,X(FF[2]),cy+12,C.green,3)+ln(X(FF[0]),cy-8,X(FF[0]),cy+8,C.navy,2.4)+ln(X(FF[4]),cy-8,X(FF[4]),cy+8,C.navy,2.4);
-      var last=-99;for(var p=0;p<5;p++){var x=X(FF[p]),up=x-last>40;if(up)last=x;s+=tag(x,up?cy-17:cy+27,nm[p]+' '+f(FF[p]),{size:10.5,mono:true,fill:C.green});}}
-    else s+=tx(180,cy+4,'box plot appears when you are right',{size:11,fill:C.goldD});
+    if(all)s+=M.boxRow(X,FF,cy);
+    else s+=tx(180,cy+4,extra&&extra.q?extra.q:'box plot appears when you are right',{size:11,fill:C.goldD});
     if(extra)s+=extra(X,ay);return s;}});}
 SP.f1={type:'multi',ok:'Here is the box plot.',viz:function(st){return fbox(st,sv(st)?[1,1,1,1,1]:[0,0,0,0,0]);},
   parts:[{k:'min',label:'min',type:'num',hint:'The min is the smallest value.',ans:FF[0],fb:[[12,'12 is the first number in the list, not the smallest. Put the numbers in order.']]},
@@ -248,8 +252,8 @@ SP.f1={type:'multi',ok:'Here is the box plot.',viz:function(st){return fbox(st,s
     {k:'max',label:'max',type:'num',hint:'The max is the largest value.',ans:FF[4],fb:[[7,'7 is the last number in the list, not the largest.']]}]};
 function fence(X,ay){return ln(X(FUF),8,X(FUF),ay,C.green,2.4,'6 4')+tag(X(FUF)-4,20,'fence '+f(FUF),{size:11,mono:true,fill:C.green,anchor:'end'});}
 SP.f2={type:'num',ans:FUF,fb:[[FF[3]+FI,'That is Q3 + IQR. Use 1.5 × IQR = 12.'],[1.5*FI,'12 is 1.5 × IQR. Add it to Q3.'],[FF[1]-1.5*FI,'That is the lower fence. The upper fence = Q3 + 1.5 × IQR.']],hint:'IQR = Q3 − Q1 = 16 − 8. Then Q3 + 1.5 × IQR.',
-  viz:function(st){return fbox(st,sv(st)?[1,1,1,1,1]:[0,0,0,0,0],function(X,ay){return sv(st)?fence(X,ay):ln(X(31),8,X(31),ay,C.gold,2.4,'6 4')+tag(X(31)-4,20,'fence ?',{size:11,mono:true,fill:C.goldD,anchor:'end'});});}};
-SP.f3={type:'mc',ans:30>FUF?'yes':'no',ok:'30 is past the upper fence (28), so it is an outlier.',fb:{no:'Compare 30 to the upper fence, 28.'},viz:function(st){return fbox(st,sv(st)?[1,1,1,1,1]:[0,0,0,0,0],function(X,ay){return sv(st)?fence(X,ay)+tag(X(30)-10,ay-4,'outlier',{size:10.5,fill:C.goldD,anchor:'end'}):tag(X(30)-10,ay-4,'?',{size:11,fill:C.goldD,anchor:'end'});},true);}};
+  viz:function(st){var ex=function(X,ay){return sv(st)?fence(X,ay):'';};ex.q='upper fence = Q3 + 1.5 × IQR = ?';return fbox(st,sv(st)?[1,1,1,1,1]:[0,0,0,0,0],ex);}};
+SP.f3={type:'mc',ans:30>FUF?'yes':'no',ok:'30 is past the upper fence (28), so it is an outlier.',fb:{no:'Compare 30 to the upper fence, 28.'},viz:function(st){return fbox(st,sv(st)?[1,1,1,1,1]:[0,0,0,0,0],function(X,ay){return sv(st)?fence(X,ay):tag(X(30)-10,ay-4,'?',{size:11,fill:C.goldD,anchor:'end'});},true)+(sv(st)?'<div class="diagram-cap">Gold dot: 30 is past the fence 28, so it is an outlier.</div>':'');}};
 var FMEAN=St.mean(FD);
 SP.f4={type:'mc',ans:'median',ok:'The outlier 30 pulls the mean up to about '+f(FMEAN,1)+'. The median (11) is not pulled.',fb:{mean:'The mean is pulled up by the outlier 30. Which one resists outliers?'},
   viz:function(st){return M.dotPlot(FD,{min:0,max:32,lab:4,label:'mean and median',color:function(v){return v>FUF?C.gold:C.navy;},marks:[{v:FMEAN,label:'mean '+f(FMEAN,1),color:C.navy,row:0,anchor:'start'},{v:FF[2],label:'median '+FF[2],color:sv(st)?C.green:C.navy,row:1,anchor:'end'}]});}};

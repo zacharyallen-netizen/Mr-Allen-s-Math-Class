@@ -447,19 +447,19 @@ var smMode;
     f45: function () { var v = [0, 1, 2].map(function (t) { return 2000 * Math.pow(0.95, t); });
       return M1.bars({ vals: v, labs: ['yr 0', 'yr 1', 'yr 2'], ops: ['−5%', '−5%'], hide: [1, 2], done: false, max: 2300, fmt: function (x) { return M1.commas(Math.round(x)); }, label: 'a town of 2,000 that loses 5% each year' }); },
     q45c: function () { return M1.eqrows({ w: 300, h: 128, label: 'the parts of y = 50(0.8)^x', rows: [
-        { y: 38, items: [{ s: 'y = ' }, { s: '50', st: 'box' }, { s: '(' }, { s: '0.8', st: 'tgt' }, { s: ')^x' }] }],
+        { y: 38, items: [{ s: 'y =', x: 98, a: 'middle' }, { s: '50', st: 'box', x: 132, a: 'middle' }, { s: '(', x: 156, a: 'middle' }, { s: '0.8', st: 'tgt', x: 184, a: 'middle' }, { s: ')^x', x: 206, a: 'start' }] }],
         notes: [{ x: 150, y: 74, s: 'a = 50 is the start.  b = 0.8', c: C.navy, fs: 12.5 }, { x: 150, y: 104, s: 'Is b bigger than 1 or smaller than 1?', c: C.goldTx, fs: 12.5 }] }); },
     f46: function () { return P({ x: [-2, 4], y: [0, 22], ys: 2, yl: 4, label: 'y = 5(0.5)^x and its y-intercept', items: [
         { t: 'fn', f: function (x) { return 5 * Math.pow(0.5, x); }, c: C.red, label: 'y = 5(0.5)^x', at: 0.2 }, { t: 'pt', x: 0, y: 5, c: C.gold, label: '(0, ?)', pill: true }] }); },
     q46b: function () { return P({ x: [-3, 2], y: [-2, 30], ys: 2, yl: 4, label: 'y = 4(3)^x and the line y = 0', items: [
-        { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy, label: 'y = 4(3)^x', at: 0.85 }, { t: 'txt', x: -1.6, y: 14, s: 'lowest y-values?', c: C.goldTx }] }); },
+        { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy }, { t: 'txt', x: 1.25, y: 4.5, s: 'y = 4(3)^x', c: C.navy }, { t: 'txt', x: -1.6, y: 14, s: 'lowest y-values?', c: C.goldTx }] }); },
     q46c: function () { var v = [0, 1, 2, 3, 4].map(function (x) { return 6 * Math.pow(0.5, x); });
       return M1.tbl({ heads: ['x', 'y'], rows: [[0, 1, 2, 3, 4, 10], v.map(function (y) { return f(y, 3); }).concat(['?'])], hide: [[1, 5]], ops: ['×0.5', '×0.5', '×0.5', '×0.5', '…'], label: 'y = 6(0.5)^x for x = 0 to 4, then x = 10' }); }
   };
   /* ---- Topic 1 ---- */
   V.t1map = function () { return M1.mapping({ inp: [1, 2, 3, 4], out: seq(2, 3, 4) }); };
   V.t1dots = function () { var A = seq(2, 3, 4), G = seq(2, 3, 4, true), it = [];
-    A.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: i === 3 ? 'arithmetic' : null }); }); G.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.purple, r: 4, label: i === 3 ? 'geometric' : null }); });
+    A.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.navy, r: 4, label: i === 3 ? 'arithmetic' : null }); }); G.forEach(function (v, i) { it.push({ t: 'pt', x: i + 1, y: v, c: C.purple, r: 6.5, ring: true, label: i === 3 ? 'geometric' : null }); }); /* purple rings, so a dot under a ring (n = 1: both are 2) still shows */
     return P({ x: [0, 5], y: [0, 56], ys: 8, yl: 8, xname: 'n', yname: 'a_n', label: 'dot graphs of two sequences', items: it }); };
   V.t1a = function () { return seqT(seq(2, 3, 4)); };
   V.t1g = function () { return seqT(seq(2, 3, 4, true), { geo: true }); };
@@ -565,14 +565,14 @@ var smMode;
   var v2 = Math.round(300 * Math.pow(1.06, 2) * 100) / 100;
   V.q45b = function (d) { return M1.tbl({ heads: ['year', '$'], hw: 52, cw: 70, rows: [[0, 1, 2], ['300', M1.money(300 * 1.06, 2).slice(1), d ? M1.money(v2, 2).slice(1) : '?']], ops: ['×1.06', '×1.06'], hide: [[1, 2]], done: d }); };
   R('q45b', { kind: 'num', ans: v2, tol: 0.006, viz: 'q45b', ok: '300(1.06)<sup>2</sup> = 300(1.1236) = $337.08.', miss: [{ v: 336, m: 'That adds 6% of 300 twice. Compound growth multiplies: 300(1.06)<sup>2</sup>.' }, { v: 318, m: 'That is after 1 year. Use x = 2.' }, { v: 300 * 2.12, m: 'Do the power: 1.06<sup>2</sup> = 1.06 × 1.06, not 1.06 × 2.' }], hint: 'Put x = 2 into y = 300(1.06)<sup>x</sup>. Do the power first.' });
-  V.q45c = function (d) { if (!d) return pre.q45c(); return after(d, P({ x: [0, 6], y: [0, 60], ys: 10, yl: 10, label: 'decay 50(0.8)^x', items: [{ t: 'fn', f: function (x) { return 50 * Math.pow(0.8, x); }, c: C.red, label: 'y = 50(0.8)^x' }].concat(expPts(50, 0.8, 6)) })); };
+  V.q45c = function (d) { if (!d) return pre.q45c(); return after(d, P({ x: [0, 6], y: [0, 60], ys: 10, yl: 10, label: 'decay 50(0.8)^x', items: [{ t: 'fn', f: function (x) { return 50 * Math.pow(0.8, x); }, c: C.red }, { t: 'txt', x: 3.6, y: 40, s: 'y = 50(0.8)^x', c: C.red }].concat(expPts(50, 0.8, 6)) })); };
   R('q45c', { kind: 'mc', ans: 'd20', viz: 'q45c', ok: 'b = 0.8 is less than 1, so it is decay. 1 − 0.8 = 0.2 = 20% lost each step.', why: { g80: 'b = 0.8 is less than 1. Multiplying by 0.8 makes things smaller.', d80: 'Decay is right. But 0.8 is what is LEFT. The loss is 1 − 0.8 = 0.2.', g20: 'Multiplying by 0.8 makes things smaller, not bigger.' } });
   /* ---- Topic 6 ---- */
   V.t6a = function () { return P({ x: [-3, 3], y: [0, 8], ys: 1, yl: 2, label: 'y = 2^x with its asymptote', items: [
-    { t: 'seg', x1: -3, y1: 0.08, x2: 3, y2: 0.08, c: C.gold, w: 2.4, dash: true }, { t: 'txt', x: -1.6, y: 0.9, s: 'asymptote y = 0', c: C.goldTx },
+    { t: 'seg', x1: -3, y1: 0.08, x2: 3, y2: 0.08, c: C.gold, w: 2.4, dash: true }, { t: 'txt', x: 1.45, y: 0.5, s: 'asymptote y = 0', c: C.goldTx },
     { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.navy, label: 'y = 2^x', at: 0.82 }, { t: 'pt', x: 0, y: 1, c: C.green, label: '(0, 1)' }] }); };
-  V.t6b = function () { return P({ w: 260, x: [-1, 5], y: [0, 10], ys: 1, yl: 2, label: 'decay with asymptote', items: [
-    { t: 'seg', x1: -1, y1: 0.1, x2: 5, y2: 0.1, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 8 * Math.pow(0.5, x); }, c: C.red, label: 'y = 8(0.5)^x', at: 0.35 },
+  V.t6b = function () { return P({ w: 260, x: [0, 5], y: [0, 10], ys: 1, yl: 2, label: 'decay with asymptote', items: [
+    { t: 'seg', x1: 0, y1: 0.1, x2: 5, y2: 0.1, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 8 * Math.pow(0.5, x); }, c: C.red, label: 'y = 8(0.5)^x', at: 0.35 },
     { t: 'pt', x: 0, y: 8, c: C.green, label: '(0, 8)' }, { t: 'txt', x: 3.6, y: 2, s: '→ near 0', c: C.goldTx }] }); };
   V.t6c = function () { return P({ w: 260, x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: '2^x vs x squared', items: [
     { t: 'fn', f: function (x) { return x * x; }, c: C.navy, label: 'y = x^2', at: 0.62 }, { t: 'fn', f: function (x) { return Math.pow(2, x); }, c: C.purple, label: 'y = 2^x', at: 0.9 }, { t: 'pt', x: 4, y: 16, c: C.green, label: '(4, 16)' }] }); };
@@ -587,7 +587,7 @@ var smMode;
     { t: 'fn', f: function (x) { return 7 * Math.pow(1.2, x); }, c: C.navy, label: 'y = 7(1.2)^x', at: 0.8 }, d ? { t: 'pt', x: 0, y: 7, c: C.green, label: '(0, 7)' } : { t: 'pt', x: 0, y: 7, c: C.gold, label: '(0, ?)', pill: true }] }); };
   R('q46', { kind: 'num', ans: 7 * Math.pow(1.2, 0), viz: 'q46', ok: 'At x = 0: 7(1.2)<sup>0</sup> = 7(1) = 7. The y-intercept is (0, 7).', miss: [{ v: 1.2, m: 'That is b. Put x = 0: anything to the 0 power is 1. So y = 7 · 1.' }, { v: 8.4, m: 'That is x = 1. The y-intercept uses x = 0.' }, { v: 0, m: 'The graph never touches 0. Put x = 0 into 7(1.2)<sup>x</sup>.' }] });
   V.q46b = function (d) { if (!d) return pre.q46b(); return after(d, P({ x: [-3, 2], y: [-2, 30], ys: 2, yl: 4, label: 'range of 4(3)^x', items: [
-    { t: 'region', hp: [{ m: 0, b: 0, s: '>' }], c: C.green, op: 0.1 }, { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy, label: 'y = 4(3)^x', at: 0.85 }, { t: 'txt', x: -1.8, y: 14, s: 'y > 0', c: C.green }] })); };
+    { t: 'region', hp: [{ m: 0, b: 0, s: '>' }], c: C.green, op: 0.1 }, { t: 'seg', x1: -3, y1: 0, x2: 2, y2: 0, c: C.gold, w: 2.4, dash: true }, { t: 'fn', f: function (x) { return 4 * Math.pow(3, x); }, c: C.navy }, { t: 'txt', x: 1.25, y: 4.5, s: 'y = 4(3)^x', c: C.navy }, { t: 'txt', x: -1.8, y: 14, s: 'y > 0', c: C.green }] })); };
   R('q46b', { kind: 'ineq', v: 'y', op: '>', n: 0, viz: 'q46b', show: 'y &gt; 0', ok: 'The graph is always above the asymptote y = 0, so the range is y &gt; 0.', eqMsg: 'Close! The graph never touches 0, so 0 is not included. Use &gt;, not ≥.',
     miss: [{ op: '>', n: 4, m: '4 is the y-intercept. Far to the left the graph gets lower than 4, close to 0.' }, { op: '<', n: 0, m: 'a = 4 is positive, so every y-value is positive.' }], hint: 'Look at the asymptote. The graph is always above it.' });
   V.q46c = function (d) { if (!d) return pre.q46c(); return after(d, P({ x: [0, 8], y: [0, 7], ys: 1, yl: 1, label: '6(0.5)^x', items: [

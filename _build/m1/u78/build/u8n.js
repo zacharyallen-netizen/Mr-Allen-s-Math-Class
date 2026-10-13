@@ -39,8 +39,8 @@ const SF = `m = ${fr('y₂ − y₁', 'x₂ − x₁')}`;
   const pA = [1, 1], pB = [9, 5], k = 1 / 4, pP = [pA[0] + k * (pB[0] - pA[0]), pA[1] + k * (pB[1] - pA[1])];
   const e3 = gp([0, 10, 0, 6]); e3.seg(1, 1, 9, 5); labPts(e3, [pA, pB], ['A', 'B'], { pos: ['se', 'nw'] }); e3.text(6.2, 1.2, 'P = ?', { c: C.goldT, fs: 13, bold: true, anchor: 'end' });
   const e3a = gp([0, 10, 0, 6]); e3a.seg(1, 1, 9, 5); [0.25, 0.5, 0.75].forEach(t => e3a.tick(1, 1, 9, 5, t, { c: C.green }));
-  labPts(e3a, [pA, pB], ['A', 'B'], { pos: ['se', 'nw'] }); e3a.dot(pP[0], pP[1], { c: C.green, r: 5.5 }); e3a.lab(pP[0], pP[1], 'P(3, 2)', 'nw', { c: C.green });
-  e3a.text(2, 1.5, '1 part', { c: C.green, fs: 11, bold: true, anchor: 'start', dy: 18, dx: 4 }); e3a.text(6, 3.5, '3 parts', { c: C.green, fs: 11, bold: true, anchor: 'start', dy: 18, dx: 4 });
+  labPts(e3a, [pA, pB], ['A', 'B'], { pos: ['se', 'nw'] }); e3a.dot(pP[0], pP[1], { c: C.green, r: 5.5 }); e3a.lab(pP[0], pP[1], 'P(3, 2)', 'se', { c: C.green });
+  e3a.text(2, 1.5, '1 part', { c: C.green, fs: 11, bold: true, anchor: 'end', dy: -8, dx: -4 }); e3a.text(6, 3.5, '3 parts', { c: C.green, fs: 11, bold: true, anchor: 'start', dy: 18, dx: 4 });
 
   const mA = [-4, 2], mB = [6, 8], mM = mid(mA, mB);
   const mg = gp([-5, 7, -1, 9]); mg.seg(-4, 2, 6, 8); labPts(mg, [mA, mB], ['', ''], {}); mg.lab(-4, 2, '(−4, 2)', 'se'); mg.lab(6, 8, '(6, 8)', 'w');
@@ -52,7 +52,7 @@ const SF = `m = ${fr('y₂ − y₁', 'x₂ − x₁')}`;
   const t1a = gp([-7, 3, -1, 8]); t1a.seg(-6, 1, 2, 7); t1a.dot(-6, 1); t1a.dot(2, 7); t1a.lab(-6, 1, '(−6, 1)', 'se'); t1a.lab(2, 7, '(2, 7)', 'w'); t1a.dot(t1M[0], t1M[1], { c: C.green, r: 5.5 }); t1a.lab(t1M[0], t1M[1], 'M(−2, 4)', 'se', { c: C.green });
   const t2A = [-1, 3], t2M = [2, 1], t2B = [2 * t2M[0] - t2A[0], 2 * t2M[1] - t2A[1]];
   const t2 = gp([-2, 6, -3, 5]); t2.seg(-1, 3, 2, 1); labPts(t2, [t2A, t2M], ['A', 'M'], { pos: ['ne', 'ne'] }); t2.text(5.6, 4.3, 'B = ?', { c: C.goldT, fs: 13, bold: true, anchor: 'end' });
-  const t2a = gp([-2, 6, -3, 5]); t2a.seg(-1, 3, 5, -1); labPts(t2a, [t2A, t2M], ['A', 'M'], { pos: ['ne', 'ne'] }); t2a.dot(5, -1, { c: C.green, r: 5.5 }); t2a.lab(5, -1, 'B(5, −1)', 'nw', { c: C.green });
+  const t2a = gp([-2, 6, -3, 5]); t2a.seg(-1, 3, 5, -1); labPts(t2a, [t2A, t2M], ['A', 'M'], { pos: ['ne', 'ne'] }); t2a.dot(5, -1, { c: C.green, r: 5.5 }); t2a.lab(5, -1, 'B(5, −1)', 'sw', { c: C.green });
   const t3A = [0, 0], t3B = [6, 9], t3P = [t3A[0] + (t3B[0] - t3A[0]) / 3, t3A[1] + (t3B[1] - t3A[1]) / 3];
   const t3 = gp([-1, 7, -1, 10], { W: 260 }); t3.seg(0, 0, 6, 9); labPts(t3, [t3A, t3B], ['A', 'B'], { pos: ['se', 'w'] });
   const t3a = gp([-1, 7, -1, 10], { W: 260 }); t3a.seg(0, 0, 6, 9); [1 / 3, 2 / 3].forEach(t => t3a.tick(0, 0, 6, 9, t, { c: C.green })); labPts(t3a, [t3A, t3B], ['A', 'B'], { pos: ['se', 'w'] }); t3a.dot(2, 3, { c: C.green, r: 5.5 }); t3a.lab(2, 3, 'P(2, 3)', 'e', { c: C.green });
@@ -142,17 +142,17 @@ ${howto('How to find the distance between two points', ['Find Δx: subtract the 
 ${example('e82', { title: 'Distance between (1, 2) and (4, 6)', fig: fig(tri([1, 2], [4, 6], false, { v: [-1, 6, -1, 7] })),
   steps: [['Δx = 3, Δy = 4:', '√(3² + 4²) = √(9 + 16) = √25'], ['d =', '5']],
   after: fig(tri([1, 2], [4, 6], true, { v: [-1, 6, -1, 7] }), 'Legs 3 and 4, hypotenuse 5') })}
-${example('e82b', { title: 'Worked example: distance between (−2, −1) and (4, 2)', fig: fig(tri([-2, -1], [4, 2], false, { v: [-3, 6, -2, 4] })),
+${example('e82b', { title: 'Worked example: distance between (−2, −1) and (4, 2)', fig: fig(tri([-2, -1], [4, 2], false, { v: [-3, 6, -2, 4], pa: 's' })),
   steps: [['Δx:', '4 − (−2) = 4 + 2 = 6'], ['Δy:', '2 − (−1) = 3'], ['Square and add:', '6² + 3² = 36 + 9 = 45'], ['Square root:', `d = √45 ≈ 6.71`]],
-  after: fig(tri([-2, -1], [4, 2], true, { v: [-3, 6, -2, 4] }), 'd = √45 ≈ 6.71 (not a whole number — that is OK)') })}
-${mistake('m82', { who: 'Mia found the distance from (−1, 2) to (3, 5):', fig: fig(tri([-1, 2], [3, 5], false, { v: [-2, 4, -1, 6] })),
+  after: fig(tri([-2, -1], [4, 2], true, { v: [-3, 6, -2, 4], pa: 's' }), 'd = √45 ≈ 6.71 (not a whole number — that is OK)') })}
+${mistake('m82', { who: 'Mia found the distance from (−1, 2) to (3, 5):', fig: fig(tri([-1, 2], [3, 5], false, { v: [-3, 4, -1, 6] })),
   work: ['Δx = 3 − 1 = 2', 'Δy = 5 − 2 = 3', 'd = √(2² + 3²) = √13'], bad: 0,
   fbs: ['', 'Step 2 is right: 5 − 2 = 3.', 'Step 3 uses Δx from Step 1. Find the first mistake.'],
-  why: 'Subtracting a negative: 3 − (−1) = 3 + 1 = 4. Then d = √(16 + 9) = √25 = 5.', after: fig(tri([-1, 2], [3, 5], true, { v: [-2, 4, -1, 6] }), 'Fixed: Δx = 4, d = 5') })}
+  why: 'Subtracting a negative: 3 − (−1) = 3 + 1 = 4. Then d = √(16 + 9) = √25 = 5.', after: fig(tri([-1, 2], [3, 5], true, { v: [-3, 4, -1, 6] }), 'Fixed: Δx = 4, d = 5') })}
 ${yt()}
-${q('n82a', { n: 1, text: 'Find the distance between (−3, −2) and (3, 6).', fig: fig(tri([-3, -2], [3, 6], false, { v: [-4, 4, -3, 7], W: 260 })), t: 'num', a: 10, sq: true, ph: 'd = ?',
+${q('n82a', { n: 1, text: 'Find the distance between (−3, −2) and (3, 6).', fig: fig(tri([-3, -2], [3, 6], false, { v: [-4, 4, -3, 7], W: 260, pa: 's' })), t: 'num', a: 10, sq: true, ph: 'd = ?',
   traps: [{ v: 14, m: 'You added Δx + Δy. Square them, add, then take the square root.' }],
-  sol: 'Δx = 6, Δy = 8. d = √(36 + 64) = √100 = <b>10</b>', after: fig(tri([-3, -2], [3, 6], true, { v: [-4, 4, -3, 7], W: 260 })) })}
+  sol: 'Δx = 6, Δy = 8. d = √(36 + 64) = √100 = <b>10</b>', after: fig(tri([-3, -2], [3, 6], true, { v: [-4, 4, -3, 7], W: 260, pa: 's' })) })}
 ${q('n82b', { n: 2, text: 'Find the distance between (2, −1) and (5, 3).', fig: fig(tri([2, -1], [5, 3], false, { v: [0, 7, -2, 4] })), t: 'num', a: 5, sq: true, ph: 'd = ?',
   traps: [{ v: Math.sqrt(13), m: 'Check Δy: 3 − (−1) = 4, not 2.' }],
   sol: 'Δx = 3, Δy = 4. d = √(9 + 16) = √25 = <b>5</b>', after: fig(tri([2, -1], [5, 3], true, { v: [0, 7, -2, 4] })) })}
@@ -170,7 +170,7 @@ ${q('n82c', { n: 3, text: 'Find the distance between (0, 0) and (2, 3). Give the
     P.poly(pts, { c: C.navy, fill: C.navy, op: 0.08 });
     pts.forEach((p, i) => { const qq = pts[(i + 1) % pts.length]; const L = o.sides ? o.sides[i] : null; if (L) sideLab(P, p, qq, L, cen, { c: String(L).includes('?') ? C.goldT : known ? C.green : C.navy }); });
     if (o.inside) P.text(cen[0], cen[1], o.inside, { c: known ? C.green : C.goldT, fs: 13, bold: true, anchor: 'middle', dy: 4 });
-    labPts(P, pts, o.names || pts.map(() => ''), { coords: o.coords !== false, fs: 11 });
+    labPts(P, pts, o.names || pts.map(() => ''), { coords: o.coords !== false, fs: 11, coordsOnly: o.coordsOnly, pos: o.pos });
     if (o.right) o.right.forEach(i => { const p = pts[i], a = pts[(i + pts.length - 1) % pts.length], b = pts[(i + 1) % pts.length]; P.right(p[0], p[1], a[0], a[1], b[0], b[1], { c: known ? C.green : C.muted }); });
     return P.out('figure on the coordinate plane');
   };
@@ -200,10 +200,10 @@ ${howto('How to find perimeter and area from coordinates', ['Plot the points and
 ${example('e83b', { title: 'Worked example: triangle A(1, 1), B(7, 1), C(7, 9). Find the perimeter and area.', fig: fig(rect(T, [0, 8, 0, 10], false, { names: ['A', 'B', 'C'], sides: ['', '', ''], right: [1] }, ), ''),
   steps: [['AB (flat): count', '7 − 1 = 6'], ['BC (straight up): count', '9 − 1 = 8'], ['AC (slants): distance formula', '√(6² + 8²) = √100 = 10'], ['Perimeter:', '6 + 8 + 10 = 24 units'], [`Area = ${fr('1', '2')} × base × height =`, '½ × 6 × 8 = 24 square units']],
   after: fig(rect(T, [0, 8, 0, 10], true, { names: ['A', 'B', 'C'], sides: ['6', '8', '10'], right: [1], inside: '' }), 'Sides 6, 8, 10') })}
-${mistake('m83', { who: 'Leo found the area of the triangle (0, 0), (4, 0), (4, 6):', fig: fig(rect(tA, [-1, 5, -1, 7], false, { sides: ['', '', ''], right: [1] })),
+${mistake('m83', { who: 'Leo found the area of the triangle (0, 0), (4, 0), (4, 6):', fig: fig(rect(tA, [-2, 6, -1, 7], false, { sides: ['', '', ''], right: [1], coordsOnly: true, pos: ['sw', null, null] })),
   work: ['base = 4 − 0 = 4', 'height = 6 − 0 = 6', 'Area = 4 × 6 = 24 square units'], bad: 2,
   fbs: ['Step 1 is right.', 'Step 2 is right: the height makes a square corner with the base.', ''],
-  why: `A triangle is half of a rectangle. Area = ${fr('1', '2')} × 4 × 6 = 12 square units.`, after: fig(rect(tA, [-1, 5, -1, 7], true, { sides: ['4', '6', ''], right: [1], inside: '' }), 'Half of the 4 × 6 rectangle: 12') })}
+  why: `A triangle is half of a rectangle. Area = ${fr('1', '2')} × 4 × 6 = 12 square units.`, after: fig(rect(tA, [-2, 6, -1, 7], true, { sides: ['4', '6', ''], right: [1], inside: '', coordsOnly: true, pos: ['sw', null, null] }), 'Half of the 4 × 6 rectangle: 12') })}
 ${yt()}
 ${fig(rect(yr, [-3, 5, -2, 4], false, { names: ['P', 'Q', 'R', 'S'], sides: ['', '', '', ''] }), 'Rectangle P(−2, −1), Q(4, −1), R(4, 3), S(−2, 3)')}
 ${q('n83a', { n: 1, text: 'Find the perimeter of rectangle PQRS.', t: 'num', a: 20, ph: 'perimeter = ?', traps: [{ v: 24, m: '24 is the area. Perimeter adds the sides: 6 + 4 + 6 + 4.' }, { v: 10, m: 'A rectangle has 4 sides. Add all four: 6 + 4 + 6 + 4.' }],
@@ -223,20 +223,21 @@ ${q('n83d', { n: 4, text: 'Find the area of triangle ABC.', t: 'num', a: 6, ph: 
   const P = gp([-2, 6, -2, 6]);
   P.line(2, -1, { c: C.navy }); P.line(2, 2, { c: C.blue }); P.line(-0.5, 3, { c: C.green });
   P.text(4.0, 5.3, 'm = 2', { c: C.navy, fs: 12, bold: true, anchor: 'start' });
-  P.text(-1.1, 4.4, 'm = 2', { c: C.blue, fs: 12, bold: true, anchor: 'end' });
+  P.text(1.4, 5.4, 'm = 2', { c: C.blue, fs: 12, bold: true, anchor: 'end' });
   P.text(5.9, 1.9, 'm = −½', { c: C.green, fs: 12, bold: true, anchor: 'end' });
   const rr = (A, B, known, v, o = {}) => {
     const R = gp(v, { W: o.W }); const [n, d] = slopeND(A, B);
     R.seg(A[0], A[1], B[0], A[1], { c: known ? C.green : C.gold, w: 2, dash: '5 4' }); R.seg(B[0], A[1], B[0], B[1], { c: known ? C.green : C.gold, w: 2, dash: '5 4' });
     R.seg(A[0], A[1], B[0], B[1], { c: C.navy, w: 2.6 });
     const col = known ? C.green : C.goldT;
-    R.text((A[0] + B[0]) / 2, A[1], 'run = ' + (known ? fmt(d) : '?'), { c: col, fs: 11, bold: true, anchor: 'middle', dy: n > 0 ? 16 : -6 });
+    let rx = (A[0] + B[0]) / 2; const lo = Math.min(A[0], B[0]), hi = Math.max(A[0], B[0]); if (lo < 0 && hi > 0 && Math.abs(rx) < 1.3) rx = hi >= -lo ? hi / 2 : lo / 2;
+    R.text(rx, A[1], 'run = ' + (known ? fmt(d) : '?'), { c: col, fs: 11, bold: true, anchor: 'middle', dy: n > 0 ? 16 : -6 });
     R.text(B[0], (A[1] + B[1]) / 2, 'rise = ' + (known ? fmt(n) : '?'), { c: col, fs: 11, bold: true, anchor: d > 0 ? 'start' : 'end', dx: d > 0 ? 7 : -7, dy: 4 });
     R.dot(A[0], A[1]); R.dot(B[0], B[1]); R.lab(A[0], A[1], pt(A[0], A[1]), o.pa || 'w'); R.lab(B[0], B[1], pt(B[0], B[1]), o.pb || 'w');
     if (known && o.perp) { R.line(o.perp[0], o.perp[1], { c: C.green, dash: '7 5' }); }
     return R.out('slope triangle');
   };
-  const sv = (m, v) => { const R = gp(v); R.line(m[0] / m[1], 0, { c: C.navy }); R.seg(0, 0, m[1], 0, { c: C.navy, w: 1.6, dash: '4 3' }); R.seg(m[1], 0, m[1], m[0], { c: C.navy, w: 1.6, dash: '4 3' }); R.text(m[1] / 2, 0, 'run ' + m[1], { fs: 11, bold: true, anchor: 'middle', dy: 16 }); R.text(m[1], m[0] / 2, 'rise ' + m[0], { fs: 11, bold: true, dx: 6 }); return R; };
+  const sv = (m, v) => { const R = gp(v); R.line(m[0] / m[1], 0, { c: C.navy }); R.seg(0, 0, m[1], 0, { c: C.navy, w: 1.6, dash: '4 3' }); R.seg(m[1], 0, m[1], m[0], { c: C.navy, w: 1.6, dash: '4 3' }); R.text(m[1] * 0.62, 0, 'run ' + m[1], { fs: 11, bold: true, anchor: 'middle', dy: -6 }); R.text(m[1], m[0] / 2, 'rise ' + m[0], { fs: 11, bold: true, dx: 6 }); return R; };
   const nb = slopeND([-2, 1], [2, 3]), nbm = nb[0] / nb[1];
   const rq = F.recipe({ a: 'm', b: '?', c: '?', foot: 'Start with your slope from Question 1', aria: 'flip the slope, then change its sign' });
   const fs2 = (n, d) => { const g = Math.abs(gcd(n, d)); n /= g; d /= g; if (d < 0) { n = -n; d = -d; } return d === 1 ? fmt(n) : (n < 0 ? '−' : '') + Math.abs(n) + '/' + d; };
@@ -246,7 +247,7 @@ ${q('n83d', { n: 4, text: 'Find the area of triangle ABC.', t: 'num', a: 6, ph: 
   const gc = gp([-3, 4, -2, 7]); gc.line(pc.m, pc.b, { c: C.navy }); gc.line(pc.m, 1, { c: C.green, dash: '7 5' });
   gc.text(1.1, 2.1, 'y = −3x + 5', { c: C.navy, fs: 12, bold: true, anchor: 'start', dx: 4 }); gc.text(-2.8, -1.45, 'same slope ' + fmt(pc.m), { c: C.green, fs: 12, bold: true, anchor: 'start' });
   const m1 = sv([3, 4], [-5, 5, -5, 5]);
-  const m1a = sv([3, 4], [-5, 5, -5, 5]); m1a.line(-4 / 3, 0, { c: C.green }); m1a.right(0, 0, 4, 3, -3, 4, { c: C.green }); m1a.text(-4.8, 1.6, 'm = −⁴⁄₃', { c: C.green, fs: 12, bold: true, anchor: 'start' });
+  const m1a = sv([3, 4], [-5, 5, -5, 5]); m1a.line(-4 / 3, 0, { c: C.green }); m1a.right(0, 0, 4, 3, -3, 4, { c: C.green }); m1a.text(-2.2, 4.4, 'm = −⁴⁄₃', { c: C.green, fs: 12, bold: true, anchor: 'start' });
   sec('t4', 4, 'Parallel &amp; Perpendicular Slopes', `
 ${vocab([
   ['slope (m)', 'how steep a line is: rise ÷ run. ' + SF + '.'],
@@ -267,9 +268,9 @@ ${mistake('m84', { who: 'Ana found the slope perpendicular to m = ¾:', fig: fig
   fbs: ['Step 1 is right.', 'Step 2 is right — flipping is half the job.', ''],
   why: 'Flip AND change the sign. ¾ is positive, so the perpendicular slope is −⁴⁄₃. Check: ¾ × (−⁴⁄₃) = −1.', after: fig(m1a.out('perpendicular'), 'The green line makes a square corner') })}
 ${yt()}
-${q('n84a', { n: 1, text: 'Find the slope of the line through (−2, 1) and (2, 3).', fig: fig(rr([-2, 1], [2, 3], false, [-3, 3, -1, 4])), t: 'num', a: 2 / 4, ph: 'm = ?',
+${q('n84a', { n: 1, text: 'Find the slope of the line through (−2, 1) and (2, 3).', fig: fig(rr([-2, 1], [2, 3], false, [-4, 3, -1, 4])), t: 'num', a: 2 / 4, ph: 'm = ?',
   traps: [{ v: 2, m: 'That is run ÷ rise. Slope is RISE ÷ run: 2 ÷ 4.' }, { v: -0.5, m: 'The line goes up from left to right, so the slope is positive.' }],
-  sol: `${fr('3 − 1', '2 − (−2)')} = ${fr('2', '4')} = <b>½</b>`, after: fig(rr([-2, 1], [2, 3], true, [-3, 3, -1, 4])) })}
+  sol: `${fr('3 − 1', '2 − (−2)')} = ${fr('2', '4')} = <b>½</b>`, after: fig(rr([-2, 1], [2, 3], true, [-4, 3, -1, 4])) })}
 ${q('n84b', { n: 2, text: 'What is the slope of a line perpendicular to that line?', t: 'num', a: -2, ph: 'm = ?',
   traps: [{ v: 2, m: 'You flipped ½ to 2. Now change the sign too.' }, { v: -0.5, m: 'You changed the sign. Now flip the fraction too.' }, { v: 0.5, m: '½ is the parallel slope. Perpendicular: flip and change the sign.' }],
   fig: fig(rq, 'Perpendicular: flip the fraction, then change the sign.'),
@@ -295,11 +296,11 @@ ${q('n84c', { n: 3, text: 'What is the slope of a line parallel to y = −3x + 5
   const rb = F.recipe({ a: '2', b: '?', c: '?', foot: 'slope of the new line', aria: 'flip 2 and change its sign' });
   const c0 = g([{ m: 2, b: -5, c: C.navy }], [[2, 3, '(2, 3)', C.navy, 'w']], [-2, 6, -2, 6]);
   const c1 = g([{ m: 2, b: -5, c: C.navy }, { m: -0.5, b: 4, c: C.green }], [[2, 3, '(2, 3)', C.navy, 'ne']], [-2, 6, -2, 6]);
-  c1.text(5.8, -1.4, 'y = −½x + 4', { c: C.green, fs: 12, bold: true, anchor: 'end' });
+  c1.text(5.8, 0.4, 'y = −½x + 4', { c: C.green, fs: 12, bold: true, anchor: 'end' });
   const mg = g([{ m: 3, b: 1, c: C.navy }], [[1, 7, '(1, 7)', C.navy, 'w']], [-3, 4, -2, 10]);
-  const mga = g([{ m: 3, b: 1, c: C.navy }, { m: 3, b: 4, c: C.green }], [[1, 7, '(1, 7)', C.navy, 'w']], [-3, 4, -2, 10]); mga.text(1.6, 9.4, 'y = 3x + 4', { c: C.green, fs: 12, bold: true, anchor: 'start' });
+  const mga = g([{ m: 3, b: 1, c: C.navy }, { m: 3, b: 4, c: C.green }], [[1, 7, '(1, 7)', C.navy, 'w']], [-3, 4, -2, 10]); mga.text(1.45, 9.4, 'y = 3x + 4', { c: C.green, fs: 12, bold: true, anchor: 'end' });
   const t1 = g([{ m: -2, b: 3, c: C.navy }], [[1, 4, '(1, 4)', C.navy, 'e']], [-3, 5, -3, 7]);
-  const t1a = g([{ m: -2, b: 3, c: C.navy }, { m: -2, b: 6, c: C.green }], [[1, 4, '(1, 4)', C.navy, 'e']], [-3, 5, -3, 7]); t1a.text(4.8, 3.5, 'y = −2x + 6', { c: C.green, fs: 12, bold: true, anchor: 'end' });
+  const t1a = g([{ m: -2, b: 3, c: C.navy }, { m: -2, b: 6, c: C.green }], [[1, 4, '(1, 4)', C.navy, 'e']], [-3, 5, -3, 7]); t1a.text(4.9, 2.4, 'y = −2x + 6', { c: C.green, fs: 12, bold: true, anchor: 'end' });
   const t2 = g([{ m: 1 / 3, b: -2, c: C.navy }], [[1, 1, '(1, 1)', C.navy, 'nw']], [-3, 5, -4, 5]);
   const t2a = g([{ m: 1 / 3, b: -2, c: C.navy }, { m: -3, b: 4, c: C.green }], [[1, 1, '(1, 1)', C.navy, 'ne']], [-3, 5, -4, 5]); t2a.text(-0.2, 4.4, 'y = −3x + 4', { c: C.green, fs: 12, bold: true, anchor: 'end', dx: -6 });
   sec('t5', 5, 'Equations of Parallel/Perp Lines', `
@@ -346,7 +347,7 @@ ${q('n85b', { n: 2, text: 'Write the equation of the line through (1, 1) perpend
     R.poly(pts, { c: C.navy, fill: C.navy, op: 0.08 });
     if (known && o.labels) pts.forEach((p, i) => { const qq = pts[(i + 1) % 4]; sideLab(R, p, qq, o.labels[i], cen, { c: C.green, fs: 11 }); });
     if (known && o.right) pts.forEach((p, i) => R.right(p[0], p[1], pts[(i + 3) % 4][0], pts[(i + 3) % 4][1], pts[(i + 1) % 4][0], pts[(i + 1) % 4][1], { c: C.green }));
-    labPts(R, pts, names, { fs: 11, coords: o.coords !== false });
+    labPts(R, pts, names, { fs: 11, coords: o.coords !== false, pos: o.pos });
     return R.out('quadrilateral');
   };
   const sl = (p, q) => { const [n, d] = slopeND(p, q); return d === 0 ? 'undef.' : 'm = ' + require('./u8common.js').ftxt(n, d); };
@@ -376,9 +377,9 @@ ${vocab([
 ${fig(quad(sq, ['A', 'B', 'C', 'D'], [-1, 6, -1, 6], true, { labels: ['3', '3', '3', '3'], right: true }), 'All 4 sides equal (3) and all right angles → a square')}
 ${figHtml(flow, 'Decision steps for classifying a quadrilateral')}
 ${howto('How to classify a quadrilateral from its corners', ['Find the slope of each side: AB, BC, CD, DA.', 'Opposite sides with equal slopes are parallel.', 'Neighbor sides whose slopes multiply to −1 are perpendicular (right angle).', 'Use the distance formula to compare side lengths.', 'Use the decision steps above to name it.'])}
-${example('e86', { title: 'Worked example: A(1, 0), B(4, 1), C(3, 4), D(0, 3)', fig: fig(quad(ex, ['A', 'B', 'C', 'D'], [-1, 5, -1, 5], false)),
+${example('e86', { title: 'Worked example: A(1, 0), B(4, 1), C(3, 4), D(0, 3)', fig: fig(quad(ex, ['A', 'B', 'C', 'D'], [-2, 5, -1, 5], false, { pos: [null, null, null, 'w'] })),
   steps: [['Slopes:', 'AB = ⅓, BC = −3, CD = ⅓, DA = −3'], ['Parallel?', 'AB ∥ CD and BC ∥ DA → parallelogram'], ['Right angles?', '⅓ × (−3) = −1 → yes, a rectangle'], ['Side lengths:', 'AB = √(9 + 1) = √10, BC = √(1 + 9) = √10 … all √10'], ['Name it:', 'right angles + equal sides → a square']],
-  after: fig(quad(ex, ['A', 'B', 'C', 'D'], [-1, 5, -1, 5], true, { labels: [sl(ex[0], ex[1]), sl(ex[1], ex[2]), sl(ex[2], ex[3]), sl(ex[3], ex[0])], right: true }), 'Slopes ⅓ and −3 multiply to −1') })}
+  after: fig(quad(ex, ['A', 'B', 'C', 'D'], [-2, 5, -1, 5], true, { pos: [null, null, null, 'w'], labels: [sl(ex[0], ex[1]), sl(ex[1], ex[2]), sl(ex[2], ex[3]), sl(ex[3], ex[0])], right: true }), 'Slopes ⅓ and −3 multiply to −1') })}
 ${example('e86b', { title: 'Worked example: A(0, 0), B(3, 1), C(4, 4), D(1, 3)', fig: fig(quad(rh, ['A', 'B', 'C', 'D'], [-1, 5, -1, 5], false)),
   steps: [['Slopes:', 'AB = ⅓, BC = 3, CD = ⅓, DA = 3 → parallelogram'], ['Right angles?', '⅓ × 3 = 1, not −1 → no right angles'], ['Side lengths:', 'all four are √10 → equal'], ['Name it:', 'a rhombus (not a square)']],
   after: fig(quad(rh, ['A', 'B', 'C', 'D'], [-1, 5, -1, 5], true, { labels: ['√10', '√10', '√10', '√10'] }), 'Four equal sides, no right angles: rhombus') })}

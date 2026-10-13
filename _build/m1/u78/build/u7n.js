@@ -29,7 +29,7 @@ const sec = (id, n, title, html) => S.push(`<section class="topic" id="${id}">\n
   const yv = [-7, 5, -10, 6];
   const tg = () => pgraph(t.f, yv, { H: 300, ly: 2 });
   const tg0 = tg();
-  const tA = tg(); feats(tA, t, { vertex: { c: C.green, text: 'vertex (−1, −9)', pos: 'e' } });
+  const tA = tg(); feats(tA, t, { vertex: { c: C.green, text: 'vertex (−1, −9)', pos: 'w' } });
   const tB = tg(); feats(tB, t, { axis: { c: C.green, text: 'x = −1', y: 5.2 } });
   const tC = tg(); feats(tC, t, { zeros: { c: C.green, pos: ['nw', 'ne'] } });
   const tD = tg(); feats(tD, t, { yint: { c: C.green, text: '(0, −8)', pos: 'e' } });
@@ -256,12 +256,12 @@ ${q('n73c', { n: 3, text: 'Write y = (x − 3)² − 1 in standard form.', fig: 
   feats(P, d1, { vertex: { c: C.blue, text: 'max (0, 4)', pos: 'e' }, zeros: { c: C.blue, text: false } });
   P.text(3.6, 1.5, 'range', { c: C.green, fs: 11, anchor: 'end', bold: true, dx: -6 });
   const d2 = Q(1, -2, -3);
-  const P2 = pgraph(d2.f, [-3, 5, -5, 6], { H: 250 });
+  const P2 = pgraph(d2.f, [-4, 5, -5, 6], { H: 250 });
   rangeBand(P2, d2, C.green);
   feats(P2, d2, { vertex: { c: C.blue, text: 'min (1, −4)', pos: 'e' } });
-  P2.text(4.6, 1, 'range', { c: C.green, fs: 11, anchor: 'end', bold: true, dx: -6 });
-  P2.text(-2.2, 5.2, '↑ end', { c: C.blue, fs: 11, anchor: 'middle', bold: true });
-  P2.text(4.1, 5.2, 'end ↑', { c: C.blue, fs: 11, anchor: 'middle', bold: true, dx: -10 });
+  P2.text(4.6, -1.6, 'range', { c: C.green, fs: 11, anchor: 'end', bold: true, dx: -6 });
+  P2.text(-3.0, 5.2, '↑ end', { c: C.blue, fs: 11, anchor: 'middle', bold: true });
+  P2.text(3.2, 5.2, 'end ↑', { c: C.blue, fs: 11, anchor: 'middle', bold: true });
 
   const e = QV(-2, 1, 3);
   const dec = F.decoder([{ t: 'y = ' }, { t: '−2', lab: 'a = −2' }, { t: '(x − 1)²' , lab: 'h = 1' }, { t: ' + 3', lab: 'k = 3' }]);
@@ -269,8 +269,8 @@ ${q('n73c', { n: 3, text: 'Write y = (x − 3)² − 1 in standard form.', fig: 
   rangeBand(pe, e, C.green); feats(pe, e, { vertex: { c: C.green, text: 'max (1, 3)', pos: 'e' } });
 
   const mq = QV(1, 2, -5);
-  const pm = pgraph(mq.f, [-3, 6, -6, 5], { H: 250 });
-  rangeBand(pm, mq, C.green); feats(pm, mq, { vertex: { c: C.green, text: 'min (2, −5)', pos: 'w' } });
+  const pm = pgraph(mq.f, [-3, 6, -7, 5], { H: 260 });
+  rangeBand(pm, mq, C.green); feats(pm, mq, { vertex: { c: C.green, text: 'min (2, −5)', pos: 's' } });
 
   const pm0 = pgraph(mq.f, [-3, 6, -6, 5], { H: 250 }); feats(pm0, mq, { vertex: { c: C.navy, text: `vertex (${fmt(mq.h)}, ${fmt(mq.k)})`, pos: 'e' } });
   const t = Q(1, 4, -1);
@@ -330,9 +330,9 @@ ${mc('n74c', { n: 3, text: 'Describe the end behavior of y = −3x² + x + 2.', 
   const modelA = F.areaModel({ wLab: 'length = 6', hLab: 'w = 4', inside: '4 × 6 = 24', wc: C.green, hc: C.green, ic: C.green });
   const pr = Q(-16, 32, 48);
   const sc = F.scene({ eq: 'h(t) = −16t² + 32t + 48' });
-  const pp = pgraph(pr.f, [0, 3.5, 0, 70], { H: 250, gx: 0.5, lx: 1, gy: 10, ly: 10, xname: 't (s)', yname: 'h (ft)' });
+  const pp = pgraph(pr.f, [0, 4, 0, 80], { H: 250, gx: 0.5, lx: 1, gy: 10, ly: 10, xname: 't (s)', yname: 'h (ft)' });
   pp.dot(0, 48, { c: C.green }); pp.lab(0, 48, 'start 48 ft', 'e', { c: C.green, fs: 11, dy: 6 });
-  pp.dot(1, 64, { c: C.green }); pp.lab(1, 64, 'max 64 ft at t = 1', 'e', { c: C.green, fs: 11, dy: 6 });
+  pp.dot(1, 64, { c: C.green }); pp.lab(1, 64, 'max 64 ft at t = 1', 'n', { c: C.green, fs: 11 });
   pp.dot(3, 0, { c: C.green }); pp.lab(3, 0, 'lands t = 3', 'nw', { c: C.green, fs: 11 });
 
   const mArea = F.areaModel({ wLab: 'w + 3', hLab: 'w', inside: 'Area = 40' });
@@ -344,9 +344,14 @@ ${mc('n74c', { n: 3, text: 'Describe the end behavior of y = −3x² + x + 2.', 
   const tAA = F.areaModel({ wLab: '9', hLab: '5', inside: '5 × 9 = 45 ✓', wc: C.green, hc: C.green, ic: C.green });
   const kq = Q(-16, 64, 0);
   const ktbl = F.vt(['t (s)', 'h (ft)'], [[0, 1, 2, 3, 4], [0, fmt(kq.f(1)), '?', '?', '?']]);
-  const kg = pgraph(kq.f, [0, 4.5, 0, 80], { H: 250, gx: 0.5, lx: 1, gy: 10, ly: 20, xname: 't (s)', yname: 'h (ft)' });
-  kg.dot(2, 64, { c: C.green }); kg.lab(2, 64, 'max 64 ft at t = 2', 'n', { c: C.green, fs: 11 });
-  kg.dot(4, 0, { c: C.green }); kg.lab(4, 0, 'lands t = 4', 'nw', { c: C.green, fs: 11 });
+  /* two different pictures: Question 2 shows the landing time, Question 3 shows the top */
+  const kgg = () => pgraph(kq.f, [0, 5, 0, 80], { H: 250, gx: 0.5, lx: 1, gy: 10, ly: 20, xname: 't (s)', yname: 'h (ft)' });
+  const kg = kgg();
+  kg.dot(0, 0, { c: C.navy }); kg.lab(0, 0, 'kicked t = 0', 'ne', { c: C.navy, fs: 11, dx: 4 });
+  kg.dot(4, 0, { c: C.green, r: 5.5 }); kg.lab(4, 0, 'lands t = 4', 'nw', { c: C.green, fs: 11 });
+  const kgM = kgg();
+  kgM.seg(2, 0, 2, 64, { c: C.green, w: 1.6, dash: '5 4' });
+  kgM.dot(2, 64, { c: C.green, r: 5.5 }); kgM.lab(2, 64, 'max 64 ft at t = 2', 'n', { c: C.green, fs: 11 });
 
   sec('t5', 5, 'Creating Quadratic Equations', `
 ${vocab([
@@ -386,9 +391,9 @@ ${q('n75a', { n: 1, text: 'A rectangle’s length is 4 more than its width. Its 
   sol: 'w(w + 4) = 45 → w² + 4w − 45 = 0 → (w + 9)(w − 5) = 0 → <b>w = 5</b> (length 9).', after: fig(tAA, 'Check: 5 × 9 = 45 ✓') })}
 ${figHtml(`<div class="table-wrap">${ktbl}</div>`, 'A ball is kicked from the ground: h(t) = −16t² + 64t. Use it for Questions 2–3.')}
 ${q('n75b', { n: 2, text: 'When does the ball land? (t in seconds)', fig: fig(F.scene({ eq: 'h(t) = −16t² + 64t', hi: 'land', ground: true, aria: 'sketch of a kicked ball landing' }), 'Sketch (not to scale): it lands when h(t) = 0 again.'), t: 'num', a: 4, ph: 't = ?', traps: [{ v: 0, m: 't = 0 is when it was kicked. Find the OTHER time when h = 0.' }, { v: 2, m: 't = 2 is when the ball is at the top. Find when h = 0 again.' }],
-  sol: '−16t² + 64t = 0 → −16t(t − 4) = 0 → t = 0 or <b>t = 4 s</b>. It lands at 4 s.', after: fig(kg.out('ball graph'), 'Lands at t = 4') })}
+  sol: '−16t² + 64t = 0 → −16t(t − 4) = 0 → t = 0 or <b>t = 4 s</b>. It lands at 4 s.', after: fig(kg.out('ball graph with its landing time'), 'h = 0 at t = 0 (kicked) and t = 4 (lands)') })}
 ${q('n75c', { n: 3, text: 'What is the maximum height? (feet)', fig: fig(F.scene({ eq: 'h(t) = −16t² + 64t', hi: 'max', ground: true, aria: 'sketch of a kicked ball at its highest point' }), 'Sketch (not to scale): the top is halfway between the two times when h = 0.'), t: 'num', a: kq.k, ph: 'h = ?', traps: [{ v: 2, m: '2 is the TIME of the top. Put t = 2 into h(t) to get the height.' }],
-  sol: `Top at t = ${fr('−64', '2(−16)')} = 2. h(2) = −16(4) + 64(2) = −64 + 128 = <b>64 ft</b>.`, after: fig(kg.out('ball graph'), 'Max 64 ft at t = 2') })}
+  sol: `Top at t = ${fr('−64', '2(−16)')} = 2. h(2) = −16(4) + 64(2) = −64 + 128 = <b>64 ft</b>.`, after: fig(kgM.out('ball graph with its highest point'), 'Max 64 ft at t = 2 (halfway between t = 0 and t = 4)') })}
 `);
 }
 
@@ -406,24 +411,24 @@ ${q('n75c', { n: 3, text: 'What is the maximum height? (feet)', fig: fig(F.scene
 
   const Cf = Q(1, -4, 0), D = Q(1, 2, -1);
   const ctab = F.vt(['x', 'C(x)'], [[-1, 0, 1, 2, 3], [-1, 0, 1, 2, 3].map(x => fmt(Cf.f(x)))]);
-  const pcd = pgraph(Cf.f, [-4, 5, -5, 6], { H: 250 });
+  const pcd = pgraph(Cf.f, [-4, 5, -6, 6], { H: 260 });
   pcd.curve(D.f, { c: C.blue, dash: '7 5' });
-  pcd.dot(2, -4, { c: C.green }); pcd.lab(2, -4, 'C min −4', 'e', { c: C.green, fs: 11 });
-  pcd.dot(-1, -2, { c: C.green }); pcd.lab(-1, -2, 'D min −2', 'w', { c: C.green, fs: 11 });
+  pcd.dot(2, -4, { c: C.green }); pcd.lab(2, -4, 'C min −4', 'se', { c: C.green, fs: 11 });
+  pcd.dot(-1, -2, { c: C.green }); pcd.lab(-1, -2, 'D min −2', 'sw', { c: C.green, fs: 11 });
 
   const g = Q(1, -4, 5);
   const pg = pgraph(g.f, [-2, 6, -2, 8], { H: 230 });
   pg.text(4.6, 6, 'g', { c: C.navy, fs: 13, bold: true, anchor: 'start', dx: 6 });
   const pg2 = pgraph(g.f, [-2, 6, -2, 8], { H: 230 });
-  pg2.dot(0, 5, { c: C.green }); pg2.lab(0, 5, 'g: y-int 5', 'w', { c: C.green, fs: 11 });
+  pg2.dot(0, 5, { c: C.green }); pg2.lab(0, 5, 'g: y-int 5', 'ne', { c: C.green, fs: 11 });
 
   const TA = QV(-1, -1, 6), TB = Q(-1, 4, 1);
   const pta = pgraph(TA.f, [-5, 3, -4, 7], { H: 250 });
   pta.text(1.2, 2, 'A', { c: C.navy, fs: 13, bold: true, anchor: 'start', dx: 8 });
-  const ptb = pgraph(TA.f, [-5, 6, -4, 7], { H: 250 });
+  const ptb = pgraph(TA.f, [-5, 6, -4, 8], { H: 260 });
   ptb.curve(TB.f, { c: C.blue, dash: '7 5' });
-  ptb.dot(-1, 6, { c: C.green }); ptb.lab(-1, 6, 'A max 6', 'w', { c: C.green, fs: 11 });
-  ptb.dot(2, 5, { c: C.green }); ptb.lab(2, 5, 'B max 5', 'e', { c: C.green, fs: 11 });
+  ptb.dot(-1, 6, { c: C.green }); ptb.lab(-1, 6, 'A max 6', 'nw', { c: C.green, fs: 11 });
+  ptb.dot(2, 5, { c: C.green }); ptb.lab(2, 5, 'B max 5', 'ne', { c: C.green, fs: 11 });
   const tbdec = F.decoder([{ t: 'B: y = ' }, { t: '−x²', lab: 'a = −1' }, { t: ' + 4x', lab: 'b = 4' }, { t: ' + 1', lab: 'c = 1' }]);
 
   sec('t6', 6, 'Comparing Functions', `

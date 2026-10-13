@@ -7,12 +7,12 @@ function labPts(P, pts, names, o = {}) {
   pts.forEach((p, i) => {
     const c = (o.cols && o.cols[i]) || o.c || C.navy;
     P.dot(p[0], p[1], { c });
-    if (names[i] === '') return;
+    if (names[i] === '' && !o.coordsOnly) return;
     let pos = (o.pos && o.pos[i]) || ((p[1] >= cy ? 'n' : 's') + (p[0] > cx + 0.01 ? 'e' : p[0] < cx - 0.01 ? 'w' : ''));
     if ((pos === 'n' || pos === 's') && pts.length === 2 && !(o.pos && o.pos[i])) pos = pos + (i ? 'e' : 'w');
     const txt = names[i] + (o.coords === false ? '' : '(' + fmt(p[0]) + ', ' + fmt(p[1]) + ')');
     const onX = p[1] === 0 && P.o.ymin < 0 && pos.indexOf('s') >= 0;            // keep clear of the x-axis numbers
-    if (p[0] === 0 && P.o.xmin < 0 && pos.indexOf('w') >= 0) pos = pos.replace('w', 'e');   // on the y-axis: keep clear of its numbers
+    if (p[0] === 0 && P.o.xmin < 0 && pos.indexOf('w') >= 0 && !(o.pos && o.pos[i])) pos = pos.replace('w', 'e');   // on the y-axis: keep clear of its numbers (unless a side was chosen)
     P.lab(p[0], p[1], txt, pos, { c: c === C.gold ? C.goldT : c, fs: o.fs || 12, dy: onX ? 13 : 0 });
   });
   return P;
@@ -42,6 +42,8 @@ function dist(p, q) { return Math.hypot(q[0] - p[0], q[1] - p[1]); }
 function sideLab(P, p, q, txt, cen, o = {}) {
   const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2;
   let dx = mx - cen[0], dy = my - cen[1];
+  if (p[1] === q[1]) dx = 0;            // flat side: label straight above or below it
+  else if (p[0] === q[0]) dy = 0;       // vertical side: label straight left or right of it
   const L = Math.hypot(dx, dy) || 1;
   if (!o.off && ((p[1] === 0 && q[1] === 0) || (p[0] === 0 && q[0] === 0))) o = Object.assign({}, o, { off: 28 });
   const px = P.X(mx) + dx / L * (o.off || 14), py = P.Y(my) - dy / L * (o.off || 14) + 4;

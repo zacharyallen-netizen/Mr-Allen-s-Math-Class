@@ -205,13 +205,13 @@
   /* ---- Part B ---- */
   var B = {
     b1: { m1: 3, b1: -2, m2: 1, b2: 4, eq1: ['y', ' = ', 'x + 4'], eq2: ['y', ' = 3x − 2'], k2: 0, res: ['x + 4 = 3x − 2  →  x = ', '?'], done: ['6 = 2x  →  x = 3', 'y = 3 + 4 = 7  →  (3, 7)'], v2: 'x + 4', lab: ['y = 3x − 2', 'y = x + 4'], x: [-1, 6], y: [-3, 11], yl: 2 },
-    b2: { m1: -2, b1: 1, m2: -4, b2: 9, eq1: ['y', ' = ', '−2x + 1'], eq2: ['4x + ', 'y', ' = 9'], k2: 1, res: ['2x + 1 = 9  →  x = ', '?'], done: ['2x + 1 = 9  →  x = 4', 'y = −2(4) + 1 = −7  →  (4, −7)'], v2: '−2x + 1', lab: ['y = −2x + 1', '4x + y = 9'], x: [-1, 6], y: [-9, 3], yl: 2 },
+    b2: { m1: -2, b1: 1, m2: -4, b2: 9, eq1: ['y', ' = ', '−2x + 1'], eq2: ['4x + ', 'y', ' = 9'], k2: 1, res: ['2x + 1 = 9  →  x = ', '?'], done: ['2x + 1 = 9  →  x = 4', 'y = −2(4) + 1 = −7  →  (4, −7)'], v2: '−2x + 1', lab: ['y = −2x + 1', '4x + y = 9'], tx: [[1.6, -7.5], [4.6, -2.2]], x: [-1, 6], y: [-9, 3], yl: 2 },
     b3: { m1: 2, b1: -2, m2: -1, b2: 10, eq1: ['y', ' = ', '2x − 2'], eq2: ['x + ', 'y', ' = 10'], k2: 1, res: ['3x − 2 = 10  →  x = ', '?'], done: ['3x − 2 = 10  →  x = 4', 'y = 2(4) − 2 = 6  →  (4, 6)'], v2: '2x − 2', lab: ['y = 2x − 2', 'x + y = 10'], x: [-1, 8], y: [-3, 11], yl: 2 }
   };
   Object.keys(B).forEach(function (id) {
     var q = B[id], sol = solveSI(q.m1, q.b1, q.m2, q.b2);
     V[id] = function (d) { return M1.subst({ done: d, eq1: q.eq1, k1: 2, eq2: q.eq2, k2: q.k2, res: [q.res, ['y = ' + q.v2 + '  →  (', '?', ', ', '?', ')']], resDone: q.done.map(function (t) { return [t]; }) }); };
-    V[id + 'g'] = function (d) { return after(d, S({ x: q.x, y: q.y, yl: q.yl, lines: [L(q.m1, q.b1, q.lab[0]), L(q.m2, q.b2, q.lab[1])], sol: sol, done: true, label: 'graph check' })); };
+    V[id + 'g'] = function (d) { return after(d, S({ x: q.x, y: q.y, yl: q.yl, lines: q.tx ? [L(q.m1, q.b1), L(q.m2, q.b2)] : [L(q.m1, q.b1, q.lab[0]), L(q.m2, q.b2, q.lab[1])], pts: q.tx ? q.tx.map(function (p, i) { return { t: 'txt', x: p[0], y: p[1], s: q.lab[i], c: i ? C.purple : C.navy }; }) : [], sol: sol, done: true, label: 'graph check' })); };
     R(id, { kind: 'pt', ans: sol, viz: [id, id + 'g'], ok: 'Yes! (' + f(sol[0]) + ', ' + f(sol[1]) + ') works in both equations. The graph shows the lines crossing there.',
       miss: [{ v: [sol[0], -sol[1]], m: 'x is right. Check the sign when you find y.' }], hint: 'Swap the expression in for y. Solve for x. Then put x back in to find y.' });
   });
@@ -250,16 +250,16 @@
   R('d5', { kind: 'fix', ans: 3, viz: 'd5', ok: 'Step 3 is the mistake. 3 ≤ 2 is FALSE (3 is bigger than 2). So (2, 3) is not a solution. The point is outside the shading.',
     why: { 1: 'Step 1 is right. He put x = 2 and y = 3 in the right places.', 2: 'Step 2 is right: −2 + 4 = 2.' } });
   /* ---- Part E ---- */
-  V.e1 = function () { return S({ x: [-4, 2], y: [-9, 9], ys: 1, yl: 3, lines: [L(2, 1, 'y = 2x + 1'), L(2, -3, 'y = 2x − 3')], label: 'two lines with the same slope' }); };
+  V.e1 = function () { return S({ x: [-3, 3], y: [-6, 8], ys: 1, yl: 2, lines: [L(2, 1), L(2, -3)], pts: [{ t: 'txt', x: -1.6, y: 3, s: 'y = 2x + 1', c: C.navy }, { t: 'txt', x: 1.7, y: -4.5, s: 'y = 2x − 3', c: C.purple }], label: 'two lines with the same slope' }); };
   R('e1', { kind: 'mc', ans: 'none', ok: 'The lines are parallel (both slopes are 2, different y-intercepts). They never meet: no solution.', why: { one: 'Look closely: do the lines ever cross? Both have slope 2.', inf: 'The lines are not on top of each other. The y-intercepts are 1 and −3.' } });
   V.e2 = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 3x + 2', '6x − 2y = −4'], [3, 3], [2, 2]], hide: [[1, 1], [2, 1]], done: d, label: 'compare slopes and intercepts' }); };
-  V.e2g = function (d) { return after(d, S({ w: 240, x: [-3, 2], y: [-4, 6], lines: [L(3, 2, 'y = 3x + 2', { at: 0.2 }), { A: 6, B: -2, C: -4, label: '6x − 2y = −4', dash: '8 6', at: 0.85 }], label: 'the same line' })); };
+  V.e2g = function (d) { return after(d, S({ w: 300, x: [-3, 2], y: [-4, 6], lines: [L(3, 2, 'y = 3x + 2', { at: 0.2 }), { A: 6, B: -2, C: -4, label: '6x − 2y = −4', dash: '8 6', at: 0.85 }], label: 'the same line' })); };
   var e2s = M1.solve2(-3, 1, 2, 6, -2, -4).type;
   R('e2', { kind: 'mc', ans: e2s, viz: ['e2', 'e2g'], ok: 'Solve 6x − 2y = −4 for y: −2y = −6x − 4, so y = 3x + 2. Same slope AND same b: the same line. Infinitely many solutions.',
     why: { one: 'Get y alone in 6x − 2y = −4 first. Then compare the slopes.', none: 'Get y alone in 6x − 2y = −4. Is the b-value really different?' } });
   var e3s = solveSI(2, 3, -1, 9);
   V.e3 = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 2x + 3', 'y = −x + 9'], [2, -1], [3, 9]], hide: [[1, 0], [1, 1]], done: d, label: 'compare slopes' }); };
-  V.e3g = function (d) { return after(d, S({ w: 240, x: [-1, 6], y: [0, 11], yl: 2, lines: [L(2, 3, 'y = 2x + 3'), L(-1, 9, 'y = −x + 9')], sol: e3s, done: true, label: 'one solution' })); };
+  V.e3g = function (d) { return after(d, S({ w: 300, x: [-1, 6], y: [0, 11], yl: 2, lines: [L(2, 3, 'y = 2x + 3'), L(-1, 9, 'y = −x + 9')], sol: e3s, done: true, label: 'one solution' })); };
   R('e3', { kind: 'pt', ans: e3s, viz: ['e3', 'e3g'], ok: 'Different slopes, so one solution. 2x + 3 = −x + 9 → 3x = 6 → x = 2, y = 7.', hint: 'Set 2x + 3 equal to −x + 9. Solve for x. Then find y.' });
   /* Nia's elimination, built from her two equations: every term cancels */
   V.e4p = function () {
@@ -275,7 +275,7 @@
     rows[0].items.push({ s: '×(' + f(k) + ')', x: 240, a: 'start', st: 'tag', fs: 13 });
     return M1.eqrows({ w: 300, h: 220, rows: rows, rules: [{ x1: 40, x2: 250, y: 122 }], notes: [{ x: 150, y: 52, s: 'multiply every term ↓', c: C.goldTx, fs: 12.5 }, { x: 150, y: 208, s: 'All the x, y and number terms cancel.', c: C.red, fs: 12.5 }], label: 'elimination for 2x + y = 4 and 4x + 2y = 8: every term cancels' });
   };
-  V.e4 = function (d) { return after(d, S({ x: [-2, 4], y: [-3, 7], lines: [L(-2, 4, '2x + y = 4', { at: 0.2 }), { A: 4, B: 2, C: 8, label: '4x + 2y = 8', dash: '8 6', at: 0.85 }], label: 'the same line' })); };
+  V.e4 = function (d) { return after(d, S({ x: [-2, 4], y: [-3, 7], lines: [L(-2, 4), { A: 4, B: 2, C: 8, dash: '8 6' }], pts: [{ t: 'txt', x: 2.75, y: 4.6, s: '2x + y = 4', c: C.navy }, { t: 'txt', x: 1.55, y: -2.4, s: '4x + 2y = 8', c: C.purple }], label: 'the same line' })); };
   R('e4', { kind: 'fix', ans: 3, viz: 'e4', ok: 'Step 3 is the mistake. 0 = 0 is ALWAYS true. It means both equations are the same line, so there are infinitely many solutions — not just (0, 0).',
     why: { 1: 'Step 1 is right. Every term was multiplied by −2.', 2: 'Step 2 is right: everything cancels and you get 0 = 0.' } });
   M1.init();

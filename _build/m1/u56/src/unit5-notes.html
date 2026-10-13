@@ -380,19 +380,14 @@ function G(t){return {t:t};} function W(t){return {t:t||'?',c:C.goldD};} functio
 /* dot plot with a box plot drawn under the number line; known = which of the 5 parts are shown */
 function dotBox(data,o){var five=St.five(data),kn=o.known||[0,0,0,0,0],all=kn.every(Boolean);
   return M.dotPlot(data,{min:o.min,max:o.max,step:o.step||1,lab:o.lab,below:78,label:o.label||'dot plot and box plot',color:o.color,marks:o.marks,dist:o.dist,
-    after:function(X,ay){var cy=ay+58,s='',nm=['min','Q1','med','Q3','max'];
-      if(all){s+=ln(X(five[0]),cy,X(five[1]),cy,C.navy,2.2)+ln(X(five[3]),cy,X(five[4]),cy,C.navy,2.2)+rc(X(five[1]),cy-12,X(five[3])-X(five[1]),24,'#EEF1F8',C.navy,2.2)+ln(X(five[2]),cy-12,X(five[2]),cy+12,C.green,3)
-        +ln(X(five[0]),cy-8,X(five[0]),cy+8,C.navy,2.4)+ln(X(five[4]),cy-8,X(five[4]),cy+8,C.navy,2.4);}
-      else{s+=tx((X(o.min)+X(o.max))/2,cy+4,o.qtext||'box plot: finish the steps to build it',{size:11,fill:C.goldD});}
-      var lastX=-99;
-      for(var p=0;p<5;p++){if(!kn[p])continue;var x=X(five[p]);if(!all)s+=ln(x,cy-14,x,cy+14,C.green,2.4,'4 3');
-        var up=x-lastX>40;if(up)lastX=x;s+=tag(x,up?cy-17:cy+27,nm[p]+' '+f(five[p]),{size:10.5,mono:true,fill:C.green});}
-      return s;}});}
+    after:function(X,ay){var cy=ay+58;
+      if(!kn.some(Boolean))return tx((X(o.min)+X(o.max))/2,cy+4,o.qtext||'box plot: finish the steps to build it',{size:11,fill:C.goldD});
+      return M.boxRow(X,five,cy,{known:kn});}});}
 /* ---------- topic 1 figures ---------- */
 var QUIZ=[7,4,9,5,7,10,6,8,5,7];
 FIG.dot1=function(){return M.dotPlot(QUIZ,{min:3,max:11,title:'Quiz score',label:'dot plot of quiz scores'});};
 FIG.hist1=function(){return M.histogram(['0–9','10–19','20–29','30–39','40–49'],[2,5,8,4,1],{xTitle:'Minutes of reading',yTitle:'Number of students',label:'histogram'});};
-FIG.box1=function(){var F=[2,5,8,12,18];return M.boxPlots([{f:F,parts:F.map(function(v,i){return {t:['min ','Q1 ','med ','Q3 ','max '][i]+v};})}],{min:0,max:20,step:1,lab:2,label:'box plot'});};
+FIG.box1=function(){var F=[2,5,8,12,18];return M.boxPlots([{f:F,parts:F.map(function(v,i){return {t:['min ','Q1 ','med ','Q3 ','max '][i]+v};})}],{min:0,max:20,step:1,lab:2,rowH:86,label:'box plot'});};
 EX.e51a={viz:function(st){var k=[0,0,0,0,0];if(st==='solved')k=[1,1,1,1,1];else{if(st>=2){k[0]=1;k[4]=1;}if(st>=3)k[2]=1;if(st>=4)k[1]=1;}
   return dotBox(QUIZ,{min:3,max:11,known:k,label:'quiz scores: dot plot and box plot'});}};
 var AGES=[12,15,18,21,22,25,27,28,33,36,38,41],BINS=['10–19','20–29','30–39','40–49'];
@@ -424,7 +419,7 @@ function distViz(d,st,o){var m=St.mean(d);o=o||{};var cnt={},mx=0;d.forEach(func
   return M.dotPlot(d,{min:o.min||0,max:o.max||18,lab:o.lab||2,label:o.label||'distances from the mean',extraTop:n*17+8,
   marks:[{v:m,label:'mean '+f(m),color:C.navy,dash:'3 3'}],
   after:function(X,ay){var s='',seen={},base=ay-8-(mx-1)*14-6-12;
-    d.forEach(function(v,i){seen[v]=(seen[v]||0)+1;if(v===m)return;var k=idx.indexOf(i),y=base-k*17,cy=ay-8-(seen[v]-1)*14,dd=Math.abs(v-m),sv=st==='solved',col=sv?C.green:C.gold;
+    d.forEach(function(v,i){seen[v]=(seen[v]||0)+1;if(v===m)return;var k=idx.indexOf(i),y=base-k*17,cy=ay-8-(cnt[v]-1)*14,dd=Math.abs(v-m),sv=st==='solved',col=sv?C.green:C.gold;
       s+=ln(X(v),cy-6,X(v),y,C.grid,1.2,'2 2')+ln(X(v),y,X(m),y,col,2.6)+ln(X(v),y-4,X(v),y+4,col,2);
       var t=sv?(o.signed?M.sgn(v-m):f(dd)):(o.q?'?':'');if(t)s+=tag(v<m?X(v)-5:X(v)+5,y+4,t,{size:10.5,mono:true,fill:sv?C.green:C.goldD,anchor:v<m?'end':'start'});});
     return s;}});}
@@ -455,9 +450,10 @@ SP.yt52={type:'multi',ok:'The gold gaps are the distances from the mean.',viz:fu
 var D53=[4,6,7,8,9,10,11,25],F53=St.five(D53),IQR53=F53[3]-F53[1],UF53=F53[3]+1.5*IQR53,LF53=F53[1]-1.5*IQR53;
 FIG.pull=function(){var a=D53.slice(0,7),X=M.sc(0,26,22,338),s='',rows=[{d:a,y:86,name:'Without 25'},{d:D53,y:196,name:'With 25'}];
   rows.forEach(function(r){var m=St.mean(r.d),md=St.median(r.d);s+=tx(22,r.y-62,r.name,{size:12,bold:true,anchor:'start'});
-    s+=ln(22,r.y,338,r.y,C.axis,1.4);r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});
+    s+=ln(22,r.y,338,r.y,C.axis,1.4);
     var mr=m>md;s+=ln(X(m),r.y-30,X(m),r.y,C.gold,2.2,'4 3')+tag(X(m)+(mr?3:-3),r.y-34,'mean '+f(m),{size:10.5,mono:true,fill:C.goldD,anchor:mr?'start':'end'});
-    s+=ln(X(md),r.y-30,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-34,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});});
+    s+=ln(X(md),r.y-30,X(md),r.y,C.green,2.2,'4 3')+tag(X(md)+(mr?-3:3),r.y-34,'median '+f(md),{size:10.5,mono:true,fill:C.green,anchor:mr?'end':'start'});
+    r.d.forEach(function(v){s+=ci(X(v),r.y-8,5.5,v===25?C.gold:C.navy,'#fff',1.2);});});
   var A2=M.axisX({x0:22,x1:338,y:222,min:0,max:26,step:1,lab:2});
   return M.svg(360,252,s+A2.s,'mean versus median with an outlier');};
 function fenceViz(d,st,o){var F=St.five(d),I=F[3]-F[1],uf=F[3]+1.5*I,lf=F[1]-1.5*I;o=o||{};
@@ -498,14 +494,14 @@ EX.e54={viz:function(st){var s=st==='solved'?2:(st||0),y=2+3*4;
 EX.e54b={viz:function(st){var s=st==='solved'?3:(st||0);
   return M.scatter(BK,o(BKO,{h:270,line:{a:FIT.a,b:FIT.b},label:'slope and intercept',
     after:function(X,Y){var q='',x0=5.5,x1=6.5,y0=FIT.a+FIT.b*x0,y1=FIT.a+FIT.b*x1,c1=s>=1?C.green:C.gold;q+=ln(X(x0),Y(y0),X(x1),Y(y0),c1,2.6)+ln(X(x1),Y(y0),X(x1),Y(y1),c1,2.6);
-      q+=tag(X(6),Y(y0)+16,'run 1',{size:10.5,fill:C.navy})+tag(X(x1)+5,Y((y0+y1)/2)+4,s>=1?'rise '+f(FIT.b):'rise ?',{size:10.5,mono:true,fill:s>=1?C.green:C.goldD,anchor:'start'});
+      q+=tag(X(6)+5,Y(y0)+19,'run 1',{size:10.5,fill:C.navy})+tag(X(x1)+5,Y((y0+y1)/2)+4,s>=1?'rise '+f(FIT.b):'rise ?',{size:10.5,mono:true,fill:s>=1?C.green:C.goldD,anchor:'start'});
       q+=ci(X(0),Y(FIT.a),5.5,s>=2?C.green:C.gold)+tag(X(0)+8,Y(FIT.a)+18,s>=2?'(0, '+f(FIT.a)+')':'(0, ?)',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD,anchor:'start'});return q;}}));}};
 SP.fm54={type:'mc',ans:'2',ok:'Mia added 5 + 2 before multiplying. Multiply first: 2(6) = 12. Then 5 + 12 = 17.',fb:{'1':'Putting 6 in for x is right.','3':'7 × 6 really is 42 — the mistake happened before this line.'},
-  viz:function(st){var y=5+2*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:44,ystep:4,ylab:8,h:250,xTitle:'x',yTitle:'ŷ',line:{a:5,b:2,label:'ŷ = 5 + 2x',lx:7.6,anchor:'end',ly:-8},
+  viz:function(st){var y=5+2*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:44,ystep:4,ylab:8,h:250,xTitle:'x',yTitle:'ŷ',line:{a:5,b:2,label:'ŷ = 5 + 2x',at:[0.3,12.5]},
     guides:[{x:6,y:st==='solved'?y:42,toY:true,color:st==='solved'?C.green:C.gold}],marks:[st==='solved'?{x:6,y:y,color:C.green,label:'(6, 17)',anchor:'end',dx:-8}:{x:6,y:42,color:C.gold,label:'Mia: 42?',anchor:'end',dx:-8,dy:14}],label:'Mia’s prediction'});}};
 SP.fm54b={hint:'Multiply first: 2 × 6. Then add 5.',type:'num',ans:5+2*6,fb:[[42,'Multiply before you add: 2(6) first.'],[13,'2(6) means 2 × 6 = 12, not 2 + 6.']]};
 SP.yt54={hint:'Put 6 in for x: 4 + 1.5(6). Multiply first.',type:'num',ans:4+1.5*6,fb:[[33,'Multiply first: 1.5 × 6 = 9. Then add 4.'],[11.5,'1.5x means 1.5 × 6, not 1.5 + 6.'],[9,'9 is 1.5 × 6. Now add the 4.']],ok:'',
-  viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',lx:0.4,anchor:'start',ly:-10},
+  viz:function(st){var y=4+1.5*6;return M.scatter([],{xmin:0,xmax:8,xstep:1,ymin:0,ymax:18,ystep:2,ylab:4,h:240,xTitle:'x',yTitle:'ŷ',line:{a:4,b:1.5,label:'ŷ = 4 + 1.5x',at:[0.3,10.4]},
     guides:[{x:6,y:y,toY:st==='solved',color:st==='solved'?C.green:C.gold}],marks:[{x:6,y:y,color:st==='solved'?C.green:C.gold,label:st==='solved'?'(6, 13)':'(6, ?)',dx:8,dy:14}],label:'prediction at x = 6'});}};
 SP.yt54b={type:'mc',ans:'e',cap:'Shaded: the x-values in the data. Gold: the x we want to predict for.',viz:function(){var lo=0,hi=8,xq=20;return M.pointsLine({min:0,max:22,step:1,lab:4,y:66,title:'x-value',label:'data x-values 0 to 8 and the new x = 20',pts:[{v:xq,t:'x = '+xq,c:C.gold}],after:function(X,y){return rc(X(lo),y-24,X(hi)-X(lo),24,'rgba(30,45,79,0.12)',C.navy,1.2,3)+tag((X(lo)+X(hi))/2,y-32,'data: '+lo+' to '+hi,{size:11,fill:C.navy});}});},ok:'20 is outside 0 to 8, so it is extrapolation. The prediction is risky.',fb:{i:'Interpolation means inside the data (0 to 8). Is 20 inside?'}};
 /* ---------- topic 5 ---------- */

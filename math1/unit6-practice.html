@@ -226,6 +226,16 @@ function dotPlot(data,o){o=o||{};var w=o.w||360,min=o.min,max=o.max,step=o.step|
     var col=o.color?o.color(v,i):C.navy;s+=ci(cx,cy,r,col,'#fff',1.2);});
   if(o.after)s+=o.after(X,ay);
   return svg(w,h,s+A.s,o.label||'dot plot');}
+/* box plot row with five-number labels; labels go above or below the box, placed by width so they never overlap */
+function boxRow(X,F,cy,o){o=o||{};var s='',bh=24,nm=['min','Q1','med','Q3','max'],kn=o.known||[1,1,1,1,1],all=kn.every(Boolean),W=o.w||360,col=o.color||C.green;
+  if(all){s+=ln(X(F[0]),cy,X(F[1]),cy,C.navy,2.2)+ln(X(F[3]),cy,X(F[4]),cy,C.navy,2.2)+rc(X(F[1]),cy-bh/2,X(F[3])-X(F[1]),bh,'#EEF1F8',C.navy,2.2)+ln(X(F[2]),cy-bh/2,X(F[2]),cy+bh/2,C.green,3)
+    +ln(X(F[0]),cy-8,X(F[0]),cy+8,C.navy,2.4)+ln(X(F[4]),cy-8,X(F[4]),cy+8,C.navy,2.4);}
+  var endA=-99,endB=-99;
+  for(var p=0;p<5;p++){if(!kn[p])continue;var x=X(F[p]),t=nm[p]+' '+fmt(F[p]),hw=tw(t,fz(10.5),true)/2+4,x2=Math.min(Math.max(x,hw+2),W-hw-2);
+    if(!all)s+=ln(x,cy-14,x,cy+14,col,2.4,'4 3');
+    var up=x2-hw>endA+4||!(x2-hw>endB+4);if(up)endA=x2+hw;else endB=x2+hw;
+    s+=tag(x2,up?cy-bh/2-8:cy+bh/2+21,t,{size:10.5,mono:true,fill:col});}
+  return s;}
 /* ---------- histogram ---------- */
 function histogram(labels,freqs,o){o=o||{};var w=o.w||360,h=(o.h||236)+18,L=48,R=10,T=40,B=50,n=freqs.length;
   var yMax=o.yMax||Math.max.apply(null,freqs),ys=o.ystep||(yMax>10?2:1),Y=sc(0,yMax,h-B,T),bw=(w-L-R)/n,s='';while(Y(0)-Y(ys)<22&&ys<yMax)ys*=2;
@@ -243,7 +253,7 @@ function boxPlots(rows,o){o=o||{};var w=o.w||360,rowH=o.rowH||70,top=o.top||8,n=
   if(o.grid)for(var g=o.min;g<=o.max+1e-9;g+=o.grid)s+=ln(X(g),top,X(g),ay,C.grid,1);
   rows.forEach(function(r,k){var f=r.f,cy=top+k*rowH+(r.name?44:40),bh=26,hl=r.hl||{},col=function(p){return hl[p]||C.navy;};
     if(r.name)s+=tx(X(o.min),cy-30,r.name,{size:12,bold:true,anchor:'start'});
-    if(hl.box)s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,C.goldL);
+    if(hl.box)s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,hl.boxFill||C.goldL);
     s+=ln(X(f[0]),cy,X(f[1]),cy,col('lw'),2.2)+ln(X(f[3]),cy,X(f[4]),cy,col('rw'),2.2);
     s+=ln(X(f[0]),cy-9,X(f[0]),cy+9,col('min'),2.4)+ln(X(f[4]),cy-9,X(f[4]),cy+9,col('max'),2.4);
     s+=rc(X(f[1]),cy-bh/2,X(f[3])-X(f[1]),bh,hl.box?'none':'#EEF1F8',hl.box||C.navy,2.2);
@@ -284,8 +294,15 @@ function plane(o){var w=o.w||340,pad=o.pad||22,u=(w-2*pad)/(o.xmax-o.xmin),h=o.h
   var ax0=Math.min(Math.max(0,o.ymin),o.ymax),ay0=Math.min(Math.max(0,o.xmin),o.xmax);
   s+=ln(pad-6,Y(ax0),w-pad+6,Y(ax0),C.axis,1.7)+ln(X(ay0),pad-6,X(ay0),h-pad+6,C.axis,1.7);
   s+=tx(w-pad+2,Y(ax0)-7,'x',{size:12,italic:true,fill:C.axis,anchor:'end'})+tx(X(ay0)+8,pad-8+12,'y',{size:12,italic:true,fill:C.axis,anchor:'start'});
-  var labs='';for(v=Math.ceil(o.xmin);v<=o.xmax;v++){if(v===0||!onStep(v,lab)||v===o.xmax)continue;labs+=tx(X(v),Y(ax0)+15,fmt(v),{size:10.5,mono:true,fill:C.axis,halo:1});}
-  for(v=Math.ceil(o.ymin);v<=o.ymax;v++){if(v===0||!onStep(v,ylab)||v===o.ymax)continue;labs+=tx(X(ay0)-5,Y(v)+4,fmt(v),{size:10.5,mono:true,fill:C.axis,anchor:'end',halo:1});}
+  var lfs=fz(10.5);
+  function hits(x0,x1,y0,y1){var k,F,i,xx,yy;for(k=0;k<(o.fns||[]).length;k++){F=o.fns[k];for(i=0;i<=12;i++){xx=x0-2+(x1-x0+4)*i/12;yy=Y(F.f(o.xmin+(xx-pad)/u));if(yy>=y0-2&&yy<=y1+2)return true;}}
+    return (o.pts||[]).some(function(p){var px=X(p.x),py=Y(p.y),r=(p.r||5)+2;return px+r>x0&&px-r<x1&&py+r>y0&&py-r<y1;});}
+  var labs='';for(v=Math.ceil(o.xmin);v<=o.xmax;v++){if(v===0||!onStep(v,lab)||v===o.xmax)continue;var t1=fmt(v),hw1=tw(t1,lfs,true)/2;
+    if(!hits(X(v)-hw1,X(v)+hw1,Y(ax0)+15-lfs*0.8,Y(ax0)+17))labs+=tx(X(v),Y(ax0)+15,t1,{size:10.5,mono:true,fill:C.axis,halo:1});
+    else if(!hits(X(v)-hw1,X(v)+hw1,Y(ax0)-7-lfs*0.8,Y(ax0)-5))labs+=tx(X(v),Y(ax0)-7,t1,{size:10.5,mono:true,fill:C.axis,halo:1});}
+  for(v=Math.ceil(o.ymin);v<=o.ymax;v++){if(v===0||!onStep(v,ylab)||v===o.ymax)continue;var t2=fmt(v),ww=tw(t2,lfs,true);
+    if(!hits(X(ay0)-5-ww,X(ay0)-5,Y(v)+4-lfs*0.8,Y(v)+6))labs+=tx(X(ay0)-5,Y(v)+4,t2,{size:10.5,mono:true,fill:C.axis,anchor:'end',halo:1});
+    else if(!hits(X(ay0)+5,X(ay0)+5+ww,Y(v)+4-lfs*0.8,Y(v)+6))labs+=tx(X(ay0)+5,Y(v)+4,t2,{size:10.5,mono:true,fill:C.axis,anchor:'start',halo:1});}
   (o.vlines||[]).forEach(function(l){s+=ln(X(l.x),pad,X(l.x),h-pad,l.color||C.gold,2,l.dash||'6 4');if(l.label)s+=tag(X(l.x)+(l.dx||0),pad+12,l.label,{size:11,mono:true,fill:l.tc||C.goldD,anchor:l.anchor||'middle'});});
   (o.fns||[]).forEach(function(F){var seg=[],out='',N=360,prev=null;
     for(var i=0;i<=N;i++){var x=o.xmin+(o.xmax-o.xmin)*i/N,y=F.f(x),inr=y>=o.ymin&&y<=o.ymax;
@@ -335,16 +352,33 @@ function dosPic(a,b,o){o=o||{};var A=112,Bs=42,s='',L=34,T=30,solved=o.solved,lb
   s+=ln(L,T+A-Bs,L+A-Bs,T+A-Bs,C.navy,1.2,'3 3');
   s+=tx(L+A/2,T-9,a,{size:13,mono:true,bold:true})+tx(L-8,T+A/2+5,a,{size:13,mono:true,bold:true,anchor:'end'});
   var sq=function(t){return /^([a-z]|\d+)$/i.test(t)?t:'('+t+')';},al=sq(a)+'² − '+sq(b)+'²';
-  s+=tx(L+(A-Bs)/2,T+(A-Bs)/2+5,al,{size:al.length>8?11:12,mono:true,bold:true});
+  if(al.length>8){var al1=sq(a)+'²',al2='− '+sq(b)+'²';s+=tx(L+(A-Bs)/2,T+(A-Bs)/2-4,al1,{size:12,mono:true,bold:true})+tx(L+(A-Bs)/2,T+(A-Bs)/2+16,al2,{size:12,mono:true,bold:true});}
+  else s+=tx(L+(A-Bs)/2,T+(A-Bs)/2+5,al,{size:12,mono:true,bold:true});
   s+=arrow(L+A+10,T+A/2,L+A+42,T+A/2,C.navy,2);
   var x2=L+A+52,R=A-Bs;
   s+=rc(x2,T+10,A,R,C.navyL,C.navy,1.8)+rc(x2+A,T+10,Bs,R,'#C9D3E6',C.navy,1.8);
-  s+=tx(x2+(A+Bs)/2,T+2,solved?'('+a+' + '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
-  s+=tx(x2+(A+Bs)/2,T+10+R+20,solved?'('+a+' − '+b+')':'?',{size:13,mono:true,bold:true,fill:lb});
+  s+=tx(x2+(A+Bs)/2,T+2,solved?'width ('+a+' + '+b+')':'width ?',{size:13,mono:true,bold:true,fill:lb});
+  /* height of the new rectangle: a double arrow on its right side, label written level underneath */
+  var hx=x2+A+Bs+9;s+=arrow(hx,T+10+R/2,hx,T+12,lb,1.6)+arrow(hx,T+10+R/2,hx,T+8+R,lb,1.6);
+  s+=tx(hx+4,T+10+R+20,solved?'height ('+a+' − '+b+')':'height ?',{size:12,mono:true,bold:true,fill:lb,anchor:'end'});
   s+=tx(x2+A+Bs/2,T+10+R/2+4,'moved',{size:9.5,fill:C.navy,rot:-90});
-  var w=Math.max(x2+A+Bs+10,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
+  var w=Math.max(x2+A+Bs+16,o.foot?tw(o.foot.t,fz(12.5),true)+24:0),h=T+A+(o.foot?34:12);
   if(o.foot)s+=tag(w/2,h-10,o.foot.t,{size:12.5,mono:true,fill:o.foot.k==='ans'?C.green:C.goldD});
   return svg(w,h,s,o.label||'difference of squares picture');}
+/* ---------- quadratic formula card: the item's own equation on top, then a, b, c, the discriminant and the formula ----------
+   s: 0 = all unknown, 1 = a, b, c found (step answer), 'given' = a, b, c shown as givens, 'sub' = givens put in the formula,
+      2 = discriminant found, 3 = formula with numbers, 4 = solutions */
+function fcard(a,b,c,s){var gv=s==='sub'||s==='given',o='',k=gv?1:s,Tp=34,ok1=k>=1,ok2=k>=2&&!gv;
+  var eq=pstr([c,b,a])+' = 0';o+=tx(180,20,eq,{size:14,mono:true,bold:true});
+  /* gv: a, b, c are read straight from the equation (given, navy); otherwise a revealed step shows green */
+  [['a',a],['b',b],['c',c]].forEach(function(q,i){var x=20+i*82;o+=rc(x,Tp,70,40,gv?C.navyL:ok1?C.greenL:C.goldL,gv?C.navy:ok1?C.green:C.gold,1.8,6)+tx(x+35,Tp+26,q[0]+' = '+(ok1?fmt(q[1]):'?'),{size:13,mono:true,bold:true,fill:gv?C.navy:ok1?C.green:C.goldD});});
+  var d=b*b-4*a*c;o+=rc(270,Tp,80,40,ok2?C.greenL:C.goldL,ok2?C.green:C.gold,1.8,6)+tx(310,Tp+16,'b² − 4ac',{size:10.5,mono:true,fill:ok2?C.green:C.goldD})+tx(310,Tp+33,ok2?fmt(d):'?',{size:13,mono:true,bold:true,fill:ok2?C.green:C.goldD});
+  var p=function(v){return v<0?'('+fmt(v)+')':fmt(v);},y=Tp+80;
+  var num=s==='sub'?'−('+fmt(b)+') ± √('+p(b)+'² − 4('+fmt(a)+')('+fmt(c)+'))':k>=3?'−('+fmt(b)+') ± √'+fmt(d):'−b ± √(b² − 4ac)',den=s==='sub'||k>=3?'2('+fmt(a)+')':'2a';
+  var nf=num.length>18?12.5:14,bw=Math.max(150,tw(num,fz(nf),true)+12),cx=Math.max(200,96+bw/2);
+  o+=tx(cx-bw/2-12,y+8,'x =',{size:15,mono:true,bold:true,anchor:'end'})+tx(cx,y-4,num,{size:nf,mono:true,bold:true,fill:k>=3?C.green:C.navy})+ln(cx-bw/2,y+4,cx+bw/2,y+4,C.navy,2)+tx(cx,y+24,den,{size:14,mono:true,bold:true,fill:k>=3?C.green:C.navy});
+  if(k>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+fmt((-b+r)/(2*a))+'  or  x = '+fmt((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
+  return svg(360,k>=4?y+68:y+40,o,'quadratic formula card for '+eq);}
 /* ---------- number line with marked points ---------- */
 function pointsLine(o){var w=o.w||360,y=o.y||58,A=axisX({x0:22,x1:w-22,y:y,min:o.min,max:o.max,step:o.step||1,lab:o.lab||1,title:o.title}),s='',X=A.X;
   (o.pts||[]).forEach(function(p,i){var col=p.c||C.navy;s+=ci(X(p.v),y,6,p.hollow?'#fff':col,col,2.2);
@@ -530,8 +564,8 @@ function init(){
   hook();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else setTimeout(init,0);
 return {C:C,svg:svg,ln:ln,tx:tx,rc:rc,ci:ci,pg:pg,pl:pl,arrow:arrow,tag:tag,fmt:fmt,sgn:sgn,sc:sc,esc:esc,axisX:axisX,
-  dotPlot:dotPlot,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
-  dosPic:dosPic,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
+  dotPlot:dotPlot,boxRow:boxRow,histogram:histogram,boxPlots:boxPlots,scatter:scatter,plane:plane,areaModel:areaModel,tileRect:tileRect,csTiles:csTiles,
+  dosPic:dosPic,fcard:fcard,pointsLine:pointsLine,flow:flow,St:St,parsePoly:parsePoly,setOf:setOf,numOf:numOf,ptOf:ptOf,pstr:pstr,peq:peq,factorsOf:factorsOf,
   judge:judge,check:check,mc:mc,SPEC:SPEC,EX:EX,FIG:FIG,INT:INT,render:render,drawEx:drawEx,uid:function(){return ++uid;}};
 })();
 </script>
@@ -568,12 +602,7 @@ function pairTable(c,b,o){o=o||{};var ps=pairs(c,b),rh=26,y0=30,s='',x0=14,x1=15
     if(hl)s+=tx(x2+8,y+18,'✓',{size:14,bold:true,fill:C.green,anchor:'start'});});
   s+=ln(x1,y0,x1,y0+ps.length*rh,C.grid,1.5);return M.svg(262,y0+ps.length*rh+10,s,'factor pair table');}
 function D(a,b,c){return b*b-4*a*c;}
-function fcard(a,b,c,s){var o='';[['a',a],['b',b],['c',c]].forEach(function(k,i){var x=20+i*82;o+=rc(x,10,70,40,s>=1?C.greenL:C.goldL,s>=1?C.green:C.gold,1.8,6)+tx(x+35,36,k[0]+' = '+(s>=1?f(k[1]):'?'),{size:13,mono:true,bold:true,fill:s>=1?C.green:C.goldD});});
-  var d=D(a,b,c);o+=rc(270,10,80,40,s>=2?C.greenL:C.goldL,s>=2?C.green:C.gold,1.8,6)+tx(310,26,'b² − 4ac',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD})+tx(310,43,s>=2?f(d):'?',{size:13,mono:true,bold:true,fill:s>=2?C.green:C.goldD});
-  var y=88,num=s>=3?'−('+f(b)+') ± √'+f(d):'−b ± √(b² − 4ac)',den=s>=3?'2('+f(a)+')':'2a';
-  o+=tx(70,y+8,'x =',{size:15,mono:true,bold:true})+tx(200,y-4,num,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy})+ln(110,y+4,290,y+4,C.navy,2)+tx(200,y+24,den,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy});
-  if(s>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+f((-b+r)/(2*a))+'  or  x = '+f((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
-  return M.svg(360,s>=4?156:124,o,'quadratic formula card');}
+var fcard=M.fcard;
 function roots(a,b,c){var d=D(a,b,c),r=Math.sqrt(d);return [(-b+r)/(2*a),(-b-r)/(2*a)];}
 /* ---------- Part A ---------- */
 SP.a1={type:'poly',ans:P('(x+3)(x+2)'),fb:[['x^2+6','You added only the first and last boxes. Add the two x-boxes too: 3x + 2x.'],['x^2+5x+5','The last box is 3 × 2 = 6.']],viz:mulViz(['x','+3'],['x','+2'],'(x+3)(x+2)')};
@@ -605,21 +634,21 @@ SP.c4={hint:'Add 8 to both sides and divide by 2: x² = 4. Then take ± square r
 /* ---------- Part D ---------- */
 function dg(st,extra){return parab(function(x){return x*x-2*x-3;},extra);}
 SP.d1={type:'mc',ans:'a',ok:'The graph crosses the x-axis at x = −1 and x = 3.',fb:{b:'Those have the wrong signs. Read where the curve crosses the x-axis.',c:'x = 3 is right. Look at the left crossing: it is to the LEFT of 0, at −1. (x = 1 is the middle of the parabola, under the vertex.)',d:'The curve crosses the y-axis at −3. Zeros are where it crosses the x-axis.'},
-  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'3',dx:7,dy:-9}]:[]});}};
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-12,dy:-9},{x:3,y:0,color:C.green,label:'3',dx:12,dy:-9}]:[]});}};
 SP.d2={type:'factor',ans:P('x^2-2x-3'),fb:[['(x-1)(x+3)','A zero at x = −1 gives the factor (x + 1). A zero at 3 gives (x − 3).']],
-  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'x + 1 = 0',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'x − 3 = 0',dx:7,dy:-9}]:[{x:-1,y:0,color:C.gold,hollow:true,label:'(x − ?)',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.gold,hollow:true,label:'(x − ?)',dx:7,dy:-9}]})+(sv(st)?'':'<div class="diagram-cap" style="font-family:var(--font-mono);color:#8A6500">y = (x − ?)(x − ?)</div>');}};
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green},{x:3,y:0,color:C.green}]:[{x:-1,y:0,color:C.gold,hollow:true},{x:3,y:0,color:C.gold,hollow:true}]})+(sv(st)?'<div class="diagram-cap" style="font-family:var(--font-mono);color:#15803D">zeros −1 and 3 → y = (x + 1)(x − 3)</div>':'<div class="diagram-cap" style="font-family:var(--font-mono);color:#8A6500">the gold dots are the zeros → y = (x − ?)(x − ?)</div>');}};
 SP.d3={hint:'The axis is halfway between the zeros −1 and 3. Plug that x into y = x² − 2x − 3.',type:'pt',ans:[1,-4],fb:[[[-4,1],'Write (x, y): x first.'],[[1,4],'The vertex is below the x-axis, so y is negative.'],[[0,-3],'(0, −3) is the y-intercept. The vertex is the lowest point.']],
-  viz:function(st){return dg(st,{vlines:[{x:1,label:sv(st)?'x = 1':'axis x = ?',color:sv(st)?C.green:C.gold,tc:sv(st)?C.green:C.goldD,dx:sv(st)?20:30}],pts:sv(st)?[{x:1,y:-4,color:C.green,label:'(1, −4)',dx:8,dy:16}]:[]});}};
+  viz:function(st){return dg(st,{vlines:[{x:1,label:sv(st)?'x = 1':'x = ?',color:sv(st)?C.green:C.gold,tc:sv(st)?C.green:C.goldD,anchor:'start',dx:6}],pts:sv(st)?[{x:1,y:-4,color:C.green,label:'(1, −4)',dx:8,dy:16}]:[]});}};
 /* ---------- Part E ---------- */
 SP.e1={hint:'Take half of 8. Then square it.',type:'num',ans:Math.pow(8/2,2),fb:[[8,'8 is b. Take half of it, then square it.'],[4,'4 is half of 8. Now square it.'],[64,'Square HALF of 8, not 8 itself.']],viz:function(st){return M.csTiles(8,{corner:sv(st)?{t:'16',k:'ans'}:{t:'c = ?',k:'want'},foot:sv(st)?{t:'x² + 8x + 16 = (x + 4)²',k:'ans'}:null,label:'tiles for x² + 8x'});}};
 SP.e2={hint:'Add 9 to both sides: (x + 3)² = 25. Then take ± square roots.',type:'set',ans:[2,-8],fb:[[[2],'Remember ±: x + 3 = 5 OR x + 3 = −5.'],[[5,-5],'Those are values of x + 3. Subtract 3 from each.'],[[1,-7],'Add 9 to BOTH sides: 16 + 9 = 25.']],
   viz:function(st){return M.csTiles(6,{corner:sv(st)?{t:'9',k:'ans'}:{t:'?',k:'want'},foot:sv(st)?{t:'(x + 3)² = 25 → x = 2 or −8',k:'ans'}:{t:'x² + 6x = 16',k:'g'},label:'tiles for x² + 6x'});}};
 /* ---------- Part F ---------- */
-SP.f1={hint:'b² − 4ac = 3² − 4(1)(−10).',type:'num',ans:D(1,3,-10),fb:[[9-40,'c = −10, so −4(1)(−10) = +40. 9 + 40.'],[-31,'c = −10, so −4ac = +40.'],[9,'You still need to subtract 4ac: 9 − 4(1)(−10).']],viz:function(st){return fcard(1,3,-10,sv(st)?2:0);}};
-SP.f2={hint:'x = (−3 ± √49) ÷ 2. Do the + and the − separately.',type:'set',ans:roots(1,3,-10),fb:[[[-2,5],'−b = −3, so x = (−3 ± 7) ÷ 2. Check your signs.'],[[4,-10],'Divide by 2a = 2.']],viz:function(st){return fcard(1,3,-10,sv(st)?4:0)+(sv(st)?parab(function(x){return x*x+3*x-10;},{xmin:-7,xmax:4,ymin:-13,ymax:5,h:240,ygrid:1,lab:1,ylab:4,pts:[{x:-5,y:0,color:C.green,label:'−5',anchor:'end',dx:-6,dy:-9},{x:2,y:0,color:C.green,label:'2',dx:6,dy:-9}]}):'');}};
+SP.f1={hint:'b² − 4ac = 3² − 4(1)(−10).',type:'num',ans:D(1,3,-10),fb:[[9-40,'c = −10, so −4(1)(−10) = +40. 9 + 40.'],[-31,'c = −10, so −4ac = +40.'],[9,'You still need to subtract 4ac: 9 − 4(1)(−10).']],viz:function(st){return fcard(1,3,-10,sv(st)?2:'given');}};
+SP.f2={hint:'x = (−3 ± √49) ÷ 2. Do the + and the − separately.',type:'set',ans:roots(1,3,-10),fb:[[[-2,5],'−b = −3, so x = (−3 ± 7) ÷ 2. Check your signs.'],[[4,-10],'Divide by 2a = 2.']],viz:function(st){return fcard(1,3,-10,sv(st)?4:'sub')+(sv(st)?parab(function(x){return x*x+3*x-10;},{xmin:-7,xmax:4,ymin:-13,ymax:5,h:240,ygrid:2,lab:1,ylab:4,pts:[{x:-5,y:0,color:C.green,label:'−5',anchor:'end',dx:-12,dy:-9},{x:2,y:0,color:C.green,label:'2',dx:12,dy:-9}]}):'');}};
 var F3=roots(2,-4,-3);
 SP.f3={type:'set',ans:F3,tol:0.01,fb:[[[(-4+Math.sqrt(40))/4,(-4-Math.sqrt(40))/4],'−b = −(−4) = +4. Start the top with +4.'],[[(4+Math.sqrt(40))/2,(4-Math.sqrt(40))/2],'The bottom is 2a = 2(2) = 4.'],[[(4+Math.sqrt(-8+16))/4,(4-Math.sqrt(8))/4],'c = −3, so −4(2)(−3) = +24. The discriminant is 16 + 24 = 40.']],hint:'Discriminant: (−4)² − 4(2)(−3) = 40. Then x = (4 ± √40) ÷ 4. Round to hundredths.',
-  viz:function(st){return fcard(2,-4,-3,sv(st)?4:0)+(sv(st)?parab(function(x){return 2*x*x-4*x-3;},{xmin:-2,xmax:4,ymin:-6,ymax:6,h:240,lab:1,ylab:2,pts:F3.map(function(v){return {x:v,y:0,color:C.green};})}):'');}};
+  viz:function(st){return fcard(2,-4,-3,sv(st)?4:'sub')+(sv(st)?parab(function(x){return 2*x*x-4*x-3;},{xmin:-2,xmax:4,ymin:-6,ymax:6,h:240,lab:1,ylab:2,pts:F3.map(function(v){return {x:v,y:0,color:C.green};})}):'');}};
 /* ---------- Part G ---------- */
 SP.g1={type:'mc',ans:'1',ok:'(x + 4)² = (x + 4)(x + 4). The box has two 4x pieces that were left out.',fb:{'2':'4² = 16 is fine. Look at Line 1.'},viz:function(st){return boxModel(['x','+4'],['x','+4'],{cell:function(i,j){return i!==j?(sv(st)?'a':'w'):'g';},label:'area model of (x + 4)²'});}};
 SP.g1b={type:'poly',ans:P('(x+4)^2'),fb:[['x^2+16','You still left out the middle: 4x + 4x = 8x.'],['x^2+4x+16','There are TWO 4x boxes: 8x.']]};
@@ -627,7 +656,7 @@ SP.g2={type:'mc',ans:'2',ok:'(x − 4) = 0 gives x = +4, and (x + 3) = 0 gives x
   viz:function(st){return M.pointsLine({min:-6,max:6,lab:1,y:62,pts:sv(st)?[{v:-3,t:'x = −3',c:C.green},{v:4,t:'x = 4',c:C.green}]:[{v:-4,t:'−4?',c:C.gold},{v:3,t:'3?',c:C.gold}],label:'checking the solutions'});}};
 SP.g2b={hint:'Set each factor to 0: x − 4 = 0 and x + 3 = 0.',type:'set',ans:[4,-3],fb:[[[-4,3],'Those are the student’s answers. x − 4 = 0 means x = +4.']]};
 SP.g3={type:'mc',ans:'2',ok:'c = −5, so −4ac = −4(1)(−5) = +20. b² − 4ac = 16 + 20 = 36. That is positive: two solutions.',fb:{'1':'a = 1, b = −4, c = −5 is right.','3':'Line 3 is wrong only because Line 2 was wrong.'},
-  viz:function(st){return parab(function(x){return x*x-4*x-5;},{xmin:-3,xmax:7,ymin:-10,ymax:6,h:250,ygrid:1,ylab:2,lab:1,pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-6,dy:-9},{x:5,y:0,color:C.green,label:'5',dx:6,dy:-9}]:[]})+'<div class="diagram-cap">'+(sv(st)?'Two x-intercepts → two real solutions.':'The student says “no real solutions.” Does the graph agree?')+'</div>';}};
+  viz:function(st){return parab(function(x){return x*x-4*x-5;},{xmin:-3,xmax:7,ymin:-10,ymax:6,h:250,ygrid:1,ylab:2,lab:1,pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-12,dy:-9},{x:5,y:0,color:C.green,label:'5',dx:12,dy:-9}]:[]})+'<div class="diagram-cap">'+(sv(st)?'Two x-intercepts → two real solutions.':'The student says “no real solutions.” Does the graph agree?')+'</div>';}};
 SP.g3b={hint:'Discriminant = 36. Then x = (4 ± 6) ÷ 2.',type:'set',ans:roots(1,-4,-5),fb:[[[-5,1],'−b = −(−4) = +4. So x = (4 ± 6) ÷ 2.']]};
 })();
 </script>

@@ -158,7 +158,7 @@
 <div class="key"><strong>📌</strong> <strong>Domain</strong> = all inputs (x-values). <strong>Range</strong> = all outputs (y-values). <strong>Discrete</strong> = separate points; <strong>continuous</strong> = unbroken line.</div>
 <div class="viz" id="p5a"></div><div class="viz-cap">The gold bar on the x-axis is the domain. The gold bar on the y-axis is the range. Closed dots mean the ends are included.</div>
 <div class="viz-row"><div class="viz" id="p5b"></div><div class="viz" id="p5c"></div></div>
-<div class="viz-cap">Left: discrete (whole tickets only). Right: continuous (any amount of gas).</div>
+<div class="viz-cap">Tickets: discrete (whole tickets only, so separate dots). Gas: continuous (any amount of gas, so a solid line).</div>
 <div class="note">In context, pick a <strong>reasonable</strong> domain — for example, time can’t be negative, and people must be whole numbers.</div>
 <p class="howto-h">How to find domain and range from a graph</p>
 <ol class="howto"><li>Domain: find the leftmost x and the rightmost x.</li><li>Range: find the lowest y and the highest y.</li><li>Closed dot → use ≤. Open dot → use &lt;.</li><li>An arrow means the graph keeps going forever in that direction.</li><li>Write smallest first: a ≤ x ≤ b.</li></ol>
@@ -222,7 +222,7 @@ V.put({
  p1a:function(){return V.machine({inp:'3',rule:'2x + 1',out:'7',outK:'ans',name:'f(x) =',label:'function machine'});},
  p1b:function(){return V.mapping({w:240,ins:[1,2,3],outs:[5,8],pairs:[[0,0],[1,0],[2,1]],hl:[0,1,2],hlK:'ans',label:'function mapping'});},
  p1c:function(){return V.mapping({w:240,ins:[1,2,3],outs:[4,6,9],pairs:[[0,0],[1,1],[1,2],[2,2]],hl:[1,2],label:'not a function mapping'});},
- p1d:function(){return V.mapping({ins:[1,2],outs:[3,5,7],pairs:[[0,0],[1,1],[0,2]],label:'mapping for (1,3),(2,5),(1,7)'});},
+ p1d:function(){return V.mapping({ins:[1,2],outs:[3,5,7],pairs:[[0,0],[1,1],[0,2]],hl:[0,2],label:'mapping for (1,3),(2,5),(1,7): input 1 has two arrows'});},
  p2a:function(){return V.machine({inp:'4',rule:'2x + 1',out:'9',outK:'ans',name:'f(x) =',label:'f of 4 is 9'});},
  p2b:function(){return G({w:260,xmin:-1,xmax:6,ymin:-1,ymax:12,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:2}],guides:[{x:4,y:9}],pts:[{x:4,y:9,k:'ans',lbl:'(4, 9)',pos:'se'}],label:'point 4, 9'});},
  p2c:function(){return V.tbl({xs:['x','2x','2x + 1'],ys:['4','2(4) = 8','8 + 1 = ?'],names:['step','value'],cw:84,k:['given','given','want'],label:'substitution table'});},
@@ -262,8 +262,8 @@ V.items('t1-try',[
   post:function(){return V.mapping({ins:[1,2,3],outs:[5,6,7,8],pairs:[[0,0],[1,1],[2,2],[1,3]],hl:[1,3],label:'mapping of the table'});}},
  {id:'y22',n:2,q:'Is the graph of <span class="math">y = 3</span> (a flat line) a function?',kind:'mc',opts:[['yes','Yes'],['no','No']],ans:'yes',
   why:{no:'Try the vertical line test: any vertical line crosses a flat line only ONCE.'},ok:'Every vertical line crosses it once. Each x has the single output 3.',
-  pre:function(){return G({xmin:-4,xmax:4,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],label:'flat line with vertical test line'});},
-  post:function(){return G({xmin:-4,xmax:4,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],pts:[{x:1.5,y:3,k:'ans',lbl:'1 crossing',pos:'ne'}],label:'one crossing'});}},
+  pre:function(){return G({xmin:-4,xmax:6,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],label:'flat line with vertical test line'});},
+  post:function(){return G({xmin:-4,xmax:6,ymin:-2,ymax:5,lines:[{m:0,b:3,lbl:'y = 3',lx:-3.5}],vlines:[{x:1.5,k:'want'}],pts:[{x:1.5,y:3,k:'ans',lbl:'1 crossing',pos:'ne'}],label:'one crossing'});}},
  {id:'y23',n:3,q:'Is this mapping a function?',kind:'mc',opts:[['yes','Yes'],['no','No']],ans:'yes',
   why:{no:'Check each INPUT: −1, 0 and 4 each have exactly one arrow. Sharing an output is fine.'},ok:'Every input has exactly one arrow.',
   pre:function(){return V.mapping({ins:[-1,0,4],outs:[2,7],pairs:[[0,0],[1,1],[2,0]],label:'mapping'});},
@@ -286,7 +286,7 @@ V.items('t2-try',[
   post:function(){return V.tbl({xs:[0,1,2,3],ys:[2,5,8,11],names:['x','g(x)'],k:[null,null,'ans',null],label:'g of 2'});}},
  {id:'y26',n:3,q:'<span class="math">f(x) = 2x + 1</span>. Find x so that <span class="math">f(x) = 13</span>.',kind:'num',ph:'x = ?',ans:6,
   wrong:[[27,'27 is f(13). Here 13 is the OUTPUT. Solve 2x + 1 = 13.'],[7,'Subtract 1 first: 2x = 12.'],[12,'12 is 2x. Divide by 2.']],ok:'2x + 1 = 13 → 2x = 12 → x = 6.',
-  pre:function(){return G({xmin:-2,xmax:8,ymin:-2,ymax:16,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:3.6}],hlines:[{y:13,k:'want',lbl:'output 13'}],label:'solve f(x) = 13'});},
+  pre:function(){return V.machine({inp:'?',inK:'want',rule:'2x + 1',name:'f(x) =',out:'13',outK:'given',label:'function machine: which input gives 13?'});},preCap:'The output is 13. Work backward to find the input.',
   post:function(){return G({xmin:-2,xmax:8,ymin:-2,ymax:16,yl:2,lines:[{m:2,b:1,lbl:'f(x) = 2x + 1',lx:3.6}],guides:[{x:6,y:13}],pts:[{x:6,y:13,k:'ans',lbl:'(6, 13)',pos:'nw'}],label:'solved'});}}
 ]);
 
@@ -294,8 +294,8 @@ V.items('t2-try',[
 V.items('t3-mis',[{id:'m23',n:'FIND THE MISTAKE',kind:'pick',q:'Max graphed <span class="math">y = 3x − 2</span>. Click the line with the mistake.',
   lines:['b = −2, so plot the point (−2, 0)','Slope 3: from there go up 3, right 1','Draw the line'],ans:0,why:{1:'Up 3, right 1 is the right way to use slope 3. The start point was wrong.',2:'Drawing the line is fine. The start point was wrong.'},
   ok:'Line 1. b is on the y-axis: plot (0, −2), not (−2, 0).',
-  pre:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:6,lbl:'Max’s line',lx:-3.6}],pts:[{x:-2,y:0,lbl:'(−2, 0)',pos:'se'}],label:'Max graph'});},
-  post:function(){return G({xmin:-4,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'right 1',rise:'up 3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
+  pre:function(){return G({xmin:-3,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:6,lbl:'Max’s line',lx:-2.9}],pts:[{x:-2,y:0,lbl:'(−2, 0)',pos:'se'}],label:'Max graph'});},
+  post:function(){return G({xmin:-3,xmax:4,ymin:-6,ymax:6,lines:[{m:3,b:-2,k:'ans',lbl:'y = 3x − 2',lx:1.2}],tri:{x1:0,y1:-2,x2:1,y2:1,run:'right 1',rise:'up 3',k:'ans'},pts:[{x:0,y:-2,k:'ans',lbl:'(0, −2)',pos:'w'}],label:'correct graph'});}}]);
 V.items('t3-try',[
  {id:'y27',n:1,q:'Find the slope of the line through (−1, −1) and (1, 3).',kind:'num',ph:'m = ?',ans:2,
   wrong:[[0.5,'You did run ÷ rise. Slope = rise ÷ run = 4 ÷ 2.'],[4,'4 is the rise. Divide by the run, 2.'],[1,'Subtract the coordinates: 3 − (−1) = 4 and 1 − (−1) = 2.']],ok:'rise 4 ÷ run 2 = 2.',

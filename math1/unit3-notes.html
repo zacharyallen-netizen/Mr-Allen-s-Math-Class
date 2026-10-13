@@ -679,7 +679,7 @@ var M1 = (function () {
     var yEdge = x0 >= 0, xEdge = y0 >= 0;
     var L = (yEdge ? maxYW + 9 : 10);
     var B = H - ((xEdge ? tfs + 8 : 10) + (o.xtitle ? 17 : 0));
-    var T = o.ytitle ? 30 : 10, R = W - 10;
+    var T = o.ytitle ? 30 : o.banner ? 36 : 10, R = W - 10;
     function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
     function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
     var id = 'cp' + (++uid), mk = 'mk' + uid;
@@ -733,6 +733,7 @@ var M1 = (function () {
     if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
     if (o.xtitle) s += text((L + R) / 2, H - 5, o.xtitle + ' →', { fs: 12.5, c: C.axis, fam: 'Inter,system-ui,sans-serif', b: true });
     if (o.ytitle) s += text(4, 17, '↑ ' + o.ytitle, { fs: 12.5, c: C.axis, a: 'start', fam: 'Inter,system-ui,sans-serif', b: true });
+    if (o.banner) s += pill(W / 2, 18, o.banner, { fs: 12.5 }); /* a note above the grid, clear of every tick label */
     // lines, curves, segments (clipped)
     var cl = '', labels = [];
     items.forEach(function (it) {
@@ -759,6 +760,7 @@ var M1 = (function () {
       } else if (it.t === 'seg') {
         var cc = it.c || C.navy, mkr = it.arrow ? ' marker-end="url(#' + mk + (cc === C.gold ? 'g' : cc === C.green ? 'G' : 'n') + ')"' : '';
         cl += '<line x1="' + r1(sx(it.x1)) + '" y1="' + r1(sy(it.y1)) + '" x2="' + r1(sx(it.x2)) + '" y2="' + r1(sy(it.y2)) + '" stroke="' + cc + '" stroke-width="' + (it.w || 2) + '"' + (it.dash ? ' stroke-dasharray="4 4"' : '') + mkr + '/>';
+        P.segs.push([sx(it.x1), sy(it.y1), sx(it.x2), sy(it.y2)]); /* labels keep off guide lines too */
       }
     });
     s += '<g clip-path="url(#' + id + ')">' + cl + '</g>';
@@ -777,7 +779,7 @@ var M1 = (function () {
     items.forEach(function (it) {
       if (it.t !== 'pt') return;
       var X = sx(it.x), Y = sy(it.y), col = it.c || C.navy, r = it.r || 4.5;
-      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
+      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.ring ? 'none' : it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
       both({ x: X - r - 1, y: Y - r - 1, w: 2 * r + 2, h: 2 * r + 2 });
       if (it.label) labels.unshift({ s: it.label, c: it.lc || col, at: [X, Y], pill: it.pill, pt: true, id: it.lid });
     });
@@ -787,21 +789,26 @@ var M1 = (function () {
     labels.forEach(function (lb) {
       var lfs = lb.fs || fs, w = tw(lb.s, lfs) + (lb.pill ? 10 : 2), h = lfs + (lb.pill ? 6 : 3), cands = [], pos;
       if (lb.pt) {
-        var X = lb.at[0], Y = lb.at[1], ox = w / 2 + 8, oy = h / 2 + 6;
-        cands = [[X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]];
+        var X = lb.at[0], Y = lb.at[1];
+        /* rings of spots around the point: the nearest spot that touches no line, curve or other label wins */
+        for (var ring = 0; ring < 4; ring++) {
+          var ox = w / 2 + 8 + ring * 12, oy = h / 2 + 6 + ring * 10;
+          cands.push([X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]);
+        }
         pos = PV.pick(cands, w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else if (lb.fixed) {
         pos = PV.pick([lb.fixed], w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else {
         var fr = lb.fr != null ? [lb.fr] : [], base = [0.86, 0.14, 0.7, 0.3, 0.5, 0.94, 0.06, 0.6, 0.4];
         fr = fr.concat(base);
-        fr.forEach(function (f) {
+        for (var fi = 0.04; fi < 0.99; fi += 0.04) fr.push(+fi.toFixed(2)); /* finer spots if the usual ones are taken */
+        [0, 12].forEach(function (extra) { fr.forEach(function (f) {
           var A, Bp, ux, uy;
           if (lb.seg) { A = lb.seg[0]; Bp = lb.seg[1]; ux = Bp[0] - A[0]; uy = Bp[1] - A[1]; var px = A[0] + ux * f, py = A[1] + uy * f; }
           else { var n = lb.pts.length, ii = Math.min(n - 2, Math.max(1, Math.round(f * (n - 1)))); px = lb.pts[ii][0]; py = lb.pts[ii][1]; ux = lb.pts[ii + 1][0] - lb.pts[ii - 1][0]; uy = lb.pts[ii + 1][1] - lb.pts[ii - 1][1]; }
-          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5;
+          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5 + extra;
           cands.push([px + nx * dd, py + ny * dd]); cands.push([px - nx * dd, py - ny * dd]);
-        });
+        }); });
         pos = P.pick(cands, w, h); PV.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       }
       if (lb.pill) lt += pill(pos[0], pos[1], lb.s, { fs: lfs });
@@ -1005,30 +1012,44 @@ var M1 = (function () {
   }
 
   /* ---------- number-line hops ---------- */
+  // When the jumps are too narrow to draw one by one (less than 24 px each), every term is a small dot on the line,
+  // the first jump gets its arc and +d label, and a bracket over the whole trip says how many jumps there are.
   function hops(o) {
-    var W = o.w || 300, H = o.h || (o.note ? 134 : 116), L = 16, R = W - 16, y = H - (o.note ? 44 : 30), id = 'hp' + (++uid);
+    var W = o.w || 300, L = 16, R = W - 16, id = 'hp' + (++uid);
     function X(v) { return L + (v - o.min) / (o.max - o.min) * (R - L); }
-    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    var end = o.start + o.step * o.count, jw = Math.abs(X(o.start + o.step) - X(o.start)), squeeze = jw < 24 && o.count > 4;
+    var H = o.h || ((o.note ? 134 : 116) + (squeeze ? 16 : 0)), y = H - (o.note ? 44 : 30);
+    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, o.c || C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
     s += '<line x1="' + L + '" y1="' + y + '" x2="' + R + '" y2="' + y + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
     for (var v = o.min; v <= o.max + 1e-9; v += o.tick) {
       var big = Math.abs(v / o.lab - Math.round(v / o.lab)) < 1e-9;
       s += '<line x1="' + r1(X(v)) + '" y1="' + (y - (big ? 6 : 3)) + '" x2="' + r1(X(v)) + '" y2="' + (y + (big ? 6 : 3)) + '" stroke="' + C.axis + '" stroke-width="1.2"/>';
       if (big) s += text(X(v), y + 19, fmt(v), { fs: 10, c: C.axis });
     }
-    var cur = o.start, hopC = o.c || C.navy;
-    for (var i = 0; i < o.count; i++) {
-      var a = X(cur), b = X(cur + o.step), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
-      s += '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
-      if (o.every || i === 0) s += text((a + b) / 2, y - h / 2 - 8, (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step)), { fs: 10, c: hopC, b: true });
-      cur += o.step;
+    if (squeeze) s = s.replace(/<line x1="[^"]*" y1="[^"]*" x2="[^"]*" y2="[^"]*" stroke="#5a6680" stroke-width="1.2"\/>/g, function (m) { return /y1="(\d+)"/.exec(m)[1] == y - 6 ? m : ''; }); /* keep only the numbered ticks */
+    var hopC = o.c || C.navy, stepTx = (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step));
+    function hop(i, lab) {
+      var a = X(o.start + o.step * i), b = X(o.start + o.step * (i + 1)), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
+      var t = '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
+      if (lab) t += text((a + b) / 2, y - h / 2 - 9, stepTx, { fs: 10, c: hopC, b: true });
+      return t;
+    }
+    if (!squeeze) { for (var i = 0; i < o.count; i++) s += hop(i, o.every || i === 0); }
+    else {
+      for (var k = 1; k < o.count; k++) s += '<circle cx="' + r1(X(o.start + o.step * k)) + '" cy="' + y + '" r="2.6" fill="' + hopC + '"/>';
+      var a0 = X(o.start), a1 = X(o.start + o.step);
+      s += '<path d="M' + r1(a0) + ',' + (y - 4) + ' Q' + r1((a0 + a1) / 2) + ',' + (y - 22) + ' ' + r1(a1) + ',' + (y - 4) + '" fill="none" stroke="' + hopC + '" stroke-width="1.8"/>';
+      s += text(a1 + 3, y - 20, stepTx + ' each jump', { fs: 10, c: hopC, b: true, a: 'start' });
+      var ya = 42, xa = X(o.start), xb = X(end);
+      s += '<path d="M' + r1(xa) + ',' + (ya + 8) + ' L' + r1(xa) + ',' + ya + ' L' + r1(xb) + ',' + ya + ' L' + r1(xb) + ',' + (ya + 8) + '" fill="none" stroke="' + C.muted + '" stroke-width="1.4"/>';
+      s += text((xa + xb) / 2, ya - 6, o.done ? o.count + ' jumps × ' + fmt(Math.abs(o.step)) + ' = ' + fmt(Math.abs(o.step) * o.count) : o.count + ' jumps of ' + stepTx, { fs: 12.5, c: C.navy, b: true, fam: 'Inter,system-ui,sans-serif' });
     }
     s += '<circle cx="' + r1(X(o.start)) + '" cy="' + y + '" r="5" fill="' + C.navy + '"/>';
     var sl = o.startLab || fmt(o.start), sw = tw(sl, 11) / 2 + 2;
     s += text(Math.min(Math.max(X(o.start), sw), W - sw), 14, sl, { fs: 11, c: C.navy, b: true });
-    var end = o.start + o.step * o.count;
     s += '<circle cx="' + r1(X(end)) + '" cy="' + y + '" r="5" fill="' + (o.done ? C.green : C.gold) + '" stroke="#8a6500" stroke-width="1"/>';
-    var ex = Math.min(Math.max(X(end), 30), W - 30);
-    if (o.done) s += text(ex, 14, o.endLab || fmt(end), { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, o.endQ || '?', { fs: 11 });
+    var el = o.done ? (o.endLab || fmt(end)) : (o.endQ || '?'), ew = tw(el, 11) / 2 + 8, ex = Math.min(Math.max(X(end), ew), W - ew);
+    if (o.done) s += text(ex, 14, el, { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, el, { fs: 11 });
     if (o.note) s += text(W / 2, H - 6, o.note, { fs: 10.5, c: C.muted, fam: 'Inter,system-ui,sans-serif', halo: false });
     return s + '</svg>';
   }
@@ -1321,7 +1342,7 @@ var M1 = (function () {
   var C = M1.C, V = M1.V, R = M1.reg, P = M1.plane, S = M1.sys, f = M1.fmt;
   function L(m, b, label, o) { var q = { m: m, b: b, label: label }; for (var k in o || {}) q[k] = o[k]; return q; }
   function waitG(o) { // empty grid until the steps are revealed
-    return P({ x: o.x, y: o.y, w: o.w, label: 'graph appears after the steps', items: [{ t: 'txt', x: (o.x[0] + o.x[1]) / 2, y: (o.y[0] + o.y[1]) / 2, s: 'reveal the steps', pill: true }] });
+    return P({ x: o.x, y: o.y, w: o.w, label: 'graph appears after the steps', banner: 'Lines show after the steps', items: [] });
   }
   /* ---- pictures shown BEFORE an answer: built from each problem's own numbers, the unknown stays "?" ---- */
   function ER(rows, h, label, notes, rules) { return M1.eqrows({ w: 300, h: h, rows: rows, notes: notes || [], rules: rules || [], label: label }); }
@@ -1352,9 +1373,9 @@ var M1 = (function () {
         { t: 'region', hp: [{ m: 1, b: 2, s: '<' }], c: C.navy, op: 0.16 }, { t: 'line', m: 1, b: 2, label: 'Mia: y = x + 2' }, { t: 'pt', x: 0, y: 0, c: C.gold, lc: C.goldTx, label: 'test (0, 0)', pill: true }] }); },
     q36: function () { return P({ x: [-2, 6], y: [-2, 6], label: 'boundary lines y = x − 1 and y = −x + 3 with the point (3, 1)', items: [
         { t: 'line', m: 1, b: -1, label: 'y = x − 1' }, { t: 'line', m: -1, b: 3, c: C.purple, label: 'y = −x + 3' }, { t: 'pt', x: 3, y: 1, c: C.gold, label: '(3, 1)?', pill: true }] }); },
-    q36b: function () { return P({ x: [-2, 5], y: [-3, 6], label: 'the line y = −2x + 4 and the test point (0, 0)', items: [
-        { t: 'line', m: -2, b: 4, label: 'y = −2x + 4' }, { t: 'pt', x: 0, y: 0, c: C.gold, label: 'test (0, 0)', pill: true },
-        { t: 'txt', x: 3.4, y: 4.4, s: 'above?', c: C.goldTx }, { t: 'txt', x: -0.9, y: -2.2, s: 'below?', c: C.goldTx }] }); },
+    q36b: function () { return P({ x: [-3, 5], y: [-3, 6], label: 'the line y = −2x + 4 and the test point (0, 0)', items: [
+        { t: 'line', m: -2, b: 4, label: 'y = −2x + 4' }, { t: 'pt', x: 0, y: 0, c: C.gold }, { t: 'txt', x: -1.55, y: 0.45, s: 'test (0, 0)', pill: true },
+        { t: 'txt', x: 3.4, y: 4.4, s: 'above?', c: C.goldTx }, { t: 'txt', x: -1.5, y: -2.2, s: 'below?', c: C.goldTx }] }); },
     q36c: function () { return P({ x: [-3, 3], y: [-4, 5], label: 'the boundary y = 3x − 2, solid or dashed not drawn yet', items: [
         { t: 'line', m: 3, b: -2, c: '#9AA6B8', w: 2, lc: C.navy, label: 'y = 3x − 2', at: 0.3 }, { t: 'txt', x: -1.75, y: 2.4, s: 'solid or dashed?', pill: true }] }); }
   };
@@ -1362,7 +1383,7 @@ var M1 = (function () {
   V.t1a = function () { return P({ x: [-4, 6], y: [-4, 6], label: 'y = x + 1 with two test points', items: [
     { t: 'line', m: 1, b: 1, label: 'y = x + 1' }, { t: 'pt', x: 2, y: 3, c: C.green, label: '(2, 3) ✓' }, { t: 'pt', x: 0, y: 0, c: C.red, label: '(0, 0) ✗' }] }); };
   V.e31 = function (d) { return P({ x: [-2, 8], y: [-3, 6], label: 'x + 2y = 6 and the point (4, 1)', items: [
-    { t: 'line', A: 1, B: 2, C: 6, label: 'x + 2y = 6' }, d ? { t: 'pt', x: 4, y: 1, c: C.green, label: '(4, 1) ✓ on the line' } : { t: 'pt', x: 4, y: 1, c: C.gold, label: '(4, 1) ?', pill: true }] }); };
+    { t: 'line', A: 1, B: 2, C: 6, label: 'x + 2y = 6' }, d ? { t: 'pt', x: 4, y: 1, c: C.green, label: '(4, 1) ✓' } : { t: 'pt', x: 4, y: 1, c: C.gold, label: '(4, 1) ?', pill: true }] }); };
   V.e31b = function (d) { return S({ x: [-2, 6], y: [-2, 7], lines: [L(1, 1, 'y = x + 1'), L(-1, 5, 'y = −x + 5')], sol: [2, 3], done: d, qLabel: '(2, 3) ?', solLabel: '(2, 3) ✓ both', label: 'two lines and the point (2, 3)' }); };
   V.f31 = function (d) { if (!d) return pre.f31(); return P({ x: [-1, 6], y: [-5, 5], label: 'y = 2x − 5 through (3, 1)', items: [
     { t: 'line', m: 2, b: -5, label: 'y = 2x − 5' }, { t: 'pt', x: 3, y: 1, c: C.green, label: '(3, 1) ✓' }, { t: 'pt', x: 1, y: 3, c: C.red, label: '(1, 3) ✗ mixed up' }] }); };
@@ -1375,9 +1396,9 @@ var M1 = (function () {
   R('q31b', { kind: 'mc', ans: 'no', viz: 'q31b', ok: 'First: 5 = 2(2) + 1 = 5 ✓. Second: −2 + 6 = 4, not 5 ✗. It must work in BOTH, so it is not a solution. The picture shows it is on only one line.',
     why: { yes: 'It works in the first equation (5 = 5). Now check the second: −2 + 6 = 4. Is 4 equal to 5? A system needs both.' } });
   /* ---- Topic 2 ---- */
-  V.t2one = function () { return S({ w: 210, x: [-3, 4], y: [-2, 5], lines: [L(1, 1, 'y = x + 1'), L(-1, 3, 'y = −x + 3')], sol: [1, 2], done: true, solLabel: '(1, 2)', label: 'one solution' }); };
-  V.t2none = function () { return S({ w: 210, x: [-3, 4], y: [-3, 5], lines: [L(1, 2, 'y = x + 2'), L(1, -1, 'y = x − 1')], label: 'no solution, parallel lines' }); };
-  V.t2inf = function () { return S({ w: 210, x: [-3, 4], y: [-2, 5], lines: [L(-1, 2, 'y = −x + 2', { at: 0.2 }), { A: 2, B: 2, C: 4, label: '2x + 2y = 4', dash: '8 6', at: 0.8 }], label: 'infinitely many, same line' }); };
+  V.t2one = function () { return S({ w: 300, x: [-3, 4], y: [-2, 5], lines: [L(1, 1, 'y = x + 1'), L(-1, 3, 'y = −x + 3')], sol: [1, 2], done: true, solLabel: '(1, 2)', label: 'one solution' }); };
+  V.t2none = function () { return S({ w: 300, x: [-3, 4], y: [-3, 5], lines: [L(1, 2), L(1, -1)], pts: [{ t: 'txt', x: -1.5, y: 3.5, s: 'y = x + 2', c: C.navy }, { t: 'txt', x: 2.6, y: -1.5, s: 'y = x − 1', c: C.purple }], label: 'no solution, parallel lines' }); };
+  V.t2inf = function () { return S({ w: 300, x: [-3, 4], y: [-2, 5], lines: [L(-1, 2, 'y = −x + 2', { at: 0.2 }), { A: 2, B: 2, C: 4, label: '2x + 2y = 4', dash: '8 6', at: 0.8 }], label: 'infinitely many, same line' }); };
   V.e32 = function (d) { return S({ x: [-2, 6], y: [-3, 7], lines: [L(2, -1, 'y = 2x − 1'), L(-1, 5, 'y = −x + 5')], sol: [2, 3], done: d, label: 'y = 2x − 1 and y = −x + 5' }); };
   V.e32b = function (d) { return S({ x: [0, 6], y: [0, 16], ys: 2, yl: 2, xtitle: 'visits (x)', ytitle: 'cost in $ (y)', xname: '', yname: '', lines: [L(2, 4, 'A: y = 2x + 4'), L(1, 7, 'B: y = x + 7')], sol: [3, 10], done: d, label: 'gym costs' }); };
   V.f32 = function (d) { return S({ x: [-2, 5], y: [-2, 6], lines: [L(1, 1, 'y = x + 1'), L(-2, 4, 'y = −2x + 4')], sol: [1, 2], done: d, label: 'two lines crossing' }); };
@@ -1433,25 +1454,28 @@ var M1 = (function () {
   V.q34b = function (d) { return M1.elim({ e: [[2, 1, 9], [1, -1, 3]], done: d }); };
   R('q34b', { kind: 'pt', ans: [4, 1], viz: 'q34b', ok: 'Add: 3x = 12, x = 4. Then 2(4) + y = 9, y = 1.' });
   /* ---- Topic 5 ---- */
-  V.t5flow = function () {
-    var s = M1.svgOpen(300, 360, 'flowchart for choosing a method'), y = 8;
-    s += '<defs><marker id="fa" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker></defs><rect width="300" height="360" fill="#fafcff"/>';
-    function box(y, h, fill, st, lines, col, b) { var t = '<rect x="14" y="' + y + '" width="272" height="' + h + '" rx="9" fill="' + fill + '" stroke="' + st + '" stroke-width="2"/>';
-      lines.forEach(function (l, i) { t += M1.text(150, y + h / 2 + 4.5 - (lines.length - 1) * 8 + i * 16, l, { fs: 12, c: col, b: b, halo: false, fam: 'Inter,system-ui,sans-serif' }); }); return t; }
-    function arr(y1, y2) { return '<line x1="150" y1="' + y1 + '" x2="150" y2="' + (y2 - 2) + '" stroke="#1E2D4F" stroke-width="2" marker-end="url(#fa)"/>'; }
-    s += box(8, 34, '#1E2D4F', '#1E2D4F', ['System of two equations'], '#fff', true) + arr(42, 58);
-    s += box(58, 48, '#fff8e1', '#E0A800', ['Is a variable already alone?', '(y = … or x = …)'], '#5c4400', true) + arr(106, 122);
-    s += box(122, 34, '#f8faff', '#cdd5e0', ['Yes → SUBSTITUTION'], '#1E2D4F', true) + M1.text(166, 182, 'No ↓', { fs: 12, c: C.muted, a: 'start', fam: 'Inter,sans-serif' }) + arr(156, 194);
-    s += box(194, 48, '#fff8e1', '#E0A800', ['No: are coefficients opposite', 'or easy to match?'], '#5c4400', true) + arr(242, 258);
-    s += box(258, 34, '#f8faff', '#cdd5e0', ['Yes → ELIMINATION'], '#1E2D4F', true) + arr(292, 308);
-    s += box(308, 46, '#e8f5e2', '#15803D', ['Otherwise → GRAPH to estimate', 'the intersection'], '#15803D', true);
+  V.t5flow = function () {  /* decision chart: each question has a YES arrow to the right and a NO arrow down */
+    var W = 340, H = 300, s = M1.svgOpen(W, H, 'flowchart for choosing a method'), F = 'Inter,system-ui,sans-serif';
+    s += '<defs><marker id="fa" markerWidth="8" markerHeight="8" refX="6.5" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#1E2D4F"/></marker></defs><rect width="' + W + '" height="' + H + '" fill="#fafcff"/>';
+    function box(x, y, w, h, fill, st, lines, col) { var t = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="9" fill="' + fill + '" stroke="' + st + '" stroke-width="2"/>';
+      lines.forEach(function (l, i) { t += M1.text(x + w / 2, y + h / 2 + 4.5 - (lines.length - 1) * 8 + i * 16, l, { fs: 12.5, c: col, b: true, halo: false, fam: F }); }); return t; }
+    function arr(x1, y1, x2, y2) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#1E2D4F" stroke-width="2" marker-end="url(#fa)"/>'; }
+    function tag(x, y, t, a) { return M1.text(x, y, t, { fs: 12.5, c: '#1E2D4F', b: true, a: a || 'middle', fam: F }); }
+    s += box(8, 8, 324, 32, '#1E2D4F', '#1E2D4F', ['A system of two equations'], '#fff') + arr(98, 40, 98, 56);
+    s += box(8, 58, 180, 50, '#fff8e1', '#E0A800', ['Is x or y already alone?', '(y = …  or  x = …)'], '#5c4400');
+    s += arr(188, 83, 222, 83) + tag(205, 76, 'Yes') + box(224, 64, 108, 38, '#eef3fb', '#0056B3', ['SUBSTITUTION'], '#0056B3');
+    s += arr(98, 108, 98, 138) + tag(104, 128, 'No', 'start');
+    s += box(8, 140, 180, 66, '#fff8e1', '#E0A800', ['Are the x-terms or the', 'y-terms opposites, or', 'easy to make opposite?'], '#5c4400');
+    s += arr(188, 173, 222, 173) + tag(205, 166, 'Yes') + box(224, 154, 108, 38, '#eef3fb', '#0056B3', ['ELIMINATION'], '#0056B3');
+    s += arr(98, 206, 98, 236) + tag(104, 226, 'No', 'start');
+    s += box(8, 238, 324, 52, '#e8f5e2', '#15803D', ['GRAPH both lines and read', 'the crossing point (x, y)'], '#15803D');
     return s + '</svg>';
   };
   V.e35t = function (d) { return M1.tbl({ heads: ['line', 'm', 'b'], hw: 44, cw: 120, rows: [['y = 2x + 3', 'y = 2x − 1'], [2, 2], [3, -1]], hide: [[1, 0], [1, 1], [2, 0], [2, 1]], done: d, label: 'compare slope and intercept' }); };
-  V.e35g = function (d) { return d ? S({ w: 240, x: [-3, 3], y: [-4, 6], lines: [L(2, 3, 'y = 2x + 3'), L(2, -1, 'y = 2x − 1')], label: 'parallel lines' }) : waitG({ w: 240, x: [-3, 3], y: [-4, 6] }); };
+  V.e35g = function (d) { return d ? S({ w: 300, x: [-3, 3], y: [-4, 6], lines: [L(2, 3), L(2, -1)], pts: [{ t: 'txt', x: -1.9, y: 2.4, s: 'y = 2x + 3', c: C.navy }, { t: 'txt', x: 1.9, y: -1.6, s: 'y = 2x − 1', c: C.purple }], label: 'parallel lines' }) : waitG({ w: 300, x: [-3, 3], y: [-4, 6] }); };
   V.e35b = function (d) { return M1.subst({ done: d, eq1: ['y', ' = ', '−x + 4'], k1: 2, eq2: ['2x + 2', 'y', ' = 8'], k2: 1, res: [['2x − 2x + 8 = 8  →  ', '?']], resDone: [['8 = 8: always true'], ['→ infinitely many']] }); };
-  V.e35bg = function (d) { return d ? S({ w: 240, x: [-2, 6], y: [-2, 6], lines: [L(-1, 4, 'y = −x + 4', { at: 0.2 }), { A: 2, B: 2, C: 8, label: '2x + 2y = 8', dash: '8 6', at: 0.8 }], label: 'the same line' }) : waitG({ w: 240, x: [-2, 6], y: [-2, 6] }); };
-  V.f35 = function (d) { if (!d) return pre.f35(); return S({ x: [-4, 3], y: [-4, 7], lines: [L(2, 1, 'y = 2x + 1'), L(2, 5, 'y = 2x + 5')], label: 'parallel lines never meet' }); };
+  V.e35bg = function (d) { return d ? S({ w: 300, x: [-2, 6], y: [-2, 6], lines: [L(-1, 4, 'y = −x + 4', { at: 0.2 }), { A: 2, B: 2, C: 8, label: '2x + 2y = 8', dash: '8 6', at: 0.8 }], label: 'the same line' }) : waitG({ w: 300, x: [-2, 6], y: [-2, 6] }); };
+  V.f35 = function (d) { if (!d) return pre.f35(); return S({ x: [-4, 3], y: [-4, 7], lines: [L(2, 1), L(2, 5)], pts: [{ t: 'txt', x: 1.6, y: -2.5, s: 'y = 2x + 1', c: C.navy }, { t: 'txt', x: -2.6, y: 3.2, s: 'y = 2x + 5', c: C.purple }], label: 'parallel lines never meet' }); };
   R('f35', { kind: 'fix', ans: 3, viz: 'f35', ok: 'Step 3 is the mistake. Same slope + different intercepts means the lines are parallel. They never cross: NO solution.',
     why: { 1: 'Step 1 is right. Both slopes are 2.', 2: 'Step 2 is right. The b-values are 1 and 5.' } });
   var w3 = { one: 'Look at the slopes. Different slopes cross once.', none: 'Same slope and different b means parallel.', inf: 'Same slope and same b means the same line.' };
@@ -1486,7 +1510,7 @@ var M1 = (function () {
   V.q36 = function (d) { if (!d) return pre.q36(); return P({ x: [-2, 6], y: [-2, 6], label: 'the point (3, 1) is outside the overlap', items: [
     { t: 'region', hp: [{ m: 1, b: -1, s: '>' }, { m: -1, b: 3, s: '<' }], c: C.green, op: 0.22 }, { t: 'line', m: 1, b: -1, label: 'y = x − 1' }, { t: 'line', m: -1, b: 3, c: C.purple, label: 'y = −x + 3' }, { t: 'pt', x: 3, y: 1, c: C.red, label: '(3, 1) ✗' }] }); };
   R('q36', { kind: 'mc', ans: 'no', viz: 'q36', ok: 'First: is 1 ≥ 3 − 1? That is 1 ≥ 2. False! One false is enough: (3, 1) is not in the overlap.', why: { yes: 'Check the first one: 1 ≥ 3 − 1 means 1 ≥ 2. Is that true?' } });
-  V.q36b = function (d) { if (!d) return pre.q36b(); return P({ x: [-2, 5], y: [-3, 6], label: 'y ≤ −2x + 4 shaded below', items: [
+  V.q36b = function (d) { if (!d) return pre.q36b(); return P({ x: [-3, 5], y: [-3, 6], label: 'y ≤ −2x + 4 shaded below', items: [
     { t: 'region', hp: [{ m: -2, b: 4, s: '<' }], c: C.navy, op: 0.16 }, { t: 'line', m: -2, b: 4, label: 'y = −2x + 4' }, { t: 'pt', x: 0, y: 0, c: C.green, label: '(0, 0) ✓' }] }); };
   R('q36b', { kind: 'mc', ans: 'below', viz: 'q36b', ok: 'Test (0, 0): 0 ≤ −2(0) + 4 means 0 ≤ 4. True! Shade the side with (0, 0): below.', why: { above: 'Try the test point (0, 0): 0 ≤ 4 is true. Which side is (0, 0) on?' } });
   V.q36c = function (d) { if (!d) return pre.q36c(); return P({ x: [-3, 3], y: [-4, 5], label: 'y > 3x − 2, dashed line, shaded above', items: [

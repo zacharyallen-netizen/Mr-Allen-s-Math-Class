@@ -38,6 +38,7 @@
         put(lx + pw + fw / 2, bar + fs * 0.82 + 2, de, 'middle');
         this.parts.push('<line x1="' + f1(lx + pw + 2) + '" y1="' + f1(bar) + '" x2="' + f1(lx + pw + fw - 2) + '" y2="' + f1(bar) + '" stroke="' + (op.c || C.navy) + '" stroke-width="1.8" stroke-linecap="round"/>');
         if (fm[4]) put(lx + pw + fw, base, fm[4], 'start');
+        (this.tb || (this.tb = [])).push({ x0: lx, x1: lx + tw, y0: bar - fs - 3, y1: bar + fs + 4, k: op.tick ? 't' : 'l', i: -1 });
         return this;
       }
       var w = txt.length * fs * (op.mono === false ? 0.56 : 0.62) + (op.halo !== false ? 3 : 0);
@@ -55,6 +56,9 @@
       if (op.italic) a += ' font-style="italic"';
       if (op.halo !== false) a += ' paint-order="stroke" stroke="#FFFFFF" stroke-width="' + (fs >= 11 ? 4 : 3) + '" stroke-linejoin="round"';
       this.parts.push(a + '>' + esc(txt) + '</text>');
+      /* remember the box of every label; tick numbers that sit under a label are dropped in out() */
+      var L0 = anchor === 'start' ? px : anchor === 'end' ? px - w : px - w / 2;
+      (this.tb || (this.tb = [])).push({ x0: L0, x1: L0 + w, y0: py - fs * 0.78, y1: py + fs * 0.24, k: op.tick ? 't' : 'l', i: this.parts.length - 1 });
       return this;
     },
     _t: function (x, y, t, fs, op) {
@@ -141,7 +145,12 @@
       return this;
     },
     out: function (aria) {
-      var b = this.box;
+      var b = this.box, tb = this.tb || [], parts = this.parts;
+      tb.forEach(function (t) {
+        if (t.k !== 't' || t.i < 0) return;
+        var hit = tb.some(function (u) { return u.k === 'l' && u.x0 < t.x1 + 1 && u.x1 > t.x0 - 1 && u.y0 < t.y1 + 1 && u.y1 > t.y0 - 1; });
+        if (hit) parts[t.i] = '';
+      });
       return '<svg viewBox="0 0 ' + this.W + ' ' + this.H + '" width="' + this.W + '" height="' + this.H + '" xmlns="http://www.w3.org/2000/svg" role="img"' + (aria ? ' aria-label="' + esc(aria).replace(/"/g, '&quot;') + '"' : '') + '>' +
         '<defs><clipPath id="' + this.clip + '"><rect x="' + f1(b.x0) + '" y="' + f1(b.y0) + '" width="' + f1(b.x1 - b.x0) + '" height="' + f1(b.y1 - b.y0) + '"/></clipPath></defs>' +
         '<rect x="0" y="0" width="' + this.W + '" height="' + this.H + '" fill="' + C.bg + '"/>' + this.parts.join('') + '</svg>';
@@ -188,16 +197,17 @@
     for (v = Math.ceil(xmin / lx - eps) * lx; v <= xmax + eps; v += lx) {
       if (Math.abs(v) < eps && (originBoth || axX === 0)) continue;
       if (o.noXlab) break;
-      P.textPx(P.X(v), below ? P.Y(axY) + 12 : P.Y(axY) - 4, fmt(v), { fs: 10, c: C.muted, anchor: 'middle', halo: true });
+      P.textPx(P.X(v), below ? P.Y(axY) + 12 : P.Y(axY) - 4, fmt(v), { fs: 10, c: C.muted, anchor: 'middle', halo: true, tick: true });
     }
     for (v = Math.ceil(ymin / ly - eps) * ly; v <= ymax + eps; v += ly) {
       if (Math.abs(v) < eps && (originBoth || axY === 0)) continue;
       if (o.noYlab) break;
-      P.textPx(P.X(axX) - 4, P.Y(v) + 3.5, fmt(v), { fs: 10, c: C.muted, anchor: 'end', halo: true });
+      P.textPx(P.X(axX) - 4, P.Y(v) + 3.5, fmt(v), { fs: 10, c: C.muted, anchor: 'end', halo: true, tick: true });
     }
-    if (xmin <= 0 && ymin <= 0 && !o.noXlab) P.textPx(P.X(axX) - 4, P.Y(axY) + 12, '0', { fs: 10, c: C.muted, anchor: 'end', halo: true });
-    P.textPx(b.x1 - 3, P.Y(axY) - 5, o.xname || 'x', { fs: 11, c: C.muted, anchor: 'end', italic: true, halo: true, mono: false });
-    P.textPx(P.X(axX) + 5, b.y0 + 11, o.yname || 'y', { fs: 11, c: C.muted, anchor: 'start', italic: true, halo: true, mono: false });
+    /* the origin 0 is left out when it would run into the −1 tick number (it read like “−10”) */
+    if (xmin <= 0 && ymin <= 0 && !o.noXlab && !(xmin < 0 && ux * lx < 34)) P.textPx(P.X(axX) - 4, P.Y(axY) + 12, '0', { fs: 10, c: C.muted, anchor: 'end', halo: true, tick: true });
+    P.textPx(b.x1 - 3, P.Y(axY) - 5, o.xname || 'x', { fs: 11, c: C.muted, anchor: 'end', italic: true, halo: true, mono: false, tick: true });
+    P.textPx(P.X(axX) + 5, b.y0 + 11, o.yname || 'y', { fs: 11, c: C.muted, anchor: 'start', italic: true, halo: true, mono: false, tick: true });
     return P;
   }
 

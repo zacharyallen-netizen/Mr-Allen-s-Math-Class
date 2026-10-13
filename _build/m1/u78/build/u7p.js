@@ -43,11 +43,11 @@ ${mc('a4', { n: 4, text: 'Is the vertex a maximum or minimum?', fig: fig(g4.out(
   const g = () => pgraph(B.f, v, { H: 270 });
   const b1 = g();
   const b1a = g(); feats(b1a, B, { zeros: { c: C.green, pos: ['nw', 'ne'] } });
-  const b2 = g();
+  const b2 = g(); B.zeros.forEach((z, i) => { b2.dot(z, 0, { c: C.navy, r: 5 }); b2.lab(z, 0, 'x = ' + fmt(z), i ? 'nw' : 'ne', { c: C.navy, fs: 11 }); });
   const box = F.boxMethod({ top: ['x', '+3'], left: ['x', '−1'], cells: [['?', '?'], ['?', '?']] });
   const boxA = F.boxMethod({ top: ['x', '+3'], left: ['x', '−1'], cells: [['x²', '3x'], ['−x', '−3']], green: true });
   const b4 = ring(g(), B.h, B.k, 'vertex = ?', 'sw');
-  const b4a = g(); feats(b4a, B, { axis: { c: C.green, text: 'x = −1', y: 4.3 }, vertex: { c: C.green, text: '(−1, −4)', pos: 'e' }, zeros: { c: C.navy, text: false } });
+  const b4a = pgraph(B.f, [-5, 3, -6, 5], { H: 280 }); feats(b4a, B, { axis: { c: C.green, text: 'x = −1', y: 4.3 }, vertex: { c: C.green, text: '(−1, −4)', pos: 'sw' }, zeros: { c: C.navy, text: false } });
   part('Part B · Factored Form &amp; the Graph', 'Use the graph shown to answer Questions 1–4. Part B uses standard and factored form. Vertex form gets its own practice in Part E.');
   sec('B', 'Factored Form ↔ Graph', `
 ${q('b2', { n: 1, text: 'What are the x-intercepts (zeros) of the function graphed?', fig: fig(b1.out('parabola for Part B')), t: 'set', a: B.zeros, ph: 'x = ?, ?',
@@ -72,16 +72,15 @@ ${q('b4', { n: 4, text: 'Using the zeros, find the vertex of the parabola. (Hint
   gab.curve(B.f, { c: C.blue, dash: '7 5' });
   gab.dot(2, 5, { c: C.green }); gab.lab(2, 5, 'A: max 5', 'n', { c: C.green, fs: 11 });
   gab.text(5.6, 2.6, 'B', { c: C.blue, fs: 13, bold: true, dx: 6 });
-  gab.text(-1.6, -3.4, 'B opens up: no max', { c: C.blue, fs: 11, bold: true });
   const mach = F.machine({ input: 'x = 0', rule: 'g(x) = x² − 6x + 5', output: '?' });
   const machA = F.machine({ input: 'x = 0', rule: 'g(0) = 0 − 0 + 5', output: '5' });
   const box = F.boxMethod({ top: ['x', '?'], left: ['x', '?'], cells: [['x²', '?'], ['?', '+5']] });
-  const gB = pgraph(B.f, [-1, 7, -5, 7], { H: 260 }); feats(gB, B, { zeros: { c: C.green, pos: ['nw', 'ne'] }, yint: { c: C.navy, text: '(0, 5)', pos: 'e' } });
+  const gB = pgraph(B.f, [-1, 7, -5, 7], { H: 260 }); feats(gB, B, { zeros: { c: C.green, pos: ['ne', 'nw'] }, yint: { c: C.navy, text: '(0, 5)', pos: 'e' } });
   part('Part C · Comparing Quadratic Functions', 'Function A is graphed below. Function B is given by g(x) = x² − 6x + 5.');
   sec('C', 'Graph vs. Equation', `
 ${mc('c1', { n: 1, text: 'Function A is graphed above. Function B is g(x) = x² − 6x + 5. Which function has the greater maximum value?', fig: fig(ga.out('Function A')), opts: [
   { t: 'Function A, maximum of 5', ok: 1 }, { t: 'Function B, maximum of 5', fb: 'B has a = 1 (positive), so B opens up. It has a minimum, not a maximum.' }, { t: 'Both have the same maximum', fb: 'B opens up, so B has no maximum at all.' }, { t: 'Neither has a maximum', fb: 'A opens down, so A does have a maximum: its top point.' }],
-  why: 'Function B opens upward (no maximum), so only Function A has one — 5.', after: fig(gab.out('A and B'), 'A has a top (max 5). B goes up forever.') })}
+  why: 'Function B opens upward (no maximum), so only Function A has one — 5.', after: fig(gab.out('A and B'), 'A has a top (max 5). B (dashed) opens up, so it has no max: it goes up forever.') })}
 ${q('c2', { n: 2, text: 'What is the y-intercept of Function B: g(x) = x² − 6x + 5?', fig: fig(mach, 'Put in x = 0'), t: 'num', a: B.c, yint: true, ph: '(0, ?)',
   traps: [{ v: 1, m: '1 is a (the number in front of x²). The y-intercept is the plain number, c.' }, { v: -6, m: '−6 is b. When x = 0, the −6x term becomes 0.' }],
   sol: 'Plug in x = 0: g(0) = 0² − 6(0) + 5 → <strong>(0, 5)</strong>', after: fig(machA) })}
@@ -100,7 +99,7 @@ ${q('c3', { n: 3, text: 'Find the zeros of Function B: g(x) = x² − 6x + 5.', 
   const tbA = F.vt(hd, [[0, 1, 2], [0, 1, 2].map(x => fmt(f(x))), [0, 1, 2].map(x => fmt(g(x))), [0, 1, 2].map(x => fmt(f(x) + g(x)))]);
   const h = Q(-16, 3, 0);
   const gh = pgraph(h.f, [0, 0.4, -1.5, 0.5], { H: 220, gx: 0.05, lx: 0.1, gy: 0.25, ly: 0.5, xname: 't (s)', yname: 'h (ft)' });
-  gh.dot(3 / 32, h.f(3 / 32), { c: C.green }); gh.lab(3 / 32, h.f(3 / 32), 'tiny rise from w(t)', 'e', { c: C.green, fs: 11 });
+  gh.dot(3 / 32, h.f(3 / 32), { c: C.green }); gh.lab(3 / 32, h.f(3 / 32), 'top: only about 0.14 ft', 'ne', { c: C.green, fs: 11 });
   part('Part D · Building New Functions (F-BF.1b)', 'Combine two functions using arithmetic operations to build a new one.');
   sec('D', 'Combining Functions', `
 ${q('d1', { n: 1, text: 'A rectangle has length L(x) = x + 5 and width W(x) = x. Build a new function A(x) = L(x) · W(x) for its area.', fig: fig(am, 'Area model: what goes in each part?'), t: 'expr', form: 'std', a: 'x^2+5x', ph: 'A(x) = x^2 + ...',
@@ -116,18 +115,19 @@ ${q('d2', { n: 2, text: 'Let f(x) = x² − 3 and g(x) = 2x + 1. Find (f + g)(x)
 /* ===== Part E: vertex form ===== */
 {
   const T = QV(-1, -2, 4);
-  const gT = pgraph(T.f, [-6, 6, -6, 6], { H: 270 }); feats(gT, T, { vertex: { c: C.green, text: '(−2, 4)', pos: 'e' } });
+  const gT = pgraph(T.f, [-6, 6, -6, 6], { H: 270 }); feats(gT, T, { vertex: { c: C.green, text: '(−2, 4)', pos: 'n' } });
   const E1 = QV(1, 4, -1);
   const d1 = F.decoder([{ t: 'y = ' }, { t: '(x − 4)', lab: 'h = ?', c: 'gold' }, { t: '²' }, { t: ' − 1', lab: 'k = ?', c: 'gold' }]);
   const g1 = pgraph(E1.f, [-1, 8, -2, 8], { H: 250 }); feats(g1, E1, { vertex: { c: C.green, text: '(4, −1)', pos: 'e' } });
   const E2 = QV(-2, -1, 8);
   const d2 = F.decoder([{ t: 'y = ' }, { t: '−2', lab: 'a', c: 'navy' }, { t: '(x + 1)', lab: 'h = ?', c: 'gold' }, { t: '²' }, { t: ' + 8', lab: 'k = ?', c: 'gold' }]);
-  const g2 = pgraph(E2.f, [-5, 3, -4, 10], { H: 260 }); feats(g2, E2, { vertex: { c: C.green, text: 'max (−1, 8)', pos: 'e' } });
+  const g2 = pgraph(E2.f, [-5, 3, -4, 10], { H: 260 }); feats(g2, E2, { vertex: { c: C.green, text: 'max (−1, 8)', pos: 'nw' } });
+  const g2m = pgraph(E2.f, [-5, 3, -4, 10], { H: 260 }); g2m.seg(-1, 8, 0, 8, { c: C.green, w: 1.8, dash: '5 4' }); feats(g2m, E2, { vertex: { c: C.green, text: 'max value 8', pos: 'nw' } });
   const box = F.boxMethod({ top: ['x', '−4'], left: ['x', '−4'], cells: [['?', '?'], ['?', '?']] });
   const boxA = F.boxMethod({ top: ['x', '−4'], left: ['x', '−4'], cells: [['x²', '−4x'], ['−4x', '16']], green: true });
   const tr = F.tree({ top: '(x − 4)² = 1', left: 'x − 4 = 1', right: 'x − 4 = −1', lres: 'x = ?', rres: 'x = ?' });
   const trA = F.tree({ top: '(x − 4)² = 1', left: 'x − 4 = 1', right: 'x − 4 = −1', lres: 'x = 5', rres: 'x = 3' });
-  const g5 = pgraph(E1.f, [-1, 8, -2, 8], { H: 250 }); feats(g5, E1, { zeros: { c: C.green, pos: ['nw', 'ne'] } });
+  const g5 = pgraph(E1.f, [-1, 8, -2, 8], { H: 250 }); E1.zeros.forEach((z, i) => { g5.dot(z, 0, { c: C.green, r: 5 }); g5.lab(z, 0, '(' + fmt(z) + ', 0)', i ? 'se' : 'sw', { c: C.green, fs: 11, dy: 12 }); });
   const E6 = QV(3, 2, -7);
   const g6 = pgraph(E6.f, [-2, 5, -8, 6], { H: 250 }); feats(g6, E6, { vertex: { c: C.green, text: 'vertex (2, −7)', pos: 'e' } });
   part('Part E · Vertex Form vs. Standard Form', 'Vertex form y = a(x − h)² + k shows the vertex (h, k). Remember: inside the parentheses the sign flips.');
@@ -144,7 +144,7 @@ ${q('e2', { n: 3, text: 'What is the vertex of y = −2(x + 1)² + 8?', fig: fig
 ${mc('e3', { n: 4, text: 'For y = −2(x + 1)² + 8, is the vertex a maximum or a minimum?', fig: fig(F.cupHill({ eq: 'y = −2(x + 1)² + 8', ask: 'a = ' + fmt(E2.a) + ' → which shape?' }), 'A hill has a highest point. A cup has a lowest point.'), opts: [
   { t: 'Maximum, because a = −2 is negative', ok: 1 }, { t: 'Minimum, because a = −2 is negative', fb: 'Negative a opens DOWN, like a hill. The vertex is the top.' },
   { t: 'Maximum, because k = 8 is positive', fb: 'The direction comes from a, not k. k only tells the height of the vertex.' }, { t: 'Minimum, because h = −1', fb: 'h only moves the graph left or right. Look at a.' }],
-  why: 'a = −2 &lt; 0 opens down, so the vertex (−1, 8) is a maximum: the max value is 8.', after: fig(g2.out('max'), 'opens down, max 8') })}
+  why: 'a = −2 &lt; 0 opens down, so the vertex (−1, 8) is a maximum: the max value is 8.', after: fig(g2m.out('the highest point is y = 8'), 'Opens down, so the vertex is the top: max value 8') })}
 ${q('e4', { n: 5, text: 'Write y = (x − 4)² − 1 in standard form.', fig: fig(box, 'Box for (x − 4)(x − 4)'), t: 'expr', form: 'std', a: polyA(E1.a, E1.b, E1.c), ph: 'y = x^2 + ...',
   traps: [{ v: 'x^2+15', m: '(x − 4)² is not x² + 16. Fill the box: you also get two −4x terms.' }, { v: 'x^2-17', m: '(x − 4)² is not x² − 16. Fill the box: x², −4x, −4x and +16.' }, { v: 'x^2-8x+16', m: 'Great squaring! Now add k = −1 to the 16.' }, { v: 'x^2-8x+17', m: 'k is −1, so 16 + (−1) = 15.' }],
   sol: '(x − 4)² = x² − 8x + 16. Add −1: <b>y = x² − 8x + 15</b>', after: fig(boxA, '(x − 4)² = x² − 8x + 16') })}
@@ -205,17 +205,19 @@ ${mistake('f7', { n: 7, who: 'Marcus found the axis of symmetry of y = 2x² + 8x
   const H = Q(-16, 64, 80);
   const eq = 'h(t) = −16t² + 64t + 80';
   const sc = k => F.scene({ eq, hi: k });
-  const gg = () => pgraph(H.f, [0, 5.5, 0, 160], { H: 270, gx: 0.5, lx: 1, gy: 20, ly: 40, xname: 't (s)', yname: 'h (ft)' });
+  const gg = () => pgraph(H.f, [0, 6, 0, 180], { H: 270, gx: 0.5, lx: 1, gy: 20, ly: 40, xname: 't (s)', yname: 'h (ft)' });
   const gA = gg(); gA.dot(0, 80, { c: C.green }); gA.lab(0, 80, 'start 80 ft', 'e', { c: C.green, fs: 11, dy: 8 });
-  const gB = gg(); gB.vline(2, { c: C.green, dash: '5 4', w: 1.6 }); gB.dot(2, 144, { c: C.green }); gB.lab(2, 144, 'top at t = 2', 'e', { c: C.green, fs: 11, dy: 10 });
-  const gC = gg(); gC.dot(2, 144, { c: C.green }); gC.lab(2, 144, 'max 144 ft', 'e', { c: C.green, fs: 11, dy: 10 });
+  const gB = gg(); gB.vline(2, { c: C.green, dash: '5 4', w: 1.6 }); gB.dot(2, 144, { c: C.green }); gB.lab(2, 144, 'top at t = 2', 'ne', { c: C.green, fs: 11 });
+  const gC = gg(); gC.dot(2, 144, { c: C.green }); gC.seg(0, 144, 2, 144, { c: C.green, w: 1.6, dash: '5 4' }); gC.lab(2, 144, 'max 144 ft', 'ne', { c: C.green, fs: 11 });
   const gD = gg(); gD.dot(5, 0, { c: C.green }); gD.lab(5, 0, 'lands t = 5', 'nw', { c: C.green, fs: 11 });
   const am = F.areaModel({ wLab: 'w + 3', hLab: 'w', inside: 'Area = 54 m²' });
   const amA = F.areaModel({ wLab: '9 m', hLab: '6 m', inside: '6 × 9 = 54 ✓', wc: C.green, hc: C.green, ic: C.green });
   const pen = F.areaModel({ wLab: '20 − x', hLab: 'x', inside: 'A(x) = x(20 − x)' });
   const A = Q(-1, 20, 0);
-  const gp = pgraph(A.f, [0, 20, 0, 110], { H: 250, gx: 1, lx: 4, gy: 10, ly: 20, xname: 'x (m)', yname: 'A (m²)' });
-  gp.vline(10, { c: C.green, dash: '5 4', w: 1.6 }); gp.dot(10, 100, { c: C.green }); gp.lab(10, 100, 'x = 10, A = 100', 's', { c: C.green, fs: 11, dy: 4 });
+  /* Question 7 shows the best WIDTH, Question 8 the largest AREA */
+  const gpp = () => pgraph(A.f, [0, 20, 0, 130], { H: 250, gx: 1, lx: 4, gy: 10, ly: 20, xname: 'x (m)', yname: 'A (m²)' });
+  const gp = gpp(); gp.seg(10, 0, 10, 100, { c: C.green, dash: '5 4', w: 1.6 }); gp.dot(10, 100, { c: C.green }); gp.lab(10, 100, 'top at x = 10', 'ne', { c: C.green, fs: 11 });
+  const gpA = gpp(); gpA.seg(0, 100, 10, 100, { c: C.green, dash: '5 4', w: 1.6 }); gpA.dot(10, 100, { c: C.green }); gpA.lab(10, 100, 'max A = 100', 'ne', { c: C.green, fs: 11 });
   const mm = F.areaModel({ wLab: 'w + 2', hLab: 'w', inside: 'Area = 48' });
   const mmA = F.areaModel({ wLab: '8', hLab: '6', inside: '6 × 8 = 48 ✓', wc: C.green, hc: C.green, ic: C.green });
   part('Part G · Word Problems (A-CED.1/2)', 'Projectile and area problems. Draw a picture first, then write the equation.');
@@ -243,7 +245,7 @@ ${q('g7', { n: 7, text: 'A pen has a perimeter of 40 m. Its area is A(x) = x(20 
   traps: [{ v: 20, m: 'At x = 20 the length is 0, so the area is 0. The max is halfway between the zeros 0 and 20.' }, { v: 100, m: '100 is the largest AREA. The question asks for the width.' }],
   sol: 'A(x) = −x² + 20x. Zeros: x = 0 and x = 20. Halfway: <b>x = 10 m</b>', after: fig(gp.out('area graph'), 'The top of the area graph is at x = 10') })}
 ${q('g8', { n: 8, text: 'What is that largest area? (m²)', fig: fig(F.machine({ input: 'x = ? (from Q7)', rule: 'A(x) = x(20 − x)', output: '?', aria: 'put the best width into A(x)' }), 'Put your width from Question 7 into A(x).'), t: 'num', a: A.k, ph: 'A = ?', traps: [{ v: 10, m: '10 is the width. Put x = 10 into A(x).' }],
-  sol: 'A(10) = 10(20 − 10) = 10 · 10 = <b>100 m²</b> (a 10 by 10 square)', after: fig(gp.out('area graph'), 'Max area 100 m²') })}
+  sol: 'A(10) = 10(20 − 10) = 10 · 10 = <b>100 m²</b> (a 10 by 10 square)', after: fig(gpA.out('area graph with its largest area'), 'Max area 100 m² (at x = 10)') })}
 ${mistake('g9', { n: 9, who: 'Lena solved: “A rectangle’s length is 2 more than its width. The area is 48. Find the width.”', fig: fig(mm),
   work: ['width = w, length = w + 2', 'w + (w + 2) = 48', '2w + 2 = 48', 'w = 23'], bad: 1,
   fbs: ['Step 1 is right.', '', 'Step 3 follows from Step 2. Find the first mistake.', 'Step 4 follows from Step 3. Find the first mistake.'],

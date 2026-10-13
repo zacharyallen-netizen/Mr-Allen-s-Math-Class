@@ -375,7 +375,7 @@ var M1 = (function () {
     var yEdge = x0 >= 0, xEdge = y0 >= 0;
     var L = (yEdge ? maxYW + 9 : 10);
     var B = H - ((xEdge ? tfs + 8 : 10) + (o.xtitle ? 17 : 0));
-    var T = o.ytitle ? 30 : 10, R = W - 10;
+    var T = o.ytitle ? 30 : o.banner ? 36 : 10, R = W - 10;
     function sx(x) { return L + (x - x0) / (x1 - x0) * (R - L); }
     function sy(y) { return B - (y - y0) / (y1 - y0) * (B - T); }
     var id = 'cp' + (++uid), mk = 'mk' + uid;
@@ -429,6 +429,7 @@ var M1 = (function () {
     if (yn) { s += text(sx(ay) + 5, T + 10, yn, { fs: 11, c: C.axis, a: 'start', it: true }); both({ x: sx(ay) + 5, y: T, w: tw(yn, 11), h: 12 }); }
     if (o.xtitle) s += text((L + R) / 2, H - 5, o.xtitle + ' →', { fs: 12.5, c: C.axis, fam: 'Inter,system-ui,sans-serif', b: true });
     if (o.ytitle) s += text(4, 17, '↑ ' + o.ytitle, { fs: 12.5, c: C.axis, a: 'start', fam: 'Inter,system-ui,sans-serif', b: true });
+    if (o.banner) s += pill(W / 2, 18, o.banner, { fs: 12.5 }); /* a note above the grid, clear of every tick label */
     // lines, curves, segments (clipped)
     var cl = '', labels = [];
     items.forEach(function (it) {
@@ -455,6 +456,7 @@ var M1 = (function () {
       } else if (it.t === 'seg') {
         var cc = it.c || C.navy, mkr = it.arrow ? ' marker-end="url(#' + mk + (cc === C.gold ? 'g' : cc === C.green ? 'G' : 'n') + ')"' : '';
         cl += '<line x1="' + r1(sx(it.x1)) + '" y1="' + r1(sy(it.y1)) + '" x2="' + r1(sx(it.x2)) + '" y2="' + r1(sy(it.y2)) + '" stroke="' + cc + '" stroke-width="' + (it.w || 2) + '"' + (it.dash ? ' stroke-dasharray="4 4"' : '') + mkr + '/>';
+        P.segs.push([sx(it.x1), sy(it.y1), sx(it.x2), sy(it.y2)]); /* labels keep off guide lines too */
       }
     });
     s += '<g clip-path="url(#' + id + ')">' + cl + '</g>';
@@ -473,7 +475,7 @@ var M1 = (function () {
     items.forEach(function (it) {
       if (it.t !== 'pt') return;
       var X = sx(it.x), Y = sy(it.y), col = it.c || C.navy, r = it.r || 4.5;
-      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
+      pt += '<circle cx="' + r1(X) + '" cy="' + r1(Y) + '" r="' + r + '" fill="' + (it.ring ? 'none' : it.hollow ? '#fff' : col) + '" stroke="' + (it.st || (col === C.gold ? '#8a6500' : col)) + '" stroke-width="2"' + (it.id ? ' id="' + it.id + '"' : '') + '/>';
       both({ x: X - r - 1, y: Y - r - 1, w: 2 * r + 2, h: 2 * r + 2 });
       if (it.label) labels.unshift({ s: it.label, c: it.lc || col, at: [X, Y], pill: it.pill, pt: true, id: it.lid });
     });
@@ -483,21 +485,26 @@ var M1 = (function () {
     labels.forEach(function (lb) {
       var lfs = lb.fs || fs, w = tw(lb.s, lfs) + (lb.pill ? 10 : 2), h = lfs + (lb.pill ? 6 : 3), cands = [], pos;
       if (lb.pt) {
-        var X = lb.at[0], Y = lb.at[1], ox = w / 2 + 8, oy = h / 2 + 6;
-        cands = [[X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]];
+        var X = lb.at[0], Y = lb.at[1];
+        /* rings of spots around the point: the nearest spot that touches no line, curve or other label wins */
+        for (var ring = 0; ring < 4; ring++) {
+          var ox = w / 2 + 8 + ring * 12, oy = h / 2 + 6 + ring * 10;
+          cands.push([X + ox, Y - oy], [X - ox, Y - oy], [X + ox, Y + oy], [X - ox, Y + oy], [X, Y - oy - 4], [X, Y + oy + 4], [X + ox + 4, Y], [X - ox - 4, Y]);
+        }
         pos = PV.pick(cands, w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else if (lb.fixed) {
         pos = PV.pick([lb.fixed], w, h); P.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       } else {
         var fr = lb.fr != null ? [lb.fr] : [], base = [0.86, 0.14, 0.7, 0.3, 0.5, 0.94, 0.06, 0.6, 0.4];
         fr = fr.concat(base);
-        fr.forEach(function (f) {
+        for (var fi = 0.04; fi < 0.99; fi += 0.04) fr.push(+fi.toFixed(2)); /* finer spots if the usual ones are taken */
+        [0, 12].forEach(function (extra) { fr.forEach(function (f) {
           var A, Bp, ux, uy;
           if (lb.seg) { A = lb.seg[0]; Bp = lb.seg[1]; ux = Bp[0] - A[0]; uy = Bp[1] - A[1]; var px = A[0] + ux * f, py = A[1] + uy * f; }
           else { var n = lb.pts.length, ii = Math.min(n - 2, Math.max(1, Math.round(f * (n - 1)))); px = lb.pts[ii][0]; py = lb.pts[ii][1]; ux = lb.pts[ii + 1][0] - lb.pts[ii - 1][0]; uy = lb.pts[ii + 1][1] - lb.pts[ii - 1][1]; }
-          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5;
+          var len = Math.sqrt(ux * ux + uy * uy) || 1, nx = -uy / len, ny = ux / len, dd = Math.abs(nx) * w / 2 + Math.abs(ny) * h / 2 + 5 + extra;
           cands.push([px + nx * dd, py + ny * dd]); cands.push([px - nx * dd, py - ny * dd]);
-        });
+        }); });
         pos = P.pick(cands, w, h); PV.add({ x: pos[0] - w / 2, y: pos[1] - h / 2, w: w, h: h });
       }
       if (lb.pill) lt += pill(pos[0], pos[1], lb.s, { fs: lfs });
@@ -701,30 +708,44 @@ var M1 = (function () {
   }
 
   /* ---------- number-line hops ---------- */
+  // When the jumps are too narrow to draw one by one (less than 24 px each), every term is a small dot on the line,
+  // the first jump gets its arc and +d label, and a bracket over the whole trip says how many jumps there are.
   function hops(o) {
-    var W = o.w || 300, H = o.h || (o.note ? 134 : 116), L = 16, R = W - 16, y = H - (o.note ? 44 : 30), id = 'hp' + (++uid);
+    var W = o.w || 300, L = 16, R = W - 16, id = 'hp' + (++uid);
     function X(v) { return L + (v - o.min) / (o.max - o.min) * (R - L); }
-    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
+    var end = o.start + o.step * o.count, jw = Math.abs(X(o.start + o.step) - X(o.start)), squeeze = jw < 24 && o.count > 4;
+    var H = o.h || ((o.note ? 134 : 116) + (squeeze ? 16 : 0)), y = H - (o.note ? 44 : 30);
+    var s = svgOpen(W, H, o.label || 'number line') + '<defs>' + arrowDef(id, o.c || C.navy) + arrowDef(id + 'g', '#8a6500') + '</defs><rect x="0" y="0" width="' + W + '" height="' + H + '" fill="' + C.bg + '"/>';
     s += '<line x1="' + L + '" y1="' + y + '" x2="' + R + '" y2="' + y + '" stroke="' + C.axis + '" stroke-width="1.6"/>';
     for (var v = o.min; v <= o.max + 1e-9; v += o.tick) {
       var big = Math.abs(v / o.lab - Math.round(v / o.lab)) < 1e-9;
       s += '<line x1="' + r1(X(v)) + '" y1="' + (y - (big ? 6 : 3)) + '" x2="' + r1(X(v)) + '" y2="' + (y + (big ? 6 : 3)) + '" stroke="' + C.axis + '" stroke-width="1.2"/>';
       if (big) s += text(X(v), y + 19, fmt(v), { fs: 10, c: C.axis });
     }
-    var cur = o.start, hopC = o.c || C.navy;
-    for (var i = 0; i < o.count; i++) {
-      var a = X(cur), b = X(cur + o.step), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
-      s += '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
-      if (o.every || i === 0) s += text((a + b) / 2, y - h / 2 - 8, (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step)), { fs: 10, c: hopC, b: true });
-      cur += o.step;
+    if (squeeze) s = s.replace(/<line x1="[^"]*" y1="[^"]*" x2="[^"]*" y2="[^"]*" stroke="#5a6680" stroke-width="1.2"\/>/g, function (m) { return /y1="(\d+)"/.exec(m)[1] == y - 6 ? m : ''; }); /* keep only the numbered ticks */
+    var hopC = o.c || C.navy, stepTx = (o.step > 0 ? '+' : '−') + fmt(Math.abs(o.step));
+    function hop(i, lab) {
+      var a = X(o.start + o.step * i), b = X(o.start + o.step * (i + 1)), h = Math.min(30, Math.abs(b - a) * 0.9 + 8);
+      var t = '<path d="M' + r1(a) + ',' + (y - 3) + ' Q' + r1((a + b) / 2) + ',' + r1(y - 3 - h) + ' ' + r1(b) + ',' + (y - 3) + '" fill="none" stroke="' + hopC + '" stroke-width="1.6" marker-end="url(#' + id + ')"/>';
+      if (lab) t += text((a + b) / 2, y - h / 2 - 9, stepTx, { fs: 10, c: hopC, b: true });
+      return t;
+    }
+    if (!squeeze) { for (var i = 0; i < o.count; i++) s += hop(i, o.every || i === 0); }
+    else {
+      for (var k = 1; k < o.count; k++) s += '<circle cx="' + r1(X(o.start + o.step * k)) + '" cy="' + y + '" r="2.6" fill="' + hopC + '"/>';
+      var a0 = X(o.start), a1 = X(o.start + o.step);
+      s += '<path d="M' + r1(a0) + ',' + (y - 4) + ' Q' + r1((a0 + a1) / 2) + ',' + (y - 22) + ' ' + r1(a1) + ',' + (y - 4) + '" fill="none" stroke="' + hopC + '" stroke-width="1.8"/>';
+      s += text(a1 + 3, y - 20, stepTx + ' each jump', { fs: 10, c: hopC, b: true, a: 'start' });
+      var ya = 42, xa = X(o.start), xb = X(end);
+      s += '<path d="M' + r1(xa) + ',' + (ya + 8) + ' L' + r1(xa) + ',' + ya + ' L' + r1(xb) + ',' + ya + ' L' + r1(xb) + ',' + (ya + 8) + '" fill="none" stroke="' + C.muted + '" stroke-width="1.4"/>';
+      s += text((xa + xb) / 2, ya - 6, o.done ? o.count + ' jumps × ' + fmt(Math.abs(o.step)) + ' = ' + fmt(Math.abs(o.step) * o.count) : o.count + ' jumps of ' + stepTx, { fs: 12.5, c: C.navy, b: true, fam: 'Inter,system-ui,sans-serif' });
     }
     s += '<circle cx="' + r1(X(o.start)) + '" cy="' + y + '" r="5" fill="' + C.navy + '"/>';
     var sl = o.startLab || fmt(o.start), sw = tw(sl, 11) / 2 + 2;
     s += text(Math.min(Math.max(X(o.start), sw), W - sw), 14, sl, { fs: 11, c: C.navy, b: true });
-    var end = o.start + o.step * o.count;
     s += '<circle cx="' + r1(X(end)) + '" cy="' + y + '" r="5" fill="' + (o.done ? C.green : C.gold) + '" stroke="#8a6500" stroke-width="1"/>';
-    var ex = Math.min(Math.max(X(end), 30), W - 30);
-    if (o.done) s += text(ex, 14, o.endLab || fmt(end), { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, o.endQ || '?', { fs: 11 });
+    var el = o.done ? (o.endLab || fmt(end)) : (o.endQ || '?'), ew = tw(el, 11) / 2 + 8, ex = Math.min(Math.max(X(end), ew), W - ew);
+    if (o.done) s += text(ex, 14, el, { fs: 11, c: C.green, b: true }); else s += pill(ex, 11, el, { fs: 11 });
     if (o.note) s += text(W / 2, H - 6, o.note, { fs: 10.5, c: C.muted, fam: 'Inter,system-ui,sans-serif', halo: false });
     return s + '</svg>';
   }
@@ -1100,11 +1121,11 @@ var M1 = (function () {
   function F(x) { return 3 * x + 1; } function G(x) { return Math.pow(2, x); }
   function cItems(extra) { return [{ t: 'line', m: 3, b: 1, label: 'f(x) = 3x + 1', at: 0.25 }, { t: 'fn', f: G, c: C.purple, label: 'g(x) = 2^x', at: 0.82 }].concat(extra || []); }
   V.cg = function () { return P({ x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'f and g', items: cItems() }); };
-  function atX(X, d) { var fx = F(X), gx = G(X);
-    return P({ x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'compare at x = ' + X, items: cItems([{ t: 'seg', x1: X, y1: 0, x2: X, y2: 40, c: C.gold, dash: true, w: 1.6 },
-      d ? { t: 'pt', x: X, y: fx, c: C.navy, label: 'f(' + X + ') = ' + f(fx) } : { t: 'pt', x: X, y: fx, c: C.gold, label: 'f(' + X + ') = ?', pill: true },
+  function atX(X, d, xr, fAt) { var fx = F(X), gx = G(X), fl = 'f(' + X + ') = ' + (d ? f(fx) : '?'); /* fAt: a fixed spot for the f label (right of the guide line, under f) */
+    return P({ x: xr || [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'compare at x = ' + X, items: cItems([{ t: 'seg', x1: X, y1: 0, x2: X, y2: 40, c: C.gold, dash: true, w: 1.6 },
+      { t: 'pt', x: X, y: fx, c: d ? C.navy : C.gold, label: fAt ? null : fl, pill: !d }, fAt ? { t: 'txt', x: fAt[0], y: fAt[1], s: fl, pill: !d, c: C.navy } : { t: 'none' },
       d ? { t: 'pt', x: X, y: gx, c: C.purple, label: 'g(' + X + ') = ' + f(gx) } : { t: 'pt', x: X, y: gx, c: C.gold, label: 'g(' + X + ') = ?', pill: true }]) }); }
-  V.c1 = function (d) { return atX(3, d); }; V.c2 = function (d) { return atX(5, d); };
+  V.c1 = function (d) { return atX(3, d); }; V.c2 = function (d) { return atX(5, d, [0, 7.5], [6.35, 13.2]); };
   function bigger(X) { return F(X) > G(X) ? 'a' : G(X) > F(X) ? 'b' : 'c'; }
   R('c1', { kind: 'mc', ans: bigger(3), viz: 'c1', ok: 'f(3) = 3(3) + 1 = 10 and g(3) = 2<sup>3</sup> = 8, so f(x) is greater at x = 3.', why: { b: 'Work them out: g(3) = 2 · 2 · 2 = 8 and f(3) = 3(3) + 1 = 10.', c: '10 and 8 are not equal. Find both values.', d: 'We can find both values exactly. Put x = 3 into each.' } });
   R('c2', { kind: 'mc', ans: bigger(5), viz: 'c2', ok: 'f(5) = 3(5) + 1 = 16 and g(5) = 2<sup>5</sup> = 32, so g(x) has overtaken f(x).', why: { a: 'Work them out: f(5) = 16, but g(5) = 2<sup>5</sup> = 32.', c: '16 and 32 are not equal.', d: 'We can find both values exactly. Put x = 5 into each.' } });
@@ -1129,7 +1150,7 @@ var M1 = (function () {
   R('d1', { kind: 'expr', vars: ['t'], ans: '200*2^t', viz: 'dg1', eg: '200(2)^t', ok: 'a = 200 and it doubles, so b = 2: P(t) = 200(2)<sup>t</sup>.',
     miss: [{ v: '2*200^t', m: 'You switched a and b. The start amount 200 goes in front.' }, { v: '200*2t', m: 'Doubling is a power: 2<sup>t</sup>, not 2t. Type 200(2)^t.' }, { v: '200+2t', m: 'Doubling means multiply by 2 each hour, not add 2.' }, { v: '200*1.02^t', m: 'Doubles means +100%, so b = 1 + 1 = 2.' }], hint: 'Start amount a = 200. Doubling means b = 2. Write a(b)^t.' });
   R('d2', { kind: 'num', ans: P0(5), viz: 'dg1', ok: 'P(5) = 200(2)<sup>5</sup> = 200(32) = 6,400 bacteria.', miss: [{ v: 2000, m: 'That is 200 · 10. Do the power: 2<sup>5</sup> = 32.' }, { v: 3200, m: 'That is after 4 hours. Use t = 5.' }, { v: Math.pow(400, 5), m: 'Do the power first: 2<sup>5</sup> = 32. Then times 200.' }], hint: 'Put t = 5 into 200(2)<sup>t</sup>. 2<sup>5</sup> = 2·2·2·2·2.' });
-  V.dg2 = function (d) { var s = dState(d, 'd3', 'd4'), it = [{ t: 'fn', f: V0, c: C.red, label: s.eq ? 'V(t) = 20000(0.85)^t' : 'V(t) = ?  (−15% each year)', at: 0.3 }, { t: 'pt', x: 0, y: 20000, c: C.navy, label: '(0, 20,000)' }];
+  V.dg2 = function (d) { var s = dState(d, 'd3', 'd4'), it = [{ t: 'fn', f: V0, c: C.red }, { t: 'txt', x: 2.6, y: 5600, s: s.eq ? 'V(t) = 20000(0.85)^t' : 'V(t) = ?  (−15% each year)', c: C.red }, { t: 'pt', x: 0, y: 20000, c: C.navy, label: '(0, 20,000)' }];
     it.push(s.pt ? { t: 'pt', x: 4, y: V0(4), c: C.green, label: '(4, ≈' + M1.commas(Math.round(V0(4))) + ')' } : { t: 'pt', x: 4, y: V0(4), c: C.gold, label: '(4, ?)', pill: true });
     return P({ x: [0, 5], y: [0, 22000], ys: 2000, yl: 4000, tick: function (v) { return M1.commas(v); }, xtitle: 'Time (years)', ytitle: 'Value ($)', xname: '', yname: '', label: 'car value decay', items: it }); };
   R('d3', { kind: 'expr', vars: ['t'], ans: '20000*0.85^t', viz: 'dg2', eg: '20000(0.85)^t', ok: 'b = 1 − 0.15 = 0.85: V(t) = 20000(0.85)<sup>t</sup>.',
@@ -1146,9 +1167,9 @@ var M1 = (function () {
     why: { 1: 'Step 1 is right: it starts at $1,200.', 3: 'Step 3 copies b from step 2. The mistake is in step 2.', 4: 'Step 4 uses the wrong model from steps 2–3. Look earlier.' } });
   /* ---- Part E ---- */
   var ea = 3, eb = 6 / 3;
-  function eG(d, extra) { return P({ x: [-3, 3], y: [0, 26], ys: 2, yl: 4, label: 'y = a · b^x', items: [{ t: 'fn', f: function (x) { return ea * Math.pow(eb, x); }, c: C.navy, label: 'y = a · b^x', at: 0.82 },
+  function eG(d, extra) { return P({ x: [-3, 3], y: [0, 26], ys: 2, yl: 4, label: 'y = a · b^x', items: [{ t: 'fn', f: function (x) { return ea * Math.pow(eb, x); }, c: C.navy }, { t: 'txt', x: 1.1, y: 22, s: 'y = a · b^x', c: C.navy },
     { t: 'pt', x: 0, y: 3, c: C.navy, label: '(0, 3)' }, { t: 'pt', x: 1, y: 6, c: C.navy, label: '(1, 6)' }].concat(extra || []) }); }
-  V.e1 = function (d) { return eG(d, d ? [{ t: 'pt', x: 2, y: 12, c: C.green, label: '(2, 12) ×2 again' }] : []); };
+  V.e1 = function (d) { return eG(d, d ? [{ t: 'pt', x: 2, y: 12, c: C.green, label: '(2, 12)' }, { t: 'txt', x: -1.55, y: 18, s: '×2 again: 6 → 12', c: C.green }] : []); };
   R('e1', { kind: 'num', ans: eb, viz: 'e1', ok: 'From x = 0 to x = 1, y goes from 3 to 6. 6 ÷ 3 = 2, so b = 2.', miss: [{ v: 3, m: '3 is a, the y-intercept. b is what you multiply by: 6 ÷ 3.' }, { v: 0.5, m: 'Divide the later value by the earlier one: 6 ÷ 3.' }, { v: 6, m: '6 is a y-value. b = 6 ÷ 3.' }], hint: 'b is the ratio: y at x = 1 divided by y at x = 0.' });
   V.e2 = function (d) { return eG(d, d ? [{ t: 'seg', x1: -3, y1: 0.15, x2: 3, y2: 0.15, c: C.green, w: 2.6, dash: true }, { t: 'txt', x: -1.6, y: 2.2, s: 'y = 0', c: C.green }] : [{ t: 'seg', x1: -1.2, y1: 6, x2: -2.8, y2: 6, c: C.gold, w: 2, arrow: true }, { t: 'txt', x: -1.9, y: 8.2, s: 'far left: y → ?', c: C.goldTx }]); };
   R('e2', { kind: 'mc', ans: 'y0', viz: 'e2', ok: 'Far to the left the curve gets closer and closer to the x-axis, y = 0, but never touches it.',

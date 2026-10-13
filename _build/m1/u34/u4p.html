@@ -269,11 +269,11 @@
   function F(x) { return 3 * x + 1; } function G(x) { return Math.pow(2, x); }
   function cItems(extra) { return [{ t: 'line', m: 3, b: 1, label: 'f(x) = 3x + 1', at: 0.25 }, { t: 'fn', f: G, c: C.purple, label: 'g(x) = 2^x', at: 0.82 }].concat(extra || []); }
   V.cg = function () { return P({ x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'f and g', items: cItems() }); };
-  function atX(X, d) { var fx = F(X), gx = G(X);
-    return P({ x: [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'compare at x = ' + X, items: cItems([{ t: 'seg', x1: X, y1: 0, x2: X, y2: 40, c: C.gold, dash: true, w: 1.6 },
-      d ? { t: 'pt', x: X, y: fx, c: C.navy, label: 'f(' + X + ') = ' + f(fx) } : { t: 'pt', x: X, y: fx, c: C.gold, label: 'f(' + X + ') = ?', pill: true },
+  function atX(X, d, xr, fAt) { var fx = F(X), gx = G(X), fl = 'f(' + X + ') = ' + (d ? f(fx) : '?'); /* fAt: a fixed spot for the f label (right of the guide line, under f) */
+    return P({ x: xr || [0, 6], y: [0, 40], ys: 5, yl: 10, label: 'compare at x = ' + X, items: cItems([{ t: 'seg', x1: X, y1: 0, x2: X, y2: 40, c: C.gold, dash: true, w: 1.6 },
+      { t: 'pt', x: X, y: fx, c: d ? C.navy : C.gold, label: fAt ? null : fl, pill: !d }, fAt ? { t: 'txt', x: fAt[0], y: fAt[1], s: fl, pill: !d, c: C.navy } : { t: 'none' },
       d ? { t: 'pt', x: X, y: gx, c: C.purple, label: 'g(' + X + ') = ' + f(gx) } : { t: 'pt', x: X, y: gx, c: C.gold, label: 'g(' + X + ') = ?', pill: true }]) }); }
-  V.c1 = function (d) { return atX(3, d); }; V.c2 = function (d) { return atX(5, d); };
+  V.c1 = function (d) { return atX(3, d); }; V.c2 = function (d) { return atX(5, d, [0, 7.5], [6.35, 13.2]); };
   function bigger(X) { return F(X) > G(X) ? 'a' : G(X) > F(X) ? 'b' : 'c'; }
   R('c1', { kind: 'mc', ans: bigger(3), viz: 'c1', ok: 'f(3) = 3(3) + 1 = 10 and g(3) = 2<sup>3</sup> = 8, so f(x) is greater at x = 3.', why: { b: 'Work them out: g(3) = 2 · 2 · 2 = 8 and f(3) = 3(3) + 1 = 10.', c: '10 and 8 are not equal. Find both values.', d: 'We can find both values exactly. Put x = 3 into each.' } });
   R('c2', { kind: 'mc', ans: bigger(5), viz: 'c2', ok: 'f(5) = 3(5) + 1 = 16 and g(5) = 2<sup>5</sup> = 32, so g(x) has overtaken f(x).', why: { a: 'Work them out: f(5) = 16, but g(5) = 2<sup>5</sup> = 32.', c: '16 and 32 are not equal.', d: 'We can find both values exactly. Put x = 5 into each.' } });
@@ -298,7 +298,7 @@
   R('d1', { kind: 'expr', vars: ['t'], ans: '200*2^t', viz: 'dg1', eg: '200(2)^t', ok: 'a = 200 and it doubles, so b = 2: P(t) = 200(2)<sup>t</sup>.',
     miss: [{ v: '2*200^t', m: 'You switched a and b. The start amount 200 goes in front.' }, { v: '200*2t', m: 'Doubling is a power: 2<sup>t</sup>, not 2t. Type 200(2)^t.' }, { v: '200+2t', m: 'Doubling means multiply by 2 each hour, not add 2.' }, { v: '200*1.02^t', m: 'Doubles means +100%, so b = 1 + 1 = 2.' }], hint: 'Start amount a = 200. Doubling means b = 2. Write a(b)^t.' });
   R('d2', { kind: 'num', ans: P0(5), viz: 'dg1', ok: 'P(5) = 200(2)<sup>5</sup> = 200(32) = 6,400 bacteria.', miss: [{ v: 2000, m: 'That is 200 · 10. Do the power: 2<sup>5</sup> = 32.' }, { v: 3200, m: 'That is after 4 hours. Use t = 5.' }, { v: Math.pow(400, 5), m: 'Do the power first: 2<sup>5</sup> = 32. Then times 200.' }], hint: 'Put t = 5 into 200(2)<sup>t</sup>. 2<sup>5</sup> = 2·2·2·2·2.' });
-  V.dg2 = function (d) { var s = dState(d, 'd3', 'd4'), it = [{ t: 'fn', f: V0, c: C.red, label: s.eq ? 'V(t) = 20000(0.85)^t' : 'V(t) = ?  (−15% each year)', at: 0.3 }, { t: 'pt', x: 0, y: 20000, c: C.navy, label: '(0, 20,000)' }];
+  V.dg2 = function (d) { var s = dState(d, 'd3', 'd4'), it = [{ t: 'fn', f: V0, c: C.red }, { t: 'txt', x: 2.6, y: 5600, s: s.eq ? 'V(t) = 20000(0.85)^t' : 'V(t) = ?  (−15% each year)', c: C.red }, { t: 'pt', x: 0, y: 20000, c: C.navy, label: '(0, 20,000)' }];
     it.push(s.pt ? { t: 'pt', x: 4, y: V0(4), c: C.green, label: '(4, ≈' + M1.commas(Math.round(V0(4))) + ')' } : { t: 'pt', x: 4, y: V0(4), c: C.gold, label: '(4, ?)', pill: true });
     return P({ x: [0, 5], y: [0, 22000], ys: 2000, yl: 4000, tick: function (v) { return M1.commas(v); }, xtitle: 'Time (years)', ytitle: 'Value ($)', xname: '', yname: '', label: 'car value decay', items: it }); };
   R('d3', { kind: 'expr', vars: ['t'], ans: '20000*0.85^t', viz: 'dg2', eg: '20000(0.85)^t', ok: 'b = 1 − 0.15 = 0.85: V(t) = 20000(0.85)<sup>t</sup>.',
@@ -315,9 +315,9 @@
     why: { 1: 'Step 1 is right: it starts at $1,200.', 3: 'Step 3 copies b from step 2. The mistake is in step 2.', 4: 'Step 4 uses the wrong model from steps 2–3. Look earlier.' } });
   /* ---- Part E ---- */
   var ea = 3, eb = 6 / 3;
-  function eG(d, extra) { return P({ x: [-3, 3], y: [0, 26], ys: 2, yl: 4, label: 'y = a · b^x', items: [{ t: 'fn', f: function (x) { return ea * Math.pow(eb, x); }, c: C.navy, label: 'y = a · b^x', at: 0.82 },
+  function eG(d, extra) { return P({ x: [-3, 3], y: [0, 26], ys: 2, yl: 4, label: 'y = a · b^x', items: [{ t: 'fn', f: function (x) { return ea * Math.pow(eb, x); }, c: C.navy }, { t: 'txt', x: 1.1, y: 22, s: 'y = a · b^x', c: C.navy },
     { t: 'pt', x: 0, y: 3, c: C.navy, label: '(0, 3)' }, { t: 'pt', x: 1, y: 6, c: C.navy, label: '(1, 6)' }].concat(extra || []) }); }
-  V.e1 = function (d) { return eG(d, d ? [{ t: 'pt', x: 2, y: 12, c: C.green, label: '(2, 12) ×2 again' }] : []); };
+  V.e1 = function (d) { return eG(d, d ? [{ t: 'pt', x: 2, y: 12, c: C.green, label: '(2, 12)' }, { t: 'txt', x: -1.55, y: 18, s: '×2 again: 6 → 12', c: C.green }] : []); };
   R('e1', { kind: 'num', ans: eb, viz: 'e1', ok: 'From x = 0 to x = 1, y goes from 3 to 6. 6 ÷ 3 = 2, so b = 2.', miss: [{ v: 3, m: '3 is a, the y-intercept. b is what you multiply by: 6 ÷ 3.' }, { v: 0.5, m: 'Divide the later value by the earlier one: 6 ÷ 3.' }, { v: 6, m: '6 is a y-value. b = 6 ÷ 3.' }], hint: 'b is the ratio: y at x = 1 divided by y at x = 0.' });
   V.e2 = function (d) { return eG(d, d ? [{ t: 'seg', x1: -3, y1: 0.15, x2: 3, y2: 0.15, c: C.green, w: 2.6, dash: true }, { t: 'txt', x: -1.6, y: 2.2, s: 'y = 0', c: C.green }] : [{ t: 'seg', x1: -1.2, y1: 6, x2: -2.8, y2: 6, c: C.gold, w: 2, arrow: true }, { t: 'txt', x: -1.9, y: 8.2, s: 'far left: y → ?', c: C.goldTx }]); };
   R('e2', { kind: 'mc', ans: 'y0', viz: 'e2', ok: 'Far to the left the curve gets closer and closer to the x-axis, y = 0, but never touches it.',

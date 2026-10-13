@@ -165,12 +165,7 @@ function pairTable(c,b,o){o=o||{};var ps=pairs(c,b),rh=26,y0=30,s='',x0=14,x1=15
     if(hl)s+=tx(x2+8,y+18,'✓',{size:14,bold:true,fill:C.green,anchor:'start'});});
   s+=ln(x1,y0,x1,y0+ps.length*rh,C.grid,1.5);return M.svg(262,y0+ps.length*rh+10,s,'factor pair table');}
 function D(a,b,c){return b*b-4*a*c;}
-function fcard(a,b,c,s){var o='';[['a',a],['b',b],['c',c]].forEach(function(k,i){var x=20+i*82;o+=rc(x,10,70,40,s>=1?C.greenL:C.goldL,s>=1?C.green:C.gold,1.8,6)+tx(x+35,36,k[0]+' = '+(s>=1?f(k[1]):'?'),{size:13,mono:true,bold:true,fill:s>=1?C.green:C.goldD});});
-  var d=D(a,b,c);o+=rc(270,10,80,40,s>=2?C.greenL:C.goldL,s>=2?C.green:C.gold,1.8,6)+tx(310,26,'b² − 4ac',{size:10.5,mono:true,fill:s>=2?C.green:C.goldD})+tx(310,43,s>=2?f(d):'?',{size:13,mono:true,bold:true,fill:s>=2?C.green:C.goldD});
-  var y=88,num=s>=3?'−('+f(b)+') ± √'+f(d):'−b ± √(b² − 4ac)',den=s>=3?'2('+f(a)+')':'2a';
-  o+=tx(70,y+8,'x =',{size:15,mono:true,bold:true})+tx(200,y-4,num,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy})+ln(110,y+4,290,y+4,C.navy,2)+tx(200,y+24,den,{size:14,mono:true,bold:true,fill:s>=3?C.green:C.navy});
-  if(s>=4){var r=Math.sqrt(d);o+=tag(180,y+52,'x = '+f((-b+r)/(2*a))+'  or  x = '+f((-b-r)/(2*a)),{size:13,mono:true,fill:C.green});}
-  return M.svg(360,s>=4?156:124,o,'quadratic formula card');}
+var fcard=M.fcard;
 function roots(a,b,c){var d=D(a,b,c),r=Math.sqrt(d);return [(-b+r)/(2*a),(-b-r)/(2*a)];}
 /* ---------- Part A ---------- */
 SP.a1={type:'poly',ans:P('(x+3)(x+2)'),fb:[['x^2+6','You added only the first and last boxes. Add the two x-boxes too: 3x + 2x.'],['x^2+5x+5','The last box is 3 × 2 = 6.']],viz:mulViz(['x','+3'],['x','+2'],'(x+3)(x+2)')};
@@ -202,21 +197,21 @@ SP.c4={hint:'Add 8 to both sides and divide by 2: x² = 4. Then take ± square r
 /* ---------- Part D ---------- */
 function dg(st,extra){return parab(function(x){return x*x-2*x-3;},extra);}
 SP.d1={type:'mc',ans:'a',ok:'The graph crosses the x-axis at x = −1 and x = 3.',fb:{b:'Those have the wrong signs. Read where the curve crosses the x-axis.',c:'x = 3 is right. Look at the left crossing: it is to the LEFT of 0, at −1. (x = 1 is the middle of the parabola, under the vertex.)',d:'The curve crosses the y-axis at −3. Zeros are where it crosses the x-axis.'},
-  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'3',dx:7,dy:-9}]:[]});}};
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-12,dy:-9},{x:3,y:0,color:C.green,label:'3',dx:12,dy:-9}]:[]});}};
 SP.d2={type:'factor',ans:P('x^2-2x-3'),fb:[['(x-1)(x+3)','A zero at x = −1 gives the factor (x + 1). A zero at 3 gives (x − 3).']],
-  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green,label:'x + 1 = 0',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.green,label:'x − 3 = 0',dx:7,dy:-9}]:[{x:-1,y:0,color:C.gold,hollow:true,label:'(x − ?)',anchor:'end',dx:-7,dy:-9},{x:3,y:0,color:C.gold,hollow:true,label:'(x − ?)',dx:7,dy:-9}]})+(sv(st)?'':'<div class="diagram-cap" style="font-family:var(--font-mono);color:#8A6500">y = (x − ?)(x − ?)</div>');}};
+  viz:function(st){return dg(st,{pts:sv(st)?[{x:-1,y:0,color:C.green},{x:3,y:0,color:C.green}]:[{x:-1,y:0,color:C.gold,hollow:true},{x:3,y:0,color:C.gold,hollow:true}]})+(sv(st)?'<div class="diagram-cap" style="font-family:var(--font-mono);color:#15803D">zeros −1 and 3 → y = (x + 1)(x − 3)</div>':'<div class="diagram-cap" style="font-family:var(--font-mono);color:#8A6500">the gold dots are the zeros → y = (x − ?)(x − ?)</div>');}};
 SP.d3={hint:'The axis is halfway between the zeros −1 and 3. Plug that x into y = x² − 2x − 3.',type:'pt',ans:[1,-4],fb:[[[-4,1],'Write (x, y): x first.'],[[1,4],'The vertex is below the x-axis, so y is negative.'],[[0,-3],'(0, −3) is the y-intercept. The vertex is the lowest point.']],
-  viz:function(st){return dg(st,{vlines:[{x:1,label:sv(st)?'x = 1':'axis x = ?',color:sv(st)?C.green:C.gold,tc:sv(st)?C.green:C.goldD,dx:sv(st)?20:30}],pts:sv(st)?[{x:1,y:-4,color:C.green,label:'(1, −4)',dx:8,dy:16}]:[]});}};
+  viz:function(st){return dg(st,{vlines:[{x:1,label:sv(st)?'x = 1':'x = ?',color:sv(st)?C.green:C.gold,tc:sv(st)?C.green:C.goldD,anchor:'start',dx:6}],pts:sv(st)?[{x:1,y:-4,color:C.green,label:'(1, −4)',dx:8,dy:16}]:[]});}};
 /* ---------- Part E ---------- */
 SP.e1={hint:'Take half of 8. Then square it.',type:'num',ans:Math.pow(8/2,2),fb:[[8,'8 is b. Take half of it, then square it.'],[4,'4 is half of 8. Now square it.'],[64,'Square HALF of 8, not 8 itself.']],viz:function(st){return M.csTiles(8,{corner:sv(st)?{t:'16',k:'ans'}:{t:'c = ?',k:'want'},foot:sv(st)?{t:'x² + 8x + 16 = (x + 4)²',k:'ans'}:null,label:'tiles for x² + 8x'});}};
 SP.e2={hint:'Add 9 to both sides: (x + 3)² = 25. Then take ± square roots.',type:'set',ans:[2,-8],fb:[[[2],'Remember ±: x + 3 = 5 OR x + 3 = −5.'],[[5,-5],'Those are values of x + 3. Subtract 3 from each.'],[[1,-7],'Add 9 to BOTH sides: 16 + 9 = 25.']],
   viz:function(st){return M.csTiles(6,{corner:sv(st)?{t:'9',k:'ans'}:{t:'?',k:'want'},foot:sv(st)?{t:'(x + 3)² = 25 → x = 2 or −8',k:'ans'}:{t:'x² + 6x = 16',k:'g'},label:'tiles for x² + 6x'});}};
 /* ---------- Part F ---------- */
-SP.f1={hint:'b² − 4ac = 3² − 4(1)(−10).',type:'num',ans:D(1,3,-10),fb:[[9-40,'c = −10, so −4(1)(−10) = +40. 9 + 40.'],[-31,'c = −10, so −4ac = +40.'],[9,'You still need to subtract 4ac: 9 − 4(1)(−10).']],viz:function(st){return fcard(1,3,-10,sv(st)?2:0);}};
-SP.f2={hint:'x = (−3 ± √49) ÷ 2. Do the + and the − separately.',type:'set',ans:roots(1,3,-10),fb:[[[-2,5],'−b = −3, so x = (−3 ± 7) ÷ 2. Check your signs.'],[[4,-10],'Divide by 2a = 2.']],viz:function(st){return fcard(1,3,-10,sv(st)?4:0)+(sv(st)?parab(function(x){return x*x+3*x-10;},{xmin:-7,xmax:4,ymin:-13,ymax:5,h:240,ygrid:1,lab:1,ylab:4,pts:[{x:-5,y:0,color:C.green,label:'−5',anchor:'end',dx:-6,dy:-9},{x:2,y:0,color:C.green,label:'2',dx:6,dy:-9}]}):'');}};
+SP.f1={hint:'b² − 4ac = 3² − 4(1)(−10).',type:'num',ans:D(1,3,-10),fb:[[9-40,'c = −10, so −4(1)(−10) = +40. 9 + 40.'],[-31,'c = −10, so −4ac = +40.'],[9,'You still need to subtract 4ac: 9 − 4(1)(−10).']],viz:function(st){return fcard(1,3,-10,sv(st)?2:'given');}};
+SP.f2={hint:'x = (−3 ± √49) ÷ 2. Do the + and the − separately.',type:'set',ans:roots(1,3,-10),fb:[[[-2,5],'−b = −3, so x = (−3 ± 7) ÷ 2. Check your signs.'],[[4,-10],'Divide by 2a = 2.']],viz:function(st){return fcard(1,3,-10,sv(st)?4:'sub')+(sv(st)?parab(function(x){return x*x+3*x-10;},{xmin:-7,xmax:4,ymin:-13,ymax:5,h:240,ygrid:2,lab:1,ylab:4,pts:[{x:-5,y:0,color:C.green,label:'−5',anchor:'end',dx:-12,dy:-9},{x:2,y:0,color:C.green,label:'2',dx:12,dy:-9}]}):'');}};
 var F3=roots(2,-4,-3);
 SP.f3={type:'set',ans:F3,tol:0.01,fb:[[[(-4+Math.sqrt(40))/4,(-4-Math.sqrt(40))/4],'−b = −(−4) = +4. Start the top with +4.'],[[(4+Math.sqrt(40))/2,(4-Math.sqrt(40))/2],'The bottom is 2a = 2(2) = 4.'],[[(4+Math.sqrt(-8+16))/4,(4-Math.sqrt(8))/4],'c = −3, so −4(2)(−3) = +24. The discriminant is 16 + 24 = 40.']],hint:'Discriminant: (−4)² − 4(2)(−3) = 40. Then x = (4 ± √40) ÷ 4. Round to hundredths.',
-  viz:function(st){return fcard(2,-4,-3,sv(st)?4:0)+(sv(st)?parab(function(x){return 2*x*x-4*x-3;},{xmin:-2,xmax:4,ymin:-6,ymax:6,h:240,lab:1,ylab:2,pts:F3.map(function(v){return {x:v,y:0,color:C.green};})}):'');}};
+  viz:function(st){return fcard(2,-4,-3,sv(st)?4:'sub')+(sv(st)?parab(function(x){return 2*x*x-4*x-3;},{xmin:-2,xmax:4,ymin:-6,ymax:6,h:240,lab:1,ylab:2,pts:F3.map(function(v){return {x:v,y:0,color:C.green};})}):'');}};
 /* ---------- Part G ---------- */
 SP.g1={type:'mc',ans:'1',ok:'(x + 4)² = (x + 4)(x + 4). The box has two 4x pieces that were left out.',fb:{'2':'4² = 16 is fine. Look at Line 1.'},viz:function(st){return boxModel(['x','+4'],['x','+4'],{cell:function(i,j){return i!==j?(sv(st)?'a':'w'):'g';},label:'area model of (x + 4)²'});}};
 SP.g1b={type:'poly',ans:P('(x+4)^2'),fb:[['x^2+16','You still left out the middle: 4x + 4x = 8x.'],['x^2+4x+16','There are TWO 4x boxes: 8x.']]};
@@ -224,7 +219,7 @@ SP.g2={type:'mc',ans:'2',ok:'(x − 4) = 0 gives x = +4, and (x + 3) = 0 gives x
   viz:function(st){return M.pointsLine({min:-6,max:6,lab:1,y:62,pts:sv(st)?[{v:-3,t:'x = −3',c:C.green},{v:4,t:'x = 4',c:C.green}]:[{v:-4,t:'−4?',c:C.gold},{v:3,t:'3?',c:C.gold}],label:'checking the solutions'});}};
 SP.g2b={hint:'Set each factor to 0: x − 4 = 0 and x + 3 = 0.',type:'set',ans:[4,-3],fb:[[[-4,3],'Those are the student’s answers. x − 4 = 0 means x = +4.']]};
 SP.g3={type:'mc',ans:'2',ok:'c = −5, so −4ac = −4(1)(−5) = +20. b² − 4ac = 16 + 20 = 36. That is positive: two solutions.',fb:{'1':'a = 1, b = −4, c = −5 is right.','3':'Line 3 is wrong only because Line 2 was wrong.'},
-  viz:function(st){return parab(function(x){return x*x-4*x-5;},{xmin:-3,xmax:7,ymin:-10,ymax:6,h:250,ygrid:1,ylab:2,lab:1,pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-6,dy:-9},{x:5,y:0,color:C.green,label:'5',dx:6,dy:-9}]:[]})+'<div class="diagram-cap">'+(sv(st)?'Two x-intercepts → two real solutions.':'The student says “no real solutions.” Does the graph agree?')+'</div>';}};
+  viz:function(st){return parab(function(x){return x*x-4*x-5;},{xmin:-3,xmax:7,ymin:-10,ymax:6,h:250,ygrid:1,ylab:2,lab:1,pts:sv(st)?[{x:-1,y:0,color:C.green,label:'−1',anchor:'end',dx:-12,dy:-9},{x:5,y:0,color:C.green,label:'5',dx:12,dy:-9}]:[]})+'<div class="diagram-cap">'+(sv(st)?'Two x-intercepts → two real solutions.':'The student says “no real solutions.” Does the graph agree?')+'</div>';}};
 SP.g3b={hint:'Discriminant = 36. Then x = (4 ± 6) ÷ 2.',type:'set',ans:roots(1,-4,-5),fb:[[[-5,1],'−b = −(−4) = +4. So x = (4 ± 6) ÷ 2.']]};
 })();
 </script>
