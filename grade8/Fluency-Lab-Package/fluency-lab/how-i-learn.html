@@ -23,11 +23,12 @@
   h2{font-size:18px;margin-bottom:4px}
   h2 .n{color:var(--amber);margin-right:6px}
   .sub{color:var(--muted);font-size:14px;margin-bottom:14px}
-  label.f{display:block;font-weight:650;font-size:14px;margin-bottom:5px}
+  label.f,span.f{display:block;font-weight:650;font-size:14px;margin-bottom:5px}
   input[type=text],textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#181b35;border:1.5px solid var(--edge);border-radius:10px;padding:10px 12px}
   input[type=text]:focus,textarea:focus{outline:none;border-color:var(--sky)}
   textarea{min-height:84px;resize:vertical}
-  .row2{display:grid;grid-template-columns:1fr 140px;gap:12px}
+  .row2{display:grid;grid-template-columns:1fr 170px;gap:12px}
+  .pills.pd{flex-wrap:nowrap}.pills.pd label{flex:1}.pills.pd span{min-width:0;display:block;padding:10px 0;font-size:16px}
   .q{padding:12px 0;border-top:1px solid #2c315c}
   .q:first-of-type{border-top:0}
   .q p{font-size:15.5px;margin-bottom:8px}
@@ -72,7 +73,7 @@
     <div class="card" id="c-me">
       <div class="row2">
         <div><label class="f" for="nm">First and last name</label><input type="text" id="nm" autocomplete="name" maxlength="60"></div>
-        <div><label class="f" for="pd">Period</label><input type="text" id="pd" maxlength="12" inputmode="text"></div>
+        <div><span class="f" id="pdl">Period</span><div class="pills pd" role="radiogroup" aria-labelledby="pdl"><label><input type="radio" name="pd" value="8A"><span>8A</span></label><label><input type="radio" name="pd" value="8B"><span>8B</span></label></div></div>
       </div>
     </div>
 
@@ -165,7 +166,7 @@
   // keep a draft in this browser so a refresh does not lose answers
   function save() {
     try {
-      var d = { nm: $('nm').value, pd: $('pd').value, o3: $('o3').value, o4: $('o4').value, t1: $('t1').value, t2: $('t2').value, t3: $('t3').value, r: {}, p3: picks('p3'), p4: picks('p4') };
+      var d = { nm: $('nm').value, o3: $('o3').value, o4: $('o4').value, t1: $('t1').value, t2: $('t2').value, t3: $('t3').value, r: {}, p3: picks('p3'), p4: picks('p4') };
       document.querySelectorAll('input[type=radio]:checked').forEach(function (i) { d.r[i.name] = i.value; });
       localStorage.setItem(KEY, JSON.stringify(d));
     } catch (e) {}
@@ -173,7 +174,7 @@
   function load() {
     var d; try { d = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { d = null; }
     if (!d) { try { var n = localStorage.getItem('fluencyName'); if (n) $('nm').value = n; } catch (e) {} return; }
-    ['nm', 'pd', 'o3', 'o4', 't1', 't2', 't3'].forEach(function (k) { if (d[k]) $(k).value = d[k]; });
+    ['nm', 'o3', 'o4', 't1', 't2', 't3'].forEach(function (k) { if (d[k]) $(k).value = d[k]; });
     Object.keys(d.r || {}).forEach(function (n) { var i = document.querySelector('input[name="' + n + '"][value="' + d.r[n] + '"]'); if (i) i.checked = true; });
     (d.p3 || []).forEach(function (v) { var i = document.querySelector('input[name=p3][value="' + v + '"]'); if (i) i.checked = true; });
     (d.p4 || []).forEach(function (v) { var i = document.querySelector('input[name=p4][value="' + v + '"]'); if (i) i.checked = true; });
@@ -190,7 +191,7 @@
     document.querySelectorAll('.miss').forEach(function (e) { e.classList.remove('miss'); });
     var miss = [], first = null;
     function flag(el, what) { el.classList.add('miss'); miss.push(what); if (!first) first = el; }
-    var name = $('nm').value.replace(/\s+/g, ' ').trim(), period = $('pd').value.trim();
+    var name = $('nm').value.replace(/\s+/g, ' ').trim(), pdEl = document.querySelector('input[name=pd]:checked'), period = pdEl ? pdEl.value : '';
     if (name.length < 3 || name.indexOf(' ') < 0 || !period) flag($('c-me'), 'your first and last name and period');
     var likert = {}, missP = { p1: 0, p2: 0 };
     P1.concat(P2).forEach(function (q, i) {

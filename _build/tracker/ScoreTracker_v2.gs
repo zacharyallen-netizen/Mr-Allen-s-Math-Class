@@ -715,10 +715,16 @@ function SURVEY_HEAD_() {
                    'Clicked when…', 'When stuck I…', 'Best way to help me…', 'Best way to ask for help']);
 }
 function label_(list, id) { for (var i = 0; i < list.length; i++) if (list[i][0] === id) return list[i][1]; return null; }
+/** Tidy a period: "8a", "8th A", "A", "8AY" → "8A". Anything else is kept as typed. */
+function period_(s) {
+  var t = clip_(s, 12).toUpperCase().replace(/\s+|TH|-/g, '');
+  var m = /^8?([AB])/.exec(t);
+  return m ? '8' + m[1] : clip_(s, 12);
+}
 function clip_(s, n) { return String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n); }
 
 function handleSurvey_(d) {
-  var name = tidyName_(d.name), period = clip_(d.period, 12);
+  var name = tidyName_(d.name), period = period_(d.period);
   if (!name || name.indexOf(' ') < 0) return json_({ ok: false, error: 'first and last name' });
   if (!period) return json_({ ok: false, error: 'no period' });
   var L = d.likert || {}, row = [new Date(), name, period];
@@ -761,7 +767,7 @@ function rebuildSurvey_(ss) {
   var data = src && src.getLastRow() > 1 ? src.getRange(2, 1, src.getLastRow() - 1, W).getValues() : [];
   var newest = {};
   data.forEach(function (r) { var k = String(r[1]).toLowerCase(); if (!newest[k] || new Date(r[0]) >= new Date(newest[k][0])) newest[k] = r; });
-  var rows = Object.keys(newest).map(function (k) { return newest[k]; })
+  var rows = Object.keys(newest).map(function (k) { var r = newest[k].slice(); r[2] = period_(r[2]); return r; })
     .sort(function (a, b) { return String(a[2]).localeCompare(String(b[2])) || String(a[1]).localeCompare(String(b[1])); });
   var n = rows.length, r0 = 1;
   function put(vals, bold, bg, color) {
