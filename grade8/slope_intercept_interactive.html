@@ -114,7 +114,7 @@
   .revealed-val { font-weight: 600; color: #2e4a7a; }
 
   /* Grid area */
-  .grid-wrap { flex: 1; min-width: 220; max-width: 320; }
+  .grid-wrap { flex: 1; min-width: 220px; max-width: 320px; }
   .grid-wrap svg { width: 100%; cursor: crosshair; border-radius: 4px; }
   .grid-help { font-size: 10px; color: #8a8578; text-align: center; margin-top: 3px; }
   .point-feedback {
@@ -163,6 +163,35 @@
     .grid-wrap { max-width: 100%; }
     .header h1 { font-size: 20px; }
   }
+
+  /* Practice figures (graph / table inside a practice question) */
+  .si-fig { margin: 8px 0 2px; }
+  .si-graph svg { display: block; width: 100%; max-width: 230px; }
+  .si-table { margin: 0; }
+  .np { margin-top: 0; margin-bottom: 22px; }
+
+  /* ---------- Paper (PDF) version: ?paper=1 ---------- */
+  body.paper { padding: 0 !important; }
+  body.paper .progress-bar-wrap, body.paper .celebration, body.paper .btn-group, body.paper .feedback-area,
+  body.paper .step-area, body.paper .attempts, body.paper .grid-help, body.paper .point-feedback,
+  body.paper .how-to, body.paper .sb-local { display: none !important; }
+  body.paper .card { border-color: #B8C0CF; break-inside: avoid; }
+  body.paper .card-content { flex-wrap: nowrap; align-items: center; gap: 28px; }
+  body.paper .grid-wrap { flex: 0 0 3.1in; max-width: 3.1in; }
+  body.paper .grid-svg svg { background: #fff !important; cursor: default; }
+  body.paper .eq-table td { height: 27px; }
+  body.paper .eq-table td.y-cell { width: 70px; }
+  .pp-y { color: #15803D; font-weight: 700; }
+  body.paper-key .grid-svg polyline { stroke: #15803D !important; opacity: 1 !important; stroke-dasharray: none !important; stroke-width: 1.8 !important; }
+  body.paper-key .grid-svg circle { fill: #15803D !important; }
+  body.paper .reflection { break-inside: avoid; }
+  body.paper .reflection-q label { font-size: 14px; }
+  .pp-refl { margin: 4px 0 10px; }
+  .pp-refl div { height: .34in; border-bottom: 1.2px solid #AEB6C6; }
+  .pp-refl-key { color: #15803D; font-weight: 600; font-size: 14px; padding: 4px 0 8px; border-bottom: 1.2px solid #AEB6C6; margin-bottom: 8px; }
+  body.paper .si-graph svg { max-width: 2.4in; }
+  body.paper .grid-svg svg { overflow: visible; }
+  body.paper .grid-svg text { font-size: 9px; fill: #3a3631; }
 </style>
 <style id="u6-consistency">
 /* Unit 6 typography unified to the guided-notes look (Units 4 & 5) */
@@ -183,9 +212,9 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="container">
   <div class="header">
     <h1>Introduction to Slope-Intercept Form</h1>
-<div style="max-width:640px;margin:14px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:14px 18px;font-family:'Inter',system-ui,sans-serif">
+<div class="how-to" style="max-width:640px;margin:14px auto;background:#fff8e1;border:2px solid #FFC107;border-radius:10px;padding:14px 18px;font-family:'Inter',system-ui,sans-serif">
 <div style="font-weight:800;color:#1E2D4F;font-size:1rem;margin-bottom:6px">📋 How to Play</div>
-<div style="color:#333;font-size:.92rem;line-height:1.5">Work through this interactive lesson at your own pace. Read each section, try the practice questions, and use <b>💡 Hint</b> if you need a nudge or <b>Show Answer</b> to check your thinking. Answer the <b>Reflection Questions</b> at the end to lock in what you learned.</div>
+<div style="color:#333;font-size:.92rem;line-height:1.5">Work through this interactive lesson at your own pace. Read each section, try the ✏ Practice questions after each equation (★ Try it, ★★ On level, ★★★ Challenge), and use <b>💡 Hint</b> if you need a nudge or <b>Show Answer</b> to check your thinking. Answer the <b>Reflection Questions</b> at the end to lock in what you learned.</div>
 </div>
     <p>Complete each table, plot points on the graph, then check your work!</p>
   </div>
@@ -197,21 +226,168 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 
   <div class="celebration" id="celebration">🎉 Outstanding Work! All 6 equations complete! 🎉</div>
 
-  <div id="cards"></div>
+  <div id="cards">
+
+  <!-- 1. y = x -->
+  <div class="card-slot" data-idx="0"></div>
+  <div class="np" data-title="y = x" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="7" data-hint="On y = x, y is the same number as x.">
+      <div class="np-prompt">For y = x, what is y when x = 7?</div>
+      <div class="np-sol">y = x, so y = 7.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="−5" data-hint="y matches x exactly, even when x is negative.">
+      <div class="np-prompt">For y = x, what is y when x = −5?</div>
+      <div class="np-sol">y = x, so y = −5. The negative sign stays.</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="(4, −4)|(6, 6)|(0, 2)|(3, 1)" data-ans="(6, 6)" data-hint="A point (x, y) is on y = x when both numbers are the same.">
+      <div class="np-prompt">Which point is on the line y = x?</div>
+      <div class="np-sol">On y = x, the x-value and y-value match. Only (6, 6) has matching numbers.</div>
+    </div>
+  </div>
+
+  <!-- 2. y = −x -->
+  <div class="card-slot" data-idx="1"></div>
+  <div class="np" data-title="y = −x" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="−4" data-hint="y = −x means y is the opposite of x.">
+      <div class="np-prompt">For y = −x, what is y when x = 4?</div>
+      <div class="np-sol">y = −(4) = −4.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="6" data-hint="The opposite of a negative number is positive.">
+      <div class="np-prompt">For y = −x, what is y when x = −6?</div>
+      <div class="np-sol">y = −(−6) = 6. The opposite of −6 is 6.</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="Yes, she is right|No. When x = −2, y = 2|No. When x = −2, y = 0" data-ans="No. When x = −2, y = 2" data-hint="Put −2 in for x in y = −x. What is the opposite of −2?">
+      <div class="np-prompt">Maya says the point (−2, −2) is on the line y = −x. Is she right?</div>
+      <div class="np-sol">y = −(−2) = 2. So the point on the line is (−2, 2), not (−2, −2). Maya forgot to take the opposite.</div>
+    </div>
+  </div>
+
+  <!-- 3. y = x + 3 -->
+  <div class="card-slot" data-idx="2"></div>
+  <div class="np" data-title="y = x + 3" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="5" data-hint="Put 2 in for x, then add 3.">
+      <div class="np-prompt">For y = x + 3, what is y when x = 2?</div>
+      <div class="np-sol">y = 2 + 3 = 5.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="−2" data-hint="Start at −5 on a number line and move 3 to the right.">
+      <div class="np-prompt">For y = x + 3, what is y when x = −5?</div>
+      <div class="np-sol">y = −5 + 3 = −2.</div>
+    </div>
+    <div class="np-q" data-level="3" data-ans="7" data-hint="Think: what number plus 3 makes 10?">
+      <div class="np-prompt">On the line y = x + 3, what x-value gives y = 10?</div>
+      <div class="np-sol">10 = x + 3. Subtract 3 from both sides: x = 7. Check: 7 + 3 = 10 ✓</div>
+    </div>
+  </div>
+
+  <!-- 4. y = x − 3 -->
+  <div class="card-slot" data-idx="3"></div>
+  <div class="np" data-title="y = x − 3" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="2" data-hint="Put 5 in for x, then subtract 3.">
+      <div class="np-prompt">For y = x − 3, what is y when x = 5?</div>
+      <div class="np-sol">y = 5 − 3 = 2.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="−5" data-hint="Start at −2 on a number line and move 3 more to the left.">
+      <div class="np-prompt">For y = x − 3, what is y when x = −2?</div>
+      <div class="np-sol">y = −2 − 3 = −5.</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="It is moved up 3|It is moved down 3|It is steeper|It goes down instead of up" data-ans="It is moved down 3" data-hint="Look at your graphs for #1 and #4. Is each y-value bigger or smaller on y = x − 3?">
+      <div class="np-prompt">Compare the graphs of y = x and y = x − 3. How is y = x − 3 different?</div>
+      <div class="np-sol">Every y-value is 3 less than on y = x, so the whole line moves down 3. It crosses the y-axis at −3 instead of 0.</div>
+    </div>
+  </div>
+
+  <!-- 5. y = ½x -->
+  <div class="card-slot" data-idx="4"></div>
+  <div class="np" data-title="y = ½x" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="5" data-hint="½x means half of x.">
+      <div class="np-prompt">For y = ½x, what is y when x = 10?</div>
+      <div class="np-sol">y = ½ · 10 = 5.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="−4" data-hint="Take half of −8. Half of a negative number is still negative.">
+      <div class="np-prompt">For y = ½x, what is y when x = −8?</div>
+      <div class="np-sol">y = ½ · (−8) = −4.</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="y = x|y = ½x|They are equally steep" data-ans="y = x" data-hint="When x goes up 1, how much does y go up on each line?">
+      <div class="np-prompt">Which line is steeper: y = x or y = ½x?</div>
+      <div class="np-sol">On y = x, y goes up 1 each time x goes up 1. On y = ½x, y only goes up ½. So y = x is steeper.</div>
+    </div>
+  </div>
+
+  <!-- 6. y = ½x + 4 -->
+  <div class="card-slot" data-idx="5"></div>
+  <div class="np" data-title="y = ½x + 4" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-ans="5" data-hint="Take half of 2 first. Then add 4.">
+      <div class="np-prompt">For y = ½x + 4, what is y when x = 2?</div>
+      <div class="np-sol">y = ½ · 2 + 4 = 1 + 4 = 5.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="1" data-hint="Half of −6 is −3. Then add 4.">
+      <div class="np-prompt">For y = ½x + 4, what is y when x = −6?</div>
+      <div class="np-sol">y = ½ · (−6) + 4 = −3 + 4 = 1.</div>
+    </div>
+    <div class="np-q" data-level="3" data-ans="9" data-ph="cm" data-hint="Put 10 in for x. Half of 10 is 5. Then add 4.">
+      <div class="np-prompt">A plant’s height after x weeks is y = ½x + 4 (in cm). How tall is it after 10 weeks? Type just the number.</div>
+      <div class="np-sol">y = ½ · 10 + 4 = 5 + 4 = 9. The plant is 9 cm tall.</div>
+    </div>
+  </div>
+
+  </div>
 
   <div class="card reflection">
     <h3>Reflection Questions</h3>
     <div class="reflection-q">
       <label>A. Compare #1 and #2. What effect does the negative sign have on the graph?</label>
-      <textarea rows="2" placeholder="Type your answer..."></textarea>
+      <textarea rows="2" placeholder="Type your answer..." data-key="The negative sign flips the line. y = x goes up from left to right, but y = −x goes down from left to right."></textarea>
     </div>
     <div class="reflection-q">
       <label>B. Compare #1, #3, and #4. What effect does adding or subtracting a number have?</label>
-      <textarea rows="2" placeholder="Type your answer..."></textarea>
+      <textarea rows="2" placeholder="Type your answer..." data-key="Adding 3 moves the line up 3. Subtracting 3 moves it down 3. It changes where the line crosses the y-axis, but not how steep it is."></textarea>
     </div>
     <div class="reflection-q">
       <label>C. Compare #1 and #5. What effect does changing the number in front of x have?</label>
-      <textarea rows="2" placeholder="Type your answer..."></textarea>
+      <textarea rows="2" placeholder="Type your answer..." data-key="It changes how steep the line is. With ½ in front of x, the line is less steep: y goes up 1 for every 2 steps to the right."></textarea>
+    </div>
+  </div>
+
+  <!-- Comprehensive practice: all six equations -->
+  <div class="np final" data-title="All sections" data-std="NC.8.F.3">
+    <div class="np-q" data-level="1" data-choices="equal|opposites|3 apart" data-ans="equal" data-hint="Look back at your table for #1, y = x.">
+      <div class="np-prompt">On the line y = x, the x-value and the y-value are always…</div>
+      <div class="np-sol">y = x means y is the same number as x, so they are always equal. Example: (4, 4).</div>
+    </div>
+    <div class="np-q" data-level="1" data-choices="y = x|y = −x|y = x + 3|y = ½x" data-ans="y = −x" data-hint="Which equation has a negative sign in front of x?">
+      <div class="np-prompt">Which line goes DOWN from left to right?</div>
+      <div class="np-sol">The negative sign in front of x flips the line. So y = −x goes down as you move to the right.</div>
+    </div>
+    <div class="np-q" data-level="3" data-ans="3" data-hint="y = −x means the opposite of x. What is the opposite of −3?">
+      <div class="np-prompt">Jordan says that on y = −x, when x = −3, y = −3. What is the correct y?</div>
+      <div class="np-sol">y = −(−3) = 3. Jordan forgot that the opposite of a negative number is positive.</div>
+    </div>
+    <div class="np-q" data-level="1" data-ans="3" data-hint="The y-axis is where x = 0. Put 0 in for x.">
+      <div class="np-prompt">Where does the line y = x + 3 cross the y-axis? Type the y-value.</div>
+      <div class="np-sol">On the y-axis, x = 0. So y = 0 + 3 = 3. The line crosses at (0, 3).</div>
+    </div>
+    <div class="np-q" data-level="2" data-choices="(1, 4)|(5, 2)|(0, 3)|(2, −5)" data-ans="(5, 2)" data-hint="Put each x-value into x − 3. Does it give the y-value?">
+      <div class="np-prompt">Which point is on the line y = x − 3?</div>
+      <div class="np-sol">5 − 3 = 2 ✓ so (5, 2) works. The others don't: 1 − 3 = −2, 0 − 3 = −3, 2 − 3 = −1.</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="y = x + 3|y = x − 3|y = −x − 3|y = ½x − 3" data-ans="y = x − 3" data-hint="Where does the line cross the y-axis? Does it go up or down? How steep is it?">
+      <div class="np-prompt">Which equation matches this graph?</div>
+      <div class="si-fig si-graph" data-graph="x-3" aria-label="Graph of a line through (0, −3) and (3, 0)"></div>
+      <div class="np-sol">The line crosses the y-axis at −3, so the equation ends in − 3. It goes up 1 for every 1 step right, like y = x. So it is y = x − 3.</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="3.5|7/2" data-hint="Half of 6 is 3, so half of 7 is a little more than 3.">
+      <div class="np-prompt">For y = ½x, what is y when x = 7? Type a decimal or a fraction.</div>
+      <div class="np-sol">y = ½ · 7 = 3.5 (or 7/2).</div>
+    </div>
+    <div class="np-q" data-level="3" data-choices="y = x + 4|y = ½x + 4|y = ½x|y = 2x + 4" data-ans="y = ½x + 4" data-hint="What is y when x = 0? How much does y go up when x goes up 2?">
+      <div class="np-prompt">Which equation matches this table?</div>
+      <div class="si-fig"><table class="eq-table si-table"><thead><tr><th>x</th><th>y</th></tr></thead>
+        <tbody><tr><td>0</td><td>4</td></tr><tr><td>2</td><td>5</td></tr><tr><td>4</td><td>6</td></tr><tr><td>6</td><td>7</td></tr></tbody></table></div>
+      <div class="np-sol">When x = 0, y = 4, so the equation ends in + 4. When x goes up 2, y goes up 1. That is ½x. Check x = 6: ½ · 6 + 4 = 7 ✓</div>
+    </div>
+    <div class="np-q" data-level="2" data-ans="−3" data-hint="First take the opposite of 5. Then add 2.">
+      <div class="np-prompt">For y = −x + 2, what is y when x = 5?</div>
+      <div class="np-sol">y = −(5) + 2 = −5 + 2 = −3.</div>
     </div>
   </div>
 </div>
@@ -275,8 +451,8 @@ function buildSVG(idx) {
   // Labels every 5
   for (let i = -RANGE; i <= RANGE; i += 5) {
     if (i === 0) continue;
-    svg += `<text x="${toP(i)}" y="${toP(0)+11}" text-anchor="middle" font-size="6" fill="#8a8578">${i}</text>`;
-    svg += `<text x="${toP(0)-4}" y="${toP(-i)+3}" text-anchor="end" font-size="6" fill="#8a8578">${i}</text>`;
+    svg += `<text x="${toP(i)}" y="${toP(0)+11}" text-anchor="middle" font-size="6" fill="#8a8578">${String(i).replace('-', '−')}</text>`;
+    svg += `<text x="${toP(0)-4}" y="${toP(-i)+3}" text-anchor="end" font-size="6" fill="#8a8578">${String(i).replace('-', '−')}</text>`;
   }
   
   // Correct line (dashed)
@@ -514,7 +690,7 @@ function buildCard(idx) {
   let tableRows = '';
   eq.xVals.forEach((xv, i) => {
     tableRows += `<tr>
-      <td class="x-cell">${xv}</td>
+      <td class="x-cell">${String(xv).replace('-', '−')}</td>
       <td class="y-cell y-cell-${i}">
         <input type="text" class="y-input" data-idx="${idx}" data-i="${i}" value="" inputmode="text">
       </td>
@@ -554,10 +730,71 @@ function buildCard(idx) {
   </div>`;
 }
 
-// Initialize
+// Initialize: each card goes in its slot, so its practice block sits right after it
 const cardsEl = document.getElementById('cards');
 EQUATIONS.forEach((eq, idx) => {
-  cardsEl.insertAdjacentHTML('beforeend', buildCard(idx));
+  const slot = cardsEl.querySelector(`.card-slot[data-idx="${idx}"]`);
+  if (slot) slot.outerHTML = buildCard(idx);
+  else cardsEl.insertAdjacentHTML('beforeend', buildCard(idx));
+});
+
+// Small graphs inside practice questions
+const PRACTICE_GRAPHS = { 'x-3': x => x - 3 };
+function miniGraph(fn) {
+  const R = 6, C = 18, W = R * 2 * C, P = v => W / 2 + v * C;
+  let s = `<svg viewBox="-8 -8 ${W + 16} ${W + 16}" xmlns="http://www.w3.org/2000/svg" role="img">`;
+  for (let i = -R; i <= R; i++) {
+    s += `<line x1="${P(i)}" y1="0" x2="${P(i)}" y2="${W}" stroke="#d9d5cb" stroke-width="0.8"/>`;
+    s += `<line x1="0" y1="${P(i)}" x2="${W}" y2="${P(i)}" stroke="#d9d5cb" stroke-width="0.8"/>`;
+  }
+  s += `<line x1="0" y1="${P(0)}" x2="${W}" y2="${P(0)}" stroke="#3a3631" stroke-width="1.5"/>`;
+  s += `<line x1="${P(0)}" y1="0" x2="${P(0)}" y2="${W}" stroke="#3a3631" stroke-width="1.5"/>`;
+  for (let i = -R + 1; i < R; i++) {
+    if (i === 0 || i % 2) continue;
+    const t = String(i).replace('-', '−');
+    s += `<text x="${P(i)}" y="${P(0) + 13}" text-anchor="middle" font-size="10" fill="#5a5650">${t}</text>`;
+    s += `<text x="${P(0) - 5}" y="${P(-i) + 4}" text-anchor="end" font-size="10" fill="#5a5650">${t}</text>`;
+  }
+  s += `<text x="${W - 3}" y="${P(0) - 5}" text-anchor="end" font-size="11" font-weight="bold" fill="#3a3631">x</text>`;
+  s += `<text x="${P(0) + 6}" y="10" font-size="11" font-weight="bold" fill="#3a3631">y</text>`;
+  const pts = [];
+  for (let x = -R; x <= R; x += 0.25) { const y = fn(x); if (Math.abs(y) <= R) pts.push(`${P(x)},${P(-y)}`); }
+  s += `<polyline points="${pts.join(' ')}" fill="none" stroke="#1e2d4f" stroke-width="2.5"/>`;
+  for (let x = -R; x <= R; x++) { const y = fn(x); if (Number.isInteger(y) && Math.abs(y) <= R && x % 3 === 0) s += `<circle cx="${P(x)}" cy="${P(-y)}" r="3.5" fill="#1e2d4f"/>`; }
+  return s + '</svg>';
+}
+document.querySelectorAll('.si-graph').forEach(el => {
+  const fn = PRACTICE_GRAPHS[el.dataset.graph];
+  if (fn) el.innerHTML = miniGraph(fn);
+});
+
+// Paper version (?paper=1, &key=1 for the answer key) — see paper.js
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  const fmt = v => String(v).replace('-', '−');
+  const intro = document.querySelector('.header p');
+  if (intro) intro.innerHTML = KEY ? 'Answer key: every table is filled in and every line is drawn in green.'
+    : 'For each equation: fill in the table, plot the points on the graph, and draw the line through them.';
+  EQUATIONS.forEach((eq, idx) => {
+    const card = document.getElementById(`card-${idx}`);
+    if (!card) return;
+    card.className = 'card';
+    card.querySelector('.eq-badge').className = 'eq-badge';
+    eq.xVals.forEach((xv, i) => {
+      const td = card.querySelector(`.y-cell-${i}`);
+      td.className = `y-cell y-cell-${i}`;
+      td.innerHTML = KEY ? `<span class="pp-y">${fmt(eq.fn(xv))}</span>` : '';
+    });
+    const s = state[idx];
+    s.showLine = KEY;
+    s.points = KEY ? eq.xVals.filter(x => Math.abs(eq.fn(x)) <= RANGE).map(x => ({ x, y: eq.fn(x) })) : [];
+    card.querySelector('.grid-svg').innerHTML = buildSVG(idx);
+  });
+  document.querySelectorAll('.reflection textarea').forEach(t => {
+    const d = document.createElement('div');
+    if (KEY) { d.className = 'pp-refl-key'; d.textContent = t.dataset.key || ''; }
+    else { d.className = 'pp-refl'; d.innerHTML = '<div></div><div></div>'; }
+    t.replaceWith(d);
+  });
 });
 
 // Render SVGs and attach input listeners
@@ -585,5 +822,7 @@ document.addEventListener('input', e => {
   }
 });
 </script>
+<script src="../paper.js"></script>
+<script src="../notes-practice.js"></script>
 </body>
 </html>
