@@ -91,21 +91,30 @@
   .mult{font:700 20px var(--mono);font-variant-numeric:tabular-nums;color:var(--ink);background:var(--bg2);
     border:2px solid var(--line);border-radius:10px;min-width:50px;height:42px;padding:0 8px;cursor:pointer;position:relative}
   .mult:hover,.mult:focus{border-color:var(--sky);outline:none}
-  .mult.yes{border-color:var(--mint);color:var(--mint);background:#16342a}
-  .mult.no{border-color:var(--coral);color:var(--muted);text-decoration:line-through;text-decoration-color:var(--coral)}
+  .mrow.live .mult{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d1f}
+  .mrow.live .mult.yes,.mult.yes{border-color:var(--mint);color:var(--mint);background:#16342a}
+  .mrow.live .mult.no,.mult.no{border-color:var(--coral);box-shadow:none;color:var(--muted);text-decoration:line-through;text-decoration-color:var(--coral)}
   .fbars{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center;margin:2px auto 2px;max-width:440px}
   .fbar{display:inline-flex;border:2px solid var(--ink);border-radius:4px;overflow:hidden}
   .fbar i{width:13px;height:20px;border-right:1px solid #454c86;background:transparent}
   .fbar i:last-child{border-right:0}
   .fbar i.on{background:var(--sky)}
-  .fbcap{font-size:13px;color:var(--muted);text-align:center;margin:0 0 4px}
+  .fbcap{font-size:14px;color:var(--muted);text-align:center;margin:0 0 4px}
   @media(max-width:430px){.wl{font-size:25px;gap:4px 6px}.wl.small{font-size:17px}.wl .frac .n,.wl .frac .d{min-height:46px}
     .sc>.n,.sc>.d{min-height:46px;padding-left:5px;padding-right:5px}.sc .ar{font-size:19px}.sc .ar .pbx{width:38px;height:36px;font-size:21px}
     .pbx{width:40px;height:42px;font-size:24px}.pair .sc{font-size:22px}.pair .sc .ar{font-size:16px}.pair .sc>.n,.pair .sc>.d{padding-left:3px;padding-right:3px}.pbx.w2{width:54px}.pbx.w3{width:68px}.wl .frac.expr{font-size:17px}}
 
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
-  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .where{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .pips{display:inline-flex;gap:4px;flex:none}
+  .pips i{width:8px;height:8px;border-radius:50%;background:#3a4078}
+  .pips i.on{background:var(--mint)} .pips i.now{background:var(--amber);box-shadow:0 0 0 3px #ffbb4d33}
+  /* what the LAST move did: small mint line, kept apart from the new instruction */
+  .did{font-size:15px;line-height:1.45;color:var(--mint);font-weight:600;margin:0 0 8px;padding:0 0 8px;border-bottom:1px dashed #33396b;animation:didin .45s ease}
+  .did:empty{display:none}
+  .did b{color:var(--mint)}
+  @keyframes didin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber)}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
@@ -182,6 +191,7 @@
       <div class="work" id="fwork" aria-live="polite"></div>
       <div class="say">
         <div class="where" id="where"></div>
+        <div class="did" id="did"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
         <button class="btn" id="go">Check</button>
@@ -269,13 +279,14 @@ const GEN={1:()=>Math.random()<0.35?genMixed():genSimplify(),2:genEquiv,3:genAdd
 /* ════════ the written work ════════
    S = numbers written so far (by the student or by an animation), keyed by name.
    O = the key of the ONE open box. Fixed numbers carry data-h so a move can light them up. */
-let S={}, O=null, HOT=[], JUST=new Set(), BOXW=2, P=null;
+let S={}, O=null, HOT=[], JUST=new Set(), BOXW=2, P=null, PICK=false;
 const K=k=>({k}), F=(f,h)=>({f,h});
 function V(x){
   if(x==null) return '';
   if(typeof x!=='object') return `<span class="nm">${x}</span>`;
   if('f' in x) return `<span class="nm"${x.h?` data-h="${x.h}"`:''}>${x.f}</span>`;
   const k=x.k;
+  if(O===k && PICK) return `<span class="slot hot" data-k="${k}">?</span>`;
   if(O===k) return `<span class="slot open" data-k="${k}"><input class="pbx w${BOXW}" id="box" inputmode="numeric" autocomplete="off" maxlength="${BOXW}" aria-label="answer box"></span>`;
   if(S[k]!=null) return `<span class="slot v${JUST.has(k)?' pop':''}" data-k="${k}">${S[k]}</span>`;
   return `<span class="slot blank" data-k="${k}"></span>`;
@@ -324,7 +335,7 @@ const DRAW={
     return L; },
   addlike:p=>[WL(`${FR(F(p.a,'a'),F(p.d))}${OPX(p.op)}${FR(F(p.b,'b'),F(p.d))}${EQ}${FR(K('raw'),F(p.d,'dd'))}`)].concat(tailLines(p)),
   addunlike:p=>{ const u=p._u, L=[];
-    if(O==='L') L.push(`<div class="mrow">${u.mults.map(m=>`<button type="button" class="mult" data-m="${m}">${m}</button>`).join('')}</div>`);
+    if(O==='L') L.push(`<div class="mrow live">${u.mults.map(m=>`<button type="button" class="mult" data-m="${m}">${m}</button>`).join('')}</div>`);
     if(opened('L') && !opened('raw')) L.push(WL(`LCD${EQ}${V(K('L'))}`,'small'));
     if(S.L!=null && !opened('Lg','Mw')){
       // a fraction already over the LCD is just shown as it is (no "× 1")
@@ -369,7 +380,8 @@ function tail(p,mv,rN,rD){
   }
   if(d>1 && n>d){ const W=Math.floor(n/d), R=n%d;
     mv.push({key:'Mw',expect:W,where:'Mixed number',hot:['mN','mD'],
-      say:`${IFR(n,d)} is more than 1 whole. How many wholes? <b>${n} ÷ ${d}</b>`,
+      say:`${IFR(n,d)} is more than 1 whole. How many <b>${d}s</b> fit in <b>${n}</b>?`,
+      sub:`Every ${d} pieces make 1 whole.`,hint:`Not quite. Count by ${d}s: ${d}, ${2*d}, ${3*d}, …`,
       wrong:W>1?`${d} × ${W} = ${W*d}. That is as close as you can get to ${n}`:`${d} fits in ${n} only once`});
     mv.push({key:'Mr',expect:R,where:'Mixed number',hot:['mN','Mw'],
       say:`What is left over? <b>${n} − ${W*d}</b>`,sub:W>1?`${d} × ${W} = ${W*d}.`:'',wrong:`${n} − ${W*d} = ${R}`,
@@ -384,7 +396,7 @@ function across(mv,S0,tn,td,tTxt,bTxt,first){
   if(!autoT) mv.push({key:'tn',expect:tn,where:'Multiply across',hot:['en'],say:`Multiply the tops: <b>${tTxt.replace('×',' × ')}</b>`,
     sub:first||'',wrong:`${tTxt.replace('×',' × ')} = ${tn}`});
   if(!autoB) mv.push({key:'td',expect:td,where:'Multiply across',hot:['ed'],say:`Multiply the bottoms: <b>${bTxt.replace('×',' × ')}</b>`,
-    sub:autoT?(first||''):'',wrong:`${bTxt.replace('×',' × ')} = ${td}`});
+    sub:autoT?((first?first+' ':'')+`The top is just <b>${tn}</b>.`):'',wrong:`${bTxt.replace('×',' × ')} = ${td}`});
 }
 function build(p){
   const mv=[], S0={};
@@ -405,13 +417,14 @@ function build(p){
     mv.push({key:'t',expect:p.ansN,where:'Same fraction, new bottom',hot:['n','k2'],say:`Do the same to the top: <b>${p.n} × ${p.k}</b>`,wrong:`${p.n} × ${p.k} = ${p.ansN}`});
   }
   else if(p.type==='m2i'){ const wd=p.W*p.d;
-    mv.push({key:'wd',expect:wd,where:'Mixed → improper',hot:['W','d'],say:`How many pieces are in <b>${p.W}</b> whole${p.W>1?'s':''}? <b>${p.W} × ${p.d}</b>`,
+    if(p.W===1) S0.wd=p.d;            // 1 whole is just d pieces: no "1 × d" step
+    else mv.push({key:'wd',expect:wd,where:'Mixed → improper',hot:['W','d'],say:`How many pieces are in <b>${p.W}</b> whole${p.W>1?'s':''}? <b>${p.W} × ${p.d}</b>`,
       sub:`Each whole is cut into <b>${p.d}</b> pieces.`,wrong:`${p.W} × ${p.d} = ${wd}`});
     mv.push({key:'N',expect:p.N,where:'Mixed → improper',hot:['wd','n2'],say:`Add the <b>${p.n}</b> extra piece${p.n>1?'s':''}: <b>${wd} + ${p.n}</b>`,
-      sub:`The bottom stays <b>${p.d}</b>.`,wrong:`${wd} + ${p.n} = ${p.N}`});
+      sub:(p.W===1?`1 whole is <b>${p.d}</b> pieces. `:'')+`The bottom stays <b>${p.d}</b>.`,wrong:`${wd} + ${p.n} = ${p.N}`});
   }
   else if(p.type==='i2m'){ const wd=p.W*p.d;
-    mv.push({key:'W',expect:p.W,where:'Improper → mixed',hot:['N','d'],say:`How many groups of <b>${p.d}</b> fit in <b>${p.N}</b>?`,
+    mv.push({key:'W',expect:p.W,where:'Improper → mixed',hot:['N','d'],say:`How many <b>${p.d}s</b> fit in <b>${p.N}</b>?`,
       sub:`Think: <b>${p.d} × ?</b> gets close to ${p.N} without going over.`,
       hint:`Not quite. Count by ${p.d}s: ${p.d}, ${2*p.d}, ${3*p.d}, …`,wrong:p.W>1?`${p.d} × ${p.W} = ${wd}. One more group would be too many`:`${p.d} fits in ${p.N} only once`});
     mv.push({key:'r',expect:p.n,where:'Improper → mixed',hot:['N','W'],say:`What is left over? <b>${p.N} − ${wd}</b>`,
@@ -432,12 +445,9 @@ function build(p){
     const set={Lb1:L,Lb2:L}; const same=[];
     if(u.k1===1){ set.t1=p.a1; same.push(IFR(p.a1,p.b1)); }
     if(u.k2===1){ set.t2=p.a2; same.push(IFR(p.a2,p.b2)); }
-    mv.push({key:'L',expect:L,where:'Lowest common denominator',
-      say:`The bottoms are different. Find the <b>lowest common denominator</b>.`,
-      sub:`Count by <b>${big}</b>s. Tap the first number that <b>${small}</b> goes into.`,
-      nudge:v=>{ const n=+v; return (n>L&&n%p.b1===0&&n%p.b2===0)?`${n} works, but there is a smaller one. Look again.`:''; },
-      hint:`Not quite. Tap the numbers to test them.`,
-      wrong:`${small} goes into ${L} (${L} ÷ ${small} = ${L/small})`,
+    mv.push({key:'L',kind:'pick',expect:L,where:'Common bottom (LCD)',
+      say:`The bottoms are different. Count by <b>${big}</b>s. Tap the first number that <b>${small}</b> goes into.`,
+      sub:`That is the lowest common denominator (LCD): the smallest bottom both can share.`,
       fly:[['L','Lb1'],['L','Lb2']],set,
       note:`Both bottoms will be <b>${L}</b>.`+(same.length?` ${same.join(' ')} already ha${same.length>1?'ve':'s'} ${L} on the bottom, so it stays the same.`:'')});
     [[1,p.a1,p.b1,u.k1,u.t1],[2,p.a2,p.b2,u.k2,u.t2]].forEach(([i,a,b,k,t],j)=>{ if(k===1) return;
@@ -509,16 +519,21 @@ function renderProblem(){
 }
 function showMove(note){
   const m=M.mv[M.i]; M.tries=0;
-  O=m.kind==='tap'?null:m.key; HOT=m.hot||[]; BOXW=Math.min(3,Math.max(1,String(m.expect??'').length));
+  PICK=m.kind==='pick'; O=m.kind==='tap'?null:m.key; HOT=m.hot||[]; BOXW=Math.min(3,Math.max(1,String(m.expect??'').length));
   draw(); JUST=new Set();
-  $('where').textContent=`${m.where} · step ${M.i+1} of ${M.mv.length}`;
+  $('where').innerHTML=whereHTML(m.where);
+  $('did').innerHTML=note?'✓ '+note:'';
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=note? note+(m.sub?'<br>'+m.sub:'') : (m.sub||'');
+  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
-  const go=$('go'); go.disabled=false;
-  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
+  const go=$('go'); go.disabled=false; go.classList.toggle('hide',!!PICK);
+  if(PICK){ const t=document.querySelector('#fwork .mult'); if(t) t.focus(); }
+  else if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
   else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus(); }
 }
+// step progress as small dots (a long problem doesn't shout "STEP 1 OF 11")
+function whereHTML(w){ let d=''; for(let i=0;i<M.mv.length;i++) d+=`<i class="${i<M.i?'on':i===M.i?'now':''}"></i>`;
+  return `<span>${w}</span><span class="pips" role="img" aria-label="step ${M.i+1} of ${M.mv.length}">${d}</span>`; }
 const qk=k=>document.querySelector(`#fwork [data-k="${k}"]`);
 // a number floats from one spot in the work to another
 async function fly(from,to,text){
@@ -559,14 +574,18 @@ async function check(){
     else { $('fb').innerHTML=`${m.wrong}. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
     $('fb').className='fb no'; box.select(); return;
   }
-  M.busy=true; S[m.key]=m.expect; O=null; JUST=new Set([m.key]); HOT=[];
-  $('fb').textContent='✓'; $('fb').className='fb yes'; draw();
+  accept(m);
+}
+async function accept(m){
+  M.busy=true; S[m.key]=m.expect; O=null; PICK=false; JUST=new Set([m.key]); HOT=[];
+  if(m.kind!=='pick'){ $('fb').textContent='✓'; $('fb').className='fb yes'; }
+  draw();
   const note=await playAfter(m);
   M.busy=false; M.i++; G.si=M.i;
   if(M.i>=M.mv.length) finish(note); else showMove(note);
 }
 function finish(note){
-  O=null; HOT=[]; draw();
+  O=null; PICK=false; HOT=[]; draw(); $('go').classList.remove('hide'); $('did').innerHTML='';
   const right=!M.err, p=current;
   $('where').textContent='Done';
   $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${exprHTML(p)}</b>`;
@@ -613,20 +632,21 @@ function endSet(){
 // Enter = Check (or Flip / Next)
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
-  e.preventDefault(); if(!$('go').disabled) $('go').click();
+  if(e.target.closest&&e.target.closest('.mult')) return;          // Enter on a count-by number taps it
+  e.preventDefault(); if(!$('go').disabled&&!$('go').classList.contains('hide')) $('go').click();
 });
 // only digits in the box
 document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
   t.value=t.value.replace(/[^0-9]/g,'').slice(0,+t.maxLength||3); t.classList.remove('bad'); $('fb').textContent=''; $('fb').className='fb'; });
-// count-by strip: tap a number to test it; a good one goes into the box
+// count-by strip: tapping a number IS the answer (no box, no Check button)
 document.addEventListener('click',e=>{
-  const t=e.target.closest&&e.target.closest('.mult'); if(!t||!current||O!=='L') return;
-  const u=current._u, m=+t.dataset.m, ok=m%u.small===0;
-  t.classList.remove('yes','no'); t.classList.add(ok?'yes':'no');
-  t.setAttribute('aria-label',`${m}: ${u.small} ${ok?'goes in evenly':'does not go in evenly'}`);
-  $('fb').innerHTML=ok?`<b>${u.small}</b> goes into <b>${m}</b>. ✓`:`${u.small} does not go into ${m}. Keep counting.`;
-  $('fb').className='fb '+(ok?'yes':'no');
-  const b=$('box'); if(b){ if(ok && b.value==='') b.value=String(m); b.classList.remove('bad'); b.focus(); }
+  const t=e.target.closest&&e.target.closest('.mult'); if(!t||!current||!PICK||M.busy) return;
+  const u=current._u, m=+t.dataset.m, ok=m%u.small===0, mv=M.mv[M.i];
+  if(!ok){ t.classList.add('no'); t.setAttribute('aria-label',`${m}: ${u.small} does not go in evenly`);
+    $('fb').innerHTML=`${u.small} does not go into ${m}. Keep counting.`; $('fb').className='fb no'; return; }
+  if(m!==mv.expect){ $('fb').innerHTML=`${u.small} goes into ${m}, but there is a smaller one. Look again.`; $('fb').className='fb nudge'; return; }
+  t.classList.add('yes'); $('fb').innerHTML=`<b>${u.small}</b> goes into <b>${m}</b>. ✓`; $('fb').className='fb yes';
+  accept(mv);
 });
 
 /* ---------- worked example on the start screen: 5/6 − 1/4, finished ---------- */
