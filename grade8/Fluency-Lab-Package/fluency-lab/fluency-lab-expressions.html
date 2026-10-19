@@ -18,87 +18,112 @@
     background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
     color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
     padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
-  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
   .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
   .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
   .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
   .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
-  .flame{font-size:14px;filter:grayscale(.15)}
   .brandmark{margin-left:auto;text-align:right;line-height:1.1}
   .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
   .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
-  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
   .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
   .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
   .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
   .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:20px 18px 20px;
     box-shadow:0 22px 50px -28px #000a;position:relative}
 
-  .exprline{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;
-    font-size:50px;font-weight:700;letter-spacing:1px;margin:10px 0 6px}
-  .exprline .op{color:var(--muted);margin:0 9px}
-  .exprline .lbl{color:var(--muted);font-size:22px;margin-left:16px;font-family:var(--sans);font-weight:600;letter-spacing:0}
-  .exprline sup{font-size:.6em}
-  @media(max-width:430px){.exprline{font-size:38px}.exprline .lbl{display:block;margin:6px 0 0;font-size:18px}}
-  .fwork{font-family:var(--mono);text-align:center;margin:2px 0}
-  .fline{font-size:24px;color:var(--muted);margin:6px 0}
-  .fline:last-child{color:var(--ink)}
-  @media(max-width:430px){.fline{font-size:19px}}
-  .fline.ord{color:var(--ink);display:flex;justify-content:center;gap:10px;margin:8px 0 2px}
-  .fline.ord span{display:inline-flex;flex-direction:column;align-items:center;padding:0 4px 2px}
-  .fline.ord .u1{border-bottom:3px solid var(--amber)} .fline.ord .u2{border-bottom:3px dashed var(--muted)}
-  .fline.ord i{font:700 12px var(--sans);font-style:normal;margin-top:4px}
-  .fline.ord .u1 i{color:var(--amber)} .fline.ord .u2 i{color:var(--muted)}
-  .ordcap{font-size:13px;color:var(--muted);text-align:center;margin-bottom:4px}
+  /* the ONE open box, sitting where the number goes */
+  .ibx{display:inline-block;vertical-align:middle;width:84px;height:52px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .ibx.sm{width:64px;height:44px;font-size:24px}
+  .ibx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .ibx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .hl{color:var(--amber);background:#ffbb4d1f;border-radius:8px}
+  .mint{color:var(--mint)}
 
-  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
-    border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
-    transition:transform .12s,filter .15s;min-width:150px}
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub b{color:var(--amber)}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
-  .btn.sky{background:var(--sky);color:#0a1226}
-  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
-  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .picks{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .picks:empty{display:none}
+  .pick{font-family:var(--sans);font-size:19px;font-weight:800;padding:12px 18px;border-radius:13px;border:2px solid var(--line);
+    background:var(--panel);color:var(--ink);min-width:132px;cursor:pointer;transition:border-color .15s,background .15s}
+  .pick:hover{border-color:var(--sky)}
+  .pick.bad{border-color:var(--coral);animation:shake .35s}
+  .pick.show{border-color:var(--amber);box-shadow:0 0 0 5px #ffbb4d2b}
+  .pick.ok{border-color:var(--mint);background:#16342a;color:var(--mint)}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb b{color:var(--amber)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
 
-  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:8px 0 2px;letter-spacing:.02em}
-  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
-    padding:15px 16px 16px;margin-top:12px;text-align:left}
-  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
-  .stepcard .q{font-family:var(--mono);font-size:18px;font-weight:600;line-height:1.45;margin-bottom:13px}
-  .stepcard .q b{color:var(--amber)} .stepcard .q sup{font-size:.7em}
-  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
-  .bx{display:flex;flex-direction:column;gap:5px}
-  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
-  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:92px;text-align:center;
-    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
-    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
-  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
-  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
-  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
-  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
-  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
-    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
-  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
+  /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
-  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
-  .how{text-align:left;max-width:400px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
   .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
   .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
   .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
   .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
   .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
   .hide{display:none!important}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-  .pop{animation:pop .3s ease}
-  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-
   .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
   .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
   .labnav a:hover{text-decoration:underline}
   .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  /* ── the expression: earlier lines stay above, the live line collapses one part at a time ── */
+  .lines{text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .hist{font-size:22px;color:var(--muted);line-height:1.5;white-space:nowrap}
+  .hist sup{font-size:.6em}
+  .live{font-size:44px;font-weight:700;line-height:1.35;white-space:nowrap;margin:2px 0}
+  .live .op,.hist .op{color:var(--muted);margin:0 2px}
+  .live .eq{color:var(--muted);margin-right:6px}
+  .live sup{font-size:.55em;color:var(--sky)}
+  .live .vr{color:var(--sky)}
+  .live .chunk{display:inline-block;padding:0 6px;border-radius:10px;overflow:hidden;vertical-align:bottom;white-space:nowrap;
+    transition:width .45s ease,opacity .45s ease,padding .45s}
+  .live .chunk.hl sup{color:var(--amber)}
+  .live .chunk.gone{opacity:0;padding:0}
+  .live .new{color:var(--mint);display:inline-block}
+  .live.fin{color:var(--mint)}
+  .given{display:inline-flex;gap:8px;margin:2px 0 4px;font:700 16px var(--sans);color:var(--sky)}
+  .given span{background:#1b2550;border:1px solid #2f4a80;border-radius:999px;padding:3px 12px;font-family:var(--mono)}
+  .given:empty{display:none}
+  .work{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;font-size:30px;font-weight:700;margin:10px 0 2px;white-space:nowrap}
+  .work:empty{display:none}
+  .work .op{color:var(--muted);margin:0 2px}
+  .work .mint{display:inline-block}
+  @media (max-width:430px){.live{font-size:36px}.hist{font-size:19px}.work{font-size:26px}}
 </style>
 </head>
 <body>
@@ -108,10 +133,16 @@
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
     <div class="sub">Expressions &amp; Order of Operations · Module 8</div>
-    <div class="how">
-      First powers. Then the order you do things in &mdash; <b>PEMDAS</b>: Parentheses, Exponents,
-      Multiply and Divide, Add and Subtract. Then expressions with letters in them. Fill in each box
-      in the right order. You are only racing <b>your own best score</b>.
+    <ul class="how">
+      <li>Do things in this order: <b>( )</b> first, then <b>powers</b>, then <b>× ÷</b>, then <b>+ −</b>.</li>
+      <li>The part to do next <b>glows</b>. Only <b>one box</b> opens at a time.</li>
+      <li>Type your answer and press <b>Check</b> (or Enter).</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Here is one worked out: 5 + 3 × 4</div>
+      <div class="lines" id="exLines"></div>
+      <div class="excap">Multiply before you add: <b>3 × 4 = 12</b>.<br>Then add: <b>5 + 12 = 17</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -119,21 +150,23 @@
   <div id="play" class="hide">
     <div class="bar">
       <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
-      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
-      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE · ^</div></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">ORDER OF OPERATIONS</div></div>
     </div>
     <div class="dots" id="dots"></div>
     <section class="stage">
-      <div class="exprline" id="prob"></div>
-      <div class="fwork" id="fwork"></div>
-      <div class="steplead" id="steplead"></div>
-      <div class="stepcard">
-        <div class="lab" id="steplab"></div>
-        <div class="q" id="stepq"></div>
-        <div class="boxrow" id="boxrow"></div>
-        <div class="ginfo" id="ginfo"></div>
-        <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
-        <div class="verdict" id="gverdict"></div>
+      <div id="prob" class="hide"></div>
+      <div class="lines" id="lines" aria-live="polite"></div>
+      <div style="text-align:center"><div class="given" id="given"></div></div>
+      <div class="work" id="work"></div>
+      <div class="say">
+        <div class="where" id="where"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <div class="picks" id="picks"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
+        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -142,7 +175,7 @@
     <h1>Set complete</h1>
     <div class="pb" id="pb">&nbsp;</div>
     <div class="statgrid">
-      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
       <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
       <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
     </div>
@@ -152,167 +185,275 @@
   </section>
 
 <script>
-// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
-function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
-
+/* ════════════════════════════════════════════════════════════════
+   EXPRESSIONS & ORDER OF OPERATIONS — one box at a time
+   The part to do next glows. After you type its value, that part
+   collapses into the number, and the line before it stays above.
+   (#prob is hidden: it only holds the label for the progress tracker.)
+   ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
-let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const $=id=>document.getElementById(id);
-function sp(t){return `<span class="op">${t}</span>`;}
-function pw(b,e){return `${b}<sup>${e}</sup>`;}
-function lbl(t){return `<span class="lbl">${t}</span>`;}
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+const S=n=>(n<0?'−':'')+Math.abs(n);
+const NUM=S;
+const BOX_MODE='text';                         // same keyboard for every box, so it never hints the sign
+const ALLOW_NEG=true;
+const NUDGE='Work out the yellow part again.';
+const ENDNOTES=['Excellent! The right order, every time.','Strong set. A few more first-try answers and you level up.',
+  'Good work. ( ) first, then powers, then × ÷, then + −.','Every problem showed you the order. Go again. It gets easier.'];
 
-// new variant (mixed into level 2): partners go left to right — ÷ before × when ÷ comes first, − before + when − comes first
+/* ---------- problems (same levels as before) ---------- */
+// level 2 also mixes in partners that go left to right: ÷ before × when ÷ comes first, − before + when − comes first
 function genLTR(){
-  if(Math.random()<0.5){ const b=rnd(2,9),k=rnd(2,9),a=b*k,c=rnd(2,6);
-    return {kind:'ltr',a,o1:'÷',b,o2:'×',c,r1:k,ans:k*c,display:`${a}${sp('÷')}${b}${sp('×')}${c}`}; }
-  const a=rnd(10,20),b=rnd(2,9),c=rnd(2,9);
-  return {kind:'ltr',a,o1:'−',b,o2:'+',c,r1:a-b,ans:a-b+c,display:`${a}${sp('−')}${b}${sp('+')}${c}`};
+  if(Math.random()<0.5){ const b=rnd(2,9),k=rnd(2,9),a=b*k,c=rnd(2,6); return {kind:'ltr',a,o1:'÷',b,o2:'×',c,r1:k,ans:k*c}; }
+  const a=rnd(10,20),b=rnd(2,9),c=rnd(2,9); return {kind:'ltr',a,o1:'−',b,o2:'+',c,r1:a-b,ans:a-b+c};
 }
 function gen(L){
   if(L===2 && Math.random()<0.4) return genLTR();
-  if(L===1){const b=rnd(2,9),e=pick([2,2,2,3]); return {kind:'pow',b,e,ans:Math.pow(b,e),display:pw(b,e)};}
-  if(L===2){const a=rnd(2,9),b=rnd(2,9),c=rnd(2,9),o=pick(['+','−']); const ans=o==='+'?a+b*c:a-b*c;
-    return {kind:'md',a,o,b,c,ans,display:`${a}${sp(o)}${b}${sp('×')}${c}`};}
-  if(L===3){const a=rnd(2,9),b=rnd(2,9),c=rnd(2,9),o=pick(['+','−']); const inner=o==='+'?a+b:a-b; const ans=inner*c;
-    return {kind:'paren',a,o,b,c,inner,ans,display:`(${a}${sp(o)}${b})${sp('×')}${c}`};}
-  if(L===4){const a=rnd(2,9),b=rnd(2,6); const ans=a+b*b;
-    return {kind:'powadd',a,b,ans,display:`${a}${sp('+')}${pw(b,2)}`};}
-  if(L===5){const k=rnd(2,6),c=rnd(1,9),x=rnd(2,9); const ans=k*x+c;
-    return {kind:'sub1',k,c,x,ans,display:`${k}x${sp('+')}${c}${lbl('x = '+x)}`};}
-  const ca=rnd(2,6),cb=rnd(2,6),a=rnd(3,9),b=rnd(1,8); const ans=ca*a-cb*b;
-  return {kind:'sub2',ca,cb,a,b,ans,display:`${ca}a${sp('−')}${cb}b${lbl('a = '+a+',  b = '+b)}`};
+  if(L===1){const b=rnd(2,9),e=pick([2,2,2,3]); return {kind:'pow',b,e,ans:Math.pow(b,e)};}
+  if(L===2){const a=rnd(2,9),b=rnd(2,9),c=rnd(2,9),o=pick(['+','−']); return {kind:'md',a,o,b,c,ans:o==='+'?a+b*c:a-b*c};}
+  if(L===3){const a=rnd(2,9),b=rnd(2,9),c=rnd(2,9),o=pick(['+','−']); const inner=o==='+'?a+b:a-b; return {kind:'paren',a,o,b,c,inner,ans:inner*c};}
+  if(L===4){const a=rnd(2,9),b=rnd(2,6); return {kind:'powadd',a,b,ans:a+b*b};}
+  if(L===5){const k=rnd(2,6),c=rnd(1,9),x=rnd(2,9); return {kind:'sub1',k,c,x,ans:k*x+c};}
+  const ca=rnd(2,6),cb=rnd(2,6),a=rnd(3,9),b=rnd(1,8); return {kind:'sub2',ca,cb,a,b,ans:ca*a-cb*b};
 }
-function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=gen(L);answered=false;renderProblem();}
 
-/* ---------- guided steps ---------- */
-let G=null;
-function buildSteps(p){
-  if(p.kind==='ltr'){ const team=p.o1==='÷'?'× and ÷':'+ and −', o2w=p.o2==='×'?'multiply':'add';
-    return [
-      {lab:'Step 1 · left to right', q:`<b>${team}</b> are partners. Neither one always goes first: work <b>left to right</b>. The first one is: <b>${p.a} ${p.o1} ${p.b}</b>.`,
-       boxes:[{bl:`${p.a} ${p.o1} ${p.b}`,expect:p.r1}], info:`${p.a} ${p.o1} ${p.b} = ${p.r1}. Doing the ${p.o2} first would give a different (wrong) answer.`, line:`= ${p.r1} ${p.o2} ${p.c}`},
-      {lab:`Step 2 · then ${o2w}`, q:`Now ${o2w}: <b>${p.r1} ${p.o2} ${p.c}</b>.`,
-       boxes:[{bl:`${p.r1} ${p.o2} ${p.c}`,expect:p.ans}], info:`${p.r1} ${p.o2} ${p.c} = ${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ]; }
+/* ---------- tokens ---------- */
+const N=v=>({t:'n',v}), O=v=>({t:'o',v}), LP={t:'(' }, RP={t:')'}, PW=(b,e)=>({t:'p',b,e}), VR=(k,name)=>({t:'v',k,name});
+function startTokens(p){
+  if(p.kind==='pow') return [PW(p.b,p.e)];
+  if(p.kind==='md') return [N(p.a),O(p.o),N(p.b),O('×'),N(p.c)];
+  if(p.kind==='paren') return [LP,N(p.a),O(p.o),N(p.b),RP,O('×'),N(p.c)];
+  if(p.kind==='powadd') return [N(p.a),O('+'),PW(p.b,2)];
+  if(p.kind==='ltr') return [N(p.a),O(p.o1),N(p.b),O(p.o2),N(p.c)];
+  if(p.kind==='sub1') return [VR(p.k,'x'),O('+'),N(p.c)];
+  return [VR(p.ca,'a'),O('−'),VR(p.cb,'b')];
+}
+function tokH(k,html){ // one token as HTML
+  if(k.t==='n') return `<span class="${k.fresh?'new pop':''}">${S(k.v)}</span>`;
+  if(k.t==='o') return ` <span class="op">${k.v}</span> `;
+  if(k.t==='(') return '(';
+  if(k.t===')') return ')';
+  if(k.t==='p') return `${k.b}<sup>${k.e}</sup>`;
+  return `${k.k}<span class="vr" data-v="${k.name}">${k.name}</span>`;
+}
+const tokT=k=>k.t==='n'?S(k.v):k.t==='o'?` ${k.v} `:k.t==='p'?`${k.b}${k.e===2?'²':'³'}`:k.t==='v'?`${k.k}${k.name}`:k.t;
+const lineT=ts=>ts.map(tokT).join('');
+const lineH=(ts,hl)=>{ let h=''; ts.forEach((k,i)=>{
+  if(hl&&i===hl[0]) h+=`<span class="chunk hl" id="chunk">`;
+  h+=tokH(k); if(hl&&i===hl[1]) h+='</span>'; }); return h; };
+const given=p=>p.kind==='sub1'?` (x = ${p.x})`:p.kind==='sub2'?` (a = ${p.a}, b = ${p.b})`:'';
+const probTxt=(p,ans)=>lineT(startTokens(p))+(ans!==undefined?` = ${S(ans)}`:'')+given(p);
+
+/* ---------- the moves for one problem ---------- */
+// work out the glowing part [i..j]; it collapses into its value
+function part(i,j,mini,expect,o){
+  return Object.assign({kind:'type', hl:[i,j], expect, calc:mini, nudge:NUDGE, reveal:`${mini} = <b>${S(expect)}</b>.`,
+    enter:()=>{ V.work={txt:mini,val:null}; },
+    after:async()=>{ V.work.val=expect; draw(); await collapse(i,j,o.into||[N(expect)]); return o.note||''; }}, o);
+}
+function buildMoves(p){
+  const add=o=>o==='+'?'add':'subtract';
+  const negSub=(x,y,ans)=>ans<0?`${y} is bigger than ${x}, so the answer is negative.`:'';
   if(p.kind==='pow'){
-    if(p.e===2) return [{lab:'Step 1 · square it', q:`<b>${p.b}²</b> means ${p.b} × ${p.b}.`,
-      boxes:[{bl:`${p.b} × ${p.b}`,expect:p.b*p.b}], info:`${p.b}×${p.b}=${p.ans}.`, line:`= ${p.ans}`, last:true}];
-    return [
-      {lab:'Step 1 · start the power', q:`<b>${p.b}³</b> means ${p.b} × ${p.b} × ${p.b}. Do the first two: <b>${p.b} × ${p.b}</b>.`,
-       boxes:[{bl:`${p.b} × ${p.b}`,expect:p.b*p.b}], info:`${p.b}×${p.b}=${p.b*p.b}.`, line:`${p.b}×${p.b} = ${p.b*p.b}`},
-      {lab:'Step 2 · one more factor', q:`Now multiply by ${p.b} once more: <b>${p.b*p.b} × ${p.b}</b>.`,
-       boxes:[{bl:`${p.b*p.b} × ${p.b}`,expect:p.ans}], info:`${p.b*p.b}×${p.b}=${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ];
+    if(p.e===2) return [part(0,0,`${p.b} × ${p.b}`,p.b*p.b,{say:`<b>${p.b}²</b> means <b>${p.b} × ${p.b}</b>. Multiply.`})];
+    const sq=p.b*p.b;
+    return [part(0,0,`${p.b} × ${p.b}`,sq,{say:`<b>${p.b}³</b> means ${p.b} × ${p.b} × ${p.b}. Start with <b>${p.b} × ${p.b}</b>`,
+              into:[N(sq),O('×'),N(p.b)], note:`${p.b} × ${p.b} = ${sq}. One more ${p.b} to go.`}),
+            part(0,2,`${sq} × ${p.b}`,p.ans,{say:`Now multiply: <b>${sq} × ${p.b}</b>`})];
   }
-  if(p.kind==='md'){ const prod=p.b*p.c;
-    return [
-      {lab:'Step 1 · multiply first', q:`In <b>PEMDAS</b>, multiply before you add or subtract: <b>${p.b} × ${p.c}</b>.`,
-       boxes:[{bl:`${p.b} × ${p.c}`,expect:prod}], info:`${p.b}×${p.c}=${prod}.`, line:`= ${p.a} ${p.o} ${prod}`},
-      {lab:`Step 2 · ${p.o==='+'?'add':'subtract'}`, q:`Now ${p.o==='+'?'add':'subtract'}: <b>${p.a} ${p.o} ${prod}</b>.`,
-       boxes:[{bl:`${p.a} ${p.o} ${prod}`,expect:p.ans}], info:`${p.a} ${p.o} ${prod} = ${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ];
-  }
+  if(p.kind==='md'){ const pr=p.b*p.c;
+    return [part(2,4,`${p.b} × ${p.c}`,pr,{say:`Multiply before you ${add(p.o)}: <b>${p.b} × ${p.c}</b>`}),
+            part(0,2,`${p.a} ${p.o} ${pr}`,p.ans,{say:`Now ${add(p.o)}: <b>${p.a} ${p.o} ${pr}</b>`, sub:negSub(p.a,pr,p.ans)})]; }
   if(p.kind==='paren'){
-    return [
-      {lab:'Step 1 · parentheses first', q:`<b>PEMDAS</b> — parentheses first. Do what's inside: <b>${p.a} ${p.o} ${p.b}</b>.`,
-       boxes:[{bl:`${p.a} ${p.o} ${p.b}`,expect:p.inner}], info:`(${p.a} ${p.o} ${p.b}) = ${p.inner}.`, line:`= ${p.inner} × ${p.c}`},
-      {lab:'Step 2 · then multiply', q:`Now multiply by ${p.c}: <b>${p.inner} × ${p.c}</b>.`,
-       boxes:[{bl:`${p.inner} × ${p.c}`,expect:p.ans}], info:`${p.inner}×${p.c}=${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ];
-  }
+    return [part(0,4,`${p.a} ${p.o} ${p.b}`,p.inner,{say:`Parentheses first: <b>${p.a} ${p.o} ${p.b}</b>`, sub:negSub(p.a,p.b,p.inner)}),
+            part(0,2,`${S(p.inner)} × ${p.c}`,p.ans,{say:`Now multiply: <b>${S(p.inner)} × ${p.c}</b>`,
+              sub:p.inner<0?`Negative times positive is negative.`:p.inner===0?`0 times any number is 0.`:''})]; }
   if(p.kind==='powadd'){ const sq=p.b*p.b;
-    return [
-      {lab:'Step 1 · exponent first', q:`<b>PEMDAS</b> — exponents before adding: <b>${p.b}² = ${p.b} × ${p.b}</b>.`,
-       boxes:[{bl:`${p.b} × ${p.b}`,expect:sq}], info:`${p.b}²=${sq}.`, line:`= ${p.a} + ${sq}`},
-      {lab:'Step 2 · then add', q:`Now add: <b>${p.a} + ${sq}</b>.`,
-       boxes:[{bl:`${p.a} + ${sq}`,expect:p.ans}], info:`${p.a}+${sq}=${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ];
-  }
+    return [part(2,2,`${p.b} × ${p.b}`,sq,{say:`Powers come before adding. <b>${p.b}²</b> means <b>${p.b} × ${p.b}</b>`}),
+            part(0,2,`${p.a} + ${sq}`,p.ans,{say:`Now add: <b>${p.a} + ${sq}</b>`})]; }
+  if(p.kind==='ltr'){ const w=p.o2==='×'?'multiply':'add';
+    return [part(0,2,`${p.a} ${p.o1} ${p.b}`,p.r1,{say:`<b>${p.o1}</b> and <b>${p.o2}</b> are partners. Go left to right: <b>${p.a} ${p.o1} ${p.b}</b>`,
+              sub:`Do the one on the left first.`}),
+            part(0,2,`${p.r1} ${p.o2} ${p.c}`,p.ans,{say:`Now ${w}: <b>${p.r1} ${p.o2} ${p.c}</b>`})]; }
   if(p.kind==='sub1'){ const kx=p.k*p.x;
-    return [
-      {lab:'Step 1 · substitute', q:`Put <b>${p.x}</b> in for x, then multiply: <b>${p.k} × ${p.x}</b>.`,
-       boxes:[{bl:`${p.k} × ${p.x}`,expect:kx}], info:`${p.k}x with x=${p.x} is ${p.k}×${p.x}=${kx}.`, line:`= ${kx} + ${p.c}`},
-      {lab:'Step 2 · then add', q:`Now add the constant: <b>${kx} + ${p.c}</b>.`,
-       boxes:[{bl:`${kx} + ${p.c}`,expect:p.ans}], info:`${kx}+${p.c}=${p.ans}.`, line:`= ${p.ans}`, last:true}
-    ];
-  }
-  // sub2
+    return [{kind:'tap', button:`Put in x = ${p.x}`, say:`Put <b>${p.x}</b> in for <b>x</b>.`, sub:`${p.k}x means ${p.k} × x.`,
+              run:async()=>{ await putIn({x:p.x}); return ''; }},
+            part(0,2,`${p.k} × ${p.x}`,kx,{say:`Multiply first: <b>${p.k} × ${p.x}</b>`}),
+            part(0,2,`${kx} + ${p.c}`,p.ans,{say:`Now add: <b>${kx} + ${p.c}</b>`})]; }
   const t1=p.ca*p.a, t2=p.cb*p.b;
-  return [
-    {lab:'Step 1 · first term', q:`Substitute and multiply the first term: <b>${p.ca} × ${p.a}</b> (that's ${p.ca}a with a=${p.a}).`,
-     boxes:[{bl:`${p.ca} × ${p.a}`,expect:t1}], info:`${p.ca}×${p.a}=${t1}.`, line:`${p.ca}a = ${t1}`},
-    {lab:'Step 2 · second term', q:`Now the second term: <b>${p.cb} × ${p.b}</b> (that's ${p.cb}b with b=${p.b}).`,
-     boxes:[{bl:`${p.cb} × ${p.b}`,expect:t2}], info:`${p.cb}×${p.b}=${t2}.`, line:`${p.cb}b = ${t2}`},
-    {lab:'Step 3 · subtract', q:`Now subtract: <b>${t1} − ${t2}</b>.`,
-     boxes:[{bl:`${t1} − ${t2}`,expect:p.ans}], info:`${t1} − ${t2} = ${p.ans}.`, line:`= ${p.ans}`, last:true}
-  ];
+  return [{kind:'tap', button:`Put in a and b`, say:`Put <b>${p.a}</b> in for <b>a</b> and <b>${p.b}</b> in for <b>b</b>.`, sub:`${p.ca}a means ${p.ca} × a.`,
+            run:async()=>{ await putIn({a:p.a,b:p.b}); return ''; }},
+          part(0,2,`${p.ca} × ${p.a}`,t1,{say:`Multiply first: <b>${p.ca} × ${p.a}</b>`}),
+          part(2,4,`${p.cb} × ${p.b}`,t2,{say:`Multiply again: <b>${p.cb} × ${p.b}</b>`}),
+          part(0,2,`${t1} − ${t2}`,p.ans,{say:`Now subtract: <b>${t1} − ${t2}</b>`, sub:negSub(t1,t2,p.ans)})];
+}
+function answerText(){ return `${lineT(startTokens(current))} = ${S(current.ans)}`; }
+function checkLine(){
+  const p=current;
+  if(p.kind==='pow') return `✓ <b>Check:</b> ${p.b}${p.e===2?'²':'³'} = ${Array(p.e).fill(p.b).join(' × ')} = <b>${p.ans}</b>.`;
+  let steps=V.histT.slice(p.kind.startsWith('sub')?1:0); if(steps.length>2) steps=[steps[0],steps[steps.length-1]];
+  const chain=steps.concat([S(p.ans)]).join(' = ');
+  const why={md:` You multiplied before you ${p.o==='+'?'added':'subtracted'}.`, paren:` The parentheses came first.`,
+    powadd:` The power came first.`, ltr:` Partners go left to right.`}[p.kind]||'';
+  const pre=p.kind==='sub1'?`With x = ${p.x}: `:p.kind==='sub2'?`With a = ${p.a} and b = ${p.b}: `:'';
+  return `✓ <b>Check:</b> ${pre}${chain.replace(/ = ([^=]*)$/,' = <b>$1</b>')}.${why}`;
 }
 
-/* ---------- render ---------- */
+/* ---------- drawing ---------- */
+let V={};
+function resetVisual(){ const p=current; V={open:null,hl:null,done:false,toks:startTokens(p),hist:[],histT:[],work:null};
+  $('prob').textContent=probTxt(p);
+  $('given').innerHTML=p.kind==='sub1'?`<span id="g-x">x = ${p.x}</span>`:p.kind==='sub2'?`<span id="g-a">a = ${p.a}</span><span id="g-b">b = ${p.b}</span>`:'';
+}
+function draw(){
+  const L=$('lines');
+  L.innerHTML=V.hist.map((h,i)=>`<div class="hist">${i?'= ':''}${h}</div>`).join('')
+    +`<div class="live${V.done?' fin':''}" id="live">${V.hist.length?'<span class="eq">=</span>':''}${lineH(V.toks,V.hl)}</div>`;
+  const w=$('work'), o=V.open;
+  if(V.work){
+    const t=V.work.txt.replace(/ ([+−×÷]) /g,' <span class="op">$1</span> ');
+    w.innerHTML=`${t} <span class="op">=</span> `+(V.work.val===null?(o?boxHTML(o):''):`<span class="mint pop" id="wval">${S(V.work.val)}</span>`);
+  } else w.innerHTML='';
+  if(V.done){ w.innerHTML=''; $('prob').textContent=probTxt(current,current.ans); }
+  fit($('live')); fit(w); [...L.querySelectorAll('.hist')].forEach(fit);
+  V.toks.forEach(k=>k.fresh=false);
+}
+// the glowing part shrinks away and its value pops in
+async function collapse(i,j,into){
+  const before=lineH(V.toks), beforeT=lineT(V.toks);
+  await wait(250);
+  const ch=$('chunk');
+  if(ch && !reduce){
+    const wv=$('wval'); if(wv) fly(wv,ch,wv.textContent,30);
+    ch.style.width=ch.offsetWidth+'px'; ch.getBoundingClientRect();
+    ch.classList.add('gone'); ch.style.width='0px'; await wait(800);
+  }
+  V.hist.push(before); V.histT.push(beforeT);
+  into.forEach(k=>{ if(k.t==='n') k.fresh=true; });
+  V.toks.splice(i,j-i+1,...into); V.hl=null; V.work=null; draw(); await wait(350);
+}
+// substitution: the number flies in to replace the letter
+async function putIn(vals){
+  const before=lineH(V.toks), beforeT=lineT(V.toks);
+  for(const name of Object.keys(vals)){
+    const el=document.querySelector(`#live .vr[data-v="${name}"]`);
+    await fly($('g-'+name),el,String(vals[name]),34);
+  }
+  V.hist.push(before); V.histT.push(beforeT);
+  V.toks=V.toks.flatMap(k=>k.t==='v'?[N(k.k),O('×'),Object.assign(N(vals[k.name]),{fresh:true})]:[k]);
+  draw(); await wait(350);
+}
+/* ---------- playing one problem: one move at a time ----------
+   A move is one of
+     • type — ONE glowing box in the picture, ONE short instruction
+     • pick — two buttons (e.g. positive / negative); tap the right one
+     • tap  — one button that plays a short animation
+   ------------------------------------------------------------- */
+let M=null;            // {mv, i, tries, busy, err}
+function boxHTML(m,cls){
+  return `<input class="ibx${cls?' '+cls:''}" id="box" inputmode="${BOX_MODE}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="${m.max||5}" aria-label="answer">`;
+}
 function renderProblem(){
-  $('prob').innerHTML=current.display;
-  $('fwork').innerHTML='';
-  G={steps:buildSteps(current), si:0, tries:0};
-  renderWork(); renderStep(); paintDots();
+  M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  resetVisual();
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
 }
-function renderWork(){
-  const done=G.steps.slice(0,G.si).filter(s=>s.line);
-  let h=done.map(s=>`<div class="fline">${s.line}</div>`).join('');
-  // left to right: number the two partner operations in the order you do them
-  if(current.kind==='ltr' && G.si===0){ const p=current;
-    h=`<div class="fline ord"><span class="u1">${p.a} ${p.o1} ${p.b}<i>① first</i></span> <span class="u2">${p.o2} ${p.c}<i>② next</i></span></div>`
-     +`<div class="ordcap">Same team, so read it like a sentence: left to right.</div>`+h; }
-  $('fwork').innerHTML=h;
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
+  if(m.enter) m.enter();
+  draw();
+  $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=[note,m.sub].filter(Boolean).join('<br>');
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus({preventScroll:true}); }
+  else if(m.kind==='pick'){
+    go.classList.add('hide');
+    pk.innerHTML=m.options.map((o,i)=>`<button class="pick" data-i="${i}">${o.label}</button>`).join('');
+    pk.querySelectorAll('.pick').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus({preventScroll:true}); }
 }
-function renderStep(){
-  const st=G.steps[G.si]; G.tries=0;
-  $('steplead').textContent=`Step ${G.si+1} of ${G.steps.length} — follow the order of operations`;
-  $('steplab').textContent=st.lab;
-  $('stepq').innerHTML=st.q;
-  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
-    const mode='text'; // same keyboard for every box, so it never hints the sign
-    return `<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" inputmode="${mode}" autocomplete="off" aria-label="${bx.bl}"></div>`;
-  }).join('');
-  $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
-  $('gverdict').textContent=''; $('gverdict').className='verdict';
-  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=$('bx0'); if(f) f.focus();
+// shrink a one-line row of math until it fits the card (never a sideways scroll)
+function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
+  while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
+function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+async function doTap(){
+  if(M.busy) return; M.busy=true; $('go').disabled=true;
+  const note=await M.mv[M.i].run();
+  M.busy=false; nextMove(note);
 }
-function checkStep(){
-  const st=G.steps[G.si]; let allOk=true;
-  st.boxes.forEach((bx,i)=>{
-    const el=$('bx'+i); const raw=clean(el.value);
-    const ok=raw!=='' && !isNaN(+raw) && (+raw)===bx.expect;
-    el.classList.toggle('ok',ok); el.classList.toggle('bad',!ok);
-    if(!ok) allOk=false;
-  });
-  const gv=$('gverdict');
-  if(!allOk){
-    G.tries++; answered=true; current._hadError=true;
-    gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
-    gv.className='verdict help';
-    if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{const el=$('bx'+i); const raw=clean(el.value); if((+raw)!==bx.expect) el.placeholder=String(bx.expect);}); }
-    const bad=st.boxes.findIndex((bx,i)=>{const raw=($('bx'+i).value||'').trim().replace('−','-'); return (+raw)!==bx.expect;});
-    if(bad>=0){const e=$('bx'+bad); e.focus(); e.select&&e.select();}
+function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
+function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
+function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const raw=box.value.trim();
+  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  const v=readNum(raw);
+  if(v!==m.expect){
+    M.tries++; M.err=true; shake(box);
+    const part=m.partial?m.partial(v):'';
+    if(M.tries>=2){ say2(`${m.reveal} Type <b>${NUM(m.expect)}</b> to keep going.`); box.placeholder=NUM(m.expect); }
+    else say2(part||('Not quite. '+(m.nudge||NUDGE)));
+    box.select(); return;
+  }
+  M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  V.typed=v;
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; nextMove(note);
+}
+async function choose(i){
+  if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
+  if(m.options[i].value!==m.expect){
+    M.tries++; M.err=true; shake(btns[i]);
+    const k=m.options.findIndex(o=>o.value===m.expect);
+    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
+    else say2('Not quite. '+m.nudge);
     return;
   }
-  gv.textContent=''; gv.className='verdict';
-  G.si++; renderWork();
-  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
+  M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
+  $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove(note);
 }
-function finishGuided(){
-  const right=!current._hadError;
-  const gv=$('gverdict');
-  gv.textContent = right ? '✓ Solved it — every step correct!' : `✓ Done — the answer is ${current.ans}.`;
-  gv.className='verdict good pop';
-  concludeProblem(right, $('stepbtn'));
+function finish(note){
+  V.open=null; V.hl=null; V.done=true; draw();
+  const right=!M.err;
+  $('where').textContent='Done';
+  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
+  $('sub').innerHTML=note||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
+  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
+  concludeProblem(right, $('go'));
+}
+// a number (or text) floats from one element to another
+async function fly(fromEl,toEl,text,size){
+  if(!fromEl||!toEl||reduce) return;
+  const ra=fromEl.getBoundingClientRect(), rz=toEl.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text; s.style.fontSize=(size||28)+'px';
+  document.body.appendChild(s);
+  const w=s.offsetWidth, h=s.offsetHeight;
+  s.style.left=(ra.left+ra.width/2-w/2)+'px'; s.style.top=(ra.top+ra.height/2-h/2)+'px';
+  s.getBoundingClientRect();
+  s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
+  await wait(800); s.remove();
 }
 
+/* ---------- the set ---------- */
+function nextProblem(){ let L=level; if(level>1 && Math.random()<0.25) L=level-1; current=gen(L); renderProblem(); }
 function concludeProblem(right, btn){
   results[index]=right;
   if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
@@ -320,19 +461,37 @@ function concludeProblem(right, btn){
   else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
   levelReachedThisSet=Math.max(levelReachedThisSet,level);
   updateHUD(); paintDots();
-  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
-  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus({preventScroll:true});
 }
 function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
-function paintDots(){var h='';for(var i=0;i<SET_LEN;i++){var c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+='<span class="'+c+'"></span>';}$('dots').innerHTML=h;}
-function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
-  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');updateHUD();nextProblem();}
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+=`<span class="${c}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
 function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
-function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
+function endSet(){
+  $('play').classList.add('hide');$('summary').classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
-  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
-  $('s-note').textContent=correctCount>=9?'Excellent control — the order of operations, every time.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. PEMDAS: Parentheses, Exponents, ×/÷, then +/−.':'Every step showed the order. Run it again.';}
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();$('stepbtn').click();});
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?ENDNOTES[0]:correctCount>=7?ENDNOTES[1]:correctCount>=5?ENDNOTES[2]:ENDNOTES[3];
+}
+// Enter = Check (or the tap button / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); const go=$('go'); if(!go.disabled && !go.classList.contains('hide')) go.click();
+});
+// only digits (and a minus sign at the front where it is allowed) in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  let v=t.value.replace(/[−–—]/g,'-');
+  v=ALLOW_NEG ? v.replace(/[^0-9-]/g,'').replace(/(?!^)-/g,'') : v.replace(/[^0-9]/g,'');
+  t.value=v.slice(0,+t.maxLength||5); t.classList.remove('bad'); $('fb').textContent=''; });
+/* ---------- worked example on the start screen: 5 + 3 × 4, finished ---------- */
+$('exLines').innerHTML=`<div class="hist">5 <span class="op">+</span> 3 <span class="op">×</span> 4</div><div class="hist">= 5 <span class="op">+</span> 12</div><div class="live" style="font-size:34px">= <span class="mint">17</span></div>`;
 </script>
 <script src="../../../tracker-config.js"></script>
 <script src="../../../score-send.js"></script>
