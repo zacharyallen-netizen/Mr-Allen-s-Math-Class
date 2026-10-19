@@ -105,6 +105,21 @@
 
   .fig-cap{font-size:12.5px;color:#6B7488;text-align:center;margin:2px 0 6px;font-weight:600}
   .geo-fig svg{max-width:100%}
+  /* Paper version (?paper=1): every section and every step, in order, as a static page */
+  body.paper{padding:0 4px;min-height:0}
+  body.paper .section,body.paper .anim-step{display:block!important;animation:none!important}
+  body.paper .section{break-before:auto!important}
+  body.paper .section-nav,body.paper .step-controls,body.paper .sb-local{display:none!important}
+  body.paper .card{break-inside:auto;border-color:#C9C3B6}
+  body.paper .graph-area{break-inside:avoid;margin:6px auto}
+  body.paper .graph-area svg{max-width:225px!important}
+  body.paper .slope-type-card svg{max-width:120px!important}
+  body.paper .slope-types,body.paper .anim-step[data-step="0"],body.paper .formula,body.paper .def-box{break-inside:avoid}
+  body.paper .np-h,body.paper .card h2,body.paper .card h3{break-after:avoid}
+  body.paper .np-q .graph-area{float:right;width:205px;margin:2px 0 6px 14px}
+  body.paper .np-q .graph-area svg{max-width:205px!important}
+  body.paper .np-q::after{content:"";display:block;clear:both}
+  body.paper .np-sol,body.paper .np-ansline{overflow:hidden}
   @media(max-width:520px){.slope-types{grid-template-columns:1fr}.formula{font-size:16px}.formula .frac-num,.formula .frac-den{font-size:15px}}
   /* Print: show every section and every step, hide the on-screen navigation */
   @media print{
@@ -176,6 +191,21 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
         <button class="btn btn-secondary" onclick="prevStep(0)">← Back</button>
         <div id="dots-0" class="step-controls"></div>
         <button class="btn btn-primary" onclick="nextStep(0)">Next →</button>
+      </div>
+    </div>
+    <div class="np" data-title="What Is Slope?" data-std="NC.8.F.4">
+      <div class="np-q" data-level="1" data-choices="the slope|the y-intercept|the x-value" data-ans="the slope" data-hint="Look at the blue box in the notes: one letter is the slope, one is the y-intercept.">
+        <div class="np-prompt">In <strong>y = mx + b</strong>, what does the letter <strong>m</strong> stand for?</div>
+        <div class="np-sol">In y = mx + b, <strong>m</strong> is the slope. (b is the y-intercept.)</div>
+      </div>
+      <div class="np-q" data-level="2" data-ans="4" data-hint="The slope is the number multiplied by x.">
+        <div class="np-prompt">What is the slope of <strong>y = 4x + 7</strong>? Type just the number.</div>
+        <div class="np-sol">Match it to y = mx + b. The number in front of x is m, so m = <strong>4</strong>. (7 is b, the y-intercept.)</div>
+      </div>
+      <div class="np-q" data-level="3" data-ans="6" data-hint="Right 4 gives a climb of 3. Right 8 is 2 times as far.">
+        <div class="np-prompt">This hill goes right 4 and up 3. If you walk right 8 on the same hill, how far up do you climb?</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":9,"ymin":-1,"ymax":8,"size":210,"labelEvery":2,"maxW":280,"lines":[{"p":[0,1],"q":[8,7],"c":"blue"}],"slopeTri":{"p":[0,1],"q":[4,4]},"alt":"a hill line that goes right 4 and up 3"}'></div></div>
+        <div class="np-sol">Right 8 is 2 groups of right 4. Each group climbs 3. So you climb 3 + 3 = <strong>6</strong>. The slope stays the same: 3/4 = 6/8.</div>
       </div>
     </div>
   </div>
@@ -258,6 +288,21 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
         <button class="btn btn-primary" onclick="nextStep(1)">Next →</button>
       </div>
     </div>
+    <div class="np" data-title="Four Types of Slope" data-std="NC.8.F.4">
+      <div class="np-q" data-level="1" data-choices="Positive|Negative|Zero|Undefined" data-ans="Negative" data-hint="Read the line from left to right, like a book. Is it going uphill or downhill?">
+        <div class="np-prompt">What type of slope does this line have?</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-5,"xmax":5,"ymin":-5,"ymax":5,"size":170,"labelEvery":5,"maxW":220,"lines":[{"p":[-4,3],"q":[4,-3],"c":"navy"}],"alt":"a line going down from left to right"}'></div></div>
+        <div class="np-sol">Reading left to right, the line goes <strong>down</strong> (downhill). So the slope is <strong>negative</strong>.</div>
+      </div>
+      <div class="np-q" data-level="2" data-choices="Positive|Negative|Zero|Undefined" data-ans="Zero" data-hint="Look at the y-values. Do they change?">
+        <div class="np-prompt">A line goes through <strong>(1, 4)</strong> and <strong>(6, 4)</strong>. What type of slope does it have?</div>
+        <div class="np-sol">Both points have y = 4, so the line never goes up or down. It is flat (horizontal). The slope is <strong>zero</strong>.</div>
+      </div>
+      <div class="np-q" data-level="3" data-choices="y = 3x − 5|y = −2x + 4|y = x + 1|y = 5x" data-ans="y = −2x + 4" data-hint="The slope is the number in front of x. Which one is less than 0?">
+        <div class="np-prompt">Which equation has a <strong>negative</strong> slope?</div>
+        <div class="np-sol">The slope is the number in front of x: 3, −2, 1 and 5. Only −2 is negative, so <strong>y = −2x + 4</strong> goes downhill.</div>
+      </div>
+    </div>
   </div>
 
   <!-- ===================== SECTION 2: RISE OVER RUN ===================== -->
@@ -325,6 +370,23 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
         <button class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
         <div id="dots-2"></div>
         <button class="btn btn-primary" onclick="nextStep(2)">Next →</button>
+      </div>
+    </div>
+    <div class="np" data-title="Rise Over Run" data-std="NC.8.F.4">
+      <div class="np-q" data-level="1" data-ans="2" data-hint="Count the squares up (rise), then the squares right (run). Slope = rise ÷ run.">
+        <div class="np-prompt">Count the rise and the run from one dot to the other. What is the slope?</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":6,"ymin":-1,"ymax":7,"size":200,"labelEvery":1,"maxW":280,"lines":[{"p":[1,2],"q":[3,6],"c":"blue"}],"segments":[{"p":[1,2],"q":[3,2],"c":"green","dash":"6 4","label":"run = ?","dy":18},{"p":[3,2],"q":[3,6],"c":"gold","dash":"6 4","label":"rise = ?","dx":36,"dy":4}],"points":[{"x":1,"y":2,"label":"(1, 2)","pos":"w","c":"navy"},{"x":3,"y":6,"label":"(3, 6)","pos":"w","c":"navy"}],"alt":"a line through (1, 2) and (3, 6) with the rise and run marked"}'></div></div>
+        <div class="np-sol">Rise: up 4 (from y = 2 to y = 6). Run: right 2 (from x = 1 to x = 3). Slope = 4/2 = <strong>2</strong>.</div>
+      </div>
+      <div class="np-q" data-level="2" data-ans="-2" data-show="−2" data-hint="Going down means the rise is negative.">
+        <div class="np-prompt">Find the slope of this line. Use the two dots.</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":5,"ymin":-1,"ymax":7,"size":200,"labelEvery":1,"maxW":280,"lines":[{"p":[0,6],"q":[2,2],"c":"blue"}],"points":[{"x":0,"y":6,"label":"(0, 6)","pos":"e","c":"navy"},{"x":2,"y":2,"label":"(2, 2)","pos":"e","c":"navy"}],"alt":"a line through (0, 6) and (2, 2)"}'></div></div>
+        <div class="np-sol">From (0, 6), count <strong>down</strong> 4 to y = 2: rise = −4. Then right 2: run = 2. Slope = −4/2 = <strong>−2</strong>.</div>
+      </div>
+      <div class="np-q" data-level="3" data-ans="2/3" data-tol="0.01" data-hint="Count up from −1 to 3 for the rise. Count right from −2 to 4 for the run. Then simplify.">
+        <div class="np-prompt">Find the slope of this line. Write it as a fraction in simplest form, like 3/4.</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-3,"xmax":5,"ymin":-3,"ymax":4,"size":210,"labelEvery":1,"maxW":300,"lines":[{"p":[-2,-1],"q":[4,3],"c":"blue"}],"points":[{"x":-2,"y":-1,"label":"(−2, −1)","pos":"se","c":"navy"},{"x":4,"y":3,"label":"(4, 3)","pos":"w","c":"navy"}],"alt":"a line through (−2, −1) and (4, 3)"}'></div></div>
+        <div class="np-sol">Rise: up 4 (from −1 to 3). Run: right 6 (from −2 to 4). Slope = 4/6. Divide top and bottom by 2: <strong>2/3</strong>.</div>
       </div>
     </div>
   </div>
@@ -421,86 +483,80 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
         <button class="btn btn-primary" onclick="nextStep(3)">Next →</button>
       </div>
     </div>
+    <div class="np" data-title="The Slope Formula" data-std="NC.8.F.4">
+      <div class="np-q" data-level="1" data-ans="3" data-hint="Top: 8 − 2. Bottom: 3 − 1. Then divide.">
+        <div class="np-prompt">Use the slope formula to find the slope through <strong>(1, 2)</strong> and <strong>(3, 8)</strong>.</div>
+        <div class="np-sol">m = (8 − 2) / (3 − 1) = 6 / 2 = <strong>3</strong>.</div>
+      </div>
+      <div class="np-q" data-level="2" data-ans="-1/2|-0.5" data-show="−1/2" data-hint="Top: −2 − 1. Bottom: 2 − (−4). Subtracting a negative means add!">
+        <div class="np-prompt">Find the slope through <strong>(−4, 1)</strong> and <strong>(2, −2)</strong>. Write a fraction in simplest form.</div>
+        <div class="np-sol">m = (−2 − 1) / (2 − (−4)) = −3 / 6. Simplify: <strong>−1/2</strong>.</div>
+      </div>
+      <div class="np-q" data-level="3" data-ans="11" data-hint="The run is 6 − 2 = 4. What rise divided by 4 gives 2?">
+        <div class="np-prompt">A line goes through <strong>(2, 3)</strong> and <strong>(6, y)</strong>. Its slope is 2. What is y?</div>
+        <div class="np-sol">Run: 6 − 2 = 4. Slope 2 means rise ÷ 4 = 2, so the rise is 8. y = 3 + 8 = <strong>11</strong>. Check: (11 − 3) / (6 − 2) = 8/4 = 2 ✓</div>
+      </div>
+    </div>
   </div>
 
   <!-- ===================== SECTION 4: PRACTICE ===================== -->
   <div class="section" id="sec-4">
     <div class="card">
-      <h2>Practice Problems</h2>
-      <p>Now it's your turn! Find the slope for each pair of points.</p>
+      <h2>Comprehensive Practice</h2>
+      <p>Mixed practice from every section: what slope means, the four types, rise over run, and the slope formula. If an answer is a fraction, type it like 3/4 or -1/2.</p>
 
-      <div class="problem-card" id="prob-0">
-        <h4>Problem 1: Find the slope through (1, 3) and (4, 9)</h4>
+      <div class="np final" data-title="All sections" data-std="NC.8.F.4">
+      <div class="np-q" data-level="1" data-choices="How steep a line is|Where a line crosses the y-axis|How long a line is" data-ans="How steep a line is" data-hint="Think about the hill: slope tells you how hard the climb is.">
+        <div class="np-prompt">What does slope measure?</div>
+        <div class="np-sol">Slope measures how <strong>steep</strong> a line is (and which way it goes). Where the line crosses the y-axis is b, the y-intercept.</div>
+      </div>
+      <div class="np-q" id="p1" data-level="1" data-ans="2" data-show="2" data-hint="m = (9 − 3) / (4 − 1) = ? / ?">
+        <div class="np-prompt">Find the slope through (1, 3) and (4, 9).</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":6,"ymin":-1,"ymax":10,"size":210,"labelEvery":2,"maxW":300,"segments":[{"p":[1,3],"q":[4,3],"c":"green","dash":"6 4","label":"run = ?","dy":16,"dx":0},{"p":[4,3],"q":[4,9],"c":"gold","dash":"6 4","label":"rise = ?","dx":34,"dy":4}],"points":[{"x":1,"y":3,"label":"(1, 3)","pos":"w","c":"blue"},{"x":4,"y":9,"label":"(4, 9)","pos":"e","c":"blue"}],"alt":"the points (1, 3) and (4, 9)"}'></div></div>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-0" inputmode="text" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(0)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(0)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-0"></div>
+        <div class="np-sol">m = (9 − 3) / (4 − 1) = 6 / 3 = <strong>2</strong>.</div>
       </div>
-
-      <div class="problem-card" id="prob-1">
-        <h4>Problem 2: Find the slope through (2, 8) and (5, 2)</h4>
+      <div class="np-q" data-level="3" data-choices="Yes, a vertical line has slope 0|No, a vertical line has an undefined slope|No, a vertical line has a negative slope" data-ans="No, a vertical line has an undefined slope" data-hint="Remember the memory trick: Zero = flat. Undefined = up and down.">
+        <div class="np-prompt">Jay says, “A vertical line has a slope of 0.” Is Jay right?</div>
+        <div class="np-sol">No. A vertical line has run = 0, and we can't divide by 0. So its slope is <strong>undefined</strong>. A <em>horizontal</em> (flat) line is the one with slope 0.</div>
+      </div>
+      <div class="np-q" id="p2" data-level="2" data-ans="-2" data-show="−2" data-hint="m = (2 − 8) / (5 − 2) = ? / ?">
+        <div class="np-prompt">Find the slope through (2, 8) and (5, 2).</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":7,"ymin":-1,"ymax":9,"size":210,"labelEvery":2,"maxW":300,"segments":[{"p":[2,8],"q":[5,8],"c":"green","dash":"6 4","label":"run = ?","dy":-12,"dx":0},{"p":[5,8],"q":[5,2],"c":"gold","dash":"6 4","label":"rise = ?","dx":34,"dy":4}],"points":[{"x":2,"y":8,"label":"(2, 8)","pos":"w","c":"blue"},{"x":5,"y":2,"label":"(5, 2)","pos":"e","c":"blue"}],"alt":"the points (2, 8) and (5, 2)"}'></div></div>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-1" inputmode="text" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(1)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(1)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-1"></div>
+        <div class="np-sol">m = (2 − 8) / (5 − 2) = −6 / 3 = <strong>−2</strong>.</div>
       </div>
-
-      <div class="problem-card" id="prob-2">
-        <h4>Problem 3: Find the slope through (−2, −1) and (4, 2)</h4>
+      <div class="np-q" data-level="2" data-ans="3/4|0.75" data-show="3/4" data-hint="Count up from −2 to 1 for the rise. Count right from 0 to 4 for the run.">
+        <div class="np-prompt">What is the slope of this line? Write a fraction, like 1/2.</div>
+        <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":6,"ymin":-3,"ymax":3,"size":210,"labelEvery":1,"maxW":280,"lines":[{"p":[0,-2],"q":[4,1],"c":"blue"}],"points":[{"x":0,"y":-2,"label":"(0, −2)","pos":"e","c":"navy"},{"x":4,"y":1,"label":"(4, 1)","pos":"nw","c":"navy"}],"alt":"a line through (0, −2) and (4, 1)"}'></div></div>
+        <div class="np-sol">Rise: up 3 (from −2 to 1). Run: right 4 (from 0 to 4). Slope = <strong>3/4</strong>.</div>
+      </div>
+      <div class="np-q" id="p3" data-level="3" data-ans="1/2|0.5" data-show="1/2" data-hint="m = (2 − (−1)) / (4 − (−2)) = ? / ?   Don&#39;t forget to simplify!">
+        <div class="np-prompt">Find the slope through (−2, −1) and (4, 2). If the answer is a fraction, type it as a/b (like 3/4).</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-3,"xmax":6,"ymin":-3,"ymax":4,"size":210,"labelEvery":1,"maxW":300,"segments":[{"p":[-2,-1],"q":[4,-1],"c":"green","dash":"6 4","label":"run = ?","dy":16,"dx":16},{"p":[4,-1],"q":[4,2],"c":"gold","dash":"6 4","label":"rise = ?","dx":34,"dy":-10}],"points":[{"x":-2,"y":-1,"label":"(−2, −1)","pos":"sw","c":"blue"},{"x":4,"y":2,"label":"(4, 2)","pos":"n","c":"blue"}],"alt":"the points (−2, −1) and (4, 2)"}'></div></div>
-        <p style="font-size:12px;color:#8a8578">If the answer is a fraction, type it as a/b (example: ³⁄₄ or -¹⁄₂)</p>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-2" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(2)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(2)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-2"></div>
+        <div class="np-sol">m = (2 − (−1)) / (4 − (−2)) = 3 / 6. Simplify: <strong>1/2</strong>.</div>
       </div>
-
-      <div class="problem-card" id="prob-3">
-        <h4>Problem 4: Find the slope through (−3, 5) and (1, −3)</h4>
+      <div class="np-q" id="p4" data-level="2" data-ans="-2" data-show="−2" data-hint="m = (−3 − 5) / (1 − (−3)) = ? / ?">
+        <div class="np-prompt">Find the slope through (−3, 5) and (1, −3).</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-4,"xmax":3,"ymin":-4,"ymax":6,"size":210,"labelEvery":2,"maxW":300,"segments":[{"p":[-3,5],"q":[1,5],"c":"green","dash":"6 4","label":"run = ?","dy":-12,"dx":-30},{"p":[1,5],"q":[1,-3],"c":"gold","dash":"6 4","label":"rise = ?","dx":34,"dy":4}],"points":[{"x":-3,"y":5,"label":"(−3, 5)","pos":"w","c":"blue"},{"x":1,"y":-3,"label":"(1, −3)","pos":"e","c":"blue"}],"alt":"the points (−3, 5) and (1, −3)"}'></div></div>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-3" inputmode="text" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(3)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(3)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-3"></div>
+        <div class="np-sol">m = (−3 − 5) / (1 − (−3)) = −8 / 4 = <strong>−2</strong>.</div>
       </div>
-
-      <div class="problem-card" id="prob-4">
-        <h4>Problem 5: Find the slope through (4, 7) and (4, −2)</h4>
+      <div class="np-q" id="p5" data-level="2" data-ans="undefined" data-show="undefined" data-hint="Both x-values are 4. What happens when the denominator is 0?">
+        <div class="np-prompt">Find the slope through (4, 7) and (4, −2). Type “undefined” if the slope is undefined.</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-1,"xmax":6,"ymin":-3,"ymax":8,"size":210,"labelEvery":2,"maxW":300,"segments":[{"p":[4,7],"q":[4,-2],"c":"gold","dash":"6 4","label":"rise = ?","dx":34,"dy":4}],"points":[{"x":4,"y":7,"label":"(4, 7)","pos":"w","c":"blue"},{"x":4,"y":-2,"label":"(4, −2)","pos":"w","c":"blue"}],"alt":"the points (4, 7) and (4, −2)"}'></div></div>
-        <p style="font-size:12px;color:#8a8578">Type "undefined" if the slope is undefined</p>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-4" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(4)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(4)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-4"></div>
+        <div class="np-sol">m = (−2 − 7) / (4 − 4) = −9 / 0. We can't divide by 0, so the slope is <strong>undefined</strong> (a vertical line).</div>
       </div>
-
-      <div class="problem-card" id="prob-5">
-        <h4>Problem 6: Find the slope through (−5, 3) and (7, 3)</h4>
+      <div class="np-q" id="p6" data-level="1" data-ans="0" data-show="0" data-hint="Both y-values are 3. What happens when the numerator is 0?">
+        <div class="np-prompt">Find the slope through (−5, 3) and (7, 3).</div>
         <div class="graph-area geo-fig"><div class="geo" data-geo='{"type":"plane","xmin":-6,"xmax":8,"ymin":-2,"ymax":5,"size":230,"labelEvery":2,"maxW":300,"segments":[{"p":[-5,3],"q":[7,3],"c":"green","dash":"6 4","label":"run = ?","dy":-12,"dx":70}],"points":[{"x":-5,"y":3,"label":"(−5, 3)","pos":"n","c":"blue"},{"x":7,"y":3,"label":"(7, 3)","pos":"n","c":"blue"}],"alt":"the points (−5, 3) and (7, 3)"}'></div></div>
-        <div class="input-row">
-          <label>m = </label>
-          <input type="text" class="prob-input" id="ans-5" inputmode="text" placeholder="?">
-          <button class="btn btn-primary" onclick="checkProb(5)">Check</button>
-          <button class="btn btn-secondary" onclick="hintProb(5)">💡 Hint</button>
-        </div>
-        <div class="prob-feedback" id="fb-5"></div>
+        <div class="np-sol">m = (3 − 3) / (7 − (−5)) = 0 / 12 = <strong>0</strong> (a horizontal line).</div>
+      </div>
+      <div class="np-q" data-level="3" data-ans="1/5|0.2|2/10" data-show="1/5" data-hint="Slope = rise ÷ run. Put the rise on top.">
+        <div class="np-prompt">A ramp rises 2 feet over a run of 10 feet. What is its slope? Write a fraction in simplest form.</div>
+        <div class="np-sol">slope = rise / run = 2 / 10. Divide top and bottom by 2: <strong>1/5</strong>.</div>
+      </div>
+      <div class="np-q" data-level="3" data-ans="3" data-hint="The rise is 10 − 4 = 6. What run makes 6 ÷ run = 3?">
+        <div class="np-prompt">A line goes through <strong>(1, 4)</strong> and <strong>(x, 10)</strong>. Its slope is 3. What is x?</div>
+        <div class="np-sol">Rise: 10 − 4 = 6. Slope 3 means 6 ÷ run = 3, so the run is 2. x = 1 + 2 = <strong>3</strong>. Check: (10 − 4) / (3 − 1) = 6/2 = 3 ✓</div>
+      </div>
       </div>
       <div id="ss-mount"></div>
     </div>
@@ -508,6 +564,8 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 </div>
 
 <script src="../geo-svg.js"></script>
+<script src="../notes-practice.js"></script>
+<script src="../paper.js"></script>
 <script>
 // ============ NAVIGATION ============
 let currentSection = 0;
@@ -630,70 +688,26 @@ function renderRiseRunGraphs(step) {
 // Draw every example graph now, so they are all there when the page is printed.
 [1, 2, 3, 4].forEach(renderRiseRunGraphs);
 
-// ============ PRACTICE PROBLEMS ============
-const PROBLEMS = [
-  { pts: '(1, 3) and (4, 9)', answer: 2, answerStr: '2',
-    hint: 'm = (9 − 3) / (4 − 1) = ? / ?' },
-  { pts: '(2, 8) and (5, 2)', answer: -2, answerStr: '-2',
-    hint: 'm = (2 − 8) / (5 − 2) = ? / ?' },
-  { pts: '(−2, −1) and (4, 2)', answer: 0.5, answerStr: '1/2',
-    hint: 'm = (2 − (−1)) / (4 − (−2)) = ? / ?   Don\'t forget to simplify!' },
-  { pts: '(−3, 5) and (1, −3)', answer: -2, answerStr: '-2',
-    hint: 'm = (−3 − 5) / (1 − (−3)) = ? / ?' },
-  { pts: '(4, 7) and (4, −2)', answer: 'undefined', answerStr: 'undefined',
-    hint: 'Both x-values are 4. What happens when the denominator is 0?' },
-  { pts: '(−5, 3) and (7, 3)', answer: 0, answerStr: '0',
-    hint: 'Both y-values are 3. What happens when the numerator is 0?' },
-];
+// ============ PRACTICE ============
+// Practice questions live at the end of every section (notes-practice.js builds them).
+// The old Practice Problems 1–6 are in the Comprehensive Practice (ids p1–p6, same as before).
 
-const probAttempts = [0,0,0,0,0,0];
-
-function parseAnswer(str) {
-  str = str.trim().toLowerCase();
-  if (str === 'undefined') return 'undefined';
-  if (str.includes('/')) {
-    const parts = str.split('/');
-    if (parts.length === 2) {
-      const num = parseFloat(parts[0]);
-      const den = parseFloat(parts[1]);
-      if (den === 0) return 'undefined';
-      return num / den;
-    }
-  }
-  return parseFloat(str);
-}
-
-function checkProb(idx) {
-  const input = document.getElementById(`ans-${idx}`);
-  const fb = document.getElementById(`fb-${idx}`);
-  const val = input.value.trim();
-  if (!val) { fb.className = 'prob-feedback wrong'; fb.textContent = 'Enter an answer first!'; return; }
-  
-  probAttempts[idx]++;
-  const parsed = parseAnswer(val);
-  const correct = PROBLEMS[idx].answer;
-  
-  try{if(window.ScoreSend)ScoreSend.record('p'+(idx+1),parsed === correct,{std:'NC.8.F.4',label:'Problem '+(idx+1)+': slope through '+PROBLEMS[idx].pts});}catch(e){}
-  if (parsed === correct || (typeof correct === 'string' && parsed === correct)) {
-    input.classList.remove('wrong'); input.classList.add('correct');
-    fb.className = 'prob-feedback correct';
-    fb.textContent = `✓ Correct! The slope is ${PROBLEMS[idx].answerStr}`;
-  } else {
-    input.classList.remove('correct'); input.classList.add('wrong');
-    fb.className = 'prob-feedback wrong';
-    if (probAttempts[idx] >= 3) {
-      fb.textContent = `Not quite. The answer is m = ${PROBLEMS[idx].answerStr}`;
-    } else {
-      fb.textContent = `Not quite — try again! (Attempt ${probAttempts[idx]})`;
-    }
-  }
-}
-
-function hintProb(idx) {
-  const fb = document.getElementById(`fb-${idx}`);
-  fb.className = 'prob-feedback hint';
-  fb.textContent = '💡 ' + PROBLEMS[idx].hint;
-}
+// ============ PAPER (?paper=1 / &key=1) — this page's own changes ============
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  const sub = document.querySelector('.header p'); if (sub) sub.textContent = 'Guided Notes';
+  // Four types: show the finished grid once (the last step), and keep each step's definition box
+  const s1 = document.getElementById('steps-1');
+  const full = s1.querySelector('[data-step="4"] .slope-types'), first = s1.querySelector('[data-step="0"] .slope-types');
+  if (full && first) first.replaceWith(full);
+  s1.querySelectorAll('[data-step="1"] .slope-types,[data-step="2"] .slope-types,[data-step="3"] .slope-types').forEach(e => e.remove());
+  s1.querySelectorAll('.slope-type-card.highlight').forEach(c => c.classList.remove('highlight'));
+  const p0 = s1.querySelector('[data-step="0"] p'); if (p0) p0.innerHTML = 'There are exactly <strong>four types</strong> of slope:';
+  // Rise over run: Example 1 is shown once, already counted
+  const r1 = document.querySelector('#steps-2 [data-step="1"]'), r2 = document.querySelector('#steps-2 [data-step="2"]');
+  if (r1 && r2) { r1.remove(); r2.querySelector('h3').textContent = 'Example 1: Line through (1, 2) and (4, 5)'; }
+  // on paper you write, not type
+  document.querySelectorAll('.np-prompt, #sec-4 .card > p').forEach(e => { e.innerHTML = e.innerHTML.replace(/\bType\b/g, 'Write').replace(/\btype\b/g, 'write'); });
+});
 </script>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
