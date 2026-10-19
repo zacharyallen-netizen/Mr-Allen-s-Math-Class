@@ -62,7 +62,7 @@
   @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
-    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+    transition:transform .65s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
   .pop{animation:pop .35s ease}
   @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
   @media (max-width:430px){.algo .cell{width:40px;font-size:38px}.algo .op{width:36px}.pbx{width:36px;font-size:28px}.pbx.w2{width:76px}
@@ -78,9 +78,14 @@
 
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .note{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;padding:0 0 9px;margin:0 0 10px;border-bottom:1px dashed var(--panel-edge)}
+  .say .note:empty{display:none}
+  .say .note b{color:var(--mint)}
+  .say .note.in{animation:notein .4s ease}
+  @keyframes notein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
-  .say .msg b{color:var(--amber)}
+  .say .msg b{color:var(--amber);white-space:nowrap}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px;min-height:0}
   .say .sub b{color:var(--amber)}
   .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
@@ -88,6 +93,7 @@
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
   .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px;line-height:1.4}
+  .fb:empty{min-height:0;margin-top:0}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
   .fb.help{color:#cfe3ff;font-weight:600}
   .fb.help b{color:var(--amber)}
@@ -120,6 +126,21 @@
   .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
   .labnav a:hover{text-decoration:underline}
   .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  /* short or narrow screens (phones, Chromebooks): tighter spacing so the box AND the button fit on screen */
+  @media (max-width:430px), (max-height:720px){
+    body{padding-top:12px}
+    .bar{margin-bottom:10px} .dots{margin-bottom:10px}
+    .stage{padding:14px 14px 16px}
+    .say{margin-top:8px;padding:11px 13px 13px}
+    .say .msg{font-size:18px;line-height:1.38}
+    .say .sub{margin-top:4px}
+    .btn{margin-top:10px;padding:11px 24px}
+    .fb{margin-top:8px}
+    .algo.big .cell,.algo.big .op{height:40px}
+    .algo.big .cell{font-size:31px}
+    .algo.big .small .cell,.algo.big .small .op{height:22px;font-size:17px}
+    .algo.big .pbx{top:1px;height:38px;font-size:25px}
+  }
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -155,11 +176,12 @@
     <section class="stage">
       <div class="algo" id="algo" aria-live="polite"></div>
       <div class="say">
+        <div class="note" id="note" aria-live="polite"></div>
         <div class="where" id="where"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
-        <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
+        <button class="btn" id="go">Check</button>
         <div class="checkline" id="checkline"></div>
       </div>
     </section>
@@ -259,7 +281,7 @@ function mulRow(B,mv,p,d,out,shift,where,multCol,firstSub){
     const prod=`${d} × ${digit}${cin?` + ${cin}`:''}`;
     const hot=[['top',gi],['bot',multCol]]; if(cin) hot.push(['small',gi]);
     let sub=cin?`The small <b>${cin}</b> on top is the carry.`:(c===0&&firstSub?firstSub:'');
-    mv.push({kind:'type', where:where(c), hot, open:{row:out,col:oc,w:2}, expect:val,
+    mv.push({kind:'type', where:where(c), hot, open:{row:out,col:oc,w:2}, expect:val, last,
       say: cin?`Multiply, then add the carry: <b>${prod}</b>`:`Multiply: <b>${prod}</b>`, sub,
       wrong:`${prod} = ${val}`,
       partial: val>=10?String(val%10):null,
@@ -267,7 +289,7 @@ function mulRow(B,mv,p,d,out,shift,where,multCol,firstSub){
       after: async (b)=>{
         const row=b.rows[out];
         if(last){ String(val).split('').reverse().forEach((ch,k)=>row[oc-k]=+ch);
-          return val>=10?`Last digit, so write all of <b>${val}</b>.`:''; }
+          return val>=10?`Last digit, so all of <b>${val}</b> goes down.`:''; }
         row[oc]=val%10;
         if(val>=10){
           await flyDigit(out,oc,'small',gi-1,String(cout));
@@ -320,9 +342,9 @@ function buildMoves(p){
     mv.push({kind:'tap', where:`times ${b}`, button:'Write 0', hot:[['bot',W-1]],
       say:`The ones digit of ${b} is <b>0</b>.`, sub:`Press <b>Write 0</b> to start the answer.`,
       run: async (bd)=>{ bd.rows.ans[W-1]=0; bd.pop=['ans',W-1]; draw(); await wait(500); bd.pop=null;
-        return `We are multiplying by <b>${b}</b>, not ${tb}, so the answer starts with a <b>0</b>.`; }});
+        return `The answer starts with a <b>0</b>, because the ${tb} is really <b>${b}</b>.`; }});
     if(tb===1) copyRow(B,mv,p,'ans',1,`times ${b}`,`Now the <b>1</b> in the tens place.`,`${a} × 1 = ${a}, so copy ${a}.`,'',W-2,false);
-    else mulRow(B,mv,p,tb,'ans',1,()=>`times ${b}`,W-2,`Now multiply ${a} by the <b>${tb}</b>.`);
+    else mulRow(B,mv,p,tb,'ans',1,()=>`times ${b}`,W-2,'');
     return {B,mv};
   }
   const B=newBoard(p,true), W=B.W;
@@ -334,13 +356,13 @@ function buildMoves(p){
   const r2=`Row 2 · times ${tb*10}`;
   if(tb===1){
     copyRow(B,mv,p,'p2',1,r2,`Now the <b>1</b> in the tens place. It is really 10.`,
-      `${a} × 10 = ${a*10}: the same digits with a 0 on the end.`,`Times 10 just puts a <b>0</b> on the end.`,W-2,true);
+      `${a} × 10 = ${a*10}: the same digits with a 0 on the end.`,`Row 2 is <b>${a*10}</b>.`,W-2,true);
   } else {
     mv.push({kind:'tap', where:r2, button:'Write 0', hot:[['bot',W-2]],
       say:`Now multiply by the <b>${tb}</b> in the tens place.`, sub:`Press <b>Write 0</b> to start row 2.`,
       run: async (bd,show)=>{ await clearCarries(bd,show);
         bd.rows.p2[W-1]=0; bd.pop=['p2',W-1]; draw(); await wait(500); bd.pop=null;
-        return `We are multiplying by <b>${tb*10}</b>, not ${tb}, so this row starts with a <b>0</b>.`; }});
+        return `Row 2 starts with a <b>0</b>, because the ${tb} is really <b>${tb*10}</b>.`; }});
     mulRow(B,mv,p,tb,'p2',1,()=>r2,W-2,'');
   }
   addRows(B,mv,p);
@@ -375,10 +397,10 @@ function addRows(B,mv,p){
     mv.push({kind:'type', phase:'add', where, hot, open:{row:'sum',col:gi,w:2}, expect:s,
       say:`Add the <b>${NAMES[c]}</b>: <b>${txt}</b>`,
       sub:cin?`The small <b>${cin}</b> is the carry.`:'',
-      wrong:`${txt} = ${s}`, partial:s>=10?String(s%10):null, add:true,
+      wrong:`${txt} = ${s}`, partial:s>=10?String(s%10):null, add:true, last,
       after: async (bd)=>{
         if(last){ String(s).split('').reverse().forEach((ch,k)=>bd.rows.sum[gi-k]=+ch);
-          return s>=10?`Last column, so write all of <b>${s}</b>.`:''; }
+          return s>=10?`Last column, so all of <b>${s}</b> goes down.`:''; }
         bd.rows.sum[gi]=s%10;
         if(s>=10){ await flyDigit('sum',gi,'addc',gi-1,String(cout)); bd.rows.addc[gi-1]=cout;
           return `${s} is too big for one box. Keep the <b>${s%10}</b>. Carry the <b>${cout}</b>.`; }
@@ -440,7 +462,7 @@ async function flyDigit(fromRow,fromCol,toRow,toCol,text,big){
   s.style.left=(ra.left+ra.width/2-(big?10:7))+'px'; s.style.top=(ra.top+ra.height/2-(big?18:13))+'px';
   document.body.appendChild(s); s.getBoundingClientRect();
   s.style.transform=`translate(${rz.left-ra.left}px,${rz.top-ra.top}px)`;
-  await wait(800); s.remove();
+  await wait(680); s.remove();
 }
 
 /* ---------- playing one problem ---------- */
@@ -460,16 +482,30 @@ function showMove(note){
   }
   draw();
   $('where').textContent=m.where;
+  setNote(note);
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=note? note+(m.sub?'<br>'+m.sub:'') : (m.sub||'');
+  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go'); go.disabled=false;
   if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
   else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus(); }
+  setTimeout(keepInView,60);
 }
+// the note about the move just done: its own small mint line, above the new instruction
+function setNote(t){ const n=$('note'); n.classList.remove('in'); n.innerHTML=t?'✓ '+t:''; if(t){ void n.offsetWidth; n.classList.add('in'); } }
+// phone keyboard open: scroll so the Check button is not hidden (never past the top of the problem)
+function keepInView(){
+  const vv=window.visualViewport, go=$('go'), st=document.querySelector('.stage');
+  if(!vv||!go||!st||$('play').classList.contains('hide')) return;
+  const need=go.getBoundingClientRect().bottom-vv.offsetTop-(vv.height-10);
+  if(need<=0) return;
+  const room=st.getBoundingClientRect().top-vv.offsetTop+parseFloat(getComputedStyle(st).paddingTop)-4;
+  if(room>0) window.scrollBy({top:Math.min(need,room),behavior:reduce?'auto':'smooth'});
+}
+if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(keepInView,50));
 async function doTap(){
   if(M.busy) return; M.busy=true; const m=M.mv[M.i];
-  $('go').disabled=true;
+  $('go').disabled=true; setNote('');
   const show=t=>{ $('sub').innerHTML=t; };
   const note=await m.run(BOARD,show); draw();
   $('go').disabled=false; M.busy=false;
@@ -482,15 +518,16 @@ async function check(){
   if(v===''){ fb.textContent='Type a number in the glowing box.'; fb.className='fb no'; box.focus(); return; }
   if(+v!==m.expect){
     M.tries++; M.err=true; box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
-    if(M.tries>=2){ fb.innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; fb.className='fb no'; box.placeholder=String(m.expect); }
-    else if(m.fact){ fb.innerHTML=`Not quite. Try this: ${m.help}`; fb.className='fb help'; }
-    else if(m.partial && v===m.partial){ fb.innerHTML=`Close! Type the <b>whole</b> number (both digits). We carry next.`; fb.className='fb no'; }
-    else if(m.noCarry!==null && m.noCarry!==undefined && +v===m.noCarry){ fb.innerHTML=`Almost! Now add the small carry, <b>${m.cin}</b>.`; fb.className='fb no'; }
-    else { fb.innerHTML='Not quite. '+(m.add?'Add the yellow numbers again, one at a time.':'Multiply the yellow numbers again.'); fb.className='fb no'; }
+    if(M.tries>=2){ fb.innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
+    else if(m.fact){ fb.innerHTML=`Not quite. Try this: ${m.help}`; }
+    else if(m.partial && v===m.partial){ fb.innerHTML=m.last?`Close! This is the last one, so type <b>both</b> digits.`:`Close! Type the <b>whole</b> number (both digits). We carry next.`; }
+    else if(m.noCarry!==null && m.noCarry!==undefined && +v===m.noCarry){ fb.innerHTML=`Almost! Now add the small carry, <b>${m.cin}</b>.`; }
+    else { fb.innerHTML='Not quite. '+(m.add?'Add the yellow numbers again, one at a time.':m.cin?`Multiply the two big yellow digits, then add the small <b>${m.cin}</b>.`:'Multiply the yellow numbers again.'); }
+    fb.className='fb help';
     box.select(); return;
   }
   M.busy=true; if(BOARD.fact) BOARD.open=false; else BOARD.open=null;
-  fb.textContent='✓'; fb.className='fb yes';
+  fb.textContent='✓'; fb.className='fb yes'; setNote('');
   const note=await m.after(BOARD); draw();
   M.busy=false; M.i++; G.si=M.i;
   if(M.i>=M.mv.length) finish(note); else showMove(note);
@@ -506,7 +543,7 @@ function finish(note){
     $('sub').innerHTML=right?'':'Say it to yourself once to lock it in.';
   } else {
     $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${eq}</b>`;
-    $('sub').innerHTML=note||'';
+    setNote(note); $('sub').innerHTML='';
     $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
   }
   $('fb').textContent=''; $('fb').className='fb';

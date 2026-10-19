@@ -58,24 +58,31 @@
   @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
-    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+    transition:transform .65s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
   .pop{animation:pop .35s ease}
   @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
   @media (max-width:430px){.algo .cell{width:40px;font-size:38px}.algo .op{width:36px}.pbx{width:36px;font-size:28px}.pbx.w2{width:76px}}
 
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .note{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;padding:0 0 9px;margin:0 0 10px;border-bottom:1px dashed var(--panel-edge)}
+  .say .note:empty{display:none}
+  .say .note b{color:var(--mint)}
+  .say .note.in{animation:notein .4s ease}
+  @keyframes notein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
-  .say .msg b{color:var(--amber)}
+  .say .msg b{color:var(--amber);white-space:nowrap}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px;min-height:0}
   .say .sub b{color:var(--amber)}
   .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
   .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
-  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px;line-height:1.4}
+  .fb:empty{min-height:0;margin-top:0}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb.help{color:#cfe3ff;font-weight:600} .fb.help b{color:var(--amber)}
   .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
   .checkline.show{display:block}
   .checkline b{color:var(--mint)}
@@ -99,10 +106,22 @@
   .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
   .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
   .hide{display:none!important}
   .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
   .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
   .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  /* short or narrow screens (phones, Chromebooks): tighter spacing so the box AND the button fit on screen */
+  @media (max-width:430px), (max-height:720px){
+    body{padding-top:12px}
+    .bar{margin-bottom:10px} .dots{margin-bottom:10px}
+    .stage{padding:14px 14px 16px}
+    .say{margin-top:8px;padding:11px 13px 13px}
+    .say .msg{font-size:18px;line-height:1.38}
+    .say .sub{margin-top:4px}
+    .btn{margin-top:10px;padding:11px 24px}
+    .fb{margin-top:8px}
+  }
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -137,11 +156,12 @@
     <section class="stage">
       <div class="algo" id="algo" aria-live="polite"></div>
       <div class="say">
+        <div class="note" id="note" aria-live="polite"></div>
         <div class="where" id="where"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
-        <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
+        <button class="btn" id="go">Check</button>
         <div class="checkline" id="checkline"></div>
       </div>
     </section>
@@ -196,7 +216,7 @@ function newBoard(p){
   const W=Math.max(String(p.a).length,String(p.b).length,String(p.answer).length);
   const pad=(n)=>String(n).padStart(W,' ').split('').map(d=>d===' '?null:+d);
   return {W, op:p.op, top:pad(p.a), bot:pad(p.b), small:Array(W).fill(null), ans:Array(W).fill(null),
-          struck:Array(W).fill(false), col:-1, open:null, fade:-1};
+          struck:Array(W).fill(false), col:-1, open:null, fade:[]};
 }
 
 /* ---------- the moves for one problem ---------- */
@@ -207,20 +227,20 @@ function movesAdd(p){
     const gi=W-1-c, da=B.top[gi]||0, db=B.bot[gi], cin=carry;
     const sum=da+(db||0)+cin, last=(c===n-1);
     const parts=[da].concat(db===null?[]:[db]);
-    let say=`Add the <b>${NAMES[c]}</b>: <b>${parts.join(' + ')}${cin?` + ${cin}`:''}</b>${cin?' <span style="font-size:15px;color:#cfd3f5">(the small '+cin+' is the carry)</span>':''}`;
-    const sub=db===null?`Only one number is in this column.`:``;
+    let say=`Add the <b>${NAMES[c]}</b>: <b>${parts.join(' + ')}${cin?` + ${cin}`:''}</b>`;
+    const sub=(cin?`The small <b>${cin}</b> on top is the carry.`:'')+(db===null?`${cin?' ':''}Only one number is in this column.`:'');
     const carryOut=last?0:Math.floor(sum/10);
     mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:2, expect:sum, say, sub,
       wrong:`${parts.join(' + ')}${cin?` + ${cin}`:''} = ${sum}`,
-      partial:sum>=10?String(sum%10):null,
+      partial:sum>=10?String(sum%10):null, last,
       after: async (b)=>{
         if(sum>=10 && !last){
           b.ans[gi]=sum%10;
           await flyDigit(gi, 'ans', gi-1, 'small', String(carryOut));
           b.small[gi-1]=carryOut;
-          return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b> to the ${NAMES[c+1]}.`;
+          return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b>.`;
         }
-        if(sum>=10 && last){ b.ans[gi]=sum%10; b.ans[gi-1]=Math.floor(sum/10); return `Last column, so write all of <b>${sum}</b>.`; }
+        if(sum>=10 && last){ b.ans[gi]=sum%10; b.ans[gi-1]=Math.floor(sum/10); return `Last column, so all of <b>${sum}</b> goes down.`; }
         b.ans[gi]=sum; return '';
       }});
     carry=carryOut;
@@ -244,28 +264,29 @@ function movesSub(p){
       const was=now[gi], lendWas=now[j];
       now[j]-=1; plan.zeros.forEach(k=>now[k]=9); now[gi]+=10;
       const jNew=now[j], gNew=now[gi];          // fixed now: later borrows must not change this animation
-      const zeroTxt=plan.zeros.length?` The 0 next to it has nothing to lend, so we go to the <b>${lendWas}</b>.`:'';
+      const zeroTxt=plan.zeros.length?` The 0 next door has nothing to lend, so the <b>${lendWas}</b> lends.`:'';
       mv.push({kind:'tap', where:`${NAMES[c]} column`, col:gi, button:'Borrow',
-        say: lent[gi]?`This digit already lent 1, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>, so we <b>borrow</b> again.`
+        say: lent[gi]?`The ${NAMES[c]} digit already lent 1, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>. <b>Borrow</b> again.`
                      :`<b>${was}</b> is smaller than <b>${bot}</b>. We need to <b>borrow</b>.`,
-        sub:`Press <b>Borrow</b> to watch it happen.${zeroTxt}`,
+        sub:`${zeroTxt?zeroTxt.trim()+' ':''}Press <b>Borrow</b> to watch.`,
         run: async (b,show)=>{
           b.struck[j]=true; b.small[j]=jNew; draw(); show(`The <b>${lendWas}</b> lends 1 and becomes <b>${jNew}</b>.`); await wait(1100);
           for(const k of plan.zeros){ b.struck[k]=true; b.small[k]=10; draw(); show(`The 0 gets 10…`); await wait(900);
             b.small[k]=9; draw(); show(`…then it lends 1, so it is <b>9</b>.`); await wait(1000); }
           await flyDigit(gi-1,'top',gi,'small','+10');
           b.struck[gi]=true; b.small[gi]=gNew; draw();
-          return `The <b>${was}</b> becomes <b>${gNew}</b>. Now we can subtract.`;
+          return `The <b>${was}</b> became <b>${gNew}</b>.`;
         }});
     }
     const t=now[gi], diff=t-bot, isLeadZero=(c===n-1 && diff===0 && n>1);
+    const fadeCols=[]; for(let k=String(p.answer).length;k<n;k++) fadeCols.push(W-1-k);   // every 0 at the front (e.g. 633 − 626 = 007)
     const lentEarlier=lent[gi]&&!borrowedHere;
     mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:1, expect:diff,
       say: hasBot?`Subtract the <b>${NAMES[c]}</b>: <b>${t} − ${bot}</b>`:`Nothing to take away. Bring down the <b>${t}</b>.`,
-      sub: lentEarlier?`This digit lent 1 already. Use the small <b>${t}</b> on top — that is what it is worth now.`:'',
-      wrong:`${t} − ${bot} = ${diff}`,
+      sub: lentEarlier?`Use the small <b>${t}</b> on top, not the crossed-out digit.`:'',
+      wrong:hasBot?`${t} − ${bot} = ${diff}`:`just ${t}`, t, bot, hasBot,
       after: async (b)=>{ b.ans[gi]=diff;
-        if(isLeadZero){ draw(); await wait(500); b.fade=gi; return `We don’t write a 0 at the front of a number, so it disappears.`; }
+        if(isLeadZero){ draw(); await wait(500); b.fade=fadeCols; return (fadeCols.length>1?`We don’t write 0s at the front of a number, so they fade away.`:`We don’t write a 0 at the front of a number, so it fades away.`); }
         return ''; }});
   }
   return {B, mv};
@@ -281,11 +302,11 @@ function cellsRow(cls,lead,arr,kind){
   let h=`<div class="row${cls?' '+cls:''}"><span class="op">${lead}</span>`;
   arr.forEach((d,i)=>{
     const c=[];
-    if(kind!=='small' && BOARD.col===i) c.push('col');
+    if(BOARD.col===i && (kind!=='small' || d!==null)) c.push('col');
     if(kind==='top' && BOARD.struck[i]) c.push('struck');
     if((kind==='top'||kind==='bot') && BOARD.col===i) c.push('hot');
     if(kind==='ans' && d!==null) c.push('done');
-    if(kind==='ans' && BOARD.fade===i) c.push('fade');
+    if(kind==='ans' && BOARD.fade.includes(i)) c.push('fade');
     let inner=d===null?'':d;
     const o=BOARD.open;
     if(o && o.row===kind && o.col===i){
@@ -314,7 +335,7 @@ async function flyDigit(fromCol,fromRow,toCol,toRow,text){
   s.style.left=(ra.left+ra.width/2-12)+'px'; s.style.top=(ra.top+ra.height/2-18)+'px';
   document.body.appendChild(s); s.getBoundingClientRect();
   s.style.transform=`translate(${rz.left-ra.left}px,${rz.top-ra.top}px)`;
-  await wait(800); s.remove();
+  await wait(680); s.remove();
 }
 
 /* ---------- playing one problem ---------- */
@@ -331,17 +352,31 @@ function showMove(note){
   BOARD.col=m.col; BOARD.open=m.kind==='type'?{row:m.row,col:m.col,w:m.w,label:m.where}:null;
   draw();
   $('where').textContent=`${m.where} · ${colCount()}`;
+  setNote(note);
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=note? note+(m.sub?'<br>'+m.sub:'') : (m.sub||'');
+  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go');
   if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
   else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box){ box.focus(); } }
+  setTimeout(keepInView,60);
 }
-function colCount(){ const cols=[...new Set(M.mv.map(m=>m.col))]; return `column ${cols.indexOf(M.mv[M.i].col)+1} of ${cols.length}`; }
+// the note about the move just done: its own small mint line, above the new instruction
+function setNote(t){ const n=$('note'); n.classList.remove('in'); n.innerHTML=t?'✓ '+t:''; if(t){ void n.offsetWidth; n.classList.add('in'); } }
+// phone keyboard open: scroll so the Check button is not hidden (never past the top of the problem)
+function keepInView(){
+  const vv=window.visualViewport, go=$('go'), st=document.querySelector('.stage');
+  if(!vv||!go||!st||$('play').classList.contains('hide')) return;
+  const need=go.getBoundingClientRect().bottom-vv.offsetTop-(vv.height-10);
+  if(need<=0) return;
+  const room=st.getBoundingClientRect().top-vv.offsetTop+parseFloat(getComputedStyle(st).paddingTop)-4;
+  if(room>0) window.scrollBy({top:Math.min(need,room),behavior:reduce?'auto':'smooth'});
+}
+if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(keepInView,50));
+function colCount(){ const cols=[...new Set(M.mv.map(m=>m.col))]; return `${cols.indexOf(M.mv[M.i].col)+1} of ${cols.length}`; }
 async function doTap(){
   if(M.busy) return; M.busy=true; const m=M.mv[M.i];
-  $('go').disabled=true;
+  $('go').disabled=true; setNote('');
   const show=t=>{ $('sub').innerHTML=t; };
   const note=await m.run(BOARD,show);
   $('go').disabled=false; M.busy=false;
@@ -353,12 +388,13 @@ async function check(){
   if(v===''){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
   if(+v!==m.expect){
     M.tries++; M.err=true; box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
-    if(m.partial && v===m.partial){ $('fb').innerHTML=`Close! Type the <b>whole</b> answer (both digits). We carry next.`; }
-    else if(M.tries===1){ $('fb').innerHTML='Not quite. '+(current.op==='+'?'Add the yellow numbers again, one at a time.':'Try again. Tip: count up from the bottom number to the top number.'); }
+    if(M.tries===1 && m.partial && v===m.partial){ $('fb').innerHTML=m.last?`Close! This is the last column, so type <b>both</b> digits.`:`Close! Type the <b>whole</b> answer (both digits). We carry next.`; }
+    else if(M.tries===1){ $('fb').innerHTML='Not quite. '+(current.op==='+'?'Add the yellow numbers again, one at a time.'
+        :m.hasBot?`Count up from <b>${m.bot}</b> to <b>${m.t}</b>.`:`Nothing is taken away, so it stays <b>${m.t}</b>.`); }
     else { $('fb').innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
-    $('fb').className='fb no'; box.select(); return;
+    $('fb').className='fb help'; box.select(); return;
   }
-  M.busy=true; BOARD.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  M.busy=true; BOARD.open=null; $('fb').textContent='✓'; $('fb').className='fb yes'; setNote('');
   const note=await m.after(BOARD); draw();
   M.busy=false; M.i++; G.si=M.i;
   if(M.i>=M.mv.length) finish(note); else showMove(note);
@@ -369,7 +405,7 @@ function finish(note){
   $('where').textContent='Done';
   $('msg').innerHTML=right?`✓ Solved it! <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`
                           :`✓ Done. <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`;
-  $('sub').innerHTML=note||'';
+  setNote(note); $('sub').innerHTML='';
   $('fb').textContent=''; $('fb').className='fb';
   $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
