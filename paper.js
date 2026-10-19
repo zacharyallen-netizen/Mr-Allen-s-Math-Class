@@ -139,6 +139,8 @@
       });
     }
     if (V && V.relayout) setTimeout(V.relayout, 50);
+    // page-specific paper changes (a page sets window.PAPER_HOOKS = [function (KEY) {…}])
+    (window.PAPER_HOOKS || []).forEach(function (f) { try { f(KEY); } catch (e) { console.error('paper hook', e); } });
     document.documentElement.setAttribute('data-paper-ready', '1');
   }
   if (document.readyState === 'complete') setTimeout(run, 60); else window.addEventListener('load', function () { setTimeout(run, 60); });
