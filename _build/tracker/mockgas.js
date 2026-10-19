@@ -19,6 +19,7 @@ class Range {
     v.forEach((row, i) => row.forEach((x, j) => { if (x === undefined || (typeof x === 'number' && !isFinite(x))) throw new Error('bad value ' + x + ' at ' + (this.r + i) + ',' + (this.c + j) + ' on ' + this.sh.name); this.sh.set(this.r + i, this.c + j, x); })); return this;
   }
   setValue(x) { this.sh.set(this.r, this.c, x); return this; }
+  getValue() { return this.getValues()[0][0]; }
   setBackgrounds(b) { if (b.length !== this.nr || b.some(r => r.length !== this.nc)) throw new Error(`setBackgrounds size mismatch on ${this.sh.name}`); return this; }
 }
 ['setBackground','setNumberFormat','setFontWeight','setFontColor','setFontStyle','setFontSize','setWrap',

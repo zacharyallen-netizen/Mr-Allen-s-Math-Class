@@ -8,13 +8,13 @@ const GROUPS = [
   ['Toward Grade Level', [['7', ':', 'Ratios & Proportions'], ['8', 'x²', 'Expressions & Order of Ops']]],
 ];
 const SBG = [
-  ['5', 'Beyond', '12 out of 12 on the Skill Check <b>and</b> I reached Level 6 in practice.'],
-  ['4', 'Mastery', '10 or 11 out of 12. Only small mistakes.'],
-  ['3', 'Getting there', '8 or 9 out of 12. I know the basics but still miss some.'],
-  ['2', 'Partly', '5 to 7 out of 12. I need the worked steps or help.'],
-  ['1', 'Starting', '0 to 4 out of 12. I need to practice before I try again.'],
+  ['5', 'Beyond', '100% on the Skill Check <b>and</b> I reached Level 6 in practice.'],
+  ['4', 'Mastery', '80% to 99%. Only small mistakes.'],
+  ['3', 'Getting there', '65% to 79%. I know the basics but still miss some.'],
+  ['2', 'Partly', '40% to 64%. I need the worked steps or help.'],
+  ['1', 'Starting', 'Below 40%. I need to practice before I try again.'],
 ];
-const tryCell = '<td class="t"><span class="d">Date</span><span class="sc"><b></b>/12</span><span class="lv">SBG</span></td>';
+const tryCell = '<td class="t"><span class="d">Date</span><span class="sc"><b></b>%</span><span class="lv">SBG</span></td>';
 let rows = '';
 GROUPS.forEach(([g, mods]) => {
   rows += '<tr class="grp"><td colspan="7">' + g + '</td></tr>';
@@ -69,11 +69,11 @@ td.goal{width:.62in;text-align:center}.box{display:inline-block;width:20px;heigh
 <div class="mid">
  <div class="how"><b class="h">How to use this tracker</b><ol>
   <li><b>Practice</b> a module in sets of 10. Circle the <b>highest level</b> you reach (1–6).</li>
-  <li>When you feel ready, take the <b>Skill Check</b> (12 questions). Write the date and your score.</li>
-  <li>Use the scale to give yourself an <b>SBG level</b> (1–5) for that try.</li>
+  <li>When you feel ready, take the <b>Skill Check</b>. Write the date and your percent.</li>
+  <li>The Skill Check shows your <b>SBG level</b> (1–5) in <b>My plan</b>. Write it down.</li>
   <li>Write your <b>best</b> level. Check the box when you reach <b>4 or higher</b>, my goal.</li>
-  <li>Below a 4? Read the worked steps for the ones you missed, practice again, then retake it.</li></ol></div>
- <div class="sbg"><div class="h">Our SBG scale for the Skill Check</div>
+  <li>Below a 4? Tap the <b>Practice</b> button in My plan, do a set of 10, then retake it.</li></ol></div>
+ <div class="sbg"><div class="h">Our SBG scale for the Skill Check (percent right)</div>
   ${SBG.map(([n, w, t]) => `<div class="r"><span class="n c${n}">${n}</span><span class="w">${w}</span><span>${t}</span></div>`).join('')}
  </div>
 </div>

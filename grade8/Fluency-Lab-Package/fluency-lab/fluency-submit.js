@@ -101,7 +101,9 @@
           name:   name,
           module: FL.module,
           score:  FL.score,
-          total:  FL.total
+          total:  FL.total,
+          sbg:      FL.extra ? FL.extra.sbg : '',
+          practice: FL.extra ? FL.extra.practice : ''
         })
       })
       .then(function (r) { return r.json(); })

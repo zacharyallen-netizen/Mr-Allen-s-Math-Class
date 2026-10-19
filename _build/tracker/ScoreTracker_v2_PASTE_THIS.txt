@@ -149,8 +149,10 @@ function handleFluency_(d) {
   try {
     var log = book_().getSheetByName(LOG_TAB);
     var pct = Math.round(score / total * 100);
-    log.appendRow([new Date(), name, module, score, total, pct / 100]);
+    var sbg = Number(d.sbg), practice = clip_(d.practice, 300);
+    log.appendRow([new Date(), name, module, score, total, pct / 100, sbg >= 1 && sbg <= 5 ? sbg : '', practice]);
     log.getRange(log.getLastRow(), 6).setNumberFormat('0%');
+    if (!log.getRange(1, 7).getValue()) log.getRange(1, 7, 1, 2).setValues([['SBG level', 'Practice next']]).setFontWeight('bold');
     rebuildSummary();
   } finally { lock.releaseLock(); }
   return json_({ ok: true, name: name, pct: Math.round(score / total * 100) });
@@ -600,7 +602,7 @@ function ensureTab_(ss, name) { return ss.getSheetByName(name) || ss.insertSheet
 function ensureLog_(ss) {
   var log = ensureTab_(ss, LOG_TAB);
   if (log.getLastRow() === 0) {
-    log.appendRow(['When','Student','Skill','Score','Out of','Percent']);
+    log.appendRow(['When','Student','Skill','Score','Out of','Percent','SBG level','Practice next']);
     styleHeader_(log, 6);
     log.setColumnWidth(1,160); log.setColumnWidth(2,180); log.setColumnWidth(3,230);
   }

@@ -88,3 +88,13 @@ console.log('     wilcoxon:', JSON.stringify(w));
 const P = A.phi(1.96);
 assert(Math.abs(P - 0.9750021) < 1e-6, 'normal CDF accurate');
 console.log(process.exitCode ? 'SOME TESTS FAILED' : 'ALL TESTS PASSED');
+
+// 3. Skill Check plan columns
+{
+  const r2 = post({ code: 'allen-8th', name: 'plan tester', module: 'Divide', score: 10, total: 13, sbg: 3, practice: 'Remainders (L6)' });
+  const sc = ss.getSheetByName('Scores').data; const last = sc[sc.length - 1];
+  console.log((r2.ok && last[6] === 3 && last[7] === 'Remainders (L6)' && sc[0][6] === 'SBG level') ? 'ok   plan columns saved' : 'FAIL: plan columns ' + JSON.stringify([sc[0], last]));
+  const r3 = post({ code: 'allen-8th', name: 'old page', module: 'Divide', score: 5, total: 13 });
+  const l3 = ss.getSheetByName('Scores').data.slice(-1)[0];
+  console.log(r3.ok && l3[6] === '' ? 'ok   old pages (no plan) still accepted' : 'FAIL: old page ' + JSON.stringify(l3));
+}

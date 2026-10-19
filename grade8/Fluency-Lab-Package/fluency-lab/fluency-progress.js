@@ -27,6 +27,9 @@
   // ── 1. remember the level ───────────────────────────────────────
   var saved = +get();
   if (saved >= 1 && saved <= 6) { level = saved; }          // `level` is the page's own variable
+  // a Skill Check "Practice Level N" button opens the lab with ?level=N
+  var asked = +(/[?&]level=(\d)/.exec(location.search) || [])[1];
+  if (asked >= 1 && asked <= 6) { level = asked; put(level); }
   var origHUD = window.updateHUD;
   window.updateHUD = function () { origHUD(); put(level); };
 
@@ -39,7 +42,8 @@
     var d = document.createElement('div');
     d.id = 'flresume';
     d.style.cssText = 'margin:0 auto 14px;max-width:390px;font-size:14px;color:#cfd3f5;line-height:1.5';
-    d.innerHTML = 'Welcome back! You are on <b style="color:#63a8ef">Level ' + level + '</b>. ' +
+    d.innerHTML = (asked === level ? 'Your Skill Check plan sent you to ' : 'Welcome back! You are on ') +
+      '<b style="color:#63a8ef">Level ' + level + '</b>. ' +
       '<a href="#" id="flrestart" style="color:#9aa0cf;text-decoration:underline">Start over at Level 1</a>';
     btn.parentNode.insertBefore(d, btn);
     document.getElementById('flrestart').addEventListener('click', function (e) {
