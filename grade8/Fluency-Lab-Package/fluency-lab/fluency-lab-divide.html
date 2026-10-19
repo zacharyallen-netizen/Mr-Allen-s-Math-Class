@@ -71,7 +71,7 @@
   @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;font-size:38px;color:var(--amber);pointer-events:none;
-    transition:transform .75s cubic-bezier(.4,.1,.2,1);text-shadow:0 2px 10px #000}
+    transition:transform .6s cubic-bezier(.4,.1,.2,1);text-shadow:0 2px 10px #000}
   .pop{animation:pop .35s ease}
   @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
   @media (max-width:430px){:root{--cw:42px}.ld .cell{height:46px;font-size:34px}.pbx{height:42px}}
@@ -85,6 +85,9 @@
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
   .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .last{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;margin:0 0 8px;padding-bottom:8px;border-bottom:1px dashed var(--panel-edge)}
+  .say .last:empty{display:none}
+  .say .last b{color:var(--mint)}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber)}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
@@ -158,10 +161,10 @@
       <div class="ttl">Here is one worked out: 128 ÷ 4</div>
       <div class="ld" id="exPaper"></div>
       <ol>
-        <li><b>Divide:</b> 4 fits into 12 three times. Write 3 on top.</li>
+        <li><b>Divide:</b> 4 is bigger than 1, so use 12. 4 fits into 12 three times. Write 3 on top.</li>
         <li><b>Multiply:</b> 3 × 4 = 12.</li>
         <li><b>Subtract:</b> 12 − 12 = 0.</li>
-        <li><b>Bring down</b> the 8. Do it again with 8.</li>
+        <li><b>Bring down</b> the 8. 08 is just 8. Do it again with 8.</li>
       </ol>
       <div class="excap">The answer is <b>32</b>.</div>
     </div>
@@ -181,6 +184,7 @@
       <div class="dmsb" id="dmsb"></div>
       <div class="say">
         <div class="where" id="where"></div>
+        <div class="last" id="last" aria-live="polite"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
         <div id="helper"></div>
@@ -276,27 +280,28 @@ function movesLong(p){
         : `Nothing left to bring down, and nothing is left over.`);
     /* Divide */
     let dsub='';
-    if(ci===0 && c.i>0) dsub=`${d} does not fit into ${s.slice(0,c.i)}, so we use <b>${Wn}</b>.`;
-    if(c.qd===0) dsub=`${d} does not fit into ${Wn}. Write <b>0</b> on top.`;
+    if(ci===0 && c.i>0) dsub=`${d} is bigger than ${s.slice(0,c.i)}, so use <b>${Wn}</b>.`;
+    if(c.qd===0) dsub= Wn===0 ? `There is nothing to divide. Write <b>0</b> on top.`
+                              : `${d} is bigger than ${Wn}. It fits 0 times. Write <b>0</b> on top.`;
     mv.push({kind:'type', step:'D', where:round, r:0, c:e, w:1, expect:c.qd, past, hot:wHot.concat([[1,0]]),
-      say:`How many <b>${d}</b>s fit into <b>${Wn}</b>?`, sub:dsub, helper:{d, target:Wn, kmax:9},
+      say:`How many <b>${d}</b>s fit into <b>${Wn}</b>?`, sub:dsub, helper:c.qd===0?null:{d, target:Wn, kmax:9},
       tryMsg:k=>{ if(k*d>Wn) return `${d} × ${k} = ${k*d}. That is bigger than ${Wn}. Try a smaller number.`;
                   if((k+1)*d<=Wn) return `${d} × ${k} = ${k*d}. Another ${d} still fits. Try a bigger number.`; return null; },
       wrong: c.qd===0 ? `It is <b>0</b>. ${d} is bigger than ${Wn}.`
                       : `It is <b>${c.qd}</b>. ${d} × ${c.qd+1} = ${(c.qd+1)*d} is too big.`,
       apply:b=>{ b.rows[0].v[e]=c.qd; if(c.qd===0 && last && p.r>0) b.rtxt=`r ${p.r}`; },
-      note:()=> c.qd===0 ? (last ? endNote() : `Nothing to subtract.`) : ''});
+      note:()=> c.qd===0 ? (last ? endNote() : `0 × ${d} = 0, so there is nothing to subtract.`) : ''});
     if(c.qd>0){
       const pr=nrows++, ps=String(c.prod), pcols=[...ps].map((_,k)=>e-ps.length+1+k);
       mv.push({kind:'type', step:'M', where:round, r:pr, c:e, w:ps.length, newRow:'prod', expect:c.prod, past,
         hot:[[0,e],[1,0]], say:`Multiply: <b>${c.qd} × ${d}</b>`, sub:`Write it under ${Wn}.`,
-        nudge:'Not quite. Multiply the yellow numbers again.', wrong:`It is <b>${c.qd} × ${d} = ${c.prod}</b>.`,
+        nudge:'Not quite. Multiply the yellow numbers again.', wrong:`${c.qd} × ${d} = <b>${c.prod}</b>.`,
         apply:b=>{ pcols.forEach((col,k)=>b.rows[pr].v[col]=+ps[k]); b.mn[pr]=pcols[0]; b.ul[pr]=[Math.min(pcols[0],w0),e]; },
         note:()=>''});
       const sr=nrows++;
       mv.push({kind:'type', step:'S', where:round, r:sr, c:e, w:1, newRow:'work', expect:c.rem, past,
         hot:wHot.concat(pcols.map(col=>[pr,col])), say:`Subtract: <b>${Wn} − ${c.prod}</b>`, sub:'',
-        nudge:'Not quite. Subtract the yellow numbers again.', wrong:`It is <b>${Wn} − ${c.prod} = ${c.rem}</b>.`,
+        nudge:'Not quite. Subtract the yellow numbers again.', wrong:`${Wn} − ${c.prod} = <b>${c.rem}</b>.`,
         apply:b=>{ b.rows[sr].v[e]=c.rem; if(last && p.r>0) b.rtxt=`r ${p.r}`; },
         note:endNote});
       wr=sr; wcols=[e];
@@ -304,12 +309,12 @@ function movesLong(p){
     if(c.next!==null){
       const row=wr, to=e+1, nextW=c.rem*10+c.next, keep=String(nextW).length;
       const fadeCols=[]; for(let col=1;col<to-keep+1;col++) fadeCols.push(col);
-      const zeroGone=nextW>0 && wcols.some(col=>col<to-keep+1);
       mv.push({kind:'tap', step:'B', where:round, button:'Bring down ↓', past, hot:[[1,to]], col:to, colRow:1, slot:[row,to],
         say:`Bring down the <b>${c.next}</b>.`, sub:`Press <b>Bring down</b> to slide it down.`,
         apply:b=>{ b.rows[row].v[to]=c.next; fadeCols.forEach(col=>{ if(b.rows[row].v[col]!==null) b.fade[row+':'+col]=true; }); },
         run: async function(b){ await flyDigit([1,to],[row,to],String(c.next)); this.apply(b); },
-        note:()=> (zeroGone ? `The 0 in front does not count. Now we have <b>${nextW}</b>.` : `Now we have <b>${nextW}</b>.`)});
+        note:()=>{ let shown=''; for(let col=1;col<=to;col++){ const v=BOARD.rows[row].v[col]; if(v!==null) shown+=v; }
+          return shown!==String(nextW) ? `<b>${shown}</b> is just <b>${nextW}</b>.` : `Now we have <b>${nextW}</b>.`; }});
       wcols=[]; for(let col=to-keep+1;col<=to;col++) wcols.push(col);
     }
   });
@@ -371,7 +376,7 @@ async function flyDigit(from,to,text){
   s.style.left=(ra.left+ra.width/2-sr.width/2)+'px'; s.style.top=(ra.top+ra.height/2-sr.height/2)+'px';
   s.getBoundingClientRect();
   s.style.transform=`translate(${rz.left-ra.left}px,${rz.top-ra.top}px)`;
-  await wait(850); s.remove();
+  await wait(650); s.remove();
 }
 function drawFact(open){
   const {N,d,q}=current;
@@ -410,7 +415,8 @@ function showMove(note){
   }
   $('where').textContent=m.where;
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=[note,m.sub].filter(Boolean).join('<br>');
+  $('last').innerHTML=note?`✓ ${note}`:'';
+  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   $('helper').innerHTML=m.helper?`<button type="button" class="helpbtn" id="helpbtn">Stuck? Show the ${m.helper.d}s</button>`:'';
   const go=$('go'); go.disabled=false;
@@ -419,8 +425,9 @@ function showMove(note){
   keepInView();
 }
 // keep the open box AND the button on screen (long problems grow tall on phones)
-function keepInView(){ try{ const go=$('go'), box=$('box');
-  const top=box?box.getBoundingClientRect().top:$('msg').getBoundingClientRect().top, bot=go.getBoundingClientRect().bottom+12;
+function keepInView(){ try{ const go=$('go'), box=$('box'), ck=$('checkline');
+  const top=box?box.getBoundingClientRect().top:$('msg').getBoundingClientRect().top;
+  const bot=(ck.classList.contains('show')?ck:go).getBoundingClientRect().bottom+12;
   if(bot>innerHeight) window.scrollBy(0,Math.min(bot-innerHeight, top-8));
   else if(top<0) window.scrollBy(0,top-8); }catch(e){} }
 function showHelper(){
@@ -461,7 +468,7 @@ function finish(note){
   const ans=p.fact?`${p.q}`:`${fmt(p.q)}${p.r?` r ${p.r}`:''}`;
   if(!p.fact){ BOARD.hot=[]; BOARD.col=-1; BOARD.open=null; BOARD.slot=null; BOARD.past=2; draw(); dmsb('');
     $('prob').innerHTML=`${fmt(p.N)}<span class="op">÷</span>${p.d}<span class="op">=</span><span style="color:var(--mint)">${ans}</span>`; }
-  $('where').textContent='Done';
+  $('where').textContent='Done'; $('last').innerHTML='';
   $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${fmt(p.N)} ÷ ${p.d} = ${ans}</b>`;
   $('sub').innerHTML=note||'';
   $('helper').innerHTML='';
