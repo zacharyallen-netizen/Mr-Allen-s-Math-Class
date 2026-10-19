@@ -45,7 +45,7 @@
   @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
   @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
   .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
-    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+    transition:transform .6s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
   .pop{animation:pop .4s ease}
   @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
   .hl{color:var(--amber);background:#ffbb4d1f;border-radius:8px}
@@ -53,11 +53,14 @@
 
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .done{font-size:15px;line-height:1.4;color:var(--mint);font-weight:700;margin-bottom:8px}
+  .say .done:empty{display:none}
+  .say .done b{color:var(--mint)}
   .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber);white-space:nowrap}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
-  .say .sub b{color:var(--amber)}
+  .say .sub b{color:var(--amber);white-space:nowrap}
   .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
@@ -105,6 +108,8 @@
   .ptext{text-align:center;font-size:24px;font-weight:700;line-height:1.35;margin:2px 0 4px}
   .ptext .m{font-family:var(--mono);font-variant-numeric:tabular-nums}
   .ptext .op{color:var(--muted);margin:0 6px;font-family:var(--mono)}
+  .ptext .op.c{margin:0 4px}
+  .ptext .nw{white-space:nowrap}
   .ptext .mint{color:var(--mint)}
   .ptext .qm{color:var(--amber)}
   .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-family:var(--mono);font-size:30px;line-height:1.1;margin:0 4px}
@@ -135,9 +140,11 @@
   .tape .u{width:46px;height:46px;border:2px solid var(--sky);margin-left:-2px;display:flex;align-items:center;justify-content:center;
     font:700 20px var(--mono);color:var(--sky);background:#1b2550;transition:background .25s}
   .tape .tr.second .u{border-color:var(--muted);color:var(--muted);background:var(--bg2)}
-  .tape .u.hot{background:#ffbb4d1f;color:var(--amber)}
+  .tape .tr .u.hot{background:#ffbb4d1f;color:var(--amber)}
   .tape .u .ibx{width:46px;height:46px;font-size:22px;border-radius:6px;position:relative;z-index:2}
-  .tape .tt{font:700 20px var(--mono);color:var(--muted);margin-left:4px;display:flex;align-items:center;gap:6px}
+  .tape .tt{font:700 20px var(--mono);color:var(--muted);margin-left:4px;display:flex;align-items:center;gap:6px;min-width:88px}
+  .tape .tt .qm{color:var(--amber)}
+  .tape .sh{min-width:64px;display:inline-flex;justify-content:flex-end}
   .tape .tt .mint{color:var(--mint)}
   .tape .tot{font-size:16px;color:#cfd3f5;margin-left:70px;display:flex;align-items:center;gap:8px;min-height:46px}
   .tape .tot b{color:var(--amber)} .tape .tot .mint{font:800 20px var(--mono)}
@@ -177,6 +184,7 @@
       <div class="ptext" id="prob" aria-live="polite"></div>
       <div class="rvis" id="rvis"></div>
       <div class="say">
+        <div class="done" id="done"></div>
         <div class="where" id="where"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
@@ -232,38 +240,37 @@ function gen(L){
     return {kind:'equiv',bn,bd,k,ans:bn*k};}
   if(L===3){const rate=rnd(10,60),time=rnd(2,9),total=rate*time;
     return {kind:'unit',rate,time,total,ans:rate};}
-  if(L===4){const x=rnd(2,9),b=rnd(2,9),m=rnd(2,4),c=x*m,d=b*m;
+  if(L===4){const x=rnd(2,9); let b; do{b=rnd(2,9);}while(b===x); const m=rnd(2,4),c=x*m,d=b*m;
     return {kind:'prop',x,b,m,c,d,ans:x};}
   if(L===5){let bn,bd;do{bn=rnd(1,5);bd=rnd(1,5);}while(bn===bd);const u=rnd(2,6),total=(bn+bd)*u,first=bn*u;
     return {kind:'split',bn,bd,u,total,first,ans:first};}
-  const unit=rnd(2,9),q=rnd(2,6),p=unit*q,n=rnd(2,9),ans=unit*n;
+  const unit=rnd(2,9),q=rnd(2,6),p=unit*q; let n; do{n=rnd(2,9);}while(n===q); const ans=unit*n;   // n ≠ q, or the question answers itself
   return {kind:'cost',unit,q,p,n,ans};
 }
-const m=t=>`<span class="m">${t}</span>`, colon=` <span class="op">:</span> `;
+const m=t=>`<span class="m">${t}</span>`, colon=`<span class="op c">:</span>`;
 function frac(t,b){ return `<span class="frac"><span>${t}</span><i class="sl">/</i><span>${b}</span></span>`; }
 // the problem line; the ? turns into the answer when you finish
 function probH(p,done){
   const A=v=>done?`<span class="mint">${v}</span>`:`<span class="qm">?</span>`;
-  if(p.kind==='simp')  return `Simplify ${m(p.N)}${colon}${m(p.D)}`+(done?` <span class="op">=</span> <span class="mint m">${p.bn} : ${p.bd}</span>`:'');
+  if(p.kind==='simp')  return `Simplify ${m(p.N)}${colon}${m(p.D)}`+(done?` <span class="op">=</span> <span class="mint m nw">${p.bn}${colon}${p.bd}</span>`:'');
   if(p.kind==='equiv') return `${m(p.bn)}${colon}${m(p.bd)} <span class="op">=</span> ${m(A(p.ans))}${colon}${m(p.bd*p.k)}`;
-  if(p.kind==='unit')  return `${m(p.total)} miles in ${m(p.time)} hours = ${m(A(p.rate))} miles per hour`;
+  if(p.kind==='unit')  return `${m(p.total)} miles in ${m(p.time)} hours <br><span class="op">=</span> ${m(A(p.rate))} miles per hour`;
   if(p.kind==='prop')  return `${frac(p.c,p.d)} <span class="op">=</span> ${frac(A(p.x),p.b)}`;
-  if(p.kind==='split') return `Split ${m(p.total)} in the ratio ${m(p.bn+' : '+p.bd)}. The first part is ${m(A(p.first))}`;
-  return `${m(p.q)} items cost ${m('$'+p.p)}. ${m(p.n)} items cost ${m(done?`<span class="mint">$${p.ans}</span>`:'<span class="qm">$?</span>')}`;
+  if(p.kind==='split') return `Split ${m(p.total)} in the ratio <span class="nw">${m(p.bn)}${colon}${m(p.bd)}</span>. <br>The first part is ${m(A(p.first))}`;
+  return `${m(p.q)} items cost ${m('$'+p.p)}. <br>${m(p.n)} items cost ${m(done?`<span class="mint">$${p.ans}</span>`:'<span class="qm">$?</span>')}`;
 }
 const probTxt=p=>({simp:`Simplify ${p.N} : ${p.D}`, equiv:`${p.bn} : ${p.bd} = ? : ${p.bd*p.k}`, unit:`${p.total} miles in ${p.time} hours`,
   prop:`${p.c}/${p.d} = ?/${p.b}`, split:`Split ${p.total} in ${p.bn} : ${p.bd}`, cost:`${p.q} items cost $${p.p}, ${p.n} items cost $?`})[p.kind];
 
 /* ---------- the moves for one problem ---------- */
-const cellBox=(c,r)=>({c,r}), arrBox=a=>({a});
+const cellBox=(c,r)=>({c,r}), arrBox=(a,r)=>({a,r:r||0});
 // type a number into a table cell; then it turns mint and the × / ÷ slides across
 function cellMove(o){ return Object.assign({kind:'type', after:async()=>{ const {c,r}=o.box;
-  await fly($('a'+o.from+'r'+r), $(`c${c}r${r}`), arrTxt(o.from), 22);
-  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(350); return o.note||''; }}, o); }
-// type the × or ÷ number; it is copied to the other row
-function arrMove(o){ return Object.assign({kind:'type', box:arrBox(0), after:async()=>{
-  V.arrows[0].k=o.expect; V.hotArr=true; draw();
-  await fly($('a0r0'), $('a0r1'), arrTxt(0), 20); draw(); await wait(200); return o.note; }}, o); }
+  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(450); return o.note||''; }}, o); }
+// type the × or ÷ number in the row you are looking at; it is copied to the other row
+function arrMove(o){ const r=o.row||0; return Object.assign({kind:'type', box:arrBox(0,r), after:async()=>{
+  V.arrows[0].k=o.expect; V.pendRow=1-r; V.hotArr=true; draw();
+  await fly($('a0r'+r), $('a0r'+(1-r)), arrTxt(0), 20); V.pendRow=null; V.hotArr=true; draw(); await wait(250); return o.note; }}, o); }
 function buildMoves(p){
   if(p.kind==='simp') return [
     arrMove({hl:['c0r0','c0r1'], expect:p.k, calc:`G(${p.N},${p.D})`,
@@ -272,17 +279,17 @@ function buildMoves(p){
       partial:v=>(v>1&&v<p.k&&p.N%v===0&&p.D%v===0)?`<b>${v}</b> goes into both, but there is a bigger one. Try again.`:'',
       nudge:`It has to go into ${p.N} and ${p.D} with nothing left over.`,
       reveal:`The GCF of ${p.N} and ${p.D} is <b>${p.k}</b>.`,
-      note:`Divide both numbers by <b>${p.k}</b>.`}),
+      note:`The GCF is <b>${p.k}</b>. Now divide both numbers by it.`}),
     cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.bn, calc:`${p.N}/${p.k}`,
       say:`Divide the top: <b>${p.N} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.N} ÷ ${p.k} = <b>${p.bn}</b>.`}),
     cellMove({box:cellBox(1,1), from:0, hl:['c0r1','a0'], expect:p.bd, calc:`${p.D}/${p.k}`,
       say:`Now the bottom: <b>${p.D} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.D} ÷ ${p.k} = <b>${p.bd}</b>.`})
   ];
   if(p.kind==='equiv'){ const B=p.bd*p.k; return [
-    arrMove({hl:['c0r1','c1r1'], expect:p.k, calc:`${B}/${p.bd}`,
+    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.k, calc:`${B}/${p.bd}`,
       say:`Look at the bottom row. <b>${p.bd}</b> times what makes <b>${B}</b>?`,
       nudge:`Count by ${p.bd}s until you reach ${B}.`, reveal:`${p.bd} × ${p.k} = ${B}, so it is <b>${p.k}</b>.`,
-      note:''}),
+      note:`The bottom was multiplied by <b>${p.k}</b>.`}),
     cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.ans, calc:`${p.bn}*${p.k}`,
       say:`Do the same to the top: <b>${p.bn} × ${p.k}</b>`, nudge:`Multiply the yellow numbers again.`, reveal:`${p.bn} × ${p.k} = <b>${p.ans}</b>.`})
   ]; }
@@ -293,10 +300,10 @@ function buildMoves(p){
       nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${p.time} = <b>${p.rate}</b>.`})
   ];
   if(p.kind==='prop') return [
-    arrMove({hl:['c0r1','c1r1'], expect:p.m, calc:`${p.d}/${p.b}`,
+    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.m, calc:`${p.d}/${p.b}`,
       say:`The bottom went from <b>${p.d}</b> to <b>${p.b}</b>. Divide: <b>${p.d} ÷ ${p.b}</b>`,
       nudge:`Divide the yellow numbers again.`, reveal:`${p.d} ÷ ${p.b} = <b>${p.m}</b>.`,
-      note:''}),
+      note:`The bottom was divided by <b>${p.m}</b>.`}),
     cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.x, calc:`${p.c}/${p.m}`,
       say:`Do the same to the top: <b>${p.c} ÷ ${p.m}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.c} ÷ ${p.m} = <b>${p.x}</b>.`})
   ];
@@ -314,10 +321,10 @@ function buildMoves(p){
     {kind:'type', box:'shares', hl:'all', expect:sh, calc:`${p.bn}+${p.bd}`,
       say:`How many boxes in all? <b>${p.bn} + ${p.bd}</b>`,
       nudge:`Count all the boxes.`, reveal:`${p.bn} + ${p.bd} = <b>${sh}</b>.`,
-      after:async()=>{ V.tape.shares=sh; draw(); return `<b>${sh}</b> equal boxes share <b>${p.total}</b>.`; }},
+      after:async()=>{ V.tape.shares=sh; draw(); return `<b>${sh}</b> boxes in all.`; }},
     {kind:'type', box:'unit', hl:'all', expect:p.u, calc:`${p.total}/${sh}`,
-      say:`Share it equally: <b>${p.total} ÷ ${sh}</b>`,
-      sub:`That is how much goes in each box.`,
+      say:`Share <b>${p.total}</b> equally: <b>${p.total} ÷ ${sh}</b>`,
+      sub:`The answer goes in each box.`,
       nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${sh} = <b>${p.u}</b>.`,
       after:async()=>{ for(let i=1;i<=sh;i++){ V.tape.filled=i; draw(); await wait(110); }
         V.tape.u=p.u; draw();
@@ -361,9 +368,9 @@ function cellH(c,r){
   return `<span class="${cls.join(' ')}" id="${key}">${v===null?'?':v}</span>`;
 }
 function arrH(a,r){
-  const A=V.arrows[a], o=V.open, open=o&&o.box&&o.box.a===a;
-  const cls=['arr']; if(A.k===null && !(open&&r===0)) cls.push('unk'); if(isHot('a'+a)||(V.hotArr&&a===0)) cls.push('hot');
-  const inner=(open&&r===0)?`${A.op} ${boxHTML(o,'sm')}`:`${A.op} ${A.k===null?'?':A.k}`;
+  const A=V.arrows[a], o=V.open, here=o&&o.box&&o.box.a===a&&o.box.r===r, k=(a===0&&V.pendRow===r)?null:A.k;
+  const cls=['arr']; if(k===null && !here) cls.push('unk'); if(isHot('a'+a)||(V.hotArr&&a===0)) cls.push('hot');
+  const inner=here?`${A.op} ${boxHTML(o,'sm')}`:`${A.op} ${k===null?'?':k}`;
   return `<span class="${cls.join(' ')}" id="a${a}r${r}">${inner} <i>→</i></span>`;
 }
 function tableH(){
@@ -384,11 +391,12 @@ function tapeH(){
   let first='';
   if(o&&o.box==='first') first=`<span class="tt">= ${boxHTML(o,'sm')}</span>`;
   else if(T.first!==null) first=`<span class="tt">= <span class="mint${T.pop?' pop':''}">${T.first}</span></span>`;
+  else first=`<span class="tt">= <span class="qm">?</span></span>`;
   const shares=(o&&o.box==='shares')?boxHTML(o,'sm'):(T.shares!==null?`<span class="mint">${T.shares}</span>`:'<b>?</b>');
   T.pop=false;
   return `<div class="tape"><div class="tr first"><span class="tl">first</span><span class="bars">${bars(p.bn,0)}</span>${first}</div>`
     +`<div class="tr second"><span class="tl">second</span><span class="bars">${bars(p.bd,1)}</span></div>`
-    +`<div class="tot">${shares} boxes make <b>${p.total}</b></div></div>`;
+    +`<div class="tot"><span class="sh">${shares}</span> boxes make <b>${p.total}</b></div></div>`;
 }
 function draw(){
   $('prob').innerHTML=probH(current,V.done);
@@ -420,8 +428,9 @@ function showMove(note){
   if(m.enter) m.enter();
   draw();
   $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
+  $('done').innerHTML=note?'✓ '+note:'';
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=[note,m.sub].filter(Boolean).join('<br>');
+  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
   if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus({preventScroll:true}); }
@@ -480,7 +489,7 @@ function finish(note){
   const right=!M.err;
   $('where').textContent='Done';
   $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
-  $('sub').innerHTML=note||'';
+  $('done').innerHTML=note?'✓ '+note:''; $('sub').innerHTML='';
   $('fb').textContent=''; $('fb').className='fb';
   $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
   $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
@@ -496,7 +505,7 @@ async function fly(fromEl,toEl,text,size){
   s.style.left=(ra.left+ra.width/2-w/2)+'px'; s.style.top=(ra.top+ra.height/2-h/2)+'px';
   s.getBoundingClientRect();
   s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
-  await wait(800); s.remove();
+  await wait(650); s.remove();
 }
 
 /* ---------- the set ---------- */
