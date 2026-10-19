@@ -18,117 +18,92 @@
     background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
     color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
     padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
-  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
   .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
   .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
   .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
   .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
-  .flame{font-size:14px;filter:grayscale(.15)}
   .brandmark{margin-left:auto;text-align:right;line-height:1.1}
   .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
   .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
-  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
   .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
   .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
   .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
   .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:22px 20px 22px;
     box-shadow:0 22px 50px -28px #000a;position:relative}
 
-  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;
-    display:flex;flex-direction:column;align-items:center;margin:6px 0 4px;line-height:1}
+  /* ── the written problem ── */
+  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;margin:4px 0 6px;line-height:1}
   .algo .row{display:flex;justify-content:flex-end}
-  .algo .cell{width:46px;height:52px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600}
-  .algo .op{width:46px;height:52px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
-  .carryrow .cell,.carryrow .op,.brwrow .cell,.brwrow .op{height:38px;font-size:20px;color:var(--amber);font-weight:700}
-  .cell.hot{color:var(--amber)}
-  /* a top digit that was borrowed from: crossed out, its new value sits in the row above */
-  .cell.struck{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--coral);text-decoration-thickness:3px}
-  /* boxes that sit right inside the written problem, in the column where the digit goes */
-  .pbx{font-family:var(--mono);font-variant-numeric:tabular-nums;width:40px;height:46px;padding:0;text-align:center;
-    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--sky);border-radius:8px;
-    outline:none;caret-color:var(--amber);transition:border-color .15s,box-shadow .15s}
-  .pbx::placeholder{color:#5b6190}
-  .carryrow .pbx,.brwrow .pbx{width:30px;height:32px;font-size:18px;border-radius:6px;border-color:var(--amber)}
-  .brwrow .pbx.w2{width:42px}
-  .pbx:focus,.pbx.on{border-color:var(--amber);box-shadow:0 0 0 4px #ffbb4d33}
-  .pbx.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
-  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
-  .sbx{display:flex;align-items:center;justify-content:center;min-width:40px;height:46px;padding:0 3px;font-size:30px;
-    border:2px solid var(--mint);border-radius:8px;color:var(--mint);background:#16342a}
-  .carryrow .sbx,.brwrow .sbx{min-width:30px;height:32px;font-size:18px;border-radius:6px;color:var(--amber);border-color:var(--amber);background:#3a2f1a}
-  .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:8px 0 6px;opacity:.9}
-  .ans .cell{color:var(--mint)}
-  .cell.ghost{color:#3b4178}
-  @media (max-width:430px){.algo .cell,.algo .op{width:38px}.algo .cell{font-size:36px}.carryrow .cell,.brwrow .cell{font-size:17px}
-    .pbx{width:34px;height:42px;font-size:26px}.sbx{min-width:34px;height:42px;font-size:26px}
-    .carryrow .pbx,.brwrow .pbx{width:28px;height:30px;font-size:17px}.brwrow .pbx.w2{width:37px}.brwrow .sbx{min-width:28px;height:30px;font-size:16px}}
+  .algo .cell{position:relative;width:48px;height:56px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600;border-radius:10px;transition:background .25s}
+  .algo .op{width:44px;height:56px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
+  .algo .small .cell,.algo .small .op{height:34px;font-size:22px;color:var(--amber);font-weight:800}
+  .algo .cell.col{background:#ffbb4d1f}                 /* the column we are working on */
+  .algo .cell.hot{color:var(--amber)}
+  .algo .cell.done{color:var(--mint)}
+  .algo .cell.struck::after{content:"";position:absolute;left:10%;right:10%;top:50%;height:4px;background:var(--coral);border-radius:2px;transform:rotate(-20deg);animation:strike .35s ease}
+  .algo .cell.struck{color:var(--muted)}
+  @keyframes strike{from{transform:rotate(-20deg) scaleX(0)}to{transform:rotate(-20deg) scaleX(1)}}
+  .algo .cell.fade{opacity:.15;transition:opacity .6s}
+  .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:6px 0 4px;opacity:.9}
+  .slot{position:absolute;right:3px;top:5px;height:46px;border:2.5px dashed #5b6190;border-radius:9px}
+  /* the ONE open box */
+  .pbx{position:absolute;right:3px;top:4px;height:48px;width:42px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:32px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .pbx.w2{width:90px}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .35s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  @media (max-width:430px){.algo .cell{width:40px;font-size:38px}.algo .op{width:36px}.pbx{width:36px;font-size:28px}.pbx.w2{width:76px}}
 
-  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
-    border:none;border-radius:13px;padding:13px 22px;margin-top:16px;cursor:pointer;
-    transition:transform .12s,filter .15s;min-width:150px}
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber)}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px;min-height:0}
+  .say .sub b{color:var(--amber)}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
-  .btn.sky{background:var(--sky);color:#0a1226}
-  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
-  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
 
-  /* guided step-by-step scaffold */
-  .steplead{text-align:center;color:var(--muted);font-size:13px;margin:4px 0 2px;letter-spacing:.02em}
-  .stepcard{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;
-    padding:15px 16px 16px;margin-top:16px;text-align:left}
-  .stepcard .lab{font-size:11px;letter-spacing:.06em;color:var(--sky);text-transform:uppercase;font-weight:700;margin-bottom:7px}
-  .stepcard .q{font-family:var(--mono);font-size:18px;font-weight:600;line-height:1.45;margin-bottom:13px}
-  .stepcard .q b{color:var(--amber)}
-  .boxrow{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px}
-  .bx{display:flex;flex-direction:column;gap:5px}
-  .bx .bl{font-size:11px;color:var(--muted);letter-spacing:.02em;min-height:13px}
-  .bx input{font-family:var(--mono);font-variant-numeric:tabular-nums;width:80px;text-align:center;
-    font-size:26px;font-weight:700;color:var(--ink);background:var(--panel);border:2px solid var(--line);
-    border-radius:11px;padding:9px 6px;outline:none;transition:border-color .15s,box-shadow .15s}
-  .bx input.wide{width:120px}
-  .bx input:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
-  .bx input.ok{border-color:var(--mint);color:var(--mint);background:#16342a}
-  .bx input.bad{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7022}
-  .conn{align-self:center;color:var(--muted);font-family:var(--mono);font-size:22px;font-weight:700;padding-bottom:4px}
-  /* a box that lives in the problem shows up in the card as a labelled tile pointing up to it */
-  .chip{cursor:pointer}
-  .chip .tile{display:flex;align-items:center;justify-content:center;min-width:62px;height:52px;padding:0 10px;
-    font-family:var(--mono);font-size:24px;font-weight:700;color:var(--muted);border:2px dashed var(--line);border-radius:11px}
-  .chip .tile.empty{font-family:var(--sans);font-size:22px;font-weight:600}
-  .chip.on .tile{border-style:solid;border-color:var(--amber);color:var(--amber)}
-  .chip.ok .tile{border-style:solid;border-color:var(--mint);color:var(--mint);background:#16342a}
-  .chip.bad .tile{border-style:solid;border-color:var(--coral)}
-  .papernote{font-family:var(--sans);font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.45}
-  .papernote b{color:var(--sky)}
-  .example{max-width:390px;margin:0 auto 24px}
-  .example .ttl{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:700;margin-bottom:2px}
-  .example .ttl2{font-size:13px;color:var(--muted);margin-bottom:8px}
-  .example .algo .cell,.example .algo .op{width:40px;height:50px}.example .algo .cell{font-size:34px}
-  .example .carryrow .cell,.example .brwrow .cell,.example .brwrow .op{height:38px}
-  .example .excap{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.45}
-  .ginfo{margin-top:11px;color:#cfd3f5;background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--amber);
-    border-radius:10px;padding:10px 13px;font-size:13.5px;line-height:1.5;display:none}
-  .ginfo.show{display:block} .ginfo b{color:var(--amber)}
+  /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
-  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
-  .how{text-align:left;max-width:380px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
   .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .algo .cell{width:40px;height:48px;font-size:34px}.example .algo .op{width:36px;height:48px;font-size:30px}
+  .example .algo .small .cell,.example .algo .small .op{height:30px;font-size:19px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
   .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
   .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
   .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
   .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
   .hide{display:none!important}
-  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-  .pop{animation:pop .3s ease}
-  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-
   .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
   .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
-  .labnav a:hover{text-decoration:underline}
   .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -138,16 +113,16 @@
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
     <div class="sub">Add &amp; Subtract · Module 1</div>
-    <div class="how">
-      Stack the numbers and work <b>right to left</b>, <b>one column at a time</b>. Fill in each box, carrying or
-      borrowing when you need to. You have to get a column right before the next one opens, so you
-      learn the real way to do it. You are only racing <b>your own best score</b>.
-    </div>
+    <ul class="how">
+      <li>Work <b>one column at a time</b>, from the <b>right</b>.</li>
+      <li>Only <b>one box</b> opens at a time. It glows.</li>
+      <li>Type your answer and press <b>Check</b> (or Enter).</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out</div>
-      <div class="ttl2">52 &minus; 27 &mdash; the boxes sit right in the problem</div>
+      <div class="ttl">Here is one worked out: 52 − 27</div>
       <div class="algo" id="exPaper"></div>
-      <div class="excap">2 is smaller than 7, so the 5 lends 1 ten. Cross out the <b style="color:var(--coral)">5</b> and write <b style="color:var(--amber)">4</b> above it. The 2 becomes <b style="color:var(--amber)">12</b>. Then 12 &minus; 7 = 5 and 4 &minus; 2 = 2.</div>
+      <div class="excap">The 2 is smaller than 7, so the 5 <b>lends 1 ten</b>. The 5 becomes <b>4</b> and the 2 becomes <b>12</b>.<br>12 − 7 = 5. Then 4 − 2 = 2. The answer is <b>25</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -155,21 +130,19 @@
   <div id="play" class="hide">
     <div class="bar">
       <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
-      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
-      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE</div></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">ADD &amp; SUBTRACT</div></div>
     </div>
     <div class="dots" id="dots"></div>
     <section class="stage">
-      <div class="algo" id="algo"></div>
-      <div class="steplead" id="steplead"></div>
-      <div class="stepcard">
-        <div class="lab" id="steplab"></div>
-        <div class="q" id="stepq"></div>
-        <div class="papernote" id="papernote"></div>
-        <div class="boxrow" id="boxrow"></div>
-        <div class="ginfo" id="ginfo"></div>
-        <button class="btn" id="stepbtn" onclick="checkStep()">Check</button>
-        <div class="verdict" id="gverdict"></div>
+      <div class="algo" id="algo" aria-live="polite"></div>
+      <div class="say">
+        <div class="where" id="where"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
+        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -178,7 +151,7 @@
     <h1>Set complete</h1>
     <div class="pb" id="pb">&nbsp;</div>
     <div class="statgrid">
-      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
       <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
       <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
     </div>
@@ -188,16 +161,25 @@
   </section>
 
 <script>
-// forgiving read of a typed answer: true minus, spaces, commas, $ and % are all fine
-function clean(v){return String(v==null?'':v).trim().replace(/[\u2212\u2013]/g,'-').replace(/[\s,$%]/g,'');}
-
+/* ════════════════════════════════════════════════════════════════
+   ADD & SUBTRACT — one box at a time
+   Each problem is a list of small moves. A move is either
+     • type  — one glowing box in the written problem, one short instruction
+     • tap   — a button (e.g. "Borrow") that plays a short animation
+   Carries, borrows and leading zeros are shown with animations.
+   ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
 let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
-let levelReachedThisSet=1, sessionBest=0, current=null, answered=false, results=[];
-
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const $=id=>document.getElementById(id);
+const NAMES=['ones','tens','hundreds','thousands'];
+const fmt=n=>n.toLocaleString('en-US');
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
 
+/* ---------- problems (same levels as before) ---------- */
 function genAddNoCarry(){ let t1=rnd(1,8),t2=rnd(1,9-t1); let o1=rnd(0,8),o2=rnd(0,9-o1); return mk(10*t1+o1,10*t2+o2,'+'); }
 function genAddCarry2(){ let o1=rnd(2,9),o2=rnd(10-o1,9); let a=10*rnd(1,8)+o1,b=10*rnd(1,8)+o2; return mk(a,b,'+'); }
 function genAdd3(){ return mk(rnd(105,899),rnd(105,899),'+'); }
@@ -208,225 +190,194 @@ function forcesBorrow(a,b){ const A=String(a).padStart(3,'0'),B=String(b).padSta
 function mk(a,b,op){ return {a,b,op,answer:op==='+'?a+b:a-b}; }
 const GEN={1:genAddNoCarry,2:genAddCarry2,3:genAdd3,4:genSubNoBorrow,5:genSubBorrow,6:genSubZero};
 
-function nextProblem(){
-  let useLevel=level; if(level>1 && Math.random()<0.25) useLevel=level-1;
-  current=GEN[useLevel](); answered=false; renderProblem();
+/* ---------- the board: everything written on the paper ---------- */
+// W = number of columns; arrays are left→right
+function newBoard(p){
+  const W=Math.max(String(p.a).length,String(p.b).length,String(p.answer).length);
+  const pad=(n)=>String(n).padStart(W,' ').split('').map(d=>d===' '?null:+d);
+  return {W, op:p.op, top:pad(p.a), bot:pad(p.b), small:Array(W).fill(null), ans:Array(W).fill(null),
+          struck:Array(W).fill(false), col:-1, open:null, fade:-1};
 }
 
-function digitsOf(n,w){return String(n).padStart(w,' ').split('');}
-function cellHTML(d,cls){return `<span class="cell${cls?' '+cls:''}">${d===' '?'':d}</span>`;}
-const EMPTYOP='<span class="op"></span>';
-const NAMES=['ones','tens','hundreds','thousands'];
-
-/* ---------- guided steps ---------- */
-let G=null;
-function WDof(p){ return Math.max(String(p.a).length,String(p.b).length,String(p.answer).length); }
-// round to the number's biggest place (58 → 60, 485 → 500)
-function frontRound(n){ const pl=10**(String(n).length-1); return Math.round(n/pl)*pl; }
-function buildSteps(p){ const st=p.op==='+'?stepsAdd(p):stepsSub(p); st.push(checkStepFor(p)); return st; }
-// last step: does the answer make sense?
-function checkStepFor(p){
-  if(p.op==='+'){ const ra=frontRound(p.a), rb=frontRound(p.b);
-    return {est:true, lab:'Check · estimate', write:null,
-      q:`Does <b>${p.answer}</b> make sense? Round each number to its biggest place, then add: <b>${p.a} ≈ ?</b> and <b>${p.b} ≈ ?</b>. Your answer should be close.`,
-      boxes:[{bl:`${p.a} ≈`,expect:ra},{bl:`${p.b} ≈`,expect:rb,connector:'·'},{bl:`${'estimate'} =`,expect:ra+rb,connector:'→'}],
-      info:`${p.a} rounds to ${ra}. ${p.b} rounds to ${rb}. ${ra} + ${rb} = ${ra+rb}, and ${p.answer} is close to that, so it makes sense.`}; }
-  return {est:true, lab:'Check · add back', write:null,
-    q:`Check your answer by <b>adding back</b>: answer + the number you took away should give the top number. <b>${p.answer} + ${p.b}</b> should be <b>${p.a}</b>.`,
-    boxes:[{bl:`${p.answer} + ${p.b} =`,expect:p.a,wide:true}],
-    info:`${p.answer} + ${p.b} = ${p.a}. Adding undoes subtracting, so the answer checks out.`};
-}
-
-function stepsAdd(p){
-  const WD=WDof(p), numCols=Math.max(String(p.a).length,String(p.b).length);
-  const aPad=String(p.a).padStart(WD,'0'), bPad=String(p.b).padStart(WD,'0');
-  const steps=[]; let carry=0;
-  for(let c=0;c<numCols;c++){
-    const gi=WD-1-c, da=+aPad[gi], db=+bPad[gi];
-    const val=da+db+carry, write=val%10, carryOut=Math.floor(val/10);
-    steps.push({
-      lab:`Step ${c+1} · ${NAMES[c]} column`,
-      q:`Add the <b>${NAMES[c]}</b> column: <b>${da} + ${db}${carry?` + ${carry}`:''}</b>.`
-        +`${carry?` The <b>${carry}</b> is what you carried.`:``}`
-        +` Write the last digit below. Carry the rest above.`,
-      info:`${da} + ${db}${carry?` + ${carry}`:''} = ${val}; write ${write}${carryOut?`, carry ${carryOut}`:' (nothing to carry)'}.`,
-      boxes:[{bl:`${da} + ${db}${carry?` + ${carry}`:''}`,expect:val},
-             {bl:'write below',expect:write,connector:'→',where:'paper',row:'ans',cols:[gi]},
-             {bl:'carry above',expect:carryOut,connector:'·',where:'paper',row:'carry',cols:[gi-1],blank0:true}],
-      grid:gi, write, carryOut
-    });
+/* ---------- the moves for one problem ---------- */
+function movesAdd(p){
+  const B=newBoard(p), W=B.W, mv=[]; let carry=0;
+  const n=Math.max(String(p.a).length,String(p.b).length);
+  for(let c=0;c<n;c++){
+    const gi=W-1-c, da=B.top[gi]||0, db=B.bot[gi], cin=carry;
+    const sum=da+(db||0)+cin, last=(c===n-1);
+    const parts=[da].concat(db===null?[]:[db]);
+    let say=`Add the <b>${NAMES[c]}</b>: <b>${parts.join(' + ')}${cin?` + ${cin}`:''}</b>${cin?' <span style="font-size:15px;color:#cfd3f5">(the small '+cin+' is the carry)</span>':''}`;
+    const sub=db===null?`Only one number is in this column.`:``;
+    const carryOut=last?0:Math.floor(sum/10);
+    mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:2, expect:sum, say, sub,
+      wrong:`${parts.join(' + ')}${cin?` + ${cin}`:''} = ${sum}`,
+      partial:sum>=10?String(sum%10):null,
+      after: async (b)=>{
+        if(sum>=10 && !last){
+          b.ans[gi]=sum%10;
+          await flyDigit(gi, 'ans', gi-1, 'small', String(carryOut));
+          b.small[gi-1]=carryOut;
+          return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b> to the ${NAMES[c+1]}.`;
+        }
+        if(sum>=10 && last){ b.ans[gi]=sum%10; b.ans[gi-1]=Math.floor(sum/10); return `Last column, so write all of <b>${sum}</b>.`; }
+        b.ans[gi]=sum; return '';
+      }});
     carry=carryOut;
   }
-  if(carry>0){ const gi=WD-1-numCols;
-    steps.push({lab:`Step ${numCols+1} · final carry`,
-      q:`There is still a <b>${carry}</b> carried. Write it at the front of the answer.`,
-      info:`Nothing is left to add it to, so the carried ${carry} becomes the first digit of the answer.`,
-      boxes:[{bl:'front digit',expect:carry,where:'paper',row:'ans',cols:[gi]}], grid:gi, write:carry, carryOut:0});
-  }
-  return steps;
+  return {B, mv};
 }
-function stepsSub(p){
-  const WD=WDof(p), numCols=Math.max(String(p.a).length,String(p.b).length);
-  const aPad=String(p.a).padStart(WD,'0'), bPad=String(p.b).padStart(WD,'0');
-  const steps=[]; let borrowIn=0;
-  for(let c=0;c<numCols;c++){
-    const gi=WD-1-c, top=+aPad[gi], bot=+bPad[gi];
-    const avail=top-borrowIn;
-    let diff,outgoing,boxes,q,info;
-    if(avail<bot){
-      const bt=avail+10; diff=bt-bot; outgoing=1;
-      boxes=[{bl:'the top is now',expect:bt,where:'paper',row:'brw',cols:[gi],w2:true},
-             {bl:`− ${bot} =`,expect:diff,connector:'→',where:'paper',row:'ans',cols:[gi]}];
-      if(borrowIn && top===0){
-        // borrowing across a zero: it has nothing to give, so it borrows first
-        q=`This top digit is <b>0</b>, so it had nothing to give the column on its right. It borrows 10 from the left first and becomes 10. Then it gives 1 away, so now it is <b>9</b>. Subtract: <b>9 − ${bot}</b>.`;
-        info=`0 borrows from the left and becomes 10. It gives 1 to the right, so it is 9. 9 − ${bot} = ${diff}. The column to the left goes down by 1.`;
-      } else if(borrowIn){
-        q=`This top digit was <b>${top}</b>, but it gave 1 to the right, so now it is <b>${avail}</b>. ${avail} is smaller than ${bot}, so borrow 1 ten from the left. The top becomes <b>${bt}</b>. Then subtract.`;
-        info=`${avail} + 10 = ${bt}. Then ${bt} − ${bot} = ${diff}. The column to the left goes down by 1.`;
-      } else {
-        q=`The top digit is <b>${top}</b>. The bottom digit is <b>${bot}</b>. ${top} is smaller than ${bot}, so you cannot subtract yet. Borrow 1 ten from the left. The top becomes <b>${bt}</b>. Then subtract.`;
-        info=`${top} + 10 = ${bt}. Then ${bt} − ${bot} = ${diff}. The column to the left goes down by 1.`;
-      }
-    } else {
-      diff=avail-bot; outgoing=0;
-      boxes=[{bl:`${avail} − ${bot} =`,expect:diff,where:'paper',row:'ans',cols:[gi]}];
-      q=borrowIn?`This top digit gave 1 to the right, so now it is <b>${avail}</b>. Subtract: <b>${avail} − ${bot}</b>.`
-               :`Subtract the <b>${NAMES[c]}</b> column: <b>${top} − ${bot}</b>.`;
-      info=`${avail} − ${bot} = ${diff}.`;
+function movesSub(p){
+  const B=newBoard(p), W=B.W, mv=[];
+  const now=B.top.slice();                      // what each top digit is worth right now
+  const lead=W-String(p.a).length;              // first real column
+  const n=String(p.a).length, lent=Array(W).fill(false);
+  for(let c=0;c<n;c++){
+    const gi=W-1-c, bot=B.bot[gi]===null?0:B.bot[gi], hasBot=B.bot[gi]!==null;
+    let borrowedHere=false;
+    if(now[gi]<bot){
+      borrowedHere=true;
+      // borrow: find the first column to the left that has something to lend
+      let j=gi-1; while(now[j]===0) j--;
+      const plan={from:j, to:gi, zeros:[]}; lent[j]=true;
+      for(let k=j+1;k<gi;k++){ plan.zeros.push(k); lent[k]=true; }
+      const was=now[gi], lendWas=now[j];
+      now[j]-=1; plan.zeros.forEach(k=>now[k]=9); now[gi]+=10;
+      const jNew=now[j], gNew=now[gi];          // fixed now: later borrows must not change this animation
+      const zeroTxt=plan.zeros.length?` The 0 next to it has nothing to lend, so we go to the <b>${lendWas}</b>.`:'';
+      mv.push({kind:'tap', where:`${NAMES[c]} column`, col:gi, button:'Borrow',
+        say: lent[gi]?`This digit already lent 1, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>, so we <b>borrow</b> again.`
+                     :`<b>${was}</b> is smaller than <b>${bot}</b>. We need to <b>borrow</b>.`,
+        sub:`Press <b>Borrow</b> to watch it happen.${zeroTxt}`,
+        run: async (b,show)=>{
+          b.struck[j]=true; b.small[j]=jNew; draw(); show(`The <b>${lendWas}</b> lends 1 and becomes <b>${jNew}</b>.`); await wait(1100);
+          for(const k of plan.zeros){ b.struck[k]=true; b.small[k]=10; draw(); show(`The 0 gets 10…`); await wait(900);
+            b.small[k]=9; draw(); show(`…then it lends 1, so it is <b>9</b>.`); await wait(1000); }
+          await flyDigit(gi-1,'top',gi,'small','+10');
+          b.struck[gi]=true; b.small[gi]=gNew; draw();
+          return `The <b>${was}</b> becomes <b>${gNew}</b>. Now we can subtract.`;
+        }});
     }
-    // newTop: what the top digit of this column is worth now (shown above it, the old digit crossed out)
-    steps.push({lab:`Step ${c+1} · ${NAMES[c]} column`, q, info, boxes, grid:gi, write:diff,
-                newTop:(avail<bot)?avail+10:(borrowIn?avail:null)});
-    borrowIn=outgoing;
+    const t=now[gi], diff=t-bot, isLeadZero=(c===n-1 && diff===0 && n>1);
+    const lentEarlier=lent[gi]&&!borrowedHere;
+    mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:1, expect:diff,
+      say: hasBot?`Subtract the <b>${NAMES[c]}</b>: <b>${t} − ${bot}</b>`:`Nothing to take away. Bring down the <b>${t}</b>.`,
+      sub: lentEarlier?`This digit lent 1 already. Use the small <b>${t}</b> on top — that is what it is worth now.`:'',
+      wrong:`${t} − ${bot} = ${diff}`,
+      after: async (b)=>{ b.ans[gi]=diff;
+        if(isLeadZero){ draw(); await wait(500); b.fade=gi; return `We don’t write a 0 at the front of a number, so it disappears.`; }
+        return ''; }});
   }
-  return steps;
+  return {B, mv};
+}
+function checkLine(p){
+  if(p.op==='-') return `✓ <b>Check:</b> add back. ${fmt(p.answer)} + ${fmt(p.b)} = <b>${fmt(p.a)}</b>. It matches the top number.`;
+  const r=n=>{const pl=10**(String(n).length-1);return Math.round(n/pl)*pl;};
+  return `✓ <b>Check:</b> round and add. ${fmt(r(p.a))} + ${fmt(r(p.b))} = ${fmt(r(p.a)+r(p.b))}. Your answer <b>${fmt(p.answer)}</b> is close to that.`;
 }
 
-/* ---------- render ---------- */
+/* ---------- drawing ---------- */
+let BOARD=null;
+function cellsRow(cls,lead,arr,kind){
+  let h=`<div class="row${cls?' '+cls:''}"><span class="op">${lead}</span>`;
+  arr.forEach((d,i)=>{
+    const c=[];
+    if(kind!=='small' && BOARD.col===i) c.push('col');
+    if(kind==='top' && BOARD.struck[i]) c.push('struck');
+    if((kind==='top'||kind==='bot') && BOARD.col===i) c.push('hot');
+    if(kind==='ans' && d!==null) c.push('done');
+    if(kind==='ans' && BOARD.fade===i) c.push('fade');
+    let inner=d===null?'':d;
+    const o=BOARD.open;
+    if(o && o.row===kind && o.col===i){
+      inner=`<input class="pbx${o.w===2?' w2':''}" id="box" inputmode="numeric" autocomplete="off" maxlength="${o.w}" aria-label="${o.label}">`;
+    } else if(kind==='ans' && d===null && BOARD.col===i && !o){ inner=''; }
+    h+=`<span class="cell ${c.join(' ')}" data-row="${kind}" data-col="${i}">${inner}</span>`;
+  });
+  return h+'</div>';
+}
+function draw(target){
+  const el=target||$('algo'), b=BOARD;
+  el.innerHTML=cellsRow('small','',b.small,'small')
+    +cellsRow('','',b.top,'top')
+    +cellsRow('',b.op==='+'?'+':'−',b.bot,'bot')
+    +'<div class="ruleline"></div>'
+    +cellsRow('','',b.ans,'ans');
+}
+function cellEl(row,col){ return document.querySelector(`#algo .cell[data-row="${row}"][data-col="${col}"]`); }
+// a digit (or "+10") floats from one cell to another
+async function flyDigit(fromCol,fromRow,toCol,toRow,text){
+  draw();
+  const a=cellEl(fromRow,fromCol), z=cellEl(toRow,toCol); if(!a||!z||reduce) return;
+  const ra=a.getBoundingClientRect(), rz=z.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text;
+  s.style.fontSize=(toRow==='small'?24:34)+'px';
+  s.style.left=(ra.left+ra.width/2-12)+'px'; s.style.top=(ra.top+ra.height/2-18)+'px';
+  document.body.appendChild(s); s.getBoundingClientRect();
+  s.style.transform=`translate(${rz.left-ra.left}px,${rz.top-ra.top}px)`;
+  await wait(800); s.remove();
+}
+
+/* ---------- playing one problem ---------- */
+let M=null;            // {mv, i, tries, busy, err}
 function renderProblem(){
-  G={steps:buildSteps(current), si:0, tries:0};
-  renderWork(); renderStep(); paintDots();
+  const p=current, built=p.op==='+'?movesAdd(p):movesSub(p);
+  BOARD=built.B; M={mv:built.mv, i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
 }
-function renderWork(){ drawCols(current,G.steps,G.si,$('algo'),false); }
-function pbxHTML(g,k,label,w2){
-  return `<input class="pbx${w2?' w2':''}" data-g="${g}" data-k="${k}" maxlength="${w2?2:1}" inputmode="numeric" autocomplete="off" aria-label="${label}">`;
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  BOARD.col=m.col; BOARD.open=m.kind==='type'?{row:m.row,col:m.col,w:m.w,label:m.where}:null;
+  draw();
+  $('where').textContent=`${m.where} · ${colCount()}`;
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=note? note+(m.sub?'<br>'+m.sub:'') : (m.sub||'');
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go');
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box){ box.focus(); } }
 }
-// {row:{col:html}} for the step's boxes that sit in the problem (col -1 = the space left of the numbers)
-function paperMap(st){
-  const m={}; if(!st) return m;
-  st.boxes.forEach((bx,g)=>{ if(bx.where!=='paper') return;
-    (m[bx.row]=m[bx.row]||{});
-    bx.cols.forEach((c,k)=>{ m[bx.row][c]=pbxHTML(g,k,bx.bl,bx.w2); });
-  });
-  return m;
+function colCount(){ const cols=[...new Set(M.mv.map(m=>m.col))]; return `column ${cols.indexOf(M.mv[M.i].col)+1} of ${cols.length}`; }
+async function doTap(){
+  if(M.busy) return; M.busy=true; const m=M.mv[M.i];
+  $('go').disabled=true;
+  const show=t=>{ $('sub').innerHTML=t; };
+  const note=await m.run(BOARD,show);
+  $('go').disabled=false; M.busy=false;
+  M.i++; G.si=M.i; showMove(note);
 }
-function rowHTML(cls,opTxt,arr,row,pm,boxed,classes){
-  const slot=(pm[row]||{});
-  const lead=slot[-1]!==undefined?`<span class="op">${slot[-1]}</span>`:`<span class="op">${opTxt}</span>`;
-  return `<div class="row${cls?' '+cls:''}">${lead}${arr.map((d,i)=>{
-    if(slot[i]!==undefined) return `<span class="cell">${slot[i]}</span>`;
-    if(boxed&&d!==' '&&d!=='') return `<span class="cell"><span class="sbx">${d}</span></span>`;
-    const c=(classes&&classes[i])||(d===' '?'ghost':'');
-    return cellHTML(d,c);
-  }).join('')}</div>`;
-}
-function drawCols(p,steps,done,el,boxed){
-  steps=steps.filter(x=>!x.est); done=Math.min(done,steps.length);   // the check step is not a column
-  const WD=WDof(p); const cur=(!boxed&&done<steps.length)?steps[done]:null; const pm=paperMap(cur);
-  const ansArr=Array(WD).fill(' '), carryArr=Array(WD).fill(' '), brwArr=Array(WD).fill(' ');
-  const topCls=Array(WD).fill(''), botCls=Array(WD).fill('');
-  for(let s=0;s<done;s++){ const st=steps[s]; ansArr[st.grid]=st.write;
-    if(p.op==='+' && st.carryOut>0 && st.grid-1>=0) carryArr[st.grid-1]=st.carryOut;
-    if(p.op==='-' && st.newTop!==null){ brwArr[st.grid]=st.newTop; topCls[st.grid]='struck'; } }
-  if(cur){
-    topCls[cur.grid]=topCls[cur.grid]||'hot'; botCls[cur.grid]='hot';
-    if(p.op==='-' && cur.newTop!==null){ topCls[cur.grid]='struck';
-      // gave 1 to the right but needs no borrow: show what it is worth now
-      if(!pm.brw) brwArr[cur.grid]=cur.newTop; }
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const v=box.value.trim();
+  if(v===''){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
+  if(+v!==m.expect){
+    M.tries++; M.err=true; box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
+    if(m.partial && v===m.partial){ $('fb').innerHTML=`Close! Type the <b>whole</b> answer (both digits). We carry next.`; }
+    else if(M.tries===1){ $('fb').innerHTML='Not quite. '+(current.op==='+'?'Add the yellow numbers again, one at a time.':'Try again. Tip: count up from the bottom number to the top number.'); }
+    else { $('fb').innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
+    $('fb').className='fb no'; box.select(); return;
   }
-  // a later column's lend shows as the next column's step; nothing else changes
-  let h='';
-  if(p.op==='+') h+=rowHTML('carryrow','',carryArr,'carry',pm,boxed);
-  else h+=rowHTML('brwrow','',brwArr,'brw',pm,boxed);
-  h+=rowHTML('','',digitsOf(p.a,WD),'top',{},false,topCls);
-  h+=rowHTML('',p.op==='+'?'+':'−',digitsOf(p.b,WD),'bot',{},false,botCls);
-  h+=`<div class="ruleline"></div>`;
-  h+=rowHTML('ans','',ansArr,'ans',pm,boxed);
-  el.innerHTML=h;
+  M.busy=true; BOARD.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=await m.after(BOARD); draw();
+  M.busy=false; M.i++; G.si=M.i;
+  if(M.i>=M.mv.length) finish(note); else showMove(note);
+}
+function finish(note){
+  BOARD.col=-1; BOARD.open=null; draw();
+  const right=!M.err, p=current;
+  $('where').textContent='Done';
+  $('msg').innerHTML=right?`✓ Solved it! <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`
+                          :`✓ Done. <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`;
+  $('sub').innerHTML=note||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
+  concludeProblem(right, $('go'));
 }
 
-/* ---------- the boxes of one step (in the card or in the problem) ---------- */
-const grpInputs=g=>Array.from(document.querySelectorAll(`input[data-g="${g}"]`));
-function stepInputs(){ return G.steps[G.si].boxes.flatMap((bx,g)=>grpInputs(g)); }
-function boxVal(g){ return grpInputs(g).map(e=>clean(e.value)).join(''); }
-function boxOk(bx,g){ const raw=boxVal(g);
-  if(raw==='') return !!bx.blank0 && bx.expect===0;     // nothing to carry: an empty box is fine
-  return !isNaN(+raw) && (+raw)===bx.expect; }
-function focusG(g){ const ins=grpInputs(g); const e=ins.find(x=>x.value==='')||ins[0]; if(e){e.focus(); e.select&&e.select();} }
-function mirror(g){ const t=$('tile'+g); if(!t) return; const v=boxVal(g);
-  t.textContent=v===''?'↑':v; t.classList.toggle('empty',v===''); }
-function markGroup(g,ok){
-  grpInputs(g).forEach(e=>{e.classList.toggle('ok',ok); e.classList.toggle('bad',!ok);});
-  const c=document.querySelector(`.chip[data-g="${g}"]`); if(c){c.classList.toggle('ok',ok); c.classList.toggle('bad',!ok);}
-}
-function renderStep(){
-  const st=G.steps[G.si]; G.tries=0;
-  $('steplead').textContent=st.est?`Last step — does your answer make sense?`:`Step ${G.si+1} of ${G.steps.length} — work right to left`;
-  $('steplab').textContent=st.lab;
-  $('stepq').innerHTML=st.q;
-  const hasCarry=st.boxes.some(bx=>bx.row==='carry'), hasBrw=st.boxes.some(bx=>bx.row==='brw');
-  $('papernote').innerHTML=`Type in the <b>boxes in the problem</b> above. Each one sits right where its digit goes. A tile with <b>↑</b> points up to it.`
-    +(hasCarry?` The small box on top is the <b>carry</b>. If there is nothing to carry, leave it empty.`:``)
-    +(hasBrw?` The small box on top is what the <b>top digit is worth now</b>.`:``);
-  if(st.est) $('papernote').innerHTML=current.op==='+'?`An estimate is a quick, rounded answer. If your real answer is far from it, look for a mistake.`
-    :`Subtracting and adding undo each other. If your answer is right, adding back gives the top number.`;
-  $('boxrow').innerHTML=st.boxes.map((bx,i)=>{
-    const conn=bx.connector?`<span class="conn">${bx.connector}</span>`:'';
-    if(bx.where==='paper')
-      return `${i>0?conn:''}<div class="bx chip" data-g="${i}" onclick="focusG(${i})"><span class="bl">${bx.bl}</span>`
-        +`<span class="tile empty" id="tile${i}" title="This box is in the problem above">↑</span></div>`;
-    return `${i>0?conn:''}<div class="bx"><span class="bl">${bx.bl}</span>`
-      +`<input id="bx${i}" data-g="${i}" class="${bx.wide?'wide':''}" inputmode="numeric" autocomplete="off" aria-label="${bx.bl}"></div>`;
-  }).join('');
-  $('ginfo').innerHTML=''; $('ginfo').classList.remove('show');
-  $('gverdict').textContent=''; $('gverdict').className='verdict';
-  const btn=$('stepbtn'); btn.textContent='Check'; btn.className='btn'; btn.onclick=checkStep;
-  const f=stepInputs()[0]; if(f) f.focus();
-}
-function checkStep(){
-  const st=G.steps[G.si]; let allOk=true;
-  st.boxes.forEach((bx,i)=>{
-    const ok=boxOk(bx,i);
-    markGroup(i,ok);
-    if(!ok) allOk=false;
-  });
-  const gv=$('gverdict');
-  if(!allOk){
-    G.tries++; answered=true; current._hadError=true;
-    gv.textContent=G.tries>=2?'Check the highlighted box — the hint shows the work.':'Not quite — fix the red box and check again.';
-    gv.className='verdict help';
-    if(G.tries>=2){ $('ginfo').innerHTML=st.info; $('ginfo').classList.add('show');
-      st.boxes.forEach((bx,i)=>{ if(boxOk(bx,i)) return; const ins=grpInputs(i);
-        if(ins.length===1) ins[0].placeholder=String(bx.expect);
-        else String(bx.expect).split('').forEach((d,k)=>{ if(ins[k]) ins[k].placeholder=d; }); }); }
-    const bad=st.boxes.findIndex((bx,i)=>!boxOk(bx,i));
-    if(bad>=0){const e=grpInputs(bad)[0]; if(e){e.focus(); e.select&&e.select();}}
-    return;
-  }
-  gv.textContent=''; gv.className='verdict';
-  G.si++; renderWork();
-  if(G.si>=G.steps.length){ finishGuided(); } else { renderStep(); }
-}
-function finishGuided(){
-  const right=!current._hadError;
-  const gv=$('gverdict');
-  gv.textContent = right ? '✓ Solved it — every column correct!' : `✓ Done — ${current.a} ${current.op==='+'?'+':'−'} ${current.b} = ${current.answer}.`;
-  gv.className='verdict good pop';
-  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
-  concludeProblem(right, $('stepbtn'));
-}
-
+/* ---------- the set ---------- */
+function nextProblem(){ let useLevel=level; if(level>1 && Math.random()<0.25) useLevel=level-1; current=GEN[useLevel](); renderProblem(); }
 function concludeProblem(right, btn){
   results[index]=right;
   if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
@@ -434,8 +385,8 @@ function concludeProblem(right, btn){
   else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
   levelReachedThisSet=Math.max(levelReachedThisSet,level);
   updateHUD(); paintDots();
-  btn.textContent=(index===SET_LEN-1)?'See results':'Next';
-  btn.className='btn '+(right?'':'sky'); btn.onclick=advance;
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus();
 }
 function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
 function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;} $('dots').innerHTML=h; }
@@ -450,49 +401,21 @@ function endSet(){
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   const pb=$('pb');
   if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
-  else pb.textContent=`Personal best this session: ${sessionBest}/10`;
-  $('s-note').textContent=note(correctCount);
+  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?'Excellent! Clean columns, every time.':correctCount>=7?'Strong set. A few more first-try answers and you level up.'
+    :correctCount>=5?'Good work. Watch the carries and borrows — that is where the points are.':'Every problem showed you the steps. Go again — it gets easier.';
 }
-function note(c){
-  if(c>=9)return 'Excellent control — clean columns, step by step.';
-  if(c>=7)return 'Strong set. A few more first-try solves and you climb again.';
-  if(c>=5)return 'Solid. Watch the carry/borrow line-ups — that’s where the points are.';
-  return 'Every column showed you the algorithm. Run it again — it gets easier.';
-}
+// Enter = Check (or Borrow / Next)
 document.addEventListener('keydown',e=>{
-  if(e.key!=='Enter')return;
-  if($('play').classList.contains('hide'))return;
-  e.preventDefault();
-  const a=document.activeElement;
-  if(a && a.matches && a.matches('input[data-g]') && G && G.si<G.steps.length){
-    const ins=stepInputs(); const nx=ins[ins.indexOf(a)+1];
-    if(nx){ nx.focus(); return; }
-  }
-  $('stepbtn').click();
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); if(!$('go').disabled) $('go').click();
 });
-// typing in a box inside the problem: one digit per box (two for "the top is now"), then hop to the next box
-document.addEventListener('input',e=>{
-  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
-  if(t.classList.contains('pbx')){
-    const max=t.classList.contains('w2')?2:1;
-    t.value=t.value.replace(/[^0-9]/g,'').slice(-max);
-    if(t.value.length===max){ const ins=stepInputs(); const nx=ins[ins.indexOf(t)+1]; if(nx && nx.classList.contains('pbx')) nx.focus(); }
-  }
-  t.classList.remove('bad');
-  mirror(t.dataset.g);
-});
-document.addEventListener('keydown',e=>{
-  const t=e.target; if(e.key!=='Backspace' || !t.matches || !t.matches('input.pbx') || t.value!=='') return;
-  const ins=stepInputs(); const pv=ins[ins.indexOf(t)-1]; if(pv && pv.classList.contains('pbx')){ e.preventDefault(); pv.focus(); }
-});
-// light up the matching tile for the box you are in
-document.addEventListener('focusin',e=>{
-  document.querySelectorAll('.chip.on').forEach(x=>x.classList.remove('on'));
-  const t=e.target; if(!t.matches || !t.matches('input[data-g]')) return;
-  const c=document.querySelector(`.chip[data-g="${t.dataset.g}"]`); if(c) c.classList.add('on');
-});
-// worked example on the start screen: the same written frame, every box filled in
-(function(){ const ex=mk(52,27,'-'); const st=buildSteps(ex); drawCols(ex,st,st.length,$('exPaper'),true); })();
+// only digits in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  t.value=t.value.replace(/[^0-9]/g,'').slice(0,+t.maxLength||2); t.classList.remove('bad'); $('fb').textContent=''; });
+
+/* ---------- worked example on the start screen: 52 − 27, finished ---------- */
+(function(){ BOARD=newBoard(mk(52,27,'-')); BOARD.top=[5,2]; BOARD.small=[4,12]; BOARD.struck=[true,true]; BOARD.ans=[2,5]; draw($('exPaper')); BOARD=null; })();
 </script>
 <script src="../../../tracker-config.js"></script>
 <script src="../../../score-send.js"></script>
