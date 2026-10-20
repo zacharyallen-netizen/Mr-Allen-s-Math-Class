@@ -26,43 +26,28 @@
 
 function buildM2Form() {
   var form = FormApp.create('Fluency Lab · Module 2 Fluency Check — Multiplication');
-  form.setDescription(
-    'Facts first, then the big ones. For multi-digit problems, use the standard algorithm on paper — ' +
-    'and remember the second partial product is the TENS (the place-value shift). You will see your ' +
-    'score and the worked steps for anything you miss. Racing your own best.');
+  form.setDescription('Pick an answer for each.');
   form.setIsQuiz(true);
   form.setProgressBar(true);
   form.setShuffleQuestions(false);
   form.addTextItem().setTitle('Your name').setRequired(true);
 
-  var RIGHT = 'Correct — fast and clean.';
+  var RIGHT = 'Correct.';
 
   var Q = [
-    ['7 \u00D7 8 =', ['56','54','63','48'], 0,
-      '7 \u00D7 8 = 56. Tip: double 7 three times \u2014 7 \u2192 14 \u2192 28 \u2192 56. Lock it in.'],
-    ['9 \u00D7 6 =', ['54','56','45','63'], 0,
-      '9 \u00D7 6 = 54. \u00D79 trick: 10 \u00D7 6 = 60, minus 6 = 54.'],
-    ['8 \u00D7 8 =', ['64','56','72','48'], 0,
-      '8 \u00D7 8 = 64. One of the squares worth memorizing cold.'],
-    ['12 \u00D7 7 =', ['84','72','96','77'], 0,
-      '12 \u00D7 7 = 84. Think (10 \u00D7 7) + (2 \u00D7 7) = 70 + 14 = 84.'],
-    ['34 \u00D7 6 =', ['204','184','244','210'], 0,
-      'Ones: 6 \u00D7 4 = 24 \u2192 write 4, carry 2. Tens: 6 \u00D7 3 = 18, + 2 = 20  →  204. Don\u2019t drop the carry.'],
-    ['47 \u00D7 8 =', ['376','326','356','386'], 0,
-      'Ones: 8 \u00D7 7 = 56 \u2192 write 6, carry 5. Tens: 8 \u00D7 4 = 32, + 5 = 37  →  376.'],
-    ['128 \u00D7 4 =', ['512','488','502','412'], 0,
-      '4 \u00D7 8 = 32 (write 2, carry 3); 4 \u00D7 2 = 8, + 3 = 11 (write 1, carry 1); 4 \u00D7 1 = 4, + 1 = 5  →  512.'],
-    ['23 \u00D7 14 =', ['322','115','312','422'], 0,
-      'Two partial products: 23 \u00D7 4 = 92, then 23 \u00D7 10 = 230 (the tens \u2014 the shift). Add: 92 + 230 = 322.'],
-    ['47 \u00D7 38 =', ['1786','517','1416','1886'], 0,
-      'Two partials: 47 \u00D7 8 = 376, then 47 \u00D7 30 = 1410 (NOT 141 \u2014 that\u2019s the place-value shift). 376 + 1410 = 1786.'],
-    ['56 \u00D7 24 =', ['1344','336','1244','1444'], 0,
-      '56 \u00D7 4 = 224, then 56 \u00D7 20 = 1120 (the shift). 224 + 1120 = 1344.'],
-    ['63 \u00D7 45 =', ['2835','567','2735','2935'], 0,
-      '63 \u00D7 5 = 315, then 63 \u00D7 40 = 2520 (the shift, not 252). 315 + 2520 = 2835.'],
-    ['A theater has 36 rows of 24 seats. How many seats in all?',
-      ['864','216','764','964'], 0,
-      '36 \u00D7 24: 36 \u00D7 4 = 144, then 36 \u00D7 20 = 720 (the shift). 144 + 720 = 864 seats.'],
+    ["7 × 8", ["56", "54", "63", "48"], 0, "7 × 8 = 56"],
+    ["9 × 6", ["54", "56", "45", "63"], 0, "9 × 6 = 54"],
+    ["8 × 8", ["64", "56", "72", "48"], 0, "8 × 8 = 64"],
+    ["12 × 7", ["84", "72", "96", "77"], 0, "12 × 7 = 84"],
+    ["34 × 6", ["204", "184", "244", "210"], 0, "6 × 4 = 24, carry 2. 6 × 3 + 2 = 20"],
+    ["47 × 8", ["376", "326", "356", "386"], 0, "8 × 7 = 56, carry 5. 8 × 4 + 5 = 37"],
+    ["128 × 4", ["512", "488", "502", "412"], 0, "4 × 8 = 32, carry 3. 4 × 2 + 3 = 11, carry 1. 4 × 1 + 1 = 5"],
+    ["23 × 14", ["322", "115", "312", "422"], 0, "23 × 4 = 92. 23 × 10 = 230. 92 + 230 = 322"],
+    ["47 × 38", ["1786", "517", "1416", "1886"], 0, "47 × 8 = 376. 47 × 30 = 1410. 376 + 1410 = 1786"],
+    ["56 × 24", ["1344", "336", "1244", "1444"], 0, "56 × 4 = 224. 56 × 20 = 1120. 224 + 1120 = 1344"],
+    ["63 × 45", ["2835", "567", "2735", "2935"], 0, "63 × 5 = 315. 63 × 40 = 2520. 315 + 2520 = 2835"],
+    ["36 × 24", ["864", "216", "764", "964"], 0, "36 × 4 = 144. 36 × 20 = 720. 144 + 720 = 864"],
+    ["29 × 6", ["174", "124", "1,254", "164"], 0, "6 × 9 = 54, carry 5. 6 × 2 + 5 = 17"]
   ];
 
   Q.forEach(function (q, n) {

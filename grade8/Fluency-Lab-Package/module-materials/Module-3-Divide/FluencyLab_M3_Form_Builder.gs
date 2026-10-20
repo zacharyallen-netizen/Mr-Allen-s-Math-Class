@@ -26,44 +26,29 @@
 
 function buildM3Form() {
   var form = FormApp.create('Fluency Lab · Module 3 Fluency Check — Division');
-  form.setDescription(
-    'Facts first, then long division. Remember: division is multiplication backwards, and you can ' +
-    'check any answer by multiplying back. Write remainders like  64 r 1. You will see your score and ' +
-    'the worked steps for anything you miss. Racing your own best.');
+  form.setDescription('Pick an answer for each.');
   form.setIsQuiz(true);
   form.setProgressBar(true);
   form.setShuffleQuestions(false);
   form.addTextItem().setTitle('Your name').setRequired(true);
 
-  var RIGHT = 'Correct — check by multiplying back and you’ll see it fits.';
+  var RIGHT = 'Correct.';
 
   // [prompt, [choices], correctIndex, incorrectFeedback]
   var Q = [
-    ['56 \u00F7 7 =', ['8','7','9','6'], 0,
-      '56 \u00F7 7 = 8 because 7 \u00D7 8 = 56. Reach for the multiplication twin.'],
-    ['72 \u00F7 8 =', ['9','8','7','6'], 0,
-      '72 \u00F7 8 = 9 because 8 \u00D7 9 = 72.'],
-    ['63 \u00F7 9 =', ['7','6','8','9'], 0,
-      '63 \u00F7 9 = 7 because 9 \u00D7 7 = 63.'],
-    ['84 \u00F7 6 =', ['14','13','16','12'], 0,
-      '6 into 8 = 1 (6, leaves 2). Bring down 4 \u2192 24. 6 into 24 = 4. Answer 14. Check: 6 \u00D7 14 = 84.'],
-    ['96 \u00F7 4 =', ['24','22','28','26'], 0,
-      '4 into 9 = 2 (8, leaves 1). Bring down 6 \u2192 16. 4 into 16 = 4. Answer 24. Check: 4 \u00D7 24 = 96.'],
-    ['252 \u00F7 7 =', ['36','34','38','42'], 0,
-      '7 into 25 = 3 (21, leaves 4). Bring down 2 \u2192 42. 7 into 42 = 6. Answer 36. Check: 7 \u00D7 36 = 252.'],
-    ['256 \u00F7 4 =', ['64','62','66','16'], 0,
-      '4 into 25 = 6 (24, leaves 1). Bring down 6 \u2192 16. 4 into 16 = 4. Answer 64. Check: 4 \u00D7 64 = 256.'],
-    ['824 \u00F7 4 =', ['206','26','216','260'], 0,
-      '4 into 8 = 2; 4 into 2 = 0 \u2014 write the 0! Bring down 4 \u2192 24, 4 into 24 = 6. Answer 206, not 26. Don\u2019t drop the zero.'],
-    ['98 \u00F7 4 =', ['24 r 2','24 r 1','23 r 2','24'], 0,
-      '4 into 9 = 2 (8, leaves 1). Bring down 8 \u2192 18. 4 into 18 = 4 (16, leaves 2). Answer 24 r 2. Check: 4 \u00D7 24 + 2 = 98.'],
-    ['139 \u00F7 4 =', ['34 r 3','34 r 1','33 r 3','35 r 1'], 0,
-      '4 into 13 = 3 (12, leaves 1). Bring down 9 \u2192 19. 4 into 19 = 4 (16, leaves 3). Answer 34 r 3. Check: 4 \u00D7 34 + 3 = 139.'],
-    ['253 \u00F7 6 =', ['42 r 1','42 r 2','41 r 1','43 r 1'], 0,
-      '6 into 25 = 4 (24, leaves 1). Bring down 3 \u2192 13. 6 into 13 = 2 (12, leaves 1). Answer 42 r 1. Check: 6 \u00D7 42 + 1 = 253.'],
-    ['A teacher shares 196 pencils equally among 7 tables. How many per table?',
-      ['28','27','29','26'], 0,
-      '196 \u00F7 7: 7 into 19 = 2 (14, leaves 5). Bring down 6 \u2192 56. 7 into 56 = 8. Answer 28. Check: 7 \u00D7 28 = 196.'],
+    ["56 ÷ 7", ["8", "7", "9", "6"], 0, "7 × 8 = 56"],
+    ["72 ÷ 8", ["9", "8", "7", "6"], 0, "8 × 9 = 72"],
+    ["63 ÷ 9", ["7", "6", "8", "9"], 0, "9 × 7 = 63"],
+    ["84 ÷ 6", ["14", "13", "16", "12"], 0, "8 ÷ 6 = 1 r 2. 24 ÷ 6 = 4"],
+    ["96 ÷ 4", ["24", "22", "28", "26"], 0, "9 ÷ 4 = 2 r 1. 16 ÷ 4 = 4"],
+    ["252 ÷ 7", ["36", "34", "38", "42"], 0, "25 ÷ 7 = 3 r 4. 42 ÷ 7 = 6"],
+    ["256 ÷ 4", ["64", "62", "66", "16"], 0, "25 ÷ 4 = 6 r 1. 16 ÷ 4 = 4"],
+    ["824 ÷ 4", ["206", "26", "216", "260"], 0, "8 ÷ 4 = 2. 2 ÷ 4 = 0 (write the 0). 24 ÷ 4 = 6"],
+    ["98 ÷ 4", ["24 r 2", "24 r 1", "23 r 2", "24"], 0, "9 ÷ 4 = 2 r 1. 18 ÷ 4 = 4 r 2"],
+    ["139 ÷ 4", ["34 r 3", "34 r 1", "33 r 3", "35 r 1"], 0, "13 ÷ 4 = 3 r 1. 19 ÷ 4 = 4 r 3"],
+    ["253 ÷ 6", ["42 r 1", "42 r 2", "41 r 1", "43 r 1"], 0, "25 ÷ 6 = 4 r 1. 13 ÷ 6 = 2 r 1"],
+    ["196 ÷ 7", ["28", "27", "29", "26"], 0, "19 ÷ 7 = 2 r 5. 56 ÷ 7 = 8"],
+    ["157 ÷ 5", ["31 r 2", "31 r 1", "30 r 7", "32 r 3"], 0, "15 ÷ 5 = 3. 7 ÷ 5 = 1 r 2"]
   ];
 
   Q.forEach(function (q, n) {

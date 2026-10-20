@@ -26,43 +26,32 @@
 
 function buildM4Form() {
   var form = FormApp.create('Fluency Lab · Module 4 Fluency Check — Fractions');
-  form.setDescription(
-    'Use the real methods: a common denominator to add or subtract, multiply straight across, ' +
-    'and to divide, multiply by the reciprocal (flip the second). Give answers in simplest form. ' +
-    'You will see your score and the worked steps for anything you miss. Racing your own best.');
+  form.setDescription('Simplest form. Pick an answer for each.');
   form.setIsQuiz(true);
   form.setProgressBar(true);
   form.setShuffleQuestions(false);
   form.addTextItem().setTitle('Your name').setRequired(true);
 
-  var RIGHT = 'Correct — the real method, in simplest form.';
+  var RIGHT = 'Correct.';
 
   // [prompt, [choices], correctIndex, incorrectFeedback]
   var Q = [
-    ['Simplify  6/8', ['3/4','6/8','3/8','4/6'], 0,
-      'Divide top and bottom by their greatest common factor (2): 6\u00F72=3, 8\u00F72=4 \u2192 3/4.'],
-    ['Simplify  10/15', ['2/3','5/7','10/15','3/5'], 0,
-      'Greatest common factor of 10 and 15 is 5: 10\u00F75=2, 15\u00F75=3 \u2192 2/3.'],
-    ['2/3  =  ?/12   (what is the missing top number?)', ['8','6','4','9'], 0,
-      'To turn 3 into 12 you multiply by 4, so multiply the top too: 2\u00D74 = 8.'],
-    ['3/8 + 2/8', ['5/8','5/16','6/8','1/4'], 0,
-      'Same denominator: add the tops, keep the bottom. 3+2 = 5 \u2192 5/8 (already simplest).'],
-    ['5/6 \u2212 1/6', ['2/3','4/6','4/12','1/3'], 0,
-      'Same denominator: 5\u22121 = 4 \u2192 4/6, which simplifies to 2/3.'],
-    ['3/4 + 1/4', ['1','4/8','1/2','4/4'], 0,
-      '3+1 = 4 \u2192 4/4 = 1 whole.'],
-    ['1/2 + 1/3', ['5/6','2/5','2/6','3/5'], 0,
-      'Common denominator 6: 1/2 = 3/6, 1/3 = 2/6. Add the tops: 3+2 = 5 \u2192 5/6. (Never add the bottoms.)'],
-    ['5/6 \u2212 1/4', ['7/12','4/2','1/3','6/10'], 0,
-      'Common denominator 12: 5/6 = 10/12, 1/4 = 3/12. 10\u22123 = 7 \u2192 7/12.'],
-    ['2/3 \u00D7 4/5', ['8/15','6/8','8/8','2/15'], 0,
-      'Multiply straight across: 2\u00D74 = 8 over 3\u00D75 = 15 \u2192 8/15. No common denominator for multiplying.'],
-    ['3/4 \u00D7 2/9', ['1/6','6/13','5/13','6/36'], 0,
-      '3\u00D72 = 6 over 4\u00D79 = 36 \u2192 6/36, which simplifies to 1/6.'],
-    ['1/2 \u00F7 1/4', ['2','1/8','1/2','8'], 0,
-      'Flip the second and multiply: 1/2 \u00D7 4/1 = 4/2 = 2. Dividing by 1/4 asks how many quarters are in a half \u2014 two.'],
-    ['2/3 \u00F7 4/9', ['3/2','8/27','6/12','2/3'], 0,
-      'Flip the second and multiply: 2/3 \u00D7 9/4 = 18/12 = 3/2.'],
+    ["Simplify ⁶⁄₈", ["³⁄₄", "⁶⁄₈", "³⁄₈", "⁴⁄₆"], 0, "÷ 2: ⁶⁄₈ = ³⁄₄"],
+    ["Simplify ¹⁰⁄₁₅", ["²⁄₃", "⁵⁄₇", "¹⁰⁄₁₅", "³⁄₅"], 0, "÷ 5: ¹⁰⁄₁₅ = ²⁄₃"],
+    ["²⁄₃ = ?⁄₁₂", ["8", "6", "4", "9"], 0, "3 × 4 = 12, so 2 × 4 = 8"],
+    ["³⁄₈ + ²⁄₈", ["⁵⁄₈", "⁵⁄₁₆", "⁶⁄₈", "¹⁄₄"], 0, "3 + 2 = 5"],
+    ["⁵⁄₆ − ¹⁄₆", ["²⁄₃", "⁶⁄₆", "⁴⁄₁₂", "¹⁄₃"], 0, "5 − 1 = 4 → ⁴⁄₆ = ²⁄₃"],
+    ["³⁄₄ + ¹⁄₄", ["1", "⁴⁄₈", "¹⁄₂", "⁴⁄₁₆"], 0, "3 + 1 = 4 → ⁴⁄₄ = 1"],
+    ["¹⁄₂ + ¹⁄₃", ["⁵⁄₆", "²⁄₅", "²⁄₆", "³⁄₅"], 0, "³⁄₆ + ²⁄₆ = ⁵⁄₆"],
+    ["⁵⁄₆ − ¹⁄₄", ["⁷⁄₁₂", "⁴⁄₂", "¹⁄₃", "⁶⁄₁₀"], 0, "¹⁰⁄₁₂ − ³⁄₁₂ = ⁷⁄₁₂"],
+    ["²⁄₃ × ⁴⁄₅", ["⁸⁄₁₅", "⁶⁄₈", "⁸⁄₈", "²⁄₁₅"], 0, "2 × 4 = 8. 3 × 5 = 15"],
+    ["³⁄₄ × ²⁄₉", ["¹⁄₆", "⁶⁄₁₃", "⁵⁄₁₃", "²⁷⁄₈"], 0, "⁶⁄₃₆ = ¹⁄₆"],
+    ["¹⁄₂ ÷ ¹⁄₄", ["2", "¹⁄₈", "¹⁄₂", "8"], 0, "¹⁄₂ × ⁴⁄₁ = ⁴⁄₂ = 2"],
+    ["²⁄₃ ÷ ⁴⁄₉", ["³⁄₂", "⁸⁄₂₇", "⁶⁄₁₂", "²⁄₃"], 0, "²⁄₃ × ⁹⁄₄ = ¹⁸⁄₁₂ = ³⁄₂"],
+    ["Write 2 ³⁄₄ as an improper fraction", ["¹¹⁄₄", "⁹⁄₄", "⁶⁄₄", "²³⁄₄"], 0, "2 × 4 + 3 = 11"],
+    ["Write ¹⁷⁄₅ as a mixed number", ["3 ²⁄₅", "2 ³⁄₅", "3 ¹⁄₅", "17 ¹⁄₅"], 0, "17 ÷ 5 = 3 r 2"],
+    ["⁴⁄₉ × ³⁄₈", ["¹⁄₆", "¹²⁄₇₂", "⁷⁄₁₇", "²⁄₃"], 0, "¹²⁄₇₂ = ¹⁄₆"],
+    ["³⁄₄ ÷ ¹⁄₂", ["1 ¹⁄₂", "³⁄₈", "²⁄₃", "1 ¹⁄₄"], 0, "³⁄₄ × ²⁄₁ = ⁶⁄₄ = 1 ¹⁄₂"]
   ];
 
   Q.forEach(function (q, n) {

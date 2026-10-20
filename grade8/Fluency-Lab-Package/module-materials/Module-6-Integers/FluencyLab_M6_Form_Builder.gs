@@ -9,28 +9,28 @@
 
 function buildM6Form() {
   var form = FormApp.create('Fluency Lab · Module 6 Fluency Check — Integers');
-  form.setDescription('Subtracting is adding the opposite; for × and ÷, same signs give positive and different signs give negative. '+
-    'Type negatives with a minus sign. You will see your score and the worked steps for anything you miss.');
+  form.setDescription('Pick an answer for each.');
   form.setIsQuiz(true);
   form.setProgressBar(true);
   form.setShuffleQuestions(false);
   form.addTextItem().setTitle('Your name').setRequired(true);
 
-  var RIGHT = 'Correct — sign and value both right.';
+  var RIGHT = 'Correct.';
 
   var Q = [
-    ['-7 + -5', ['-12','12','-2','2'], 0, 'Same sign: add the values (7+5=12), keep the sign → -12.'],
-    ['-8 + 3', ['-5','5','-11','11'], 0, 'Different signs: 8-3=5, keep the sign of the bigger (negative) → -5.'],
-    ['6 + (-9)', ['-3','3','-15','15'], 0, 'Different signs: 9-6=3, bigger is negative → -3.'],
-    ['5 - (-3)', ['8','2','-8','-2'], 0, 'Subtracting a negative is adding: 5 + 3 = 8.'],
-    ['-4 - 6', ['-10','2','10','-2'], 0, '-4 - 6 = -4 + (-6) = -10.'],
-    ['-2 - (-9)', ['7','-11','-7','11'], 0, '-2 - (-9) = -2 + 9 = 7.'],
-    ['(-4) × 6', ['-24','24','-10','10'], 0, 'Different signs → negative: -24.'],
-    ['(-3) × (-7)', ['21','-21','10','-10'], 0, 'Same signs → positive: 21.'],
-    ['(-40) ÷ 8', ['-5','5','-32','32'], 0, 'Different signs → negative: -5.'],
-    ['(-56) ÷ (-7)', ['8','-8','49','-49'], 0, 'Same signs → positive: 8.'],
-    ['-3 × 4 + 5', ['-7','-17','7','17'], 0, 'Multiply first: -3×4=-12, then +5 = -7.'],
-    ['The temperature was 4° and dropped 11°. What is it now?', ['-7°','7°','15°','-15°'], 0, '4 - 11 = 4 + (-11) = -7°.'],
+    ["−7 + (−5)", ["−12", "12", "−2", "2"], 0, "Same signs: 7 + 5 = 12. Keep the −"],
+    ["−8 + 3", ["−5", "5", "−11", "11"], 0, "Different signs: 8 − 3 = 5. −8 is farther from 0"],
+    ["6 + (−9)", ["−3", "3", "−15", "15"], 0, "Different signs: 9 − 6 = 3. −9 is farther from 0"],
+    ["5 − (−3)", ["8", "2", "−8", "−2"], 0, "5 + 3 = 8"],
+    ["−4 − 6", ["−10", "2", "10", "−2"], 0, "−4 + (−6) = −10"],
+    ["−2 − (−9)", ["7", "−11", "−7", "11"], 0, "−2 + 9 = 7"],
+    ["(−4) × 6", ["−24", "24", "−10", "10"], 0, "Different signs"],
+    ["(−3) × (−7)", ["21", "−21", "10", "−10"], 0, "Same signs"],
+    ["(−40) ÷ 8", ["−5", "5", "−32", "32"], 0, "Different signs"],
+    ["(−56) ÷ (−7)", ["8", "−8", "49", "−49"], 0, "Same signs"],
+    ["(−6) × (−8)", ["48", "−48", "−14", "14"], 0, "Same signs"],
+    ["4 − 11", ["−7", "7", "15", "−15"], 0, "4 + (−11) = −7"],
+    ["−5 + (−9)", ["−14", "4", "−4", "14"], 0, "Same signs: 5 + 9 = 14. Keep the −"]
   ];
 
   Q.forEach(function (q, n) {
