@@ -162,12 +162,22 @@ def check_math():
 
 check_math()
 
+FRAC = re.compile(r'(?<![\w.])([0-9?x]+)/([0-9?x]+)(?![\w.])')
+def stack(t):
+    """Every fraction on screen is stacked: top over bottom."""
+    return FRAC.sub(lambda m: f'<span class="fr"><span>{m.group(1)}</span><span>{m.group(2)}</span></span>', t)
+FR_CSS = ('.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 3px}'
+          '.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 3px 1px}.fr>span:last-child{padding:1px 3px 0}'
+          '.prompt .fr{font-size:.95em}.opt{min-height:52px}')
+
 for name, (plan, Q) in QUIZ.items():
     for q in Q:   # the answer is shown in bold already: drop a repeated "→ answer" at the end
         ans = q[1][q[2]]
         q[3] = re.sub(r'\.?\s*→\s*' + re.escape(ans) + r'$', '', q[3])
     p = D / f'quiz-{name}.html'
     s = p.read_text()
+    Q = [[stack(q[0]), [stack(c) for c in q[1]], q[2], stack(q[3])] for q in Q]
+    if '.fr{' not in s: s = s.replace('</style>', FR_CSS + '\n</style>', 1)
     s, n = re.subn(r'const Q=\[.*?\];\n', lambda m: 'const Q=' + json.dumps(Q, ensure_ascii=False) + ';\n', s, count=1, flags=re.S)
     assert n == 1, name
     s = re.sub(r'<div class="sub">.*?</div>', f'<div class="sub">{len(Q)} questions. Pick an answer for each. Then check.</div>', s, count=1)
@@ -179,8 +189,8 @@ for name, (plan, Q) in QUIZ.items():
                   "skipped+' left. Answer every question.'")
     s = s.replace("let msg = score===Q.length?'Perfect! 🎉':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good — review the blue notes below.':'Keep going — read the worked steps, then try again.';",
                   "let msg = score===Q.length?'Perfect!':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good. Read the notes below.':'Read the steps below. Try again.';")
-    s = s.replace("s.innerHTML='You scored '+score+' / '+Q.length+'  ('+pct+'%) — '+msg;", "s.innerHTML=score+' / '+Q.length+' ('+pct+'%). '+msg;")
-    s = s.replace("<div class=\"qnum\">QUESTION ${i+1} OF ${Q.length}</div>", "<div class=\"qnum\">${i+1} / ${Q.length}</div>")
+    s = s.replace("s.innerHTML='You scored '+score+' / '+Q.length+'  ('+pct+'%) — '+msg;", "s.innerHTML=score+' of '+Q.length+' ('+pct+'%). '+msg;")
+    s = s.replace("<div class=\"qnum\">QUESTION ${i+1} OF ${Q.length}</div>", "<div class=\"qnum\">${i+1} of ${Q.length}</div>")
     # every skill in the plan must point at real questions
     P = json.loads(re.search(r'window\.SKILL_PLAN=(\{.*?\});', s).group(1))
     idx = sorted(i for sk in P['skills'] for i in sk[2])

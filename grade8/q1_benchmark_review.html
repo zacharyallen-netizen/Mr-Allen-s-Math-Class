@@ -494,19 +494,19 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
         var ok = p.length === 2 && p.indexOf('B') >= 0 && p.indexOf('E') >= 0;
         if (ok) return { ok: true };
         var notes = [];
-        var W = { A: '√64 = 8, so it is rational.', C: '0.666… repeats, so it is rational (it equals 2/3).', D: '3.14159 stops, so it is rational. Only π itself goes on forever.', F: '−√25 = −5, so it is rational.' };
+        var W = { A: '√64 = 8, so it is rational.', C: '0.666… repeats, so it is rational (it equals <span class="fr"><span>2</span><span>3</span></span>).', D: '3.14159 stops, so it is rational. Only π itself goes on forever.', F: '−√25 = −5, so it is rational.' };
         p.forEach(function (x) { if (W[x]) notes.push(W[x]); });
         if (p.indexOf('B') < 0) notes.push('√18 is irrational: 18 is not a perfect square.');
-        if (p.indexOf('E') < 0) notes.push('π ÷ 2 is still irrational.');
+        if (p.indexOf('E') < 0) notes.push('<span class="fr"><span>π</span><span>2</span></span> is still irrational.');
         return { ok: false, why: notes.join(' ') };
       },
-      key: 'B and E (√18 and π/2)' },
+      keyHTML: 'B and E (√<span class="rad">18</span> and <span class="fr"><span>π</span><span>2</span></span>)' },
     { id: '2', std: 'NC.8.NS.1', label: 'Rational or irrational: operations',
       read: function () { return [0, 1, 2, 3].map(function (i) { var r = $('input[name="r' + i + '"]:checked'); return r ? r.value : '?'; }).join(','); },
       blank: function () { return $$('#q2 input:checked').length < 4; },
       grade: function () {
         var want = ['I', 'R', 'I', 'R'], got = this.read().split(','), why = [];
-        var T = ['6 + √11: rational + irrational is irrational.', '√5 · √5 = 5, which is rational.', '4π: rational × irrational is irrational.', '0.25 + 3/4 = 1, which is rational.'];
+        var T = ['6 + √11: rational + irrational is irrational.', '√5 · √5 = 5, which is rational.', '4π: rational × irrational is irrational.', '0.25 + <span class="fr"><span>3</span><span>4</span></span> = 1, which is rational.'];
         got.forEach(function (g, i) { if (g !== want[i]) why.push(T[i]); });
         return why.length ? { ok: false, why: (why.length === 1 ? 'One row is off. ' : '') + why.join(' ') } : { ok: true };
       },
@@ -531,7 +531,7 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
       grade: function () {
         var want = ['pi', '438', 'rep', 'r20', 'f92'];
         if (placed.join() === want.join()) return { ok: true };
-        return { ok: false, why: 'Change each number to a decimal first: π + 1 ≈ 4.14, 4.38, 4.444… ≈ 4.44, √20 ≈ 4.47, 9/2 = 4.5.' };
+        return { ok: false, why: 'Change each number to a decimal first: π + 1 ≈ 4.14, 4.38, 4.444… ≈ 4.44, √20 ≈ 4.47, <span class="fr"><span>9</span><span>2</span></span> = 4.5.' };
       },
       keyHTML: 'π + 1, 4.38, 4.<span class="rep">4</span>, √<span class="rad">20</span>, <span class="fr"><span>9</span><span>2</span></span>' },
     { id: '5', std: 'NC.8.EE.1', label: 'Multiply monomials',

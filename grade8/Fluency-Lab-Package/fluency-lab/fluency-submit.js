@@ -111,7 +111,7 @@
         if (res && res.ok) {
           FL.sent = true;
           btn.textContent = 'Sent ✓';
-          msg('Sent ✓ ' + FL.score + ' / ' + FL.total + ', ' + res.name + '.', 'ok');
+          msg('Sent ✓ ' + FL.score + ' of ' + FL.total + ', ' + res.name + '.', 'ok');
         } else {
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Try again';
           msg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') +
