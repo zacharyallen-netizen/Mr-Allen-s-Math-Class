@@ -63,7 +63,7 @@
   document.head.appendChild(css);
 
   function norm(s) {
-    return String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/(°|degrees?|squnits|sq\.?units|units?|cm²?|in²?|ft²?|m²?|inches|feet|meters)$/, '')
+    return String(s).toLowerCase().replace(/[−–—]/g, '-').replace(/\s+/g, '').replace(/(°|degrees?|squnits|sq\.?units|cubicunits|cu\.?units|units?|cm[²³23]?|in[²³23]?|ft[²³23]?|m[²³23]?|yd[²³23]?|inches|feet|meters|miles?|blocks?)$/, '')
       .replace(/^[a-z]\s*=/, '').replace(/,(?=\d{3}\b)/g, '').replace(/^\$/, '');
   }
   function num(s) {

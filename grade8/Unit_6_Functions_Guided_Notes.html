@@ -635,6 +635,15 @@ h1 em { font-style: italic; color: var(--accent); font-weight: 400; }
 .np .data-table{margin:8px 0}
 .np .fnfig{margin:10px auto 4px}
 #tab-review .np.final{margin-top:8px}
+.fig-row.fig3>.fnfig{flex:1 1 200px;max-width:250px}
+.fig-row>.u6-cmp{flex:0 0 auto;align-self:center;margin:0;width:auto}
+.fig-row>.u6-cmp+.fnfig{flex:0 1 270px}
+.u6-cmp th,.u6-cmp td{padding:4px 10px;text-align:center}
+body.paper .fig-row.fig3>.fnfig{flex:1 1 150px;max-width:190px}
+body.paper .np-q .fig-row>.fnfig{max-width:220px}
+/* paper: a practice figure sits to the right of the answer space, so each question takes less height */
+body.paper .np-q>.fnfig{float:right;width:210px;max-width:210px;margin:0 0 8px 16px}
+body.paper .np-q::after{content:"";display:block;clear:both}
 /* ===== PAPER (?paper=1 → PDFs). paper.js adds body.paper; the hook at the end of the page does the rest ===== */
 body.paper::before{display:none}
 body.paper .sb-local,body.paper .u6-topics,body.paper .tabs,body.paper .sec-progress,body.paper .btn-show,body.paper #ss-mount{display:none!important}
@@ -801,7 +810,9 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="np" data-title="Functions" data-std="NC.8.F.1">
   <div class="np-q" data-level="1" data-choices="Yes|No" data-ans="No" data-hint="Look at the first numbers (the inputs). Does any input show up twice?">
     <div class="np-prompt">Is this a function? &nbsp;(3, 8), (5, 2), (3, 9), (6, 1)</div>
-    <div class="np-sol">The inputs are 3, 5, 3, 6. The input 3 shows up twice: (3, 8) and (3, 9). One input has two outputs, so it is <b>not</b> a function.</div>
+    <div class="fnfig sm"><div data-fn='{"type":"mapping","pairs":[[3,8],[5,2],[3,9],[6,1]],"maxW":240,"alt":"mapping diagram for (3, 8), (5, 2), (3, 9), (6, 1)"}'></div><div class="fig-cap">Count the arrows leaving each input.</div></div>
+    <div class="np-sol">The inputs are 3, 5, 3, 6. The input 3 shows up twice: (3, 8) and (3, 9). One input has two outputs, so it is <b>not</b> a function.
+      <div class="fnfig sm"><div data-fn='{"type":"mapping","pairs":[[3,8],[5,2],[3,9],[6,1]],"bad":[3],"maxW":240,"alt":"mapping diagram: the input 3 has two arrows, to 8 and to 9"}'></div></div></div>
   </div>
   <div class="np-q" data-level="2" data-ans="4" data-hint="Find the x that shows up twice in the table. Then look at its two y-values.">
     <div class="np-prompt">This table is <b>not</b> a function. Which input breaks the rule? Type just the number.</div>
@@ -810,7 +821,9 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="np-q" data-level="3" data-ans="1|2|4" data-show="1, 2, or 4" data-hint="To break the rule, the missing input must be an input that is already used.">
     <div class="np-prompt">(1, 5), (2, 7), (<span class="u6-box"></span>, 9), (4, 11). Give one number for the box that makes this <b>NOT</b> a function.</div>
-    <div class="np-sol">The inputs already used are 1, 2 and 4. If the box is one of them, that input gets a second output. Example: box = 1 gives (1, 5) and (1, 9). So 1, 2, or 4 works.</div>
+    <div class="fnfig sm"><div data-fn='{"type":"mapping","pairs":[[1,5],[2,7],["?",9],[4,11]],"keepOrder":true,"maxW":240,"alt":"mapping diagram: 1 to 5, 2 to 7, a missing input ? to 9, and 4 to 11"}'></div><div class="fig-cap">Which input could the <span style="color:#B45309">?</span> be, so one input gets two arrows?</div></div>
+    <div class="np-sol">The inputs already used are 1, 2 and 4. If the box is one of them, that input gets a second output. Example: box = 1 gives (1, 5) and (1, 9). So 1, 2, or 4 works.
+      <div class="fnfig sm"><div data-fn='{"type":"mapping","pairs":[[1,5],[2,7],[1,9],[4,11]],"keepOrder":true,"bad":[1],"maxW":240,"alt":"mapping diagram with the box = 1: the input 1 now has two arrows, to 5 and to 9"}'></div><div class="fig-cap">Box = 1: the input 1 has two arrows.</div></div></div>
   </div>
 </div>
 </div>
@@ -926,15 +939,19 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="np" data-title="Linear Functions in Real-World Context" data-std="NC.8.F.4">
   <div class="np-q" data-level="1" data-ans="2" data-hint="The rate is the amount that repeats for each mile.">
     <div class="np-prompt">A taxi charges $3 to start, plus $2 per mile. What is the rate of change (slope)? Type just the number.</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":5,"xstep":1,"ymin":0,"ymax":14,"ystep":1,"ylabelEvery":2,"w":230,"h":190,"xlabel":"Miles (x)","ylabel":"Taxi cost in $ (y)","lines":[{"pts":[[0,3],[5,13]],"c":"blue"}],"bmark":{"y":3,"label":"$3 to start","below":true},"tri":{"p":[2,7],"q":[3,9],"run":"1 mile","rise":"?"},"maxW":260,"alt":"graph of the taxi cost: starts at 3 dollars on the y-axis and goes up; a slope triangle shows 1 mile across and an unknown rise"}'></div><div class="fig-cap">Each mile, how much does the cost go up?</div></div>
     <div class="np-sol">“Per mile” tells you the rate. Each mile adds $2, so m = 2. (The $3 to start is b.)</div>
   </div>
   <div class="np-q" data-level="2" data-ans="y = 5x + 4|5x+4|4+5x|y=4+5x" data-ph="y = …" data-hint="The cost per game is m. The one-time shoe cost is b. Use y = mx + b.">
     <div class="np-prompt">Bowling costs $4 for shoes, plus $5 per game. Write an equation for the total cost y after x games.</div>
+    <div class="fnfig"><div data-fn='{"type":"tape","segs":[{"w":96,"t":"$4 shoes","c":"gold"},{"w":60,"t":"$5"},{"w":60,"t":"$5"},{"w":70,"t":"…","dash":"5 4","fill":"#fff"}],"braces":[{"a":0,"b":3,"t":"total cost y"},{"a":1,"b":3,"t":"x games, $5 each","below":true,"c":"blue"}],"maxW":300,"alt":"bar model: 4 dollars for shoes once, then 5 dollars for each game"}'></div><div class="fig-cap">Paid once: shoes. Repeats: each game.</div></div>
     <div class="np-sol">$5 per game is the rate → m = 5. The $4 for shoes is paid once → b = 4. So y = 5x + 4.</div>
   </div>
   <div class="np-q" data-level="3" data-ans="20" data-hint="First find the rate: (145 − 70) ÷ (5 − 2). Then take away the cost of 2 hours from $70.">
     <div class="np-prompt">A tutor charges a fixed fee plus a rate per hour. 2 hours cost $70. 5 hours cost $145. What is the fixed fee? Type just the number.</div>
-    <div class="np-sol">Rate: (145 − 70) ÷ (5 − 2) = 75 ÷ 3 = $25 per hour. 2 hours of work cost 2 × 25 = $50. Fixed fee: 70 − 50 = <b>$20</b>. Check: 25(5) + 20 = 145 ✓</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":6,"xstep":1,"ymin":0,"ymax":175,"ystep":25,"ylabelEvery":50,"w":240,"h":200,"xlabel":"Hours (x)","ylabel":"Total cost in $ (y)","points":[{"x":2,"y":70,"label":"(2, 70)","pos":"nw","c":"blue"},{"x":5,"y":145,"label":"(5, 145)","pos":"nw","c":"blue"}],"tri":{"p":[2,70],"q":[5,145],"run":"5 − 2","rise":"145 − 70"},"maxW":270,"alt":"the points (2, 70) and (5, 145) with a slope triangle; the y-axis start is not shown"}'></div><div class="fig-cap">The fixed fee is the cost at 0 hours (on the y-axis).</div></div>
+    <div class="np-sol">Rate: (145 − 70) ÷ (5 − 2) = 75 ÷ 3 = $25 per hour. 2 hours of work cost 2 × 25 = $50. Fixed fee: 70 − 50 = <b>$20</b>. Check: 25(5) + 20 = 145 ✓
+      <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":6,"xstep":1,"ymin":0,"ymax":175,"ystep":25,"ylabelEvery":50,"w":240,"h":200,"xlabel":"Hours (x)","ylabel":"Total cost in $ (y)","lines":[{"pts":[[0,20],[6,170]],"c":"green"}],"points":[{"x":0,"y":20,"label":"fee $20","pos":"w","c":"green"},{"x":2,"y":70,"label":"(2, 70)","pos":"nw","c":"blue"},{"x":5,"y":145,"label":"(5, 145)","pos":"nw","c":"blue"}],"maxW":270,"alt":"answer graph: the line y = 25x + 20 through (2, 70) and (5, 145) starts at 20 on the y-axis"}'></div><div class="fig-cap">y = 25x + 20 starts at $20.</div></div></div>
   </div>
 </div>
 </div><div class="tab-pane" id="tab-6-5">
@@ -1040,6 +1057,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="np" data-title="Comparing Functions" data-std="NC.8.F.2">
   <div class="np-q" data-level="1" data-choices="Function A|Function B" data-ans="Function B" data-hint="The rate of change is the slope m: the number next to x.">
     <div class="np-prompt">Function A: y = 3x + 7. &nbsp;Function B: y = 5x + 1. Which has the greater rate of change?</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":4,"xstep":1,"ymin":0,"ymax":22,"ystep":2,"ylabelEvery":4,"w":220,"h":190,"xlabel":"x","ylabel":"y","lines":[{"pts":[[0,7],[4,19]],"c":"blue","label":"A","at":[0.5,11]},{"pts":[[0,1],[4,21]],"c":"gold","label":"B","at":[2.3,9.3]}],"maxW":250,"alt":"graphs of A: y = 3x + 7, starting at 7, and B: y = 5x + 1, starting at 1"}'></div><div class="fig-cap"><span style="color:#0056B3">A: y = 3x + 7</span> · <span style="color:#B45309">B: y = 5x + 1</span>. Which line is steeper?</div></div>
     <div class="np-sol">Slopes: A has m = 3. B has m = 5. 5 &gt; 3, so <b>Function B</b> has the greater rate of change. (The 7 and the 1 are starting values.)</div>
   </div>
   <div class="np-q" data-level="2" data-choices="Function A|Function B|They are the same" data-ans="Function A" data-hint="In the table, how much does y go up each time x goes up 1?">
@@ -1049,7 +1067,12 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="np-q" data-level="3" data-ans="6" data-hint="Write both: y = 10x and y = 5x + 30. Try a few x values in both until the costs match.">
     <div class="np-prompt">Gym A costs $10 per visit. Gym B costs a $30 fee plus $5 per visit. After how many visits do they cost the same? Type just the number.</div>
-    <div class="np-sol">Gym A: y = 10x. Gym B: y = 5x + 30. Set them equal: 10x = 5x + 30 → 5x = 30 → x = <b>6</b>. Check: 10(6) = 60 and 5(6) + 30 = 60 ✓</div>
+    <div class="fig-row">
+      <table class="data-table u6-cmp"><tr><th>Visits</th><th>Gym A</th><th>Gym B</th></tr><tr><td>0</td><td>$0</td><td>$30</td></tr><tr><td>1</td><td>$10</td><td>$35</td></tr><tr><td>2</td><td>$20</td><td>$40</td></tr><tr><td>3</td><td>…</td><td>…</td></tr></table>
+      <div class="fnfig"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"xlabelEvery":2,"ymin":0,"ymax":100,"ystep":10,"ylabelEvery":20,"w":230,"h":200,"xlabel":"Visits (x)","ylabel":"Total cost in $ (y)","lines":[{"pts":[[0,0],[10,100]],"c":"blue","label":"Gym A","at":[7.6,96]},{"pts":[[0,30],[10,80]],"c":"gold","label":"Gym B","at":[2.4,50]}],"maxW":260,"alt":"Gym A y = 10x starts at 0 and Gym B y = 5x + 30 starts at 30; the crossing point is not labeled"}'></div></div>
+    </div>
+    <div class="np-sol">Gym A: y = 10x. Gym B: y = 5x + 30. Set them equal: 10x = 5x + 30 → 5x = 30 → x = <b>6</b>. Check: 10(6) = 60 and 5(6) + 30 = 60 ✓
+      <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"xlabelEvery":2,"ymin":0,"ymax":100,"ystep":10,"ylabelEvery":20,"w":230,"h":200,"xlabel":"Visits (x)","ylabel":"Total cost in $ (y)","lines":[{"pts":[[0,0],[10,100]],"c":"blue","label":"Gym A","at":[7.6,96]},{"pts":[[0,30],[10,80]],"c":"gold","label":"Gym B","at":[2.4,50]}],"points":[{"x":6,"y":60,"label":"(6, 60)","pos":"se","c":"green"}],"maxW":260,"alt":"answer graph: the lines cross at (6, 60)"}'></div><div class="fig-cap">The lines cross at 6 visits, $60.</div></div></div>
   </div>
 </div>
 </div><div class="tab-pane" id="tab-6-6">
@@ -1146,6 +1169,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="np" data-title="Qualitative Graphs" data-std="NC.8.F.5">
   <div class="np-q" data-level="1" data-choices="Moving away from home|Moving toward home|Standing still" data-ans="Moving toward home" data-hint="Down means the distance from home is getting smaller.">
     <div class="np-prompt">A graph shows Leo’s distance from home. The line goes DOWN. What is Leo doing?</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"ymin":0,"ymax":6,"ystep":1,"w":230,"h":130,"noNums":true,"xlabel":"Time","ylabel":"Leo’s distance from home","lines":[{"pts":[[0,5],[9,1]],"c":"blue"}],"maxW":250,"alt":"Leo’s distance from home: a line going down as time goes on"}'></div></div>
     <div class="np-sol">Going down means the distance from home is decreasing. Leo is getting closer to home, so he is <b>moving toward home</b>.</div>
   </div>
   <div class="np-q" data-level="2" data-choices="Part A|Part B|Part C" data-ans="Part C" data-hint="Draining means the water goes down. Find the part where the line goes down.">
@@ -1175,6 +1199,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <div class="np final" data-title="All sections">
   <div class="np-q" data-level="1" data-choices="(1, 2), (1, 3), (2, 4)|(0, 5), (1, 5), (2, 5)|(4, 1), (4, 2), (4, 3)" data-ans="(0, 5), (1, 5), (2, 5)" data-hint="Look for an input that shows up twice with different outputs. Repeated outputs are OK.">
     <div class="np-prompt">(6.1) Which set of points is a function?</div>
+    <div class="fig-row fig3"><div class="fnfig"><div data-fn='{"type":"mapping","pairs":[[1,2],[1,3],[2,4]],"maxW":240,"alt":"mapping diagram for (1, 2), (1, 3), (2, 4)"}'></div><div class="fig-cap">(1, 2), (1, 3), (2, 4)</div></div><div class="fnfig"><div data-fn='{"type":"mapping","pairs":[[0,5],[1,5],[2,5]],"maxW":240,"alt":"mapping diagram for (0, 5), (1, 5), (2, 5)"}'></div><div class="fig-cap">(0, 5), (1, 5), (2, 5)</div></div><div class="fnfig"><div data-fn='{"type":"mapping","pairs":[[4,1],[4,2],[4,3]],"maxW":240,"alt":"mapping diagram for (4, 1), (4, 2), (4, 3)"}'></div><div class="fig-cap">(4, 1), (4, 2), (4, 3)</div></div></div>
     <div class="np-sol">In the first set, 1 goes to 2 and to 3. In the last set, 4 goes to 1, 2 and 3. In (0, 5), (1, 5), (2, 5) every input is different, so it <b>is</b> a function. Outputs may repeat.</div>
   </div>
   <div class="np-q" data-level="1" data-ans="20" data-hint="Do the rule in order: first × 3, then + 2.">
@@ -1189,10 +1214,12 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="np-q" data-level="1" data-choices="The cost for each month|A one-time starting fee|The number of months" data-ans="A one-time starting fee" data-hint="35 is b. What is b in a real-world problem?">
     <div class="np-prompt">(6.4) A phone plan costs y = 15x + 35, where x is the number of months. What does the 35 mean?</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":6,"xstep":1,"ymin":0,"ymax":140,"ystep":20,"ylabelEvery":40,"w":230,"h":190,"xlabel":"Months (x)","ylabel":"Total cost in $ (y)","lines":[{"pts":[[0,35],[6,125]],"c":"blue"}],"bmark":{"y":35,"label":"35","below":true},"tri":{"p":[3,80],"q":[4,95],"run":"1 mo","rise":"+15"},"maxW":260,"alt":"graph of y = 15x + 35: the line starts at 35 on the y-axis and goes up 15 each month"}'></div><div class="fig-cap">Where is the 35 on the graph? What is x there?</div></div>
     <div class="np-sol">35 is b, the y-intercept. It is the cost when x = 0 months, so it is <b>a one-time starting fee</b>. The 15 is the cost for each month.</div>
   </div>
   <div class="np-q" data-level="2" data-ans="y = −2x + 30|-2x+30|30-2x|y=30-2x" data-ph="y = …" data-hint="The candle gets shorter, so the slope is negative. The starting height is b.">
     <div class="np-prompt">(6.4) A candle is 30 cm tall. It burns down 2 cm each hour. Write an equation for its height y after x hours.</div>
+    <div class="fnfig sm"><div data-fn='{"type":"table","xs":[0,1,2,3],"ys":[30,28,26,24],"dx":"+1","dy":"?","hl0":"start height","alt":"table: hours 0, 1, 2, 3 and candle height 30, 28, 26, 24 centimeters"}'></div><div class="fig-cap">x = hours, y = height in cm. How does y change each hour?</div></div>
     <div class="np-sol">Start: 30 cm → b = 30. It loses 2 cm each hour → m = −2. So <b>y = −2x + 30</b>.</div>
   </div>
   <div class="np-q" data-level="3" data-ans="10" data-hint="How much money does each movie use? How many of those fit into $50?">
@@ -1207,10 +1234,12 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="np-q" data-level="3" data-choices="Store A, by $6|Store B, by $6|Store B, by $4|They cost the same" data-ans="Store B, by $6" data-hint="Write both equations. Then put x = 6 into each one.">
     <div class="np-prompt">(6.5) Store A rents bikes for $8 per hour. Store B charges a $12 fee plus $5 per hour. For a 6-hour ride, which store is cheaper?</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":8,"xstep":1,"xlabelEvery":2,"ymin":0,"ymax":72,"ystep":8,"ylabelEvery":16,"w":240,"h":200,"xlabel":"Hours (x)","ylabel":"Total cost in $ (y)","vline":{"x":6,"label":"6 hours"},"lines":[{"pts":[[0,0],[8,64]],"c":"blue","label":"Store A","at":[7.3,68]},{"pts":[[0,12],[8,52]],"c":"gold","label":"Store B","at":[1.6,29]}],"maxW":270,"alt":"Store A y = 8x and Store B y = 5x + 12 on one graph, with a dashed line at 6 hours"}'></div><div class="fig-cap">Which line is lower at 6 hours? Find both costs to see by how much.</div></div>
     <div class="np-sol">Store A: y = 8(6) = $48. Store B: y = 5(6) + 12 = 30 + 12 = $42. 48 − 42 = 6, so <b>Store B is cheaper by $6</b>.</div>
   </div>
   <div class="np-q" data-level="1" data-choices="going up|going down|staying the same" data-ans="staying the same" data-hint="Flat means there is no change.">
     <div class="np-prompt">(6.6) On a graph of temperature over time, a flat part means the temperature is…</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"ymin":0,"ymax":8,"ystep":1,"w":230,"h":130,"noNums":true,"xlabel":"Time","ylabel":"Temperature","lines":[{"pts":[[0,1],[3,5],[7,5],[10,7.5]],"c":"red"}],"phases":[{"x0":0,"x1":3,"label":""},{"x0":3,"x1":7,"label":"flat part"},{"x0":7,"x1":10,"label":""}],"maxW":250,"alt":"temperature graph: up, then a flat part, then up again"}'></div></div>
     <div class="np-sol">Flat (horizontal) means no change. The temperature is <b>staying the same</b> (constant).</div>
   </div>
   <div class="np-q" data-level="2" data-choices="Part A|Part B|Part C|Part D" data-ans="Part C" data-hint="In a flat part, Ali is not moving. Of the other parts, which line is the least steep?">
@@ -1220,7 +1249,9 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="np-q" data-level="3" data-show="His line should go DOWN, not up.">
     <div class="np-prompt">(6.6) Find the mistake: Ben walks home from school. He draws his distance from home as a line going UP. What did Ben do wrong?</div>
-    <div class="np-sol">As Ben walks home, he gets closer to home. His distance from home gets smaller, so the line should go <b>DOWN</b> toward 0, not up.</div>
+    <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"ymin":0,"ymax":6,"ystep":1,"w":230,"h":130,"noNums":true,"xlabel":"Time","ylabel":"Distance from home","lines":[{"pts":[[0,0.5],[9,5]],"c":"red"}],"maxW":250,"alt":"Ben’s graph: a line going up as time goes on"}'></div><div class="fig-cap">Ben’s graph</div></div>
+    <div class="np-sol">As Ben walks home, he gets closer to home. His distance from home gets smaller, so the line should go <b>DOWN</b> toward 0, not up.
+      <div class="fnfig sm"><div data-fn='{"type":"chart","xmin":0,"xmax":10,"xstep":1,"ymin":0,"ymax":6,"ystep":1,"w":230,"h":130,"noNums":true,"xlabel":"Time","ylabel":"Distance from home","lines":[{"pts":[[0,5],[9,0]],"c":"green"}],"maxW":250,"alt":"correct graph: distance from home goes down to 0"}'></div><div class="fig-cap">Correct: the distance goes down to 0 (home).</div></div></div>
   </div>
 </div>
 </div>
@@ -1251,7 +1282,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   T.mapping = function (s) {
     var f = new Fig(), ins = [], outs = [];
     s.pairs.forEach(function (p) { if (ins.indexOf(p[0]) < 0) ins.push(p[0]); if (outs.indexOf(p[1]) < 0) outs.push(p[1]); });
-    ins.sort(function (a, b) { return a - b; }); outs.sort(function (a, b) { return a - b; });
+    if (!s.keepOrder) { ins.sort(function (a, b) { return a - b; }); outs.sort(function (a, b) { return a - b; }); }
     var n = Math.max(ins.length, outs.length), gap = 40, H = n * gap + 24, lx = 0, rx = 190;
     var yOf = function (arr, i) { return 12 + (H - 24) * (i + 0.5) / arr.length; };
     [[lx, ins], [rx, outs]].forEach(function (o) {
@@ -1264,7 +1295,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
       var a = [lx + 22, yOf(ins, i)], b = [rx - 24, yOf(outs, j)];
       arrow(f, a, b, bad ? 'red' : 'navy', { w: bad ? 3 : 2.2, size: 9 });
     });
-    ins.forEach(function (v, i) { var bad = (s.bad || []).indexOf(v) >= 0; f.ctext(lx - 6, yOf(ins, i), fmt(v), { size: 17, c: bad ? 'red' : 'navy' }); });
+    ins.forEach(function (v, i) { var bad = (s.bad || []).indexOf(v) >= 0; f.ctext(lx - 6, yOf(ins, i), fmt(v), { size: 17, c: bad ? 'red' : (v === '?' ? 'gold' : 'navy') }); });
     outs.forEach(function (v, i) { f.ctext(rx + 6, yOf(outs, i), fmt(v), { size: 17 }); });
     return f.svg(s.alt || 'mapping diagram', { maxW: s.maxW || 280 });
   };
