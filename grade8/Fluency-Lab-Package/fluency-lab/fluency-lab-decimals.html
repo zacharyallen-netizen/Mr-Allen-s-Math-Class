@@ -109,14 +109,11 @@
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
   .say .where{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .where:empty{display:none}
+  .sr{display:none}
   .pips{display:inline-flex;gap:4px;flex:none;flex-wrap:wrap;justify-content:flex-end;max-width:55%}
   .pips i{width:8px;height:8px;border-radius:50%;background:#3a4078}
   .pips i.on{background:var(--mint)} .pips i.now{background:var(--amber);box-shadow:0 0 0 3px #ffbb4d33}
-  /* what the LAST move did: small mint line, kept apart from the new instruction */
-  .did{font-size:15px;line-height:1.45;color:var(--mint);font-weight:600;margin:0 0 8px;padding:0 0 8px;border-bottom:1px dashed #33396b;animation:didin .45s ease}
-  .did:empty{display:none}
-  .did b{color:var(--mint);white-space:nowrap}
-  @keyframes didin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   /* stacked fractions */
   .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.82em;line-height:1.05;margin:0 4px}
   .frac>span:first-child{border-bottom:3px solid currentColor;padding:0 4px 1px}
@@ -133,9 +130,6 @@
   .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -171,17 +165,15 @@
 
   <section id="start" class="screen">
     <h1>Fluency Lab</h1>
-    <div class="sub">Decimals &amp; Percents · Module 5</div>
+    <div class="sub">Decimals &amp; Percents</div>
     <ul class="how">
-      <li>To add or subtract, <b>line up the points</b>. Then work one column at a time, from the right.</li>
-      <li>To multiply, <b>ignore the point</b>. Put it back at the end.</li>
-      <li>Only <b>one box</b> opens at a time. It glows.</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li><b>Line up</b> the points.</li>
+      <li>Fill the <b>glowing box</b>.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: 4.56 + 2.39</div>
+      <div class="ttl">Example: 4.56 + 2.39</div>
       <div id="exPaper"></div>
-      <div class="excap">The points line up in one column. The point drops straight down.<br>6 + 9 = 15: keep the 5, <b>carry the 1</b>. 5 + 3 + 1 = 9. 4 + 2 = 6. The answer is <b>6.95</b>.</div>
+      <div class="excap">Add from the right.<br>6 + 9 = 15: <b>carry the 1</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -198,12 +190,10 @@
       <div id="fwork" aria-live="polite"></div>
       <div class="say">
         <div class="where" id="where"></div>
-        <div class="did" id="did"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
         <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
-        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -243,7 +233,7 @@ const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').m
 let FAST=false;
 const wait=ms=>new Promise(r=>setTimeout(r,(reduce||FAST)?0:ms));
 const fmt=x=>String(+(+x).toFixed(6));          // 6.950 → "6.95", 4.00 → "4"
-const FRC=(n,d)=>`<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+const FRC=(n,d)=>`<span class="frac"><span>${n}</span><span class="sr">/</span><span>${d}</span></span>`;
 const IFR=(n,d)=>`<span class="ifr"><span>${n}</span><span>${d}</span></span>`;
 // a number written the way the problem shows it (7.20 stays 7.20)
 const wrA=p=>p.a.toFixed(p.short==='a'?1:2), wrB=p=>p.b.toFixed(p.short==='b'?1:2);
@@ -281,8 +271,8 @@ function gen(L){
     return {kind:'sub',a,b,ans,display:`${a.toFixed(2)}${sp('−')}${b.toFixed(2)}`};}
   if(L===3){const a=nz(11,99)/10,b=rnd(2,9); const ans=Math.round(a*b*10)/10;
     return {kind:'mul',a,b,ans,display:`${a.toFixed(1)}${sp('×')}${b}`};}
-  if(L===4){ if(Math.random()<0.5){const d=rnd(1,99)/100; return {kind:'d2p',d,ans:Math.round(d*100),display:`<span class="lbl">Write</span> ${d.toFixed(2)} <span class="lbl">as a percent</span>`};}
-    const p=rnd(1,99); return {kind:'p2d',p,ans:p/100,display:`<span class="lbl">Write</span> ${p}% <span class="lbl">as a decimal</span>`};}
+  if(L===4){ if(Math.random()<0.5){const d=rnd(1,99)/100; return {kind:'d2p',d,ans:Math.round(d*100),display:`${d.toFixed(2)} <span class="lbl">as a percent</span>`};}
+    const p=rnd(1,99); return {kind:'p2d',p,ans:p/100,display:`${p}% <span class="lbl">as a decimal</span>`};}
   if(L===5){const fr=pick([[1,2,0.5],[1,4,0.25],[3,4,0.75],[1,5,0.2],[2,5,0.4],[3,5,0.6],[1,10,0.1],[7,10,0.7],[1,8,0.125],[3,8,0.375]]);
     return {kind:'f2d',fn:fr[0],fd:fr[1],ans:fr[2],display:`${FRC(fr[0],fr[1])} <span class="lbl">as a decimal</span>`};}
   const p=pick([10,20,25,50,75,5,40,60]),base=pick([20,40,60,80,100,120,160,200]); const ans=Math.round(p*base)/100;
@@ -392,21 +382,20 @@ function movesAS(p){
   if(p.short){ const row=p.short==='a'?'top':'bot', x=p.short==='a'?p.a:p.b;
     b[row][W-1]=null; b.shift=row;
     b.ptCls={top:'hotpt',bot:'hotpt'};
-    mv.push({kind:'tap',where:'Line up the points',button:'Line up',
-      say:`The points are not lined up yet.`,sub:`Press <b>Line up</b> to slide <b>${x.toFixed(1)}</b> over.`,
+    mv.push({kind:'tap',where:'',button:'Line up',
+      say:`Line up the points.`,
       run:async()=>{ const el=document.querySelector(`#fwork [data-row="${row}"] .digs`);
         if(el&&!reduce&&!FAST){ el.style.transition=''; el.getBoundingClientRect(); el.style.transform='translateX(0)'; await wait(800); }
-        B.shift=null; B.ptCls={}; draw(); return `Now the points are in one column. ${x.toFixed(1)} has an empty spot.`; }});
-    mv.push({key:`${row}:${W-1}`,col:W-1,w:1,expect:0,where:'Line up the points',
-      say:`Fill the empty spot with a <b>0</b>.`,sub:`<b>${x.toFixed(1)}</b> and <b>${x.toFixed(2)}</b> are the same amount.`,
-      hint:`Type a 0. It holds the place.`,wrong:`${x.toFixed(1)} = ${x.toFixed(2)}`,
+        B.shift=null; B.ptCls={}; draw(); return ''; }});
+    mv.push({key:`${row}:${W-1}`,col:W-1,w:1,expect:0,where:'',
+      say:`Type <b>0</b> in the empty spot.`,
+      hint:`${x.toFixed(1)} = ${x.toFixed(2)}`,
       after:async()=>{ B[row][W-1]=0; B.ph=`${row}:${W-1}`; return ''; }});
   }
-  mv.push({kind:'tap',where:'Point down',button:'Point down',col:-1,
-    say:`The point in the answer goes straight down.`,sub:`Press <b>Point down</b>.`,
+  mv.push({kind:'tap',where:'',button:'Point down',col:-1,
+    say:`Bring the point straight down.`,
     run:async()=>{ draw(); await flyEl(qg(`bot:${W-3}`),qg(`ans:${W-3}`),'.',42); B.pt.ans=W-3; draw();
-      return `The point is in the answer.`; }});
-  const first=`Work like whole numbers, from the right.`;
+      return ''; }});
   if(p.kind==='add'){ let carry=0;
     for(let c=0;c<b.n;c++){
       const gi=W-1-c, da=full.top[gi]||0, db=full.bot[gi], cin=carry, sum=da+(db||0)+cin, last=(c===b.n-1);
@@ -414,17 +403,14 @@ function movesAS(p){
       const carryOut=last?0:Math.floor(sum/10);
       // a column with only one number in it (the other is a 0) is just brought down: no "+ 0"
       const say=terms.length>1?`Add the <b>${name(gi)}</b>: <b>${expr}</b>`
-        :terms.length===0?`Nothing to add in the <b>${name(gi)}</b>. Write a <b>0</b>.`
-        :cin&&terms[0]===cin?`Only the carried <b>${cin}</b> is in the <b>${name(gi)}</b>. Write it down.`
-        :`Nothing to add to the <b>${terms[0]}</b>. Bring it down.`;
-      mv.push({key:`ans:${gi}`,col:gi,w:terms.length>1?2:1,expect:sum,where:`${name(gi)} column`,
-        say,sub:cin&&terms.length>1?`The small <b>${cin}</b> is the carry.`:c===0?first:'',
-        wrong:terms.length>1?`${expr} = ${sum}`:`It is just ${sum}`,partial:sum>=10?String(sum%10):null,
-        hint:terms.length>1?'Not quite. Add the yellow numbers again, one at a time.':'Not quite. Copy the number down.',
+        :terms.length===0?`Write a <b>0</b>.`
+        :`Bring down the <b>${terms[0]}</b>.`;
+      mv.push({key:`ans:${gi}`,col:gi,w:terms.length>1?2:1,expect:sum,where:'',
+        say,partial:sum>=10?String(sum%10):null,
+        hint:terms.length>1?'Add the yellow numbers again.':'Copy the number down.',
         after:async()=>{
-          if(sum>=10&&!last){ B.ans[gi]=sum%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut;
-            return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b>.`; }
-          if(sum>=10&&last){ B.ans[gi]=sum%10; B.ans[gi-1]=Math.floor(sum/10); return `Last column, so write all of <b>${sum}</b>.`; }
+          if(sum>=10&&!last){ B.ans[gi]=sum%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut; return ''; }
+          if(sum>=10&&last){ B.ans[gi]=sum%10; B.ans[gi-1]=Math.floor(sum/10); return ''; }
           B.ans[gi]=sum; return ''; }});
       carry=carryOut;
     }
@@ -438,27 +424,23 @@ function movesAS(p){
         const was=now[gi], lendWas=now[j];
         now[j]-=1; zeros.forEach(k=>now[k]=9); now[gi]+=10;
         const jNew=now[j], gNew=now[gi], again=lent[gi];
-        mv.push({kind:'tap',where:`${name(gi)} column`,col:gi,button:'Borrow',
-          say:again?`This digit lent 1 already, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>, so we <b>borrow</b> again.`
-                   :`<b>${was}</b> is smaller than <b>${bot}</b>. We need to <b>borrow</b>.`,
-          sub:`Press <b>Borrow</b> to watch it happen.`+(zeros.length?` The 0 next to it has nothing to lend, so we go to the <b>${lendWas}</b>.`:''),
-          run:async(show)=>{
-            B.struck[j]=true; B.small[j]=jNew; draw(); show(`The <b>${lendWas}</b> lends 1 and becomes <b>${jNew}</b>.`); await wait(1100);
-            for(const k of zeros){ B.struck[k]=true; B.small[k]=10; draw(); show(`The 0 gets 10…`); await wait(900);
-              B.small[k]=9; draw(); show(`…then it lends 1, so it is <b>9</b>.`); await wait(1000); }
+        mv.push({kind:'tap',where:'',col:gi,button:'Borrow',
+          say:`<b>${was}</b> is less than <b>${bot}</b>. Borrow.`,
+          run:async()=>{
+            B.struck[j]=true; B.small[j]=jNew; draw(); await wait(1100);
+            for(const k of zeros){ B.struck[k]=true; B.small[k]=10; draw(); await wait(900);
+              B.small[k]=9; draw(); await wait(1000); }
             await flyK(`top:${gi-1}`,`small:${gi}`,'+10',24);
             B.struck[gi]=true; B.small[gi]=gNew; draw();
-            return `The <b>${was}</b> becomes <b>${gNew}</b>. Now we can subtract.`; }});
+            return ''; }});
       }
-      const t=now[gi], diff=t-bot, lentEarlier=lent[gi]&&!borrowedHere;
+      const t=now[gi], diff=t-bot;
       const leadZero=(c===n-1&&diff===0&&gi<W-3);       // a 0 in front of the ones place is not written
-      mv.push({key:`ans:${gi}`,col:gi,w:1,expect:diff,where:`${name(gi)} column`,
-        say:(hasBot&&bot!==0)?`Subtract the <b>${name(gi)}</b>: <b>${t} − ${bot}</b>`:`Nothing to take away. Bring down the <b>${t}</b>.`,
-        sub:lentEarlier?`This digit lent 1 already. Use the small <b>${t}</b> on top.`:(c===0&&!borrowedHere)?first:'',
-        hint:(hasBot&&bot!==0)?'Not quite. Tip: count up from the bottom number to the top number.':'Not quite. Copy the top number down.',
-        wrong:(hasBot&&bot!==0)?`${t} − ${bot} = ${diff}`:`It is just ${diff}`,
+      mv.push({key:`ans:${gi}`,col:gi,w:1,expect:diff,where:'',
+        say:(hasBot&&bot!==0)?`Subtract the <b>${name(gi)}</b>: <b>${t} − ${bot}</b>`:`Bring down the <b>${t}</b>.`,
+        hint:(hasBot&&bot!==0)?`Count up from ${bot} to ${t}.`:'Copy the top number down.',
         after:async()=>{ B.ans[gi]=diff;
-          if(leadZero){ draw(); await wait(500); B.fade.add(`ans:${gi}`); return `We don’t write a 0 at the front of a number, so it disappears.`; }
+          if(leadZero){ draw(); await wait(500); B.fade.add(`ans:${gi}`); }
           return ''; }});
     }
   }
@@ -473,32 +455,28 @@ function movesMul(p){
   const b={kind:'mul',W,op:'×',top:pad(String(ai)),bot:pad(pb?'0'+d:String(d)),small:Array(W).fill(null),ans:Array(W).fill(null),
     struck:Array(W).fill(false),pt:{top:W-2,bot:pb?W-2:null,ans:null,small:null},ptCls:{top:'dim',bot:'dim'},col:-1,fade:new Set(),hot:new Set(),
     ph:null,muted:new Set(pb?[`bot:${W-2}`]:[])};
-  const mv=[], aT=p.a.toFixed(1), bT=pb?p.b.toFixed(1):String(p.b); let carry=0;
+  const mv=[]; let carry=0;
   const n=String(ai).length;
   for(let c=0;c<n;c++){
     const gi=W-1-c, da=b.top[gi], cin=carry, v=da*d+cin, last=c===n-1, carryOut=last?0:Math.floor(v/10);
     const expr=`${da} × ${d}${cin?` + ${cin}`:''}`;
-    mv.push({key:`ans:${gi}`,col:gi,w:2,expect:v,where:'Multiply',hot:[`top:${gi}`,`bot:${W-1}`],
-      say:cin?`Multiply <b>${da} × ${d}</b>, then add the carried <b>${cin}</b>`:`Multiply: <b>${da} × ${d}</b>`,
-      sub:c===0?`Ignore the point${pb?'s':''} for now. Multiply like whole numbers.`:'',
-      wrong:`${expr} = ${v}`,partial:v>=10?String(v%10):null,hint:'Not quite. Multiply the yellow numbers again.',
+    mv.push({key:`ans:${gi}`,col:gi,w:2,expect:v,where:'',hot:[`top:${gi}`,`bot:${W-1}`],
+      say:cin?`<b>${da} × ${d}</b>, then add the carried <b>${cin}</b>.`:`Multiply <b>${da} × ${d}</b>. Ignore the point${pb?'s':''}.`,
+      partial:v>=10?String(v%10):null,hint:cin?`${da} × ${d} = ${da*d}. Then add ${cin}.`:'Multiply the yellow numbers again.',
       after:async()=>{
-        if(v>=10&&!last){ B.ans[gi]=v%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut;
-          return `${v} is too big for one box. Keep the <b>${v%10}</b>. Carry the <b>${carryOut}</b>.`; }
-        if(v>=10&&last){ B.ans[gi]=v%10; B.ans[gi-1]=Math.floor(v/10); return `Last digit, so write all of <b>${v}</b>.`; }
+        if(v>=10&&!last){ B.ans[gi]=v%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut; return ''; }
+        if(v>=10&&last){ B.ans[gi]=v%10; B.ans[gi-1]=Math.floor(v/10); return ''; }
         B.ans[gi]=v; return ''; }});
     carry=carryOut;
   }
   const after=[`top:${W-1}`].concat(pb?[`bot:${W-1}`]:[]);
-  mv.push({key:'pl',expect:P,w:1,where:'Put the point back',hot:after,
-    say:pb?`Count the digits after the points in <b>${aT}</b> and <b>${bT}</b>.`:`Count the digits after the point in <b>${aT}</b>.`,
-    sub:`The answer gets that many digits after its point.`,
-    hint:'Not quite. Count only the yellow digits.',wrong:pb?`1 + 1 = 2`:`${aT} has 1 digit after the point`,
+  mv.push({key:'pl',expect:P,w:1,where:'',hot:after,
+    say:`Count the digits after the point${pb?'s':''}.`,
+    hint:'Count only the yellow digits.',
     after:async()=>{ B.ptCls={top:'',bot:''}; B.hot=new Set(); draw();
       await flyEl(qk(`ans:${W-1}`),qg(`ans:${W-1-P}`),'.',42); B.pt.ans=W-1-P; draw();
-      let note=`${P} place${P>1?'s':''}: the point goes <b>${P}</b> digit${P>1?'s':''} in from the right.`;
-      if(B.ans[W-1-P]==null){ await wait(400); B.ans[W-1-P]=0; B.ph=`ans:${W-1-P}`; note+=` Nothing is in the ones place, so write a <b>0</b> there.`; }
-      return note; }});
+      if(B.ans[W-1-P]==null){ await wait(400); B.ans[W-1-P]=0; B.ph=`ans:${W-1-P}`; }
+      return ''; }});
   return {B:b,mv};
 }
 
@@ -507,28 +485,26 @@ function movesDivw(p){
   const Ni=Math.round(p.N*10), D=String(Ni).split('').map(Number), W=D.length;
   const b={kind:'divw',W,d:p.d,q:Array(W).fill(null),div:D.slice(),rem:Array(W).fill(null),pt:{q:null,div:W-2},ptCls:{},col:-1,fade:new Set(),hot:new Set(),ph:null};
   const mv=[];
-  mv.push({kind:'tap',where:'Point up',button:'Point up',
-    say:`The point in the answer goes straight up.`,sub:`Press <b>Point up</b>.`,
+  mv.push({kind:'tap',where:'',button:'Point up',
+    say:`Bring the point straight up.`,
     run:async()=>{ draw(); await flyEl(qg(`div:${W-2}`),qg(`q:${W-2}`),'.',42); B.pt.q=W-2; draw();
-      return `The point is in the answer.`; }});
-  let rem=0, started=false, skip='', from=0;
+      return ''; }});
+  let rem=0, started=false, from=0;
   for(let i=0;i<W;i++){
     const cur=rem*10+D[i];
-    if(!started && cur<p.d && i<W-1){ skip=`${p.d} does not fit in ${D[i]}. Use <b>${cur*10+D[i+1]}</b>.`; rem=cur; continue; }
+    if(!started && cur<p.d && i<W-1){ rem=cur; continue; }
     started=true;
     const q=Math.floor(cur/p.d), r=cur-q*p.d, hot=[];
     for(let k=from;k<=i;k++) hot.push(`div:${k}`);
-    const nextD=D[i+1], i0=i;
-    mv.push({key:`q:${i}`,w:1,expect:q,where:'Divide',hot,
-      say:`How many <b>${p.d}s</b> fit in <b>${cur}</b>?`,sub:skip||(!mv.some(x=>x.key&&x.key.startsWith('q:'))?'Divide like whole numbers, one digit at a time.':''),
-      hint:`Not quite. Count by ${p.d}s: ${p.d}, ${2*p.d}, ${3*p.d}, …`,
-      wrong:q>1?`${p.d} × ${q} = ${q*p.d}. That is the most that fits in ${cur}`:q===1?`${p.d} fits in ${cur} only once`:`${p.d} does not fit in ${cur}, so it is 0`,
+    const i0=i;
+    mv.push({key:`q:${i}`,w:1,expect:q,where:'',hot,
+      say:`How many <b>${p.d}s</b> fit in <b>${cur}</b>?`,
+      hint:`Count by ${p.d}s: ${p.d}, ${2*p.d}, ${3*p.d}, …`,
       after:async()=>{ B.q[i0]=q;
         if(i0===W-1) return '';
-        if(r>0){ draw(); await flyEl(qk(`q:${i0}`),qk(`div:${i0+1}`),String(r),20); B.rem[i0+1]=r;
-          return (q===1?`One ${p.d} fits. ${cur} − ${p.d}`:`${p.d} × ${q} = ${q*p.d}. ${cur} − ${q*p.d}`)+` = <b>${r}</b> left over. It goes next to the <b>${nextD}</b>.`; }
-        return (q===1?`One ${p.d} fits`:`${p.d} × ${q} = ${q*p.d}`)+`. Nothing left over.`; }});
-    skip=''; rem=r; from=i+1;
+        if(r>0){ draw(); await flyEl(qk(`q:${i0}`),qk(`div:${i0+1}`),String(r),20); B.rem[i0+1]=r; }
+        return ''; }});
+    rem=r; from=i+1;
   }
   return {B:b,mv};
 }
@@ -537,30 +513,30 @@ function movesDivw(p){
 function divdLines(p){ const L=[];
   const A=S.moved?{d:String(Math.round(p.a*10)),pt:9}:{d:p.a.toFixed(1).replace('.',''),pt:p.a.toFixed(1).indexOf('.')};
   const Bn=S.moved?{d:String(Math.round(p.b*10)),pt:9}:{d:p.b.toFixed(1).replace('.',''),pt:1};
-  L.push(WL(`${PN(A,'na')}<span class="opx">÷</span>${PN(Bn,'nb')}`));
-  if(S.moved) L.push(WL(`${EQ}${V(K('q'))}`));
+  L.push(WL(`${PN(A,'na')}<span class="opx">÷</span>${PN(Bn,'nb')}${S.moved?EQ+V(K('q')):''}`));
   return L; }
 function longLines(p){ const t=p._t, L=[];
-  const digs=t.rows.map((r,i)=>S['a'+i]!=null?`<span class="slot v${JUST.has('a'+i)?' pop':''}" data-k="a${i}">${S['a'+i]}</span>`:`<span class="slot blank" data-k="a${i}"></span>`);
+  const digs=t.rows.map((r,i)=>S['a'+i]!=null&&O==='rep'?`${S['a'+i]}`:S['a'+i]!=null?`<span class="slot v${JUST.has('a'+i)?' pop':''}" data-k="a${i}">${S['a'+i]}</span>`:`<span class="slot blank" data-k="a${i}"></span>`);
   let ans;
   if(S.bar){ ans=`0.${t.lead}<span class="ol">${t.rep}</span>`; }
-  else ans=`0.${digs.join('')}${p.kind==='f2r'&&S['r'+(t.rows.length-1)]!=null?'…':''}`;
+  else ans=`0.${digs.join('')}${p.kind==='f2r'&&S['r'+(t.rows.length-1)]!=null?t.rep.repeat(2)+'…':''}`;   // 0.1666… so the repeat shows
   L.push(WL(`${V(F(p.fn,'fn'))}<span class="opx">÷</span>${V(F(p.fd,'fd'))}${EQ}<span>${ans}</span>`));
-  t.rows.forEach((r,i)=>{ if(!(O==='q'+i||S['q'+i]!=null||('w'+i in S))) return;
+  let cr=-1; t.rows.forEach((r,i)=>{ if(O==='q'+i||O==='r'+i||S['q'+i]!=null||('w'+i in S)) cr=i; });
+  t.rows.forEach((r,i)=>{ if(S.done||O==='rep'||S.rep!=null||!(i===cr||i===S.prevRow)) return;
     const w=i===0?V(F(r.w,'w0')):(S['w'+i]!=null?`<span class="slot" data-k="w${i}">${S['w'+i]}</span>`:`<span class="slot blank" data-k="w${i}"></span>`);
     const cur=(O==='q'+i||O==='r'+i);
     L.push(WL(`${w}<span class="opx">÷</span>${p.fd}${EQ}${V(K('q'+i))}<span class="opx${(O==='r'+i||S['r'+i]!=null)?'':' ghost'}" style="${(O==='r'+i||S['r'+i]!=null)?'':'visibility:hidden'}">r</span>${V(K('r'+i))}`,'small'+(cur?'':' past')));
   });
-  if(O==='rep'||S.rep!=null) L.push(WL(`repeats: ${V(K('rep'))}`,'small'));
+  if(O==='rep') L.push(WL(`repeats: ${V(K('rep'))}`,'small'));
   return L; }
 function d2pLines(p){ const n=S.moved?{d:String(p.ans),pt:9}:{d:p.d.toFixed(2).replace('.',''),pt:1};
   return [WL(`${PN(n,'nd')}${S.moved?'<span>%</span>':''}`), WL(`${p.d.toFixed(2)} × 100${EQ}${V(K('pc'))}<span>%</span>`,'small')]; }
 function p2dLines(p){ const z=String(p.p).length<2?2:1;
   const n=S.moved?{d:fmt(p.ans).replace('.',''),pt:1}:(S.pad?{d:'0'.repeat(z)+String(p.p),pt:z+String(p.p).length,add:z}:{d:String(p.p),pt:String(p.p).length});
   return [WL(`<span>${PN(n,'np',!S.moved)}${S.moved?'':'<span class="opx">%</span>'}</span>`), WL(`${p.p} ÷ 100${EQ}${V(K('dec'))}`,'small')]; }
-function pofLines(p){ const L=[WL(`${p.p}%${EQ}${V(K('dec'))}`, S.dec!=null?'small':'')];
-  if(S.dec!=null) L.push(WL(`${fmt(p.p/100)} × ${p.base}${EQ}${V(K('ans'))}`));
-  return L; }
+function pofLines(p){   // once 25% is 0.25, the 25% line is gone: only 0.25 × 80 is left
+  if(S.dec==null) return [WL(`${p.p}%${EQ}${V(K('dec'))}`)];
+  return [WL(`${fmt(p.p/100)} × ${p.base}${EQ}${V(K('ans'))}`)]; }
 
 function longTrace(fn,fd){ const seen={}, rows=[]; let r=fn;
   while(!(r in seen) && r!==0 && rows.length<4){ seen[r]=rows.length; const w=r*10, dig=Math.floor(w/fd), rem=w%fd; rows.push({w,dig,rem}); r=rem; }
@@ -569,63 +545,59 @@ function longTrace(fn,fd){ const seen={}, rows=[]; let r=fn;
 
 function movesLine(p){
   const mv=[];
-  if(p.kind==='divd'){ const ai=Math.round(p.a*10), bi=Math.round(p.b*10), aT=p.a.toFixed(1), bT=p.b.toFixed(1);
+  if(p.kind==='divd'){ const ai=Math.round(p.a*10), bi=Math.round(p.b*10), aT=p.a.toFixed(1);
     LINES=divdLines;
-    mv.push({kind:'tap',where:'Make it a whole number',button:'Move points',hot:['na','nb'],
-      say:`Make <b>${bT}</b> a whole number. Move both points <b>1 place right</b>.`,
-      sub:`That is × 10 for both numbers. The answer stays the same.`,
+    mv.push({kind:'tap',where:'',button:'Move points',hot:['na','nb'],
+      say:`Move both points <b>1 place right</b>.`,
       run:async()=>{ draw(); await Promise.all([hop('na',{pt:aT.indexOf('.')},1),hop('nb',{pt:1},1)]); S.moved=1; JUST=new Set(); draw();
-        return `${aT} ÷ ${bT} is the same as <b>${ai} ÷ ${bi}</b>.`; }});
-    mv.push({key:'q',expect:p.q,w:String(p.q).length,where:'Divide',say:`Divide: <b>${ai} ÷ ${bi}</b>`,
-      hint:`Not quite. Think: ${bi} × ? = ${ai}.`,wrong:`${ai} ÷ ${bi} = ${p.q}`});
+        return ''; }});
+    mv.push({key:'q',expect:p.q,w:String(p.q).length,where:'',say:`Divide.`,
+      hint:`Think: ${bi} × ? = ${ai}`});
   }
   else if(p.kind==='f2r'||p.kind==='f2d'){ const t=longTrace(p.fn,p.fd); p._t=t; LINES=longLines;
     if(p.kind==='f2r') p.ans=+(`0.${t.lead}${t.rep.repeat(6)}`);
     t.rows.forEach((r,i)=>{ const last=i===t.rows.length-1;
-      mv.push({key:'q'+i,expect:r.dig,w:1,where:'Divide',hot:i===0?['w0']:['w'+i],
+      mv.push({key:'q'+i,expect:r.dig,w:1,where:'',hot:i===0?['w0']:['w'+i],
         say:`How many <b>${p.fd}s</b> fit in <b>${r.w}</b>?`,
-        sub:i===0?`${p.fd} does not fit in ${p.fn}, so the answer starts <b>0.</b> Put a 0 on the ${p.fn} to make <b>${r.w}</b>.`:'',
-        hint:`Not quite. Count by ${p.fd}s: ${p.fd}, ${2*p.fd}, ${3*p.fd}, …`,
-        wrong:r.dig>1?`${p.fd} × ${r.dig} = ${p.fd*r.dig}. That is the most that fits in ${r.w}`:`${p.fd} fits in ${r.w} only once`,
+        hint:`Count by ${p.fd}s: ${p.fd}, ${2*p.fd}, ${3*p.fd}, …`,
         fly:['q'+i,'a'+i]});
-      mv.push({key:'r'+i,expect:r.rem,w:1,where:'Left over',hot:['q'+i],
-        say:`What is left over? <b>${r.w} − ${p.fd*r.dig}</b>`,sub:(r.dig>1?`${p.fd} × ${r.dig} = ${p.fd*r.dig}. `:'')+(i===0?`(<b>r</b> means left over.)`:''),
-        hint:'Not quite. Subtract again.',wrong:`${r.w} − ${p.fd*r.dig} = ${r.rem}`,
+      mv.push({key:'r'+i,expect:r.rem,w:1,where:'',hot:['q'+i],
+        say:`Left over: <b>${r.w} − ${p.fd*r.dig}</b>`,
+        hint:'Subtract again.',
         after:async()=>{
-          if(r.rem===0) return `Nothing left over, so the decimal stops here.`;
-          if(last) return `<b>${r.rem}</b> again! We had it before, so the same digit will come back forever.`;
-          S['w'+(i+1)]=null; draw(); await flyEl(qk('r'+i),qk('w'+(i+1)),String(r.rem*10),22); S['w'+(i+1)]=r.rem*10;
-          return `${r.rem} left over. Put a 0 on it: <b>${r.rem*10}</b>.`; }});
+          if(r.rem===0||last) return '';
+          S.prevRow=i; S['w'+(i+1)]=null; draw(); await flyEl(qk('r'+i),qk('w'+(i+1)),String(r.rem*10),22); S['w'+(i+1)]=r.rem*10;
+          delete S.prevRow; return ''; }});
     });
-    if(p.kind==='f2r') mv.push({key:'rep',expect:+t.rep,w:1,where:'It repeats',
-      say:`Which digit keeps repeating?`,sub:`We draw a bar over it.`,hint:'Not quite. Look at the answer digits.',wrong:`The ${t.rep} repeats: 0.${t.lead}${t.rep}${t.rep}${t.rep}…`,
-      after:async()=>{ S.bar=1; return `0.${t.lead}${t.rep}${t.rep}${t.rep}… is written with a bar over the <b>${t.rep}</b>.`; }});
+    if(p.kind==='f2r') mv.push({key:'rep',expect:+t.rep,w:1,where:'',
+      say:`Which digit repeats?`,hint:'Look at the digits after the point.',
+      after:async()=>{ S.bar=1; return ''; }});
   }
   else if(p.kind==='d2p'){ LINES=d2pLines; const dT=p.d.toFixed(2);
-    mv.push({key:'pc',expect:p.ans,w:2,where:'Decimal → percent',hot:['nd'],
-      say:`Move the point <b>2 places right</b>: <b>${dT} × 100</b>`,sub:`Percent means "out of 100."`,
-      hint:`Not quite. ${dT} × 100: the point moves 2 places right.`,wrong:`${dT} × 100 = ${p.ans}`,
+    mv.push({key:'pc',expect:p.ans,w:2,where:'',hot:['nd'],
+      say:`Move the point <b>2 places right</b>.`,
+      hint:`Count 2 places to the right.`,
       after:async()=>{ draw(); await hop('nd',{pt:1},2); S.moved=1; draw(); return ''; }});
   }
   else if(p.kind==='p2d'){ LINES=p2dLines; const len=String(p.p).length, z=len<2?2:1;
-    mv.push({key:'dec',expect:p.ans,w:3,dec:true,where:'Percent → decimal',hot:['np'],
-      say:`Move the point <b>2 places left</b>: <b>${p.p} ÷ 100</b>`,
-      sub:`The point in <b>${p.p}</b> is hiding at the end: <b>${p.p}.</b>`+(p.p<10?` Fill empty places with 0.`:''),
-      hint:`Not quite. Start at ${p.p}. and move the point 2 places left.`,wrong:`${p.p} ÷ 100 = ${fmt(p.ans)}`,
+    mv.push({key:'dec',expect:p.ans,w:3,dec:true,where:'',hot:['np'],
+      say:`Move the point <b>2 places left</b>.`,
+      sub:p.p<10?`Fill empty places with 0.`:'',
+      hint:`Count 2 places to the left.`,
       after:async()=>{ S.pad=1; draw(); await wait(350); await hop('np',{pt:z+len},-2); S.moved=1; draw(); return ''; }});
   }
   else if(p.kind==='pof'){ LINES=pofLines; const dec=p.p/100;
-    mv.push({key:'dec',expect:dec,w:3,dec:true,where:'Percent → decimal',
-      say:`First write <b>${p.p}%</b> as a decimal: <b>${p.p} ÷ 100</b>`,sub:`Move the point 2 places left.`,
-      hint:`Not quite. ${p.p} ÷ 100: the point moves 2 places left.`,wrong:`${p.p} ÷ 100 = ${fmt(dec)}`});
-    mv.push({key:'ans',expect:p.ans,w:3,dec:true,where:'Multiply',
-      say:`Now multiply: <b>${fmt(dec)} × ${p.base}</b>`,sub:`That is the same as <b>${p.p} × ${p.base} ÷ 100</b>.`,
-      hint:`Not quite. Try ${p.p} × ${p.base}, then ÷ 100.`,wrong:`${fmt(dec)} × ${p.base} = ${fmt(p.ans)}`});
+    mv.push({key:'dec',expect:dec,w:3,dec:true,where:'',
+      say:`Write <b>${p.p}%</b> as a decimal.`,
+      hint:`Move the point 2 places left.`});
+    mv.push({key:'ans',expect:p.ans,w:3,dec:true,where:'',
+      say:`Multiply.`,
+      hint:`Multiply again. Watch the point.`});
   }
   return mv;
 }
 
-/* ---- the answer, and the exact "does it make sense?" line ---- */
+/* ---- the answer, and the finished problem ---- */
 function answerText(p){ return p.kind==='d2p'?`${p.ans}%`:p.kind==='f2r'?`0.${p._t.lead}<span class="ol">${p._t.rep}</span>`:fmt(p.ans); }
 function exprText(p){
   switch(p.kind){
@@ -640,22 +612,6 @@ function exprText(p){
     default: return `${p.p}% of ${p.base} = ${fmt(p.ans)}`;
   }
 }
-function checkLine(p){
-  const c='✓ <b>Check:</b> ';
-  switch(p.kind){
-    case 'add': return c+`take it back. ${fmt(p.ans)} − ${wrB(p)} = <b>${wrA(p)}</b>.`;
-    case 'sub': return c+`add back. ${fmt(p.ans)} + ${wrB(p)} = <b>${wrA(p)}</b>. It matches the top number.`;
-    case 'mul': return c+`${fmt(p.ans)} ÷ ${p.pb?p.b.toFixed(1):p.b} = <b>${p.a.toFixed(1)}</b>.`;
-    case 'divw': return c+`${fmt(p.q)} × ${p.d} = <b>${p.N.toFixed(1)}</b>.`;
-    case 'divd': return c+`${p.q} × ${p.b.toFixed(1)} = <b>${p.a.toFixed(1)}</b>.`;
-    case 'f2d': return c+`${fmt(p.ans)} × ${p.fd} = <b>${p.fn}</b>.`;
-    case 'f2r': return c+`the left over <b>${p._t.back}</b> keeps coming back, so the ${p._t.rep}s never stop.`;
-    case 'd2p': return c+`${p.ans}% means ${p.ans} out of 100, and ${p.ans} ÷ 100 = <b>${fmt(p.d)}</b>.`;
-    case 'p2d': return c+`${fmt(p.ans)} × 100 = <b>${p.p}</b>, so ${fmt(p.ans)} = ${p.p}%.`;
-    default: return c+`${fmt(p.ans)} ÷ ${p.base} = <b>${fmt(p.p/100)}</b>, which is ${p.p}%.`;
-  }
-}
-
 /* ════════ playing one problem ════════ */
 let M=null;            // {mv, i, tries, busy, err}
 function buildMoves(p){
@@ -670,16 +626,14 @@ function renderProblem(){
   O=null; HOT=[]; JUST=new Set();
   const mv=buildMoves(p);
   M={mv, i:0, tries:0, busy:false, err:false}; G={steps:M.mv, si:0};
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
   paintDots(); showMove();
 }
-function showMove(note){
+function showMove(){
   const m=M.mv[M.i]; M.tries=0;
   O=m.kind==='tap'?null:m.key; HOT=m.hot||[]; BOXW=m.w||Math.min(3,String(m.expect).length); BOXDEC=!!m.dec;
   if(B){ B.col=m.col!=null?m.col:-1; B.hot=new Set(); }
   draw(); JUST=new Set();
   $('where').innerHTML=whereHTML(m.where);
-  $('did').innerHTML=note?'✓ '+note:'';
   $('msg').innerHTML=m.say;
   $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
@@ -689,14 +643,14 @@ function showMove(note){
 }
 // step progress as small dots (a long problem doesn't shout "STEP 1 OF 12")
 function whereHTML(w){ let d=''; for(let i=0;i<M.mv.length;i++) d+=`<i class="${i<M.i?'on':i===M.i?'now':''}"></i>`;
-  return `<span>${w}</span><span class="pips" role="img" aria-label="step ${M.i+1} of ${M.mv.length}">${d}</span>`; }
+  return `<span>${w||''}</span><span class="pips" role="img" aria-label="step ${M.i+1} of ${M.mv.length}">${d}</span>`; }
 async function doTap(){
   if(M.busy) return; M.busy=true; const m=M.mv[M.i];
   $('go').disabled=true;
-  const note=await m.run(t=>{ $('sub').innerHTML=t; });
+  await m.run();
   $('go').disabled=false; M.busy=false;
   M.i++; G.si=M.i;
-  if(M.i>=M.mv.length) finish(note); else showMove(note);
+  if(M.i>=M.mv.length) finish(); else showMove();
 }
 async function runAfter(m){
   if(!B || !String(m.key).includes(':')){ S[m.key]=m.expect; JUST=new Set([m.key]); }
@@ -709,40 +663,38 @@ async function runAfter(m){
 async function check(){
   if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
   const v=box.value.trim().replace(/^\./,'0.');
-  if(v===''||v==='.'){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
+  if(v===''||v==='.'){ $('fb').textContent='Type a number first.'; $('fb').className='fb no'; box.focus(); return; }
   if(!(isFinite(+v) && Math.abs(+v-m.expect)<1e-9)){
     M.tries++; M.err=true; current._hadError=true; answered=true;
     box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
-    if(m.partial && v===m.partial) $('fb').innerHTML=`Close! Type the <b>whole</b> answer (both digits). We carry next.`;
-    else if(M.tries===1) $('fb').innerHTML=m.hint||'Not quite. Try again.';
-    else { $('fb').innerHTML=`${m.wrong}. Type <b>${fmt(m.expect)}</b> to keep going.`; box.placeholder=fmt(m.expect); }
+    if(m.partial && v===m.partial && M.tries===1) $('fb').innerHTML=`Type <b>both</b> digits.`;
+    else if(M.tries===1) $('fb').innerHTML=m.hint||'Try again.';
+    else { $('fb').innerHTML=`Type <b>${fmt(m.expect)}</b>.`; box.placeholder=fmt(m.expect); }
     $('fb').className='fb no'; box.select(); return;
   }
   M.busy=true; $('fb').textContent='✓'; $('fb').className='fb yes';
-  const note=await runAfter(m);
+  await runAfter(m);
   M.busy=false; M.i++; G.si=M.i;
-  if(M.i>=M.mv.length) finish(note); else showMove(note);
+  if(M.i>=M.mv.length) finish(); else showMove();
 }
 // zeros at the end, after the point, are dropped (4.50 → 4.5, 10.0 → 10)
 function tidyEnd(){
   if(!B || B.kind==='divw') return '';
   const W=B.W, pt=B.pt.ans; if(pt==null) return '';
-  const digs=B.ans.map(d=>d==null?'':d).join(''); let k=W-1, dropped=0;
+  let k=W-1, dropped=0;
   while(k>pt && B.ans[k]===0){ B.fade.add(`ans:${k}`); k--; dropped++; }
   if(!dropped) return '';
   if(k===pt) B.ptCls.ans='fade';
-  const full=digs.slice(0,pt+1)+'.'+digs.slice(pt+1);
-  return `<b>${full}</b> is the same as <b>${fmt(full)}</b>. Zeros at the end, after the point, can go.`;
+  return '';
 }
-function finish(note){
-  O=null; HOT=[]; if(B){ B.col=-1; B.hot=new Set(); }
-  const t=tidyEnd(); draw();
+function finish(){
+  O=null; HOT=[]; if(B){ B.col=-1; B.hot=new Set(); } else S.done=1;
+  tidyEnd(); draw();
   const right=!M.err, p=current;
-  $('where').textContent='Done'; $('did').innerHTML='';
-  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${exprText(p)}</b>`;
-  $('sub').innerHTML=[note,t].filter(Boolean).join(' ');
+  $('where').innerHTML='';
+  $('msg').innerHTML=`✓ <b>${exprText(p)}</b>`;
+  $('sub').innerHTML='';
   $('fb').textContent=''; $('fb').className='fb';
-  $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 
@@ -766,8 +718,8 @@ function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;
 function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
 function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
-  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this visit: '+sessionBest+'/10';
-  $('s-note').textContent=correctCount>=9?'Excellent! The point lands in the right place every time.':correctCount>=7?'Strong set. A few more first-try answers and you level up.':correctCount>=5?'Good work. Line up the points, and count the decimal places.':'Every problem showed you the steps. Go again — it gets easier.';}
+  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Best this visit: '+sessionBest+'/10';
+  $('s-note').textContent=correctCount>=9?'Excellent set!':correctCount>=7?'Strong set.':correctCount>=5?'Good work. Keep going.':'Go again. It gets easier.';}
 // Enter = Check (or the tap button / Next)
 document.addEventListener('keydown',e=>{
   if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
