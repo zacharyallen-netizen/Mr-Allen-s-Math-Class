@@ -41,17 +41,17 @@
         'display:none;margin:0 0 18px;padding:16px 18px;border-radius:14px;' +
         'background:var(--panel,#222749);border:1px solid var(--edge,#33396b)';
       box.innerHTML =
-        '<div style="font-weight:700;font-size:15px;margin-bottom:4px">Send your score to Mr. Allen</div>' +
+        '<div style="font-weight:700;font-size:15px;margin-bottom:4px">Send to Mr. Allen</div>' +
         '<div id="flmsg" style="color:var(--muted,#9aa0cf);font-size:13px;margin-bottom:10px">' +
-          'Type your first and last name, then tap Send.</div>' +
+          'First and last name.</div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
-          '<input id="flname" type="text" autocomplete="name" placeholder="Your name" ' +
+          '<input id="flname" type="text" autocomplete="name" placeholder="First and last name" ' +
             'style="flex:1 1 180px;min-width:0;font:inherit;font-size:15px;padding:11px 13px;' +
             'border-radius:11px;border:1px solid var(--edge,#33396b);background:#1b1e38;' +
             'color:var(--ink,#f1f3ff)">' +
           '<button id="flbtn" type="button" style="font:inherit;font-size:15px;font-weight:650;' +
             'color:#12132a;background:var(--mint,#39d99a);border:none;border-radius:11px;' +
-            'padding:11px 20px;cursor:pointer">Send my score</button>' +
+            'padding:11px 20px;cursor:pointer">Send</button>' +
         '</div>';
       host.parentNode.insertBefore(box, host.nextSibling);
       document.getElementById('flname').value = ls('get');
@@ -68,8 +68,8 @@
       if (!box) return;
       box.style.display = 'block';
       var b = document.getElementById('flbtn');
-      b.disabled = false; b.style.opacity = '1'; b.textContent = 'Send my score';
-      msg('Type your first and last name, then tap Send.', 'muted');
+      b.disabled = false; b.style.opacity = '1'; b.textContent = 'Send';
+      msg('First and last name.', 'muted');
     },
 
     hide: function () {
@@ -111,8 +111,7 @@
         if (res && res.ok) {
           FL.sent = true;
           btn.textContent = 'Sent ✓';
-          msg('Got it, ' + res.name + ' — Mr. Allen has your score of ' +
-              FL.score + ' / ' + FL.total + '.', 'ok');
+          msg('Sent ✓ ' + FL.score + ' / ' + FL.total + ', ' + res.name + '.', 'ok');
         } else {
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Try again';
           msg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') +
@@ -121,7 +120,7 @@
       })
       .catch(function () {
         btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Try again';
-        msg('No connection — check the wifi and try once more.', 'warn');
+        msg('No connection. Check the wifi. Try again.', 'warn');
       });
     }
   };

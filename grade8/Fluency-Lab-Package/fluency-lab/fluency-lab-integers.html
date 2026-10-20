@@ -54,9 +54,7 @@
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
   .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
-  .say .last{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;margin:0 0 8px;padding-bottom:8px;border-bottom:1px dashed var(--panel-edge)}
-  .say .last:empty{display:none}
-  .say .last b{color:var(--mint);white-space:nowrap}
+  .say .where:empty{display:none}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber);white-space:nowrap}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
@@ -77,9 +75,6 @@
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
   .fb b{color:var(--amber)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -111,16 +106,16 @@
   .eline .n{display:inline-block;padding:0 4px;border-radius:8px;transition:background .25s,color .25s}
   .eline .dim{opacity:.28}
   .eline .hs{color:var(--amber);text-shadow:0 0 12px #ffbb4d88}
-  .eline.rew{font-size:36px}
-  .eline.muted{font-size:24px;color:var(--muted)}
-  .eline.muted .op{margin:0}
+  /* the problem line turns into its new form (5 − (−3) → 5 + 3): one line, a short fade */
+  .eline.swap{animation:swapin .45s ease}
+  @keyframes swapin{0%{opacity:0;transform:translateY(-8px) scale(.96)}100%{opacity:1;transform:none}}
   .eline .res{color:var(--mint);display:inline-block}
   .eline .ibx{margin-left:4px}
   .work{white-space:nowrap;font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;font-size:30px;font-weight:700;margin:8px 0 2px;min-height:0}
   .work:empty{display:none}
   .work .op{color:var(--muted);margin:0 6px}
   .work.fin{font-size:22px;color:var(--muted)}
-  @media (max-width:430px){.eline{font-size:38px}.eline.rew{font-size:30px}.eline.muted{font-size:21px}.work{font-size:26px}}
+  @media (max-width:430px){.eline{font-size:38px}.work{font-size:26px}}
   /* number line */
   .nl{margin:2px auto 0;max-width:460px}
   .nl:empty{display:none}
@@ -136,15 +131,13 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Integers · Module 6</div>
     <ul class="how">
-      <li>First work out the <b>number</b>. Then pick the <b>sign</b>.</li>
-      <li>Only <b>one box</b> opens at a time. It glows.</li>
-      <li>Type your answer and press <b>Check</b> (or Enter).</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li>Find the <b>number</b>. Then pick the <b>sign</b>.</li>
+      <li>Type in the glowing box. Press <b>Check</b>.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: −3 + 8</div>
+      <div class="ttl">Example: −3 + 8 = 5</div>
       <div class="nl" id="exLine"></div>
-      <div class="excap">The signs are different, so subtract: <b>8 − 3 = 5</b>.<br>8 is farther from 0, so the answer is positive.<br>Start at −3 and move 8 right. You land on <b>5</b>.</div>
+      <div class="excap">Different signs, so subtract: <b>8 − 3 = 5</b>.<br>8 is farther from 0, so <b>+5</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -158,18 +151,15 @@
     <div class="dots" id="dots"></div>
     <section class="stage">
       <div class="eline" id="prob" aria-live="polite"></div>
-      <div class="eline rew hide" id="rew"></div>
       <div class="nl" id="nline"></div>
       <div class="work" id="work"></div>
       <div class="say">
         <div class="where" id="where"></div>
-        <div class="last" id="last" aria-live="polite"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
         <div class="picks" id="picks"></div>
         <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
-        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -208,9 +198,9 @@ const NUM=S;
 const P=n=>n<0?`(−${Math.abs(n)})`:`${n}`;     // (−5)
 const BOX_MODE='numeric';                      // every box takes a plain number; signs are always picked with buttons
 const ALLOW_NEG=false;
-const NUDGE='Look at the yellow numbers again.';
-const ENDNOTES=['Excellent! Number first, then the sign. Every time.','Strong set. A few more first-try answers and you level up.',
-  'Good work. The sign is where the points hide. Slow down there.','Every problem showed you the steps. Go again. It gets easier.'];
+const NUDGE='Look at the yellow numbers.';
+const ENDNOTES=['Excellent! Number first, then sign.','Strong set. Keep going.',
+  'Good work. Slow down on signs.','Go again. It gets easier.'];
 const SIGNOPTS=[{label:'+ positive',value:1},{label:'− negative',value:-1}];
 
 /* ---------- problems (same levels as before) ---------- */
@@ -230,82 +220,68 @@ const firstTxt=p=>(p.op==='×'||p.op==='÷')?P(p.a):S(p.a);
 const probTxt=p=>`${firstTxt(p)} ${p.op} ${P(p.b)}`;
 
 /* ---------- the moves for one problem ---------- */
+// each move: say = ONE short instruction; nudge = first wrong try; second wrong try shows the answer
 function workMove(o){ o.kind='type'; o.calc=o.work; o.box='work'; o.enter=()=>{ V.work={txt:o.work,val:null}; }; return o; }
 function buildMoves(p){
   if(p.op==='+') return addMoves(p.a,p.b);
   if(p.op==='−'){
     const opp=-p.b, ab=Math.abs(p.b);
     return [{kind:'pick', hl:'sub', expect:opp, options:[{label:`${ab}`,value:ab},{label:`−${ab}`,value:-ab}],
-      say:`Subtracting is adding the opposite. What is the opposite of <b>${S(p.b)}</b>?`,
-      sub:`Same number, other sign.`,
-      nudge:`That is the same number. Flip its sign.`,
-      reveal:`The opposite of ${S(p.b)} is <b>${S(opp)}</b>.`,
-      after:async()=>{ V.oppVal=opp; V.arcNew=true; draw(); await wait(900);
-        return `<b>${S(p.a)} − ${P(p.b)}</b> is the same as <b>${S(p.a)} + ${P(opp)}</b>.`; }}]
+      say:`Add the opposite. Opposite of <b>${S(p.b)}</b>?`,
+      nudge:`Flip its sign.`,
+      after:async()=>{ V.oppVal=opp; V.arcNew=true; draw(); await wait(900); }}]   // the line becomes a + (opposite)
       .concat(addMoves(p.a,opp));
   }
   return mulMoves(p);
 }
-async function land(ans,note){ V.result=ans; V.justRes=true; await jump(); return note; }
+async function land(ans){ V.result=ans; V.justRes=true; await jump(); }
 function addMoves(a,b){
   const x=Math.abs(a), y=Math.abs(b), ans=a+b, mv=[];
   if((a<0)===(b<0)){
     const neg=a<0;
     mv.push(workMove({hl:neg?'vals':'nums', expect:x+y, work:`${x} + ${y}`,
-      say:neg?`Both numbers are negative. Add the numbers: <b>${x} + ${y}</b>`:`Both numbers are positive. Add them: <b>${x} + ${y}</b>`,
-      sub:neg?`Just the numbers for now. You pick the sign next.`:'',
-      nudge:`Add the yellow numbers again.`, reveal:`${x} + ${y} = <b>${x+y}</b>.`,
-      after:async()=>{ V.work.val=x+y; return neg?'':land(ans,`Positive plus positive is positive.`); }}));
+      say:`Same signs: add the numbers.`,
+      nudge:`Add the yellow numbers again.`,
+      after:async()=>{ V.work.val=x+y; if(!neg) await land(ans); }}));
     if(neg) mv.push({kind:'pick', hl:'signs', expect:-1, options:SIGNOPTS,
-      say:`Now the sign. Is the answer positive or negative?`,
-      sub:`Both numbers are negative. When the signs match, the answer keeps that sign.`,
-      nudge:`Look at the signs of the two numbers.`, reveal:`Both numbers are negative, so the answer is negative.`,
-      after:()=>land(ans,`Negative plus negative is negative.`)});
+      say:`Is the answer positive or negative?`,
+      sub:`Same signs keep their sign.`,
+      nudge:`Look at the signs.`,
+      after:()=>land(ans)});
     return mv;
   }
   const big=Math.max(x,y), small=Math.min(x,y), w=x>y?a:b;
   mv.push(workMove({hl:'vals', expect:big-small, work:`${big} − ${small}`,
-    say:`The signs are different, so subtract: <b>${big} − ${small}</b>`,
-    sub:big===small?`Just the numbers, no signs.`:`Big number minus small number. You pick the sign next.`,
-    nudge:`Subtract the yellow numbers again.`, reveal:`${big} − ${small} = <b>${big-small}</b>.`,
-    after:async()=>{ V.work.val=big-small; return big===small?land(0,`They cancel out, so the answer is <b>0</b>.`):''; }}));
+    say:`Different signs: subtract the numbers.`,
+    nudge:`Subtract the yellow numbers again.`,
+    after:async()=>{ V.work.val=big-small; if(big===small) await land(0); }}));
   if(big!==small) mv.push({kind:'pick', hl:'nums', expect:w, options:[{label:S(a),value:a},{label:S(b),value:b}],
-    say:`Now the sign. Which number is farther from 0?`,
-    sub:`The answer gets that number’s sign.`,
-    nudge:`Forget the signs. Which number is bigger?`, reveal:`${S(w)} is farther from 0.`,
-    after:()=>land(ans,`<b>${S(w)}</b> is farther from 0, so the answer is ${w<0?'negative':'positive'}.`)});
+    say:`Which number is farther from 0?`,
+    sub:`The answer gets its sign.`,
+    nudge:`Ignore the signs. Which is bigger?`,
+    after:()=>land(ans)});
   return mv;
 }
 function mulMoves(p){
   const {a,b,op}=p, x=Math.abs(a), y=Math.abs(b), val=op==='×'?x*y:x/y;
-  const anyNeg=a<0||b<0, same=(a<0)===(b<0), word=op==='×'?'Multiply':'Divide', mv=[];
+  const anyNeg=a<0||b<0, word=op==='×'?'Multiply':'Divide', mv=[];
   mv.push(workMove({hl:anyNeg?'vals':'nums', expect:val, work:`${x} ${op} ${y}`,
-    say:`${word}: <b>${x} ${op} ${y}</b>`,
-    sub:anyNeg?`Just the numbers for now. You pick the sign next.`:'',
-    nudge:`${word} the yellow numbers again.`, reveal:`${x} ${op} ${y} = <b>${val}</b>.`,
-    after:async()=>{ V.work.val=val; if(anyNeg) return '';
-      V.result=p.ans; V.justRes=true; return `Both numbers are positive, so the answer is positive.`; }}));
+    say:`${word} the numbers.`,
+    nudge:`${word} the yellow numbers again.`,
+    after:async()=>{ V.work.val=val; if(!anyNeg){ V.result=p.ans; V.justRes=true; } }}));
   if(anyNeg) mv.push({kind:'pick', hl:'signs', expect:Math.sign(p.ans), options:SIGNOPTS,
-    say:`Now the sign. Is the answer positive or negative?`,
-    sub:`Same signs: positive. Different signs: negative.`,
-    nudge:`Are the two signs the same or different?`,
-    reveal:same?`The signs are the same, so it is positive.`:`The signs are different, so it is negative.`,
-    after:async()=>{ V.result=p.ans; V.justRes=true;
-      return `${same?'Same':'Different'} signs, so the answer is ${same?'positive':'negative'}.`; }});
+    say:`Is the answer positive or negative?`,
+    sub:`Same signs +. Different signs −.`,
+    nudge:`Same signs or different?`,
+    after:async()=>{ V.result=p.ans; V.justRes=true; }});
   return mv;
 }
+// the finished problem, as given (this is what #prob shows when it is saved)
 function answerText(){ return `${probTxt(current)} = ${S(current.ans)}`; }
-function checkLine(){
-  const p=current;
-  if(p.op==='+') return `✓ <b>Check:</b> start at ${S(p.a)} and move ${Math.abs(p.b)} ${p.b<0?'left':'right'}. You land on <b>${S(p.ans)}</b>.`;
-  if(p.op==='−') return `✓ <b>Check:</b> add it back. ${S(p.ans)} + ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
-  if(p.op==='×') return `✓ <b>Check:</b> ${S(p.ans)} ÷ ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
-  return `✓ <b>Check:</b> ${S(p.ans)} × ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
-}
 
 /* ---------- drawing ---------- */
 let V={};
-function resetVisual(){ V={open:null,hl:null,done:false,oppVal:null,work:null,result:null,landed:false,arcNew:false,justRes:false}; }
+function resetVisual(){ V={open:null,hl:null,done:false,oppVal:null,work:null,result:null,landed:false,arcNew:false,justRes:false,form:null}; }
 // one number: minus sign and digits are separate so either can glow
 function numH(n,paren,mode){
   const neg=n<0, d=Math.abs(n);
@@ -317,26 +293,20 @@ function numH(n,paren,mode){
 function resH(){ const c='res'+(V.justRes?' pop':''); return ` <span class="op">=</span> <span class="${c}">${S(V.result)}</span>`; }
 function draw(){
   const p=current, sub=p.op==='−', md=p.op==='×'||p.op==='÷';
-  const onRew=sub && V.oppVal!==null;                  // after the flip, we work on the second line
-  const o=V.open;
-  // line 1: the problem as given
-  let h=numH(p.a,md,onRew?null:(V.hl==='sub'?null:V.hl));
-  const secHL=onRew?null:(V.hl==='sub'?'nums':V.hl);
-  const opH=` <span class="op${!onRew&&V.hl==='sub'?' hs':''}">${p.op}</span> `;
-  h+=opH+numH(p.b,true,secHL);
-  if((V.result!==null && !sub) || (sub && V.done)) h+=resH();
-  $('prob').innerHTML=h;
-  $('prob').className='eline'+(onRew&&!V.done?' muted':'');
-  // line 2 (subtracting only): = a + (opposite)
-  const rew=$('rew');
-  if(sub){
-    rew.classList.remove('hide');
-    let r=`<span class="op">=</span> `+numH(p.a,false,onRew?V.hl:null)+` <span class="op">+</span> `;
-    r+=(V.oppVal===null)?'<span class="n hs">?</span>':numH(V.oppVal,true,onRew?V.hl:null);
-    if(V.result!==null) r+=resH();
-    rew.innerHTML=r; rew.className='eline rew'+(V.done?' muted':'');
-  } else rew.classList.add('hide');
-  // the small sum we are working on
+  // ONE problem line. Subtracting: once the opposite is picked, the line itself
+  // becomes  a + (opposite).  When finished it shows the problem as given, with its answer.
+  const form=V.done?'done':(sub&&V.oppVal!==null)?'rew':'orig';
+  const o=V.open, hl=V.done?null:V.hl;
+  let h;
+  if(form==='rew') h=numH(p.a,false,hl)+` <span class="op">+</span> `+numH(V.oppVal,true,hl);
+  else h=numH(p.a,md,hl==='sub'?null:hl)+` <span class="op${hl==='sub'?' hs':''}">${p.op}</span> `+numH(p.b,true,hl==='sub'?'nums':hl);
+  if(V.result!==null && form!=='rew') h+=resH();
+  const pr=$('prob'); pr.innerHTML=h;
+  if(V.form!==form){ pr.classList.remove('swap');
+    if(V.form==='rew'){ void pr.offsetWidth; pr.classList.add('swap'); }        // a + (opp)  →  original = answer
+    else if(form==='rew'){ void pr.offsetWidth; pr.classList.add('swap'); }     // original  →  a + (opp)
+    V.form=form; }
+  // the one small sum we are working on right now
   const w=$('work');
   if(V.work){
     const t=V.work.txt.replace(/ ([+−×÷]) /,' <span class="op">$1</span> ');
@@ -350,7 +320,7 @@ function draw(){
     $('nline').innerHTML=nlSVG(p.a,hop,V.landed);
     if(V.arcNew){ V.arcNew=false; growArc(); }
   }
-  ['prob','rew','work'].forEach(id=>fit($(id)));
+  ['prob','work'].forEach(id=>fit($(id)));
   V.justRes=false;
 }
 /* number line drawn from this problem's own numbers */
@@ -420,17 +390,15 @@ function renderProblem(){
   M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
   G={steps:M.mv, si:0};
   resetVisual();
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
   paintDots(); showMove();
 }
-function showMove(note){
+function showMove(){
   const m=M.mv[M.i]; M.tries=0;
   V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
   if(m.enter) m.enter();
   draw();
   $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
   $('msg').innerHTML=m.say;
-  $('last').innerHTML=note?`✓ ${note}`:'';
   $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
@@ -445,11 +413,11 @@ function showMove(note){
 // shrink a one-line row of math until it fits the card (never a sideways scroll)
 function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
   while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
-function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+function nextMove(){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(); else showMove(); }
 async function doTap(){
   if(M.busy) return; M.busy=true; $('go').disabled=true;
-  const note=await M.mv[M.i].run();
-  M.busy=false; nextMove(note);
+  await M.mv[M.i].run();
+  M.busy=false; nextMove();
 }
 function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
 function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
@@ -457,43 +425,42 @@ function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
 async function check(){
   if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
   const raw=box.value.trim();
-  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  if(raw===''||raw==='-'){ say2('Type a number in the box.'); box.focus(); return; }
   const v=readNum(raw);
   if(v!==m.expect){
     M.tries++; M.err=true; shake(box);
     const part=m.partial?m.partial(v):'';
-    if(M.tries>=2){ say2(`${m.reveal} Type <b>${NUM(m.expect)}</b> to keep going.`); box.placeholder=NUM(m.expect); }
+    if(M.tries>=2){ say2(`Type <b>${NUM(m.expect)}</b>.`); box.placeholder=NUM(m.expect); }
     else say2(part||('Not quite. '+(m.nudge||NUDGE)));
     box.select(); return;
   }
   M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
   V.typed=v;
-  const note=m.after?await m.after():''; draw();
-  M.busy=false; nextMove(note);
+  if(m.after) await m.after(); draw();
+  M.busy=false; nextMove();
 }
 async function choose(i){
   if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
   if(m.options[i].value!==m.expect){
     M.tries++; M.err=true; shake(btns[i]);
     const k=m.options.findIndex(o=>o.value===m.expect);
-    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
+    if(M.tries>=2){ say2(`Tap <b>${m.options[k].label}</b>.`); btns[k].classList.add('show'); }
     else say2('Not quite. '+m.nudge);
     return;
   }
   M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
   $('fb').textContent='✓'; $('fb').className='fb yes';
-  const note=m.after?await m.after():''; draw();
-  M.busy=false; $('picks').innerHTML=''; nextMove(note);
+  if(m.after) await m.after(); draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove();
 }
-function finish(note){
-  V.open=null; V.hl=null; V.done=true; draw();
+function finish(){
+  V.open=null; V.hl=null; V.done=true; V.work=null; draw();   // #prob = the problem as given, with its answer
   const right=!M.err;
-  $('where').textContent='Done'; $('last').innerHTML='';
-  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
-  $('sub').innerHTML=note||'';
+  $('where').textContent='';
+  $('msg').innerHTML=`✓ <b>${answerText()}</b>`;
+  $('sub').innerHTML='';
   $('fb').textContent=''; $('fb').className='fb';
   $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
-  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 // a number (or text) floats from one element to another

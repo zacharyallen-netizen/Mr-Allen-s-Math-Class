@@ -65,16 +65,8 @@
 
   /* ── one instruction at a time ── */
   .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
-  .say .note{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;padding:0 0 9px;margin:0 0 10px;border-bottom:1px dashed var(--panel-edge)}
-  .say .note:empty{display:none}
-  .say .note b{color:var(--mint)}
-  .say .note.in{animation:notein .4s ease}
-  @keyframes notein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber);white-space:nowrap}
-  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px;min-height:0}
-  .say .sub b{color:var(--amber)}
   .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
@@ -83,9 +75,6 @@
   .fb:empty{min-height:0;margin-top:0}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
   .fb.help{color:#cfe3ff;font-weight:600} .fb.help b{color:var(--amber)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -118,7 +107,6 @@
     .stage{padding:14px 14px 16px}
     .say{margin-top:8px;padding:11px 13px 13px}
     .say .msg{font-size:18px;line-height:1.38}
-    .say .sub{margin-top:4px}
     .btn{margin-top:10px;padding:11px 24px}
     .fb{margin-top:8px}
   }
@@ -133,17 +121,15 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Add &amp; Subtract · Module 1</div>
     <ul class="how">
-      <li>Work <b>one column at a time</b>, from the <b>right</b>.</li>
-      <li>Only <b>one box</b> opens at a time. It glows.</li>
-      <li>Type your answer and press <b>Check</b> (or Enter).</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li>One column at a time, from the <b>right</b>.</li>
+      <li>Type in the <b>glowing box</b>.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: 52 − 27</div>
+      <div class="ttl">Example: 52 − 27</div>
       <div class="algo" id="exPaper"></div>
-      <div class="excap">The 2 is smaller than 7, so the 5 <b>lends 1 ten</b>. The 5 becomes <b>4</b> and the 2 becomes <b>12</b>.<br>12 − 7 = 5. Then 4 − 2 = 2. The answer is <b>25</b>.</div>
+      <div class="excap">Borrow: <b>12 − 7 = 5</b>.<br>Then <b>4 − 2 = 2</b>.</div>
     </div>
-    <button class="btn" onclick="startSet()">Start a set of 10</button>
+    <button class="btn" onclick="startSet()">Start</button>
   </section>
 
   <div id="play" class="hide">
@@ -156,14 +142,11 @@
     <section class="stage">
       <div class="algo" id="algo" aria-live="polite"></div>
       <div class="say">
-        <div class="note" id="note" aria-live="polite"></div>
-        <div class="where" id="where"></div>
-        <div class="msg" id="msg"></div>
-        <div class="sub" id="sub"></div>
+        <div class="msg" id="msg" aria-live="polite"></div>
         <div class="fb" id="fb" role="status"></div>
         <button class="btn" id="go">Check</button>
-        <div class="checkline" id="checkline"></div>
       </div>
+      <span id="prob" hidden></span>
     </section>
   </div>
 
@@ -186,7 +169,8 @@
    Each problem is a list of small moves. A move is either
      • type  — one glowing box in the written problem, one short instruction
      • tap   — a button (e.g. "Borrow") that plays a short animation
-   Carries, borrows and leading zeros are shown with animations.
+   Carries, borrows and leading zeros are shown with animations, not words.
+   #prob (hidden) holds the plain problem for the teacher's Sheet label.
    ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
 let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
@@ -195,6 +179,7 @@ let G=null;            // {steps, si}  (read by fluency-progress.js)
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const $=id=>document.getElementById(id);
 const NAMES=['ones','tens','hundreds','thousands'];
+const COL=c=>NAMES[c][0].toUpperCase()+NAMES[c].slice(1)+' column';   // "Ones column"
 const fmt=n=>n.toLocaleString('en-US');
 const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
@@ -226,22 +211,21 @@ function movesAdd(p){
   for(let c=0;c<n;c++){
     const gi=W-1-c, da=B.top[gi]||0, db=B.bot[gi], cin=carry;
     const sum=da+(db||0)+cin, last=(c===n-1);
-    const parts=[da].concat(db===null?[]:[db]);
-    let say=`Add the <b>${NAMES[c]}</b>: <b>${parts.join(' + ')}${cin?` + ${cin}`:''}</b>`;
-    const sub=(cin?`The small <b>${cin}</b> on top is the carry.`:'')+(db===null?`${cin?' ':''}Only one number is in this column.`:'');
+    const parts=[da].concat(db===null?[]:[db]).concat(cin?[cin]:[]);
+    const sumTxt=parts.join(' + ');
     const carryOut=last?0:Math.floor(sum/10);
-    mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:2, expect:sum, say, sub,
-      wrong:`${parts.join(' + ')}${cin?` + ${cin}`:''} = ${sum}`,
+    mv.push({kind:'type', where:COL(c), col:gi, row:'ans', w:2, expect:sum,
+      say:`${COL(c)}: <b>${sumTxt}</b>`, sumTxt,
       partial:sum>=10?String(sum%10):null, last,
       after: async (b)=>{
         if(sum>=10 && !last){
           b.ans[gi]=sum%10;
           await flyDigit(gi, 'ans', gi-1, 'small', String(carryOut));
           b.small[gi-1]=carryOut;
-          return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b>.`;
+          return;
         }
-        if(sum>=10 && last){ b.ans[gi]=sum%10; b.ans[gi-1]=Math.floor(sum/10); return `Last column, so all of <b>${sum}</b> goes down.`; }
-        b.ans[gi]=sum; return '';
+        if(sum>=10 && last){ b.ans[gi]=sum%10; b.ans[gi-1]=Math.floor(sum/10); return; }
+        b.ans[gi]=sum;
       }});
     carry=carryOut;
   }
@@ -250,51 +234,38 @@ function movesAdd(p){
 function movesSub(p){
   const B=newBoard(p), W=B.W, mv=[];
   const now=B.top.slice();                      // what each top digit is worth right now
-  const lead=W-String(p.a).length;              // first real column
-  const n=String(p.a).length, lent=Array(W).fill(false);
+  const n=String(p.a).length;
   for(let c=0;c<n;c++){
     const gi=W-1-c, bot=B.bot[gi]===null?0:B.bot[gi], hasBot=B.bot[gi]!==null;
-    let borrowedHere=false;
     if(now[gi]<bot){
-      borrowedHere=true;
       // borrow: find the first column to the left that has something to lend
       let j=gi-1; while(now[j]===0) j--;
-      const plan={from:j, to:gi, zeros:[]}; lent[j]=true;
-      for(let k=j+1;k<gi;k++){ plan.zeros.push(k); lent[k]=true; }
-      const was=now[gi], lendWas=now[j];
+      const plan={from:j, to:gi, zeros:[]};
+      for(let k=j+1;k<gi;k++) plan.zeros.push(k);
+      const was=now[gi];
       now[j]-=1; plan.zeros.forEach(k=>now[k]=9); now[gi]+=10;
       const jNew=now[j], gNew=now[gi];          // fixed now: later borrows must not change this animation
-      const zeroTxt=plan.zeros.length?` The 0 next door has nothing to lend, so the <b>${lendWas}</b> lends.`:'';
-      mv.push({kind:'tap', where:`${NAMES[c]} column`, col:gi, button:'Borrow',
-        say: lent[gi]?`The ${NAMES[c]} digit already lent 1, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>. <b>Borrow</b> again.`
-                     :`<b>${was}</b> is smaller than <b>${bot}</b>. We need to <b>borrow</b>.`,
-        sub:`${zeroTxt?zeroTxt.trim()+' ':''}Press <b>Borrow</b> to watch.`,
-        run: async (b,show)=>{
-          b.struck[j]=true; b.small[j]=jNew; draw(); show(`The <b>${lendWas}</b> lends 1 and becomes <b>${jNew}</b>.`); await wait(1100);
-          for(const k of plan.zeros){ b.struck[k]=true; b.small[k]=10; draw(); show(`The 0 gets 10…`); await wait(900);
-            b.small[k]=9; draw(); show(`…then it lends 1, so it is <b>9</b>.`); await wait(1000); }
+      mv.push({kind:'tap', where:COL(c), col:gi, button:'Borrow',
+        say:`${COL(c)}: <b>${was}</b> is less than <b>${bot}</b>. Borrow.`,
+        run: async (b)=>{
+          b.struck[j]=true; b.small[j]=jNew; draw(); await wait(1000);
+          for(const k of plan.zeros){ b.struck[k]=true; b.small[k]=10; draw(); await wait(800);
+            b.small[k]=9; draw(); await wait(900); }
           await flyDigit(gi-1,'top',gi,'small','+10');
           b.struck[gi]=true; b.small[gi]=gNew; draw();
-          return `The <b>${was}</b> became <b>${gNew}</b>.`;
         }});
     }
     const t=now[gi], diff=t-bot, isLeadZero=(c===n-1 && diff===0 && n>1);
     const fadeCols=[]; for(let k=String(p.answer).length;k<n;k++) fadeCols.push(W-1-k);   // every 0 at the front (e.g. 633 − 626 = 007)
-    const lentEarlier=lent[gi]&&!borrowedHere;
-    mv.push({kind:'type', where:`${NAMES[c]} column`, col:gi, row:'ans', w:1, expect:diff,
-      say: hasBot?`Subtract the <b>${NAMES[c]}</b>: <b>${t} − ${bot}</b>`:`Nothing to take away. Bring down the <b>${t}</b>.`,
-      sub: lentEarlier?`Use the small <b>${t}</b> on top, not the crossed-out digit.`:'',
-      wrong:hasBot?`${t} − ${bot} = ${diff}`:`just ${t}`, t, bot, hasBot,
+    mv.push({kind:'type', where:COL(c), col:gi, row:'ans', w:1, expect:diff,
+      say: hasBot?`${COL(c)}: <b>${t} − ${bot}</b>`:`${COL(c)}: bring down <b>${t}</b>`,
+      t, bot, hasBot,
       after: async (b)=>{ b.ans[gi]=diff;
-        if(isLeadZero){ draw(); await wait(500); b.fade=fadeCols; return (fadeCols.length>1?`We don’t write 0s at the front of a number, so they fade away.`:`We don’t write a 0 at the front of a number, so it fades away.`); }
-        return ''; }});
+        if(isLeadZero){ draw(); await wait(500); b.fade=fadeCols; } }});
   }
   return {B, mv};
 }
-function checkLine(p){
-  if(p.op==='-') return `✓ <b>Check:</b> add back. ${fmt(p.answer)} + ${fmt(p.b)} = <b>${fmt(p.a)}</b>. It matches the top number.`;
-  return `✓ <b>Check:</b> subtract back. ${fmt(p.answer)} − ${fmt(p.b)} = <b>${fmt(p.a)}</b>. It matches the top number.`;
-}
+const probText=p=>`${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)}`;
 
 /* ---------- drawing ---------- */
 let BOARD=null;
@@ -344,25 +315,20 @@ function renderProblem(){
   const p=current, built=p.op==='+'?movesAdd(p):movesSub(p);
   BOARD=built.B; M={mv:built.mv, i:0, tries:0, busy:false, err:false};
   G={steps:M.mv, si:0};
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  $('prob').textContent=probText(p);
   paintDots(); showMove();
 }
-function showMove(note){
+function showMove(){
   const m=M.mv[M.i]; M.tries=0;
   BOARD.col=m.col; BOARD.open=m.kind==='type'?{row:m.row,col:m.col,w:m.w,label:m.where}:null;
   draw();
-  $('where').textContent=`${m.where} · ${colCount()}`;
-  setNote(note);
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go');
   if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
   else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box){ box.focus(); } }
   setTimeout(keepInView,60);
 }
-// the note about the move just done: its own small mint line, above the new instruction
-function setNote(t){ const n=$('note'); n.classList.remove('in'); n.innerHTML=t?'✓ '+t:''; if(t){ void n.offsetWidth; n.classList.add('in'); } }
 // phone keyboard open: scroll so the Check button is not hidden (never past the top of the problem)
 function keepInView(){
   const vv=window.visualViewport, go=$('go'), st=document.querySelector('.stage');
@@ -373,41 +339,36 @@ function keepInView(){
   if(room>0) window.scrollBy({top:Math.min(need,room),behavior:reduce?'auto':'smooth'});
 }
 if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(keepInView,50));
-function colCount(){ const cols=[...new Set(M.mv.map(m=>m.col))]; return `${cols.indexOf(M.mv[M.i].col)+1} of ${cols.length}`; }
 async function doTap(){
   if(M.busy) return; M.busy=true; const m=M.mv[M.i];
-  $('go').disabled=true; setNote('');
-  const show=t=>{ $('sub').innerHTML=t; };
-  const note=await m.run(BOARD,show);
+  $('go').disabled=true;
+  await m.run(BOARD);
   $('go').disabled=false; M.busy=false;
-  M.i++; G.si=M.i; showMove(note);
+  M.i++; G.si=M.i; showMove();
 }
 async function check(){
   if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
   const v=box.value.trim();
-  if(v===''){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
+  if(v===''){ $('fb').textContent='Type a number.'; $('fb').className='fb no'; box.focus(); return; }
   if(+v!==m.expect){
     M.tries++; M.err=true; box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
-    if(M.tries===1 && m.partial && v===m.partial){ $('fb').innerHTML=m.last?`Close! This is the last column, so type <b>both</b> digits.`:`Close! Type the <b>whole</b> answer (both digits). We carry next.`; }
-    else if(M.tries===1){ $('fb').innerHTML='Not quite. '+(current.op==='+'?'Add the yellow numbers again, one at a time.'
-        :m.hasBot?`Count up from <b>${m.bot}</b> to <b>${m.t}</b>.`:`Nothing is taken away, so it stays <b>${m.t}</b>.`); }
-    else { $('fb').innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
+    if(M.tries===1 && m.partial && v===m.partial){ $('fb').innerHTML=`Type <b>both</b> digits.`; }
+    else if(M.tries===1){ $('fb').innerHTML=current.op==='+'?`Add again: <b>${m.sumTxt}</b>`
+        :m.hasBot?`Count up from <b>${m.bot}</b> to <b>${m.t}</b>.`:`Just bring down <b>${m.t}</b>.`; }
+    else { $('fb').innerHTML=`Type <b>${m.expect}</b>.`; box.placeholder=String(m.expect); }
     $('fb').className='fb help'; box.select(); return;
   }
-  M.busy=true; BOARD.open=null; $('fb').textContent='✓'; $('fb').className='fb yes'; setNote('');
-  const note=await m.after(BOARD); draw();
+  M.busy=true; BOARD.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  await m.after(BOARD); draw();
   M.busy=false; M.i++; G.si=M.i;
-  if(M.i>=M.mv.length) finish(note); else showMove(note);
+  if(M.i>=M.mv.length) finish(); else showMove();
 }
-function finish(note){
+function finish(){
   BOARD.col=-1; BOARD.open=null; draw();
-  const right=!M.err, p=current;
-  $('where').textContent='Done';
-  $('msg').innerHTML=right?`✓ Solved it! <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`
-                          :`✓ Done. <b>${fmt(p.a)} ${p.op==='+'?'+':'−'} ${fmt(p.b)} = ${fmt(p.answer)}</b>`;
-  setNote(note); $('sub').innerHTML='';
+  const right=!M.err, p=current, done=`${probText(p)} = ${fmt(p.answer)}`;
+  $('msg').innerHTML=`✓ <b>${done}</b>`;
+  $('prob').textContent=done;
   $('fb').textContent=''; $('fb').className='fb';
-  $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 
@@ -435,10 +396,9 @@ function endSet(){
   $('play').classList.add('hide');const s=$('summary');s.classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   const pb=$('pb');
-  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
-  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
-  $('s-note').textContent=correctCount>=9?'Excellent! Clean columns, every time.':correctCount>=7?'Strong set. A few more first-try answers and you level up.'
-    :correctCount>=5?'Good work. Watch the carries and borrows — that is where the points are.':'Every problem showed you the steps. Go again — it gets easier.';
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New best: ${correctCount}/10`;}
+  else pb.textContent=`Best: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?'Excellent!':correctCount>=7?'Strong set!':correctCount>=5?'Good work.':'Go again. It gets easier.';
 }
 // Enter = Check (or Borrow / Next)
 document.addEventListener('keydown',e=>{

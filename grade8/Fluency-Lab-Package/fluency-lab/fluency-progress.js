@@ -42,9 +42,8 @@
     var d = document.createElement('div');
     d.id = 'flresume';
     d.style.cssText = 'margin:0 auto 14px;max-width:390px;font-size:14px;color:#cfd3f5;line-height:1.5';
-    d.innerHTML = (asked === level ? 'Your Skill Check plan sent you to ' : 'Welcome back! You are on ') +
-      '<b style="color:#63a8ef">Level ' + level + '</b>. ' +
-      '<a href="#" id="flrestart" style="color:#9aa0cf;text-decoration:underline">Start over at Level 1</a>';
+    d.innerHTML = '<b style="color:#63a8ef">Level ' + level + '</b> · ' +
+      '<a href="#" id="flrestart" style="color:#9aa0cf;text-decoration:underline">Start at Level 1</a>';
     btn.parentNode.insertBefore(d, btn);
     document.getElementById('flrestart').addEventListener('click', function (e) {
       e.preventDefault(); level = 1; forget(); welcome();

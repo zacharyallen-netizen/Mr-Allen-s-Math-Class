@@ -44,7 +44,7 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 <script src="../../../site-bar.js"></script><div class="wrap">
 <a class="back" href="index.html">← All skills</a>
 <h1>Skill Check — Integers</h1>
-<div class="sub">13 questions. Pick an answer for each, then check your score. Missed ones show the worked steps.</div>
+<div class="sub">13 questions. Pick an answer for each. Then check.</div>
 <div class="score" id="score"></div>
 <div id="quiz"></div>
 <button class="btn" id="checkbtn" onclick="check()">Check my answers</button>
@@ -52,10 +52,10 @@ border:none;border-radius:13px;padding:14px 26px;margin:18px auto 0;cursor:point
 </div>
 <script src="fluency-config.js"></script>
 <script src="fluency-submit.js"></script>
-<script>window.SKILL_PLAN={"lab": "fluency-lab-integers.html", "module": "Integers", "skills": [["Adding, same signs", 1, [0, 12]], ["Adding, different signs", 2, [1, 2, 11]], ["Subtracting integers", 3, [3, 4, 5]], ["Multiplying integers", 4, [6, 7]], ["Dividing integers", 5, [8, 9]], ["Mixed problems", 6, [10]]]};</script>
+<script>window.SKILL_PLAN={"lab": "fluency-lab-integers.html", "module": "Integers", "skills": [["Adding, same signs", 1, [0, 12]], ["Adding, different signs", 2, [1, 2]], ["Subtracting integers", 3, [3, 4, 5, 11]], ["Multiplying integers", 4, [6, 7]], ["Dividing integers", 5, [8, 9]], ["Mixed problems", 6, [10]]]};</script>
 <script src="skill-plan.js"></script>
 <script>
-const Q=[["−7 + (−5)", ["−12", "12", "−2", "2"], 0, "Same signs keep their sign: add 7 + 5 = 12, and both are negative → −12."], ["−8 + 3", ["−5", "5", "−11", "11"], 0, "Different signs, so subtract: 8 − 3 = 5. −8 is farther from 0 than 3, so the answer is negative → −5."], ["6 + (−9)", ["−3", "3", "−15", "15"], 0, "Different signs, so subtract: 9 − 6 = 3. −9 is farther from 0 than 6, so the answer is negative → −3."], ["5 − (−3)", ["8", "2", "−8", "−2"], 0, "Add the opposite: 5 − (−3) = 5 + 3 = 8."], ["−4 − 6", ["−10", "2", "10", "−2"], 0, "Add the opposite: −4 − 6 = −4 + (−6). Same signs keep their sign → −10."], ["−2 − (−9)", ["7", "−11", "−7", "11"], 0, "Add the opposite: −2 − (−9) = −2 + 9. Different signs, so subtract: 9 − 2 = 7. 9 is farther from 0, so it is positive → 7."], ["(−4) × 6", ["−24", "24", "−10", "10"], 0, "Different signs → negative: −24."], ["(−3) × (−7)", ["21", "−21", "10", "−10"], 0, "Same signs → positive: 21."], ["(−40) ÷ 8", ["−5", "5", "−32", "32"], 0, "Different signs → negative: −5."], ["(−56) ÷ (−7)", ["8", "−8", "49", "−49"], 0, "Same signs → positive: 8."], ["−3 × 4 + 5", ["−7", "−17", "7", "17"], 0, "Multiply first: −3 × 4 = −12. Then −12 + 5: different signs, so subtract 12 − 5 = 7. −12 is farther from 0, so → −7."], ["The temperature was 4° and dropped 11°. What is it now?", ["−7°", "7°", "15°", "−15°"], 0, "Add the opposite: 4 − 11 = 4 + (−11). Different signs, so subtract 11 − 4 = 7. −11 is farther from 0 → −7°."], ["On a number line, start at −5 and move 9 to the left. Where do you land?", ["−14", "4", "−4", "14"], 0, "Moving left makes numbers smaller: −5 + (−9) = −14."]];
+const Q=[["−7 + (−5)", ["−12", "12", "−2", "2"], 0, "Same signs: 7 + 5 = 12. Keep the −"], ["−8 + 3", ["−5", "5", "−11", "11"], 0, "Different signs: 8 − 3 = 5. −8 is farther from 0"], ["6 + (−9)", ["−3", "3", "−15", "15"], 0, "Different signs: 9 − 6 = 3. −9 is farther from 0"], ["5 − (−3)", ["8", "2", "−8", "−2"], 0, "5 + 3 = 8"], ["−4 − 6", ["−10", "2", "10", "−2"], 0, "−4 + (−6) = −10"], ["−2 − (−9)", ["7", "−11", "−7", "11"], 0, "−2 + 9 = 7"], ["(−4) × 6", ["−24", "24", "−10", "10"], 0, "Different signs"], ["(−3) × (−7)", ["21", "−21", "10", "−10"], 0, "Same signs"], ["(−40) ÷ 8", ["−5", "5", "−32", "32"], 0, "Different signs"], ["(−56) ÷ (−7)", ["8", "−8", "49", "−49"], 0, "Same signs"], ["(−6) × (−8)", ["48", "−48", "−14", "14"], 0, "Same signs"], ["4 − 11", ["−7", "7", "15", "−15"], 0, "4 + (−11) = −7"], ["−5 + (−9)", ["−14", "4", "−4", "14"], 0, "Same signs: 5 + 9 = 14. Keep the −"]];
 const box=document.getElementById('quiz');
 let locked=false;
 const sel={};
@@ -67,7 +67,7 @@ function render(){
     const order=q[1].map((_,k)=>k);
     for(let k=order.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[order[k],order[j]]=[order[j],order[k]];}
     let opts=order.map(oi=>`<div class="opt" data-q="${i}" data-o="${oi}"><span class="mk"></span><span>${q[1][oi]}</span></div>`).join('');
-    d.innerHTML=`<div class="qnum">QUESTION ${i+1} OF ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
+    d.innerHTML=`<div class="qnum">${i+1} / ${Q.length}</div><div class="prompt">${q[0]}</div><div class="opts">${opts}</div><div class="fb" id="fb${i}"></div>`;
     box.appendChild(d);
   });
   box.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
@@ -80,7 +80,7 @@ function check(){
   const skipped=Q.filter((q,i)=>sel[i]===undefined).length;
   if(skipped){
     const s=document.getElementById('score');
-    s.innerHTML='You have '+skipped+' question'+(skipped>1?'s':'')+' left. Pick an answer for each one, then check.';
+    s.innerHTML=skipped+' left. Answer every question.';
     s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
     return;
   }
@@ -98,8 +98,8 @@ function check(){
   locked=true;box.classList.add('locked');
   const pct=Math.round(score/Q.length*100);
   const s=document.getElementById('score');
-  let msg = score===Q.length?'Perfect! 🎉':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good — review the blue notes below.':'Keep going — read the worked steps, then try again.';
-  s.innerHTML='You scored '+score+' / '+Q.length+'  ('+pct+'%) — '+msg;
+  let msg = score===Q.length?'Perfect!':score>=Q.length*0.8?'Strong work.':score>=Q.length*0.6?'Good. Read the notes below.':'Read the steps below. Try again.';
+  s.innerHTML=score+' / '+Q.length+' ('+pct+'%). '+msg;
   s.className='score show';s.scrollIntoView({behavior:'smooth',block:'start'});
   document.getElementById('checkbtn').style.display='none';
   document.getElementById('againbtn').style.display='block';

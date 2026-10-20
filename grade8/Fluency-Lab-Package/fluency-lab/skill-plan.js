@@ -80,19 +80,19 @@
       var h = '<h2>My plan</h2>' +
         '<div class="lvl"><span class="n" style="background:' + info[2] + '">' + lv + '</span><div><b>My SBG level: ' + lv + ' · ' + info[1] + '</b>' +
         '<small>' + right + ' of ' + Q.length + ' right (' + pct + '%).' +
-        (pct >= 100 && lv < 5 ? ' Reach Level 6 in practice to make it a 5.' : '') + '</small></div></div>';
-      if (got.length) h += '<div class="got"><div class="hd">✓ You\'ve got these</div><div class="chips">' +
+        (pct >= 100 && lv < 5 ? ' Reach Level 6 for a 5.' : '') + '</small></div></div>';
+      if (got.length) h += '<div class="got"><div class="hd">✓ Got it</div><div class="chips">' +
         got.map(function (g) { return '<span>' + esc(g.name) + '</span>'; }).join('') + '</div></div>';
       if (next.length) {
         h += '<div class="next"><div class="hd">Practice next</div>' +
           next.map(function (s, k) {
-            return '<div class="row' + (k ? '' : ' first') + '"><div class="t">' + (k ? '' : 'Start here: ') + esc(s.name) +
+            return '<div class="row' + (k ? '' : ' first') + '"><div class="t">' + esc(s.name) +
               '<small>Missed ' + s.miss + ' of ' + s.n + '</small></div>' +
               '<a href="' + CFG.lab + '?level=' + s.level + '">Practice Level ' + s.level + ' →</a></div>';
           }).join('') +
-          '<div class="tip">Do one set of 10 at that level. Then read the worked steps below for the ones you missed.</div></div>';
+          '<div class="tip">Do one set of 10 at that level.</div></div>';
       } else {
-        h += '<div class="tip">Nothing to fix. Great work! Keep practicing at Level 6 to stay sharp.</div>';
+        h += '<div class="tip">Nothing to fix. Practice Level 6 to stay sharp.</div>';
       }
       box.innerHTML = h; box.style.display = 'block';
 
