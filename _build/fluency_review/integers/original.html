@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Integers</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:20px 18px 20px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  /* the ONE open box, sitting where the number goes */
+  .ibx{display:inline-block;vertical-align:middle;width:84px;height:52px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .ibx.sm{width:64px;height:44px;font-size:24px}
+  .ibx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .ibx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .75s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .hl{color:var(--amber);background:#ffbb4d1f;border-radius:8px}
+  .mint{color:var(--mint)}
+
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .last{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;margin:0 0 8px;padding-bottom:8px;border-bottom:1px dashed var(--panel-edge)}
+  .say .last:empty{display:none}
+  .say .last b{color:var(--mint);white-space:nowrap}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub b{color:var(--amber)}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .picks{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .picks:empty{display:none}
+  .pick{font-family:var(--sans);font-size:19px;font-weight:800;padding:12px 18px;border-radius:13px;border:2px solid var(--line);
+    background:var(--panel);color:var(--ink);min-width:132px;cursor:pointer;transition:border-color .15s,background .15s}
+  .pick:hover{border-color:var(--sky)}
+  .pick.bad{border-color:var(--coral);animation:shake .35s}
+  .pick.show{border-color:var(--amber);box-shadow:0 0 0 5px #ffbb4d2b}
+  .pick.ok{border-color:var(--mint);background:#16342a;color:var(--mint)}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb b{color:var(--amber)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
+
+  /* ── start / summary ── */
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
+  .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  .hide{display:none!important}
+  .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  /* ── the problem, written big ── */
+  .eline{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;font-size:46px;font-weight:700;line-height:1.3;
+    margin:2px 0;transition:color .3s;white-space:nowrap}
+  .eline .op{color:var(--muted);margin:0 2px}
+  .eline .n{display:inline-block;padding:0 4px;border-radius:8px;transition:background .25s,color .25s}
+  .eline .dim{opacity:.28}
+  .eline .hs{color:var(--amber);text-shadow:0 0 12px #ffbb4d88}
+  .eline.rew{font-size:36px}
+  .eline.muted{font-size:24px;color:var(--muted)}
+  .eline.muted .op{margin:0}
+  .eline .res{color:var(--mint);display:inline-block}
+  .eline .ibx{margin-left:4px}
+  .work{white-space:nowrap;font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;font-size:30px;font-weight:700;margin:8px 0 2px;min-height:0}
+  .work:empty{display:none}
+  .work .op{color:var(--muted);margin:0 6px}
+  .work.fin{font-size:22px;color:var(--muted)}
+  @media (max-width:430px){.eline{font-size:38px}.eline.rew{font-size:30px}.eline.muted{font-size:21px}.work{font-size:26px}}
+  /* number line */
+  .nl{margin:2px auto 0;max-width:460px}
+  .nl:empty{display:none}
+  .nl svg{display:block;width:100%;height:auto;overflow:visible}
+  .example .nl{margin-top:4px}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-integers.html">Skill check →</a></nav>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Integers · Module 6</div>
+    <ul class="how">
+      <li>First work out the <b>number</b>. Then pick the <b>sign</b>.</li>
+      <li>Only <b>one box</b> opens at a time. It glows.</li>
+      <li>Type your answer and press <b>Check</b> (or Enter).</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Here is one worked out: −3 + 8</div>
+      <div class="nl" id="exLine"></div>
+      <div class="excap">The signs are different, so subtract: <b>8 − 3 = 5</b>.<br>8 is farther from 0, so the answer is positive.<br>Start at −3 and move 8 right. You land on <b>5</b>.</div>
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">INTEGERS ±</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="eline" id="prob" aria-live="polite"></div>
+      <div class="eline rew hide" id="rew"></div>
+      <div class="nl" id="nline"></div>
+      <div class="work" id="work"></div>
+      <div class="say">
+        <div class="where" id="where"></div>
+        <div class="last" id="last" aria-live="polite"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <div class="picks" id="picks"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
+        <div class="checkline" id="checkline"></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-integers.html">Take the Skill check</a>
+  </section>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   INTEGERS — one box at a time
+   1. the number (signs left off)   2. the sign (tap positive / negative,
+   or tap the number that is farther from 0). Subtracting first turns
+   into adding the opposite. + and − hop along a number line.
+   ════════════════════════════════════════════════════════════════ */
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+const S=n=>(n<0?'−':'')+Math.abs(n);          // −5
+const NUM=S;
+const P=n=>n<0?`(−${Math.abs(n)})`:`${n}`;     // (−5)
+const BOX_MODE='numeric';                      // every box takes a plain number; signs are always picked with buttons
+const ALLOW_NEG=false;
+const NUDGE='Look at the yellow numbers again.';
+const ENDNOTES=['Excellent! Number first, then the sign. Every time.','Strong set. A few more first-try answers and you level up.',
+  'Good work. The sign is where the points hide. Slow down there.','Every problem showed you the steps. Go again. It gets easier.'];
+const SIGNOPTS=[{label:'+ positive',value:1},{label:'− negative',value:-1}];
+
+/* ---------- problems (same levels as before) ---------- */
+const sgn=()=>pick([1,-1]);
+function gen(L){
+  if(L===1){const s=sgn(); const a=s*rnd(2,12), b=s*rnd(2,12); return mk(a,'+',b);}
+  if(L===2){const a=sgn()*rnd(2,12); let b; do{b=sgn()*rnd(2,12);}while((a<0)===(b<0)); return mk(a,'+',b);}
+  if(L===3){let a=rnd(-12,12),b=rnd(-12,12); if(a===0)a=3; if(b===0)b=4; return mk(a,'−',b);}
+  if(L===4){return mk(sgn()*rnd(2,12),'×',sgn()*rnd(2,12));}
+  if(L===5){const q=sgn()*rnd(2,12), b=sgn()*rnd(2,9); return mk(q*b,'÷',b);}
+  const o=pick(['+','−','×','÷']);
+  if(o==='÷'){const q=sgn()*rnd(2,12),b=sgn()*rnd(2,9); return mk(q*b,'÷',b);}
+  const a=sgn()*rnd(2,15),b=sgn()*rnd(2,15); return mk(a,o,b);
+}
+function mk(a,op,b){ const ans=op==='+'?a+b : op==='−'?a-b : op==='×'?a*b : a/b; return {a,op,b,ans}; }
+const firstTxt=p=>(p.op==='×'||p.op==='÷')?P(p.a):S(p.a);
+const probTxt=p=>`${firstTxt(p)} ${p.op} ${P(p.b)}`;
+
+/* ---------- the moves for one problem ---------- */
+function workMove(o){ o.kind='type'; o.calc=o.work; o.box='work'; o.enter=()=>{ V.work={txt:o.work,val:null}; }; return o; }
+function buildMoves(p){
+  if(p.op==='+') return addMoves(p.a,p.b);
+  if(p.op==='−'){
+    const opp=-p.b, ab=Math.abs(p.b);
+    return [{kind:'pick', hl:'sub', expect:opp, options:[{label:`${ab}`,value:ab},{label:`−${ab}`,value:-ab}],
+      say:`Subtracting is adding the opposite. What is the opposite of <b>${S(p.b)}</b>?`,
+      sub:`Same number, other sign.`,
+      nudge:`That is the same number. Flip its sign.`,
+      reveal:`The opposite of ${S(p.b)} is <b>${S(opp)}</b>.`,
+      after:async()=>{ V.oppVal=opp; V.arcNew=true; draw(); await wait(900);
+        return `<b>${S(p.a)} − ${P(p.b)}</b> is the same as <b>${S(p.a)} + ${P(opp)}</b>.`; }}]
+      .concat(addMoves(p.a,opp));
+  }
+  return mulMoves(p);
+}
+async function land(ans,note){ V.result=ans; V.justRes=true; await jump(); return note; }
+function addMoves(a,b){
+  const x=Math.abs(a), y=Math.abs(b), ans=a+b, mv=[];
+  if((a<0)===(b<0)){
+    const neg=a<0;
+    mv.push(workMove({hl:neg?'vals':'nums', expect:x+y, work:`${x} + ${y}`,
+      say:neg?`Both numbers are negative. Add the numbers: <b>${x} + ${y}</b>`:`Both numbers are positive. Add them: <b>${x} + ${y}</b>`,
+      sub:neg?`Just the numbers for now. You pick the sign next.`:'',
+      nudge:`Add the yellow numbers again.`, reveal:`${x} + ${y} = <b>${x+y}</b>.`,
+      after:async()=>{ V.work.val=x+y; return neg?'':land(ans,`Positive plus positive is positive.`); }}));
+    if(neg) mv.push({kind:'pick', hl:'signs', expect:-1, options:SIGNOPTS,
+      say:`Now the sign. Is the answer positive or negative?`,
+      sub:`Both numbers are negative. When the signs match, the answer keeps that sign.`,
+      nudge:`Look at the signs of the two numbers.`, reveal:`Both numbers are negative, so the answer is negative.`,
+      after:()=>land(ans,`Negative plus negative is negative.`)});
+    return mv;
+  }
+  const big=Math.max(x,y), small=Math.min(x,y), w=x>y?a:b;
+  mv.push(workMove({hl:'vals', expect:big-small, work:`${big} − ${small}`,
+    say:`The signs are different, so subtract: <b>${big} − ${small}</b>`,
+    sub:big===small?`Just the numbers, no signs.`:`Big number minus small number. You pick the sign next.`,
+    nudge:`Subtract the yellow numbers again.`, reveal:`${big} − ${small} = <b>${big-small}</b>.`,
+    after:async()=>{ V.work.val=big-small; return big===small?land(0,`They cancel out, so the answer is <b>0</b>.`):''; }}));
+  if(big!==small) mv.push({kind:'pick', hl:'nums', expect:w, options:[{label:S(a),value:a},{label:S(b),value:b}],
+    say:`Now the sign. Which number is farther from 0?`,
+    sub:`The answer gets that number’s sign.`,
+    nudge:`Forget the signs. Which number is bigger?`, reveal:`${S(w)} is farther from 0.`,
+    after:()=>land(ans,`<b>${S(w)}</b> is farther from 0, so the answer is ${w<0?'negative':'positive'}.`)});
+  return mv;
+}
+function mulMoves(p){
+  const {a,b,op}=p, x=Math.abs(a), y=Math.abs(b), val=op==='×'?x*y:x/y;
+  const anyNeg=a<0||b<0, same=(a<0)===(b<0), word=op==='×'?'Multiply':'Divide', mv=[];
+  mv.push(workMove({hl:anyNeg?'vals':'nums', expect:val, work:`${x} ${op} ${y}`,
+    say:`${word}: <b>${x} ${op} ${y}</b>`,
+    sub:anyNeg?`Just the numbers for now. You pick the sign next.`:'',
+    nudge:`${word} the yellow numbers again.`, reveal:`${x} ${op} ${y} = <b>${val}</b>.`,
+    after:async()=>{ V.work.val=val; if(anyNeg) return '';
+      V.result=p.ans; V.justRes=true; return `Both numbers are positive, so the answer is positive.`; }}));
+  if(anyNeg) mv.push({kind:'pick', hl:'signs', expect:Math.sign(p.ans), options:SIGNOPTS,
+    say:`Now the sign. Is the answer positive or negative?`,
+    sub:`Same signs: positive. Different signs: negative.`,
+    nudge:`Are the two signs the same or different?`,
+    reveal:same?`The signs are the same, so it is positive.`:`The signs are different, so it is negative.`,
+    after:async()=>{ V.result=p.ans; V.justRes=true;
+      return `${same?'Same':'Different'} signs, so the answer is ${same?'positive':'negative'}.`; }});
+  return mv;
+}
+function answerText(){ return `${probTxt(current)} = ${S(current.ans)}`; }
+function checkLine(){
+  const p=current;
+  if(p.op==='+') return `✓ <b>Check:</b> start at ${S(p.a)} and move ${Math.abs(p.b)} ${p.b<0?'left':'right'}. You land on <b>${S(p.ans)}</b>.`;
+  if(p.op==='−') return `✓ <b>Check:</b> add it back. ${S(p.ans)} + ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
+  if(p.op==='×') return `✓ <b>Check:</b> ${S(p.ans)} ÷ ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
+  return `✓ <b>Check:</b> ${S(p.ans)} × ${P(p.b)} = <b>${S(p.a)}</b>, the first number.`;
+}
+
+/* ---------- drawing ---------- */
+let V={};
+function resetVisual(){ V={open:null,hl:null,done:false,oppVal:null,work:null,result:null,landed:false,arcNew:false,justRes:false}; }
+// one number: minus sign and digits are separate so either can glow
+function numH(n,paren,mode){
+  const neg=n<0, d=Math.abs(n);
+  let sg=neg?`<span class="sg${mode==='signs'?' hs':mode==='vals'?' dim':''}">−</span>`:'';
+  let dg=`<span class="dg${mode==='vals'?' hl':''}">${d}</span>`;
+  const body=(paren&&neg)?`<span class="${mode==='vals'?'dim':''}">(</span>${sg}${dg}<span class="${mode==='vals'?'dim':''}">)</span>`:sg+dg;
+  return `<span class="n${mode==='nums'?' hl':''}">${body}</span>`;
+}
+function resH(){ const c='res'+(V.justRes?' pop':''); return ` <span class="op">=</span> <span class="${c}">${S(V.result)}</span>`; }
+function draw(){
+  const p=current, sub=p.op==='−', md=p.op==='×'||p.op==='÷';
+  const onRew=sub && V.oppVal!==null;                  // after the flip, we work on the second line
+  const o=V.open;
+  // line 1: the problem as given
+  let h=numH(p.a,md,onRew?null:(V.hl==='sub'?null:V.hl));
+  const secHL=onRew?null:(V.hl==='sub'?'nums':V.hl);
+  const opH=` <span class="op${!onRew&&V.hl==='sub'?' hs':''}">${p.op}</span> `;
+  h+=opH+numH(p.b,true,secHL);
+  if((V.result!==null && !sub) || (sub && V.done)) h+=resH();
+  $('prob').innerHTML=h;
+  $('prob').className='eline'+(onRew&&!V.done?' muted':'');
+  // line 2 (subtracting only): = a + (opposite)
+  const rew=$('rew');
+  if(sub){
+    rew.classList.remove('hide');
+    let r=`<span class="op">=</span> `+numH(p.a,false,onRew?V.hl:null)+` <span class="op">+</span> `;
+    r+=(V.oppVal===null)?'<span class="n hs">?</span>':numH(V.oppVal,true,onRew?V.hl:null);
+    if(V.result!==null) r+=resH();
+    rew.innerHTML=r; rew.className='eline rew'+(V.done?' muted':'');
+  } else rew.classList.add('hide');
+  // the small sum we are working on
+  const w=$('work');
+  if(V.work){
+    const t=V.work.txt.replace(/ ([+−×÷]) /,' <span class="op">$1</span> ');
+    w.innerHTML=`${t} <span class="op">=</span> `+(V.work.val===null?(o&&o.box==='work'?boxHTML(o):''):`<span class="mint">${V.work.val}</span>`);
+    w.className='work'+(V.work.val!==null?' fin':'');
+  } else w.innerHTML='';
+  // number line for + and −
+  if(md) $('nline').innerHTML='';
+  else {
+    const hop=p.op==='+'?p.b:V.oppVal;
+    $('nline').innerHTML=nlSVG(p.a,hop,V.landed);
+    if(V.arcNew){ V.arcNew=false; growArc(); }
+  }
+  ['prob','rew','work'].forEach(id=>fit($(id)));
+  V.justRes=false;
+}
+/* number line drawn from this problem's own numbers */
+function nlSVG(a,hop,landed){
+  const land=hop===null?a:a+hop;
+  const lo=Math.min(0,a,land)-1, hi=Math.max(0,a,land)+1;
+  const W=340, pad=16, Y=74, X=v=>pad+(v-lo)*(W-2*pad)/(hi-lo);
+  const MONO='ui-monospace,Menlo,monospace';
+  let g=`<line x1="${pad-8}" y1="${Y}" x2="${W-pad+8}" y2="${Y}" stroke="#9aa0cf" stroke-width="2"/>`
+       +`<path d="M${pad-12},${Y} l8,-5 v10z M${W-pad+12},${Y} l-8,-5 v10z" fill="#9aa0cf"/>`;
+  const x1=X(a), x2=X(land), close=Math.abs(x2-x1)<40;
+  const marks=[a].concat(hop===null?[]:[land]);
+  for(let v=lo;v<=hi;v++){ const big=v%5===0;
+    g+=`<line x1="${X(v)}" y1="${Y-(big?7:4)}" x2="${X(v)}" y2="${Y+(big?7:4)}" stroke="${v===0?'#f1f3ff':'#5b6190'}" stroke-width="${v===0?2.5:1.5}"/>`;
+    if((big||v===0) && marks.every(k=>Math.abs(X(k)-X(v))>=30))
+      g+=`<text x="${X(v)}" y="${Y+26}" text-anchor="middle" font-size="15" fill="${v===0?'#f1f3ff':'#9aa0cf'}" font-family="${MONO}">${S(v)}</text>`;
+  }
+  if(hop!==null){
+    const h=Math.min(46,16+Math.abs(x2-x1)*0.3), mx=(x1+x2)/2, dir=Math.sign(x2-x1)||1;
+    g+=`<path id="arc" d="M${x1},${Y-8} Q${mx},${Y-8-h*2} ${x2},${Y-8}" fill="none" stroke="#ffbb4d" stroke-width="3"/>`
+      +`<path id="arcHead" d="M${x2},${Y-7} l${-dir*10},-6 l${dir*2},10 z" fill="#ffbb4d"/>`
+      +`<text id="arcLab" x="${mx}" y="${Math.max(16,Y-8-h-10)}" text-anchor="middle" font-size="17" font-weight="700" fill="#ffbb4d" font-family="system-ui,sans-serif">${Math.abs(hop)} ${hop<0?'left':'right'}</text>`;
+    const ly=close?Y+48:Y+27;
+    if(landed) g+=`<circle cx="${x2}" cy="${Y}" r="7" fill="#39d99a"/>`
+      +`<text x="${x2}" y="${ly}" text-anchor="middle" font-size="19" font-weight="800" fill="#39d99a" font-family="${MONO}">${S(land)}</text>`;
+    else g+=`<text x="${x2}" y="${ly}" text-anchor="middle" font-size="19" font-weight="800" fill="#ffbb4d" font-family="system-ui,sans-serif">?</text>`;
+  }
+  g+=`<circle cx="${x1}" cy="${Y}" r="7" fill="#63a8ef"/>`
+    +`<text x="${x1}" y="${Y+27}" text-anchor="middle" font-size="19" font-weight="800" fill="#63a8ef" font-family="${MONO}">${S(a)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${close?132:112}" role="img" aria-label="number line">${g}</svg>`;
+}
+// the jump arrow draws itself (after the opposite is found)
+function growArc(){
+  const p=document.getElementById('arc'); if(!p||reduce) return;
+  const L=p.getTotalLength(), hd=$('arcHead'), lb=$('arcLab');
+  p.style.strokeDasharray=L; p.style.strokeDashoffset=L; hd.style.opacity=0; lb.style.opacity=0;
+  p.getBoundingClientRect();
+  p.style.transition='stroke-dashoffset .8s ease'; p.style.strokeDashoffset=0;
+  setTimeout(()=>{ hd.style.transition=lb.style.transition='opacity .25s'; hd.style.opacity=1; lb.style.opacity=1; },750);
+}
+// a dot hops along the arrow and lands
+async function jump(){
+  draw();
+  const p=document.getElementById('arc');
+  if(p && !reduce){
+    const svg=p.ownerSVGElement, L=p.getTotalLength();
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('r','8'); c.setAttribute('fill','#39d99a'); svg.appendChild(c);
+    await new Promise(res=>{ const t0=performance.now();
+      const step=t=>{ const k=Math.min(1,(t-t0)/900), e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2, pt=p.getPointAtLength(e*L);
+        c.setAttribute('cx',pt.x); c.setAttribute('cy',pt.y); if(k<1) requestAnimationFrame(step); else res(); };
+      requestAnimationFrame(step); });
+  }
+  V.landed=true; draw();
+}
+/* ---------- playing one problem: one move at a time ----------
+   A move is one of
+     • type — ONE glowing box in the picture, ONE short instruction
+     • pick — two buttons (e.g. positive / negative); tap the right one
+     • tap  — one button that plays a short animation
+   ------------------------------------------------------------- */
+let M=null;            // {mv, i, tries, busy, err}
+function boxHTML(m,cls){
+  return `<input class="ibx${cls?' '+cls:''}" id="box" inputmode="${BOX_MODE}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="${m.max||5}" aria-label="answer">`;
+}
+function renderProblem(){
+  M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  resetVisual();
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
+}
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
+  if(m.enter) m.enter();
+  draw();
+  $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
+  $('msg').innerHTML=m.say;
+  $('last').innerHTML=note?`✓ ${note}`:'';
+  $('sub').innerHTML=m.sub||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus({preventScroll:true}); }
+  else if(m.kind==='pick'){
+    go.classList.add('hide');
+    pk.innerHTML=m.options.map((o,i)=>`<button class="pick" data-i="${i}">${o.label}</button>`).join('');
+    pk.querySelectorAll('.pick').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus({preventScroll:true}); }
+}
+// shrink a one-line row of math until it fits the card (never a sideways scroll)
+function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
+  while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
+function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+async function doTap(){
+  if(M.busy) return; M.busy=true; $('go').disabled=true;
+  const note=await M.mv[M.i].run();
+  M.busy=false; nextMove(note);
+}
+function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
+function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
+function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const raw=box.value.trim();
+  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  const v=readNum(raw);
+  if(v!==m.expect){
+    M.tries++; M.err=true; shake(box);
+    const part=m.partial?m.partial(v):'';
+    if(M.tries>=2){ say2(`${m.reveal} Type <b>${NUM(m.expect)}</b> to keep going.`); box.placeholder=NUM(m.expect); }
+    else say2(part||('Not quite. '+(m.nudge||NUDGE)));
+    box.select(); return;
+  }
+  M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  V.typed=v;
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; nextMove(note);
+}
+async function choose(i){
+  if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
+  if(m.options[i].value!==m.expect){
+    M.tries++; M.err=true; shake(btns[i]);
+    const k=m.options.findIndex(o=>o.value===m.expect);
+    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
+    else say2('Not quite. '+m.nudge);
+    return;
+  }
+  M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
+  $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove(note);
+}
+function finish(note){
+  V.open=null; V.hl=null; V.done=true; draw();
+  const right=!M.err;
+  $('where').textContent='Done'; $('last').innerHTML='';
+  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
+  $('sub').innerHTML=note||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
+  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
+  concludeProblem(right, $('go'));
+}
+// a number (or text) floats from one element to another
+async function fly(fromEl,toEl,text,size){
+  if(!fromEl||!toEl||reduce) return;
+  const ra=fromEl.getBoundingClientRect(), rz=toEl.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text; s.style.fontSize=(size||28)+'px';
+  document.body.appendChild(s);
+  const w=s.offsetWidth, h=s.offsetHeight;
+  s.style.left=(ra.left+ra.width/2-w/2)+'px'; s.style.top=(ra.top+ra.height/2-h/2)+'px';
+  s.getBoundingClientRect();
+  s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
+  await wait(800); s.remove();
+}
+
+/* ---------- the set ---------- */
+function nextProblem(){ let L=level; if(level>1 && Math.random()<0.25) L=level-1; current=gen(L); renderProblem(); }
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus({preventScroll:true});
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+=`<span class="${c}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){
+  $('play').classList.add('hide');$('summary').classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?ENDNOTES[0]:correctCount>=7?ENDNOTES[1]:correctCount>=5?ENDNOTES[2]:ENDNOTES[3];
+}
+// Enter = Check (or the tap button / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); const go=$('go'); if(!go.disabled && !go.classList.contains('hide')) go.click();
+});
+// only digits (and a minus sign at the front where it is allowed) in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  let v=t.value.replace(/[−–—]/g,'-');
+  v=ALLOW_NEG ? v.replace(/[^0-9-]/g,'').replace(/(?!^)-/g,'') : v.replace(/[^0-9]/g,'');
+  t.value=v.slice(0,+t.maxLength||5); t.classList.remove('bad'); $('fb').textContent=''; });
+/* ---------- worked example on the start screen: −3 + 8, finished ---------- */
+$('exLine').innerHTML=nlSVG(-3,8,true);
+</script>
+<script src="../../../tracker-config.js"></script>
+<script src="../../../score-send.js"></script>
+<script src="fluency-progress.js" data-module="Integers"></script>
+</body>
+</html>

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Ratios</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:20px 18px 20px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  /* the ONE open box, sitting where the number goes */
+  .ibx{display:inline-block;vertical-align:middle;width:84px;height:52px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .ibx.sm{width:64px;height:44px;font-size:24px}
+  .ibx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .ibx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .6s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .hl{color:var(--amber);background:#ffbb4d1f;border-radius:8px}
+  .mint{color:var(--mint)}
+
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .done{font-size:15px;line-height:1.4;color:var(--mint);font-weight:700;margin-bottom:8px}
+  .say .done:empty{display:none}
+  .say .done b{color:var(--mint)}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub b{color:var(--amber);white-space:nowrap}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .picks{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .picks:empty{display:none}
+  .pick{font-family:var(--sans);font-size:19px;font-weight:800;padding:12px 18px;border-radius:13px;border:2px solid var(--line);
+    background:var(--panel);color:var(--ink);min-width:132px;cursor:pointer;transition:border-color .15s,background .15s}
+  .pick:hover{border-color:var(--sky)}
+  .pick.bad{border-color:var(--coral);animation:shake .35s}
+  .pick.show{border-color:var(--amber);box-shadow:0 0 0 5px #ffbb4d2b}
+  .pick.ok{border-color:var(--mint);background:#16342a;color:var(--mint)}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb b{color:var(--amber)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
+
+  /* ── start / summary ── */
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
+  .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  .hide{display:none!important}
+  .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+  /* ── the problem ── */
+  .ptext{text-align:center;font-size:24px;font-weight:700;line-height:1.35;margin:2px 0 4px}
+  .ptext .m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .ptext .op{color:var(--muted);margin:0 6px;font-family:var(--mono)}
+  .ptext .op.c{margin:0 4px}
+  .ptext .nw{white-space:nowrap}
+  .ptext .mint{color:var(--mint)}
+  .ptext .qm{color:var(--amber)}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-family:var(--mono);font-size:30px;line-height:1.1;margin:0 4px}
+  .frac>span{padding:0 6px}
+  .frac>span:first-child{border-bottom:3px solid var(--ink)}
+  .frac .sl{font-size:0;line-height:0}
+  @media (max-width:430px){.ptext{font-size:20px}.frac{font-size:26px}}
+  /* ratio table: one column per ratio, the same × or ÷ on both rows between them */
+  .rvis{display:flex;justify-content:center;margin:12px 0 4px}
+  .rt{display:inline-grid;gap:8px 4px;align-items:center;justify-items:center}
+  .rt .rlab{font-size:13px;color:var(--muted);font-weight:700;justify-self:end;padding-right:4px;white-space:nowrap}
+  .rt .cell{min-width:58px;height:50px;padding:0 8px;display:flex;align-items:center;justify-content:center;
+    font:700 24px var(--mono);font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:10px;background:var(--bg2);color:var(--ink);transition:background .25s,border-color .25s}
+  .rt .cell.q{color:#5b6190;border-style:dashed}
+  .rt .cell.hot{color:var(--amber);border-color:var(--amber);background:#ffbb4d1f}
+  .rt .cell.new{color:var(--mint);border-color:var(--mint);background:#16342a}
+  .rt .cell.open{border:none;background:none;padding:0}
+  .rt .arr{display:flex;align-items:center;gap:3px;padding:0 2px;color:var(--sky);font:800 18px var(--sans);white-space:nowrap}
+  .rt .arr i{font-style:normal;color:var(--muted);font-weight:400}
+  .rt .arr.unk{color:#5b6190}
+  .rt .arr.hot{color:var(--amber)}
+  .rt .arr .ibx{width:56px;margin:0 6px 0 2px}
+  /* tape diagram for sharing */
+  .tape{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+  .tape .tr{display:flex;align-items:center;gap:8px}
+  .tape .tl{width:62px;text-align:right;font-size:14px;color:var(--muted);font-weight:700;white-space:nowrap}
+  .tape .bars{display:flex}
+  .tape .u{width:46px;height:46px;border:2px solid var(--sky);margin-left:-2px;display:flex;align-items:center;justify-content:center;
+    font:700 20px var(--mono);color:var(--sky);background:#1b2550;transition:background .25s}
+  .tape .tr.second .u{border-color:var(--muted);color:var(--muted);background:var(--bg2)}
+  .tape .tr .u.hot{background:#ffbb4d1f;color:var(--amber)}
+  .tape .u .ibx{width:46px;height:46px;font-size:22px;border-radius:6px;position:relative;z-index:2}
+  .tape .tt{font:700 20px var(--mono);color:var(--muted);margin-left:4px;display:flex;align-items:center;gap:6px;min-width:88px}
+  .tape .tt .qm{color:var(--amber)}
+  .tape .sh{min-width:64px;display:inline-flex;justify-content:flex-end}
+  .tape .tt .mint{color:var(--mint)}
+  .tape .tot{font-size:16px;color:#cfd3f5;margin-left:70px;display:flex;align-items:center;gap:8px;min-height:46px}
+  .tape .tot b{color:var(--amber)} .tape .tot .mint{font:800 20px var(--mono)}
+  @media (max-width:430px){.rt .cell{min-width:48px;height:46px;font-size:21px;padding:0 6px}.rt .arr{font-size:16px}
+    .tape .u{width:38px;height:40px;font-size:17px}.tape .u .ibx{width:38px;height:40px;font-size:19px}.tape .tl{width:56px;font-size:13px}.tape .tot{margin-left:64px}}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-ratios.html">Skill check →</a></nav>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Ratios &amp; Proportions · Module 7</div>
+    <ul class="how">
+      <li>Whatever you do to one number, do to the <b>other</b>.</li>
+      <li>Only <b>one box</b> opens at a time. It glows.</li>
+      <li>Type your answer and press <b>Check</b> (or Enter).</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Here is one worked out: 2 : 3 = ? : 12</div>
+      <div class="rvis" id="exTable"></div>
+      <div class="excap">The bottom went from 3 to 12. That is <b>× 4</b>.<br>Do the same to the top: 2 × 4 = <b>8</b>. So 2 : 3 = <b>8 : 12</b>.</div>
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">RATIOS &amp; PROPORTIONS</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="ptext" id="prob" aria-live="polite"></div>
+      <div class="rvis" id="rvis"></div>
+      <div class="say">
+        <div class="done" id="done"></div>
+        <div class="where" id="where"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <div class="picks" id="picks"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
+        <div class="checkline" id="checkline"></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-ratios.html">Take the Skill check</a>
+  </section>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   RATIOS & PROPORTIONS — one box at a time
+   Every box sits in the ratio table (or tape diagram) where the
+   number goes. The × or ÷ is always done to BOTH rows.
+   ════════════════════════════════════════════════════════════════ */
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+const NUM=n=>String(n);
+const BOX_MODE='numeric';
+const ALLOW_NEG=false;
+const NUDGE='Look at the yellow numbers again.';
+const ENDNOTES=['Excellent! Same thing to both numbers, every time.','Strong set. A few more first-try answers and you level up.',
+  'Good work. Find the × or ÷ first. The rest follows.','Every problem showed you the steps. Go again. It gets easier.'];
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+
+/* ---------- problems (same levels as before) ---------- */
+function gen(L){
+  if(L===1){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
+    return {kind:'simp',bn,bd,k,N:bn*k,D:bd*k};}
+  if(L===2){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
+    return {kind:'equiv',bn,bd,k,ans:bn*k};}
+  if(L===3){const rate=rnd(10,60),time=rnd(2,9),total=rate*time;
+    return {kind:'unit',rate,time,total,ans:rate};}
+  if(L===4){const x=rnd(2,9); let b; do{b=rnd(2,9);}while(b===x); const m=rnd(2,4),c=x*m,d=b*m;
+    return {kind:'prop',x,b,m,c,d,ans:x};}
+  if(L===5){let bn,bd;do{bn=rnd(1,5);bd=rnd(1,5);}while(bn===bd);const u=rnd(2,6),total=(bn+bd)*u,first=bn*u;
+    return {kind:'split',bn,bd,u,total,first,ans:first};}
+  const unit=rnd(2,9),q=rnd(2,6),p=unit*q; let n; do{n=rnd(2,9);}while(n===q); const ans=unit*n;   // n ≠ q, or the question answers itself
+  return {kind:'cost',unit,q,p,n,ans};
+}
+const m=t=>`<span class="m">${t}</span>`, colon=`<span class="op c">:</span>`;
+function frac(t,b){ return `<span class="frac"><span>${t}</span><i class="sl">/</i><span>${b}</span></span>`; }
+// the problem line; the ? turns into the answer when you finish
+function probH(p,done){
+  const A=v=>done?`<span class="mint">${v}</span>`:`<span class="qm">?</span>`;
+  if(p.kind==='simp')  return `Simplify ${m(p.N)}${colon}${m(p.D)}`+(done?` <span class="op">=</span> <span class="mint m nw">${p.bn}${colon}${p.bd}</span>`:'');
+  if(p.kind==='equiv') return `${m(p.bn)}${colon}${m(p.bd)} <span class="op">=</span> ${m(A(p.ans))}${colon}${m(p.bd*p.k)}`;
+  if(p.kind==='unit')  return `${m(p.total)} miles in ${m(p.time)} hours <br><span class="op">=</span> ${m(A(p.rate))} miles per hour`;
+  if(p.kind==='prop')  return `${frac(p.c,p.d)} <span class="op">=</span> ${frac(A(p.x),p.b)}`;
+  if(p.kind==='split') return `Split ${m(p.total)} in the ratio <span class="nw">${m(p.bn)}${colon}${m(p.bd)}</span>. <br>The first part is ${m(A(p.first))}`;
+  return `${m(p.q)} items cost ${m('$'+p.p)}. <br>${m(p.n)} items cost ${m(done?`<span class="mint">$${p.ans}</span>`:'<span class="qm">$?</span>')}`;
+}
+const probTxt=p=>({simp:`Simplify ${p.N} : ${p.D}`, equiv:`${p.bn} : ${p.bd} = ? : ${p.bd*p.k}`, unit:`${p.total} miles in ${p.time} hours`,
+  prop:`${p.c}/${p.d} = ?/${p.b}`, split:`Split ${p.total} in ${p.bn} : ${p.bd}`, cost:`${p.q} items cost $${p.p}, ${p.n} items cost $?`})[p.kind];
+
+/* ---------- the moves for one problem ---------- */
+const cellBox=(c,r)=>({c,r}), arrBox=(a,r)=>({a,r:r||0});
+// type a number into a table cell; then it turns mint and the × / ÷ slides across
+function cellMove(o){ return Object.assign({kind:'type', after:async()=>{ const {c,r}=o.box;
+  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(450); return o.note||''; }}, o); }
+// type the × or ÷ number in the row you are looking at; it is copied to the other row
+function arrMove(o){ const r=o.row||0; return Object.assign({kind:'type', box:arrBox(0,r), after:async()=>{
+  V.arrows[0].k=o.expect; V.pendRow=1-r; V.hotArr=true; draw();
+  await fly($('a0r'+r), $('a0r'+(1-r)), arrTxt(0), 20); V.pendRow=null; V.hotArr=true; draw(); await wait(250); return o.note; }}, o); }
+function buildMoves(p){
+  if(p.kind==='simp') return [
+    arrMove({hl:['c0r0','c0r1'], expect:p.k, calc:`G(${p.N},${p.D})`,
+      say:`Find the biggest number that goes into both <b>${p.N}</b> and <b>${p.D}</b>.`,
+      sub:`This is the GCF (greatest common factor).`,
+      partial:v=>(v>1&&v<p.k&&p.N%v===0&&p.D%v===0)?`<b>${v}</b> goes into both, but there is a bigger one. Try again.`:'',
+      nudge:`It has to go into ${p.N} and ${p.D} with nothing left over.`,
+      reveal:`The GCF of ${p.N} and ${p.D} is <b>${p.k}</b>.`,
+      note:`The GCF is <b>${p.k}</b>. Now divide both numbers by it.`}),
+    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.bn, calc:`${p.N}/${p.k}`,
+      say:`Divide the top: <b>${p.N} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.N} ÷ ${p.k} = <b>${p.bn}</b>.`}),
+    cellMove({box:cellBox(1,1), from:0, hl:['c0r1','a0'], expect:p.bd, calc:`${p.D}/${p.k}`,
+      say:`Now the bottom: <b>${p.D} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.D} ÷ ${p.k} = <b>${p.bd}</b>.`})
+  ];
+  if(p.kind==='equiv'){ const B=p.bd*p.k; return [
+    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.k, calc:`${B}/${p.bd}`,
+      say:`Look at the bottom row. <b>${p.bd}</b> times what makes <b>${B}</b>?`,
+      nudge:`Count by ${p.bd}s until you reach ${B}.`, reveal:`${p.bd} × ${p.k} = ${B}, so it is <b>${p.k}</b>.`,
+      note:`The bottom was multiplied by <b>${p.k}</b>.`}),
+    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.ans, calc:`${p.bn}*${p.k}`,
+      say:`Do the same to the top: <b>${p.bn} × ${p.k}</b>`, nudge:`Multiply the yellow numbers again.`, reveal:`${p.bn} × ${p.k} = <b>${p.ans}</b>.`})
+  ]; }
+  if(p.kind==='unit') return [
+    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.rate, calc:`${p.total}/${p.time}`,
+      say:`Divide the miles by <b>${p.time}</b>: <b>${p.total} ÷ ${p.time}</b>`,
+      sub:`That gives the miles in <b>1</b> hour.`,
+      nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${p.time} = <b>${p.rate}</b>.`})
+  ];
+  if(p.kind==='prop') return [
+    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.m, calc:`${p.d}/${p.b}`,
+      say:`The bottom went from <b>${p.d}</b> to <b>${p.b}</b>. Divide: <b>${p.d} ÷ ${p.b}</b>`,
+      nudge:`Divide the yellow numbers again.`, reveal:`${p.d} ÷ ${p.b} = <b>${p.m}</b>.`,
+      note:`The bottom was divided by <b>${p.m}</b>.`}),
+    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.x, calc:`${p.c}/${p.m}`,
+      say:`Do the same to the top: <b>${p.c} ÷ ${p.m}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.c} ÷ ${p.m} = <b>${p.x}</b>.`})
+  ];
+  if(p.kind==='cost') return [
+    cellMove({box:cellBox(1,1), from:0, hl:['c0r1','a0'], expect:p.unit, calc:`${p.p}/${p.q}`,
+      say:`Find the cost of <b>1</b> item: <b>$${p.p} ÷ ${p.q}</b>`,
+      nudge:`Divide the yellow numbers again.`, reveal:`${p.p} ÷ ${p.q} = <b>${p.unit}</b>.`,
+      note:`One item costs <b>$${p.unit}</b>.`}),
+    cellMove({box:cellBox(2,1), from:1, hl:['c1r1','a1'], expect:p.ans, calc:`${p.unit}*${p.n}`,
+      say:`Now <b>${p.n}</b> items: <b>$${p.unit} × ${p.n}</b>`,
+      nudge:`Multiply the yellow numbers again.`, reveal:`${p.unit} × ${p.n} = <b>${p.ans}</b>.`})
+  ];
+  // split: tape diagram
+  const sh=p.bn+p.bd, mv=[
+    {kind:'type', box:'shares', hl:'all', expect:sh, calc:`${p.bn}+${p.bd}`,
+      say:`How many boxes in all? <b>${p.bn} + ${p.bd}</b>`,
+      nudge:`Count all the boxes.`, reveal:`${p.bn} + ${p.bd} = <b>${sh}</b>.`,
+      after:async()=>{ V.tape.shares=sh; draw(); return `<b>${sh}</b> boxes in all.`; }},
+    {kind:'type', box:'unit', hl:'all', expect:p.u, calc:`${p.total}/${sh}`,
+      say:`Share <b>${p.total}</b> equally: <b>${p.total} ÷ ${sh}</b>`,
+      sub:`The answer goes in each box.`,
+      nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${sh} = <b>${p.u}</b>.`,
+      after:async()=>{ for(let i=1;i<=sh;i++){ V.tape.filled=i; draw(); await wait(110); }
+        V.tape.u=p.u; draw();
+        if(p.bn===1){ V.tape.first=p.u; draw(); return `Each box is <b>${p.u}</b>. The first part is just 1 box, so it is <b>${p.u}</b>.`; }
+        return `Each box is <b>${p.u}</b>.`; }}];
+  if(p.bn>1) mv.push({kind:'type', box:'first', hl:'first', expect:p.first, calc:`${p.bn}*${p.u}`,
+      say:`The first part has <b>${p.bn}</b> boxes: <b>${p.bn} × ${p.u}</b>`,
+      nudge:`Multiply the yellow numbers again.`, reveal:`${p.bn} × ${p.u} = <b>${p.first}</b>.`,
+      after:async()=>{ V.tape.first=p.first; V.tape.pop=true; draw(); await wait(300); return ''; }});
+  return mv;
+}
+function answerText(){ const p=current;
+  return ({simp:`${p.N} : ${p.D} = ${p.bn} : ${p.bd}`, equiv:`${p.bn} : ${p.bd} = ${p.ans} : ${p.bd*p.k}`, unit:`${p.rate} miles per hour`,
+    prop:`${p.c}/${p.d} = ${p.x}/${p.b}`, split:`The first part is ${p.first}`, cost:`${p.n} items cost $${p.ans}`})[p.kind]; }
+function checkLine(){ const p=current, C='✓ <b>Check:</b> ';
+  if(p.kind==='simp')  return C+`${p.bn} × ${p.k} = ${p.N} and ${p.bd} × ${p.k} = ${p.D}. Same ratio, smaller numbers.`;
+  if(p.kind==='equiv') return C+`${p.bn} × ${p.k} = ${p.ans} and ${p.bd} × ${p.k} = ${p.bd*p.k}. Both numbers were multiplied by ${p.k}.`;
+  if(p.kind==='unit')  return C+`${p.rate} × ${p.time} = <b>${p.total}</b> miles.`;
+  if(p.kind==='prop')  return C+`${p.x} × ${p.m} = ${p.c} and ${p.b} × ${p.m} = ${p.d}. The fractions are equal.`;
+  if(p.kind==='split') return C+`${p.first} + ${p.bd*p.u} = <b>${p.total}</b>. The two parts make the total.`;
+  return C+`$${p.ans} ÷ ${p.n} = <b>$${p.unit}</b> each, the same price as before.`;
+}
+
+/* ---------- drawing ---------- */
+let V={};
+function resetVisual(){
+  const p=current; V={open:null,hl:null,done:false,newc:[],justKey:null,hotArr:false,labels:null,cols:null,arrows:null,tape:null};
+  if(p.kind==='simp'){ V.cols=[[p.N,p.D],[null,null]]; V.arrows=[{op:'÷',k:null}]; }
+  if(p.kind==='equiv'){ V.cols=[[p.bn,p.bd],[null,p.bd*p.k]]; V.arrows=[{op:'×',k:null}]; }
+  if(p.kind==='unit'){ V.labels=['miles','hours']; V.cols=[[p.total,p.time],[null,1]]; V.arrows=[{op:'÷',k:p.time}]; }
+  if(p.kind==='prop'){ V.labels=['top','bottom']; V.cols=[[p.c,p.d],[null,p.b]]; V.arrows=[{op:'÷',k:null}]; }
+  if(p.kind==='cost'){ V.labels=['items','cost $']; V.cols=[[p.q,p.p],[1,null],[p.n,null]]; V.arrows=[{op:'÷',k:p.q},{op:'×',k:p.n}]; }
+  if(p.kind==='split'){ V.tape={shares:null,u:null,first:null,filled:0}; }
+}
+const arrTxt=a=>`${V.arrows[a].op} ${V.arrows[a].k}`;
+function isHot(key){ return Array.isArray(V.hl)&&V.hl.includes(key); }
+function cellH(c,r){
+  const v=V.cols[c][r], key=`c${c}r${r}`, o=V.open;
+  if(o&&o.box&&o.box.c===c&&o.box.r===r) return `<span class="cell open" id="${key}">${boxHTML(o,'sm')}</span>`;
+  const cls=['cell']; if(v===null) cls.push('q'); if(isHot(key)) cls.push('hot'); if(V.newc.includes(key)) cls.push('new'); if(V.justKey===key) cls.push('pop');
+  return `<span class="${cls.join(' ')}" id="${key}">${v===null?'?':v}</span>`;
+}
+function arrH(a,r){
+  const A=V.arrows[a], o=V.open, here=o&&o.box&&o.box.a===a&&o.box.r===r, k=(a===0&&V.pendRow===r)?null:A.k;
+  const cls=['arr']; if(k===null && !here) cls.push('unk'); if(isHot('a'+a)||(V.hotArr&&a===0)) cls.push('hot');
+  const inner=here?`${A.op} ${boxHTML(o,'sm')}`:`${A.op} ${k===null?'?':k}`;
+  return `<span class="${cls.join(' ')}" id="a${a}r${r}">${inner} <i>→</i></span>`;
+}
+function tableH(){
+  const n=V.cols.length; let h=`<div class="rt" style="grid-template-columns:${V.labels?'auto ':''}repeat(${2*n-1},auto)">`;
+  for(let r=0;r<2;r++){
+    if(V.labels) h+=`<span class="rlab">${V.labels[r]}</span>`;
+    for(let c=0;c<n;c++){ h+=cellH(c,r); if(c<n-1) h+=arrH(c,r); }
+  }
+  return h+'</div>';
+}
+function tapeH(){
+  const p=current, T=V.tape, o=V.open, hot=V.hl;
+  const unit=(i,row)=>{ const filled=T.u!==null||(T.filled>i+(row?p.bn:0));
+    if(o&&o.box==='unit'&&row===0&&i===0) return `<span class="u">${boxHTML(o)}</span>`;
+    const hc=(hot==='all'||(hot==='first'&&row===0))?' hot':'';
+    return `<span class="u${hc}${T.u===null&&filled&&T.filled===i+(row?p.bn:0)+1?' pop':''}">${filled?p.u:''}</span>`; };
+  const bars=(k,row)=>Array.from({length:k},(_,i)=>unit(i,row)).join('');
+  let first='';
+  if(o&&o.box==='first') first=`<span class="tt">= ${boxHTML(o,'sm')}</span>`;
+  else if(T.first!==null) first=`<span class="tt">= <span class="mint${T.pop?' pop':''}">${T.first}</span></span>`;
+  else first=`<span class="tt">= <span class="qm">?</span></span>`;
+  const shares=(o&&o.box==='shares')?boxHTML(o,'sm'):(T.shares!==null?`<span class="mint">${T.shares}</span>`:'<b>?</b>');
+  T.pop=false;
+  return `<div class="tape"><div class="tr first"><span class="tl">first</span><span class="bars">${bars(p.bn,0)}</span>${first}</div>`
+    +`<div class="tr second"><span class="tl">second</span><span class="bars">${bars(p.bd,1)}</span></div>`
+    +`<div class="tot"><span class="sh">${shares}</span> boxes make <b>${p.total}</b></div></div>`;
+}
+function draw(){
+  $('prob').innerHTML=probH(current,V.done);
+  $('rvis').innerHTML=V.tape?tapeH():tableH();
+  // scale the table down if a phone screen is too narrow for it
+  const t=$('rvis').firstElementChild; if(t){ t.style.transform=''; const k=$('rvis').clientWidth/t.scrollWidth; if(k<1){ t.style.transform=`scale(${k})`; t.style.transformOrigin='center top'; } }
+  V.justKey=null; V.hotArr=false;
+}
+/* ---------- playing one problem: one move at a time ----------
+   A move is one of
+     • type — ONE glowing box in the picture, ONE short instruction
+     • pick — two buttons (e.g. positive / negative); tap the right one
+     • tap  — one button that plays a short animation
+   ------------------------------------------------------------- */
+let M=null;            // {mv, i, tries, busy, err}
+function boxHTML(m,cls){
+  return `<input class="ibx${cls?' '+cls:''}" id="box" inputmode="${BOX_MODE}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="${m.max||5}" aria-label="answer">`;
+}
+function renderProblem(){
+  M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  resetVisual();
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
+}
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
+  if(m.enter) m.enter();
+  draw();
+  $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
+  $('done').innerHTML=note?'✓ '+note:'';
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=m.sub||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus({preventScroll:true}); }
+  else if(m.kind==='pick'){
+    go.classList.add('hide');
+    pk.innerHTML=m.options.map((o,i)=>`<button class="pick" data-i="${i}">${o.label}</button>`).join('');
+    pk.querySelectorAll('.pick').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus({preventScroll:true}); }
+}
+// shrink a one-line row of math until it fits the card (never a sideways scroll)
+function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
+  while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
+function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+async function doTap(){
+  if(M.busy) return; M.busy=true; $('go').disabled=true;
+  const note=await M.mv[M.i].run();
+  M.busy=false; nextMove(note);
+}
+function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
+function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
+function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const raw=box.value.trim();
+  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  const v=readNum(raw);
+  if(v!==m.expect){
+    M.tries++; M.err=true; shake(box);
+    const part=m.partial?m.partial(v):'';
+    if(M.tries>=2){ say2(`${m.reveal} Type <b>${NUM(m.expect)}</b> to keep going.`); box.placeholder=NUM(m.expect); }
+    else say2(part||('Not quite. '+(m.nudge||NUDGE)));
+    box.select(); return;
+  }
+  M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  V.typed=v;
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; nextMove(note);
+}
+async function choose(i){
+  if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
+  if(m.options[i].value!==m.expect){
+    M.tries++; M.err=true; shake(btns[i]);
+    const k=m.options.findIndex(o=>o.value===m.expect);
+    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
+    else say2('Not quite. '+m.nudge);
+    return;
+  }
+  M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
+  $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove(note);
+}
+function finish(note){
+  V.open=null; V.hl=null; V.done=true; draw();
+  const right=!M.err;
+  $('where').textContent='Done';
+  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
+  $('done').innerHTML=note?'✓ '+note:''; $('sub').innerHTML='';
+  $('fb').textContent=''; $('fb').className='fb';
+  $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
+  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
+  concludeProblem(right, $('go'));
+}
+// a number (or text) floats from one element to another
+async function fly(fromEl,toEl,text,size){
+  if(!fromEl||!toEl||reduce) return;
+  const ra=fromEl.getBoundingClientRect(), rz=toEl.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text; s.style.fontSize=(size||28)+'px';
+  document.body.appendChild(s);
+  const w=s.offsetWidth, h=s.offsetHeight;
+  s.style.left=(ra.left+ra.width/2-w/2)+'px'; s.style.top=(ra.top+ra.height/2-h/2)+'px';
+  s.getBoundingClientRect();
+  s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
+  await wait(650); s.remove();
+}
+
+/* ---------- the set ---------- */
+function nextProblem(){ let L=level; if(level>1 && Math.random()<0.25) L=level-1; current=gen(L); renderProblem(); }
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus({preventScroll:true});
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+=`<span class="${c}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){
+  $('play').classList.add('hide');$('summary').classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?ENDNOTES[0]:correctCount>=7?ENDNOTES[1]:correctCount>=5?ENDNOTES[2]:ENDNOTES[3];
+}
+// Enter = Check (or the tap button / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); const go=$('go'); if(!go.disabled && !go.classList.contains('hide')) go.click();
+});
+// only digits (and a minus sign at the front where it is allowed) in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  let v=t.value.replace(/[−–—]/g,'-');
+  v=ALLOW_NEG ? v.replace(/[^0-9-]/g,'').replace(/(?!^)-/g,'') : v.replace(/[^0-9]/g,'');
+  t.value=v.slice(0,+t.maxLength||5); t.classList.remove('bad'); $('fb').textContent=''; });
+/* ---------- worked example on the start screen: 2 : 3 = 8 : 12, finished ---------- */
+(function(){ V={open:null,hl:null,newc:['c1r0'],justKey:null,labels:null,cols:[[2,3],[8,12]],arrows:[{op:'×',k:4}]}; $('exTable').innerHTML=tableH(); V={}; })();
+</script>
+<script src="../../../tracker-config.js"></script>
+<script src="../../../score-send.js"></script>
+<script src="fluency-progress.js" data-module="Ratios &amp; Proportions"></script>
+</body>
+</html>

@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Decimals</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:20px 16px 20px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  .exprline{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:center;
+    font-size:38px;font-weight:700;margin:2px 0 8px;line-height:1.15}
+  .exprline .op{color:var(--muted);margin:0 10px}
+  .exprline .lbl{font-family:var(--sans);font-size:22px;color:var(--muted);font-weight:600}
+  @media(max-width:430px){.exprline{font-size:30px}.exprline .lbl{font-size:18px}}
+
+  /* ── the written problem: digits in columns, a narrow gap between columns holds the point ── */
+  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;margin:4px 0 6px;line-height:1}
+  .algo .row{display:flex;justify-content:flex-end;align-items:center}
+  .algo .digs{display:flex;align-items:center;transition:transform .7s cubic-bezier(.4,.1,.2,1)}
+  .algo .cell{position:relative;width:46px;height:56px;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;border-radius:10px;transition:background .25s,opacity .6s}
+  .algo .gp{width:16px;height:56px;display:flex;align-items:flex-end;justify-content:center;font-size:42px;font-weight:700;padding-bottom:6px;transition:opacity .6s}
+  .algo .gp.dim{opacity:.25}
+  .algo .gp.hotpt{color:var(--amber)}
+  .algo .gp.fade{opacity:.12}
+  .algo .op{width:46px;height:56px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:36px;padding-left:2px}
+  .algo .small .cell{height:30px;font-size:22px;color:var(--amber);font-weight:800}
+  .algo .small .gp{height:30px}
+  .algo .cell.col{background:#ffbb4d1f}
+  .algo .cell.hot{color:var(--amber)}
+  .algo .cell.hotbg{background:#ffbb4d1f}
+  .algo .cell.done{color:var(--mint)}
+  .algo .cell.ph{color:var(--amber)}
+  .algo .cell.muted{color:var(--muted)}
+  .algo .cell.struck::after{content:"";position:absolute;left:10%;right:10%;top:50%;height:4px;background:var(--coral);border-radius:2px;transform:rotate(-20deg);animation:strike .35s ease}
+  .algo .cell.struck{color:var(--muted)}
+  @keyframes strike{from{transform:rotate(-20deg) scaleX(0)}to{transform:rotate(-20deg) scaleX(1)}}
+  .algo .cell.fade{opacity:.12}
+  .algo .vinc .digs{border-top:4px solid var(--ink);padding-top:2px}
+  .algo .vinc .op{justify-content:flex-end;color:var(--ink);font-size:32px;padding-right:2px}
+  .algo .rm{position:absolute;left:1px;top:3px;font-size:18px;color:var(--amber);font-weight:800}
+  .ruleline{align-self:stretch;height:4px;background:var(--ink);border-radius:2px;margin:6px 0 4px;opacity:.9}
+  .pline{font-family:var(--sans);font-size:18px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:10px;margin-top:8px}
+  @media (max-width:430px){.algo .cell{width:38px;font-size:34px}.algo .gp{width:13px;font-size:34px}.algo .op{width:38px;font-size:30px}}
+
+  /* line work (percents, fractions → decimals, ÷ by a decimal) */
+  .work{display:flex;flex-direction:column;align-items:center;gap:6px;margin:4px 0 6px}
+  .wl{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:600;color:var(--ink);min-height:50px}
+  .wl.small{font-size:22px;color:#cfd3f5;min-height:44px}
+  .wl.past{opacity:.6}
+  .wl .eq,.wl .opx{color:var(--muted)}
+  .nm{border-radius:8px;padding:0 2px}
+  .nm.hot,.slot.hot{color:var(--amber);background:#ffbb4d1f}
+  .slot{display:inline-flex;align-items:center;justify-content:center;min-width:1ch}
+  .slot.v{color:var(--mint)}
+  .slot.blank{min-width:1ch}
+  .pn{display:inline-flex}
+  .pn span{display:inline-block;transition:transform .6s cubic-bezier(.4,.1,.2,1),opacity .4s}
+  .pn .pt{color:var(--amber)}
+  .pn .add{color:var(--amber)}
+  .ol{text-decoration:overline;text-decoration-thickness:3px;text-decoration-color:var(--amber)}
+  @media(max-width:430px){.wl{font-size:25px}.wl.small{font-size:19px}}
+
+  /* the ONE open box */
+  .pbx{width:46px;height:46px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:28px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .pbx.w2{width:62px} .pbx.w3{width:80px} .pbx.w4{width:96px}
+  .algo .pbx{position:absolute;right:2px;top:4px;height:48px;width:42px;font-size:30px}
+  .algo .pbx.w2{width:86px}
+  .algo .pline .pbx{position:static;width:50px;height:44px}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .pbx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @media (max-width:430px){.algo .pbx{width:34px;font-size:26px}.algo .pbx.w2{width:72px}.pbx{height:42px;font-size:24px}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;font-size:30px;color:var(--amber);pointer-events:none;
+    transition:transform .75s cubic-bezier(.4,.1,.2,1);text-shadow:0 2px 10px #000}
+  .pop{animation:pop .35s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .where{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .pips{display:inline-flex;gap:4px;flex:none;flex-wrap:wrap;justify-content:flex-end;max-width:55%}
+  .pips i{width:8px;height:8px;border-radius:50%;background:#3a4078}
+  .pips i.on{background:var(--mint)} .pips i.now{background:var(--amber);box-shadow:0 0 0 3px #ffbb4d33}
+  /* what the LAST move did: small mint line, kept apart from the new instruction */
+  .did{font-size:15px;line-height:1.45;color:var(--mint);font-weight:600;margin:0 0 8px;padding:0 0 8px;border-bottom:1px dashed #33396b;animation:didin .45s ease}
+  .did:empty{display:none}
+  .did b{color:var(--mint);white-space:nowrap}
+  @keyframes didin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  /* stacked fractions */
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.82em;line-height:1.05;margin:0 4px}
+  .frac>span:first-child{border-bottom:3px solid currentColor;padding:0 4px 1px}
+  .frac>span:last-child{padding:1px 4px 0}
+  .ifr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.78em;line-height:1.05;margin:0 2px;font-weight:700}
+  .ifr>span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub b{color:var(--amber);white-space:nowrap}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
+
+  /* ── start / summary ── */
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
+  .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .algo .cell{width:38px;height:46px;font-size:32px}.example .algo .gp{width:13px;height:46px;font-size:32px}.example .algo .op{width:34px;height:46px;font-size:28px}
+  .example .algo .small .cell,.example .algo .small .gp{height:26px;font-size:18px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .hide{display:none!important}
+  .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-decimals.html">Skill check →</a></nav>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Decimals &amp; Percents · Module 5</div>
+    <ul class="how">
+      <li>To add or subtract, <b>line up the points</b>. Then work one column at a time, from the right.</li>
+      <li>To multiply, <b>ignore the point</b>. Put it back at the end.</li>
+      <li>Only <b>one box</b> opens at a time. It glows.</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Here is one worked out: 4.56 + 2.39</div>
+      <div id="exPaper"></div>
+      <div class="excap">The points line up in one column. The point drops straight down.<br>6 + 9 = 15: keep the 5, <b>carry the 1</b>. 5 + 3 + 1 = 9. 4 + 2 = 6. The answer is <b>6.95</b>.</div>
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">DECIMALS</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="exprline" id="prob"></div>
+      <div id="fwork" aria-live="polite"></div>
+      <div class="say">
+        <div class="where" id="where"></div>
+        <div class="did" id="did"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
+        <div class="checkline" id="checkline"></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-decimals.html">Take the Skill check</a>
+  </section>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   DECIMALS — one box at a time
+   Each problem is a list of small moves:
+     • type — one glowing box in the written work + one short instruction
+     • tap  — a button (Line up, Point down, Move points …) that plays an animation
+   + and − go column by column with carries and borrows; × multiplies digit by
+   digit, then counts decimal places; ÷ goes one answer digit at a time.
+   ════════════════════════════════════════════════════════════════ */
+const SET_LEN=10;
+let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+// no 0 as the last digit (7.20, 5.00, 3.0): it would only make a "+ 0" or "− 0" column
+const nz=(lo,hi)=>{ let n; do{ n=rnd(lo,hi); }while(n%10===0); return n; };
+const $=id=>document.getElementById(id);
+function sp(t){return `<span class="op">${t}</span>`;}
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let FAST=false;
+const wait=ms=>new Promise(r=>setTimeout(r,(reduce||FAST)?0:ms));
+const fmt=x=>String(+(+x).toFixed(6));          // 6.950 → "6.95", 4.00 → "4"
+const FRC=(n,d)=>`<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+const IFR=(n,d)=>`<span class="ifr"><span>${n}</span><span>${d}</span></span>`;
+// a number written the way the problem shows it (7.20 stays 7.20)
+const wrA=p=>p.a.toFixed(p.short==='a'?1:2), wrB=p=>p.b.toFixed(p.short==='b'?1:2);
+
+/* ---------- generators (same levels and number ranges as before) ---------- */
+// variants mixed in: placeholder zeros, decimal × decimal, dividing decimals, repeating decimals
+function genVariant(L){
+  if(L===1){ const shortA=Math.random()<0.5;
+    const a=shortA?nz(11,99)/10:nz(15,995)/100, b=shortA?nz(15,995)/100:nz(11,99)/10, ans=Math.round((a+b)*100)/100;
+    return {kind:'add',a,b,ans,short:shortA?'a':'b',display:`${a.toFixed(shortA?1:2)}${sp('+')}${b.toFixed(shortA?2:1)}`}; }
+  if(L===2){ let a,b,short;
+    if(Math.random()<0.5){ a=nz(200,999)/100; b=nz(2,Math.floor(a*10)-1)/10; short='b'; }
+    else { a=nz(20,99)/10; b=nz(15,Math.round(a*100)-1)/100; short='a'; }
+    const ans=Math.round((a-b)*100)/100;
+    return {kind:'sub',a,b,ans,short,display:`${a.toFixed(short==='a'?1:2)}${sp('−')}${b.toFixed(short==='b'?1:2)}`}; }
+  if(L===3){ const r=Math.random();
+    if(r<0.34){ const a=nz(11,99)/10, b=rnd(2,9)/10, ans=Math.round(a*b*100)/100;
+      return {kind:'mul',a,b,ans,pb:1,display:`${a.toFixed(1)}${sp('×')}${b.toFixed(1)}`}; }
+    if(r<0.67){ const d=rnd(2,9); let qi; do{ qi=rnd(11,99); }while(qi%10===0);   // 54.0 ÷ 6 = 9 has no decimal to find
+      const N=qi*d/10, q=qi/10;
+      return {kind:'divw',N,d,q,ans:q,display:`${N.toFixed(1)}${sp('÷')}${d}`}; }
+    const b=rnd(2,9)/10, q=rnd(2,12), a=Math.round(q*b*10)/10;
+    return {kind:'divd',a,b,q,ans:q,display:`${a.toFixed(1)}${sp('÷')}${b.toFixed(1)}`}; }
+  // L5: a fraction whose decimal repeats
+  const fr=pick([[1,3],[2,3],[1,6],[5,6],[1,9],[2,9],[4,9],[5,9],[7,9]]);
+  return {kind:'f2r',fn:fr[0],fd:fr[1],display:`${FRC(fr[0],fr[1])} <span class="lbl">as a decimal</span>`};
+}
+function gen(L){
+  if((L===1||L===2) && Math.random()<0.4) return genVariant(L);
+  if(L===3 && Math.random()<0.6) return genVariant(L);
+  if(L===5 && Math.random()<0.4) return genVariant(L);
+  if(L===1){const a=nz(15,995)/100,b=nz(15,995)/100; const ans=Math.round((a+b)*100)/100;
+    return {kind:'add',a,b,ans,display:`${a.toFixed(2)}${sp('+')}${b.toFixed(2)}`};}
+  if(L===2){const a=nz(200,999)/100,b=nz(15,Math.round(a*100)-1)/100; const ans=Math.round((a-b)*100)/100;
+    return {kind:'sub',a,b,ans,display:`${a.toFixed(2)}${sp('−')}${b.toFixed(2)}`};}
+  if(L===3){const a=nz(11,99)/10,b=rnd(2,9); const ans=Math.round(a*b*10)/10;
+    return {kind:'mul',a,b,ans,display:`${a.toFixed(1)}${sp('×')}${b}`};}
+  if(L===4){ if(Math.random()<0.5){const d=rnd(1,99)/100; return {kind:'d2p',d,ans:Math.round(d*100),display:`<span class="lbl">Write</span> ${d.toFixed(2)} <span class="lbl">as a percent</span>`};}
+    const p=rnd(1,99); return {kind:'p2d',p,ans:p/100,display:`<span class="lbl">Write</span> ${p}% <span class="lbl">as a decimal</span>`};}
+  if(L===5){const fr=pick([[1,2,0.5],[1,4,0.25],[3,4,0.75],[1,5,0.2],[2,5,0.4],[3,5,0.6],[1,10,0.1],[7,10,0.7],[1,8,0.125],[3,8,0.375]]);
+    return {kind:'f2d',fn:fr[0],fd:fr[1],ans:fr[2],display:`${FRC(fr[0],fr[1])} <span class="lbl">as a decimal</span>`};}
+  const p=pick([10,20,25,50,75,5,40,60]),base=pick([20,40,60,80,100,120,160,200]); const ans=Math.round(p*base)/100;
+  return {kind:'pof',p,base,ans,display:`${p}% <span class="lbl">of</span> ${base}`};
+}
+
+/* ════════ two kinds of written work ════════
+   COLUMN board B (+, −, ×, ÷ by a whole number): rows of digits; a gap between two columns holds the point.
+   LINE work (everything else): numbers written so far live in S, keyed by name.
+   O = the key of the ONE open box ("ans:3" on the board, or a name in S). */
+let B=null, S={}, O=null, HOT=[], JUST=new Set(), BOXW=1, BOXDEC=false, LINES=null;
+const K=k=>({k}), F=(f,h)=>({f,h});
+const BOX=()=>`<input class="pbx w${BOXW}" id="box" inputmode="${BOXDEC?'decimal':'numeric'}" autocomplete="off" maxlength="${BOXW+(BOXDEC?2:0)}" aria-label="answer box">`;
+function V(x){
+  if(x==null) return '';
+  if(typeof x!=='object') return `<span class="nm">${x}</span>`;
+  if('f' in x) return `<span class="nm"${x.h?` data-h="${x.h}"`:''}>${x.f}</span>`;
+  const k=x.k;
+  if(O===k) return `<span class="slot open" data-k="${k}">${BOX()}</span>`;
+  if(S[k]!=null) return `<span class="slot v${JUST.has(k)?' pop':''}" data-k="${k}">${S[k]}</span>`;
+  return `<span class="slot blank" data-k="${k}"></span>`;
+}
+const EQ='<span class="eq">=</span>';
+const WL=(h,cls)=>`<div class="wl${cls?' '+cls:''}">${h}</div>`;
+// a number whose point can hop: {d:'045', pt:1, add:0}  → "0.45"  (pt = digits before the point)
+function PN(n,h,showEndPt){ let s=`<span class="pn" data-pn="${h}">`;
+  for(let i=0;i<=n.d.length;i++){
+    if(i===n.pt && (i<n.d.length||showEndPt)) s+=`<span class="pt" data-p="${h}">.</span>`;
+    if(i<n.d.length) s+=`<span class="${i<(n.add||0)?'add':''}" data-i="${i}">${n.d[i]}</span>`;
+  }
+  return s+'</span>'; }
+// slide the point k places (k>0 right, k<0 left): the point moves, the digits it passes step aside
+async function hop(h,n,k){
+  const box=document.querySelector(`#fwork [data-pn="${h}"]`); if(!box||reduce||FAST) return;
+  const pt=box.querySelector('.pt'); if(!pt) return;
+  const ch=pt.getBoundingClientRect().width;
+  pt.style.transform=`translateX(${k*ch}px)`;
+  const lo=k>0?n.pt:n.pt+k, hi=k>0?n.pt+k:n.pt;
+  box.querySelectorAll('[data-i]').forEach(e=>{ const i=+e.dataset.i; if(i>=lo&&i<hi) e.style.transform=`translateX(${k>0?-ch:ch}px)`; });
+  await wait(750);
+}
+function cellsRow(name,lead,arr,cls){
+  let h=`<div class="row ${cls||''}" data-row="${name}"><span class="op">${lead}</span><span class="digs">`;
+  arr.forEach((d,i)=>{
+    const c=[], key=name+':'+i;
+    if(name!=='small'&&name!=='q'&&B.col===i&&!(B.kind==='mul'&&name==='bot')) c.push('col');
+    if((name==='top'||name==='bot')&&B.col===i&&B.kind!=='mul') c.push('hot');
+    if(B.hot.has(key)) c.push('hot','hotbg');
+    if(name==='top'&&B.struck[i]) c.push('struck');
+    if((name==='ans'||name==='q')&&d!=null) c.push('done');
+    if(B.fade.has(key)) c.push('fade');
+    if(B.ph===key) c.push('ph');
+    if(B.muted&&B.muted.has(key)) c.push('muted');
+    let inner=d==null?'':d;
+    if(name==='div'&&B.rem[i]!=null) inner=`<span class="rm">${B.rem[i]}</span>`+inner;
+    if(O===key) inner=`<input class="pbx${BOXW>1?' w2':''}" id="box" inputmode="numeric" autocomplete="off" maxlength="${BOXW}" aria-label="answer box">`;
+    h+=`<span class="cell ${c.join(' ')}" data-k="${key}">${inner}</span>`;
+    if(i<arr.length-1){ const isPt=B.pt[name]===i, pc=B.ptCls[name]||'';
+      h+=`<span class="gp${isPt&&pc?' '+pc:''}" data-g="${name}:${i}">${isPt?'.':''}</span>`; }
+  });
+  return h+'</span></div>';
+}
+function drawBoard(el){
+  let h='';
+  if(B.kind==='divw'){ h+=cellsRow('q','',B.q)+cellsRow('div',`${B.d})`,B.div,'vinc'); }
+  else { h+=cellsRow('small','',B.small,'small')+cellsRow('top','',B.top)+cellsRow('bot',B.op,B.bot)
+          +'<div class="ruleline"></div>'+cellsRow('ans','',B.ans); }
+  if(B.kind==='mul' && (O==='pl'||S.pl!=null)) h+=`<div class="pline">Decimal places: ${V(K('pl'))}</div>`;
+  el.innerHTML=`<div class="algo">${h}</div>`;
+  if(B.shift){ const row=el.querySelector(`[data-row="${B.shift}"] .digs`), c=el.querySelector('.cell'), g=el.querySelector('.gp');
+    if(row&&c&&g){ row.style.transition='none'; row.style.transform=`translateX(${c.offsetWidth+g.offsetWidth}px)`; } }
+}
+function draw(target){
+  const el=target||$('fwork');
+  if(B) drawBoard(el); else el.innerHTML=`<div class="work">${LINES(current).join('')}</div>`;
+  HOT.forEach(h=>el.querySelectorAll(`[data-h="${h}"],[data-k="${h}"]`).forEach(e=>e.classList.add('hot')));
+}
+const qk=k=>document.querySelector(`#fwork [data-k="${k}"]`);
+const qg=g=>document.querySelector(`#fwork [data-g="${g}"]`);
+// something floats from one spot to another
+async function flyEl(a,z,text,size){
+  if(!a||!z||reduce||FAST) return;
+  const ra=a.getBoundingClientRect(), rz=z.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text; if(size) s.style.fontSize=size+'px';
+  document.body.appendChild(s); const w=s.getBoundingClientRect();
+  s.style.left=(ra.left+ra.width/2-w.width/2)+'px'; s.style.top=(ra.top+ra.height/2-w.height/2)+'px';
+  s.getBoundingClientRect();
+  s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
+  await wait(800); s.remove();
+}
+async function flyK(a,b,text,size){ draw(); await flyEl(qk(a),qk(b),text,size); }
+
+/* ════════ moves: + and − ════════ */
+const PLACE=['hundredths','tenths','ones','tens'];
+function boardAS(p){
+  const ai=Math.round(p.a*100), bi=Math.round(p.b*100), res=p.kind==='add'?ai+bi:ai-bi;
+  const s3=n=>String(n).padStart(3,'0');
+  const W=Math.max(s3(ai).length,s3(bi).length,s3(res).length);
+  const pad=n=>s3(n).padStart(W,' ').split('').map(d=>d===' '?null:+d);
+  return {kind:p.kind,W,op:p.kind==='add'?'+':'−',top:pad(ai),bot:pad(bi),small:Array(W).fill(null),ans:Array(W).fill(null),
+    struck:Array(W).fill(false),pt:{top:W-3,bot:W-3,ans:null,small:null},ptCls:{},col:-1,fade:new Set(),hot:new Set(),shift:null,ph:null,
+    n:Math.max(s3(ai).length,s3(bi).length), res};
+}
+function movesAS(p){
+  const b=boardAS(p), W=b.W, mv=[], name=gi=>PLACE[W-1-gi];
+  const full={top:b.top.slice(),bot:b.bot.slice()};       // the digits with the placeholder 0 in place
+  if(p.short){ const row=p.short==='a'?'top':'bot', x=p.short==='a'?p.a:p.b;
+    b[row][W-1]=null; b.shift=row;
+    b.ptCls={top:'hotpt',bot:'hotpt'};
+    mv.push({kind:'tap',where:'Line up the points',button:'Line up',
+      say:`The points are not lined up yet.`,sub:`Press <b>Line up</b> to slide <b>${x.toFixed(1)}</b> over.`,
+      run:async()=>{ const el=document.querySelector(`#fwork [data-row="${row}"] .digs`);
+        if(el&&!reduce&&!FAST){ el.style.transition=''; el.getBoundingClientRect(); el.style.transform='translateX(0)'; await wait(800); }
+        B.shift=null; B.ptCls={}; draw(); return `Now the points are in one column. ${x.toFixed(1)} has an empty spot.`; }});
+    mv.push({key:`${row}:${W-1}`,col:W-1,w:1,expect:0,where:'Line up the points',
+      say:`Fill the empty spot with a <b>0</b>.`,sub:`<b>${x.toFixed(1)}</b> and <b>${x.toFixed(2)}</b> are the same amount.`,
+      hint:`Type a 0. It holds the place.`,wrong:`${x.toFixed(1)} = ${x.toFixed(2)}`,
+      after:async()=>{ B[row][W-1]=0; B.ph=`${row}:${W-1}`; return ''; }});
+  }
+  mv.push({kind:'tap',where:'Point down',button:'Point down',col:-1,
+    say:`The point in the answer goes straight down.`,sub:`Press <b>Point down</b>.`,
+    run:async()=>{ draw(); await flyEl(qg(`bot:${W-3}`),qg(`ans:${W-3}`),'.',42); B.pt.ans=W-3; draw();
+      return `The point is in the answer.`; }});
+  const first=`Work like whole numbers, from the right.`;
+  if(p.kind==='add'){ let carry=0;
+    for(let c=0;c<b.n;c++){
+      const gi=W-1-c, da=full.top[gi]||0, db=full.bot[gi], cin=carry, sum=da+(db||0)+cin, last=(c===b.n-1);
+      const terms=[da].concat(db===null?[]:[db]).filter(x=>x!==0).concat(cin?[cin]:[]), expr=terms.join(' + ');
+      const carryOut=last?0:Math.floor(sum/10);
+      // a column with only one number in it (the other is a 0) is just brought down: no "+ 0"
+      const say=terms.length>1?`Add the <b>${name(gi)}</b>: <b>${expr}</b>`
+        :terms.length===0?`Nothing to add in the <b>${name(gi)}</b>. Write a <b>0</b>.`
+        :cin&&terms[0]===cin?`Only the carried <b>${cin}</b> is in the <b>${name(gi)}</b>. Write it down.`
+        :`Nothing to add to the <b>${terms[0]}</b>. Bring it down.`;
+      mv.push({key:`ans:${gi}`,col:gi,w:terms.length>1?2:1,expect:sum,where:`${name(gi)} column`,
+        say,sub:cin&&terms.length>1?`The small <b>${cin}</b> is the carry.`:c===0?first:'',
+        wrong:terms.length>1?`${expr} = ${sum}`:`It is just ${sum}`,partial:sum>=10?String(sum%10):null,
+        hint:terms.length>1?'Not quite. Add the yellow numbers again, one at a time.':'Not quite. Copy the number down.',
+        after:async()=>{
+          if(sum>=10&&!last){ B.ans[gi]=sum%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut;
+            return `${sum} is too big for one box. Keep the <b>${sum%10}</b>. Carry the <b>${carryOut}</b>.`; }
+          if(sum>=10&&last){ B.ans[gi]=sum%10; B.ans[gi-1]=Math.floor(sum/10); return `Last column, so write all of <b>${sum}</b>.`; }
+          B.ans[gi]=sum; return ''; }});
+      carry=carryOut;
+    }
+  } else {
+    const now=full.top.map(d=>d==null?0:d), lent=Array(W).fill(false), n=b.n;
+    for(let c=0;c<n;c++){
+      const gi=W-1-c, hasBot=full.bot[gi]!==null, bot=hasBot?full.bot[gi]:0; let borrowedHere=false;
+      if(now[gi]<bot){ borrowedHere=true;
+        let j=gi-1; while(now[j]===0) j--;
+        const zeros=[]; lent[j]=true; for(let k=j+1;k<gi;k++){ zeros.push(k); lent[k]=true; }
+        const was=now[gi], lendWas=now[j];
+        now[j]-=1; zeros.forEach(k=>now[k]=9); now[gi]+=10;
+        const jNew=now[j], gNew=now[gi], again=lent[gi];
+        mv.push({kind:'tap',where:`${name(gi)} column`,col:gi,button:'Borrow',
+          say:again?`This digit lent 1 already, so it is <b>${was}</b> now. <b>${was}</b> is smaller than <b>${bot}</b>, so we <b>borrow</b> again.`
+                   :`<b>${was}</b> is smaller than <b>${bot}</b>. We need to <b>borrow</b>.`,
+          sub:`Press <b>Borrow</b> to watch it happen.`+(zeros.length?` The 0 next to it has nothing to lend, so we go to the <b>${lendWas}</b>.`:''),
+          run:async(show)=>{
+            B.struck[j]=true; B.small[j]=jNew; draw(); show(`The <b>${lendWas}</b> lends 1 and becomes <b>${jNew}</b>.`); await wait(1100);
+            for(const k of zeros){ B.struck[k]=true; B.small[k]=10; draw(); show(`The 0 gets 10…`); await wait(900);
+              B.small[k]=9; draw(); show(`…then it lends 1, so it is <b>9</b>.`); await wait(1000); }
+            await flyK(`top:${gi-1}`,`small:${gi}`,'+10',24);
+            B.struck[gi]=true; B.small[gi]=gNew; draw();
+            return `The <b>${was}</b> becomes <b>${gNew}</b>. Now we can subtract.`; }});
+      }
+      const t=now[gi], diff=t-bot, lentEarlier=lent[gi]&&!borrowedHere;
+      const leadZero=(c===n-1&&diff===0&&gi<W-3);       // a 0 in front of the ones place is not written
+      mv.push({key:`ans:${gi}`,col:gi,w:1,expect:diff,where:`${name(gi)} column`,
+        say:(hasBot&&bot!==0)?`Subtract the <b>${name(gi)}</b>: <b>${t} − ${bot}</b>`:`Nothing to take away. Bring down the <b>${t}</b>.`,
+        sub:lentEarlier?`This digit lent 1 already. Use the small <b>${t}</b> on top.`:(c===0&&!borrowedHere)?first:'',
+        hint:(hasBot&&bot!==0)?'Not quite. Tip: count up from the bottom number to the top number.':'Not quite. Copy the top number down.',
+        wrong:(hasBot&&bot!==0)?`${t} − ${bot} = ${diff}`:`It is just ${diff}`,
+        after:async()=>{ B.ans[gi]=diff;
+          if(leadZero){ draw(); await wait(500); B.fade.add(`ans:${gi}`); return `We don’t write a 0 at the front of a number, so it disappears.`; }
+          return ''; }});
+    }
+  }
+  return {B:b,mv};
+}
+
+/* ════════ moves: × ════════ */
+function movesMul(p){
+  const pb=p.pb||0, ai=Math.round(p.a*10), d=Math.round(p.b*10**pb), prod=ai*d, P=1+pb;
+  const W=Math.max(String(prod).length,P+1,String(ai).length,pb?2:1);
+  const pad=s=>s.padStart(W,' ').split('').map(c=>c===' '?null:+c);
+  const b={kind:'mul',W,op:'×',top:pad(String(ai)),bot:pad(pb?'0'+d:String(d)),small:Array(W).fill(null),ans:Array(W).fill(null),
+    struck:Array(W).fill(false),pt:{top:W-2,bot:pb?W-2:null,ans:null,small:null},ptCls:{top:'dim',bot:'dim'},col:-1,fade:new Set(),hot:new Set(),
+    ph:null,muted:new Set(pb?[`bot:${W-2}`]:[])};
+  const mv=[], aT=p.a.toFixed(1), bT=pb?p.b.toFixed(1):String(p.b); let carry=0;
+  const n=String(ai).length;
+  for(let c=0;c<n;c++){
+    const gi=W-1-c, da=b.top[gi], cin=carry, v=da*d+cin, last=c===n-1, carryOut=last?0:Math.floor(v/10);
+    const expr=`${da} × ${d}${cin?` + ${cin}`:''}`;
+    mv.push({key:`ans:${gi}`,col:gi,w:2,expect:v,where:'Multiply',hot:[`top:${gi}`,`bot:${W-1}`],
+      say:cin?`Multiply <b>${da} × ${d}</b>, then add the carried <b>${cin}</b>`:`Multiply: <b>${da} × ${d}</b>`,
+      sub:c===0?`Ignore the point${pb?'s':''} for now. Multiply like whole numbers.`:'',
+      wrong:`${expr} = ${v}`,partial:v>=10?String(v%10):null,hint:'Not quite. Multiply the yellow numbers again.',
+      after:async()=>{
+        if(v>=10&&!last){ B.ans[gi]=v%10; await flyK(`ans:${gi}`,`small:${gi-1}`,String(carryOut),24); B.small[gi-1]=carryOut;
+          return `${v} is too big for one box. Keep the <b>${v%10}</b>. Carry the <b>${carryOut}</b>.`; }
+        if(v>=10&&last){ B.ans[gi]=v%10; B.ans[gi-1]=Math.floor(v/10); return `Last digit, so write all of <b>${v}</b>.`; }
+        B.ans[gi]=v; return ''; }});
+    carry=carryOut;
+  }
+  const after=[`top:${W-1}`].concat(pb?[`bot:${W-1}`]:[]);
+  mv.push({key:'pl',expect:P,w:1,where:'Put the point back',hot:after,
+    say:pb?`Count the digits after the points in <b>${aT}</b> and <b>${bT}</b>.`:`Count the digits after the point in <b>${aT}</b>.`,
+    sub:`The answer gets that many digits after its point.`,
+    hint:'Not quite. Count only the yellow digits.',wrong:pb?`1 + 1 = 2`:`${aT} has 1 digit after the point`,
+    after:async()=>{ B.ptCls={top:'',bot:''}; B.hot=new Set(); draw();
+      await flyEl(qk(`ans:${W-1}`),qg(`ans:${W-1-P}`),'.',42); B.pt.ans=W-1-P; draw();
+      let note=`${P} place${P>1?'s':''}: the point goes <b>${P}</b> digit${P>1?'s':''} in from the right.`;
+      if(B.ans[W-1-P]==null){ await wait(400); B.ans[W-1-P]=0; B.ph=`ans:${W-1-P}`; note+=` Nothing is in the ones place, so write a <b>0</b> there.`; }
+      return note; }});
+  return {B:b,mv};
+}
+
+/* ════════ moves: ÷ by a whole number ════════ */
+function movesDivw(p){
+  const Ni=Math.round(p.N*10), D=String(Ni).split('').map(Number), W=D.length;
+  const b={kind:'divw',W,d:p.d,q:Array(W).fill(null),div:D.slice(),rem:Array(W).fill(null),pt:{q:null,div:W-2},ptCls:{},col:-1,fade:new Set(),hot:new Set(),ph:null};
+  const mv=[];
+  mv.push({kind:'tap',where:'Point up',button:'Point up',
+    say:`The point in the answer goes straight up.`,sub:`Press <b>Point up</b>.`,
+    run:async()=>{ draw(); await flyEl(qg(`div:${W-2}`),qg(`q:${W-2}`),'.',42); B.pt.q=W-2; draw();
+      return `The point is in the answer.`; }});
+  let rem=0, started=false, skip='', from=0;
+  for(let i=0;i<W;i++){
+    const cur=rem*10+D[i];
+    if(!started && cur<p.d && i<W-1){ skip=`${p.d} does not fit in ${D[i]}. Use <b>${cur*10+D[i+1]}</b>.`; rem=cur; continue; }
+    started=true;
+    const q=Math.floor(cur/p.d), r=cur-q*p.d, hot=[];
+    for(let k=from;k<=i;k++) hot.push(`div:${k}`);
+    const nextD=D[i+1], i0=i;
+    mv.push({key:`q:${i}`,w:1,expect:q,where:'Divide',hot,
+      say:`How many <b>${p.d}s</b> fit in <b>${cur}</b>?`,sub:skip||(!mv.some(x=>x.key&&x.key.startsWith('q:'))?'Divide like whole numbers, one digit at a time.':''),
+      hint:`Not quite. Count by ${p.d}s: ${p.d}, ${2*p.d}, ${3*p.d}, …`,
+      wrong:q>1?`${p.d} × ${q} = ${q*p.d}. That is the most that fits in ${cur}`:q===1?`${p.d} fits in ${cur} only once`:`${p.d} does not fit in ${cur}, so it is 0`,
+      after:async()=>{ B.q[i0]=q;
+        if(i0===W-1) return '';
+        if(r>0){ draw(); await flyEl(qk(`q:${i0}`),qk(`div:${i0+1}`),String(r),20); B.rem[i0+1]=r;
+          return (q===1?`One ${p.d} fits. ${cur} − ${p.d}`:`${p.d} × ${q} = ${q*p.d}. ${cur} − ${q*p.d}`)+` = <b>${r}</b> left over. It goes next to the <b>${nextD}</b>.`; }
+        return (q===1?`One ${p.d} fits`:`${p.d} × ${q} = ${q*p.d}`)+`. Nothing left over.`; }});
+    skip=''; rem=r; from=i+1;
+  }
+  return {B:b,mv};
+}
+
+/* ════════ LINE work ════════ */
+function divdLines(p){ const L=[];
+  const A=S.moved?{d:String(Math.round(p.a*10)),pt:9}:{d:p.a.toFixed(1).replace('.',''),pt:p.a.toFixed(1).indexOf('.')};
+  const Bn=S.moved?{d:String(Math.round(p.b*10)),pt:9}:{d:p.b.toFixed(1).replace('.',''),pt:1};
+  L.push(WL(`${PN(A,'na')}<span class="opx">÷</span>${PN(Bn,'nb')}`));
+  if(S.moved) L.push(WL(`${EQ}${V(K('q'))}`));
+  return L; }
+function longLines(p){ const t=p._t, L=[];
+  const digs=t.rows.map((r,i)=>S['a'+i]!=null?`<span class="slot v${JUST.has('a'+i)?' pop':''}" data-k="a${i}">${S['a'+i]}</span>`:`<span class="slot blank" data-k="a${i}"></span>`);
+  let ans;
+  if(S.bar){ ans=`0.${t.lead}<span class="ol">${t.rep}</span>`; }
+  else ans=`0.${digs.join('')}${p.kind==='f2r'&&S['r'+(t.rows.length-1)]!=null?'…':''}`;
+  L.push(WL(`${V(F(p.fn,'fn'))}<span class="opx">÷</span>${V(F(p.fd,'fd'))}${EQ}<span>${ans}</span>`));
+  t.rows.forEach((r,i)=>{ if(!(O==='q'+i||S['q'+i]!=null||('w'+i in S))) return;
+    const w=i===0?V(F(r.w,'w0')):(S['w'+i]!=null?`<span class="slot" data-k="w${i}">${S['w'+i]}</span>`:`<span class="slot blank" data-k="w${i}"></span>`);
+    const cur=(O==='q'+i||O==='r'+i);
+    L.push(WL(`${w}<span class="opx">÷</span>${p.fd}${EQ}${V(K('q'+i))}<span class="opx${(O==='r'+i||S['r'+i]!=null)?'':' ghost'}" style="${(O==='r'+i||S['r'+i]!=null)?'':'visibility:hidden'}">r</span>${V(K('r'+i))}`,'small'+(cur?'':' past')));
+  });
+  if(O==='rep'||S.rep!=null) L.push(WL(`repeats: ${V(K('rep'))}`,'small'));
+  return L; }
+function d2pLines(p){ const n=S.moved?{d:String(p.ans),pt:9}:{d:p.d.toFixed(2).replace('.',''),pt:1};
+  return [WL(`${PN(n,'nd')}${S.moved?'<span>%</span>':''}`), WL(`${p.d.toFixed(2)} × 100${EQ}${V(K('pc'))}<span>%</span>`,'small')]; }
+function p2dLines(p){ const z=String(p.p).length<2?2:1;
+  const n=S.moved?{d:fmt(p.ans).replace('.',''),pt:1}:(S.pad?{d:'0'.repeat(z)+String(p.p),pt:z+String(p.p).length,add:z}:{d:String(p.p),pt:String(p.p).length});
+  return [WL(`<span>${PN(n,'np',!S.moved)}${S.moved?'':'<span class="opx">%</span>'}</span>`), WL(`${p.p} ÷ 100${EQ}${V(K('dec'))}`,'small')]; }
+function pofLines(p){ const L=[WL(`${p.p}%${EQ}${V(K('dec'))}`, S.dec!=null?'small':'')];
+  if(S.dec!=null) L.push(WL(`${fmt(p.p/100)} × ${p.base}${EQ}${V(K('ans'))}`));
+  return L; }
+
+function longTrace(fn,fd){ const seen={}, rows=[]; let r=fn;
+  while(!(r in seen) && r!==0 && rows.length<4){ seen[r]=rows.length; const w=r*10, dig=Math.floor(w/fd), rem=w%fd; rows.push({w,dig,rem}); r=rem; }
+  const start=r===0?rows.length:seen[r];
+  return {rows,start,lead:rows.slice(0,start).map(x=>x.dig).join(''),rep:rows.slice(start).map(x=>x.dig).join(''),back:r}; }
+
+function movesLine(p){
+  const mv=[];
+  if(p.kind==='divd'){ const ai=Math.round(p.a*10), bi=Math.round(p.b*10), aT=p.a.toFixed(1), bT=p.b.toFixed(1);
+    LINES=divdLines;
+    mv.push({kind:'tap',where:'Make it a whole number',button:'Move points',hot:['na','nb'],
+      say:`Make <b>${bT}</b> a whole number. Move both points <b>1 place right</b>.`,
+      sub:`That is × 10 for both numbers. The answer stays the same.`,
+      run:async()=>{ draw(); await Promise.all([hop('na',{pt:aT.indexOf('.')},1),hop('nb',{pt:1},1)]); S.moved=1; JUST=new Set(); draw();
+        return `${aT} ÷ ${bT} is the same as <b>${ai} ÷ ${bi}</b>.`; }});
+    mv.push({key:'q',expect:p.q,w:String(p.q).length,where:'Divide',say:`Divide: <b>${ai} ÷ ${bi}</b>`,
+      hint:`Not quite. Think: ${bi} × ? = ${ai}.`,wrong:`${ai} ÷ ${bi} = ${p.q}`});
+  }
+  else if(p.kind==='f2r'||p.kind==='f2d'){ const t=longTrace(p.fn,p.fd); p._t=t; LINES=longLines;
+    if(p.kind==='f2r') p.ans=+(`0.${t.lead}${t.rep.repeat(6)}`);
+    t.rows.forEach((r,i)=>{ const last=i===t.rows.length-1;
+      mv.push({key:'q'+i,expect:r.dig,w:1,where:'Divide',hot:i===0?['w0']:['w'+i],
+        say:`How many <b>${p.fd}s</b> fit in <b>${r.w}</b>?`,
+        sub:i===0?`${p.fd} does not fit in ${p.fn}, so the answer starts <b>0.</b> Put a 0 on the ${p.fn} to make <b>${r.w}</b>.`:'',
+        hint:`Not quite. Count by ${p.fd}s: ${p.fd}, ${2*p.fd}, ${3*p.fd}, …`,
+        wrong:r.dig>1?`${p.fd} × ${r.dig} = ${p.fd*r.dig}. That is the most that fits in ${r.w}`:`${p.fd} fits in ${r.w} only once`,
+        fly:['q'+i,'a'+i]});
+      mv.push({key:'r'+i,expect:r.rem,w:1,where:'Left over',hot:['q'+i],
+        say:`What is left over? <b>${r.w} − ${p.fd*r.dig}</b>`,sub:(r.dig>1?`${p.fd} × ${r.dig} = ${p.fd*r.dig}. `:'')+(i===0?`(<b>r</b> means left over.)`:''),
+        hint:'Not quite. Subtract again.',wrong:`${r.w} − ${p.fd*r.dig} = ${r.rem}`,
+        after:async()=>{
+          if(r.rem===0) return `Nothing left over, so the decimal stops here.`;
+          if(last) return `<b>${r.rem}</b> again! We had it before, so the same digit will come back forever.`;
+          S['w'+(i+1)]=null; draw(); await flyEl(qk('r'+i),qk('w'+(i+1)),String(r.rem*10),22); S['w'+(i+1)]=r.rem*10;
+          return `${r.rem} left over. Put a 0 on it: <b>${r.rem*10}</b>.`; }});
+    });
+    if(p.kind==='f2r') mv.push({key:'rep',expect:+t.rep,w:1,where:'It repeats',
+      say:`Which digit keeps repeating?`,sub:`We draw a bar over it.`,hint:'Not quite. Look at the answer digits.',wrong:`The ${t.rep} repeats: 0.${t.lead}${t.rep}${t.rep}${t.rep}…`,
+      after:async()=>{ S.bar=1; return `0.${t.lead}${t.rep}${t.rep}${t.rep}… is written with a bar over the <b>${t.rep}</b>.`; }});
+  }
+  else if(p.kind==='d2p'){ LINES=d2pLines; const dT=p.d.toFixed(2);
+    mv.push({key:'pc',expect:p.ans,w:2,where:'Decimal → percent',hot:['nd'],
+      say:`Move the point <b>2 places right</b>: <b>${dT} × 100</b>`,sub:`Percent means "out of 100."`,
+      hint:`Not quite. ${dT} × 100: the point moves 2 places right.`,wrong:`${dT} × 100 = ${p.ans}`,
+      after:async()=>{ draw(); await hop('nd',{pt:1},2); S.moved=1; draw(); return ''; }});
+  }
+  else if(p.kind==='p2d'){ LINES=p2dLines; const len=String(p.p).length, z=len<2?2:1;
+    mv.push({key:'dec',expect:p.ans,w:3,dec:true,where:'Percent → decimal',hot:['np'],
+      say:`Move the point <b>2 places left</b>: <b>${p.p} ÷ 100</b>`,
+      sub:`The point in <b>${p.p}</b> is hiding at the end: <b>${p.p}.</b>`+(p.p<10?` Fill empty places with 0.`:''),
+      hint:`Not quite. Start at ${p.p}. and move the point 2 places left.`,wrong:`${p.p} ÷ 100 = ${fmt(p.ans)}`,
+      after:async()=>{ S.pad=1; draw(); await wait(350); await hop('np',{pt:z+len},-2); S.moved=1; draw(); return ''; }});
+  }
+  else if(p.kind==='pof'){ LINES=pofLines; const dec=p.p/100;
+    mv.push({key:'dec',expect:dec,w:3,dec:true,where:'Percent → decimal',
+      say:`First write <b>${p.p}%</b> as a decimal: <b>${p.p} ÷ 100</b>`,sub:`Move the point 2 places left.`,
+      hint:`Not quite. ${p.p} ÷ 100: the point moves 2 places left.`,wrong:`${p.p} ÷ 100 = ${fmt(dec)}`});
+    mv.push({key:'ans',expect:p.ans,w:3,dec:true,where:'Multiply',
+      say:`Now multiply: <b>${fmt(dec)} × ${p.base}</b>`,sub:`That is the same as <b>${p.p} × ${p.base} ÷ 100</b>.`,
+      hint:`Not quite. Try ${p.p} × ${p.base}, then ÷ 100.`,wrong:`${fmt(dec)} × ${p.base} = ${fmt(p.ans)}`});
+  }
+  return mv;
+}
+
+/* ---- the answer, and the exact "does it make sense?" line ---- */
+function answerText(p){ return p.kind==='d2p'?`${p.ans}%`:p.kind==='f2r'?`0.${p._t.lead}<span class="ol">${p._t.rep}</span>`:fmt(p.ans); }
+function exprText(p){
+  switch(p.kind){
+    case 'add': return `${wrA(p)} + ${wrB(p)} = ${fmt(p.ans)}`;
+    case 'sub': return `${wrA(p)} − ${wrB(p)} = ${fmt(p.ans)}`;
+    case 'mul': return `${p.a.toFixed(1)} × ${p.pb?p.b.toFixed(1):p.b} = ${fmt(p.ans)}`;
+    case 'divw': return `${p.N.toFixed(1)} ÷ ${p.d} = ${fmt(p.q)}`;
+    case 'divd': return `${p.a.toFixed(1)} ÷ ${p.b.toFixed(1)} = ${p.q}`;
+    case 'f2d': case 'f2r': return `${IFR(p.fn,p.fd)} = ${answerText(p)}`;
+    case 'd2p': return `${p.d.toFixed(2)} = ${p.ans}%`;
+    case 'p2d': return `${p.p}% = ${fmt(p.ans)}`;
+    default: return `${p.p}% of ${p.base} = ${fmt(p.ans)}`;
+  }
+}
+function checkLine(p){
+  const c='✓ <b>Check:</b> ';
+  switch(p.kind){
+    case 'add': return c+`take it back. ${fmt(p.ans)} − ${wrB(p)} = <b>${wrA(p)}</b>.`;
+    case 'sub': return c+`add back. ${fmt(p.ans)} + ${wrB(p)} = <b>${wrA(p)}</b>. It matches the top number.`;
+    case 'mul': return c+`${fmt(p.ans)} ÷ ${p.pb?p.b.toFixed(1):p.b} = <b>${p.a.toFixed(1)}</b>.`;
+    case 'divw': return c+`${fmt(p.q)} × ${p.d} = <b>${p.N.toFixed(1)}</b>.`;
+    case 'divd': return c+`${p.q} × ${p.b.toFixed(1)} = <b>${p.a.toFixed(1)}</b>.`;
+    case 'f2d': return c+`${fmt(p.ans)} × ${p.fd} = <b>${p.fn}</b>.`;
+    case 'f2r': return c+`the left over <b>${p._t.back}</b> keeps coming back, so the ${p._t.rep}s never stop.`;
+    case 'd2p': return c+`${p.ans}% means ${p.ans} out of 100, and ${p.ans} ÷ 100 = <b>${fmt(p.d)}</b>.`;
+    case 'p2d': return c+`${fmt(p.ans)} × 100 = <b>${p.p}</b>, so ${fmt(p.ans)} = ${p.p}%.`;
+    default: return c+`${fmt(p.ans)} ÷ ${p.base} = <b>${fmt(p.p/100)}</b>, which is ${p.p}%.`;
+  }
+}
+
+/* ════════ playing one problem ════════ */
+let M=null;            // {mv, i, tries, busy, err}
+function buildMoves(p){
+  B=null; S={}; LINES=null;
+  if(p.kind==='add'||p.kind==='sub'){ const r=movesAS(p); B=r.B; return r.mv; }
+  if(p.kind==='mul'){ const r=movesMul(p); B=r.B; return r.mv; }
+  if(p.kind==='divw'){ const r=movesDivw(p); B=r.B; return r.mv; }
+  return movesLine(p);
+}
+function renderProblem(){
+  const p=current; $('prob').innerHTML=p.display;
+  O=null; HOT=[]; JUST=new Set();
+  const mv=buildMoves(p);
+  M={mv, i:0, tries:0, busy:false, err:false}; G={steps:M.mv, si:0};
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
+}
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  O=m.kind==='tap'?null:m.key; HOT=m.hot||[]; BOXW=m.w||Math.min(3,String(m.expect).length); BOXDEC=!!m.dec;
+  if(B){ B.col=m.col!=null?m.col:-1; B.hot=new Set(); }
+  draw(); JUST=new Set();
+  $('where').innerHTML=whereHTML(m.where);
+  $('did').innerHTML=note?'✓ '+note:'';
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=m.sub||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus(); }
+}
+// step progress as small dots (a long problem doesn't shout "STEP 1 OF 12")
+function whereHTML(w){ let d=''; for(let i=0;i<M.mv.length;i++) d+=`<i class="${i<M.i?'on':i===M.i?'now':''}"></i>`;
+  return `<span>${w}</span><span class="pips" role="img" aria-label="step ${M.i+1} of ${M.mv.length}">${d}</span>`; }
+async function doTap(){
+  if(M.busy) return; M.busy=true; const m=M.mv[M.i];
+  $('go').disabled=true;
+  const note=await m.run(t=>{ $('sub').innerHTML=t; });
+  $('go').disabled=false; M.busy=false;
+  M.i++; G.si=M.i;
+  if(M.i>=M.mv.length) finish(note); else showMove(note);
+}
+async function runAfter(m){
+  if(!B || !String(m.key).includes(':')){ S[m.key]=m.expect; JUST=new Set([m.key]); }
+  O=null; HOT=[]; if(B) B.hot=new Set(); draw();
+  let note='';
+  if(m.fly){ await flyK(m.fly[0],m.fly[1],String(m.expect)); S[m.fly[1]]=m.expect; JUST=new Set([m.fly[1]]); draw(); }
+  if(m.after) note=await m.after();
+  draw(); return note||'';
+}
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const v=box.value.trim().replace(/^\./,'0.');
+  if(v===''||v==='.'){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
+  if(!(isFinite(+v) && Math.abs(+v-m.expect)<1e-9)){
+    M.tries++; M.err=true; current._hadError=true; answered=true;
+    box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
+    if(m.partial && v===m.partial) $('fb').innerHTML=`Close! Type the <b>whole</b> answer (both digits). We carry next.`;
+    else if(M.tries===1) $('fb').innerHTML=m.hint||'Not quite. Try again.';
+    else { $('fb').innerHTML=`${m.wrong}. Type <b>${fmt(m.expect)}</b> to keep going.`; box.placeholder=fmt(m.expect); }
+    $('fb').className='fb no'; box.select(); return;
+  }
+  M.busy=true; $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=await runAfter(m);
+  M.busy=false; M.i++; G.si=M.i;
+  if(M.i>=M.mv.length) finish(note); else showMove(note);
+}
+// zeros at the end, after the point, are dropped (4.50 → 4.5, 10.0 → 10)
+function tidyEnd(){
+  if(!B || B.kind==='divw') return '';
+  const W=B.W, pt=B.pt.ans; if(pt==null) return '';
+  const digs=B.ans.map(d=>d==null?'':d).join(''); let k=W-1, dropped=0;
+  while(k>pt && B.ans[k]===0){ B.fade.add(`ans:${k}`); k--; dropped++; }
+  if(!dropped) return '';
+  if(k===pt) B.ptCls.ans='fade';
+  const full=digs.slice(0,pt+1)+'.'+digs.slice(pt+1);
+  return `<b>${full}</b> is the same as <b>${fmt(full)}</b>. Zeros at the end, after the point, can go.`;
+}
+function finish(note){
+  O=null; HOT=[]; if(B){ B.col=-1; B.hot=new Set(); }
+  const t=tidyEnd(); draw();
+  const right=!M.err, p=current;
+  $('where').textContent='Done'; $('did').innerHTML='';
+  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${exprText(p)}</b>`;
+  $('sub').innerHTML=[note,t].filter(Boolean).join(' ');
+  $('fb').textContent=''; $('fb').className='fb';
+  $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
+  concludeProblem(right, $('go'));
+}
+
+/* ---------- the set ---------- */
+function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=gen(L);answered=false;renderProblem();}
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.disabled=false;
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus();
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){var h='';for(var i=0;i<SET_LEN;i++){var c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+='<span class="'+c+'"></span>';}$('dots').innerHTML=h;}
+function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');updateHUD();nextProblem();}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this visit: '+sessionBest+'/10';
+  $('s-note').textContent=correctCount>=9?'Excellent! The point lands in the right place every time.':correctCount>=7?'Strong set. A few more first-try answers and you level up.':correctCount>=5?'Good work. Line up the points, and count the decimal places.':'Every problem showed you the steps. Go again — it gets easier.';}
+// Enter = Check (or the tap button / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); if(!$('go').disabled) $('go').click();
+});
+// only digits (and a point where the answer needs one) in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  t.value=BOXDEC? t.value.replace(/[^0-9.]/g,'').replace(/(\..*)\./g,'$1') : t.value.replace(/[^0-9]/g,'');
+  t.value=t.value.slice(0,+t.maxLength||3); t.classList.remove('bad'); $('fb').textContent=''; $('fb').className='fb'; });
+
+/* ---------- worked example on the start screen: 4.56 + 2.39, finished ---------- */
+(async function(){ FAST=true; const ex={kind:'add',a:4.56,b:2.39,ans:6.95};
+  current=ex; const mv=buildMoves(ex);
+  for(const m of mv){ if(m.kind==='tap') await m.run(()=>{}); else await runAfter(m); }
+  B.col=-1; O=null; HOT=[]; draw($('exPaper'));
+  if(current===ex){ current=null; B=null; } FAST=false; })();
+</script>
+<script src="../../../tracker-config.js"></script>
+<script src="../../../score-send.js"></script>
+<script src="fluency-progress.js" data-module="Decimals &amp; Percents"></script>
+</body>
+</html>
