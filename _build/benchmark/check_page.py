@@ -14,6 +14,7 @@ def check(c, m):
 
 def fill_correct(p, variant=0):
     p.fill('#sname', 'Test Student')
+    p.click('.cls >> text=B5')
     for v in 'BE': p.click(f'#q1 .chip[data-v="{v}"]')
     for i, v in enumerate('IRIR'): p.check(f'input[name="r{i}"][value="{v}"]')
     p.fill('#q3a', '7'); p.fill('#q3b', '8'); p.fill('#q3c', '7.4')
@@ -53,6 +54,8 @@ with sync_playwright() as pw:
         # name required
         p.fill('#sname', '')
         p.click('#sbtn'); check('first AND last' in p.inner_text('#smsg'), f'{width}: name required')
+        p.fill('#sname', 'Test Student'); p.click('#sbtn')
+        check('class' in p.inner_text('#smsg'), f'{width}: class required')
 
         fill_correct(p, 0 if width == 1280 else 1)
         p.wait_for_timeout(100)
@@ -65,6 +68,7 @@ with sync_playwright() as pw:
         if captured:
             (HERE / f'payload_{width}.json').write_text(captured[0])
             d = json.loads(captured[0])
+            check(d.get('period') == 'B5', f"{width}: class sent ({d.get('period')})")
             check(d['kind'] == 'benchmark' and d['total'] == 15 and d['score'] == 15 and len(d['items']) == 15, f'{width}: payload shape')
         check(p.locator('#q5in').is_disabled(), f'{width}: inputs locked after submit')
         p.screenshot(path=str(SHOTS / f'done_{width}.png'), full_page=True)

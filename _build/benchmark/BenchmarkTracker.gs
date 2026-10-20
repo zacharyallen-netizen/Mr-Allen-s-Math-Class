@@ -49,15 +49,19 @@ var QA_TAB     = 'Question Analysis';
 var README_TAB = 'Read Me';
 var NAVY = '#1E2D4F', GOLD = '#FFC107';
 
-var SUBS_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Score', 'Out of', 'Percent', 'By standard', 'Session'];
-var RESP_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Question', 'Standard', 'Skill', 'Student answer', 'Correct'];
+var SUBS_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Score', 'Out of', 'Percent', 'By standard', 'Session', 'Class'];
+var RESP_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Question', 'Standard', 'Skill', 'Student answer', 'Correct', 'Class'];
+var GRADE_HEAD = ['Class', 'Student', 'Benchmark', 'Best %', 'Latest %', 'Attempts', 'Last submitted'];
+
+/** The classes students choose from on the website, in the order the Gradebook lists them. */
+var CLASSES = ['A1', 'A2', 'A4', 'B5', 'B6', '8A', '8B'];
 
 var STD_OK = /^NC\.8\.(NS\.[1-2]|EE\.[1-8]|F\.[1-5]|G\.[1-9]|SP\.[1-4])$/;
 
 // ───────────────────────── setup ─────────────────────────
 function setup() {
   var ss = book_();
-  tab_(ss, GRADE_TAB, ['Student', 'Benchmark', 'Best %', 'Latest %', 'Attempts', 'Last submitted']);
+  tab_(ss, GRADE_TAB, GRADE_HEAD);
   tab_(ss, SUBS_TAB, SUBS_HEAD);
   tab_(ss, RESP_TAB, RESP_HEAD);
   tab_(ss, QA_TAB, ['Benchmark', 'Question', 'Standard', 'Skill', 'Students', '% right', 'Most common wrong answer']);
@@ -77,6 +81,8 @@ function doPost(e) {
     var name = cleanName_(d.name);
     if (!name) return json_({ ok: false, error: 'no name' });
     var bench = clip_(d.benchmark, 80);
+    var cls = String(d.period || '').toUpperCase().replace(/\s+/g, '');
+    if (CLASSES.indexOf(cls) < 0) cls = '';
     if (!bench) return json_({ ok: false, error: 'no benchmark' });
     var items = (d.items || []).slice(0, 100).map(function (it, i) {
       var std = String(it.std || '');
@@ -107,9 +113,9 @@ function doPost(e) {
         var b = bySt[it.std] = bySt[it.std] || { r: 0, n: 0 }; b.r += it.ok; b.n++;
       });
       var byText = Object.keys(bySt).sort().map(function (s) { return s.replace('NC.8.', '') + ' ' + bySt[s].r + '/' + bySt[s].n; }).join(' · ');
-      subs.appendRow([now, name, bench, attempt, score, total, Math.round(100 * score / total) / 100, byText, session]);
+      subs.appendRow([now, name, bench, attempt, score, total, Math.round(100 * score / total) / 100, byText, session, cls]);
       subs.getRange(subs.getLastRow(), 7).setNumberFormat('0%');
-      var block = items.map(function (it) { return [now, name, bench, attempt, it.id, it.std, it.label, it.answer, it.ok]; });
+      var block = items.map(function (it) { return [now, name, bench, attempt, it.id, it.std, it.label, it.answer, it.ok, cls]; });
       resp.getRange(resp.getLastRow() + 1, 1, block.length, RESP_HEAD.length).setValues(block);
       rebuild_(ss);
       return json_({ ok: true, name: name, score: score, total: total, attempt: attempt });
@@ -143,9 +149,10 @@ function rebuild_(ss) {
   var G = {}, stdSet = {};
   subs.forEach(function (r) {
     var k = key(r[1], r[2]), pct = Number(r[6]) || 0, a = Number(r[3]) || 0;
-    var g = G[k] = G[k] || { student: r[1], bench: r[2], best: 0, latest: 0, latestA: 0, attempts: {}, when: r[0] };
+    var g = G[k] = G[k] || { student: r[1], bench: r[2], best: 0, latest: 0, latestA: 0, attempts: {}, when: r[0], cls: '' };
     g.best = Math.max(g.best, pct); g.attempts[a] = 1;
     if (a >= g.latestA) { g.latestA = a; g.latest = pct; g.when = r[0]; }
+    if (r[9]) g.cls = r[9];
   });
   var latestStd = {};
   resp.forEach(function (r) {
@@ -155,26 +162,28 @@ function rebuild_(ss) {
     var b = m[r[5]] = m[r[5]] || { r: 0, n: 0 }; b.r += Number(r[8]) || 0; b.n++;
   });
   var stds = Object.keys(stdSet).sort();
-  var head = ['Student', 'Benchmark', 'Best %', 'Latest %', 'Attempts', 'Last submitted'].concat(stds.map(function (s) { return s + ' %'; }));
+  var head = GRADE_HEAD.concat(stds.map(function (s) { return s + ' %'; }));
   var list = Object.keys(G).map(function (k) { return G[k]; }).sort(function (a, b) {
+    var ca = clsOrder_(a.cls), cb = clsOrder_(b.cls);
+    if (ca !== cb) return ca - cb;
     var la = lastName_(a.student), lb = lastName_(b.student);
     return la < lb ? -1 : la > lb ? 1 : (a.bench < b.bench ? -1 : a.bench > b.bench ? 1 : 0);
   });
   var out = list.map(function (g) {
     var m = latestStd[key(g.student, g.bench)] || {};
-    return [g.student, g.bench, g.best, g.latest, Object.keys(g.attempts).length, g.when]
+    return [g.cls, g.student, g.bench, g.best, g.latest, Object.keys(g.attempts).length, g.when]
       .concat(stds.map(function (s) { return m[s] ? Math.round(100 * m[s].r / m[s].n) / 100 : ''; }));
   });
   var gb = ss.getSheetByName(GRADE_TAB) || ss.insertSheet(GRADE_TAB);
   gb.clear();
   write_(gb, head, out);
   if (out.length) {
-    gb.getRange(2, 3, out.length, 2).setNumberFormat('0%');
-    if (stds.length) gb.getRange(2, 7, out.length, stds.length).setNumberFormat('0%');
-    gb.getRange(2, 6, out.length, 1).setNumberFormat('m/d/yyyy h:mm');
+    gb.getRange(2, 4, out.length, 2).setNumberFormat('0%');
+    if (stds.length) gb.getRange(2, 8, out.length, stds.length).setNumberFormat('0%');
+    gb.getRange(2, 7, out.length, 1).setNumberFormat('m/d/yyyy h:mm');
     var colors = out.map(function (r) {
       return r.map(function (v, j) {
-        if (j !== 3 && j < 6) return null;
+        if (j !== 4 && j < 7) return null;
         if (v === '') return null;
         return v >= 0.8 ? '#DCF2E3' : v >= 0.6 ? '#FFF4CC' : '#FADBD8';
       });
@@ -217,7 +226,7 @@ function writeReadMe_(ss) {
     ["Mr. Allen's Benchmark Tracker"],
     ['Results from the interactive benchmark reviews on the class website. Only benchmarks come here.'],
     [''],
-    ['Gradebook — one row per student per benchmark. Best % and Latest % are out of 100. The NC standard columns show the % right on that standard in the latest attempt. Green = 80% or more, yellow = 60–79%, red = below 60%.'],
+    ['Gradebook — one row per student per benchmark, grouped by class (A1, A2, A4, B5, B6, 8A, 8B). Best % and Latest % are out of 100. The NC standard columns show the % right on that standard in the latest attempt. Green = 80% or more, yellow = 60–79%, red = below 60%.'],
     ['Submissions — one row every time a student taps Submit. Attempt 1 is the first try. Each new try counts as a new attempt.'],
     ['Responses — every question a student answered: what they typed or chose, and whether it was right (1) or not (0).'],
     ['Question Analysis — first attempts only. % right on each question and the most common wrong answer, so you can see what to reteach.'],
@@ -248,6 +257,9 @@ function tab_(ss, name, head) {
     sh = ss.insertSheet(name);
     sh.getRange(1, 1, 1, head.length).setValues([head]);
     style_(sh, head.length);
+  } else if (sh.getRange(1, head.length).getValue() !== head[head.length - 1]) {
+    sh.getRange(1, 1, 1, head.length).setValues([head]);        // add new columns (e.g. Class) to an older Sheet
+    style_(sh, head.length);
   }
   return sh;
 }
@@ -266,7 +278,7 @@ function style_(sh, n) {
 function rows_(sh) {
   var last = sh.getLastRow();
   if (last < 2) return [];
-  return sh.getRange(2, 1, last - 1, 9).getValues();
+  return sh.getRange(2, 1, last - 1, 10).getValues();
 }
 
 function cleanName_(s) {
@@ -274,6 +286,8 @@ function cleanName_(s) {
   if (s.length < 3 || s.indexOf(' ') < 0) return '';
   return s.split(' ').map(function (w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }).join(' ');
 }
+
+function clsOrder_(c) { var i = CLASSES.indexOf(c); return i < 0 ? 99 : i; }
 
 function lastName_(s) { var p = String(s).split(' '); return (p[p.length - 1] + ' ' + s).toLowerCase(); }
 
