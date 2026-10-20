@@ -16,6 +16,8 @@
  *    Read Me            what every tab means
  *
  *  SET IT UP — about five minutes, one time
+ *  (Easiest way: make a blank Google Sheet, then Extensions → Apps Script,
+ *   and paste this there. Steps 3–5 below are the same.)
  *   1. Go to script.google.com and click  New project.
  *   2. Delete what is in the editor. Paste this whole file. Click the
  *      disk icon to Save. Name the project "Benchmark Tracker".
@@ -233,7 +235,10 @@ function writeReadMe_(ss) {
 function book_() {
   var props = PropertiesService.getScriptProperties(), id = props.getProperty('SHEET_ID'), ss = null;
   if (id) { try { ss = SpreadsheetApp.openById(id); } catch (e) { ss = null; } }
-  if (!ss) { ss = SpreadsheetApp.create(SHEET_NAME); props.setProperty('SHEET_ID', ss.getId()); }
+  // Pasted into a Sheet (Extensions → Apps Script)? Use that Sheet.
+  if (!ss && SpreadsheetApp.getActiveSpreadsheet) { try { ss = SpreadsheetApp.getActiveSpreadsheet(); } catch (e) { ss = null; } }
+  if (!ss) ss = SpreadsheetApp.create(SHEET_NAME);
+  if (ss.getId() !== id) props.setProperty('SHEET_ID', ss.getId());
   return ss;
 }
 
