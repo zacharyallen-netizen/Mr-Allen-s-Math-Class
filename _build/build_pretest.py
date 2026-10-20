@@ -22,7 +22,7 @@ function cleanNum(raw){
   s=s.replace(/−/g,'-');
   s=s.replace(/,/g,'').replace(/\$/g,'').replace(/≈|=/g,'');
   s=s.replace(/\b(square|cubic)\b/g,'');
-  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|m|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|times|hours?|hr|miles?|mi|g)\b/g,'');
+  s=s.replace(/(units?|centimeters?|millimeters?|meters?|kilometers?|feet|foot|inches|inch|cm|mm|km|kg|ft|in|m|sec(onds?)?|degrees?|points?|people|persons?|videos?|files?|songs?|movies?|photos?|bytes?|grams?|grains?|times|hours?|hr|miles?|mi|g)\b/g,'');
   s=s.replace(/°/g,'');
   s=s.replace(/\s+/g,'');
   return s;
