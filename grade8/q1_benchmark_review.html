@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q1 Benchmark Review — Mr. Allen's Math Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E2D4F; --ink:#1B2333; --muted:#5B6475; --faint:#687082;
+  --gold:#FFC107; --gold-line:#E0A800; --gold-text:#8A6100; --gold-soft:#FFF6D6;
+  --bg:#F7F7F4; --card:#FFFFFF; --line:#E3E5EA; --line-2:#D5D9E0;
+  --ok:#15803D; --ok-bg:#E8F5EC; --no:#B42318; --no-bg:#FBEAE8; --info:#1D4ED8;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--gold-line);outline-offset:3px}
+.wrap{max-width:840px;margin:0 auto;padding:32px 16px 96px}
+.back-link{display:inline-flex;gap:6px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;margin:0 0 20px}
+.back-link:hover{color:var(--navy)}
+.eyebrow{color:var(--gold-text);font:600 12.5px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+h1{font:600 clamp(30px,5vw,42px)/1.12 var(--serif);color:var(--navy);margin:0 0 12px;letter-spacing:-.01em}
+.lede{color:var(--muted);font-size:17px;margin:0;max-width:62ch}
+.stds{font:500 12.5px/1.4 var(--mono);color:var(--faint);margin:10px 0 0}
+.hdr{border-bottom:1px solid var(--line);padding:0 0 24px;margin:0 0 24px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.links a{font:600 14px/1 var(--sans);color:var(--navy);text-decoration:none;border:1px solid var(--line-2);background:#fff;border-radius:8px;padding:12px 14px;min-height:44px;display:inline-flex;align-items:center}
+.links a:hover{border-color:var(--navy)}
+
+.namebox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 8px}
+.namebox label{display:block;font:600 15px/1.3 var(--sans);color:var(--navy);margin-bottom:8px}
+.namebox input{width:100%;max-width:420px;font:16px var(--sans);padding:11px 13px;border:1px solid var(--line-2);border-radius:8px;min-height:44px}
+.namebox .help{color:var(--muted);font-size:14px;margin:8px 0 0}
+
+.part{margin:36px 0 0}
+.part-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+.part-h .tag{font:600 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);border-radius:5px;padding:5px 8px}
+.part-h h2{font:600 24px/1.2 var(--serif);color:var(--navy);margin:0}
+.part-h .std{margin-left:auto;font:500 12.5px var(--mono);color:var(--faint)}
+.tip{background:var(--gold-soft);border-left:4px solid var(--gold);border-radius:6px;padding:10px 14px;font-size:15px;margin:0 0 14px}
+.tip b.lbl{font-size:12px;letter-spacing:.1em;color:var(--navy);margin-right:4px}
+.calc{font-size:13.5px;color:var(--muted);margin:-6px 0 14px}
+
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;margin:0 0 14px}
+.q-top{display:flex;gap:12px;align-items:flex-start}
+.qn{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font:700 14px/30px var(--sans);text-align:center}
+.q-text{flex:1;min-width:0;padding-top:2px}
+.q-type{font:600 11px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.q-text p{margin:0}
+.q-body{margin:14px 0 0 42px}
+.expr{font:600 22px/1.5 var(--serif);color:var(--navy)}
+.m{font-family:var(--serif);font-weight:600;color:var(--navy);white-space:nowrap}
+sup{font-size:.68em;line-height:0;position:relative;vertical-align:baseline;top:-.55em}
+.rad{border-top:2px solid currentColor;padding:1px 2px 0;margin-left:1px}
+.rep{border-top:2px solid currentColor;padding-top:1px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.25}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px 1px}
+.fr>span:last-child{padding:1px 4px 0}
+
+/* choices */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:600 19px/1.2 var(--serif);color:var(--navy);background:#fff;border:1.5px solid var(--line-2);border-radius:10px;min-height:52px;min-width:88px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;touch-action:manipulation}
+.chip .L{font:700 13px/1 var(--sans);color:var(--muted);border:1.5px solid var(--line-2);border-radius:50%;width:26px;height:26px;display:inline-grid;place-items:center;flex:none}
+.chip[aria-pressed="true"]{border-color:var(--navy);background:#EEF1F7;box-shadow:inset 0 0 0 1px var(--navy)}
+.chip[aria-pressed="true"] .L{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip:disabled{cursor:default}
+.cv{white-space:nowrap}
+.chips.col{flex-direction:column;align-items:stretch}
+.chips.col .chip{justify-content:flex-start}
+
+/* rational/irrational table */
+table.ri{border-collapse:separate;border-spacing:0;width:100%;max-width:520px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+table.ri th{background:var(--navy);color:#fff;font:600 13px var(--sans);padding:9px 10px;text-align:center}
+table.ri th:first-child{text-align:left}
+table.ri td{border-top:1px solid var(--line);padding:6px 10px;text-align:center}
+table.ri td:first-child{text-align:left;font:600 20px/1.4 var(--serif);color:var(--navy);white-space:nowrap}
+table.ri tr:nth-child(even) td{background:#FAFAF8}
+.ri label{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer}
+.ri input{width:22px;height:22px;accent-color:var(--navy);cursor:pointer}
+
+/* inputs */
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
+.row .lab{font-size:15px;color:var(--muted)}
+input.box{font:600 18px/1 var(--mono);color:var(--ink);border:1px solid var(--line-2);border-radius:8px;padding:9px 10px;min-height:44px;background:#fff;width:84px;text-align:center}
+input.box.wide{width:min(260px,100%);text-align:left}
+input.box.exp{width:64px;font-size:15px;min-height:40px;position:relative;top:-14px}
+input.box:disabled{background:#F4F5F7;color:var(--ink)}
+.sn{display:inline-flex;align-items:center;gap:6px;font:600 20px var(--serif);color:var(--navy);padding-top:14px}
+.preview{font:600 20px/1.4 var(--serif);color:var(--navy);min-height:30px;margin:6px 0 0}
+.preview .hint{font:400 14px var(--sans);color:var(--muted)}
+.typehelp{font-size:14px;color:var(--muted);margin:8px 0 0}
+code{font:500 14px var(--mono);background:#F1F2F5;border-radius:4px;padding:1px 5px}
+
+/* ordering */
+.pool{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.slots{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.slot{min-width:84px;min-height:52px;border:1.5px dashed var(--line-2);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font:600 19px var(--serif);color:var(--navy);background:#fff;padding:6px 12px;cursor:pointer}
+.slot.filled{border-style:solid;border-color:var(--navy);background:#EEF1F7}
+.slot .n{font:600 12px var(--sans);color:var(--faint)}
+.lg{font:600 13px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.used{opacity:.35}
+
+/* results */
+.res{margin:14px 0 0 42px;border-radius:8px;padding:10px 14px;font-size:15px;display:none}
+.res.show{display:block}
+.res.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.res.no{background:var(--no-bg);border-left:4px solid var(--no)}
+.res .head{font-weight:700;margin-bottom:2px}
+.res.ok .head{color:var(--ok)} .res.no .head{color:var(--no)}
+.res .key{margin-top:4px}
+
+.submit{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:28px 0 0}
+.submit h2{font:600 22px/1.2 var(--serif);color:var(--navy);margin:0 0 6px}
+.btn{font:600 16px var(--sans);color:#fff;background:var(--navy);border:0;border-radius:8px;padding:12px 22px;min-height:48px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line-2)}
+.btn:disabled{opacity:.55;cursor:default}
+.msg{margin:10px 0 0;font-size:15px;color:var(--muted)}
+.msg.warn{color:var(--no)} .msg.good{color:var(--ok)}
+.score{display:none;margin:18px 0 0}
+.score.show{display:block}
+.big{font:600 44px/1 var(--serif);color:var(--navy)}
+.big small{font-size:20px;color:var(--muted)}
+table.bystd{border-collapse:collapse;margin:14px 0 0;width:100%;max-width:560px;font-size:15px}
+table.bystd th,table.bystd td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+table.bystd th{font:600 12.5px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+table.bystd td.p{font:600 15px var(--mono);text-align:right}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+@media (max-width:560px){
+  .q{padding:16px 14px 14px}
+  .q-body,.res{margin-left:0}
+  .part-h .std{margin-left:0;width:100%}
+  .expr{font-size:20px}
+}
+@media print{ .submit,.namebox,.links{display:none} }
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<script src="../site-bar.js"></script>
+<div class="wrap">
+<a class="back-link" href="index.html">← 8th Grade Home</a>
+
+<header class="hdr">
+  <div class="eyebrow">Quarter 1 Benchmark</div>
+  <h1>Q1 Benchmark Review</h1>
+  <p class="lede">15 questions on everything from Quarter 1: the real number system, exponent rules, and scientific notation. Answer every question. Then tap <b>Submit</b> at the bottom. Mr. Allen gets your results.</p>
+  <p class="stds">NC.8.NS.1 · NC.8.NS.2 · NC.8.EE.1 · NC.8.EE.3 · NC.8.EE.4</p>
+  <div class="links"><a href="Q1_Benchmark_Review.pdf">Printable version (PDF)</a></div>
+</header>
+
+<div class="namebox">
+  <label for="sname">Your first and last name</label>
+  <input id="sname" type="text" autocomplete="name" placeholder="First and last name">
+  <p class="help">Type it the same way every time, so Mr. Allen can find your work.</p>
+</div>
+
+<!-- ───────────── PART 1 ───────────── -->
+<section class="part">
+  <div class="part-h"><span class="tag">Part 1</span><h2>The Real Number System</h2><span class="std">NC.8.NS.1 · NC.8.NS.2</span></div>
+  <div class="tip"><b class="lbl">REMEMBER</b> A <b>rational</b> number can be written as a fraction of two integers. Its decimal ends or repeats. Square roots of perfect squares are rational.
+  An <b>irrational</b> number's decimal never ends and never repeats, like <span class="m">√<span class="rad">2</span></span> and <span class="m">π</span>.
+  Rational + irrational is irrational. A rational number (not 0) × an irrational number is irrational.</div>
+  <p class="calc">No calculator for Parts 1 and 2.</p>
+
+  <div class="q" id="q1">
+    <div class="q-top"><span class="qn">1</span><div class="q-text"><div class="q-type">Select all</div><p>Select <b>all</b> the numbers that are <b>irrational</b>.</p></div></div>
+    <div class="q-body"><div class="chips" data-multi>
+      <button type="button" class="chip" data-v="A" aria-pressed="false"><span class="L">A</span>√<span class="rad">64</span></button>
+      <button type="button" class="chip" data-v="B" aria-pressed="false"><span class="L">B</span>√<span class="rad">18</span></button>
+      <button type="button" class="chip" data-v="C" aria-pressed="false"><span class="L">C</span>0.<span class="rep">6</span></button>
+      <button type="button" class="chip" data-v="D" aria-pressed="false"><span class="L">D</span>3.14159</button>
+      <button type="button" class="chip" data-v="E" aria-pressed="false"><span class="L">E</span><span class="fr"><span>π</span><span>2</span></span></button>
+      <button type="button" class="chip" data-v="F" aria-pressed="false"><span class="L">F</span>−√<span class="rad">25</span></button>
+    </div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q2">
+    <div class="q-top"><span class="qn">2</span><div class="q-text"><div class="q-type">Table</div><p>Is the value of each expression rational or irrational? Choose one in each row.</p></div></div>
+    <div class="q-body"><table class="ri">
+      <tr><th>Expression</th><th>Rational</th><th>Irrational</th></tr>
+      <tr><td>6 + √<span class="rad">11</span></td><td><label><input type="radio" name="r0" value="R" aria-label="6 plus root 11 is rational"></label></td><td><label><input type="radio" name="r0" value="I" aria-label="6 plus root 11 is irrational"></label></td></tr>
+      <tr><td>√<span class="rad">5</span> · √<span class="rad">5</span></td><td><label><input type="radio" name="r1" value="R" aria-label="root 5 times root 5 is rational"></label></td><td><label><input type="radio" name="r1" value="I" aria-label="root 5 times root 5 is irrational"></label></td></tr>
+      <tr><td>4π</td><td><label><input type="radio" name="r2" value="R" aria-label="4 pi is rational"></label></td><td><label><input type="radio" name="r2" value="I" aria-label="4 pi is irrational"></label></td></tr>
+      <tr><td>0.25 + <span class="fr"><span>3</span><span>4</span></span></td><td><label><input type="radio" name="r3" value="R" aria-label="0.25 plus three fourths is rational"></label></td><td><label><input type="radio" name="r3" value="I" aria-label="0.25 plus three fourths is irrational"></label></td></tr>
+    </table></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q3">
+    <div class="q-top"><span class="qn">3</span><div class="q-text"><div class="q-type">Short answer</div><p>Estimate <span class="m">√<span class="rad">55</span></span> to the nearest <b>tenth</b>.</p></div></div>
+    <div class="q-body">
+      <div class="row"><span class="lab">It is between the whole numbers</span><input class="box" id="q3a" inputmode="decimal" aria-label="smaller whole number"><span class="lab">and</span><input class="box" id="q3b" inputmode="decimal" aria-label="larger whole number"></div>
+      <div class="row"><span class="lab">To the nearest tenth, <span class="m">√<span class="rad">55</span></span> ≈</span><input class="box" id="q3c" inputmode="decimal" aria-label="estimate to the nearest tenth"></div>
+    </div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q4">
+    <div class="q-top"><span class="qn">4</span><div class="q-text"><div class="q-type">Order</div><p>Order these numbers from <b>least to greatest</b>. Tap the numbers in order. Tap a box to take a number back out.</p></div></div>
+    <div class="q-body">
+      <div class="pool" id="q4pool"></div>
+      <div class="slots"><span class="lg">Least</span><span id="q4slots" class="slots"></span><span class="lg">Greatest</span></div>
+    </div>
+    <div class="res"></div>
+  </div>
+</section>
+
+<!-- ───────────── PART 2 ───────────── -->
+<section class="part">
+  <div class="part-h"><span class="tag">Part 2</span><h2>Exponent Rules with Monomials</h2><span class="std">NC.8.EE.1</span></div>
+  <div class="tip"><b class="lbl">REMEMBER</b> Numbers go with numbers. Letters go with letters. <b>Multiply → ADD</b> the exponents. <b>Divide → SUBTRACT</b> the exponents. <b>Power to a power → MULTIPLY</b> the exponents, and raise the number to the power too.</div>
+  <p class="calc">How to type an exponent: use <code>^</code>. For example, type <code>12m^10</code> for 12m<sup>10</sup>. Type <code>-</code> for a negative.</p>
+
+  <div class="q" id="q5">
+    <div class="q-top"><span class="qn">5</span><div class="q-text"><div class="q-type">Short answer</div><p>Simplify.</p><div class="expr">(−3x<sup>4</sup>y<sup>2</sup>)(5x<sup>3</sup>y)</div></div></div>
+    <div class="q-body"><input class="box wide mono-in" id="q5in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Question 5 answer" placeholder="Type your answer"><div class="preview" aria-live="polite"></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q6">
+    <div class="q-top"><span class="qn">6</span><div class="q-text"><div class="q-type">Short answer</div><p>Simplify.</p><div class="expr"><span class="fr"><span>24a<sup>8</sup>b<sup>3</sup></span><span>6a<sup>2</sup>b<sup>3</sup></span></span></div></div></div>
+    <div class="q-body"><input class="box wide mono-in" id="q6in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Question 6 answer" placeholder="Type your answer"><div class="preview" aria-live="polite"></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q7">
+    <div class="q-top"><span class="qn">7</span><div class="q-text"><div class="q-type">Multiple choice</div><p>Which expression is equivalent to <span class="m">(−2x<sup>3</sup>)<sup>4</sup></span>?</p></div></div>
+    <div class="q-body"><div class="chips">
+      <button type="button" class="chip" data-v="A" aria-pressed="false"><span class="L">A</span>−8x<sup>7</sup></button>
+      <button type="button" class="chip" data-v="B" aria-pressed="false"><span class="L">B</span>−16x<sup>12</sup></button>
+      <button type="button" class="chip" data-v="C" aria-pressed="false"><span class="L">C</span>16x<sup>12</sup></button>
+      <button type="button" class="chip" data-v="D" aria-pressed="false"><span class="L">D</span>8x<sup>12</sup></button>
+    </div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q8">
+    <div class="q-top"><span class="qn">8</span><div class="q-text"><div class="q-type">Short answer</div><p>Simplify.</p><div class="expr">(2m<sup>3</sup>)<sup>2</sup> · 3m<sup>4</sup></div></div></div>
+    <div class="q-body"><input class="box wide mono-in" id="q8in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Question 8 answer" placeholder="Type your answer"><div class="preview" aria-live="polite"></div></div>
+    <div class="res"></div>
+  </div>
+</section>
+
+<!-- ───────────── PART 3 ───────────── -->
+<section class="part">
+  <div class="part-h"><span class="tag">Part 3</span><h2>Scientific Notation</h2><span class="std">NC.8.EE.3 · NC.8.EE.4</span></div>
+  <div class="tip"><b class="lbl">REMEMBER</b> The first number must be <b>at least 1 and less than 10</b>. Multiply → multiply the numbers and <b>ADD</b> the exponents. Divide → divide the numbers and <b>SUBTRACT</b> the exponents. Then check that the first number is still from 1 to less than 10.</div>
+  <p class="calc">You may use a calculator for Part 3. Type the first number in the left box and the exponent in the small box.</p>
+
+  <div class="q" id="q9">
+    <div class="q-top"><span class="qn">9</span><div class="q-text"><div class="q-type">Short answer</div><p>Write each number in scientific notation.</p></div></div>
+    <div class="q-body">
+      <div class="row"><span class="lab">a.</span><span class="m">3,040,000,000 =</span><span class="sn" data-sn="q9a"></span></div>
+      <div class="row"><span class="lab">b.</span><span class="m">0.000062 =</span><span class="sn" data-sn="q9b"></span></div>
+    </div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q10">
+    <div class="q-top"><span class="qn">10</span><div class="q-text"><div class="q-type">Short answer</div><p>Each number is <b>not</b> in correct scientific notation. Rewrite it correctly.</p></div></div>
+    <div class="q-body">
+      <div class="row"><span class="lab">a.</span><span class="m">48.5 × 10<sup>6</sup> =</span><span class="sn" data-sn="q10a"></span></div>
+      <div class="row"><span class="lab">b.</span><span class="m">0.73 × 10<sup>−3</sup> =</span><span class="sn" data-sn="q10b"></span></div>
+    </div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q11">
+    <div class="q-top"><span class="qn">11</span><div class="q-text"><div class="q-type">Short answer</div><p>Multiply. Write your answer in scientific notation.</p><div class="expr">(4 × 10<sup>5</sup>)(6 × 10<sup>3</sup>)</div></div></div>
+    <div class="q-body"><div class="row"><span class="sn" data-sn="q11"></span></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q12">
+    <div class="q-top"><span class="qn">12</span><div class="q-text"><div class="q-type">Short answer</div><p>Divide. Write your answer in scientific notation.</p><div class="expr"><span class="fr"><span>3.6 × 10<sup>4</sup></span><span>9 × 10<sup>−2</sup></span></span></div></div></div>
+    <div class="q-body"><div class="row"><span class="sn" data-sn="q12"></span></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q13">
+    <div class="q-top"><span class="qn">13</span><div class="q-text"><div class="q-type">Word problem</div><p>One grain of rice has a mass of about <span class="m">2.5 × 10<sup>−2</sup></span> grams. A warehouse has <span class="m">4 × 10<sup>6</sup></span> grains of rice. What is the total mass of the rice, in grams? Write your answer in scientific notation.</p></div></div>
+    <div class="q-body"><div class="row"><span class="sn" data-sn="q13"></span><span class="lab">grams</span></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q14">
+    <div class="q-top"><span class="qn">14</span><div class="q-text"><div class="q-type">Word problem</div><p>An elephant has a mass of about <span class="m">6 × 10<sup>3</sup></span> kilograms. A mouse has a mass of about <span class="m">2 × 10<sup>−2</sup></span> kilograms. About how many times as great is the mass of the elephant as the mass of the mouse?</p></div></div>
+    <div class="q-body"><div class="row"><span class="sn" data-sn="q14"></span><span class="lab">times</span></div></div>
+    <div class="res"></div>
+  </div>
+
+  <div class="q" id="q15">
+    <div class="q-top"><span class="qn">15</span><div class="q-text"><div class="q-type">Multiple choice</div><p>Which statement is <b>true</b>?</p></div></div>
+    <div class="q-body"><div class="chips col">
+      <button type="button" class="chip" data-v="A" aria-pressed="false"><span class="L">A</span>7.2 × 10<sup>−4</sup> &gt; 3.1 × 10<sup>−3</sup></button>
+      <button type="button" class="chip" data-v="B" aria-pressed="false"><span class="L">B</span>5 × 10<sup>6</sup> &lt; 9 × 10<sup>5</sup></button>
+      <button type="button" class="chip" data-v="C" aria-pressed="false"><span class="L">C</span>2.8 × 10<sup>7</sup> &gt; 9.9 × 10<sup>6</sup></button>
+      <button type="button" class="chip" data-v="D" aria-pressed="false"><span class="L">D</span>4.5 × 10<sup>3</sup> &gt; 4.5 × 10<sup>4</sup></button>
+    </div></div>
+    <div class="res"></div>
+  </div>
+</section>
+
+<section class="submit" id="submitbox" aria-live="polite">
+  <h2>Submit to Mr. Allen</h2>
+  <p class="msg" id="smsg">Check your answers. Then tap Submit. You will see your score and what to fix.</p>
+  <div class="btns"><button type="button" class="btn" id="sbtn">Submit</button></div>
+  <div class="score" id="scorebox">
+    <div class="big" id="bigscore"></div>
+    <table class="bystd" id="bystd"></table>
+    <p class="msg" id="sendmsg"></p>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="resend" hidden>Try sending again</button>
+      <button type="button" class="btn ghost" id="again">Start a new attempt</button>
+    </div>
+  </div>
+</section>
+</div>
+
+<script src="../benchmark-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.BENCHMARK_CONFIG || {};
+  var BENCH = 'Q1 Benchmark Review';
+  var NAME_KEY = 'fluencyLabStudentName';
+  var M = '−';
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) {} return ''; }
+  function newSession() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  var session = newSession(), locked = false, lastPayload = null;
+
+  // ── math display helpers
+  function sn(c, e) { return '<span class="m">' + c + ' × 10<sup>' + String(e).replace('-', M) + '</sup></span>'; }
+  function sup(s) { return '<sup>' + s + '</sup>'; }
+
+  // ── scientific-notation inputs
+  $$('[data-sn]').forEach(function (el) {
+    var id = el.getAttribute('data-sn');
+    el.innerHTML = '<input class="box" id="' + id + 'c" inputmode="decimal" autocomplete="off" aria-label="first number"> × 10' +
+      '<input class="box exp" id="' + id + 'e" inputmode="text" autocomplete="off" aria-label="exponent">';
+  });
+
+  // ── choice chips (keep each chip's math in one piece so the flex gap never splits √ or exponents)
+  $$('.chip').forEach(function (b) {
+    var w = document.createElement('span'); w.className = 'cv';
+    Array.prototype.slice.call(b.childNodes).forEach(function (n) { if (!(n.classList && n.classList.contains('L'))) w.appendChild(n); });
+    b.appendChild(w);
+  });
+  $$('.chips').forEach(function (g) {
+    var multi = g.hasAttribute('data-multi');
+    $$('.chip', g).forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (locked) return;
+        if (multi) b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+        else $$('.chip', g).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        changed();
+      });
+    });
+  });
+  function picked(qid) { return $$('#' + qid + ' .chip[aria-pressed="true"]').map(function (b) { return b.getAttribute('data-v'); }); }
+
+  // ── ordering (Q4)
+  var ORDER = [
+    { k: 'pi', h: 'π + 1', v: Math.PI + 1, d: '≈ 4.14' },
+    { k: '438', h: '4.38', v: 4.38, d: '= 4.38' },
+    { k: 'rep', h: '4.<span class="rep">4</span>', v: 4 + 4 / 9, d: '≈ 4.44' },
+    { k: 'r20', h: '√<span class="rad">20</span>', v: Math.sqrt(20), d: '≈ 4.47' },
+    { k: 'f92', h: '<span class="fr"><span>9</span><span>2</span></span>', v: 4.5, d: '= 4.5' }
+  ];
+  var SHOWN = ['r20', 'rep', 'f92', 'pi', '438'];         // same order as the printed sheet
+  var placed = [];
+  function drawOrder() {
+    var pool = $('#q4pool'), slots = $('#q4slots');
+    pool.innerHTML = ''; slots.innerHTML = '';
+    SHOWN.forEach(function (k) {
+      var o = ORDER.filter(function (x) { return x.k === k; })[0];
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip' + (placed.indexOf(k) >= 0 ? ' used' : ''); b.innerHTML = '<span class="cv">' + o.h + '</span>';
+      b.disabled = locked || placed.indexOf(k) >= 0;
+      b.setAttribute('aria-label', 'Place ' + b.textContent);
+      b.addEventListener('click', function () { if (locked || placed.length >= 5) return; placed.push(k); drawOrder(); changed(); });
+      pool.appendChild(b);
+    });
+    for (var i = 0; i < 5; i++) {
+      var s = document.createElement('button');
+      s.type = 'button';
+      var k = placed[i], o = k && ORDER.filter(function (x) { return x.k === k; })[0];
+      s.className = 'slot' + (o ? ' filled' : '');
+      s.innerHTML = o ? '<span class="cv">' + o.h + '</span>' : '<span class="n">' + (i + 1) + '</span>';
+      s.setAttribute('aria-label', o ? 'Remove ' + s.textContent : 'Empty box ' + (i + 1));
+      s.disabled = locked || !o;
+      (function (i) { s.addEventListener('click', function () { if (locked) return; placed.splice(i, 1); drawOrder(); changed(); }); })(i);
+      slots.appendChild(s);
+    }
+  }
+  drawOrder();
+
+  // ── monomial parsing and preview
+  var SUPS = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '-' };
+  function norm(s) {
+    s = String(s || '').replace(/[−–—]/g, '-').replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, function (m) {
+      return '^' + m.split('').map(function (c) { return SUPS[c]; }).join('');
+    });
+    return s.replace(/\s+/g, '').replace(/[*·×]/g, '').toLowerCase();
+  }
+  // returns {c: number, v: {x: 7, ...}, repeat: bool, zero: [..]} or null
+  function parseMono(s) {
+    s = norm(s);
+    var m = /^([+-]?)(\d*\.?\d*)((?:[a-z](?:\^\(?-?\d+\)?)?)*)$/.exec(s);
+    if (!m || (!m[2] && !m[3])) return null;
+    var c = m[2] === '' ? 1 : parseFloat(m[2]);
+    if (!isFinite(c)) return null;
+    if (m[1] === '-') c = -c;
+    var v = {}, repeat = false, zero = [];
+    (m[3].match(/[a-z](?:\^\(?-?\d+\)?)?/g) || []).forEach(function (t) {
+      var L = t[0], e = t.length > 1 ? parseInt(t.slice(1).replace(/[\^()]/g, ''), 10) : 1;
+      if (v[L] !== undefined) repeat = true;
+      v[L] = (v[L] || 0) + e;
+    });
+    Object.keys(v).forEach(function (L) { if (v[L] === 0) zero.push(L); });
+    return { c: c, v: v, repeat: repeat, zero: zero };
+  }
+  function monoHTML(s) {
+    s = String(s || '').replace(/[−–]/g, '-').replace(/\s+/g, '');
+    if (!s) return '';
+    var h = s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/\^\(?(-?\d+)\)?/g, function (_, e) { return '<sup>' + e.replace('-', M) + '</sup>'; })
+      .replace(/-/g, M).replace(/\*/g, ' · ');
+    return h;
+  }
+  $$('.mono-in').forEach(function (inp) {
+    var pv = inp.parentNode.querySelector('.preview');
+    var upd = function () {
+      var v = inp.value.trim();
+      pv.innerHTML = v ? '<span class="hint">You typed: </span>' + monoHTML(v) : '';
+    };
+    inp.addEventListener('input', function () { upd(); changed(); });
+    upd();
+  });
+
+  // ── number helpers
+  function num(s) {
+    s = String(s || '').replace(/[−–]/g, '-').replace(/,/g, '').replace(/\s+/g, '');
+    if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+    return parseFloat(s);
+  }
+  function intv(s) { var n = num(s); return Number.isInteger(n) ? n : NaN; }
+  function snRead(id) {
+    var c = $('#' + id + 'c').value.trim(), e = $('#' + id + 'e').value.trim();
+    return { c: num(c), e: intv(e), raw: (c || '?') + ' × 10^' + (e || '?'), blank: !c && !e };
+  }
+  function same(a, b) { return Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(b)); }
+  // grade a scientific-notation answer; returns {ok, why}
+  function gradeSN(r, c, e, hints) {
+    if (r.blank) return { ok: false, why: 'You left this blank.' };
+    if (isNaN(r.c) || isNaN(r.e)) return { ok: false, why: 'Type a number in the first box and a whole number (like 5 or −3) in the exponent box.' };
+    if (same(r.c, c) && r.e === e) return { ok: true };
+    var val = r.c * Math.pow(10, r.e), want = c * Math.pow(10, e);
+    if (same(val, want)) return { ok: false, why: 'Your value is right, but ' + r.c + ' is not from 1 to less than 10. Move the decimal point and change the exponent.' };
+    for (var i = 0; i < (hints || []).length; i++) { var h = hints[i]; if (h.test(r)) return { ok: false, why: h.why }; }
+    if (same(r.c, c) && r.e === -e) return { ok: false, why: 'Check the sign of the exponent. ' + (e > 0 ? 'A big number has a positive exponent.' : 'A number less than 1 has a negative exponent.') };
+    if (same(r.c, c)) return { ok: false, why: 'The first number is right. Check the exponent.' };
+    return { ok: false, why: 'Check your work step by step.' };
+  }
+
+  // ── the answer key
+  var Q = [
+    { id: '1', std: 'NC.8.NS.1', label: 'Select all irrational',
+      read: function () { return picked('q1').join(', '); },
+      blank: function () { return !picked('q1').length; },
+      grade: function () {
+        var p = picked('q1'), want = ['B', 'E'];
+        var ok = p.length === 2 && p.indexOf('B') >= 0 && p.indexOf('E') >= 0;
+        if (ok) return { ok: true };
+        var notes = [];
+        var W = { A: '√64 = 8, so it is rational.', C: '0.666… repeats, so it is rational (it equals 2/3).', D: '3.14159 stops, so it is rational. Only π itself goes on forever.', F: '−√25 = −5, so it is rational.' };
+        p.forEach(function (x) { if (W[x]) notes.push(W[x]); });
+        if (p.indexOf('B') < 0) notes.push('√18 is irrational: 18 is not a perfect square.');
+        if (p.indexOf('E') < 0) notes.push('π ÷ 2 is still irrational.');
+        return { ok: false, why: notes.join(' ') };
+      },
+      key: 'B and E (√18 and π/2)' },
+    { id: '2', std: 'NC.8.NS.1', label: 'Rational or irrational: operations',
+      read: function () { return [0, 1, 2, 3].map(function (i) { var r = $('input[name="r' + i + '"]:checked'); return r ? r.value : '?'; }).join(','); },
+      blank: function () { return $$('#q2 input:checked').length < 4; },
+      grade: function () {
+        var want = ['I', 'R', 'I', 'R'], got = this.read().split(','), why = [];
+        var T = ['6 + √11: rational + irrational is irrational.', '√5 · √5 = 5, which is rational.', '4π: rational × irrational is irrational.', '0.25 + 3/4 = 1, which is rational.'];
+        got.forEach(function (g, i) { if (g !== want[i]) why.push(T[i]); });
+        return why.length ? { ok: false, why: (why.length === 1 ? 'One row is off. ' : '') + why.join(' ') } : { ok: true };
+      },
+      key: 'Irrational, Rational, Irrational, Rational' },
+    { id: '3', std: 'NC.8.NS.2', label: 'Estimate √55 to the nearest tenth',
+      read: function () { return 'between ' + ($('#q3a').value || '?') + ' and ' + ($('#q3b').value || '?') + '; ≈ ' + ($('#q3c').value || '?'); },
+      blank: function () { return !$('#q3c').value.trim(); },
+      grade: function () {
+        var a = num($('#q3a').value), b = num($('#q3b').value), c = num($('#q3c').value);
+        var between = (a === 7 && b === 8) || (a === 8 && b === 7);
+        if (between && same(c, 7.4)) return { ok: true };
+        var why = [];
+        if (!between) why.push('7² = 49 and 8² = 64. 55 is between them, so √55 is between 7 and 8.');
+        if (same(c, 7.5)) why.push('7.5² = 56.25, but 7.4² = 54.76. 54.76 is closer to 55, so round to 7.4.');
+        else if (!same(c, 7.4)) why.push('Try 7.4² = 54.76 and 7.5² = 56.25. Which one is closer to 55?');
+        return { ok: false, why: why.join(' ') };
+      },
+      key: 'Between 7 and 8; √55 ≈ 7.4' },
+    { id: '4', std: 'NC.8.NS.2', label: 'Order real numbers',
+      read: function () { return placed.map(function (k) { return { pi: 'π+1', '438': '4.38', rep: '4.4(rep)', r20: '√20', f92: '9/2' }[k]; }).join(' < '); },
+      blank: function () { return placed.length < 5; },
+      grade: function () {
+        var want = ['pi', '438', 'rep', 'r20', 'f92'];
+        if (placed.join() === want.join()) return { ok: true };
+        return { ok: false, why: 'Change each number to a decimal first: π + 1 ≈ 4.14, 4.38, 4.444… ≈ 4.44, √20 ≈ 4.47, 9/2 = 4.5.' };
+      },
+      keyHTML: 'π + 1, 4.38, 4.<span class="rep">4</span>, √<span class="rad">20</span>, <span class="fr"><span>9</span><span>2</span></span>' },
+    { id: '5', std: 'NC.8.EE.1', label: 'Multiply monomials',
+      read: function () { return $('#q5in').value.trim(); },
+      blank: function () { return !$('#q5in').value.trim(); },
+      grade: function () { return gradeMono($('#q5in').value, -15, { x: 7, y: 3 }, [
+        function (p) { return p.c === 15 ? 'Check the sign. −3 × 5 is negative.' : ''; },
+        function (p) { return p.c === 2 ? 'You added −3 + 5. Multiply the numbers: −3 × 5 = −15.' : ''; },
+        function (p) { return p.v.x === 12 ? 'You multiplied the exponents on x. When you multiply, ADD them: 4 + 3 = 7.' : ''; },
+        function (p) { return p.v.y === 2 ? 'y is the same as y¹. So y² · y¹ = y³.' : ''; }
+      ]); },
+      keyHTML: '−15x' + sup(7) + 'y' + sup(3) },
+    { id: '6', std: 'NC.8.EE.1', label: 'Divide monomials',
+      read: function () { return $('#q6in').value.trim(); },
+      blank: function () { return !$('#q6in').value.trim(); },
+      grade: function () { return gradeMono($('#q6in').value, 4, { a: 6 }, [
+        function (p) { return p.c === 18 ? 'You subtracted 24 − 6. Divide the numbers: 24 ÷ 6 = 4.' : ''; },
+        function (p) { return p.v.a === 4 ? 'You divided the exponents. When you divide, SUBTRACT them: 8 − 2 = 6.' : ''; },
+        function (p) { return p.v.a === 10 ? 'You added the exponents. When you divide, SUBTRACT them: 8 − 2 = 6.' : ''; },
+        function (p) { return p.v.b === 1 ? 'b³ ÷ b³ = b⁰ = 1, so there is no b in the answer.' : ''; }
+      ]); },
+      keyHTML: '4a' + sup(6) },
+    { id: '7', std: 'NC.8.EE.1', label: 'Power to a power (multiple choice)',
+      read: function () { return picked('q7').join(''); },
+      blank: function () { return !picked('q7').length; },
+      grade: function () {
+        var p = picked('q7')[0];
+        if (p === 'C') return { ok: true };
+        var W = { A: 'Choice A adds the exponents and multiplies −2 × 4. Raise −2 to the 4th power, and multiply the exponents: 3 × 4 = 12.',
+                  B: '(−2)⁴ = (−2)(−2)(−2)(−2) = 16. An even power of a negative number is positive.',
+                  D: 'Choice D multiplies 2 × 4. Instead, raise −2 to the 4th power: (−2)⁴ = 16.' };
+        return { ok: false, why: W[p] || '' };
+      },
+      keyHTML: 'C. 16x' + sup(12) },
+    { id: '8', std: 'NC.8.EE.1', label: 'Power, then multiply monomials',
+      read: function () { return $('#q8in').value.trim(); },
+      blank: function () { return !$('#q8in').value.trim(); },
+      grade: function () { return gradeMono($('#q8in').value, 12, { m: 10 }, [
+        function (p) { return p.c === 6 ? 'Square the 2 first: (2m³)² = 4m⁶. Then 4 × 3 = 12.' : ''; },
+        function (p) { return p.c === 7 ? 'You added 4 + 3. Multiply the numbers: 4 × 3 = 12.' : ''; },
+        function (p) { return p.v.m === 9 ? 'Do the power first: (m³)² = m⁶. Then m⁶ · m⁴ = m¹⁰.' : ''; },
+        function (p) { return p.v.m === 24 ? 'You multiplied 6 × 4. When you multiply m⁶ · m⁴, ADD the exponents: 6 + 4 = 10.' : ''; }
+      ]); },
+      keyHTML: '12m' + sup(10) },
+    { id: '9', std: 'NC.8.EE.3', label: 'Write in scientific notation',
+      read: function () { return 'a ' + snRead('q9a').raw + '; b ' + snRead('q9b').raw; },
+      blank: function () { return snRead('q9a').blank || snRead('q9b').blank; },
+      grade: function () { return two(gradeSN(snRead('q9a'), 3.04, 9), gradeSN(snRead('q9b'), 6.2, -5,
+        [{ test: function (r) { return same(r.c, 6.2) && r.e === -6; }, why: 'Count the jumps again. The point moves 5 places to get 6.2.' }])); },
+      keyHTML: 'a. ' + sn('3.04', 9) + '&nbsp; b. ' + sn('6.2', -5) },
+    { id: '10', std: 'NC.8.EE.4', label: 'Correct scientific notation',
+      read: function () { return 'a ' + snRead('q10a').raw + '; b ' + snRead('q10b').raw; },
+      blank: function () { return snRead('q10a').blank || snRead('q10b').blank; },
+      grade: function () { return two(
+        gradeSN(snRead('q10a'), 4.85, 7, [{ test: function (r) { return same(r.c, 4.85) && r.e === 5; }, why: '48.5 → 4.85 makes the first number smaller, so the exponent goes UP by 1: 6 + 1 = 7.' }]),
+        gradeSN(snRead('q10b'), 7.3, -4, [{ test: function (r) { return same(r.c, 7.3) && r.e === -2; }, why: '0.73 → 7.3 makes the first number bigger, so the exponent goes DOWN by 1: −3 − 1 = −4.' }])); },
+      keyHTML: 'a. ' + sn('4.85', 7) + '&nbsp; b. ' + sn('7.3', -4) },
+    { id: '11', std: 'NC.8.EE.4', label: 'Multiply in scientific notation',
+      read: function () { return snRead('q11').raw; }, blank: function () { return snRead('q11').blank; },
+      grade: function () { return gradeSN(snRead('q11'), 2.4, 9, [
+        { test: function (r) { return r.e === 15; }, why: 'You multiplied the exponents. When you multiply, ADD them: 5 + 3 = 8. Then 24 × 10⁸ becomes 2.4 × 10⁹.' },
+        { test: function (r) { return same(r.c, 2.4) && r.e === 8; }, why: '4 × 6 = 24, so you have 24 × 10⁸. Moving the point to make 2.4 adds 1 to the exponent: 10⁹.' }]); },
+      keyHTML: sn('2.4', 9) },
+    { id: '12', std: 'NC.8.EE.4', label: 'Divide in scientific notation',
+      read: function () { return snRead('q12').raw; }, blank: function () { return snRead('q12').blank; },
+      grade: function () { return gradeSN(snRead('q12'), 4, 5, [
+        { test: function (r) { return r.e === 2 || r.e === 1; }, why: 'Subtract the exponents with care: 4 − (−2) = 4 + 2 = 6. Then 0.4 × 10⁶ becomes 4 × 10⁵.' },
+        { test: function (r) { return same(r.c, 4) && r.e === 6; }, why: '3.6 ÷ 9 = 0.4, so you have 0.4 × 10⁶. Moving the point to make 4 takes 1 away from the exponent: 10⁵.' }]); },
+      keyHTML: sn('4', 5) },
+    { id: '13', std: 'NC.8.EE.4', label: 'Word problem: multiply (rice)',
+      read: function () { return snRead('q13').raw; }, blank: function () { return snRead('q13').blank; },
+      grade: function () { return gradeSN(snRead('q13'), 1, 5, [
+        { test: function (r) { return r.e === -8; }, why: 'Add the exponents: −2 + 6 = 4. Then 2.5 × 4 = 10, so 10 × 10⁴ = 1 × 10⁵.' },
+        { test: function (r) { return same(r.c, 1) && r.e === 4; }, why: '2.5 × 4 = 10, not 1. 10 × 10⁴ becomes 1 × 10⁵.' }]); },
+      keyHTML: sn('1', 5) + ' grams (100,000 grams)' },
+    { id: '14', std: 'NC.8.EE.4', label: 'Word problem: how many times (divide)',
+      read: function () { return snRead('q14').raw; }, blank: function () { return snRead('q14').blank; },
+      grade: function () { return gradeSN(snRead('q14'), 3, 5, [
+        { test: function (r) { return same(r.c, 3) && r.e === 1; }, why: 'Subtract with care: 3 − (−2) = 3 + 2 = 5.' },
+        { test: function (r) { return r.e === -5; }, why: 'Put the bigger number (the elephant) on top: (6 × 10³) ÷ (2 × 10⁻²).' }]); },
+      keyHTML: sn('3', 5) + ' (300,000) times' },
+    { id: '15', std: 'NC.8.EE.3', label: 'Compare numbers in scientific notation',
+      read: function () { return picked('q15').join(''); },
+      blank: function () { return !picked('q15').length; },
+      grade: function () {
+        var p = picked('q15')[0];
+        if (p === 'C') return { ok: true };
+        var W = { A: '7.2 × 10⁻⁴ = 0.00072 and 3.1 × 10⁻³ = 0.0031. 0.00072 is smaller.',
+                  B: '5 × 10⁶ = 5,000,000 and 9 × 10⁵ = 900,000. 5,000,000 is bigger.',
+                  D: '4.5 × 10³ = 4,500 and 4.5 × 10⁴ = 45,000. 4,500 is smaller.' };
+        return { ok: false, why: (W[p] || '') + ' Look at the exponents first.' };
+      },
+      keyHTML: 'C. ' + sn('2.8', 7) + ' &gt; ' + sn('9.9', 6) }
+  ];
+
+  function two(a, b) {
+    if (a.ok && b.ok) return { ok: true };
+    var w = [];
+    if (!a.ok) w.push('Part a: ' + a.why);
+    if (!b.ok) w.push('Part b: ' + b.why);
+    return { ok: false, why: w.join(' ') };
+  }
+  function gradeMono(s, c, vars, hints) {
+    if (!String(s).trim()) return { ok: false, why: 'You left this blank.' };
+    var p = parseMono(s);
+    if (!p) return { ok: false, why: 'I could not read that. Type it like 12m^10 (number first, then letters, ^ for exponents).' };
+    var keys = Object.keys(vars), have = Object.keys(p.v).filter(function (L) { return p.v[L] !== 0; });
+    var right = same(p.c, c) && have.length === keys.length && keys.every(function (L) { return p.v[L] === vars[L]; });
+    if (right && !p.repeat && !p.zero.length) return { ok: true };
+    if (right && p.zero.length) return { ok: false, why: p.zero.join(', ') + '⁰ = 1, so leave it out of a simplified answer.' };
+    if (right && p.repeat) return { ok: false, why: 'Combine the same letters. Write each letter one time.' };
+    for (var i = 0; i < hints.length; i++) { var h = hints[i](p); if (h) return { ok: false, why: h }; }
+    return { ok: false, why: 'Do the numbers first, then each letter. Check each exponent rule.' };
+  }
+
+  // ── submit
+  var armedBlank = false;
+  function changed() { armedBlank = false; var b = $('#sbtn'); if (!locked) b.textContent = 'Submit'; }
+  $$('input').forEach(function (i) { if (i.id !== 'sname') i.addEventListener('input', changed); });
+  $$('#q2 input').forEach(function (i) { i.addEventListener('change', changed); });
+  var nameEl = $('#sname');
+  nameEl.value = store(NAME_KEY);
+
+  function smsg(t, kind) { var el = $('#smsg'); el.textContent = t; el.className = 'msg' + (kind ? ' ' + kind : ''); }
+
+  $('#sbtn').addEventListener('click', function () {
+    if (locked) return;
+    var name = nameEl.value.replace(/\s+/g, ' ').trim();
+    if (name.length < 3 || name.indexOf(' ') < 0) {
+      smsg('Type your first AND last name at the top first.', 'warn');
+      nameEl.focus(); nameEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      return;
+    }
+    var blanks = Q.filter(function (q) { return q.blank(); }).map(function (q) { return '#' + q.id; });
+    if (blanks.length && !armedBlank) {
+      armedBlank = true;
+      smsg('You have not finished ' + blanks.join(', ') + '. Go back and answer, or tap Submit anyway.', 'warn');
+      $('#sbtn').textContent = 'Submit anyway';
+      return;
+    }
+    store(NAME_KEY, name);
+    finish(name);
+  });
+
+  function lockAll(on) {
+    locked = on;
+    $$('.q input, .q button').forEach(function (el) { el.disabled = on; });
+    drawOrder();
+  }
+
+  function finish(name) {
+    var items = [], byStd = {}, score = 0;
+    Q.forEach(function (q) {
+      var r = q.grade(), box = $('#q' + q.id + ' .res');
+      if (r.ok) score++;
+      var b = byStd[q.std] = byStd[q.std] || { r: 0, n: 0 }; b.n++; if (r.ok) b.r++;
+      box.className = 'res show ' + (r.ok ? 'ok' : 'no');
+      box.innerHTML = '<div class="head">' + (r.ok ? 'Correct' : 'Not yet') + '</div>' +
+        (r.ok ? '' : '<div>' + r.why + '</div>') +
+        '<div class="key"><b>Answer:</b> ' + (q.keyHTML || q.key) + '</div>';
+      items.push({ id: q.id, std: q.std, label: q.label, answer: q.read(), ok: r.ok ? 1 : 0 });
+    });
+    lockAll(true);
+    $('#sbtn').hidden = true;
+    smsg('Here is your score. Scroll up to see what to fix on each question.', '');
+    $('#bigscore').innerHTML = score + ' <small>out of ' + Q.length + ' (' + Math.round(100 * score / Q.length) + '%)</small>';
+    var NAMES = { 'NC.8.NS.1': 'Rational and irrational numbers', 'NC.8.NS.2': 'Estimating and ordering', 'NC.8.EE.1': 'Exponent rules', 'NC.8.EE.3': 'Scientific notation: write and compare', 'NC.8.EE.4': 'Scientific notation: multiply and divide' };
+    $('#bystd').innerHTML = '<tr><th>Standard</th><th>Skill</th><th style="text-align:right">Right</th></tr>' +
+      Object.keys(byStd).sort().map(function (s) { return '<tr><td><code>' + s + '</code></td><td>' + NAMES[s] + '</td><td class="p">' + byStd[s].r + ' / ' + byStd[s].n + '</td></tr>'; }).join('');
+    $('#scorebox').classList.add('show');
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, session: session, score: score, total: Q.length, items: items };
+    send();
+    $('#submitbox').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+
+  function sendmsg(t, kind) { var el = $('#sendmsg'); el.textContent = t; el.className = 'msg' + (kind ? ' ' + kind : ''); }
+  function send() {
+    var rb = $('#resend');
+    rb.hidden = true;
+    if (!CFG.ENDPOINT) { sendmsg('Sending is not switched on yet. Show this screen to Mr. Allen.', 'warn'); return; }
+    sendmsg('Sending to Mr. Allen…', '');
+    fetch(CFG.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(lastPayload) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.ok) sendmsg('Sent ✓ Mr. Allen has your results, ' + res.name + ' (attempt ' + res.attempt + ').', 'good');
+        else { sendmsg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') + '. Tap Try sending again, or tell Mr. Allen.', 'warn'); rb.hidden = false; }
+      })
+      .catch(function () { sendmsg('Could not reach Mr. Allen\'s sheet. Check the internet, then tap Try sending again.', 'warn'); rb.hidden = false; });
+  }
+  $('#resend').addEventListener('click', send);
+
+  $('#again').addEventListener('click', function () {
+    session = newSession(); lastPayload = null; placed = [];
+    $$('.q input').forEach(function (i) { if (i.type === 'radio') i.checked = false; else i.value = ''; });
+    $$('.chip[aria-pressed]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
+    $$('.res').forEach(function (r) { r.className = 'res'; r.innerHTML = ''; });
+    $$('.preview').forEach(function (p) { p.innerHTML = ''; });
+    lockAll(false);
+    $('#scorebox').classList.remove('show');
+    $('#sbtn').hidden = false; $('#sbtn').textContent = 'Submit'; armedBlank = false;
+    smsg('New attempt. Answer every question, then tap Submit.', '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // for automated checks
+  window.__bench = { Q: Q, parseMono: parseMono };
+})();
+</script>
+</body>
+</html>

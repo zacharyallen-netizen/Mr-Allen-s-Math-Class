@@ -23,6 +23,12 @@ Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in 
 `node tracker/check_payload.js file.json` checks a page's "Send my work" data against the real script.
 `tracker/calib.js` re-runs the calibration of the practice cut-offs.
 
+## Benchmark Tracker (Google Apps Script, separate Sheet)
+`benchmark/BenchmarkTracker.gs` receives results from the interactive benchmark reviews (`grade8/q1_benchmark_review.html`);
+its address goes in `/benchmark-config.js`. Tests: `node benchmark/test_benchmark_tracker.js`;
+page end to end (serve the repo on 127.0.0.1:8765 first): `python3 benchmark/check_page.py`, then
+`node benchmark/check_payload.js benchmark/payload_*.json`. The PDF and key come from `benchmark/q1_pdf.py`.
+
 ## Site checks
 - `node audit.js <site> out.json pages.txt` — every page at 390 and 1280: errors, sideways scroll, bar overlap.
 - `node audit_m1.js` — Math 1 pages incl. clipped diagram labels.
