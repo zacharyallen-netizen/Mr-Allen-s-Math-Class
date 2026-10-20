@@ -89,7 +89,7 @@ EXTRA_CSS = """
   .partin{border:0;border-bottom:1.5px solid #333;border-radius:0;background:transparent}
   .pfb{display:none}
   .qgrid[data-level=basic] .q{min-height:1.15in}
-  .qgrid[data-level=target] .q{min-height:1.9in}
+  .qgrid[data-level=target] .q{min-height:2.35in}
   .qgrid[data-level=advanced] .q{min-height:2.3in}
   .q,.refbox,table.vocab tr{break-inside:avoid;page-break-inside:avoid}
   .stripe:has(.qgrid[data-level=basic]) ~ .band{break-before:page}
