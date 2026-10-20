@@ -77,9 +77,6 @@
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
   .fb b{color:var(--amber)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -132,24 +129,7 @@
   .rt .arr.unk{color:#5b6190}
   .rt .arr.hot{color:var(--amber)}
   .rt .arr .ibx{width:56px;margin:0 6px 0 2px}
-  /* tape diagram for sharing */
-  .tape{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
-  .tape .tr{display:flex;align-items:center;gap:8px}
-  .tape .tl{width:62px;text-align:right;font-size:14px;color:var(--muted);font-weight:700;white-space:nowrap}
-  .tape .bars{display:flex}
-  .tape .u{width:46px;height:46px;border:2px solid var(--sky);margin-left:-2px;display:flex;align-items:center;justify-content:center;
-    font:700 20px var(--mono);color:var(--sky);background:#1b2550;transition:background .25s}
-  .tape .tr.second .u{border-color:var(--muted);color:var(--muted);background:var(--bg2)}
-  .tape .tr .u.hot{background:#ffbb4d1f;color:var(--amber)}
-  .tape .u .ibx{width:46px;height:46px;font-size:22px;border-radius:6px;position:relative;z-index:2}
-  .tape .tt{font:700 20px var(--mono);color:var(--muted);margin-left:4px;display:flex;align-items:center;gap:6px;min-width:88px}
-  .tape .tt .qm{color:var(--amber)}
-  .tape .sh{min-width:64px;display:inline-flex;justify-content:flex-end}
-  .tape .tt .mint{color:var(--mint)}
-  .tape .tot{font-size:16px;color:#cfd3f5;margin-left:70px;display:flex;align-items:center;gap:8px;min-height:46px}
-  .tape .tot b{color:var(--amber)} .tape .tot .mint{font:800 20px var(--mono)}
-  @media (max-width:430px){.rt .cell{min-width:48px;height:46px;font-size:21px;padding:0 6px}.rt .arr{font-size:16px}
-    .tape .u{width:38px;height:40px;font-size:17px}.tape .u .ibx{width:38px;height:40px;font-size:19px}.tape .tl{width:56px;font-size:13px}.tape .tot{margin-left:64px}}
+  @media (max-width:430px){.rt .cell{min-width:48px;height:46px;font-size:21px;padding:0 6px}.rt .arr{font-size:16px}}
 </style>
 </head>
 <body>
@@ -160,15 +140,13 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Ratios &amp; Proportions · Module 7</div>
     <ul class="how">
-      <li>Whatever you do to one number, do to the <b>other</b>.</li>
-      <li>Only <b>one box</b> opens at a time. It glows.</li>
-      <li>Type your answer and press <b>Check</b> (or Enter).</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li>Do the same to <b>both</b> numbers.</li>
+      <li>Type in the <b>glowing box</b>.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: 2 : 3 = ? : 12</div>
+      <div class="ttl">Example: 2 : 3 = ? : 12</div>
       <div class="rvis" id="exTable"></div>
-      <div class="excap">The bottom went from 3 to 12. That is <b>× 4</b>.<br>Do the same to the top: 2 × 4 = <b>8</b>. So 2 : 3 = <b>8 : 12</b>.</div>
+      <div class="excap">3 × 4 = 12, so 2 × 4 = <b>8</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -191,7 +169,6 @@
         <div class="picks" id="picks"></div>
         <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
-        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -212,7 +189,7 @@
 <script>
 /* ════════════════════════════════════════════════════════════════
    RATIOS & PROPORTIONS — one box at a time
-   Every box sits in the ratio table (or tape diagram) where the
+   Every box sits in the ratio table where the
    number goes. The × or ÷ is always done to BOTH rows.
    ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
@@ -228,24 +205,34 @@ const NUM=n=>String(n);
 const BOX_MODE='numeric';
 const ALLOW_NEG=false;
 const NUDGE='Look at the yellow numbers again.';
-const ENDNOTES=['Excellent! Same thing to both numbers, every time.','Strong set. A few more first-try answers and you level up.',
-  'Good work. Find the × or ÷ first. The rest follows.','Every problem showed you the steps. Go again. It gets easier.'];
+const ENDNOTES=['Excellent! Same to both, every time.','Strong set. Keep going!',
+  'Good work. Find × or ÷ first.','Go again. It gets easier.'];
 function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
 
-/* ---------- problems (same levels as before) ---------- */
+/* ---------- problems ----------
+   1 simplify   2 equivalent   3 unit rate (? : 1)   4 proportion, ? top left
+   5 proportion, ? in any spot   6 mix of 1–5
+   Proportion: cols = the two fractions in the order written, [top,bottom].
+   S = the full fraction, T = the one with the ?, (ur) = row of the ?.
+   T = S ÷ m (T is the small one) or T = S × m (T is the big one). */
+function makeProp(T,ur,big){
+  const x=rnd(2,9); let b; do{b=rnd(2,9);}while(b===x); const m=rnd(2,4);
+  const small=[x,b], large=[x*m,b*m], S=1-T, cols=[];
+  cols[T]=(big?large:small).slice(); cols[S]=(big?small:large).slice();
+  const ans=cols[T][ur]; cols[T][ur]=null;
+  return {kind:'prop',cols,T,S,ur,m,op:big?'×':'÷',ans};
+}
 function gen(L){
+  if(L===6) L=rnd(1,5);
   if(L===1){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
     return {kind:'simp',bn,bd,k,N:bn*k,D:bd*k};}
   if(L===2){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
     return {kind:'equiv',bn,bd,k,ans:bn*k};}
   if(L===3){const rate=rnd(10,60),time=rnd(2,9),total=rate*time;
     return {kind:'unit',rate,time,total,ans:rate};}
-  if(L===4){const x=rnd(2,9); let b; do{b=rnd(2,9);}while(b===x); const m=rnd(2,4),c=x*m,d=b*m;
-    return {kind:'prop',x,b,m,c,d,ans:x};}
-  if(L===5){let bn,bd;do{bn=rnd(1,5);bd=rnd(1,5);}while(bn===bd);const u=rnd(2,6),total=(bn+bd)*u,first=bn*u;
-    return {kind:'split',bn,bd,u,total,first,ans:first};}
-  const unit=rnd(2,9),q=rnd(2,6),p=unit*q; let n; do{n=rnd(2,9);}while(n===q); const ans=unit*n;   // n ≠ q, or the question answers itself
-  return {kind:'cost',unit,q,p,n,ans};
+  if(L===4) return makeProp(0,0,false);                 // ?/4 = 6/8
+  const T=rnd(0,1), ur=rnd(0,1), big=(T===0&&ur===0)||Math.random()<0.5;   // ? top left: big fraction, so not the level 4 shape
+  return makeProp(T,ur,big);
 }
 const m=t=>`<span class="m">${t}</span>`, colon=`<span class="op c">:</span>`;
 function frac(t,b){ return `<span class="frac"><span>${t}</span><i class="sl">/</i><span>${b}</span></span>`; }
@@ -254,110 +241,68 @@ function probH(p,done){
   const A=v=>done?`<span class="mint">${v}</span>`:`<span class="qm">?</span>`;
   if(p.kind==='simp')  return `Simplify ${m(p.N)}${colon}${m(p.D)}`+(done?` <span class="op">=</span> <span class="mint m nw">${p.bn}${colon}${p.bd}</span>`:'');
   if(p.kind==='equiv') return `${m(p.bn)}${colon}${m(p.bd)} <span class="op">=</span> ${m(A(p.ans))}${colon}${m(p.bd*p.k)}`;
-  if(p.kind==='unit')  return `${m(p.total)} miles in ${m(p.time)} hours <br><span class="op">=</span> ${m(A(p.rate))} miles per hour`;
-  if(p.kind==='prop')  return `${frac(p.c,p.d)} <span class="op">=</span> ${frac(A(p.x),p.b)}`;
-  if(p.kind==='split') return `Split ${m(p.total)} in the ratio <span class="nw">${m(p.bn)}${colon}${m(p.bd)}</span>. <br>The first part is ${m(A(p.first))}`;
-  return `${m(p.q)} items cost ${m('$'+p.p)}. <br>${m(p.n)} items cost ${m(done?`<span class="mint">$${p.ans}</span>`:'<span class="qm">$?</span>')}`;
+  if(p.kind==='unit')  return `${m(p.total)}${colon}${m(p.time)} <span class="op">=</span> ${m(A(p.rate))}${colon}${m(1)}`;
+  const F=c=>frac(...[0,1].map(r=>p.cols[c][r]===null?A(p.ans):p.cols[c][r]));
+  return `${F(0)} <span class="op">=</span> ${F(1)}`;
 }
-const probTxt=p=>({simp:`Simplify ${p.N} : ${p.D}`, equiv:`${p.bn} : ${p.bd} = ? : ${p.bd*p.k}`, unit:`${p.total} miles in ${p.time} hours`,
-  prop:`${p.c}/${p.d} = ?/${p.b}`, split:`Split ${p.total} in ${p.bn} : ${p.bd}`, cost:`${p.q} items cost $${p.p}, ${p.n} items cost $?`})[p.kind];
 
 /* ---------- the moves for one problem ---------- */
 const cellBox=(c,r)=>({c,r}), arrBox=(a,r)=>({a,r:r||0});
-// type a number into a table cell; then it turns mint and the × / ÷ slides across
+// type a number into a table cell; then it turns mint
 function cellMove(o){ return Object.assign({kind:'type', after:async()=>{ const {c,r}=o.box;
-  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(450); return o.note||''; }}, o); }
+  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(450); return ''; }}, o); }
 // type the × or ÷ number in the row you are looking at; it is copied to the other row
 function arrMove(o){ const r=o.row||0; return Object.assign({kind:'type', box:arrBox(0,r), after:async()=>{
   V.arrows[0].k=o.expect; V.pendRow=1-r; V.hotArr=true; draw();
-  await fly($('a0r'+r), $('a0r'+(1-r)), arrTxt(0), 20); V.pendRow=null; V.hotArr=true; draw(); await wait(250); return o.note; }}, o); }
+  await fly($('a0r'+r), $('a0r'+(1-r)), arrTxt(0), 20); V.pendRow=null; V.hotArr=true; draw(); await wait(250); return ''; }}, o); }
+const DIV='Divide the yellow numbers again.', MUL='Multiply the yellow numbers again.';
 function buildMoves(p){
   if(p.kind==='simp') return [
     arrMove({hl:['c0r0','c0r1'], expect:p.k, calc:`G(${p.N},${p.D})`,
-      say:`Find the biggest number that goes into both <b>${p.N}</b> and <b>${p.D}</b>.`,
-      sub:`This is the GCF (greatest common factor).`,
-      partial:v=>(v>1&&v<p.k&&p.N%v===0&&p.D%v===0)?`<b>${v}</b> goes into both, but there is a bigger one. Try again.`:'',
-      nudge:`It has to go into ${p.N} and ${p.D} with nothing left over.`,
-      reveal:`The GCF of ${p.N} and ${p.D} is <b>${p.k}</b>.`,
-      note:`The GCF is <b>${p.k}</b>. Now divide both numbers by it.`}),
-    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.bn, calc:`${p.N}/${p.k}`,
-      say:`Divide the top: <b>${p.N} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.N} ÷ ${p.k} = <b>${p.bn}</b>.`}),
-    cellMove({box:cellBox(1,1), from:0, hl:['c0r1','a0'], expect:p.bd, calc:`${p.D}/${p.k}`,
-      say:`Now the bottom: <b>${p.D} ÷ ${p.k}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.D} ÷ ${p.k} = <b>${p.bd}</b>.`})
+      say:`Biggest number that goes into <b>${p.N}</b> and <b>${p.D}</b>?`,
+      partial:v=>(v>1&&v<p.k&&p.N%v===0&&p.D%v===0)?`<b>${v}</b> works. Find a bigger one.`:'',
+      nudge:`It must go into both evenly.`}),
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.bn, calc:`${p.N}/${p.k}`,
+      say:`Divide the top: <b>${p.N} ÷ ${p.k}</b>`, nudge:DIV}),
+    cellMove({box:cellBox(1,1), hl:['c0r1','a0'], expect:p.bd, calc:`${p.D}/${p.k}`,
+      say:`Divide the bottom: <b>${p.D} ÷ ${p.k}</b>`, nudge:DIV})
   ];
   if(p.kind==='equiv'){ const B=p.bd*p.k; return [
     arrMove({row:1, hl:['c0r1','c1r1'], expect:p.k, calc:`${B}/${p.bd}`,
-      say:`Look at the bottom row. <b>${p.bd}</b> times what makes <b>${B}</b>?`,
-      nudge:`Count by ${p.bd}s until you reach ${B}.`, reveal:`${p.bd} × ${p.k} = ${B}, so it is <b>${p.k}</b>.`,
-      note:`The bottom was multiplied by <b>${p.k}</b>.`}),
-    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.ans, calc:`${p.bn}*${p.k}`,
-      say:`Do the same to the top: <b>${p.bn} × ${p.k}</b>`, nudge:`Multiply the yellow numbers again.`, reveal:`${p.bn} × ${p.k} = <b>${p.ans}</b>.`})
+      say:`<b>${p.bd}</b> times what is <b>${B}</b>?`, nudge:`Count by ${p.bd}s to ${B}.`}),
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.ans, calc:`${p.bn}*${p.k}`,
+      say:`Same to the top: <b>${p.bn} × ${p.k}</b>`, nudge:MUL})
   ]; }
   if(p.kind==='unit') return [
-    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.rate, calc:`${p.total}/${p.time}`,
-      say:`Divide the miles by <b>${p.time}</b>: <b>${p.total} ÷ ${p.time}</b>`,
-      sub:`That gives the miles in <b>1</b> hour.`,
-      nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${p.time} = <b>${p.rate}</b>.`})
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.rate, calc:`${p.total}/${p.time}`,
+      say:`Divide the top: <b>${p.total} ÷ ${p.time}</b>`, nudge:DIV})
   ];
-  if(p.kind==='prop') return [
-    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.m, calc:`${p.d}/${p.b}`,
-      say:`The bottom went from <b>${p.d}</b> to <b>${p.b}</b>. Divide: <b>${p.d} ÷ ${p.b}</b>`,
-      nudge:`Divide the yellow numbers again.`, reveal:`${p.d} ÷ ${p.b} = <b>${p.m}</b>.`,
-      note:`The bottom was divided by <b>${p.m}</b>.`}),
-    cellMove({box:cellBox(1,0), from:0, hl:['c0r0','a0'], expect:p.x, calc:`${p.c}/${p.m}`,
-      say:`Do the same to the top: <b>${p.c} ÷ ${p.m}</b>`, nudge:`Divide the yellow numbers again.`, reveal:`${p.c} ÷ ${p.m} = <b>${p.x}</b>.`})
+  // proportion: find the × or ÷ on the full row, then do it to the other row
+  const {S,T,ur,m:k,op}=p, kr=1-ur, s=p.cols[S], t=p.cols[T], row=['top','bottom'];
+  return [
+    arrMove({row:kr, hl:[`c${S}r${kr}`,`c${T}r${kr}`], expect:k, calc:op==='×'?`${t[kr]}/${s[kr]}`:`${s[kr]}/${t[kr]}`,
+      say:op==='×'?`<b>${s[kr]}</b> times what is <b>${t[kr]}</b>?`:`Divide: <b>${s[kr]} ÷ ${t[kr]}</b>`,
+      nudge:op==='×'?`Count by ${s[kr]}s to ${t[kr]}.`:DIV}),
+    cellMove({box:cellBox(T,ur), hl:[`c${S}r${ur}`,'a0'], expect:p.ans, calc:`${s[ur]}${op==='×'?'*':'/'}${k}`,
+      say:`Same to the ${row[ur]}: <b>${s[ur]} ${op} ${k}</b>`, nudge:op==='×'?MUL:DIV})
   ];
-  if(p.kind==='cost') return [
-    cellMove({box:cellBox(1,1), from:0, hl:['c0r1','a0'], expect:p.unit, calc:`${p.p}/${p.q}`,
-      say:`Find the cost of <b>1</b> item: <b>$${p.p} ÷ ${p.q}</b>`,
-      nudge:`Divide the yellow numbers again.`, reveal:`${p.p} ÷ ${p.q} = <b>${p.unit}</b>.`,
-      note:`One item costs <b>$${p.unit}</b>.`}),
-    cellMove({box:cellBox(2,1), from:1, hl:['c1r1','a1'], expect:p.ans, calc:`${p.unit}*${p.n}`,
-      say:`Now <b>${p.n}</b> items: <b>$${p.unit} × ${p.n}</b>`,
-      nudge:`Multiply the yellow numbers again.`, reveal:`${p.unit} × ${p.n} = <b>${p.ans}</b>.`})
-  ];
-  // split: tape diagram
-  const sh=p.bn+p.bd, mv=[
-    {kind:'type', box:'shares', hl:'all', expect:sh, calc:`${p.bn}+${p.bd}`,
-      say:`How many boxes in all? <b>${p.bn} + ${p.bd}</b>`,
-      nudge:`Count all the boxes.`, reveal:`${p.bn} + ${p.bd} = <b>${sh}</b>.`,
-      after:async()=>{ V.tape.shares=sh; draw(); return `<b>${sh}</b> boxes in all.`; }},
-    {kind:'type', box:'unit', hl:'all', expect:p.u, calc:`${p.total}/${sh}`,
-      say:`Share <b>${p.total}</b> equally: <b>${p.total} ÷ ${sh}</b>`,
-      sub:`The answer goes in each box.`,
-      nudge:`Divide the yellow numbers again.`, reveal:`${p.total} ÷ ${sh} = <b>${p.u}</b>.`,
-      after:async()=>{ for(let i=1;i<=sh;i++){ V.tape.filled=i; draw(); await wait(110); }
-        V.tape.u=p.u; draw();
-        if(p.bn===1){ V.tape.first=p.u; draw(); return `Each box is <b>${p.u}</b>. The first part is just 1 box, so it is <b>${p.u}</b>.`; }
-        return `Each box is <b>${p.u}</b>.`; }}];
-  if(p.bn>1) mv.push({kind:'type', box:'first', hl:'first', expect:p.first, calc:`${p.bn}*${p.u}`,
-      say:`The first part has <b>${p.bn}</b> boxes: <b>${p.bn} × ${p.u}</b>`,
-      nudge:`Multiply the yellow numbers again.`, reveal:`${p.bn} × ${p.u} = <b>${p.first}</b>.`,
-      after:async()=>{ V.tape.first=p.first; V.tape.pop=true; draw(); await wait(300); return ''; }});
-  return mv;
 }
 function answerText(){ const p=current;
-  return ({simp:`${p.N} : ${p.D} = ${p.bn} : ${p.bd}`, equiv:`${p.bn} : ${p.bd} = ${p.ans} : ${p.bd*p.k}`, unit:`${p.rate} miles per hour`,
-    prop:`${p.c}/${p.d} = ${p.x}/${p.b}`, split:`The first part is ${p.first}`, cost:`${p.n} items cost $${p.ans}`})[p.kind]; }
-function checkLine(){ const p=current, C='✓ <b>Check:</b> ';
-  if(p.kind==='simp')  return C+`${p.bn} × ${p.k} = ${p.N} and ${p.bd} × ${p.k} = ${p.D}. Same ratio, smaller numbers.`;
-  if(p.kind==='equiv') return C+`${p.bn} × ${p.k} = ${p.ans} and ${p.bd} × ${p.k} = ${p.bd*p.k}. Both numbers were multiplied by ${p.k}.`;
-  if(p.kind==='unit')  return C+`${p.rate} × ${p.time} = <b>${p.total}</b> miles.`;
-  if(p.kind==='prop')  return C+`${p.x} × ${p.m} = ${p.c} and ${p.b} × ${p.m} = ${p.d}. The fractions are equal.`;
-  if(p.kind==='split') return C+`${p.first} + ${p.bd*p.u} = <b>${p.total}</b>. The two parts make the total.`;
-  return C+`$${p.ans} ÷ ${p.n} = <b>$${p.unit}</b> each, the same price as before.`;
+  if(p.kind==='simp')  return `${p.N} : ${p.D} = ${p.bn} : ${p.bd}`;
+  if(p.kind==='equiv') return `${p.bn} : ${p.bd} = ${p.ans} : ${p.bd*p.k}`;
+  if(p.kind==='unit')  return `${p.total} : ${p.time} = ${p.rate} : 1`;
+  const f=c=>p.cols[c].map(v=>v===null?p.ans:v).join('/');
+  return `${f(0)} = ${f(1)}`;
 }
 
 /* ---------- drawing ---------- */
 let V={};
 function resetVisual(){
-  const p=current; V={open:null,hl:null,done:false,newc:[],justKey:null,hotArr:false,labels:null,cols:null,arrows:null,tape:null};
+  const p=current; V={open:null,hl:null,done:false,newc:[],justKey:null,hotArr:false,labels:null,cols:null,arrows:null,back:false};
   if(p.kind==='simp'){ V.cols=[[p.N,p.D],[null,null]]; V.arrows=[{op:'÷',k:null}]; }
   if(p.kind==='equiv'){ V.cols=[[p.bn,p.bd],[null,p.bd*p.k]]; V.arrows=[{op:'×',k:null}]; }
-  if(p.kind==='unit'){ V.labels=['miles','hours']; V.cols=[[p.total,p.time],[null,1]]; V.arrows=[{op:'÷',k:p.time}]; }
-  if(p.kind==='prop'){ V.labels=['top','bottom']; V.cols=[[p.c,p.d],[null,p.b]]; V.arrows=[{op:'÷',k:null}]; }
-  if(p.kind==='cost'){ V.labels=['items','cost $']; V.cols=[[p.q,p.p],[1,null],[p.n,null]]; V.arrows=[{op:'÷',k:p.q},{op:'×',k:p.n}]; }
-  if(p.kind==='split'){ V.tape={shares:null,u:null,first:null,filled:0}; }
+  if(p.kind==='unit'){ V.cols=[[p.total,p.time],[null,1]]; V.arrows=[{op:'÷',k:p.time}]; }
+  if(p.kind==='prop'){ V.labels=['top','bottom']; V.cols=p.cols.map(c=>c.slice()); V.arrows=[{op:p.op,k:null}]; V.back=p.S===1; }
 }
 const arrTxt=a=>`${V.arrows[a].op} ${V.arrows[a].k}`;
 function isHot(key){ return Array.isArray(V.hl)&&V.hl.includes(key); }
@@ -367,11 +312,13 @@ function cellH(c,r){
   const cls=['cell']; if(v===null) cls.push('q'); if(isHot(key)) cls.push('hot'); if(V.newc.includes(key)) cls.push('new'); if(V.justKey===key) cls.push('pop');
   return `<span class="${cls.join(' ')}" id="${key}">${v===null?'?':v}</span>`;
 }
+// the arrow points from the full fraction to the one with the ?
 function arrH(a,r){
   const A=V.arrows[a], o=V.open, here=o&&o.box&&o.box.a===a&&o.box.r===r, k=(a===0&&V.pendRow===r)?null:A.k;
   const cls=['arr']; if(k===null && !here) cls.push('unk'); if(isHot('a'+a)||(V.hotArr&&a===0)) cls.push('hot');
   const inner=here?`${A.op} ${boxHTML(o,'sm')}`:`${A.op} ${k===null?'?':k}`;
-  return `<span class="${cls.join(' ')}" id="a${a}r${r}">${inner} <i>→</i></span>`;
+  return V.back?`<span class="${cls.join(' ')}" id="a${a}r${r}"><i>←</i> ${inner}</span>`
+               :`<span class="${cls.join(' ')}" id="a${a}r${r}">${inner} <i>→</i></span>`;
 }
 function tableH(){
   const n=V.cols.length; let h=`<div class="rt" style="grid-template-columns:${V.labels?'auto ':''}repeat(${2*n-1},auto)">`;
@@ -381,26 +328,9 @@ function tableH(){
   }
   return h+'</div>';
 }
-function tapeH(){
-  const p=current, T=V.tape, o=V.open, hot=V.hl;
-  const unit=(i,row)=>{ const filled=T.u!==null||(T.filled>i+(row?p.bn:0));
-    if(o&&o.box==='unit'&&row===0&&i===0) return `<span class="u">${boxHTML(o)}</span>`;
-    const hc=(hot==='all'||(hot==='first'&&row===0))?' hot':'';
-    return `<span class="u${hc}${T.u===null&&filled&&T.filled===i+(row?p.bn:0)+1?' pop':''}">${filled?p.u:''}</span>`; };
-  const bars=(k,row)=>Array.from({length:k},(_,i)=>unit(i,row)).join('');
-  let first='';
-  if(o&&o.box==='first') first=`<span class="tt">= ${boxHTML(o,'sm')}</span>`;
-  else if(T.first!==null) first=`<span class="tt">= <span class="mint${T.pop?' pop':''}">${T.first}</span></span>`;
-  else first=`<span class="tt">= <span class="qm">?</span></span>`;
-  const shares=(o&&o.box==='shares')?boxHTML(o,'sm'):(T.shares!==null?`<span class="mint">${T.shares}</span>`:'<b>?</b>');
-  T.pop=false;
-  return `<div class="tape"><div class="tr first"><span class="tl">first</span><span class="bars">${bars(p.bn,0)}</span>${first}</div>`
-    +`<div class="tr second"><span class="tl">second</span><span class="bars">${bars(p.bd,1)}</span></div>`
-    +`<div class="tot"><span class="sh">${shares}</span> boxes make <b>${p.total}</b></div></div>`;
-}
 function draw(){
   $('prob').innerHTML=probH(current,V.done);
-  $('rvis').innerHTML=V.tape?tapeH():tableH();
+  $('rvis').innerHTML=tableH();
   // scale the table down if a phone screen is too narrow for it
   const t=$('rvis').firstElementChild; if(t){ t.style.transform=''; const k=$('rvis').clientWidth/t.scrollWidth; if(k<1){ t.style.transform=`scale(${k})`; t.style.transformOrigin='center top'; } }
   V.justKey=null; V.hotArr=false;
@@ -419,7 +349,6 @@ function renderProblem(){
   M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
   G={steps:M.mv, si:0};
   resetVisual();
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
   paintDots(); showMove();
 }
 function showMove(note){
@@ -461,7 +390,7 @@ async function check(){
   if(v!==m.expect){
     M.tries++; M.err=true; shake(box);
     const part=m.partial?m.partial(v):'';
-    if(M.tries>=2){ say2(`${m.reveal} Type <b>${NUM(m.expect)}</b> to keep going.`); box.placeholder=NUM(m.expect); }
+    if(M.tries>=2){ say2(`Type <b>${NUM(m.expect)}</b>.`); box.placeholder=NUM(m.expect); }
     else say2(part||('Not quite. '+(m.nudge||NUDGE)));
     box.select(); return;
   }
@@ -475,7 +404,7 @@ async function choose(i){
   if(m.options[i].value!==m.expect){
     M.tries++; M.err=true; shake(btns[i]);
     const k=m.options.findIndex(o=>o.value===m.expect);
-    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
+    if(M.tries>=2){ say2(`Tap <b>${m.options[k].label}</b>.`); btns[k].classList.add('show'); }
     else say2('Not quite. '+m.nudge);
     return;
   }
@@ -487,12 +416,11 @@ async function choose(i){
 function finish(note){
   V.open=null; V.hl=null; V.done=true; draw();
   const right=!M.err;
-  $('where').textContent='Done';
-  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
-  $('done').innerHTML=note?'✓ '+note:''; $('sub').innerHTML='';
+  $('where').textContent='';
+  $('msg').innerHTML=`<span class="mint">✓ ${answerText()}</span>`;
+  $('done').innerHTML=''; $('sub').innerHTML='';
   $('fb').textContent=''; $('fb').className='fb';
   $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
-  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 // a number (or text) floats from one element to another

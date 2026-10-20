@@ -56,10 +56,10 @@
   .say .done{font-size:15px;line-height:1.4;color:var(--mint);font-weight:700;margin-bottom:8px}
   .say .done:empty{display:none}
   .say .done b{color:var(--mint)}
-  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber);white-space:nowrap}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub:empty{display:none}
   .say .sub b{color:var(--amber);white-space:nowrap}
   .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
     border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
@@ -77,9 +77,6 @@
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
   .fb b{color:var(--amber)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -104,7 +101,7 @@
   .labnav a:hover{text-decoration:underline}
   .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-  /* ── the expression: earlier lines stay above, the live line collapses one part at a time ── */
+  /* ── the expression: one live line that collapses one part at a time (.hist is only the start-screen example) ── */
   .lines{text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums}
   .hist{font-size:22px;color:var(--muted);line-height:1.5;white-space:nowrap}
   .hist sup{font-size:.6em}
@@ -138,17 +135,15 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Expressions &amp; Order of Operations · Module 8</div>
     <ul class="how">
-      <li>Do things in this order: <b>( )</b> first, then <b>powers</b>, then <b>× ÷</b>, then <b>+ −</b>.</li>
-      <li>The part to do next <b>glows</b>. Only <b>one box</b> opens at a time.</li>
-      <li>Type your answer and press <b>Check</b> (or Enter).</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li>Order: <b>( )</b>, <b>powers</b>, <b>× ÷</b>, <b>+ −</b>.</li>
+      <li>Work out the <b>glowing</b> part.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: 5 + 3 × 4</div>
+      <div class="ttl">Example</div>
       <div class="lines" id="exLines"></div>
-      <div class="excap">Multiply before you add: <b>3 × 4 = 12</b>.<br>Then add: <b>5 + 12 = 17</b>.</div>
+      <div class="excap">× before +: <b>3 × 4 = 12</b>.<br>Then <b>5 + 12 = 17</b>.</div>
     </div>
-    <button class="btn" onclick="startSet()">Start a set of 10</button>
+    <button class="btn" onclick="startSet()">Start</button>
   </section>
 
   <div id="play" class="hide">
@@ -165,13 +160,11 @@
       <div class="work" id="work"></div>
       <div class="say">
         <div class="done" id="done"></div>
-        <div class="where" id="where"></div>
         <div class="msg" id="msg"></div>
         <div class="sub" id="sub"></div>
         <div class="picks" id="picks"></div>
         <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
-        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -193,7 +186,7 @@
 /* ════════════════════════════════════════════════════════════════
    EXPRESSIONS & ORDER OF OPERATIONS — one box at a time
    The part to do next glows. After you type its value, that part
-   collapses into the number, and the line before it stays above.
+   collapses into the number. Only the current line is on screen.
    (#prob is hidden: it only holds the label for the progress tracker.)
    ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
@@ -209,9 +202,9 @@ const S=n=>(n<0?'−':'')+Math.abs(n);
 const NUM=S;
 const BOX_MODE='numeric';                      // a negative answer has its − printed in front of the box (the step already says it is negative)
 const ALLOW_NEG=true;
-const NUDGE='Work out the yellow part again.';
-const ENDNOTES=['Excellent! The right order, every time.','Strong set. A few more first-try answers and you level up.',
-  'Good work. ( ) first, then powers, then × ÷, then + −.','Every problem showed you the order. Go again. It gets easier.'];
+const NUDGE='Not quite. Try again.';
+const ENDNOTES=['Excellent. Right order every time.','Strong set. Go again.',
+  'Good work. Keep practicing.','Go again. It gets easier.'];
 
 /* ---------- problems (same levels as before) ---------- */
 // level 2 also mixes in partners that go left to right: ÷ before × when ÷ comes first, − before + when − comes first
@@ -259,84 +252,74 @@ const probTxt=(p,ans)=>lineT(startTokens(p))+(ans!==undefined?` = ${S(ans)}`:'')
 /* ---------- the moves for one problem ---------- */
 // work out the glowing part [i..j]; it collapses into its value
 function part(i,j,mini,expect,o){
-  return Object.assign({kind:'type', hl:[i,j], expect, neg:expect<0, calc:mini, nudge:NUDGE, reveal:`${mini} = <b>${S(expect)}</b>.`,
+  return Object.assign({kind:'type', hl:[i,j], expect, neg:expect<0, calc:mini, nudge:NUDGE,
     enter:()=>{ if(o.pre) o.pre(); V.work={txt:mini,val:null}; },
-    after:async()=>{ V.work.val=expect; draw(); await collapse(i,j,o.into||[N(expect)]); return o.note||''; }}, o);
+    after:async()=>{ V.work.val=expect; draw(); await collapse(i,j,o.into||[N(expect)]); return ''; }}, o);
 }
 function buildMoves(p){
-  const add=o=>o==='+'?'add':'subtract';
-  // a subtraction that comes out negative: say so, and say which subtraction to do
-  const negSub=(x,y,ans)=>ans<0?`${y} is bigger than ${x}, so the answer is negative. Work out <b>${y} − ${x}</b>.`:'';
-  const negNudge=(x,y,ans)=>ans<0?`Work out ${y} − ${x}. The − is already there.`:NUDGE;
+  const verb=o=>o==='+'?'Add.':'Subtract.';
+  // an answer that comes out negative: the − is printed in front of the box; say which numbers to work out
+  const NEG=' Answer is negative.';
+  const negSub=(x,y,ans)=>ans<0?`Work out <b>${y} − ${x}</b>.`:'';
+  const negNudge=(x,y,ans)=>ans<0?`Not quite. Work out ${y} − ${x}.`:NUDGE;
   if(p.kind==='pow'){
-    if(p.e===2) return [part(0,0,`${p.b} × ${p.b}`,p.b*p.b,{say:`<b>${p.b}²</b> means <b>${p.b} × ${p.b}</b>. Multiply.`})];
+    if(p.e===2) return [part(0,0,`${p.b} × ${p.b}`,p.b*p.b,{say:`<b>${p.b}²</b> means ${p.b} × ${p.b}.`})];
     const sq=p.b*p.b;
-    return [part(0,2,`${p.b} × ${p.b}`,sq,{say:`<b>${p.b}³</b> means ${p.b} × ${p.b} × ${p.b}. Start with <b>${p.b} × ${p.b}</b>`,
-              pre:()=>{ if(V.toks.length===1){ V.hist.push(lineH(V.toks)); V.histT.push(lineT(V.toks)); V.toks=[N(p.b),O('×'),N(p.b),O('×'),N(p.b)]; } },
-              into:[N(sq)], note:`${p.b} × ${p.b} = ${sq}. One more ${p.b} to go.`}),
-            part(0,2,`${sq} × ${p.b}`,p.ans,{say:`Now multiply: <b>${sq} × ${p.b}</b>`})];
+    // 5³ is rewritten as 5 × 5 × 5 (it replaces 5³ on the line)
+    return [part(0,2,`${p.b} × ${p.b}`,sq,{say:`<b>${p.b}³</b> means ${p.b} × ${p.b} × ${p.b}.`,
+              pre:()=>{ if(V.toks.length===1) V.toks=[N(p.b),O('×'),N(p.b),O('×'),N(p.b)]; },
+              into:[N(sq)]}),
+            part(0,2,`${sq} × ${p.b}`,p.ans,{say:`Multiply.`})];
   }
   if(p.kind==='md'){ const pr=p.b*p.c;
-    return [part(2,4,`${p.b} × ${p.c}`,pr,{say:`Multiply before you ${add(p.o)}: <b>${p.b} × ${p.c}</b>`}),
-            part(0,2,`${p.a} ${p.o} ${pr}`,p.ans,{say:`Now ${add(p.o)}: <b>${p.a} ${p.o} ${pr}</b>`, sub:negSub(p.a,pr,p.ans), nudge:negNudge(p.a,pr,p.ans)})]; }
+    return [part(2,4,`${p.b} × ${p.c}`,pr,{say:`Multiply first.`}),
+            part(0,2,`${p.a} ${p.o} ${pr}`,p.ans,{say:verb(p.o)+(p.ans<0?NEG:''), sub:negSub(p.a,pr,p.ans), nudge:negNudge(p.a,pr,p.ans)})]; }
   if(p.kind==='paren'){
-    return [part(0,4,`${p.a} ${p.o} ${p.b}`,p.inner,{say:`Parentheses first: <b>${p.a} ${p.o} ${p.b}</b>`, sub:negSub(p.a,p.b,p.inner), nudge:negNudge(p.a,p.b,p.inner)}),
-            part(0,2,`${S(p.inner)} × ${p.c}`,p.ans,{say:`Now multiply: <b>${S(p.inner)} × ${p.c}</b>`,
-              sub:p.inner<0?`Negative times positive is negative. Work out <b>${-p.inner} × ${p.c}</b>.`:p.inner===0?`0 times any number is 0.`:'',
-              nudge:p.inner<0?`Work out ${-p.inner} × ${p.c}. The − is already there.`:NUDGE})]; }
+    return [part(0,4,`${p.a} ${p.o} ${p.b}`,p.inner,{say:`Parentheses first.`+(p.inner<0?NEG:''), sub:negSub(p.a,p.b,p.inner), nudge:negNudge(p.a,p.b,p.inner)}),
+            part(0,2,`${S(p.inner)} × ${p.c}`,p.ans,{say:`Multiply.`+(p.inner<0?NEG:''),
+              sub:p.inner<0?`Work out <b>${-p.inner} × ${p.c}</b>.`:'',
+              nudge:p.inner<0?`Not quite. Work out ${-p.inner} × ${p.c}.`:NUDGE})]; }
   if(p.kind==='powadd'){ const sq=p.b*p.b;
-    return [part(2,2,`${p.b} × ${p.b}`,sq,{say:`Powers come before adding. <b>${p.b}²</b> means <b>${p.b} × ${p.b}</b>`}),
-            part(0,2,`${p.a} + ${sq}`,p.ans,{say:`Now add: <b>${p.a} + ${sq}</b>`})]; }
-  if(p.kind==='ltr'){ const w=p.o2==='×'?'multiply':'add';
-    return [part(0,2,`${p.a} ${p.o1} ${p.b}`,p.r1,{say:`<b>${p.o1}</b> and <b>${p.o2}</b> are partners. Go left to right: <b>${p.a} ${p.o1} ${p.b}</b>`,
-              sub:`Do the one on the left first.`}),
-            part(0,2,`${p.r1} ${p.o2} ${p.c}`,p.ans,{say:`Now ${w}: <b>${p.r1} ${p.o2} ${p.c}</b>`})]; }
+    return [part(2,2,`${p.b} × ${p.b}`,sq,{say:`Power first.`}),
+            part(0,2,`${p.a} + ${sq}`,p.ans,{say:`Add.`})]; }
+  if(p.kind==='ltr'){
+    return [part(0,2,`${p.a} ${p.o1} ${p.b}`,p.r1,{say:`Go left to right.`}),
+            part(0,2,`${p.r1} ${p.o2} ${p.c}`,p.ans,{say:p.o2==='×'?'Multiply.':'Add.'})]; }
   if(p.kind==='sub1'){ const kx=p.k*p.x;
-    return [{kind:'tap', button:`Put in x = ${p.x}`, say:`Put <b>${p.x}</b> in for <b>x</b>.`, sub:`${p.k}x means ${p.k} × x.`,
+    return [{kind:'tap', button:`Put in`, say:`Put <b>${p.x}</b> in for <b>x</b>.`,
               run:async()=>{ await putIn({x:p.x}); return ''; }},
-            part(0,2,`${p.k} × ${p.x}`,kx,{say:`Multiply first: <b>${p.k} × ${p.x}</b>`}),
-            part(0,2,`${kx} + ${p.c}`,p.ans,{say:`Now add: <b>${kx} + ${p.c}</b>`})]; }
+            part(0,2,`${p.k} × ${p.x}`,kx,{say:`Multiply first.`}),
+            part(0,2,`${kx} + ${p.c}`,p.ans,{say:`Add.`})]; }
   const t1=p.ca*p.a, t2=p.cb*p.b;
-  return [{kind:'tap', button:`Put in a and b`, say:`Put <b>${p.a}</b> in for <b>a</b> and <b>${p.b}</b> in for <b>b</b>.`, sub:`${p.ca}a means ${p.ca} × a.`,
+  return [{kind:'tap', button:`Put in`, say:`Put in <b>a</b> and <b>b</b>.`,
             run:async()=>{ await putIn({a:p.a,b:p.b}); return ''; }},
-          part(0,2,`${p.ca} × ${p.a}`,t1,{say:`Multiply first: <b>${p.ca} × ${p.a}</b>`}),
-          part(2,4,`${p.cb} × ${p.b}`,t2,{say:`Multiply again: <b>${p.cb} × ${p.b}</b>`}),
-          part(0,2,`${t1} − ${t2}`,p.ans,{say:`Now subtract: <b>${t1} − ${t2}</b>`, sub:negSub(t1,t2,p.ans), nudge:negNudge(t1,t2,p.ans)})];
+          part(0,2,`${p.ca} × ${p.a}`,t1,{say:`Multiply first.`}),
+          part(2,4,`${p.cb} × ${p.b}`,t2,{say:`Multiply.`}),
+          part(0,2,`${t1} − ${t2}`,p.ans,{say:`Subtract.`+(p.ans<0?NEG:''), sub:negSub(t1,t2,p.ans), nudge:negNudge(t1,t2,p.ans)})];
 }
-function answerText(){ return `${lineT(startTokens(current))} = ${S(current.ans)}</b>${given(current)}<b>`; }
-function checkLine(){
-  const p=current;
-  if(p.kind==='pow') return `✓ <b>Check:</b> ${p.b}${p.e===2?'²':'³'} = ${Array(p.e).fill(p.b).join(' × ')} = <b>${p.ans}</b>.`;
-  let steps=V.histT.slice(p.kind.startsWith('sub')?1:0); if(steps.length>2) steps=[steps[0],steps[steps.length-1]];
-  const chain=steps.concat([S(p.ans)]).join(' = ');
-  const why={md:` You multiplied before you ${p.o==='+'?'added':'subtracted'}.`, paren:` The parentheses came first.`,
-    powadd:` The power came first.`, ltr:` Partners go left to right.`}[p.kind]||'';
-  const pre=p.kind==='sub1'?`With x = ${p.x}: `:p.kind==='sub2'?`With a = ${p.a} and b = ${p.b}: `:'';
-  return `✓ <b>Check:</b> ${pre}${chain.replace(/ = ([^=]*)$/,' = <b>$1</b>')}.${why}`;
-}
+function answerText(){ return `${lineT(startTokens(current))} = ${S(current.ans)}${given(current)}`; }
 
 /* ---------- drawing ---------- */
 let V={};
-function resetVisual(){ const p=current; V={open:null,hl:null,done:false,toks:startTokens(p),hist:[],histT:[],work:null};
+function resetVisual(){ const p=current; V={open:null,hl:null,done:false,toks:startTokens(p),work:null};
   $('prob').textContent=probTxt(p);
   $('given').innerHTML=p.kind==='sub1'?`<span id="g-x">x = ${p.x}</span>`:p.kind==='sub2'?`<span id="g-a">a = ${p.a}</span><span id="g-b">b = ${p.b}</span>`:'';
 }
 function draw(){
   const L=$('lines');
-  L.innerHTML=V.hist.map((h,i)=>`<div class="hist">${i?'= ':''}${h}</div>`).join('')
-    +`<div class="live${V.done?' fin':''}" id="live">${V.hist.length?'<span class="eq">=</span>':''}${lineH(V.toks,V.hl)}</div>`;
+  // only the current form of the expression: each new form replaces the one before it
+  L.innerHTML=`<div class="live${V.done?' fin':''}" id="live">${lineH(V.toks,V.hl)}</div>`;
   const w=$('work'), o=V.open;
   if(V.work){
     const t=V.work.txt.replace(/ ([+−×÷]) /g,' <span class="op">$1</span> ');
     w.innerHTML=`${t} <span class="op">=</span> `+(V.work.val===null?(o?boxHTML(o):''):`<span class="mint pop" id="wval">${S(V.work.val)}</span>`);
   } else w.innerHTML='';
   if(V.done){ w.innerHTML=''; $('prob').textContent=probTxt(current,current.ans); }
-  fit($('live')); fit(w); [...L.querySelectorAll('.hist')].forEach(fit);
+  fit($('live')); fit(w);
   V.toks.forEach(k=>k.fresh=false);
 }
 // the glowing part shrinks away and its value pops in
 async function collapse(i,j,into){
-  const before=lineH(V.toks), beforeT=lineT(V.toks);
   await wait(250);
   const ch=$('chunk');
   if(ch && !reduce){
@@ -344,18 +327,15 @@ async function collapse(i,j,into){
     ch.style.width=ch.offsetWidth+'px'; ch.getBoundingClientRect();
     ch.classList.add('gone'); ch.style.width='0px'; await wait(650);
   }
-  V.hist.push(before); V.histT.push(beforeT);
   into.forEach(k=>{ if(k.t==='n') k.fresh=true; });
   V.toks.splice(i,j-i+1,...into); V.hl=null; V.work=null; draw(); await wait(350);
 }
 // substitution: the number flies in to replace the letter
 async function putIn(vals){
-  const before=lineH(V.toks), beforeT=lineT(V.toks);
   for(const name of Object.keys(vals)){
     const el=document.querySelector(`#live .vr[data-v="${name}"]`);
     await fly($('g-'+name),el,String(vals[name]),34);
   }
-  V.hist.push(before); V.histT.push(beforeT);
   V.toks=V.toks.flatMap(k=>k.t==='v'?[N(k.k),O('×'),Object.assign(N(vals[k.name]),{fresh:true})]:[k]);
   $('given').innerHTML=''; draw(); await wait(350);
 }
@@ -373,16 +353,14 @@ function renderProblem(){
   M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
   G={steps:M.mv, si:0};
   resetVisual();
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
   paintDots(); showMove();
 }
-function showMove(note){
+function showMove(){
   const m=M.mv[M.i]; M.tries=0;
   V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
   if(m.enter) m.enter();
   draw();
-  $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
-  $('done').innerHTML=note?'✓ '+note:'';
+  $('done').innerHTML='';
   $('msg').innerHTML=m.say;
   $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
@@ -398,11 +376,11 @@ function showMove(note){
 // shrink a one-line row of math until it fits the card (never a sideways scroll)
 function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
   while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
-function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+function nextMove(){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(); else showMove(); }
 async function doTap(){
   if(M.busy) return; M.busy=true; $('go').disabled=true;
-  const note=await M.mv[M.i].run();
-  M.busy=false; nextMove(note);
+  await M.mv[M.i].run();
+  M.busy=false; nextMove();
 }
 function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
 function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
@@ -410,44 +388,41 @@ function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
 async function check(){
   if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
   const raw=box.value.trim();
-  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  if(raw===''||raw==='-'){ say2('Type a number.'); box.focus(); return; }
   let v=readNum(raw); if(m.neg && v>0) v=-v;     // the − is already in front of the box
   if(v!==m.expect){
     M.tries++; M.err=true; shake(box);
-    const part=m.partial?m.partial(v):'';
     const typeIt=m.neg?String(-m.expect):NUM(m.expect);
-    if(M.tries>=2){ say2(`${m.reveal} Type <b>${typeIt}</b> to keep going.`); box.placeholder=typeIt; }
-    else say2(part||('Not quite. '+(m.nudge||NUDGE)));
+    if(M.tries>=2){ say2(`Type <b>${typeIt}</b>.`); box.placeholder=typeIt; }
+    else say2(m.nudge||NUDGE);
     box.select(); return;
   }
   M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
   V.typed=v;
-  const note=m.after?await m.after():''; draw();
-  M.busy=false; nextMove(note);
+  if(m.after) await m.after(); draw();
+  M.busy=false; nextMove();
 }
 async function choose(i){
   if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
   if(m.options[i].value!==m.expect){
     M.tries++; M.err=true; shake(btns[i]);
     const k=m.options.findIndex(o=>o.value===m.expect);
-    if(M.tries>=2){ say2(`${m.reveal} Tap <b>${m.options[k].label}</b> to keep going.`); btns[k].classList.add('show'); }
-    else say2('Not quite. '+m.nudge);
+    if(M.tries>=2){ say2(`Tap <b>${m.options[k].label}</b>.`); btns[k].classList.add('show'); }
+    else say2(m.nudge||NUDGE);
     return;
   }
   M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
   $('fb').textContent='✓'; $('fb').className='fb yes';
-  const note=m.after?await m.after():''; draw();
-  M.busy=false; $('picks').innerHTML=''; nextMove(note);
+  if(m.after) await m.after(); draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove();
 }
-function finish(note){
+function finish(){
   V.open=null; V.hl=null; V.done=true; draw();
   const right=!M.err;
-  $('where').textContent='Done';
-  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${answerText()}</b>`;
-  $('done').innerHTML=note?'✓ '+note:''; $('sub').innerHTML='';
+  $('done').innerHTML=''; $('sub').innerHTML='';
+  $('msg').innerHTML=`<span class="mint">✓ ${answerText()}</span>`;
   $('fb').textContent=''; $('fb').className='fb';
   $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
-  $('checkline').innerHTML=checkLine(); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 // a number (or text) floats from one element to another
@@ -488,7 +463,7 @@ function endSet(){
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
   const pb=$('pb');
   if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
-  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  else pb.textContent=`Best this visit: ${sessionBest}/10`;
   $('s-note').textContent=correctCount>=9?ENDNOTES[0]:correctCount>=7?ENDNOTES[1]:correctCount>=5?ENDNOTES[2]:ENDNOTES[3];
 }
 // Enter = Check (or the tap button / Next)
