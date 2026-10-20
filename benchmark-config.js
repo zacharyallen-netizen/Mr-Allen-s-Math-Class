@@ -12,6 +12,6 @@
    feedback; the page tells them results were not sent.
    ─────────────────────────────────────────────────────────────── */
 window.BENCHMARK_CONFIG = {
-  ENDPOINT: '',
+  ENDPOINT: 'https://script.google.com/macros/s/AKfycbxQzy4ow3nVzbJC8wvPzkqVV10AG3nG2EMYfsV7IiMolGdwrZe5y1Pc2pqmO60R6HE/exec',
   CODE:     'allen-8th-benchmark'
 };
