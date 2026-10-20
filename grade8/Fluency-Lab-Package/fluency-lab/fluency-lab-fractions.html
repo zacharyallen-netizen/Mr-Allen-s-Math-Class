@@ -43,6 +43,7 @@
   .frac .n{padding:0 8px 2px;border-bottom:3px solid var(--ink);line-height:1.15}
   .frac .d{padding:2px 8px 0;line-height:1.15}
   .whole{padding:0 4px}
+  .vh{display:none}   /* "/" and spaces only for the saved problem label (#prob text) */
   @media(max-width:430px){.fexpr{font-size:32px}}
 
   /* ── the written work ── */
@@ -57,6 +58,7 @@
   .ghost{visibility:hidden}
   .nm{border-radius:8px;padding:0 3px;transition:color .2s,background .2s}
   .nm.hot,.slot.hot{color:var(--amber);background:#ffbb4d1f}
+  .wl .frac.hot{color:var(--amber)} .wl .frac.hot .n{border-bottom-color:var(--amber)}
   .slot{display:inline-flex;align-items:center;justify-content:center;min-width:1ch;border-radius:8px}
   .slot.v{color:var(--mint)}
   .slot.blank{min-width:1.2ch}
@@ -110,11 +112,6 @@
   .pips{display:inline-flex;gap:4px;flex:none}
   .pips i{width:8px;height:8px;border-radius:50%;background:#3a4078}
   .pips i.on{background:var(--mint)} .pips i.now{background:var(--amber);box-shadow:0 0 0 3px #ffbb4d33}
-  /* what the LAST move did: small mint line, kept apart from the new instruction */
-  .did{font-size:15px;line-height:1.45;color:var(--mint);font-weight:600;margin:0 0 8px;padding:0 0 8px;border-bottom:1px dashed #33396b;animation:didin .45s ease}
-  .did:empty{display:none}
-  .did b{color:var(--mint)}
-  @keyframes didin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
   .say .msg{font-size:20px;line-height:1.45;font-weight:600}
   .say .msg b{color:var(--amber)}
   .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
@@ -127,9 +124,6 @@
   .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
   .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
   .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)} .fb.nudge{color:var(--amber)}
-  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.6;display:none}
-  .checkline.show{display:block}
-  .checkline b{color:var(--mint)}
 
   /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
@@ -166,15 +160,13 @@
     <h1>Fluency Lab</h1>
     <div class="sub">Fractions · Module 4</div>
     <ul class="how">
-      <li>To add or subtract, the <b>bottoms must match</b>.</li>
-      <li>To multiply, go <b>straight across</b>. To divide, <b>flip</b> the second fraction.</li>
-      <li>Only <b>one box</b> opens at a time. It glows.</li>
-      <li>You are only racing <b>your own best score</b>.</li>
+      <li>Fill in the <b>glowing box</b>.</li>
+      <li>Beat <b>your own best</b>.</li>
     </ul>
     <div class="example">
-      <div class="ttl">Here is one worked out: 5/6 − 1/4</div>
+      <div class="ttl">Example: 5/6 − 1/4</div>
       <div class="work" id="exPaper"></div>
-      <div class="excap">Count by 6s: 6, <b>12</b>. 4 goes into 12, so the bottoms both become <b>12</b>.<br>6 × 2 = 12, so 5 × 2 = <b>10</b>. 4 × 3 = 12, so 1 × 3 = <b>3</b>.<br>10 − 3 = 7. The answer is <b>7/12</b>.</div>
+      <div class="excap">Both bottoms become <b>12</b>.<br>Subtract the tops: 10 − 3 = <b>7</b>.</div>
     </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
@@ -191,12 +183,9 @@
       <div class="work" id="fwork" aria-live="polite"></div>
       <div class="say">
         <div class="where" id="where"></div>
-        <div class="did" id="did"></div>
         <div class="msg" id="msg"></div>
-        <div class="sub" id="sub"></div>
         <button class="btn" id="go">Check</button>
         <div class="fb" id="fb" role="status"></div>
-        <div class="checkline" id="checkline"></div>
       </div>
     </section>
   </div>
@@ -240,9 +229,12 @@ const wait=ms=>new Promise(r=>setTimeout(r,(reduce||FAST)?0:ms));
 
 function frac(n,d,cls=''){
   if(d===1) return `<span class="whole ${cls}">${n}</span>`;
-  return `<span class="frac ${cls}"><span class="n">${n}</span><span class="d">${d}</span></span>`;
+  return `<span class="frac ${cls}"><span class="n">${n}</span><span class="vh">/</span><span class="d">${d}</span></span>`;
 }
-function missHTML(D){return `<span class="frac"><span class="n">?</span><span class="d">${D}</span></span>`;}
+function missHTML(D){return `<span class="frac"><span class="n">?</span><span class="vh">/</span><span class="d">${D}</span></span>`;}
+const SP='<span class="vh"> </span>';
+const OPH=o=>`${SP}<span class="op">${o==='-'?'−':o}</span>${SP}`;
+const LBL=t=>`<span class="lbl">${t}</span>${SP}`;
 // small stacked fraction for the instruction text
 const IFR=(n,d)=>d===1?`${n}`:`<span class="ifr"><span>${n}</span><span>${d}</span></span>`;
 const IMX=(W,n,d)=>`${W}&thinsp;${IFR(n,d)}`;
@@ -251,13 +243,13 @@ const IANS=(n,d)=>(d>1&&n>d)?IMX(Math.floor(n/d),n%d,d):IFR(n,d);
 /* ---- generators (same levels and number ranges as before) ---- */
 function coprimeProper(){ let n,d; do{ d=rnd(2,9); n=rnd(1,d-1);}while(gcd(n,d)!==1); return [n,d]; }
 function genSimplify(){ const [n,d]=coprimeProper(); const k=rnd(2,6); const N=n*k,D=d*k;
-  return {type:'simplify',N,D,ansN:n,ansD:d,display:`<span class="lbl">Simplify</span>${frac(N,D)}`};}
+  return {type:'simplify',N,D,ansN:n,ansD:d,display:`${LBL('Simplify')}${frac(N,D)}`};}
 function genEquiv(){ const [n,d]=coprimeProper(); const k=rnd(2,6); const D=d*k,miss=n*k;
-  return {type:'equiv',n,d,k,D,ansN:miss,ansD:1,numeric:true,display:`${frac(n,d)}<span class="op">=</span>${missHTML(D)}`};}
+  return {type:'equiv',n,d,k,D,ansN:miss,ansD:1,numeric:true,display:`${frac(n,d)}${OPH('=')}${missHTML(D)}`};}
 function genAddLike(){ const d=rnd(3,12); let a=rnd(1,d-1),b=rnd(1,d-1); let op=pick(['+','-']);
   if(op==='-'){ if(a===b) b=(b%(d-1))+1; if(a<b)[a,b]=[b,a]; }
   const raw=op==='+'?a+b:a-b; const [rn,rd]=red(raw,d);
-  return {type:'addlike',a,b,d,op,ansN:rn,ansD:rd,display:`${frac(a,d)}<span class="op">${op==='-'?'−':op}</span>${frac(b,d)}`};}
+  return {type:'addlike',a,b,d,op,ansN:rn,ansD:rd,display:`${frac(a,d)}${OPH(op)}${frac(b,d)}`};}
 function genAddUnlike(){ const ds=[2,3,4,5,6,8]; let b1,b2,a1,a2,op,num;
   // re-roll the rare "2/4 − 1/2 = 0" problem: an answer of 0/1 is not a fraction skill
   do{ b1=pick(ds);b2=pick(ds); while(b2===b1)b2=pick(ds);
@@ -265,15 +257,15 @@ function genAddUnlike(){ const ds=[2,3,4,5,6,8]; let b1,b2,a1,a2,op,num;
     if(op==='-'&&a1*b2<a2*b1){[a1,b1,a2,b2]=[a2,b2,a1,b1];}
     num=op==='+'?a1*b2+a2*b1:a1*b2-a2*b1; }while(num===0);
   const den=b1*b2; const [rn,rd]=red(num,den);
-  return {type:'addunlike',a1,b1,a2,b2,op,den,ansN:rn,ansD:rd,display:`${frac(a1,b1)}<span class="op">${op==='-'?'−':op}</span>${frac(a2,b2)}`};}
+  return {type:'addunlike',a1,b1,a2,b2,op,den,ansN:rn,ansD:rd,display:`${frac(a1,b1)}${OPH(op)}${frac(a2,b2)}`};}
 function genMul(){ const [a1,b1]=coprimeProper(),[a2,b2]=coprimeProper(); const [rn,rd]=red(a1*a2,b1*b2);
-  return {type:'mul',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}<span class="op">×</span>${frac(a2,b2)}`};}
+  return {type:'mul',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}${OPH('×')}${frac(a2,b2)}`};}
 function genDiv(){ const [a1,b1]=coprimeProper(),[a2,b2]=coprimeProper(); const [rn,rd]=red(a1*b2,b1*a2);
-  return {type:'div',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}<span class="op">÷</span>${frac(a2,b2)}`};}
-function mixedHTML(W,n,d,cls){ return `<span class="whole ${cls||''}">${W}</span>${frac(n,d,cls)}`; }
+  return {type:'div',a1,b1,a2,b2,ansN:rn,ansD:rd,display:`${frac(a1,b1)}${OPH('÷')}${frac(a2,b2)}`};}
+function mixedHTML(W,n,d,cls){ return `<span class="whole ${cls||''}">${W}</span>${SP}${frac(n,d,cls)}`; }
 function genMixed(){ const W=rnd(1,5), d=rnd(2,9), n=rnd(1,d-1), N=W*d+n;
-  if(Math.random()<0.5) return {type:'m2i',W,n,d,N,ansN:N,ansD:d,display:`<span class="lbl">Improper</span>${mixedHTML(W,n,d)}`};
-  return {type:'i2m',W,n,d,N,ansN:N,ansD:d,ansText:`${W} ${n}/${d}`,display:`<span class="lbl">Mixed</span>${frac(N,d)}`}; }
+  if(Math.random()<0.5) return {type:'m2i',W,n,d,N,ansN:N,ansD:d,display:`${LBL('Improper')}${mixedHTML(W,n,d)}`};
+  return {type:'i2m',W,n,d,N,ansN:N,ansD:d,ansText:`${W} ${n}/${d}`,display:`${LBL('Mixed')}${frac(N,d)}`}; }
 const GEN={1:()=>Math.random()<0.35?genMixed():genSimplify(),2:genEquiv,3:genAddLike,4:genAddUnlike,5:genMul,6:genDiv};
 
 /* ════════ the written work ════════
@@ -311,176 +303,159 @@ const XT=(x,y)=>x===1?`${y}`:y===1?`${x}`:`${x}×${y}`;
 // fraction bars: N pieces of size 1/d, d pieces to a whole
 function barsHTML(N,d){ const bars=Math.ceil(N/d); let h='<div class="fbars">';
   for(let b=0;b<bars;b++){ h+='<span class="fbar">'; for(let k=0;k<d;k++){ h+=`<i class="${b*d+k<N?'on':''}"></i>`; } h+='</span>'; }
-  return h+`</div><div class="fbcap">Each bar is 1 whole cut into ${d} pieces.</div>`; }
+  return h+'</div>'; }
 
+// Only the step being worked on is on screen: each new form REPLACES the line before it.
 // simplest form + mixed number lines, shared by +, −, ×, ÷
+const tailOn=()=>opened('Lg','Ln','Ld','Mw','Mr');
 function tailLines(p){ const L=[]; if(!p._r) return L; const [rN,rD]=p._r, g=gcd(rN,rD);
-  if(g>1 && opened('Lg','Ln','Ld')){ const d=rD/g;
+  const mix=opened('Mw','Mr');
+  if(g>1 && opened('Lg','Ln','Ld') && !mix){ const d=rD/g;
     let h=SC(F(rN,'rN'),F(rD,'rD'),'÷',K('Lg'),K('Lg2'),K('Ln'),K('Ld'));
     if(d===1 && S.Ld!=null) h+=`${EQ}<span class="slot v pop">${rN/g}</span>`;
     L.push(WL(h)); }
-  if(opened('Mw','Mr')) L.push(WL(`${FR(F(p.ansN,'mN'),F(p.ansD,'mD'))}${EQ}${MX(K('Mw'),K('Mr'),F(p.ansD,'Md'))}`));
+  if(mix) L.push(WL(`${FR(F(p.ansN,'mN'),F(p.ansD,'mD'))}${EQ}${MX(K('Mw'),K('Mr'),F(p.ansD,'Md'))}`));
   return L; }
 
 const DRAW={
   simplify:p=>[WL(SC(F(p.N,'N'),F(p.D,'D'),'÷',K('g'),K('g2'),K('n'),K('d')))],
   equiv:p=>[WL(SC(F(p.n,'n'),F(p.d,'d'),'×',K('k2'),K('k'),K('t'),F(p.D,'D')))],
-  m2i:p=>{ const L=[barsHTML(p.N,p.d)];
-    L.push(WL(`${MX(F(p.W,'W'),F(p.n,'n'),F(p.d,'d'))}${EQ}${FR(`${V(K('wd'))}&thinsp;+&thinsp;${V(F(p.n,'n2'))}`,F(p.d,'d2'))}`));
-    if(opened('N')) L.push(WL(`${EQ}${FR(K('N'),F(p.d,'d3'))}`));
+  m2i:p=>{ const L=[barsHTML(p.N,p.d)], mx=MX(F(p.W,'W'),F(p.n,'n'),F(p.d,'d'));
+    const sum=cls=>FR(`${V(K('wd'))}&thinsp;+&thinsp;${V(F(p.n,'n2'))}`,F(p.d,'d2'),cls);
+    if(DONE) L.push(WL(`${mx}${EQ}${FR(K('N'),F(p.d))}`));
+    else if(opened('N')) L.push(WL(`${mx}${EQ}${sum('expr')}${EQ}${FR(K('N'),F(p.d,'d3'))}`));
+    else L.push(WL(`${mx}${EQ}${sum()}`));
     return L; },
   i2m:p=>{ const L=[barsHTML(p.N,p.d)];
-    L.push(WL(`${V(F(p.N,'N'))}&thinsp;÷&thinsp;${V(F(p.d,'d'))}${EQ}${V(K('W'))}<span class="opx${opened('r')?'':' ghost'}">r</span>${V(K('r'))}`));
+    if(!DONE) L.push(WL(`${V(F(p.N,'N'))}&thinsp;÷&thinsp;${V(F(p.d,'d'))}${EQ}${V(K('W'))}<span class="opx${opened('r')?'':' ghost'}">r</span>${V(K('r'))}`));
     if(S.r!=null) L.push(WL(`${FR(F(p.N),F(p.d))}${EQ}${MX(K('W2'),K('r2'),K('d2'))}`));
     return L; },
-  addlike:p=>[WL(`${FR(F(p.a,'a'),F(p.d))}${OPX(p.op)}${FR(F(p.b,'b'),F(p.d))}${EQ}${FR(K('raw'),F(p.d,'dd'))}`)].concat(tailLines(p)),
+  addlike:p=>(tailOn()?[]:[WL(`${FR(F(p.a,'a'),F(p.d))}${OPX(p.op)}${FR(F(p.b,'b'),F(p.d))}${EQ}${FR(K('raw'),F(p.d,'dd'))}`)]).concat(tailLines(p)),
   addunlike:p=>{ const u=p._u, L=[];
+    if(tailOn()) return tailLines(p);
     if(O==='L') L.push(`<div class="mrow live">${u.mults.map(m=>`<button type="button" class="mult" data-m="${m}">${m}</button>`).join('')}</div>`);
-    if(opened('L') && !opened('raw')) L.push(WL(`LCD${EQ}${V(K('L'))}`,'small'));
-    if(S.L!=null && !opened('Lg','Mw')){
+    // the LCD line goes away once its number has flown into both bottoms
+    if(opened('L') && S.Lb1==null) L.push(WL(`LCD${EQ}${V(K('L'))}`,'small'));
+    if(S.L!=null && !opened('raw')){
       // a fraction already over the LCD is just shown as it is (no "× 1")
       const A=u.k1===1?FR(F(p.a1,'a1'),F(p.b1,'b1')):SC(F(p.a1,'a1'),F(p.b1,'b1'),'×',K('k1t'),K('k1'),K('t1'),K('Lb1'));
       const B=u.k2===1?FR(F(p.a2,'a2'),F(p.b2,'b2')):SC(F(p.a2,'a2'),F(p.b2,'b2'),'×',K('k2t'),K('k2'),K('t2'),K('Lb2'));
       L.push(WL(`<div class="pair">${A}${OPX(p.op)}${B}</div>`)); }
+    // the new fractions REPLACE the "make the bottoms match" line
     if(opened('raw')) L.push(WL(`${FR(F(u.t1,'c1'),F(u.L))}${OPX(p.op)}${FR(F(u.t2,'c2'),F(u.L))}${EQ}${FR(K('raw'),F(u.L,'cL'))}`));
-    return L.concat(tailLines(p)); },
-  mul:p=>[WL(`${EQ}${FR(V(F(XT(p.a1,p.a2),'en')),V(F(XT(p.b1,p.b2),'ed')),'expr')}${EQ}${FR(K('tn'),K('td'))}`)].concat(tailLines(p)),
-  div:p=>{ const L=[];
-    const second=S.flip?FR(F(p.b2),F(p.a2),'','fl'):FR(F(p.a2),F(p.b2),'','fl');
-    L.push(WL(`${EQ}${FR(F(p.a1),F(p.b1))}<span class="opx${S.flip?' pop':''}">${S.flip?'×':'÷'}</span>${second}`));
-    if(S.flip) L.push(WL(`${EQ}${FR(V(F(XT(p.a1,p.b2),'en')),V(F(XT(p.b1,p.a2),'ed')),'expr')}${EQ}${FR(K('tn'),K('td'))}`));
-    return L.concat(tailLines(p)); }
+    return L; },
+  mul:p=>(tailOn()?[]:[WL(`${EQ}${FR(V(F(XT(p.a1,p.a2),'en')),V(F(XT(p.b1,p.b2),'ed')),'expr')}${EQ}${FR(K('tn'),K('td'))}`)]).concat(tailLines(p)),
+  // ÷ : the flipped line REPLACES the ÷ line, and the answer is written on the same line
+  div:p=>{ if(tailOn()) return tailLines(p);
+    const pop=JUST.has('flip')?' pop':'';
+    const second=S.flip?FR(F(p.b2,'B2'),F(p.a2,'A2'),'','fl'):FR(F(p.a2),F(p.b2),'','fl');
+    let h=`${EQ}${FR(F(p.a1,'A1'),F(p.b1,'B1'))}<span class="opx${pop}">${S.flip?'×':'÷'}</span>${second}`;
+    if(S.flip) h+=`${EQ}${FR(K('tn'),K('td'))}`;
+    return [WL(h)]; }
 };
+let DONE=false;
 function draw(target){
   const el=target||$('fwork'), p=P||current;
   el.innerHTML=DRAW[p.type](p).join('');
   HOT.forEach(h=>el.querySelectorAll(`[data-h="${h}"],[data-k="${h}"]`).forEach(e=>e.classList.add('hot')));
 }
 
-/* ════════ the moves ════════ */
+/* ════════ the moves ════════
+   say   = the ONE short instruction
+   hint  = first wrong answer (default "Not quite. Try again.")
+   nudge = a close answer that is not counted wrong
+   Second wrong answer: "Type 12." */
 const DO=op=>op==='+'?'Add':'Subtract';
-function addTail(mv,t){ const m=mv[mv.length-1]; m.tail=(m.tail?m.tail+' ':'')+t; }
+const SYM=op=>op==='-'?'−':op;
 const gcfNudge=(A,B,g)=>v=>{ const n=+v;
-  if(n===1) return `1 goes into every number, but it does not make it simpler. Find a bigger one.`;
-  if(n>1&&n<g&&A%n===0&&B%n===0) return `${n} works, but there is a bigger one. Try again.`;
+  if(n===1) return `Find a bigger one.`;
+  if(n>1&&n<g&&A%n===0&&B%n===0) return `${n} works. Find a bigger one.`;
   return ''; };
+const gcfMove=(key,A,B,g,hot,set)=>({key,expect:g,hot,nudge:gcfNudge(A,B,g),
+  say:`Biggest number that goes into <b>${A}</b> and <b>${B}</b>?`,
+  hint:`Not quite. It must go into both.`,fly:[[key,key+'2']],set});
+const countBy=d=>`Count by ${d}s: ${d}, ${2*d}, ${3*d}, …`;
 // simplest form, then a mixed number if it is more than 1
 function tail(p,mv,rN,rD){
   p._r=[rN,rD]; const g=gcd(rN,rD), n=rN/g, d=rD/g;
-  if(g===1) addTail(mv,`${IFR(rN,rD)} is already as simple as it gets.`);
-  else {
-    mv.push({key:'Lg',expect:g,where:'Simplify',hot:['rN','rD'],nudge:gcfNudge(rN,rD,g),
-      say:`Simplify. What is the biggest number that goes into <b>${rN}</b> and <b>${rD}</b>?`,
-      hint:`Not quite. Find a number that goes into both ${rN} and ${rD} evenly.`,
-      wrong:`${g} goes into both: ${rN} ÷ ${g} = ${n} and ${rD} ÷ ${g} = ${d}`,
-      fly:[['Lg','Lg2']], set:{Lg2:g}});
-    mv.push({key:'Ln',expect:n,where:'Simplify',hot:['rN','Lg'],say:`Divide the top by ${g}: <b>${rN} ÷ ${g}</b>`,wrong:`${rN} ÷ ${g} = ${n}`});
-    mv.push({key:'Ld',expect:d,where:'Simplify',hot:['rD','Lg2'],say:`Now the bottom: <b>${rD} ÷ ${g}</b>`,wrong:`${rD} ÷ ${g} = ${d}`,
-      note:d===1?`${IFR(n,1)}… a bottom of 1 means it is just <b>${n}</b>.`:''});
+  if(g>1){
+    mv.push(gcfMove('Lg',rN,rD,g,['rN','rD'],{Lg2:g}));
+    mv.push({key:'Ln',expect:n,hot:['rN','Lg'],say:`Divide the top: <b>${rN} ÷ ${g}</b>`});
+    mv.push({key:'Ld',expect:d,hot:['rD','Lg2'],say:`Divide the bottom: <b>${rD} ÷ ${g}</b>`});
   }
-  if(d>1 && n>d){ const W=Math.floor(n/d), R=n%d;
-    mv.push({key:'Mw',expect:W,where:'Mixed number',hot:['mN','mD'],
-      say:`${IFR(n,d)} is more than 1 whole. How many <b>${d}s</b> fit in <b>${n}</b>?`,
-      sub:`Every ${d} pieces make 1 whole.`,hint:`Not quite. Count by ${d}s: ${d}, ${2*d}, ${3*d}, …`,
-      wrong:W>1?`${d} × ${W} = ${W*d}. That is as close as you can get to ${n}`:`${d} fits in ${n} only once`});
-    mv.push({key:'Mr',expect:R,where:'Mixed number',hot:['mN','Mw'],
-      say:`What is left over? <b>${n} − ${W*d}</b>`,sub:W>1?`${d} × ${W} = ${W*d}.`:'',wrong:`${n} − ${W*d} = ${R}`,
-      note:`The left over goes on top. The bottom stays <b>${d}</b>.`});
+  if(d>1 && n>d){ const W=Math.floor(n/d);
+    mv.push({key:'Mw',expect:W,hot:['mN','mD'],say:`How many <b>${d}s</b> fit in <b>${n}</b>?`,hint:countBy(d)});
+    mv.push({key:'Mr',expect:n%d,hot:['mN','Mw'],say:`Left over: <b>${n} − ${W*d}</b>`});
   }
 }
 // multiply across: never ask for "× 1"
-function across(mv,S0,tn,td,tTxt,bTxt,first){
-  const one=s=>/^1×|×1$/.test(s);
-  const autoT=one(tTxt), autoB=one(bTxt);
-  if(autoT) S0.tn=tn; if(autoB) S0.td=td;
-  if(!autoT) mv.push({key:'tn',expect:tn,where:'Multiply across',hot:['en'],say:`Multiply the tops: <b>${tTxt.replace('×',' × ')}</b>`,
-    sub:first||'',wrong:`${tTxt.replace('×',' × ')} = ${tn}`});
-  if(!autoB) mv.push({key:'td',expect:td,where:'Multiply across',hot:['ed'],say:`Multiply the bottoms: <b>${bTxt.replace('×',' × ')}</b>`,
-    sub:autoT?((first?first+' ':'')+`The top is just <b>${tn}</b>.`):'',wrong:`${bTxt.replace('×',' × ')} = ${td}`});
+function across(mv,S0,tn,td,tTxt,bTxt,hotT,hotB){
+  const one=s=>/^1×|×1$/.test(s), sp=s=>s.replace('×',' × ');
+  if(one(tTxt)) S0.tn=tn; else mv.push({key:'tn',expect:tn,hot:hotT,say:`Multiply the tops: <b>${sp(tTxt)}</b>`});
+  if(one(bTxt)) S0.td=td; else mv.push({key:'td',expect:td,hot:hotB,say:`Multiply the bottoms: <b>${sp(bTxt)}</b>`});
 }
 function build(p){
   const mv=[], S0={};
   if(p.type==='simplify'){ const g=gcd(p.N,p.D);
-    mv.push({key:'g',expect:g,where:'Simplify',hot:['N','D'],nudge:gcfNudge(p.N,p.D,g),
-      say:`What is the biggest number that goes into both <b>${p.N}</b> and <b>${p.D}</b>?`,
-      sub:`It is called the GCF (greatest common factor).`,
-      hint:`Not quite. Find a number that goes into both ${p.N} and ${p.D} evenly.`,
-      wrong:`${g} goes into both: ${p.N} ÷ ${g} = ${p.ansN} and ${p.D} ÷ ${g} = ${p.ansD}`,
-      fly:[['g','g2']],set:{g2:g}});
-    mv.push({key:'n',expect:p.ansN,where:'Simplify',hot:['N','g'],say:`Divide the top by ${g}: <b>${p.N} ÷ ${g}</b>`,wrong:`${p.N} ÷ ${g} = ${p.ansN}`});
-    mv.push({key:'d',expect:p.ansD,where:'Simplify',hot:['D','g2'],say:`Now the bottom: <b>${p.D} ÷ ${g}</b>`,wrong:`${p.D} ÷ ${g} = ${p.ansD}`});
+    mv.push(gcfMove('g',p.N,p.D,g,['N','D'],{g2:g}));
+    mv.push({key:'n',expect:p.ansN,hot:['N','g'],say:`Divide the top: <b>${p.N} ÷ ${g}</b>`});
+    mv.push({key:'d',expect:p.ansD,hot:['D','g2'],say:`Divide the bottom: <b>${p.D} ÷ ${g}</b>`});
   }
   else if(p.type==='equiv'){
-    mv.push({key:'k',expect:p.k,where:'Same fraction, new bottom',hot:['d','D'],say:`Look at the bottoms: <b>${p.d} × ? = ${p.D}</b>`,
-      sub:`Whatever we do to the bottom, we do to the top.`,wrong:`${p.d} × ${p.k} = ${p.D}`,
-      fly:[['k','k2']],set:{k2:p.k}});
-    mv.push({key:'t',expect:p.ansN,where:'Same fraction, new bottom',hot:['n','k2'],say:`Do the same to the top: <b>${p.n} × ${p.k}</b>`,wrong:`${p.n} × ${p.k} = ${p.ansN}`});
+    mv.push({key:'k',expect:p.k,hot:['d','D'],say:`Bottom: <b>${p.d} × ? = ${p.D}</b>`,fly:[['k','k2']],set:{k2:p.k}});
+    mv.push({key:'t',expect:p.ansN,hot:['n','k2'],say:`Same to the top: <b>${p.n} × ${p.k}</b>`});
   }
   else if(p.type==='m2i'){ const wd=p.W*p.d;
     if(p.W===1) S0.wd=p.d;            // 1 whole is just d pieces: no "1 × d" step
-    else mv.push({key:'wd',expect:wd,where:'Mixed → improper',hot:['W','d'],say:`How many pieces are in <b>${p.W}</b> whole${p.W>1?'s':''}? <b>${p.W} × ${p.d}</b>`,
-      sub:`Each whole is cut into <b>${p.d}</b> pieces.`,wrong:`${p.W} × ${p.d} = ${wd}`});
-    mv.push({key:'N',expect:p.N,where:'Mixed → improper',hot:['wd','n2'],say:`Add the <b>${p.n}</b> extra piece${p.n>1?'s':''}: <b>${wd} + ${p.n}</b>`,
-      sub:(p.W===1?`1 whole is <b>${p.d}</b> pieces. `:'')+`The bottom stays <b>${p.d}</b>.`,wrong:`${wd} + ${p.n} = ${p.N}`});
+    else mv.push({key:'wd',expect:wd,hot:['W','d'],say:`Pieces in ${p.W} wholes: <b>${p.W} × ${p.d}</b>`});
+    mv.push({key:'N',expect:p.N,hot:['wd','n2'],say:`Add the extra pieces: <b>${wd} + ${p.n}</b>`});
   }
   else if(p.type==='i2m'){ const wd=p.W*p.d;
-    mv.push({key:'W',expect:p.W,where:'Improper → mixed',hot:['N','d'],say:`How many <b>${p.d}s</b> fit in <b>${p.N}</b>?`,
-      sub:`Think: <b>${p.d} × ?</b> gets close to ${p.N} without going over.`,
-      hint:`Not quite. Count by ${p.d}s: ${p.d}, ${2*p.d}, ${3*p.d}, …`,wrong:p.W>1?`${p.d} × ${p.W} = ${wd}. One more group would be too many`:`${p.d} fits in ${p.N} only once`});
-    mv.push({key:'r',expect:p.n,where:'Improper → mixed',hot:['N','W'],say:`What is left over? <b>${p.N} − ${wd}</b>`,
-      sub:p.W>1?`${p.d} × ${p.W} = ${wd}.`:'',wrong:`${p.N} − ${wd} = ${p.n}`,
-      fly:[['W','W2'],['r','r2'],['d','d2']],set:{W2:p.W,r2:p.n,d2:p.d},
-      note:`The wholes go in front. The left over goes on top. The bottom stays <b>${p.d}</b>.`});
+    mv.push({key:'W',expect:p.W,hot:['N','d'],say:`How many <b>${p.d}s</b> fit in <b>${p.N}</b>?`,hint:countBy(p.d)});
+    mv.push({key:'r',expect:p.n,hot:['N','W'],say:`Left over: <b>${p.N} − ${wd}</b>`,
+      fly:[['W','W2'],['r','r2'],['d','d2']],set:{W2:p.W,r2:p.n,d2:p.d}});
   }
   else if(p.type==='addlike'){ const raw=p.op==='+'?p.a+p.b:p.a-p.b;
-    mv.push({key:'raw',expect:raw,where:`${DO(p.op)} the tops`,hot:['a','b','dd'],say:`The bottoms match. ${DO(p.op)} the tops: <b>${p.a} ${p.op==='-'?'−':'+'} ${p.b}</b>`,
-      sub:`The bottom stays <b>${p.d}</b>.`,wrong:`${p.a} ${p.op==='-'?'−':'+'} ${p.b} = ${raw}`});
+    mv.push({key:'raw',expect:raw,hot:['a','b','dd'],say:`${DO(p.op)} the tops: <b>${p.a} ${SYM(p.op)} ${p.b}</b>`});
     tail(p,mv,raw,p.d);
   }
   else if(p.type==='addunlike'){
     const big=Math.max(p.b1,p.b2), small=Math.min(p.b1,p.b2), L=p.b1*p.b2/gcd(p.b1,p.b2);
     const mults=[]; for(let m=big;m<=p.b1*p.b2;m+=big) mults.push(m);
     const u={big,small,L,mults,k1:L/p.b1,k2:L/p.b2,t1:p.a1*(L/p.b1),t2:p.a2*(L/p.b2)}; p._u=u;
-    const raw=p.op==='+'?u.t1+u.t2:u.t1-u.t2, o=p.op==='-'?'−':'+';
-    const set={Lb1:L,Lb2:L}; const same=[];
-    if(u.k1===1){ set.t1=p.a1; same.push(IFR(p.a1,p.b1)); }
-    if(u.k2===1){ set.t2=p.a2; same.push(IFR(p.a2,p.b2)); }
-    mv.push({key:'L',kind:'pick',expect:L,where:'Common bottom (LCD)',
-      say:`The bottoms are different. Count by <b>${big}</b>s. Tap the first number that <b>${small}</b> goes into.`,
-      sub:`That is the lowest common denominator (LCD): the smallest bottom both can share.`,
-      fly:[['L','Lb1'],['L','Lb2']],set,
-      note:`Both bottoms will be <b>${L}</b>.`+(same.length?` ${same.join(' ')} already ha${same.length>1?'ve':'s'} ${L} on the bottom, so it stays the same.`:'')});
-    [[1,p.a1,p.b1,u.k1,u.t1],[2,p.a2,p.b2,u.k2,u.t2]].forEach(([i,a,b,k,t],j)=>{ if(k===1) return;
-      mv.push({key:'k'+i,expect:k,where:'Same bottom',hot:['b'+i,'Lb'+i],say:`Make the bottom ${L}: <b>${b} × ? = ${L}</b>`,
-        wrong:`${b} × ${k} = ${L}`,
+    const raw=p.op==='+'?u.t1+u.t2:u.t1-u.t2;
+    const set={Lb1:L,Lb2:L};
+    if(u.k1===1) set.t1=p.a1;
+    if(u.k2===1) set.t2=p.a2;
+    mv.push({key:'L',kind:'pick',expect:L,say:`Tap the first number <b>${small}</b> goes into.`,
+      fly:[['L','Lb1'],['L','Lb2']],set});
+    [[1,p.a1,p.b1,u.k1,u.t1],[2,p.a2,p.b2,u.k2,u.t2]].forEach(([i,a,b,k,t])=>{ if(k===1) return;
+      mv.push({key:'k'+i,expect:k,hot:['b'+i,'Lb'+i],say:`Bottom: <b>${b} × ? = ${L}</b>`,
         fly:[['k'+i,'k'+i+'t']],set:{['k'+i+'t']:k}});
-      mv.push({key:'t'+i,expect:t,where:'Same bottom',hot:['a'+i,'k'+i+'t'],say:`Do the same to the top: <b>${a} × ${k}</b>`,wrong:`${a} × ${k} = ${t}`});
+      mv.push({key:'t'+i,expect:t,hot:['a'+i,'k'+i+'t'],say:`Same to the top: <b>${a} × ${k}</b>`});
     });
-    mv.push({key:'raw',expect:raw,where:`${DO(p.op)} the tops`,hot:['c1','c2','cL'],say:`Now ${DO(p.op).toLowerCase()} the tops: <b>${u.t1} ${o} ${u.t2}</b>`,
-      sub:`The bottom stays <b>${L}</b>.`,wrong:`${u.t1} ${o} ${u.t2} = ${raw}`});
+    mv.push({key:'raw',expect:raw,hot:['c1','c2','cL'],say:`${DO(p.op)} the tops: <b>${u.t1} ${SYM(p.op)} ${u.t2}</b>`});
     tail(p,mv,raw,L);
   }
   else if(p.type==='mul'){ const tn=p.a1*p.a2, td=p.b1*p.b2;
-    across(mv,S0,tn,td,`${p.a1}×${p.a2}`,`${p.b1}×${p.b2}`,`To multiply, go straight across. The bottoms do not need to match.`);
+    across(mv,S0,tn,td,`${p.a1}×${p.a2}`,`${p.b1}×${p.b2}`,['en'],['ed']);
     tail(p,mv,tn,td);
   }
   else if(p.type==='div'){ const tn=p.a1*p.b2, td=p.b1*p.a2;
     const m2=[], s2={};
-    across(m2,s2,tn,td,`${p.a1}×${p.b2}`,`${p.b1}×${p.a2}`,'');
-    mv.push({kind:'tap',button:'Flip',where:'Flip and multiply',hot:['fl'],
-      say:`To divide, flip the second fraction. Then multiply.`,sub:`Press <b>Flip</b> to turn ${IFR(p.a2,p.b2)} upside down.`,
-      set:Object.assign({flip:1},s2),anim:'fl',
-      note:`${IFR(p.a2,p.b2)} flipped is <span class="ifr"><span>${p.b2}</span><span>${p.a2}</span></span>. Now multiply straight across.`});
+    across(m2,s2,tn,td,`${p.a1}×${p.b2}`,`${p.b1}×${p.a2}`,['A1','B2'],['B1','A2']);
+    mv.push({kind:'tap',button:'Flip',hot:['fl'],say:`Flip the second fraction.`,
+      set:Object.assign({flip:1},s2),anim:'fl'});
     mv.push(...m2);
     tail(p,mv,tn,td);
   }
-  if(!mv.length) mv.push({kind:'tap',button:'OK',where:'',say:'',set:{}});   // never happens with these generators
+  if(!mv.length) mv.push({kind:'tap',button:'OK',say:'',set:{}});   // never happens with these generators
   return {mv,S0};
 }
 
-/* ---- answer, and the "does it make sense?" line ---- */
+/* ---- the finished problem, e.g. "✓ 1/2 + 1/3 = 5/6" ---- */
 function exprHTML(p){
-  const A=(n,d)=>IFR(n,d), o=p.op==='-'?'−':p.op;
+  const A=(n,d)=>IFR(n,d), o=SYM(p.op);
   switch(p.type){
     case 'simplify': return `${A(p.N,p.D)} = ${A(p.ansN,p.ansD)}`;
     case 'equiv': return `${A(p.n,p.d)} = ${A(p.ansN,p.D)}`;
@@ -492,48 +467,32 @@ function exprHTML(p){
     default: return `${A(p.a1,p.b1)} ÷ ${A(p.a2,p.b2)} = ${IANS(p.ansN,p.ansD)}`;
   }
 }
-function checkLine(p){
-  const A=IFR, ans=IANS(p.ansN,p.ansD);
-  switch(p.type){
-    case 'simplify': return `✓ <b>Check:</b> multiply back. ${p.ansN} × ${p.N/p.ansN} = ${p.N} and ${p.ansD} × ${p.D/p.ansD} = ${p.D}.`;
-    case 'equiv': return `✓ <b>Check:</b> ${p.ansN} ÷ ${p.k} = ${p.n} and ${p.D} ÷ ${p.k} = ${p.d}. Same fraction.`;
-    case 'm2i': return `✓ <b>Check:</b> ${p.N} ÷ ${p.d} = ${p.W} with ${p.n} left over. That is ${IMX(p.W,p.n,p.d)}.`;
-    case 'i2m': return `✓ <b>Check:</b> ${p.W>1?`${p.W} × ${p.d}`:p.d} + ${p.n} = <b>${p.N}</b>. That is the top we started with.`;
-    case 'addlike': return p.op==='+'?`✓ <b>Check:</b> undo it. ${ans} − ${A(p.b,p.d)} = ${A(p.a,p.d)}`:`✓ <b>Check:</b> add back. ${ans} + ${A(p.b,p.d)} = ${A(p.a,p.d)}`;
-    case 'addunlike': return p.op==='+'?`✓ <b>Check:</b> undo it. ${ans} − ${A(p.a2,p.b2)} = ${A(p.a1,p.b1)}`:`✓ <b>Check:</b> add back. ${ans} + ${A(p.a2,p.b2)} = ${A(p.a1,p.b1)}`;
-    case 'mul': return `✓ <b>Check:</b> undo it. ${ans} ÷ ${A(p.a2,p.b2)} = ${A(p.a1,p.b1)}`;
-    default: return `✓ <b>Check:</b> undo it. ${ans} × ${A(p.a2,p.b2)} = ${A(p.a1,p.b1)}`;
-  }
-}
 
 /* ════════ playing one problem ════════ */
 let M=null;            // {mv, i, tries, busy, err}
 function renderProblem(){
-  const p=current; P=null;
+  const p=current; P=null; DONE=false;
   $('prob').innerHTML=p.display;
   const b=build(p); S=Object.assign({},b.S0); O=null; HOT=[]; JUST=new Set();
   M={mv:b.mv, i:0, tries:0, busy:false, err:false};
   G={steps:M.mv, si:0};
-  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
   paintDots(); showMove();
 }
-function showMove(note){
+function showMove(){
   const m=M.mv[M.i]; M.tries=0;
   PICK=m.kind==='pick'; O=m.kind==='tap'?null:m.key; HOT=m.hot||[]; BOXW=Math.min(3,Math.max(1,String(m.expect??'').length));
   draw(); JUST=new Set();
-  $('where').innerHTML=whereHTML(m.where);
-  $('did').innerHTML=note?'✓ '+note:'';
+  $('where').innerHTML=whereHTML();
   $('msg').innerHTML=m.say;
-  $('sub').innerHTML=m.sub||'';
   $('fb').textContent=''; $('fb').className='fb';
   const go=$('go'); go.disabled=false; go.classList.toggle('hide',!!PICK);
   if(PICK){ const t=document.querySelector('#fwork .mult'); if(t) t.focus(); }
   else if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
   else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus(); }
 }
-// step progress as small dots (a long problem doesn't shout "STEP 1 OF 11")
-function whereHTML(w){ let d=''; for(let i=0;i<M.mv.length;i++) d+=`<i class="${i<M.i?'on':i===M.i?'now':''}"></i>`;
-  return `<span>${w}</span><span class="pips" role="img" aria-label="step ${M.i+1} of ${M.mv.length}">${d}</span>`; }
+// step progress as small dots (no words)
+function whereHTML(){ let d=''; for(let i=0;i<M.mv.length;i++) d+=`<i class="${i<M.i?'on':i===M.i?'now':''}"></i>`;
+  return `<span></span><span class="pips" role="img" aria-label="step ${Math.min(M.i+1,M.mv.length)} of ${M.mv.length}">${d}</span>`; }
 const qk=k=>document.querySelector(`#fwork [data-k="${k}"]`);
 // a number floats from one spot in the work to another
 async function fly(from,to,text){
@@ -550,48 +509,46 @@ async function fly(from,to,text){
 async function playAfter(m){
   if(m.fly&&m.fly.length){ draw(); await Promise.all(m.fly.map(([a,b])=>fly(a,b,String(S[a])))); }
   if(m.set&&Object.keys(m.set).length){ Object.assign(S,m.set); JUST=new Set(Object.keys(m.set)); draw(); await wait(300); }
-  return [m.note,m.tail].filter(Boolean).join(' ');
 }
 async function doTap(){
   if(M.busy) return; M.busy=true; const m=M.mv[M.i];
   $('go').disabled=true;
   if(m.anim){ const e=document.querySelector(`#fwork [data-h="${m.anim}"]`); if(e&&!reduce){ e.classList.add('flipping'); await wait(350); } }
-  const note=await playAfter(m);
+  await playAfter(m);
   $('go').disabled=false; M.busy=false;
   M.i++; G.si=M.i;
-  if(M.i>=M.mv.length) finish(note); else showMove(note);
+  if(M.i>=M.mv.length) finish(); else showMove();
 }
 async function check(){
   if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
   const v=box.value.trim();
-  if(v===''){ $('fb').textContent='Type a number in the glowing box.'; $('fb').className='fb no'; box.focus(); return; }
+  if(v===''){ $('fb').textContent='Type a number.'; $('fb').className='fb no'; box.focus(); return; }
   if(+v!==m.expect){
     const nd=m.nudge&&m.nudge(v);
     if(nd){ $('fb').innerHTML=nd; $('fb').className='fb nudge'; box.select(); return; }   // close, not wrong: no miss
     M.tries++; M.err=true; current._hadError=true; answered=true;
     box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
-    if(M.tries===1) $('fb').innerHTML=m.hint||'Not quite. Look at the yellow numbers and try again.';
-    else { $('fb').innerHTML=`${m.wrong}. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
+    if(M.tries===1) $('fb').innerHTML=m.hint||'Not quite. Try again.';
+    else { $('fb').innerHTML=`Type <b>${m.expect}</b>.`; box.placeholder=String(m.expect); }
     $('fb').className='fb no'; box.select(); return;
   }
   accept(m);
 }
 async function accept(m){
   M.busy=true; S[m.key]=m.expect; O=null; PICK=false; JUST=new Set([m.key]); HOT=[];
-  if(m.kind!=='pick'){ $('fb').textContent='✓'; $('fb').className='fb yes'; }
+  $('fb').textContent='✓'; $('fb').className='fb yes';
   draw();
-  const note=await playAfter(m);
+  await playAfter(m);
   M.busy=false; M.i++; G.si=M.i;
-  if(M.i>=M.mv.length) finish(note); else showMove(note);
+  if(M.i>=M.mv.length) finish(); else showMove();
 }
-function finish(note){
-  O=null; PICK=false; HOT=[]; draw(); $('go').classList.remove('hide'); $('did').innerHTML='';
+// "Done": only the finished problem
+function finish(){
+  DONE=true; O=null; PICK=false; HOT=[]; draw(); $('go').classList.remove('hide');
   const right=!M.err, p=current;
-  $('where').textContent='Done';
-  $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${exprHTML(p)}</b>`;
-  $('sub').innerHTML=note||'';
+  $('where').innerHTML=whereHTML();
+  $('msg').innerHTML=`✓ <b>${exprHTML(p)}</b>`;
   $('fb').textContent=''; $('fb').className='fb';
-  $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
   concludeProblem(right, $('go'));
 }
 
@@ -626,8 +583,8 @@ function endSet(){
   const pb=$('pb');
   if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
   else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
-  $('s-note').textContent=correctCount>=9?'Excellent! Clean steps, every time.':correctCount>=7?'Strong set. A few more first-try answers and you level up.'
-    :correctCount>=5?'Good work. Match the bottoms for + and −. Go straight across for ×.':'Every problem showed you the steps. Go again — it gets easier.';
+  $('s-note').textContent=correctCount>=9?'Clean steps, every time.':correctCount>=7?'Strong set.'
+    :correctCount>=5?'Good work. Keep going.':'Go again. It gets easier.';
 }
 // Enter = Check (or Flip / Next)
 document.addEventListener('keydown',e=>{
@@ -643,9 +600,9 @@ document.addEventListener('click',e=>{
   const t=e.target.closest&&e.target.closest('.mult'); if(!t||!current||!PICK||M.busy) return;
   const u=current._u, m=+t.dataset.m, ok=m%u.small===0, mv=M.mv[M.i];
   if(!ok){ t.classList.add('no'); t.setAttribute('aria-label',`${m}: ${u.small} does not go in evenly`);
-    $('fb').innerHTML=`${u.small} does not go into ${m}. Keep counting.`; $('fb').className='fb no'; return; }
-  if(m!==mv.expect){ $('fb').innerHTML=`${u.small} goes into ${m}, but there is a smaller one. Look again.`; $('fb').className='fb nudge'; return; }
-  t.classList.add('yes'); $('fb').innerHTML=`<b>${u.small}</b> goes into <b>${m}</b>. ✓`; $('fb').className='fb yes';
+    $('fb').innerHTML=`${u.small} does not go into ${m}.`; $('fb').className='fb no'; return; }
+  if(m!==mv.expect){ $('fb').innerHTML=`Find a smaller one.`; $('fb').className='fb nudge'; return; }
+  t.classList.add('yes');
   accept(mv);
 });
 
