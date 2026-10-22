@@ -156,14 +156,14 @@ a.back:hover{text-decoration:underline}
     <div class="hero">
       <div class="eyebrow">Fluency Lab · Game</div>
       <h1 class="logo">Flashpoint</h1>
-      <p>60 seconds per round. Type each answer and press Enter. Get answers right in a row to multiply your points. Earn 2 stars to unlock the next level.</p>
+      <p>20 problems per round, with no clock, so take your time. Type each answer and press Enter. Every right answer earns points, and higher levels are worth more. Get 16 right to earn 2 stars and unlock the next level.</p>
       <div class="rules">
-        <span>3 in a row = ×2</span><span>6 in a row = ×3</span><span>Fractions: bonus for simplest form or mixed numbers</span><span><kbd>Tab</kbd> or <kbd>/</kbd> moves to the next box</span>
+        <span>Level 1 = 10 points each</span><span>Level 5 = 50 points each</span><span>Fractions: bonus for simplest form or mixed numbers</span><span><kbd>Tab</kbd> or <kbd>/</kbd> moves to the next box</span>
       </div>
     </div>
     <div class="ladder" id="ladder" role="group" aria-label="Levels"></div>
     <div class="startrow"><button class="btn go" id="bPlay" type="button">Play Level 1</button></div>
-    <p class="tip">Stars count only when at least 70% of your answers are right.</p>
+    <p class="tip">★ 12 right · ★★ 16 right · ★★★ 19 right</p>
   </section>
 
   <!-- PLAY -->
@@ -171,10 +171,10 @@ a.back:hover{text-decoration:underline}
     <div class="hud">
       <div class="l">Level <span id="hLvl"></span><b id="hName"></b></div>
       <div class="score" id="hScore" aria-label="Score">0</div>
-      <div class="r"><span class="bonuses" id="hBonus"></span><span class="combo" id="hCombo">×1</span></div>
+      <div class="r"><span class="bonuses" id="hBonus"></span><span class="combo" id="hCombo">Streak 0</span></div>
     </div>
     <div class="timebar" id="tbar"><i id="tfill"></i></div>
-    <div class="timetxt" id="ttxt">60s</div>
+    <div class="timetxt" id="ttxt">Problem 1 of 20</div>
     <div class="count" id="count" hidden>3</div>
     <div class="card" id="card">
       <div class="prob" id="prob" aria-live="polite"></div>
@@ -221,14 +221,14 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
-const ROUND=60;
+const SET=20;
 
 const LEVELS=[
-  {n:1,name:'Add & subtract integers',ex:'(−7) + (3)   ·   numbers −10 to 10',col:'var(--sky)',kind:'int',stars:[8,14,20]},
-  {n:2,name:'All four operations',ex:'(−6) × (4)   ·   (−36) ÷ (9)',col:'var(--mint)',kind:'int',stars:[7,12,17]},
-  {n:3,name:'Bigger integers',ex:'(−18) − (12)   ·   numbers −20 to 20',col:'var(--amber)',kind:'int',stars:[7,12,17]},
-  {n:4,name:'Fractions, same denominator',ex:'5/8 + 7/8',col:'var(--coral)',kind:'frac',stars:[4,7,10]},
-  {n:5,name:'Fractions, different denominators',ex:'1/2 + 3/4   ·   2/3 − 1/2',col:'var(--violet)',kind:'frac',stars:[3,5,8]}
+  {n:1,name:'Add & subtract integers',ex:'(−7) + (3)   ·   numbers −10 to 10',col:'var(--sky)',kind:'int',pts:10,stars:[12,16,19]},
+  {n:2,name:'All four operations',ex:'(−6) × (4)   ·   (−36) ÷ (9)',col:'var(--mint)',kind:'int',pts:20,stars:[12,16,19]},
+  {n:3,name:'Bigger integers',ex:'(−18) − (12)   ·   numbers −20 to 20',col:'var(--amber)',kind:'int',pts:30,stars:[12,16,19]},
+  {n:4,name:'Fractions, same denominator',ex:'5/8 + 7/8',col:'var(--coral)',kind:'frac',pts:40,stars:[12,16,19]},
+  {n:5,name:'Fractions, different denominators',ex:'1/2 + 3/4   ·   2/3 − 1/2',col:'var(--violet)',kind:'frac',pts:50,stars:[12,16,19]}
 ];
 
 /* ---------- saved progress (this device only) ---------- */
@@ -272,7 +272,6 @@ function frame(t){
   for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.vy+=700*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt*1.3;p.rot+=dt*8;
     if(p.life<=0){parts.splice(i,1);continue}
     cx.save();cx.globalAlpha=Math.min(1,p.life*1.5);cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*.6);cx.restore()}
-  if(R&&R.running)tickTimer(t);
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
@@ -326,36 +325,30 @@ const gen=lv=>LEVELS[lv-1].kind==='int'?genInt(lv):genFrac(lv);
 let R=null,roundNo=0;
 function newRound(){
   ac();roundNo++;
-  R={lv:sel,score:0,right:0,wrong:0,streak:0,best:0,bonus:0,queue:[],missed:[],seen:0,left:ROUND,start:0,running:false,stage:'main',p:null,lastKey:'',busy:false};
+  R={lv:sel,score:0,right:0,wrong:0,streak:0,best:0,bonus:0,queue:[],missed:[],seen:0,running:false,stage:'main',p:null,lastKey:'',busy:false};
   save.last=sel;persist();
   if(window.ScoreSend&&ScoreSend.opts){ScoreSend.reset();ScoreSend.opts.page=`Fluency Lab · Flashpoint · Level ${sel}`}
   show('play');
   $('#hLvl').textContent=sel;$('#hName').textContent=LEVELS[sel-1].name;
-  $('#tbar').classList.remove('low');$('#tfill').style.transform='scaleX(1)';$('#ttxt').textContent=ROUND+'s';
+  $('#tfill').style.transform='scaleX(0)';$('#ttxt').textContent=`Problem 1 of ${SET}`;
   hud();
   $('#card').hidden=true;$('#count').hidden=false;
   let c=3;$('#count').textContent=c;sfx.tick();
-  const iv=setInterval(()=>{c--;if(c>0){$('#count').textContent=c;sfx.tick()}else{clearInterval(iv);$('#count').hidden=true;$('#card').hidden=false;R.running=true;R.start=performance.now();next()}},RM?250:600);
+  const iv=setInterval(()=>{c--;if(c>0){$('#count').textContent=c;sfx.tick()}else{clearInterval(iv);$('#count').hidden=true;$('#card').hidden=false;R.running=true;next()}},RM?250:600);
 }
 function hud(){
   $('#hScore').textContent=R.score.toLocaleString();
-  const m=mult();const c=$('#hCombo');c.textContent='×'+m;c.classList.toggle('hot',m>1);
+  const c=$('#hCombo');c.textContent='Streak '+R.streak;c.classList.toggle('hot',R.streak>=3);
   $('#hBonus').textContent=R.bonus?`★ ${R.bonus} bonus`:'';
-}
-const mult=()=>Math.min(5,1+Math.floor(R.streak/3));
-function tickTimer(t){
-  const left=Math.max(0,ROUND-(t-R.start)/1000);
-  $('#tfill').style.transform=`scaleX(${left/ROUND})`;
-  const s=Math.ceil(left);
-  if(s!==R.left){R.left=s;$('#ttxt').textContent=s+'s';if(s<=10){$('#tbar').classList.add('low');if(s>0)sfx.tick()}}
-  if(left<=0)endRound();
 }
 function next(){
   if(!R.running)return;
+  if(R.seen>=SET){endRound();return}
   let p=null;
   if(R.queue.length&&R.queue[0].due<=R.seen)p=R.queue.shift().p;
   if(!p){for(let k=0;k<20;k++){p=gen(R.lv);if(p.key!==R.lastKey)break}}
   R.lastKey=p.key;R.seen++;
+  $('#tfill').style.transform=`scaleX(${(R.seen-1)/SET})`;$('#ttxt').textContent=`Problem ${R.seen} of ${SET}`;
   if(!p.id)p.id=`Round ${roundNo} #${R.seen} · L${R.lv}`;
   R.p=p;R.stage='main';R.busy=false;
   $('#prob').innerHTML=p.html+'<span class="eq">?</span>';
@@ -402,7 +395,7 @@ function wrongMsg(t){$('#fb').className='feedback bad';$('#fb').textContent=t}
 function floatTxt(t,v){const f=document.createElement('div');f.className='float'+(v?' v':'');f.textContent=t;$('#card').appendChild(f);setTimeout(()=>f.remove(),850)}
 function correct(){
   R.streak++;R.best=Math.max(R.best,R.streak);R.right++;
-  const m=mult(),pts=10*m;R.score+=pts;
+  const pts=LEVELS[R.lv-1].pts;R.score+=pts;
   sfx.ok(R.streak);floatTxt('+'+pts);
   const c=$('#hCombo');c.classList.add('bump');setTimeout(()=>c.classList.remove('bump'),160);
   $('#card').classList.add('ok');
@@ -468,7 +461,7 @@ function submitBonus(){
   }
   R.busy=true;
   if(ok){
-    R.bonus+=earned;const pts=15*earned*mult();R.score+=pts;sfx.bonus();floatTxt(`+${pts} ★${earned>1?'★':''}`,true);
+    R.bonus+=earned;const pts=earned*LEVELS[R.lv-1].pts/2;R.score+=pts;sfx.bonus();floatTxt(`+${pts} ★${earned>1?'★':''}`,true);
     burst($('#bonus'),['#b48cff','#ffbb4d'],RM?0:18);
     $('#fb').className='feedback ok';$('#fb').textContent=earned>1?'Bonus! Mixed number in simplest form.':'Bonus!';
     hud();setTimeout(()=>{if(R&&R.running)next()},RM?60:500);
@@ -507,7 +500,7 @@ document.addEventListener('input',e=>{
 $('#card').addEventListener('pointerdown',e=>{if(e.target.tagName!=='INPUT'&&R&&R.running){e.preventDefault();focusFirst(R.stage==='bonus'?'#bonusA':'#answer')}});
 
 /* ---------- end of round ---------- */
-function starsFor(lv,right,acc){if(acc<.7)return 0;const s=LEVELS[lv-1].stars;return right>=s[2]?3:right>=s[1]?2:right>=s[0]?1:0}
+function starsFor(lv,right){const s=LEVELS[lv-1].stars;return right>=s[2]?3:right>=s[1]?2:right>=s[0]?1:0}
 function endRound(){
   if(!R||!R.running)return;
   R.running=false;sfx.end();
@@ -522,8 +515,7 @@ function endRound(){
   $('#rHead').textContent=opened?`Level ${lv+1} unlocked!`:newBest&&R.score>0?'New best score!':st===3?'Three stars!':'Round complete';
   const s=LEVELS[lv-1].stars;
   let msg='';
-  if(total&&acc<.7)msg=`You got <b>${Math.round(acc*100)}%</b> right. Slow down a little: stars need 70% or better.`;
-  else if(st<3){const need=s[st]-R.right;msg=`<b>${need}</b> more right answer${need===1?'':'s'} next time for ${st+1} star${st+1===1?'':'s'}.`+(st<2&&lv<5&&!unlocked(lv+1)?' Two stars unlock the next level.':'')}
+  if(st<3){const need=s[st]-R.right;msg=`You got <b>${R.right}</b> right. <b>${need}</b> more next time for ${st+1} star${st+1===1?'':'s'}.`+(st<2&&lv<5&&!unlocked(lv+1)?' Two stars unlock the next level.':'')}
   else msg='Top marks on this level.'+(lv<5?' Try the next level.':'');
   if(R.bonus)msg+=` You earned <b>${R.bonus}</b> bonus star${R.bonus===1?'':'s'}.`;
   $('#rMsg').innerHTML=msg;
@@ -545,7 +537,7 @@ function renderLadder(){
     const open=unlocked(L.n),st=save.stars[L.n]||0,best=save.best[L.n]||0;
     return `<button type="button" class="lvl" style="--lc:${L.col}" data-lv="${L.n}" aria-pressed="${sel===L.n}" ${open?'':'disabled'}>
       <span class="num">${open?L.n:'🔒'}</span>
-      <span><span class="nm">${L.name}</span><span class="ex">${open?L.ex:'Earn 2 stars on Level '+(L.n-1)+' to unlock'}</span></span>
+      <span><span class="nm">${L.name}</span><span class="ex">${open?L.ex+' · '+L.pts+' pts each':'Earn 2 stars on Level '+(L.n-1)+' to unlock'}</span></span>
       <span class="meta"><span class="stars" aria-label="${st} of 3 stars">${[0,1,2].map(i=>`<i class="${i<st?'on':''}">★</i>`).join('')}</span>${best?`<span>Best ${best.toLocaleString()}</span>`:''}</span>
     </button>`}).join('');
   $('#bPlay').textContent=`Play Level ${sel}`;
