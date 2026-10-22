@@ -278,7 +278,7 @@ legend{padding:0;margin-bottom:10px}
       <span><i class="tile tx"><b>x</b></i> x tile</span>
       <span><i class="tile tu"><b>+</b></i> +1 tile</span>
       <span><i class="tile tu neg"><b>−</b></i><i class="tile tx neg"><b>−x</b></i> red tiles are negative</span>
-      <span>A tile and its opposite make a zero pair.</span>
+      <span>A tile and its opposite add up to 0, so they cancel out.</span>
     </div>
     <fieldset>
       <legend class="label">Mode</legend>
@@ -591,7 +591,7 @@ function renderTray(){
   const T=$('#tray');const p=G.phase;
   if((p==='addsub'||p==='move')){
     T.innerHTML=`<div class="trayset" role="group" aria-label="Tile bin">${TT.map((t,i)=>`<button type="button" class="btn trayTile ${G.armed===i?'armed':''}" data-tt="${i}" aria-pressed="${G.armed===i}" ${G.busy?'disabled':''}>${tilesHTML(t.k,t.s)}<span>${t.s>0?'+':M}${t.k==='x'?'x':'1'}</span></button>`).join('')}</div>
-    <div class="trayset"><button type="button" class="btn" id="bUndo" ${G.busy?'disabled':''}>Undo</button><button type="button" class="btn" id="bClear" ${G.busy?'disabled':''}>Clear</button><button type="button" class="btn primary" id="bZP" ${G.busy?'disabled':''}>Make zero pairs</button></div>`;
+    <div class="trayset"><button type="button" class="btn" id="bUndo" ${G.busy?'disabled':''}>Undo</button><button type="button" class="btn" id="bClear" ${G.busy?'disabled':''}>Clear</button><button type="button" class="btn primary" id="bZP" ${G.busy?'disabled':''}>Cancel out opposites</button></div>`;
   }else if(p==='muldiv'){
     const md=G.md;const disp=`${md.op||'?'} ${md.v?(md.neg?'('+M+md.v+')':md.v):'?'}`;
     T.innerHTML=`<div class="trayset" role="group" aria-label="Operation"><button type="button" class="btn ${md.op==='÷'?'armed':''}" data-op="÷" ${G.busy?'disabled':''}>÷ Divide</button><button type="button" class="btn ${md.op==='×'?'armed':''}" data-op="×" ${G.busy?'disabled':''}>× Multiply</button></div>
@@ -676,9 +676,9 @@ function startWork(id){
   G.busy=false;G.phase=id;G.add={L:[],R:[]};G.armed=null;G.sel=null;G.md={op:null,neg:false,v:null};
   renderDoors();renderMat();renderTray();
   if(id==='dist'){const g=[...G.L,...G.R].find(t=>t.t==='g');setMsg(`Tap each term inside the parentheses to multiply it by ${num(g.a)}.`)}
-  else if(id==='comb')setMsg('Tap two like terms on the same side to combine them. A tile and its opposite make a zero pair.');
-  else if(id==='move')setMsg('Pick a tile from the bin, then tap a side to add it. Add the same tiles to BOTH sides so the x tiles on the right become zero pairs.');
-  else if(id==='addsub')setMsg('Pick a tile from the bin, then tap a side to add it. Add the same tiles to BOTH sides so the number next to x becomes zero pairs.');
+  else if(id==='comb')setMsg('Tap two like terms on the same side to combine them. Opposite tiles cancel out.');
+  else if(id==='move')setMsg('Get rid of the x tiles on the right side. Pick the opposite tile from the bin, then tap a side to add it. Add the same tiles to BOTH sides. Then tap Cancel out opposites.');
+  else if(id==='addsub')setMsg('Get rid of the number next to x. Pick the opposite tile from the bin, then tap a side to add it. Add the same tiles to BOTH sides. Then tap Cancel out opposites.');
   else setMsg('Undo what is being done to x. Choose divide or multiply, choose the number, then apply it to both sides.');
 }
 function stepDone(entry){
@@ -718,7 +718,7 @@ function zeroPairs(){
   if(G.phase==='addsub'){
     const k=sumU(G.L);
     if(aL.x!==0)return mistake('This step undoes + and −, so use unit tiles only. Tap the added x tiles to take them back.');
-    if(aL.u!==-k){const left=k+aL.u;return mistake(`After zero pairs, the x side would still have ${left===0?'0':signedNum(left)}. Add exactly enough opposite tiles to cancel the ${signedNum(k)} next to x.`)}
+    if(aL.u!==-k){const left=k+aL.u;return mistake(`After canceling, the x side would still have ${left===0?'0':signedNum(left)}. Add just enough opposite tiles to cancel out the ${signedNum(k)} next to x.`)}
   }else{
     const d=sumX(G.R),lx=sumX(G.L);
     if(aL.u!==0)return mistake('This step moves the variables, so use x tiles only. Tap the added unit tiles to take them back.');
@@ -729,7 +729,7 @@ function zeroPairs(){
   G.add={L:nt(aL),R:nt(aR)};
   const zpc=(S,a)=>{const bx=sumX(S),bu=sumU(S);return {x:(bx&&a.x&&Math.sign(bx)!==Math.sign(a.x))?Math.min(Math.abs(bx),Math.abs(a.x)):0,u:(bu&&a.u&&Math.sign(bu)!==Math.sign(a.u))?Math.min(Math.abs(bu),Math.abs(a.u)):0}};
   G.zp={L:zpc(G.L,aL),R:zpc(G.R,aR)};G.busy=true;sfx.zap();pulse('good');
-  setMsg('Zero pairs cancel out on both sides…','good');
+  setMsg('Opposites cancel out to 0 on both sides…','good');
   renderMat();renderTray();
   const step=G.phase;
   setTimeout(()=>{
@@ -759,7 +759,7 @@ function combTap(S,i){
   const lo=Math.min(G.sel.i,i),hi=Math.max(G.sel.i,i);const merged={t:a.t,c:sum};
   side.splice(hi,1);if(sum===0)side.splice(lo,1);else side[lo]=merged;
   G.sel=null;sfx.zap();pulse('good');
-  setMsg(pairs?`${label(a)} and ${label(t)} make ${pairs} zero pair${pairs>1?'s':''}, leaving ${sum?label(merged):'0'}.`:`${label(a)} and ${label(t)} combine to ${label(merged)}.`,'good');
+  setMsg(pairs?`${label(a)} and ${label(t)} cancel out ${pairs} pair${pairs>1?'s':''} of opposites, leaving ${sum?label(merged):'0'}.`:`${label(a)} and ${label(t)} combine to ${label(merged)}.`,'good');
   renderMat();
   if(!needsComb(G.L)&&!needsComb(G.R)){G.busy=true;setTimeout(()=>stepDone({type:'note',step:'comb',text:'2 · Combine like terms'}),RM?60:650)}
 }
@@ -826,8 +826,8 @@ function hintFor(p){
   const {L,R}=G;
   if(p==='dist'){const g=[...L,...R].find(t=>t.t==='g');return `Multiply ${num(g.a)} by each term inside the parentheses. Same signs give a positive. Different signs give a negative.`}
   if(p==='comb'){const S=needsComb(L)?L:R;const xs=S.filter(isX).map(label),us=S.filter(t=>t.t==='1').map(label);const parts=[];if(xs.length>1)parts.push(xs.join(' with '));if(us.length>1)parts.push(us.join(' with '));return `On the ${S===L?'left':'right'} side, combine ${parts.join(', and ')}.`}
-  if(p==='move'){const d=sumX(R),n=Math.abs(d);return `The right side has ${label(X(d))}. Add ${n} ${d>0?M+'x':'+x'} tile${n>1?'s':''} to EACH side. They make zero pairs with the x tiles on the right.`}
-  if(p==='addsub'){const k=sumU(L),n=Math.abs(k);return `The x side has ${signedNum(k)}. Add ${n} ${k>0?M+'1':'+1'} tile${n>1?'s':''} to EACH side to make zero pairs.`}
+  if(p==='move'){const d=sumX(R),n=Math.abs(d);return `The right side has ${label(X(d))}. Add ${n} ${d>0?M+'x':'+x'} tile${n>1?'s':''} to EACH side. They cancel out the x tiles on the right.`}
+  if(p==='addsub'){const k=sumU(L),n=Math.abs(k);return `The x side has ${signedNum(k)}. Add ${n} ${k>0?M+'1':'+1'} tile${n>1?'s':''} to EACH side. They cancel out the ${signedNum(k)}.`}
   if(p==='muldiv'){const xt=L.find(isX);return xt.t==='xf'?`x is divided by ${xt.n}. Multiply both sides by ${xt.n}.`:`x is multiplied by ${num(xt.c)}. Divide both sides by ${num(xt.c)}.`}
   return '';
 }
@@ -906,7 +906,7 @@ const TUT=[
  {t:'To cancel +3, you need 3 negative tiles. Tap the −1 tile in the bin.',target:'[data-tt="3"]',done:()=>G.armed===3},
  {t:'Tap the LEFT side 3 times to add three −1 tiles. Tap an added tile to take it back.',target:'#sideL',done:()=>negCount('L')>=3},
  {t:'An equation is a balance. Whatever you do to one side, you do to the other. Tap the RIGHT side 3 times.',target:'#sideR',done:()=>negCount('R')>=3},
- {t:'A +1 and a −1 make a zero pair. Together they equal 0. Tap Make zero pairs.',target:'#bZP',done:()=>G.phase==='solved'},
+ {t:'A +1 and a −1 are opposites. Together they equal 0, so they cancel out. Tap Cancel out opposites.',target:'#bZP',done:()=>G.phase==='solved'},
  {t:'x = 2. The worked solution writes each step the way you write it on paper: −3 under both sides, then a check. Tap Next gate.',target:'#bNext',also:'#logPanel',done:()=>G.tut.prob===2},
  {t:'New gate: 2x = 8. Walk the flowchart: no parentheses, nothing to combine, x on one side, nothing added to x. But x is multiplied by 2. Tap door 5, Undo × / ÷.',target:'.door[data-step="muldiv"]',done:()=>G.phase==='muldiv'},
  {t:'Undo multiplying by dividing. Tap ÷ Divide.',target:'[data-op="÷"]',done:()=>G.md.op==='÷'},
