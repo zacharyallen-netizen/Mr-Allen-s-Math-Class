@@ -186,6 +186,13 @@ legend{padding:0;margin-bottom:10px}
 #popOpts{display:flex;gap:8px}
 #popOpts .btn{font-family:var(--f-math);font-size:18px;min-width:76px}
 
+#coach{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;background:color-mix(in srgb,var(--tu) 14%,var(--panel-solid));border:1.5px solid var(--tu);border-radius:10px;padding:12px 14px}
+#coach .ct{flex:1 1 280px;min-width:0;line-height:1.5;font-size:15.5px}
+#coach .cs{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--tu);font-weight:800;margin-bottom:2px}
+#coach .cb{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:700 13px var(--f-body);padding:6px}
+.coach-on{outline:3px solid var(--tu)!important;outline-offset:3px;animation:coachPulse 1.1s ease-in-out infinite;position:relative;z-index:2}
+@keyframes coachPulse{0%,100%{outline-color:var(--tu);box-shadow:0 0 0 0 rgba(247,203,71,.55)}50%{outline-color:#fff3c4;box-shadow:0 0 0 8px rgba(247,203,71,0)}}
 @keyframes zp{0%{filter:brightness(1)}35%{transform:scale(1.18);filter:brightness(2.4)}100%{transform:scale(0) rotate(28deg);opacity:0}}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
 
@@ -239,6 +246,7 @@ legend{padding:0;margin-bottom:10px}
     </section>
     <section id="board">
       <div id="eqline" aria-live="polite"></div>
+      <div id="coach" hidden aria-live="polite"><div class="ct"><span class="cs" id="coachStep"></span><span id="coachTxt"></span></div><div class="cb"><button class="btn primary" id="coachBtn" type="button" hidden></button><button class="linkbtn" id="coachExit" type="button">Exit tutorial</button></div></div>
       <div id="prompt">
         <div id="msg" aria-live="polite"></div>
         <button class="btn" id="bHint" type="button">Hint</button>
@@ -283,7 +291,7 @@ legend{padding:0;margin-bottom:10px}
       <legend class="label">Start at level</legend>
       <div class="levels" id="lvGrid"></div>
     </fieldset>
-    <button class="btn primary big" id="bStart" type="button">Start run</button>
+    <div class="rowbtns"><button class="btn big" id="bTut" type="button">How to play · 2 min</button><button class="btn primary big" id="bStart" type="button">Start run</button></div>
   </div>
 </div>
 
@@ -410,43 +418,57 @@ const tc=$('#tunnel'),sc=$('#shards'),tx=tc.getContext('2d'),sx=sc.getContext('2
 let W=0,H=0;
 function resize(){const D=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;for(const c of [tc,sc]){c.width=Math.round(W*D);c.height=Math.round(H*D)}tx.setTransform(D,0,0,D,0,0);sx.setTransform(D,0,0,D,0,0)}
 addEventListener('resize',resize);resize();
-const NF=14,frames=Array.from({length:NF},(_,i)=>({z:1+i}));
-const dust=Array.from({length:60},()=>({x:Math.random()*2-1,y:Math.random()*2-1,z:Math.random()*NF+.5}));
-let speed=.55,boostV=0;
+/* Still corridor: frames do not move. Wall panels between frames light up
+   green when a step is right, red when it is wrong, gold when a gate is solved. */
+const NF=9,FZ=Array.from({length:NF},(_,i)=>1.15*Math.pow(1.38,i));
+const panels=[];for(let k=0;k<NF-1;k++)for(let w=0;w<4;w++)panels.push({k,w,t0:-1e9,col:'102,232,164',amp:0});
+const PULSE={good:'102,232,164',bad:'255,110,120',gold:'247,203,71'};
 const shards=[],cracks=[];
 function cssVar(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#9edcff'}
 function shatter(r,col,n){
-  n=RM?6:(n||26);
+  n=RM?4:(n||14);
   for(let i=0;i<n;i++){
     const pts=[];const k=3+Math.floor(Math.random()*3);for(let j=0;j<k;j++){const a=j/k*Math.PI*2+Math.random()*.7;pts.push([Math.cos(a)*(.5+Math.random()*.5),Math.sin(a)*(.5+Math.random()*.5)])}
-    shards.push({x:r.left+Math.random()*r.width,y:r.top+Math.random()*r.height,vx:(Math.random()-.5)*700,vy:(Math.random()-.75)*600,rot:Math.random()*6,vr:(Math.random()-.5)*12,sz:6+Math.random()*20,life:1,col,pts});
+    shards.push({x:r.left+Math.random()*r.width,y:r.top+Math.random()*r.height,vx:(Math.random()-.5)*500,vy:(Math.random()-.75)*450,rot:Math.random()*6,vr:(Math.random()-.5)*10,sz:6+Math.random()*16,life:1,col,pts});
   }
 }
 function crack(x,y){
-  const segs=[];const rays=7+Math.floor(Math.random()*4);
-  for(let i=0;i<rays;i++){let a=i/rays*Math.PI*2+Math.random()*.5,px=x,py=y;const steps=3+Math.floor(Math.random()*3);
-    for(let s=0;s<steps;s++){const L=25+Math.random()*70;const nx=px+Math.cos(a)*L,ny=py+Math.sin(a)*L;segs.push([px,py,nx,ny]);px=nx;py=ny;a+=(Math.random()-.5)*.8}}
-  cracks.push({x,y,segs,life:1.3});
+  const segs=[];const rays=6+Math.floor(Math.random()*3);
+  for(let i=0;i<rays;i++){let a=i/rays*Math.PI*2+Math.random()*.5,px=x,py=y;const steps=2+Math.floor(Math.random()*3);
+    for(let s=0;s<steps;s++){const L=20+Math.random()*55;const nx=px+Math.cos(a)*L,ny=py+Math.sin(a)*L;segs.push([px,py,nx,ny]);px=nx;py=ny;a+=(Math.random()-.5)*.8}}
+  cracks.push({x,y,segs,life:1.1});
 }
-function boost(v){boostV=Math.max(boostV,v||4)}
+/* kind: 'good' lights a ring of panels near the front, 'bad' flashes the nearest panels red,
+   'gold' sends a wave from the far end of the corridor to the front. */
+function pulse(kind){
+  const now=performance.now(),col=PULSE[kind]||PULSE.good;
+  for(const p of panels){
+    if(kind==='gold'){p.t0=now+(NF-2-p.k)*55;p.col=col;p.amp=.42}
+    else if(kind==='bad'){if(p.k<=1){p.t0=now;p.col=col;p.amp=p.k===0?.4:.25}}
+    else if(p.k>=1&&p.k<=3&&Math.random()<.6){p.t0=now+Math.random()*120;p.col=col;p.amp=.32}
+  }
+}
 let last=performance.now();
 function loop(t){
   const dt=Math.min(.05,(t-last)/1000);last=t;
-  const cx=W/2,cy=H*.3;
+  const cx=W/2,cy=H*.32;
   const g=tx.createRadialGradient(cx,cy,10,cx,cy,Math.max(W,H)*.85);
-  g.addColorStop(0,'#2a3878');g.addColorStop(.32,'#151d45');g.addColorStop(1,'#070b1c');
+  g.addColorStop(0,'#1e295c');g.addColorStop(.35,'#121a3d');g.addColorStop(1,'#070b1c');
   tx.fillStyle=g;tx.fillRect(0,0,W,H);
-  const v=RM?0:(speed+boostV);boostV*=Math.pow(.2,dt);
-  for(const f of frames){f.z-=v*dt;if(f.z<.35)f.z+=NF}
-  tx.lineWidth=1;tx.strokeStyle='rgba(150,195,255,.07)';
-  for(const [X0,Y0] of [[-.1*W,-.1*H],[1.1*W,-.1*H],[-.1*W,1.1*H],[1.1*W,1.1*H],[cx,1.1*H],[-.1*W,cy],[1.1*W,cy]]){tx.beginPath();tx.moveTo(cx,cy);tx.lineTo(cx+(X0-cx)*3,cy+(Y0-cy)*3);tx.stroke()}
-  [...frames].sort((a,b)=>b.z-a.z).forEach(f=>{
-    const s=1/f.z,a=Math.min(1,(NF-f.z)/5)*Math.min(1,(f.z-.35)*1.6)*.32;
-    const x0=cx+(-.08*W-cx)*s,y0=cy+(-.06*H-cy)*s,x1=cx+(1.08*W-cx)*s,y1=cy+(1.06*H-cy)*s;
-    tx.strokeStyle=`rgba(158,210,255,${a})`;tx.lineWidth=.6+1.8*s;tx.strokeRect(x0,y0,x1-x0,y1-y0);
-  });
-  tx.fillStyle='rgba(210,230,255,.5)';
-  for(const d of dust){d.z-=v*dt*1.2;if(d.z<.3){d.z+=NF;d.x=Math.random()*2-1;d.y=Math.random()*2-1}const s=1/d.z;const px=cx+d.x*W*.6*s,py=cy+d.y*H*.6*s;tx.globalAlpha=Math.min(1,(NF-d.z)/6)*.5;tx.fillRect(px,py,1.2*s,1.2*s)}
+  const rect=z=>{const s=1/z;return [cx+(-.06*W-cx)*s,cy+(-.06*H-cy)*s,cx+(1.06*W-cx)*s,cy+(1.06*H-cy)*s]};
+  const R=FZ.map(rect);
+  for(const p of panels){
+    const e=(t-p.t0)/1000;if(e<0||e>.9)continue;
+    const inten=p.amp*(e<.12?e/.12:Math.pow(1-(e-.12)/.78,2));
+    const [a0,b0,c0,d0]=R[p.k],[a1,b1,c1,d1]=R[p.k+1];
+    const q=[[[a0,b0],[c0,b0],[c1,b1],[a1,b1]],[[c0,b0],[c0,d0],[c1,d1],[c1,b1]],[[c0,d0],[a0,d0],[a1,d1],[c1,d1]],[[a0,d0],[a0,b0],[a1,b1],[a1,d1]]][p.w];
+    tx.beginPath();q.forEach(([x,y],i)=>i?tx.lineTo(x,y):tx.moveTo(x,y));tx.closePath();
+    tx.fillStyle=`rgba(${p.col},${inten})`;tx.fill();
+  }
+  tx.lineWidth=1;tx.strokeStyle='rgba(150,195,255,.06)';
+  const o=R[0],f=R[NF-1];
+  for(const [i,j] of [[0,1],[2,1],[2,3],[0,3]]){tx.beginPath();tx.moveTo(o[i],o[j]);tx.lineTo(f[i],f[j]);tx.stroke()}
+  R.forEach(([x0,y0,x1,y1],i)=>{tx.strokeStyle=`rgba(158,210,255,${.05+.16*(1-i/NF)})`;tx.lineWidth=.6+1.2*(1-i/NF);tx.strokeRect(x0,y0,x1-x0,y1-y0)});
   tx.globalAlpha=1;
   sx.clearRect(0,0,W,H);
   for(let i=shards.length-1;i>=0;i--){const p=shards[i];p.vy+=900*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;p.life-=dt*.9;if(p.life<=0){shards.splice(i,1);continue}
@@ -558,7 +580,7 @@ function renderLog(){
   const solved=G.phase==='solved';
   $('#log').innerHTML=G.log.map((e,i)=>{
     if(e.type==='eq')return `<div class="lrow eq ${solved&&i===eqIdx?'final':''}"><span class="l">${e.L}</span><span>=</span><span class="r">${e.R}</span></div>`;
-    const c=`--c:var(${STEP[e.step].col})`;
+    const c=e.step?`--c:var(${STEP[e.step].col})`:"";
     if(e.type==='op')return `<div class="ltag" style="${c}">${e.note}</div><div class="lrow op" style="${c}"><span class="l">${e.op}</span><span></span><span class="r">${e.op}</span></div>`;
     if(e.type==='note')return `<div class="ltag" style="${c}">${e.text}</div>`;
     if(e.type==='check')return `<div class="lcheck">${e.text}</div>`;
@@ -598,13 +620,13 @@ function showWalk(prefix,cls){
 /* ---------- game flow ---------- */
 const TT=[{k:'x',s:1},{k:'x',s:-1},{k:'1',s:1},{k:'1',s:-1}];
 function addScore(p){G.score+=G.mode==='rush'?p*2:p;renderHud()}
-function mistake(text){G.mistakes++;sfx.thud();setMsg(text,'bad');const m=$('#mat');m.classList.remove('shake');void m.offsetWidth;m.classList.add('shake')}
+function mistake(text){G.mistakes++;sfx.thud();pulse('bad');setMsg(text,'bad');const m=$('#mat');m.classList.remove('shake');void m.offsetWidth;m.classList.add('shake')}
 function stopTimer(){G.timer=null;$('#timer').classList.remove('on')}
 
 function newProblem(){
   clearTimeout(G.autoNext);
-  const p=gen(G.level);
-  G.L=p.L;G.R=p.R;G.x=p.x;G.orig={L:clone(p.L),R:clone(p.R)};
+  const p=G.tut?TUT_PROBS[++G.tut.prob]:gen(G.level);
+  G.L=clone(p.L);G.R=clone(p.R);G.x=p.x;G.orig={L:clone(p.L),R:clone(p.R)};
   G.mistakes=0;G.hints=0;G.log=[{type:'eq',L:fmt(G.L),R:fmt(G.R)}];
   startChoose();renderLog();
 }
@@ -618,11 +640,10 @@ function startChoose(){
   d.style.transition=`transform ${dur}ms ${rush?'linear':'cubic-bezier(.2,.7,.2,1)'}, opacity ${Math.min(dur,900)}ms ease-out`;
   requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.remove('far')));
   if(rush){G.timer={start:performance.now(),dur};$('#timer').classList.add('on');$('#timerFill').style.transform='scaleX(1)'}else stopTimer();
-  speed=rush?.95:.55;
 }
 function chooseStep(id,el,ev){
   if(id===G.need){
-    const r=el.getBoundingClientRect();shatter(r,cssVar(STEP[id].col));sfx.smash();boost(4);
+    const r=el.getBoundingClientRect();shatter(r,cssVar(STEP[id].col));sfx.smash();pulse('good');
     let pts=100;if(G.timer){pts+=Math.round(Math.max(0,1-(performance.now()-G.timer.start)/G.timer.dur)*100)}
     stopTimer();addScore(pts);G.cur=id;G.busy=true;
     el.style.visibility='hidden';
@@ -630,14 +651,14 @@ function chooseStep(id,el,ev){
   }else{
     G.mistakes++;sfx.thud();
     const r=el.getBoundingClientRect();
-    crack(ev&&ev.clientX?ev.clientX:r.left+r.width/2,ev&&ev.clientY?ev.clientY:r.top+r.height/2);
+    crack(ev&&ev.clientX?ev.clientX:r.left+r.width/2,ev&&ev.clientY?ev.clientY:r.top+r.height/2);pulse('bad');
     el.classList.remove('wrong');void el.offsetWidth;el.classList.add('wrong');
     showWalk(`${STEP[id].name} is not next. Walk the flowchart from the top:`,'bad');
     if(G.mode==='rush'){stopTimer();loseShield()}
   }
 }
 function timeout(){
-  stopTimer();G.mistakes++;sfx.thud();crack(W/2,H*.32);
+  stopTimer();G.mistakes++;sfx.thud();crack(W/2,H*.32);pulse('bad');
   showWalk('Time’s up. Here is the flowchart check:','bad');
   loseShield();
 }
@@ -676,9 +697,9 @@ function solved(){
   G.streak=clean?G.streak+1:0;
   let pts=200+50*G.level+(clean?100:0)+(G.streak>=3?40*Math.min(G.streak,6):0);
   addScore(pts);
-  const r=$('#gate').getBoundingClientRect();shatter(r,cssVar('--tu'),40);sfx.win();boost(6);
+  const r=$('#gate').getBoundingClientRect();shatter(r,cssVar('--tu'),22);sfx.win();pulse('gold');
   let leveled=false;
-  if(clean){G.prog++;if(G.prog>=3){G.prog=0;if(G.level<7){G.level++;leveled=true;store.level=G.level;save()}}}
+  if(clean&&!G.tut){G.prog++;if(G.prog>=3){G.prog=0;if(G.level<7){G.level++;leveled=true;store.level=G.level;save()}}}
   setMsg(clean?`x = ${num(G.x)}. Clean solve! +${G.mode==='rush'?pts*2:pts}`:`x = ${num(G.x)}. Gate cleared, +${G.mode==='rush'?pts*2:pts}. Solve one with no mistakes or hints to fill a level bar.`,'good');
   renderHud();renderDoors();renderMat();renderTray();renderLog();
   if(leveled)setTimeout(()=>showBanner(`Level ${G.level}`,LEVELS[G.level]),500);
@@ -707,7 +728,7 @@ function zeroPairs(){
   const nt=a=>[...Array(Math.abs(a.x)).fill({k:'x',s:Math.sign(a.x)}),...Array(Math.abs(a.u)).fill({k:'1',s:Math.sign(a.u)})];
   G.add={L:nt(aL),R:nt(aR)};
   const zpc=(S,a)=>{const bx=sumX(S),bu=sumU(S);return {x:(bx&&a.x&&Math.sign(bx)!==Math.sign(a.x))?Math.min(Math.abs(bx),Math.abs(a.x)):0,u:(bu&&a.u&&Math.sign(bu)!==Math.sign(a.u))?Math.min(Math.abs(bu),Math.abs(a.u)):0}};
-  G.zp={L:zpc(G.L,aL),R:zpc(G.R,aR)};G.busy=true;sfx.zap();
+  G.zp={L:zpc(G.L,aL),R:zpc(G.R,aR)};G.busy=true;sfx.zap();pulse('good');
   setMsg('Zero pairs cancel out on both sides…','good');
   renderMat();renderTray();
   const step=G.phase;
@@ -737,7 +758,7 @@ function combTap(S,i){
   const sum=a.c+t.c,pairs=Math.sign(a.c)!==Math.sign(t.c)?Math.min(Math.abs(a.c),Math.abs(t.c)):0;
   const lo=Math.min(G.sel.i,i),hi=Math.max(G.sel.i,i);const merged={t:a.t,c:sum};
   side.splice(hi,1);if(sum===0)side.splice(lo,1);else side[lo]=merged;
-  G.sel=null;sfx.zap();
+  G.sel=null;sfx.zap();pulse('good');
   setMsg(pairs?`${label(a)} and ${label(t)} make ${pairs} zero pair${pairs>1?'s':''}, leaving ${sum?label(merged):'0'}.`:`${label(a)} and ${label(t)} combine to ${label(merged)}.`,'good');
   renderMat();
   if(!needsComb(G.L)&&!needsComb(G.R)){G.busy=true;setTimeout(()=>stepDone({type:'note',step:'comb',text:'2 · Combine like terms'}),RM?60:650)}
@@ -750,7 +771,7 @@ function distTap(el,S,i,j){
   const opts=Math.random()<.5?[[prod,true],[wrong,false]]:[[wrong,false],[prod,true]];
   openPop(el,`(${num(g.a)}) · ${paren(it)} = ?`,opts.map(([o,ok])=>({text:label(o),ok})),ok=>{
     if(ok){
-      it.done=true;it.res=prod;sfx.tick(1.4);setMsg(`(${num(g.a)}) · ${paren(it)} = ${label(prod)}`,'good');renderMat();
+      it.done=true;it.res=prod;sfx.tick(1.4);pulse('good');setMsg(`(${num(g.a)}) · ${paren(it)} = ${label(prod)}`,'good');renderMat();
       if(g.in.every(q=>q.done)){
         G.busy=true;
         setTimeout(()=>{G[S].splice(i,1,...g.in.map(q=>q.res));stepDone({type:'note',step:'dist',text:`1 · Distribute ${num(g.a)}`})},RM?60:600);
@@ -792,7 +813,7 @@ function applyMd(){
     G.rows={mode:'div',n:Math.abs(a),a,c,flip:false};
     setMsg(Math.abs(a)>1?`Split each side into ${Math.abs(a)} equal groups. One group from each side is the answer.`:'Divide by the coefficient.','good');
   }
-  G.busy=true;sfx.zap();renderMat();renderTray();
+  G.busy=true;sfx.zap();pulse('good');renderMat();renderTray();
   const r=G.rows;let t=RM?60:1100;
   if(r.mode==='div'&&r.a<0){setTimeout(()=>{r.flip=true;renderMat();sfx.tick(1.2);setMsg('Dividing by a negative flips every tile to its opposite.','good')},t);t+=RM?60:1100}
   setTimeout(()=>{
@@ -854,6 +875,7 @@ $('#bSound').addEventListener('click',()=>{muted=!muted;store.muted=muted;save()
 /* menu */
 function renderMenu(){
   document.querySelectorAll('.mode').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===G.mode)));
+  const first=!store.tutDone;$('#bTut').classList.toggle('primary',first);$('#bStart').classList.toggle('primary',!first);
   $('#lvGrid').innerHTML=LEVELS.slice(1).map((n,i)=>`<button type="button" class="lv" data-lv="${i+1}" aria-pressed="${G.level===i+1}"><i>${i+1}</i><span>${n}</span></button>`).join('');
 }
 document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{G.mode=b.dataset.mode;store.mode=G.mode;save();renderMenu()}));
@@ -868,12 +890,74 @@ $('#bStart').addEventListener('click',startRun);
 $('#bAgain').addEventListener('click',startRun);
 $('#bOverMenu').addEventListener('click',openMenu);
 $('#bMenu').addEventListener('click',openMenu);
-function openMenu(){clearTimeout(G.autoNext);stopTimer();$('#pop').hidden=true;$('#over').hidden=true;G.phase='menu';G.busy=false;renderMenu();renderDoors();renderTray();$('#menu').hidden=false;$('#bStart').focus()}
+function openMenu(){if(G.tut)endTutorial();clearTimeout(G.autoNext);stopTimer();$('#pop').hidden=true;$('#over').hidden=true;G.phase='menu';G.busy=false;renderMenu();renderDoors();renderTray();$('#menu').hidden=false;(store.tutDone?$('#bStart'):$('#bTut')).focus()}
 function previewSample(){
   const p=gen(G.level);G.L=p.L;G.R=p.R;G.phase='menu';G.log=[];G.add={L:[],R:[]};G.rows=null;G.zp=null;
   renderHud();renderDoors();renderMat();renderTray();renderLog();
   setMsg(`Sample gate from level ${G.level}: ${LEVELS[G.level]}.`);
 }
+
+/* ---------- tutorial ---------- */
+const TUT_PROBS=[null,{L:[X(1),U(3)],R:[U(5)],x:2},{L:[X(2)],R:[U(8)],x:4}];
+const negCount=S=>G.add[S].filter(t=>t.k==='1'&&t.s<0).length;
+const TUT=[
+ {t:'Every gate is an equation built from algebra tiles. A green bar is x. A yellow square is +1. Red tiles are negative. Your goal: get one x alone on the left side.',target:'#mat',btn:'Next'},
+ {t:'First, pick the next step from the flowchart. Check the doors in order. 1: no parentheses, skip. 2: nothing to combine, skip. 3: x is only on the left, skip. 4: 3 is added to x. Tap door 4, Undo + / −.',target:'.door[data-step="addsub"]',done:()=>G.phase==='addsub'},
+ {t:'To cancel +3, you need 3 negative tiles. Tap the −1 tile in the bin.',target:'[data-tt="3"]',done:()=>G.armed===3},
+ {t:'Tap the LEFT side 3 times to add three −1 tiles. Tap an added tile to take it back.',target:'#sideL',done:()=>negCount('L')>=3},
+ {t:'An equation is a balance. Whatever you do to one side, you do to the other. Tap the RIGHT side 3 times.',target:'#sideR',done:()=>negCount('R')>=3},
+ {t:'A +1 and a −1 make a zero pair. Together they equal 0. Tap Make zero pairs.',target:'#bZP',done:()=>G.phase==='solved'},
+ {t:'x = 2. The worked solution writes each step the way you write it on paper: −3 under both sides, then a check. Tap Next gate.',target:'#bNext',also:'#logPanel',done:()=>G.tut.prob===2},
+ {t:'New gate: 2x = 8. Walk the flowchart: no parentheses, nothing to combine, x on one side, nothing added to x. But x is multiplied by 2. Tap door 5, Undo × / ÷.',target:'.door[data-step="muldiv"]',done:()=>G.phase==='muldiv'},
+ {t:'Undo multiplying by dividing. Tap ÷ Divide.',target:'[data-op="÷"]',done:()=>G.md.op==='÷'},
+ {t:'Divide by the number that multiplies x. Tap 2.',target:'[data-d="2"]',done:()=>G.md.op==='÷'&&G.md.v===2&&!G.md.neg},
+ {t:'Tap Apply to both sides. Each side splits into 2 equal groups. One group from each side is the answer.',target:'#bApply',done:()=>G.phase==='solved'},
+ {t:'That is the game: pick the step, then do it with tiles. Later levels use the other doors. Distribute: tap each term inside the parentheses. Combine like terms: tap two matching terms on one side. Move variables: cancel the x tiles on the right side. Stuck? Tap Hint.',target:null,btn:'Start playing',end:true}
+];
+function tutShow(){
+  document.querySelectorAll('.coach-on').forEach(e=>e.classList.remove('coach-on'));
+  const c=$('#coach');
+  if(!G.tut){c.hidden=true;return}
+  const st=TUT[G.tut.i];
+  c.hidden=false;
+  $('#coachStep').textContent=`How to play · ${G.tut.i+1} of ${TUT.length}`;
+  $('#coachTxt').textContent=st.t;
+  const b=$('#coachBtn');b.hidden=!st.btn;if(st.btn)b.textContent=st.btn==='Start playing'?`Start playing · Level ${G.level}`:st.btn;
+  for(const sel of [st.target,st.also]){if(!sel)continue;const el=document.querySelector(sel);if(el)el.classList.add('coach-on')}
+}
+function tutCheck(){
+  if(!G.tut||G.tut.lock)return;
+  G.tut.lock=true;
+  let moved=false;
+  while(G.tut&&TUT[G.tut.i].done&&TUT[G.tut.i].done()){G.tut.i++;moved=true}
+  G.tut.lock=false;
+  tutShow();
+  if(moved&&!RM)$('#coach').scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+for(const name of ['renderMat','renderTray','renderDoors']){
+  const orig={renderMat,renderTray,renderDoors}[name];
+  const wrapped=function(){orig.apply(this,arguments);tutCheck()};
+  if(name==='renderMat')renderMat=wrapped;else if(name==='renderTray')renderTray=wrapped;else renderDoors=wrapped;
+}
+function startTutorial(){
+  const a=ac();if(a&&a.state==='suspended')a.resume();
+  G.tut={i:0,prob:0,mode:G.mode};G.mode='steady';
+  G.score=0;G.streak=0;G.prog=0;G.shields=3;
+  $('#menu').hidden=true;$('#over').hidden=true;
+  renderHud();newProblem();tutShow();
+  $('#coach').scrollIntoView({block:'nearest'});
+}
+function endTutorial(){
+  if(!G.tut)return;
+  G.mode=G.tut.mode;G.tut=null;store.tutDone=true;save();tutShow();
+}
+$('#bTut').addEventListener('click',startTutorial);
+$('#coachBtn').addEventListener('click',()=>{
+  if(!G.tut)return;const st=TUT[G.tut.i];
+  if(st.end){endTutorial();startRun();return}
+  G.tut.i++;tutShow();
+});
+$('#coachExit').addEventListener('click',()=>{endTutorial();openMenu()});
 
 function boot(data){
   if(data&&data.level){G.level=data.level;G.mode=data.mode||G.mode}
