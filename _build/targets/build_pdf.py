@@ -13,10 +13,11 @@ rows=[];last=None
 for s in seq:
     x=by[s][0]
     if x['unit']!=last:
-        rows.append(f'<tr class="u"><td colspan="9">Unit {x["unit"][1:]} — {html.escape(UNIT[x["unit"]])}</td></tr>'); last=x['unit']
+        rows.append(f'<tr class="u"><td colspan="7">Unit {x["unit"][1:]} — {html.escape(UNIT[x["unit"]])}</td></tr>'); last=x['unit']
     url=f'{BASE_URL}{SLUG[s]}.html#{s}'
-    rows.append(f'<tr><td class="c">{s}</td><td>{html.escape(x["title"])}<div class="d">{DOM[s]}</div></td><td class="t {"p" if x["type"]=="Priority" else ""}">{x["type"]}</td>'
-      f'<td class="n">{len(by[s])}</td><td class="b"></td><td class="b"></td><td class="b"></td><td class="b"></td><td class="l"><a href="{url}">Try it</a></td></tr>')
+    cls="pri" if x["type"]=="Priority" else "sup"
+    rows.append(f'<tr class="{cls}"><td class="c">{s}</td><td>{html.escape(x["title"])}<div class="d">{DOM[s]}</div></td>'
+      f'<td class="n">{len(by[s])}</td><td class="b"></td><td class="b"></td><td class="b"></td><td class="b"></td></tr>')
 H=f'''<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 @page{{size:Letter;margin:0.5in 0.5in 0.55in}}
 body{{font-family:"DejaVu Sans",Arial,sans-serif;color:#1B2333;font-size:10pt;margin:0}}
@@ -31,21 +32,24 @@ th{{background:#1E2D4F;color:#fff;font-size:8pt;padding:5px 4px;text-align:left}
 th.q{{text-align:center;width:34px}}
 td{{border:1px solid #c9d0dc;padding:4px 5px;vertical-align:middle}}
 tr{{break-inside:avoid}}
-tr.u td{{background:#E8EDF5;color:#1E2D4F;font-weight:700;font-size:9pt;border-color:#c9d0dc}}
+tr.u td{{background:#fff;color:#1E2D4F;font-weight:700;font-size:9.5pt;border:0;border-bottom:2px solid #1E2D4F;padding-top:9px}}
 td.c{{font-weight:700;white-space:nowrap;font-size:9pt;color:#1E2D4F}}
 .d{{font-size:7pt;color:#687082}}
 td.t{{font-size:8pt;color:#5B6475}} td.t.p{{color:#8A6100;font-weight:700}}
 td.n{{text-align:center;font-size:8.5pt}}
 td.b{{width:34px;height:24px}}
 td.l{{text-align:center;font-size:8.5pt}} td.l a{{color:#0563C1;font-weight:700}}
+tr.pri td{{background:#FFF4D1}} tr.sup td{{background:#E8F0FB}} tr.pri td.b,tr.sup td.b{{background:#fff}}
+.key{{font-size:8.5pt;margin:0 0 8px;display:flex;align-items:center;gap:6px}} .sw{{display:inline-block;width:14px;height:14px;border:1px solid #c9d0dc;margin-left:8px}} .sw.pri{{background:#FFF4D1}} .sw.sup{{background:#E8F0FB}}
 .ft{{margin-top:10px;font-size:8pt;color:#5B6475}} .ft a{{color:#0563C1}}
 </style></head><body>
 <div class="hd"><h1>8th Grade Math — My Standards</h1><p>Mr. Allen's Math Class · IC Imagine · 2026–27 · Condensed I Can Tracker</p></div>
 <div class="id"><span>Name</span><span class="l"></span><span>Period</span><span class="l"></span></div>
 <div class="lv"><b>Scores:</b><span>5 Mastery</span><span>4 Proficient</span><span>3 Approaching</span><span>2 Developing</span><span>1 Beginning</span>
-<span style="border:0">Copy Mr. Allen's score each quarter. <b>Try it</b> opens the practice questions for that standard.</span></div>
-<table><tr><th>Standard</th><th>What it is</th><th>Type</th><th>Targets</th><th class="q">Q1</th><th class="q">Q2</th><th class="q">Q3</th><th class="q">Q4</th><th>Practice</th></tr>
+<span style="border:0">Copy Mr. Allen's score into the box each quarter.</span></div>
+<div class="key"><span class="sw pri"></span> Priority standard <span class="sw sup"></span> Supporting standard</div>
+<table><tr><th>Standard</th><th>What it is</th><th>Targets</th><th class="q">Q1</th><th class="q">Q2</th><th class="q">Q3</th><th class="q">Q4</th></tr>
 {"".join(rows)}</table>
-<p class="ft">All 218 I can targets with practice questions: <a href="{BASE_URL}index.html">{BASE_URL.replace("https://","")}index.html</a> (also on the class website: 8th Grade → I Can Targets).</p>
+
 </body></html>'''
 open('out/condensed.html','w').write(H)
