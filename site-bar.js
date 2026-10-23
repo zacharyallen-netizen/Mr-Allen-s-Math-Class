@@ -11,8 +11,7 @@
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
-    { label: "Class Info",     href: "class-information.html" },
-    { label: "Meet Mr. Allen", href: "about.html" }
+    { label: "Class Info",     href: "class-information.html" }
   ];
 
   var me = document.currentScript;
