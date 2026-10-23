@@ -14,6 +14,10 @@ const SBG = [
   ['2', 'Partly', '40% to 64%. I need the worked steps or help.'],
   ['1', 'Starting', 'Below 40%. I need to practice before I try again.'],
 ];
+const FP = [
+  ['1', 'Add & subtract integers'], ['2', 'All four operations'], ['3', 'Bigger integers'],
+  ['4', 'Fractions, same denominator'], ['5', 'Fractions, different denominators'],
+];
 const tryCell = '<td class="t"><span class="d">Date</span><span class="sc"><b></b>%</span><span class="lv">SBG</span></td>';
 let rows = '';
 GROUPS.forEach(([g, mods]) => {
@@ -33,7 +37,7 @@ body{margin:0;font-family:Inter,Arial,Helvetica,sans-serif;color:#1E2D4F}
 h1{font-family:Georgia,'Times New Roman',serif;font-size:23px;margin:0}
 .nm{font-size:13px;font-weight:600}.nm span{display:inline-block;width:2.3in;border-bottom:1.4px solid #1E2D4F;margin:0 12px 0 5px}.nm span.s{width:.8in;margin-right:0}
 .mid{display:grid;grid-template-columns:1.05fr 1.35fr;gap:12px;margin:7px 0 7px}
-.how{background:#F4F7FC;border:1px solid #D7DCE6;border-left:5px solid #0056B3;border-radius:7px;padding:6px 11px;font-size:11px;line-height:1.38}
+.how{background:#F4F7FC;border:1px solid #D7DCE6;border-left:5px solid #0056B3;border-radius:7px;padding:5px 11px;font-size:10.5px;line-height:1.3}
 .how b.h{display:block;font-size:12.5px;margin-bottom:2px}
 .how ol{margin:0;padding-left:17px}.how li{margin:1px 0}
 .sbg{border:1.5px solid #C9D0DD;border-radius:7px;padding:6px 10px}
@@ -48,21 +52,30 @@ th small{display:block;font-weight:500;font-size:9.5px;opacity:.85}
 td{border:1px solid #B8C0CF;padding:3px 6px;font-size:11.5px;vertical-align:middle}
 tr.grp td{background:#EEF2F8;font-weight:800;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#0056B3;padding:3px 8px}
 td.mod{width:2.05in;white-space:nowrap}
-td.mod .sym{display:inline-flex;width:30px;height:30px;border-radius:7px;background:#E8EEF8;color:#0056B3;font-weight:800;font-size:13px;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
+td.mod .sym{display:inline-flex;width:26px;height:26px;border-radius:7px;background:#E8EEF8;color:#0056B3;font-weight:800;font-size:13px;align-items:center;justify-content:center;margin-right:8px;vertical-align:middle}
 td.mod span:last-child{display:inline-block;vertical-align:middle;font-weight:700;font-size:12px;line-height:1.15}
 td.mod small{font-weight:600;color:#6B7488;font-size:9.5px}
 td.lvls{width:1.7in;text-align:center;white-space:nowrap}
 td.lvls span{display:inline-flex;width:20px;height:20px;border:1.5px solid #1E2D4F;border-radius:50%;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:0 1.5px}
 td.t{width:1.6in;font-size:9.5px;color:#6B7488;font-weight:600}
-td.t span{display:block;line-height:1.55}
+td.t span{display:block;line-height:1.3}
 td.t .d{border-bottom:1px solid #C9D0DD}
 td.t .sc b{display:inline-block;width:.45in;border-bottom:1px solid #8A94A8;margin-right:2px}
 td.t .sc{display:inline-block}td.t .lv{display:inline-block;float:right}
 td.t .lv::after{content:"";display:inline-block;width:20px;height:20px;border:1.5px solid #8A94A8;border-radius:50%;vertical-align:middle;margin-left:4px}
 td.best{width:.75in}
 td.goal{width:.62in;text-align:center}.box{display:inline-block;width:20px;height:20px;border:2px solid #15803D;border-radius:4px}
-.ref{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:8px;font-size:11.5px;font-weight:600}
-.ref div span{display:block;border-bottom:1.3px solid #8A94A8;height:22px}
+.ref{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:5px;font-size:11.5px;font-weight:600}
+.ref div span{display:block;border-bottom:1.3px solid #8A94A8;height:16px}
+.fp{margin-top:7px;border:1.5px solid #C9D0DD;border-radius:7px;padding:5px 8px 6px}
+.fp .h{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;font-weight:800;margin-bottom:4px}
+.fp .h small{font-size:10px;font-weight:600;color:#6B7488}
+.fp table td{font-size:10px;padding:3px 5px;vertical-align:top;width:20%}
+.fp .ln{font-weight:800;font-size:11px}.fp .lname{display:block;font-weight:600;color:#6B7488;font-size:9.5px;margin-bottom:2px}
+.fp .row{display:flex;justify-content:space-between;align-items:center;font-weight:600;color:#6B7488;margin-top:2px}
+.fp .row b{display:inline-block;width:.42in;border-bottom:1px solid #8A94A8;margin:0 2px}
+.fp .st{font-size:13px;color:#8A94A8;letter-spacing:1px}
+.ref{grid-template-columns:2fr 1fr!important}
 .foot{font-size:10px;color:#6B7488;margin-top:5px;text-align:center}
 </style></head><body><div class="page">
 <div class="top"><h1>Math Fluency Lab · My Progress Tracker</h1><div class="nm">Name <span></span> Period <span class="s"></span></div></div>
@@ -79,8 +92,10 @@ td.goal{width:.62in;text-align:center}.box{display:inline-block;width:20px;heigh
 </div>
 <table><thead><tr><th>Module</th><th>Highest practice level<small>circle one</small></th><th>Skill Check · Try 1<small>date · score · SBG</small></th><th>Skill Check · Try 2<small>date · score · SBG</small></th><th>Skill Check · Try 3<small>date · score · SBG</small></th><th>Best SBG</th><th>4 or higher ✓</th></tr></thead>
 <tbody>${rows}</tbody></table>
-<div class="ref"><div>The module I got fastest at:<span></span></div><div>The module I need to practice most:<span></span></div><div>My goal for next week:<span></span></div></div>
-<div class="foot">Fluency Lab: Mr. Allen's Math Class website → 8th Grade → Fluency Lab. Send each Skill Check score to Mr. Allen from the Skill Check page.</div>
+<div class="fp"><div class="h"><span>⚡ Flashpoint scores</span><small>20 problems a round · 12 right = ★ · 16 right = ★★ and the next level unlocks · 19 right = ★★★ · write your best round</small></div>
+<table><tr>${FP.map(([n, name]) => `<td><span class="ln">Level ${n}</span><span class="lname">${name}</span><div class="row">Right<b></b>/ 20<span class="st">☆☆☆</span></div><div class="row">Points<b style="width:.6in"></b>Date<b></b></div></td>`).join('')}</tr></table></div>
+
+<div class="foot">Fluency Lab: Mr. Allen's Math Class website → 8th Grade → Fluency Lab. Flashpoint is on the Fluency Lab page. Send each Skill Check and Flashpoint score to Mr. Allen from the results screen.</div>
 </div></body></html>`;
 (async () => {
   const b = await chromium.launch(), p = await b.newPage();
