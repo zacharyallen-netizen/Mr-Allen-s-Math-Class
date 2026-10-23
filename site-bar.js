@@ -9,6 +9,7 @@
   var LINKS = [
     { label: "8th Grade",      href: "grade8/index.html",            section: "grade8/" },
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
+    { label: "I Can Targets",  href: "grade8/targets/index.html",    section: "grade8/targets/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
     { label: "Class Info",     href: "class-information.html" }
@@ -24,8 +25,8 @@
   // Current page: an exact link match wins; otherwise the course section.
   var current = -1;
   LINKS.forEach(function (l, i) { if (rel === l.href) current = i; });
-  if (current < 0) LINKS.forEach(function (l, i) {
-    if (current < 0 && l.section && rel.indexOf(l.section) === 0) current = i;
+  if (current < 0) LINKS.forEach(function (l, i) {   // longest matching section wins
+    if (l.section && rel.indexOf(l.section) === 0 && (current < 0 || l.section.length > LINKS[current].section.length)) current = i;
   });
 
   // Fonts (shared with the page; harmless if already loaded or blocked)
