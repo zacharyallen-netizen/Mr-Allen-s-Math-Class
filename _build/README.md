@@ -19,6 +19,10 @@ Python 3, Node 18+ and Playwright with Chromium are needed.
 
 ## Score Tracker (Google Apps Script)
 `tracker/ScoreTracker_v2.gs` is the script pasted into Google (see the update guide).
+Version 3 (`tracker/ScoreTracker_v3.gs`, Roster + name matching + Flashpoint tab) holds the class list, so it is
+git-ignored and kept off the website: paste steps in `tracker/HOW_TO_UPDATE_SCRIPT.md`. Tests:
+`node tracker/test_tracker_v3.js`, `node tracker/test_survey_v3.js`, `node tracker/test_real_export.js <Sheet export>`,
+and (repo served on 127.0.0.1:8742) `node tracker/v3_flash/test_flashpoint.js`.
 Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in for Google Sheets).
 `node tracker/check_payload.js file.json` checks a page's "Send my work" data against the real script.
 `tracker/calib.js` re-runs the calibration of the practice cut-offs.

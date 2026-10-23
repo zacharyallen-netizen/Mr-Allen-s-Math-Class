@@ -508,6 +508,7 @@ function endRound(){
   const wasLocked=lv<5&&!unlocked(lv+1);
   const newBest=R.score>(save.best[lv]||0);
   save.best[lv]=Math.max(save.best[lv]||0,R.score);save.stars[lv]=Math.max(save.stars[lv]||0,st);persist();
+  if(window.ScoreSend&&ScoreSend.opts)ScoreSend.opts.page=`Fluency Lab · Flashpoint · Level ${lv} · ${R.score.toLocaleString('en-US')} points · ${st} star${st===1?'':'s'}`;
   const opened=wasLocked&&unlocked(lv+1);
   show('results');
   $('#rLvl').textContent=`Level ${lv} · ${LEVELS[lv-1].name}`;
