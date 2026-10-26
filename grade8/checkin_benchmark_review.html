@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NC Check-In Benchmark Review — Mr. Allen's Math Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1E2D4F; --ink:#1B2333; --muted:#5B6475; --faint:#687082;
+  --gold:#FFC107; --gold-line:#E0A800; --gold-text:#8A6100; --gold-soft:#FFF6D6;
+  --bg:#F7F7F4; --card:#FFFFFF; --line:#E3E5EA; --line-2:#D5D9E0;
+  --ok:#15803D; --ok-bg:#E8F5EC; --no:#B42318; --no-bg:#FBEAE8; --info:#1D4ED8;
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--gold-line);outline-offset:3px}
+.wrap{max-width:840px;margin:0 auto;padding:32px 16px 96px}
+.back-link{display:inline-flex;gap:6px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;margin:0 0 20px}
+.back-link:hover{color:var(--navy)}
+.eyebrow{color:var(--gold-text);font:600 12.5px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;margin:0 0 12px}
+h1{font:600 clamp(30px,5vw,42px)/1.12 var(--serif);color:var(--navy);margin:0 0 12px;letter-spacing:-.01em}
+.lede{color:var(--muted);font-size:17px;margin:0;max-width:62ch}
+.stds{font:500 12.5px/1.4 var(--mono);color:var(--faint);margin:10px 0 0}
+.hdr{border-bottom:1px solid var(--line);padding:0 0 24px;margin:0 0 24px}
+.links{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.links a{font:600 14px/1 var(--sans);color:var(--navy);text-decoration:none;border:1px solid var(--line-2);background:#fff;border-radius:8px;padding:12px 14px;min-height:44px;display:inline-flex;align-items:center}
+.links a:hover{border-color:var(--navy)}
+
+.namebox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin:0 0 8px}
+.namebox label{display:block;font:600 15px/1.3 var(--sans);color:var(--navy);margin-bottom:8px}
+.namebox input{width:100%;max-width:420px;font:16px var(--sans);padding:11px 13px;border:1px solid var(--line-2);border-radius:8px;min-height:44px}
+.namebox .help{color:var(--muted);font-size:14px;margin:8px 0 0}
+.namebox .lbl2{display:block;font:600 15px/1.3 var(--sans);color:var(--navy);margin:16px 0 8px}
+.classes{display:flex;flex-wrap:wrap;gap:8px}
+.cls{font:600 16px/1 var(--mono);color:var(--navy);background:#fff;border:1.5px solid var(--line-2);border-radius:8px;min-width:60px;min-height:44px;padding:0 12px;cursor:pointer;touch-action:manipulation}
+.cls[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+
+.part{margin:36px 0 0}
+.part-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+.part-h .tag{font:600 12px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--navy);border-radius:5px;padding:5px 8px}
+.part-h h2{font:600 24px/1.2 var(--serif);color:var(--navy);margin:0}
+.part-h .std{margin-left:auto;font:500 12.5px var(--mono);color:var(--faint)}
+.tip{background:var(--gold-soft);border-left:4px solid var(--gold);border-radius:6px;padding:10px 14px;font-size:15px;margin:0 0 14px}
+.tip b.lbl{font-size:12px;letter-spacing:.1em;color:var(--navy);margin-right:4px}
+.calc{font-size:13.5px;color:var(--muted);margin:-6px 0 14px}
+
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 18px 16px;margin:0 0 14px}
+.q-top{display:flex;gap:12px;align-items:flex-start}
+.qn{flex:none;width:30px;height:30px;border-radius:50%;background:var(--navy);color:#fff;font:700 14px/30px var(--sans);text-align:center}
+.q-text{flex:1;min-width:0;padding-top:2px}
+.q-type{font:600 11px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.q-text p{margin:0}
+.q-body{margin:14px 0 0 42px}
+.expr{font:600 22px/1.5 var(--serif);color:var(--navy)}
+.m{font-family:var(--serif);font-weight:600;color:var(--navy);white-space:nowrap}
+sup{font-size:.68em;line-height:0;position:relative;vertical-align:baseline;top:-.55em}
+.rad{border-top:2px solid currentColor;padding:1px 2px 0;margin-left:1px}
+.rep{border-top:2px solid currentColor;padding-top:1px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.25}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px 1px}
+.fr>span:last-child{padding:1px 4px 0}
+
+/* choices */
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:600 19px/1.2 var(--serif);color:var(--navy);background:#fff;border:1.5px solid var(--line-2);border-radius:10px;min-height:52px;min-width:88px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;touch-action:manipulation}
+.chip .L{font:700 13px/1 var(--sans);color:var(--muted);border:1.5px solid var(--line-2);border-radius:50%;width:26px;height:26px;display:inline-grid;place-items:center;flex:none}
+.chip[aria-pressed="true"]{border-color:var(--navy);background:#EEF1F7;box-shadow:inset 0 0 0 1px var(--navy)}
+.chip[aria-pressed="true"] .L{background:var(--navy);border-color:var(--navy);color:#fff}
+.chip:disabled{cursor:default}
+.cv{white-space:nowrap}
+.chips.col{flex-direction:column;align-items:stretch}
+.chips.col .chip{justify-content:flex-start}
+
+/* rational/irrational table */
+table.ri{border-collapse:separate;border-spacing:0;width:100%;max-width:520px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+table.ri th{background:var(--navy);color:#fff;font:600 13px var(--sans);padding:9px 10px;text-align:center}
+table.ri th:first-child{text-align:left}
+table.ri td{border-top:1px solid var(--line);padding:6px 10px;text-align:center}
+table.ri td:first-child{text-align:left;font:600 20px/1.4 var(--serif);color:var(--navy);white-space:nowrap}
+table.ri tr:nth-child(even) td{background:#FAFAF8}
+.ri label{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;cursor:pointer}
+.ri input{width:22px;height:22px;accent-color:var(--navy);cursor:pointer}
+
+/* inputs */
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
+.row .lab{font-size:15px;color:var(--muted)}
+input.box{font:600 18px/1 var(--mono);color:var(--ink);border:1px solid var(--line-2);border-radius:8px;padding:9px 10px;min-height:44px;background:#fff;width:84px;text-align:center}
+input.box.wide{width:min(260px,100%);text-align:left}
+input.box.exp{width:64px;font-size:15px;min-height:40px;position:relative;top:-14px}
+input.box:disabled{background:#F4F5F7;color:var(--ink)}
+.sn{display:inline-flex;align-items:center;gap:6px;font:600 20px var(--serif);color:var(--navy);padding-top:14px}
+.preview{font:600 20px/1.4 var(--serif);color:var(--navy);min-height:30px;margin:6px 0 0}
+.preview .hint{font:400 14px var(--sans);color:var(--muted)}
+.typehelp{font-size:14px;color:var(--muted);margin:8px 0 0}
+code{font:500 14px var(--mono);background:#F1F2F5;border-radius:4px;padding:1px 5px}
+
+/* ordering */
+.pool{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.slots{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.slot{min-width:84px;min-height:52px;border:1.5px dashed var(--line-2);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font:600 19px var(--serif);color:var(--navy);background:#fff;padding:6px 12px;cursor:pointer}
+.slot.filled{border-style:solid;border-color:var(--navy);background:#EEF1F7}
+.slot .n{font:600 12px var(--sans);color:var(--faint)}
+.lg{font:600 13px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.used{opacity:.35}
+
+/* results */
+.res{margin:14px 0 0 42px;border-radius:8px;padding:10px 14px;font-size:15px;display:none}
+.res.show{display:block}
+.res.ok{background:var(--ok-bg);border-left:4px solid var(--ok)}
+.res.no{background:var(--no-bg);border-left:4px solid var(--no)}
+.res .head{font-weight:700;margin-bottom:2px}
+.res.ok .head{color:var(--ok)} .res.no .head{color:var(--no)}
+.res .key{margin-top:4px}
+
+.submit{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:28px 0 0}
+.submit h2{font:600 22px/1.2 var(--serif);color:var(--navy);margin:0 0 6px}
+.btn{font:600 16px var(--sans);color:#fff;background:var(--navy);border:0;border-radius:8px;padding:12px 22px;min-height:48px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line-2)}
+.btn:disabled{opacity:.55;cursor:default}
+.msg{margin:10px 0 0;font-size:15px;color:var(--muted)}
+.msg.warn{color:var(--no)} .msg.good{color:var(--ok)}
+.score{display:none;margin:18px 0 0}
+.score.show{display:block}
+.big{font:600 44px/1 var(--serif);color:var(--navy)}
+.big small{font-size:20px;color:var(--muted)}
+table.bystd{border-collapse:collapse;margin:14px 0 0;width:100%;max-width:560px;font-size:15px}
+table.bystd th,table.bystd td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left}
+table.bystd th{font:600 12.5px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+table.bystd td.p{font:600 15px var(--mono);text-align:right}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+@media (max-width:560px){
+  .q{padding:16px 14px 14px}
+  .q-body,.res{margin-left:0}
+  .part-h .std{margin-left:0;width:100%}
+  .expr{font-size:20px}
+}
+
+/* ── Check-In page additions ── */
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+.step{font:600 15px/1 var(--sans);color:var(--navy);background:#fff;border:1px solid var(--line-2);border-radius:999px;min-height:44px;padding:0 18px 0 8px;display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+.step .sn1{width:28px;height:28px;border-radius:50%;display:inline-grid;place-items:center;background:#EEF1F7;font:700 13px var(--sans)}
+.step[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.step[aria-selected="true"] .sn1{background:var(--gold);color:var(--navy)}
+.next{display:flex;justify-content:flex-end;margin:22px 0 0}
+.ntabs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.ntab{font:600 14px/1 var(--mono);color:var(--navy);background:#fff;border:1.5px solid var(--line-2);border-radius:8px;min-height:44px;padding:0 14px;cursor:pointer}
+.ntab em{font:600 11px var(--sans);font-style:normal;text-transform:uppercase;letter-spacing:.08em;color:var(--gold-text);margin-left:6px}
+.ntab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.ntab[aria-selected="true"] em{color:var(--gold)}
+
+/* notes + strategies content (shared with the PDF) */
+.secthead{display:flex;align-items:center;flex-wrap:wrap;gap:10px 12px;border-bottom:1px solid var(--line);padding-bottom:10px;margin:0 0 16px}
+.secthead .tab{font:600 12px/1 var(--mono);color:#fff;background:var(--navy);border-radius:5px;padding:6px 8px}
+.secthead h2{font:600 24px/1.2 var(--serif);color:var(--navy);margin:0}
+.secthead .lvl{margin-left:auto;font:600 12px var(--sans);color:var(--gold-text);background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:999px;padding:4px 10px}
+.secthead .lvl.full{background:var(--navy);color:var(--gold);border-color:var(--navy)}
+h3{font:600 18px/1.3 var(--serif);color:var(--navy);margin:0 0 6px}
+.ican{background:#fff;border:1px solid var(--line);border-left:4px solid var(--navy);border-radius:0 8px 8px 0;padding:10px 14px;margin:0 0 14px}
+.ican b{font-family:var(--serif);color:var(--navy)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:0 0 14px}
+.card.gold{background:var(--gold-soft);border-color:#F1D98A}
+.card.navy{background:var(--navy);border-color:var(--navy);color:#fff}
+.card.navy h3{color:var(--gold)}
+.cols{display:flex;flex-wrap:wrap;gap:14px}
+.cols>*{flex:1 1 260px;min-width:0}
+.cols>.card,.cols>.warn,.cols>.ex{margin-bottom:0}
+.cols{margin-bottom:14px}
+.card .cols{margin-bottom:0}
+.tablewrap{overflow-x:auto}
+table.t{border-collapse:collapse;width:100%;font-size:15px}
+table.t th{background:var(--navy);color:#fff;font:600 13px var(--sans);text-align:left;padding:8px 10px}
+table.t td{border-bottom:1px solid var(--line);padding:8px 10px;vertical-align:top}
+table.t tr:nth-child(even) td{background:#FAFAF8}
+.warn{background:var(--gold-soft);border-left:4px solid var(--gold);border-radius:6px;padding:10px 14px;font-size:15px;margin:0 0 14px}
+.ex{font:500 16px/1.7 var(--serif);color:var(--navy);background:#FAFAF8;border:1px dashed var(--line-2);border-radius:8px;padding:10px 12px}
+.math{font-family:var(--serif);font-weight:600;color:var(--navy)}
+.small{font-size:14px;color:var(--muted)}
+.card.navy .small{color:#D5DBE8}
+.center{text-align:center}
+.bar{border-top:2px solid currentColor;padding-top:1px}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.2;margin:0 2px;font-size:.92em}
+.frac>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.vtable{border-collapse:collapse;font:600 15px var(--serif);margin:auto}
+.vtable td,.vtable th{border:1.5px solid var(--navy);padding:4px 11px;text-align:center}
+.vtable th{background:var(--navy);color:#fff}
+ul.tight{margin:4px 0 0;padding-left:20px} ul.tight li{margin-bottom:3px}
+.figrow{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start;justify-content:center}
+.figrow>div{min-width:0}
+svg{max-width:100%;height:auto}
+.strat{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin:0 0 14px}
+.strat .card{margin:0}
+.strat .n{font:700 13px var(--sans);color:var(--navy);background:var(--gold);border-radius:6px;padding:2px 8px;margin-right:8px}
+.chip-legend{display:none}
+
+/* practice extras */
+.stem p{margin:0}
+.stem .center{margin:8px 0}
+.chips.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+.chips.grid4 .chip{flex-direction:column;align-items:center;padding:8px}
+.chips.col .chip{font-size:17px}
+.chip .cv{white-space:normal}
+.chip.right{border-color:var(--ok);background:var(--ok-bg);box-shadow:inset 0 0 0 1px var(--ok)}
+.chip.right .L{background:var(--ok);border-color:var(--ok);color:#fff}
+.chip.wrong{border-color:var(--no);background:var(--no-bg);box-shadow:inset 0 0 0 1px var(--no)}
+.chip.wrong .L{background:var(--no);border-color:var(--no);color:#fff}
+.chip.missed{border-style:dashed;border-color:var(--ok)}
+.vtable.inchip{font-size:13px} .chip .vtable td,.chip .vtable th{padding:2px 6px}
+.withfig{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.wf-main{flex:1 1 300px;min-width:0}
+.wf-fig{flex:0 1 auto;margin:0 auto}
+input.box.right{border-color:var(--ok);background:var(--ok-bg)}
+input.box.wrong{border-color:var(--no);background:var(--no-bg)}
+.qact{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0 0}
+.btn.sm{font-size:15px;min-height:44px;padding:10px 16px}
+.nudge{font-size:14px;color:var(--no);font-weight:600}
+.res .why{margin-top:6px;color:var(--ink)}
+.res .why b{color:var(--navy)}
+.prog{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;background:rgba(247,247,244,.96);border-bottom:1px solid var(--line);padding:10px 2px;margin:16px 0 0;font:600 14px var(--sans);color:var(--navy)}
+.pbar{flex:1;height:8px;background:#E8EAEF;border-radius:99px;overflow:hidden}
+.pbar i{display:block;height:100%;width:0;background:var(--gold);transition:width .3s}
+.qgrid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px;margin:16px 0 0;max-width:560px}
+.qgrid a{text-align:center;font:600 14px/36px var(--mono);border-radius:6px;text-decoration:none;min-height:36px}
+.qgrid a.r{background:var(--ok-bg);color:var(--ok)} .qgrid a.w{background:var(--no-bg);color:var(--no)}
+@media (max-width:560px){
+  .chips.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .qgrid{grid-template-columns:repeat(5,minmax(0,1fr))}
+  .secthead .lvl{margin-left:0}
+  .step{padding-right:12px}
+}
+@media print{ .steps,.prog,.qact,.next,.ntabs{display:none} .tabp[hidden],.note[hidden]{display:block!important} }
+.cols>.warn{flex:1 1 260px!important}
+@media (max-width:560px){
+  table.t{font-size:13px}
+  table.t th,table.t td{padding:6px 5px;overflow-wrap:anywhere}
+  table.t th{font-size:12px}
+}
+.chip{text-align:left}
+.chips.col .chip .cv{font:500 16px/1.4 var(--sans);color:var(--ink)}
+.chip .small{font:400 13px var(--sans);color:var(--muted)}
+.chips.grid4 .chip{text-align:center}
+
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<script src="../site-bar.js"></script>
+<div class="wrap">
+<a class="back-link" href="index.html">← 8th Grade Home</a>
+
+<header class="hdr">
+  <div class="eyebrow">NC Check-In Benchmark</div>
+  <h1>NC Check-In Benchmark Review</h1>
+  <p class="lede">Read the test strategies. Review the notes. Then do the 20 practice questions. Tap <b>Check my answer</b> after each one to see if you got it right. When you finish, tap <b>Submit</b>. Mr. Allen gets your results.</p>
+  <p class="stds">NC.8.NS.1 · NC.8.EE.1 · NC.8.EE.7 · NC.8.F.1 · NC.8.G.3</p>
+  <div class="links"><a href="NC_CheckIn_Benchmark_Review.pdf">Printable packet (PDF)</a></div>
+</header>
+
+<nav class="steps" role="tablist" aria-label="Sections">
+  <button type="button" role="tab" class="step" data-tab="tStrat" aria-selected="true"><span class="sn1">1</span>Strategies</button>
+  <button type="button" role="tab" class="step" data-tab="tNotes" aria-selected="false"><span class="sn1">2</span>Notes</button>
+  <button type="button" role="tab" class="step" data-tab="tPrac" aria-selected="false"><span class="sn1">3</span>Practice</button>
+</nav>
+
+<section class="tabp" id="tStrat" role="tabpanel">
+
+    <div class="secthead"><span class="tab">Strategies</span><h2>Math Test-Taking Strategies</h2><span class="lvl full">Review every time</span></div>
+    <div class="strat"><div class="card"><span class="n">1</span><b>Box the question.</b><div style="margin-top:3px;font-size:9.8pt">Before any math, draw a box around what they are actually asking for. Is it <i>x</i>? The <b>image</b> of point B? The number of solutions?</div></div><div class="card"><span class="n">2</span><b>Hunt for trap words.</b><div style="margin-top:3px;font-size:9.8pt">Circle <b>NOT</b>, <b>EXCEPT</b>, <b>greatest</b>, <b>least</b>, <b>all</b>. One missed "NOT" flips the whole answer.</div></div><div class="card"><span class="n">3</span><b>Plug it back in.</b><div style="margin-top:3px;font-size:9.8pt">Got <i>x</i> = 5? Put 5 into the ORIGINAL equation. Both sides match → you're right. Works on Multiple Choice too: test each choice.</div></div><div class="card"><span class="n">4</span><b>Eliminate first.</b><div style="margin-top:3px;font-size:9.8pt">Cross out choices that can't be right (wrong sign, wrong quadrant, too big). Two left is a 50/50 — much better than 25%.</div></div><div class="card"><span class="n">5</span><b>Select All = True/False.</b><div style="margin-top:3px;font-size:9.8pt">Judge every option on its own: <b>T</b> or <b>F</b>. Don't stop after one. Expect 2 or more correct.</div></div><div class="card"><span class="n">6</span><b>Numeric Entry has no safety net.</b><div style="margin-top:3px;font-size:9.8pt">No choices to compare, so check it twice. Watch negative signs, simplify fractions, and give the form asked for (fraction vs. decimal).</div></div><div class="card"><span class="n">7</span><b>Draw it.</b><div style="margin-top:3px;font-size:9.8pt">Sketch a quick grid, mapping diagram, or number line on scratch paper. Seeing it beats picturing it — especially for G.3 and F.1.</div></div><div class="card"><span class="n">8</span><b>Estimate, then check.</b><div style="margin-top:3px;font-size:9.8pt">Make a quick guess before solving. If your final answer is way off from your estimate, go back and look.</div></div><div class="card"><span class="n">9</span><b>Wrong answers are built from mistakes.</b><div style="margin-top:3px;font-size:9.8pt">Test writers put common errors in the choices (added exponents instead of multiplying, rotated the wrong way). If your answer is there, still double-check it.</div></div><div class="card"><span class="n">10</span><b>Never leave one blank.</b><div style="margin-top:3px;font-size:9.8pt">There is no penalty for guessing. Eliminate what you can, then make your best pick and move on.</div></div></div>
+    <div class="card navy" style="margin-top:10px"><h3>C.U.B.E.S. for Word Problems</h3>
+      <div style="display:flex;gap:10px;font-size:9.8pt">
+      <div><b style="color:#FFC107">C</b>ircle key numbers</div><div><b style="color:#FFC107">U</b>nderline the question</div><div><b style="color:#FFC107">B</b>ox math words</div><div><b style="color:#FFC107">E</b>valuate &amp; eliminate</div><div><b style="color:#FFC107">S</b>olve &amp; check</div></div></div>
+    <h3 style="margin:8px 0 5px">Watch-Out List — the mistakes that cost points</h3>
+    <table class="t" style="font-size:9pt"><tr><th style="width:11%">Standard</th><th>Common mistake</th><th>Fix</th></tr>
+      <tr><td class="math">NS.1</td><td>Thinking 0.272727… is irrational because it "never ends."</td><td>Repeating = rational. Irrational means it never ends <b>and</b> never repeats.</td></tr>
+      <tr><td class="math">EE.1</td><td>Multiplying the bases: 3<sup>2</sup> · 3<sup>4</sup> = 9<sup>6</sup>. Or thinking a negative exponent makes a negative number.</td><td>Same base stays the same base. Negative exponent = flip to the other side of the fraction.</td></tr>
+      <tr><td class="math">EE.7</td><td>Distributing to only the first term; forgetting to flip the sign.</td><td>Draw the arrows to EVERY term. Multiply/divide by a negative → flip the inequality.</td></tr>
+      <tr><td class="math">F.1</td><td>Saying "not a function" because a <b>y</b>-value repeats.</td><td>Only a repeated <b>x</b> (input) with different outputs breaks a function.</td></tr>
+      <tr><td class="math">G.3</td><td>Mixing up the x-axis and y-axis reflections; rotating clockwise when it says counterclockwise.</td><td>Use the rule chart. Reflect over x-axis → <b>y</b> changes sign.</td></tr>
+    </table>
+    
+<div class="next"><button type="button" class="btn" data-go="tNotes">Next: Notes →</button></div>
+</section>
+
+<section class="tabp" id="tNotes" role="tabpanel" hidden>
+  <div class="ntabs" role="tablist" aria-label="Notes by standard">
+    <button type="button" class="ntab" data-n="nNS1" aria-selected="true">NS.1</button><button type="button" class="ntab" data-n="nEE1" aria-selected="false">EE.1</button><button type="button" class="ntab" data-n="nEE7" aria-selected="false">EE.7</button><button type="button" class="ntab" data-n="nF1" aria-selected="false">F.1 <em>new</em></button><button type="button" class="ntab" data-n="nG3" aria-selected="false">G.3 <em>new</em></button>
+  </div>
+  <div class="note" id="nNS1"><div class="secthead"><span class="tab">NS.1</span><h2>Rational &amp; Irrational Numbers</h2><span class="lvl ">Quick Refresher</span></div>
+    <div class="ican"><b>I can</b> tell rational from irrational numbers and write a repeating decimal as a fraction.</div>
+    <div class="cols">
+      <div class="card"><h3>Rational</h3>Can be written as a fraction <span class="frac"><span>a</span><span>b</span></span> of integers (b ≠ 0).<br>Its decimal <b>ends</b> or <b>repeats</b>.
+        <div class="ex" style="margin-top:5px">−7 &nbsp; <span class="frac"><span>3</span><span>8</span></span> &nbsp; 0.25 &nbsp; 0.<span class="bar">3</span> &nbsp; √49 = 7 &nbsp; √<span style="text-decoration:overline">0.25</span> = 0.5</div></div>
+      <div class="card gold"><h3>Irrational</h3>CANNOT be written as a fraction.<br>Its decimal <b>never ends AND never repeats</b>.
+        <div class="ex" style="margin-top:5px">π &nbsp; √2 &nbsp; √20 &nbsp; 0.1010010001…</div>
+        <div class="small" style="margin-top:4px">√ of a whole number that is NOT a perfect square → irrational.</div></div>
+    </div>
+    <div class="card"><div class="figrow"><div style="flex:1"><h3>Where numbers live</h3>Every real number is <b>either</b> rational <b>or</b> irrational — never both. Integers, whole numbers, and natural numbers are all <b>inside</b> the rational box.<div class="small" style="margin-top:6px">√49 = 7, so it's a natural number — even with a square root sign!</div></div><svg viewBox="0 0 330 150" width="330" height="150" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif">
+<rect x="2" y="2" width="326" height="146" rx="10" fill="#F3F5FA" stroke="#1E2D4F" stroke-width="1.5"/>
+<text x="12" y="17" font-size="10" font-weight="700" fill="#1E2D4F">REAL NUMBERS</text>
+<rect x="10" y="24" width="208" height="118" rx="8" fill="#fff" stroke="#1E2D4F" stroke-width="1.3"/>
+<text x="18" y="38" font-size="9.5" font-weight="700" fill="#1E2D4F">Rational</text><text x="70" y="38" font-size="8" fill="#55607a">3/8, 0.25, 0.333…</text>
+<rect x="18" y="44" width="192" height="90" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/>
+<text x="25" y="58" font-size="9.5" font-weight="700" fill="#1E2D4F">Integers</text><text x="80" y="58" font-size="8" fill="#55607a">−7, −1</text>
+<rect x="26" y="64" width="176" height="62" rx="6" fill="#dfe5f0" stroke="#1E2D4F"/>
+<text x="33" y="78" font-size="9.5" font-weight="700" fill="#1E2D4F">Whole</text><text x="72" y="78" font-size="8" fill="#55607a">0</text>
+<rect x="34" y="84" width="160" height="34" rx="5" fill="#1E2D4F"/>
+<text x="42" y="105" font-size="9.5" font-weight="700" fill="#FFC107">Natural</text><text x="92" y="105" font-size="8.5" fill="#fff">1, 2, 3, √49</text>
+<rect x="226" y="24" width="94" height="118" rx="8" fill="#FFF3CD" stroke="#c98f00" stroke-width="1.3"/>
+<text x="234" y="38" font-size="9.5" font-weight="700" fill="#8a5a00">Irrational</text>
+<text x="234" y="62" font-size="11" fill="#1E2D4F">π</text><text x="234" y="82" font-size="11" fill="#1E2D4F">√2, √20</text>
+<text x="234" y="102" font-size="9" fill="#1E2D4F">0.1010010…</text><text x="234" y="126" font-size="7.5" fill="#8a5a00">never ends,</text><text x="234" y="136" font-size="7.5" fill="#8a5a00">never repeats</text>
+</svg></div></div>
+    <div class="card"><h3>Repeating decimal → fraction (the algebra way)</h3>
+      <div class="cols">
+        <div class="ex">x = 0.<span class="bar">27</span> = 0.2727…<br>100x = 27.2727… &nbsp;<span class="small">(2 digits repeat → ×100)</span><br>100x − x = 27<br>99x = 27 → x = <span class="frac"><span>27</span><span>99</span></span> = <b><span class="frac"><span>3</span><span>11</span></span></b></div>
+        <div class="ex">x = 0.1<span class="bar">3</span> = 0.1333…<br>100x = 13.333… &nbsp; 10x = 1.333…<br>100x − 10x = 12<br>90x = 12 → x = <span class="frac"><span>12</span><span>90</span></span> = <b><span class="frac"><span>2</span><span>15</span></span></b></div>
+      </div>
+      <div class="small" style="margin-top:5px"><b>Shortcut:</b> when the repeat starts right after the decimal point, put the repeating digits over that many 9s: 0.<span class="bar">4</span> = <span class="frac"><span>4</span><span>9</span></span>, 0.<span class="bar">27</span> = <span class="frac"><span>27</span><span>99</span></span>. For 1.<span class="bar">6</span>, keep the 1: 1 + <span class="frac"><span>6</span><span>9</span></span> = 1<span class="frac"><span>2</span><span>3</span></span> = <span class="frac"><span>5</span><span>3</span></span>.</div>
+    </div>
+    </div><div class="note" id="nEE1" hidden><div class="secthead"><span class="tab">EE.1</span><h2>Integer Exponents</h2><span class="lvl ">Quick Refresher</span></div>
+    <div class="ican"><b>I can</b> use the properties of integer exponents to write equivalent expressions.</div>
+    <table class="t"><tr><th>Rule</th><th>In words</th><th>Example</th></tr>
+      <tr><td><b>Product</b> &nbsp;a<sup>m</sup> · a<sup>n</sup> = a<sup>m+n</sup></td><td>Same base, multiplying → <b>add</b> exponents</td><td class="math">2<sup>3</sup> · 2<sup>5</sup> = 2<sup>8</sup></td></tr>
+      <tr><td><b>Quotient</b> &nbsp;a<sup>m</sup> ÷ a<sup>n</sup> = a<sup>m−n</sup></td><td>Same base, dividing → <b>subtract</b> (top − bottom)</td><td class="math">5<sup>7</sup> ÷ 5<sup>9</sup> = 5<sup>−2</sup></td></tr>
+      <tr><td><b>Power of a power</b> &nbsp;(a<sup>m</sup>)<sup>n</sup> = a<sup>mn</sup></td><td>Exponent outside parentheses → <b>multiply</b></td><td class="math">(x<sup>4</sup>)<sup>3</sup> = x<sup>12</sup></td></tr>
+      <tr><td><b>Power of a product</b> &nbsp;(ab)<sup>n</sup> = a<sup>n</sup>b<sup>n</sup></td><td>Give the exponent to <b>every</b> factor inside</td><td class="math">(2y<sup>3</sup>)<sup>2</sup> = 4y<sup>6</sup></td></tr>
+      <tr><td><b>Zero</b> &nbsp;a<sup>0</sup> = 1</td><td>Anything (not 0) to the zero power is 1</td><td class="math">(−8)<sup>0</sup> = 1</td></tr>
+      <tr><td><b>Negative</b> &nbsp;a<sup>−n</sup> = <span class="frac"><span>1</span><span>a<sup>n</sup></span></span></td><td>Negative exponent → <b>flip</b> it across the fraction bar. It does NOT make the number negative.</td><td class="math">4<sup>−2</sup> = <span class="frac"><span>1</span><span>16</span></span></td></tr>
+    </table>
+    <div class="card" style="margin-top:8px"><div class="figrow"><div style="flex:1"><h3>Why do we ADD exponents?</h3>An exponent counts how many times the base is multiplied. Put the groups together and count.</div><svg viewBox="0 0 330 46" width="330" height="46" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif"><circle cx="16" cy="22" r="11" fill="#1E2D4F"/><text x="16" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="42" cy="22" r="11" fill="#1E2D4F"/><text x="42" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="68" cy="22" r="11" fill="#1E2D4F"/><text x="68" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><text x="92" y="27" font-size="13" fill="#1E2D4F">·</text><circle cx="110" cy="22" r="11" fill="#c98f00"/><text x="110" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="136" cy="22" r="11" fill="#c98f00"/><text x="136" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><text x="160" y="27" font-size="12" fill="#1E2D4F">=</text><circle cx="184" cy="22" r="11" fill="#1E2D4F"/><text x="184" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="210" cy="22" r="11" fill="#1E2D4F"/><text x="210" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="236" cy="22" r="11" fill="#1E2D4F"/><text x="236" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="262" cy="22" r="11" fill="#c98f00"/><text x="262" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><circle cx="288" cy="22" r="11" fill="#c98f00"/><text x="288" y="26" font-size="11" text-anchor="middle" fill="#fff" font-weight="700">2</text><text x="20" y="44" font-size="8" fill="#55607a">2³ (3 twos) · 2² (2 twos) = 2⁵ — count the twos: 3 + 2 = 5</text></svg></div></div>
+    <div class="warn"><b>Careful:</b> (−4)<sup>2</sup> = 16 but −4<sup>2</sup> = −16. The negative is only inside the power if it's inside the parentheses. Final answers usually have <b>positive exponents only</b>.</div>
+    
+    </div><div class="note" id="nEE7" hidden><div class="secthead"><span class="tab">EE.7</span><h2>Solving Linear Equations &amp; Inequalities</h2><span class="lvl ">Quick Refresher</span></div>
+    <div class="ican"><b>I can</b> solve multi-step equations and inequalities (variables on both sides) and decide how many solutions an equation has.</div>
+    <div class="cols">
+      <div class="card"><h3>The 4-step game plan</h3><ol style="margin:2px 0 0;padding-left:18px">
+        <li><b>Distribute</b> to clear parentheses.</li><li><b>Combine like terms</b> on each side.</li>
+        <li><b>Collect</b> variables on one side (inverse operations).</li><li><b>Isolate</b> the variable. Then <b>check</b>.</li></ol>
+        <div class="small" style="margin-top:4px"><b>Fractions?</b> Multiply EVERY term by the LCD to clear them first.</div></div>
+      <div class="ex">3(x − 4) + 5 = x + 9<br>3x − 12 + 5 = x + 9<br>3x − 7 = x + 9<br>2x − 7 = 9<br>2x = 16 → <b>x = 8</b><br><span class="small">Check: 3(4)+5 = 17 &nbsp;and&nbsp; 8+9 = 17 ✓</span></div>
+    </div>
+    <div class="card"><h3>How many solutions? — look at what's left when the variables cancel</h3>
+    <table class="t"><tr><th>One solution</th><th>No solution</th><th>Infinitely many solutions</th></tr>
+      <tr><td>You end with <b>x = a number</b>.</td><td>Variables cancel, you get a <b>false</b> statement.</td><td>Variables cancel, you get a <b>true</b> statement.</td></tr>
+      <tr><td class="math">4x + 1 = 2x + 7<br>x = 3</td><td class="math">2(x + 3) = 2x + 5<br>6 = 5 ✗</td><td class="math">3(x + 2) = 3x + 6<br>6 = 6 ✓</td></tr>
+      <tr><td class="small">Different slopes (x-coefficients)</td><td class="small">Same x-coefficients, different constants</td><td class="small">Both sides are exactly the same</td></tr></table></div>
+    <div class="cols">
+      <div class="card gold"><h3>Inequalities: same steps + ONE rule</h3>Multiply or divide both sides by a <b>negative</b> → <b>flip the sign</b>.
+        <div class="ex" style="margin-top:5px">−3x + 7 &gt; 19<br>−3x &gt; 12<br>x <b>&lt;</b> −4 &nbsp;<span class="small">(÷ −3 → flip)</span></div><svg viewBox="0 0 300 50" width="300" height="50" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif"><line x1="8" y1="22" x2="292" y2="22" stroke="#1E2D4F" stroke-width="1.6"/><line x1="20" y1="17" x2="20" y2="27" stroke="#1E2D4F"/><text x="20" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-8</text><line x1="46" y1="17" x2="46" y2="27" stroke="#1E2D4F"/><text x="46" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-7</text><line x1="72" y1="17" x2="72" y2="27" stroke="#1E2D4F"/><text x="72" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-6</text><line x1="98" y1="17" x2="98" y2="27" stroke="#1E2D4F"/><text x="98" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-5</text><line x1="124" y1="17" x2="124" y2="27" stroke="#1E2D4F"/><text x="124" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-4</text><line x1="150" y1="17" x2="150" y2="27" stroke="#1E2D4F"/><text x="150" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-3</text><line x1="176" y1="17" x2="176" y2="27" stroke="#1E2D4F"/><text x="176" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-2</text><line x1="202" y1="17" x2="202" y2="27" stroke="#1E2D4F"/><text x="202" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">-1</text><line x1="228" y1="17" x2="228" y2="27" stroke="#1E2D4F"/><text x="228" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">0</text><line x1="254" y1="17" x2="254" y2="27" stroke="#1E2D4F"/><text x="254" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">1</text><line x1="280" y1="17" x2="280" y2="27" stroke="#1E2D4F"/><text x="280" y="42" font-size="9" text-anchor="middle" fill="#1E2D4F">2</text><line x1="124" y1="22" x2="10" y2="22" stroke="#c98f00" stroke-width="5"/><path d="M4,22 L14,16 L14,28z" fill="#c98f00"/><circle cx="124" cy="22" r="5.5" fill="#fff" stroke="#c98f00" stroke-width="2.4"/></svg><div class="small">Open circle: −4 is NOT included (&lt;). Closed circle for ≤ or ≥.</div></div>
+      <div class="card"><h3>Word problems → read the context</h3>
+        "At most" → ≤ &nbsp;&nbsp; "at least" → ≥<br>If the answer must be a whole number (people, tickets, shirts), <b>round to what makes sense</b> — usually down for "can afford."</div>
+    </div>
+    </div><div class="note" id="nF1" hidden><div class="secthead"><span class="tab">F.1</span><h2>What Is a Function?</h2><span class="lvl full">Full Notes — New</span></div>
+    <div class="ican"><b>I can</b> explain that a function gives each input exactly one output, and decide if a table, graph, mapping diagram, or list of ordered pairs is a function.</div>
+    <div class="card navy"><h3>Definition</h3>A <b style="color:#FFC107">function</b> is a rule that assigns to each <b>input</b> (x) <b>exactly one output</b> (y). The graph of a function is the set of ordered pairs (input, output).
+      <div style="margin-top:5px;font-size:9.8pt">Think of a vending machine: press B4 → you always get the same snack. If B4 sometimes gave chips and sometimes gave cookies, the machine would be broken — <b>not a function</b>.</div></div>
+    <div class="cols">
+      <div class="card"><h3>Vocabulary</h3><table class="t">
+        <tr><td><b>Relation</b></td><td>Any set of ordered pairs.</td></tr>
+        <tr><td><b>Input / Domain</b></td><td>The x-values (what goes in).</td></tr>
+        <tr><td><b>Output / Range</b></td><td>The y-values (what comes out).</td></tr>
+        <tr><td><b>Function</b></td><td>A relation where no input has two different outputs.</td></tr></table></div>
+      <div class="card gold"><h3>The ONE question to ask</h3><div style="font-size:11pt">"Does any <b>x</b> repeat with a <b>different y</b>?"</div>
+        <ul class="tight"><li><b>Yes</b> → NOT a function.</li><li><b>No</b> → function.</li>
+        <li>Repeated <b>y</b>-values are fine! Two kids can share a birthday.</li></ul></div>
+    </div>
+    <h3 style="margin:2px 0 6px">Four ways to see it</h3>
+    <div class="cols">
+      <div class="card"><h3>1. Table</h3>
+        <div class="cols"><div><table class="vtable"><tr><th>x</th><th>y</th></tr><tr><td>1</td><td>3</td></tr><tr><td>2</td><td>3</td></tr><tr><td>3</td><td>5</td></tr></table><div class="center small" style="margin-top:3px"><b>Function ✓</b><br>y repeats — OK</div></div>
+        <div><table class="vtable"><tr><th>x</th><th>y</th></tr><tr><td style="background:#FFE0DC">2</td><td>1</td></tr><tr><td>4</td><td>6</td></tr><tr><td style="background:#FFE0DC">2</td><td>8</td></tr></table><div class="center small" style="margin-top:3px"><b>NOT ✗</b><br>x = 2 → 1 and 8</div></div></div></div>
+      <div class="card"><h3>2. Ordered pairs</h3>
+        <div class="ex">{(0, 2), (1, 4), (2, 6)}<br><span class="small">Function ✓ — every x is different</span></div>
+        <div class="ex" style="margin-top:5px">{(5, 1), (<b style="color:#c0392b">3</b>, 2), (<b style="color:#c0392b">3</b>, 7)}<br><span class="small">NOT ✗ — x = 3 has two outputs</span></div></div>
+    </div>
+    <div class="cols">
+      <div class="card"><h3>3. Mapping diagram</h3><div class="figrow" style="justify-content:space-around"><svg viewBox="0 0 200 126" width="200" height="126" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif"><text x="100" y="12" text-anchor="middle" font-size="10" font-weight="700" fill="#1E2D4F">FUNCTION ✓</text><ellipse cx="45" cy="72.0" rx="28" ry="50.0" fill="#EEF1F7" stroke="#1E2D4F" stroke-width="1.5"/><ellipse cx="155" cy="72.0" rx="28" ry="50.0" fill="#FFF3CD" stroke="#c98f00" stroke-width="1.5"/><text x="45" y="50.0" text-anchor="middle" font-size="11" fill="#1E2D4F">1</text><text x="45" y="76.0" text-anchor="middle" font-size="11" fill="#1E2D4F">2</text><text x="45" y="102.0" text-anchor="middle" font-size="11" fill="#1E2D4F">3</text><text x="155" y="63.0" text-anchor="middle" font-size="11" fill="#1E2D4F">4</text><text x="155" y="89.0" text-anchor="middle" font-size="11" fill="#1E2D4F">5</text><line x1="58" y1="46.0" x2="138" y2="59.0" stroke="#1E2D4F" stroke-width="1.6" marker-end="url(#ah0)"/><line x1="58" y1="72.0" x2="138" y2="85.0" stroke="#1E2D4F" stroke-width="1.6" marker-end="url(#ah0)"/><line x1="58" y1="98.0" x2="138" y2="85.0" stroke="#1E2D4F" stroke-width="1.6" marker-end="url(#ah0)"/><defs><marker id="ah0" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7z" fill="#1E2D4F"/></marker><marker id="ah1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7z" fill="#c0392b"/></marker></defs><text x="45" y="124" text-anchor="middle" font-size="8" fill="#55607a">INPUT (x)</text><text x="155" y="124" text-anchor="middle" font-size="8" fill="#55607a">OUTPUT (y)</text></svg><svg viewBox="0 0 200 126" width="200" height="126" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif"><text x="100" y="12" text-anchor="middle" font-size="10" font-weight="700" fill="#1E2D4F">NOT a function ✗</text><ellipse cx="45" cy="72.0" rx="28" ry="50.0" fill="#EEF1F7" stroke="#1E2D4F" stroke-width="1.5"/><ellipse cx="155" cy="72.0" rx="28" ry="50.0" fill="#FFF3CD" stroke="#c98f00" stroke-width="1.5"/><text x="45" y="50.0" text-anchor="middle" font-size="11" fill="#1E2D4F">1</text><text x="45" y="76.0" text-anchor="middle" font-size="11" fill="#1E2D4F">2</text><text x="45" y="102.0" text-anchor="middle" font-size="11" fill="#1E2D4F">3</text><text x="155" y="50.0" text-anchor="middle" font-size="11" fill="#1E2D4F">4</text><text x="155" y="76.0" text-anchor="middle" font-size="11" fill="#1E2D4F">5</text><text x="155" y="102.0" text-anchor="middle" font-size="11" fill="#1E2D4F">6</text><line x1="58" y1="46.0" x2="138" y2="46.0" stroke="#1E2D4F" stroke-width="1.6" marker-end="url(#ah0)"/><line x1="58" y1="72.0" x2="138" y2="72.0" stroke="#c0392b" stroke-width="1.6" marker-end="url(#ah1)"/><line x1="58" y1="72.0" x2="138" y2="98.0" stroke="#c0392b" stroke-width="1.6" marker-end="url(#ah1)"/><defs><marker id="ah0" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7z" fill="#1E2D4F"/></marker><marker id="ah1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7z" fill="#c0392b"/></marker></defs><text x="45" y="124" text-anchor="middle" font-size="8" fill="#55607a">INPUT (x)</text><text x="155" y="124" text-anchor="middle" font-size="8" fill="#55607a">OUTPUT (y)</text></svg></div>
+        <div class="small center">Count arrows leaving each input: more than one arrow from the same input → NOT a function.</div></div>
+      <div class="card"><h3>4. Graph — Vertical Line Test</h3><div class="figrow" style="justify-content:space-around"><div class="center"><svg viewBox="0 0 158 158" width="158" height="158" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" ><line x1="14" y1="144" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="27" y1="144" x2="27" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="40" y1="144" x2="40" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="53" y1="144" x2="53" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="66" y1="144" x2="66" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="79" y1="144" x2="79" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="92" y1="144" x2="92" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="105" y1="144" x2="105" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="118" y1="144" x2="118" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="131" y1="144" x2="131" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="144" y1="144" x2="144" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="144" x2="144" y2="144" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="131" x2="144" y2="131" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="118" x2="144" y2="118" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="105" x2="144" y2="105" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="92" x2="144" y2="92" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="79" x2="144" y2="79" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="66" x2="144" y2="66" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="53" x2="144" y2="53" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="40" x2="144" y2="40" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="27" x2="144" y2="27" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="144" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="79" x2="144" y2="79" stroke="#1E2D4F" stroke-width="1.6"/><line x1="79" y1="144" x2="79" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><polyline points="27,40 66,118 79,105" fill="none"/><polyline points="19.200000000000003,46.24000000000001 79,118.0 138.8,46.24000000000001" fill="none" stroke="#c98f00" stroke-width="2.4"/><line x1="108.89999999999999" y1="144" x2="108.89999999999999" y2="14" stroke="#c0392b" stroke-width="1.6" stroke-dasharray="4 3"/></svg><div class="small"><b>Function ✓</b> — hits once</div></div><div class="center"><svg viewBox="0 0 158 158" width="158" height="158" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" ><line x1="14" y1="144" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="27" y1="144" x2="27" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="40" y1="144" x2="40" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="53" y1="144" x2="53" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="66" y1="144" x2="66" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="79" y1="144" x2="79" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="92" y1="144" x2="92" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="105" y1="144" x2="105" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="118" y1="144" x2="118" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="131" y1="144" x2="131" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="144" y1="144" x2="144" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="144" x2="144" y2="144" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="131" x2="144" y2="131" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="118" x2="144" y2="118" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="105" x2="144" y2="105" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="92" x2="144" y2="92" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="79" x2="144" y2="79" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="66" x2="144" y2="66" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="53" x2="144" y2="53" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="40" x2="144" y2="40" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="27" x2="144" y2="27" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="144" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="79" x2="144" y2="79" stroke="#1E2D4F" stroke-width="1.6"/><line x1="79" y1="144" x2="79" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><circle cx="79" cy="79" r="39" fill="none" stroke="#c98f00" stroke-width="2.4"/><line x1="97.2" y1="144" x2="97.2" y2="14" stroke="#c0392b" stroke-width="1.6" stroke-dasharray="4 3"/></svg><div class="small"><b>NOT ✗</b> — hits twice</div></div></div>
+        <div class="small center">Slide a vertical line across. If it ever touches the graph in 2+ points → NOT a function.</div></div>
+    </div>
+    <div class="cols">
+      <div class="card"><h3>Functions in real life</h3><ul class="tight">
+        <li><b>Function:</b> input = number of $8 tickets, output = total cost. Each number of tickets has one cost.</li>
+        <li><b>Function:</b> input = a student, output = their birthday.</li>
+        <li><b>NOT:</b> input = an age, output = a student with that age. Age 13 could match many students.</li></ul></div>
+      <div class="warn" style="flex:1;margin:0"><b>Benchmark trick:</b> "Which value of <i>k</i> makes the relation NOT a function?" Look for the choice that <b>matches an x-value already used</b> with a different y. A vertical line (x = 2) is never a function; a horizontal line (y = 2) always is.</div>
+    </div>
+    
+    </div><div class="note" id="nG3" hidden><div class="secthead"><span class="tab">G.3</span><h2>Transformations with Coordinates</h2><span class="lvl full">Full Notes — New</span></div>
+    <div class="ican"><b>I can</b> describe the effect of translations, reflections (over the x- or y-axis), rotations (90°, 180°, 270° about the origin), and dilations (about the origin) using coordinates.</div>
+    <div class="cols">
+      <div class="card"><h3>Vocabulary</h3><table class="t">
+        <tr><td><b>Pre-image</b></td><td>The original figure: A, B, C</td></tr>
+        <tr><td><b>Image</b></td><td>The new figure, named with <b>primes</b>: A′, B′, C′</td></tr>
+        <tr><td><b>Rigid motion</b></td><td>Moves a figure but keeps its size &amp; shape → <b>congruent</b> (≅)</td></tr>
+        <tr><td><b>Dilation</b></td><td>Stretches or shrinks → <b>similar</b> (~), not congruent</td></tr>
+        <tr><td><b>Scale factor (k)</b></td><td>k &gt; 1 enlarges; 0 &lt; k &lt; 1 shrinks</td></tr></table></div>
+      <div class="card center"><h3 style="text-align:left">Example: reflect △ABC over the y-axis</h3><svg viewBox="0 0 188 156" width="188" height="156" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" ><line x1="14" y1="142" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="30" y1="142" x2="30" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="46" y1="142" x2="46" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="62" y1="142" x2="62" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="78" y1="142" x2="78" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="142" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="110" y1="142" x2="110" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="126" y1="142" x2="126" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="142" y1="142" x2="142" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="158" y1="142" x2="158" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="174" y1="142" x2="174" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="142" x2="174" y2="142" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="126" x2="174" y2="126" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="110" x2="174" y2="110" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="174" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="78" x2="174" y2="78" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="62" x2="174" y2="62" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="46" x2="174" y2="46" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="30" x2="174" y2="30" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="174" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="78" x2="174" y2="78" stroke="#1E2D4F" stroke-width="1.6"/><line x1="94" y1="142" x2="94" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="30" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="46" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="62" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="78" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="110" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="126" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="142" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="158" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="174" y="89" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="90" y="145" font-size="8.5" text-anchor="end" fill="#55607a">-4</text><text x="90" y="129" font-size="8.5" text-anchor="end" fill="#55607a">-3</text><text x="90" y="113" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="90" y="97" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="90" y="65" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="90" y="49" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="90" y="33" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="90" y="17" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="171" y="74" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="99" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><polygon points="110,62 158,62 110,30" fill="#1E2D4F" fill-opacity="0.35" stroke="#1E2D4F" stroke-width="2"/><circle cx="110" cy="62" r="2.8" fill="#1E2D4F"/><text x="99" y="74" font-size="10.5" font-weight="700" fill="#1E2D4F">A</text><circle cx="158" cy="62" r="2.8" fill="#1E2D4F"/><text x="162" y="74" font-size="10.5" font-weight="700" fill="#1E2D4F">B</text><circle cx="110" cy="30" r="2.8" fill="#1E2D4F"/><text x="99" y="27" font-size="10.5" font-weight="700" fill="#1E2D4F">C</text><polygon points="78,62 30,62 78,30" fill="#FFC107" fill-opacity="0.35" stroke="#c98f00" stroke-width="2" stroke-dasharray="4 3"/><circle cx="78" cy="62" r="2.8" fill="#c98f00"/><text x="81" y="74" font-size="10.5" font-weight="700" fill="#c98f00">A'</text><circle cx="30" cy="62" r="2.8" fill="#c98f00"/><text x="15" y="74" font-size="10.5" font-weight="700" fill="#c98f00">B'</text><circle cx="78" cy="30" r="2.8" fill="#c98f00"/><text x="81" y="27" font-size="10.5" font-weight="700" fill="#c98f00">C'</text></svg>
+        <div class="small">A(1, 1) → A′(−1, 1) &nbsp; B(4, 1) → B′(−4, 1) &nbsp; C(1, 3) → C′(−1, 3)<br>x changes sign, y stays the same.</div></div>
+    </div>
+    <h3 style="margin:2px 0 6px">The Rule Chart — know these cold</h3>
+    <table class="t">
+      <tr><th style="width:30%">Transformation</th><th style="width:22%">Coordinate rule</th><th style="width:20%">Example: (3, −2)</th><th>How to remember</th></tr>
+      <tr><td><b>Translation</b> a units right/left, b units up/down</td><td class="math">(x, y) → (x + a, y + b)</td><td class="math">4 left, 1 up:<br>(−1, −1)</td><td>Right/left changes x. Up/down changes y. Left &amp; down are negative.</td></tr>
+      <tr><td><b>Reflection over the x-axis</b></td><td class="math">(x, y) → (x, −y)</td><td class="math">(3, 2)</td><td>Flip over the x-axis → <b>y</b> flips sign.</td></tr>
+      <tr><td><b>Reflection over the y-axis</b></td><td class="math">(x, y) → (−x, y)</td><td class="math">(−3, −2)</td><td>Flip over the y-axis → <b>x</b> flips sign.</td></tr>
+      <tr><td><b>Rotation 90° counterclockwise</b><br><span class="small">(same as 270° clockwise)</span></td><td class="math">(x, y) → (−y, x)</td><td class="math">(2, 3)</td><td>Swap, then make the <b>new first</b> number opposite.</td></tr>
+      <tr><td><b>Rotation 180°</b> <span class="small">(either direction)</span></td><td class="math">(x, y) → (−x, −y)</td><td class="math">(−3, 2)</td><td>Both signs flip. No swap.</td></tr>
+      <tr><td><b>Rotation 270° counterclockwise</b><br><span class="small">(same as 90° clockwise)</span></td><td class="math">(x, y) → (y, −x)</td><td class="math">(−2, −3)</td><td>Swap, then make the <b>new second</b> number opposite.</td></tr>
+      <tr><td><b>Dilation</b> by scale factor k, centered at origin</td><td class="math">(x, y) → (kx, ky)</td><td class="math">k = 2:<br>(6, −4)</td><td>Multiply <b>both</b> coordinates by k. Side lengths × k, angles stay the same.</td></tr>
+    </table>
+    <div class="cols" style="margin-top:10px">
+      <div class="card gold"><h3>What stays the same?</h3><table class="t">
+        <tr><th></th><th>Size</th><th>Shape &amp; angles</th><th>Congruent?</th></tr>
+        <tr><td>Translate / Reflect / Rotate</td><td>✓</td><td>✓</td><td><b>Yes</b></td></tr>
+        <tr><td>Dilate</td><td>✗</td><td>✓</td><td>No — <b>similar</b></td></tr></table></div>
+      <div class="card"><div class="figrow"><div style="flex:1"><h3>Quick-check tricks</h3><ul class="tight">
+        <li><b>Quadrant check:</b> a 90° rotation moves a point one quadrant over; 180° moves it to the opposite quadrant.</li>
+        <li><b>Counterclockwise</b> = the direction of the quadrant numbers I → II → III → IV.</li>
+        <li>Turn your paper! Rotate your scratch sketch to see a rotation.</li></ul></div><svg viewBox="0 0 188 188" width="188" height="188" xmlns="http://www.w3.org/2000/svg" font-family="Inter, system-ui, sans-serif" ><line x1="14" y1="174" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="30" y1="174" x2="30" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="46" y1="174" x2="46" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="62" y1="174" x2="62" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="78" y1="174" x2="78" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="174" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="110" y1="174" x2="110" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="126" y1="174" x2="126" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="142" y1="174" x2="142" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="158" y1="174" x2="158" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="174" y1="174" x2="174" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="174" x2="174" y2="174" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="158" x2="174" y2="158" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="142" x2="174" y2="142" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="126" x2="174" y2="126" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="110" x2="174" y2="110" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="174" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="78" x2="174" y2="78" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="62" x2="174" y2="62" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="46" x2="174" y2="46" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="30" x2="174" y2="30" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="174" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="174" y2="94" stroke="#1E2D4F" stroke-width="1.6"/><line x1="94" y1="174" x2="94" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><line x1="94" y1="94" x2="142" y2="62" stroke="#1E2D4F" stroke-width="1.3" stroke-dasharray="3 2"/><circle cx="142" cy="62" r="4" fill="#1E2D4F"/><text x="147" y="56" font-size="8.5" font-weight="700" text-anchor="start" fill="#1E2D4F">(3, 2)</text><line x1="94" y1="94" x2="62" y2="46" stroke="#c98f00" stroke-width="1.3" stroke-dasharray="3 2"/><circle cx="62" cy="46" r="4" fill="#c98f00"/><text x="57" y="40" font-size="8.5" font-weight="700" text-anchor="end" fill="#c98f00">90°: (−2, 3)</text><line x1="94" y1="94" x2="46" y2="126" stroke="#2e7d32" stroke-width="1.3" stroke-dasharray="3 2"/><circle cx="46" cy="126" r="4" fill="#2e7d32"/><text x="41" y="120" font-size="8.5" font-weight="700" text-anchor="end" fill="#2e7d32">180°: (−3, −2)</text><line x1="94" y1="94" x2="126" y2="142" stroke="#8e44ad" stroke-width="1.3" stroke-dasharray="3 2"/><circle cx="126" cy="142" r="4" fill="#8e44ad"/><text x="131" y="136" font-size="8.5" font-weight="700" text-anchor="start" fill="#8e44ad">270°: (2, −3)</text><path d="M126,84.4 A 30.4 30.4 0 0 0 84.4,62" fill="none" stroke="#c98f00" stroke-width="1.6" marker-end="url(#rr)"/><defs><marker id="rr" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7z" fill="#c98f00"/></marker></defs><text x="158" y="30" font-size="11" text-anchor="middle" fill="#b8c0d2" font-family="Source Serif 4, Georgia, serif" font-weight="700">I</text><text x="30" y="30" font-size="11" text-anchor="middle" fill="#b8c0d2" font-family="Source Serif 4, Georgia, serif" font-weight="700">II</text><text x="30" y="158" font-size="11" text-anchor="middle" fill="#b8c0d2" font-family="Source Serif 4, Georgia, serif" font-weight="700">III</text><text x="158" y="158" font-size="11" text-anchor="middle" fill="#b8c0d2" font-family="Source Serif 4, Georgia, serif" font-weight="700">IV</text></svg></div></div>
+    </div>
+    </div>
+  <div class="next"><button type="button" class="btn" data-go="tPrac">Start the practice →</button></div>
+</section>
+
+<section class="tabp" id="tPrac" role="tabpanel" hidden>
+<div class="namebox">
+  <label for="sname">Your first and last name</label>
+  <input id="sname" type="text" autocomplete="name" placeholder="First and last name">
+  <p class="help">Type it the same way every time, so Mr. Allen can find your work.</p>
+  <span class="lbl2" id="clslabel">Your class</span>
+  <div class="classes" role="group" aria-labelledby="clslabel">
+    <button type="button" class="cls" aria-pressed="false">A1</button>
+    <button type="button" class="cls" aria-pressed="false">A2</button>
+    <button type="button" class="cls" aria-pressed="false">A4</button>
+    <button type="button" class="cls" aria-pressed="false">B5</button>
+    <button type="button" class="cls" aria-pressed="false">B6</button>
+    <button type="button" class="cls" aria-pressed="false">8A</button>
+    <button type="button" class="cls" aria-pressed="false">8B</button>
+  </div>
+</div>
+
+<div class="prog" aria-live="polite"><span id="progtxt">0 of 20 checked</span><span class="pbar"><i id="pbar"></i></span><span id="progok">0 right</span></div>
+
+<section class="part"><div class="part-h"><span class="tag">Part 1</span><h2>Rational &amp; Irrational Numbers</h2><span class="std">NC.8.NS.1</span></div><div class="tip"><b class="lbl">REMEMBER</b> A <b>rational</b> number can be written as a fraction. Its decimal stops or repeats. An <b>irrational</b> number's decimal never stops and never repeats.</div>
+  <div class="q" id="q1" data-i="0">
+    <div class="q-top"><span class="qn">1</span><div class="q-text"><div class="q-type">Select all that apply</div><div class="stem">Select <b>ALL</b> of the numbers that are <b>irrational</b>.</div></div></div>
+    <div class="q-body"><div class="chips " data-multi><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">√49</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">√20</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">0.<span class='bar'>37</span></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">π</span></button><button type="button" class="chip" data-v="4" aria-pressed="false"><span class="L">E</span><span class="cv">−<span class="frac"><span>5</span><span>8</span></span></span></button><button type="button" class="chip" data-v="5" aria-pressed="false"><span class="L">F</span><span class="cv">0.1010010001… <span class='small'>(pattern: one more 0 each time)</span></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="0">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q2" data-i="1">
+    <div class="q-top"><span class="qn">2</span><div class="q-text"><div class="q-type">Type your answer</div><div class="stem">Write the repeating decimal 1.<span class='bar'>6</span> = 1.666… as a fraction in simplest form.</div></div></div>
+    <div class="q-body"><div class="row"><label class="lab" for="in1">Your answer</label><input class="box wide" id="in1" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer"></div><p class="typehelp">Fractions: <code>5/3</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="1">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q3" data-i="2">
+    <div class="q-top"><span class="qn">3</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which fraction is equal to 0.<span class='bar'>27</span> = 0.272727… ?</div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv"><span class="frac"><span>27</span><span>100</span></span></span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv"><span class="frac"><span>3</span><span>11</span></span></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv"><span class="frac"><span>2</span><span>7</span></span></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv"><span class="frac"><span>27</span><span>90</span></span></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="2">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q4" data-i="3">
+    <div class="q-top"><span class="qn">4</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which statement is true?</div></div></div>
+    <div class="q-body"><div class="chips col"><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">Every fraction has a decimal that terminates (ends).</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">0.161616… is irrational because it never ends.</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">√50 is irrational because 50 is not a perfect square.</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">π is rational because π = 22/7.</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="3">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div></section><section class="part"><div class="part-h"><span class="tag">Part 2</span><h2>Integer Exponents</h2><span class="std">NC.8.EE.1</span></div><div class="tip"><b class="lbl">REMEMBER</b> Multiply → <b>ADD</b> exponents. Divide → <b>SUBTRACT</b>. Power to a power → <b>MULTIPLY</b>. Anything to the 0 power is 1. A negative exponent means <b>flip</b>.</div>
+  <div class="q" id="q5" data-i="4">
+    <div class="q-top"><span class="qn">5</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which value is equal to the expression?<div class='center math' style='font-size:13pt;margin:4px 0'><span class="frac"><span>3<sup>4</sup> · 3<sup>−6</sup></span><span>3<sup>2</sup></span></span></div></div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">−81</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv"><span class="frac"><span>1</span><span>81</span></span></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv"><span class="frac"><span>1</span><span>9</span></span></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">81</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="4">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q6" data-i="5">
+    <div class="q-top"><span class="qn">6</span><div class="q-text"><div class="q-type">Type your answer</div><div class="stem">What is the value of the expression?<div class='center math' style='font-size:13pt;margin:4px 0'>(2<sup>3</sup>)<sup>2</sup> · 2<sup>−4</sup> · 7<sup>0</sup></div></div></div></div>
+    <div class="q-body"><div class="row"><label class="lab" for="in5">Your answer</label><input class="box wide" id="in5" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer"></div><p class="typehelp">Fractions: <code>5/3</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="5">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q7" data-i="6">
+    <div class="q-top"><span class="qn">7</span><div class="q-text"><div class="q-type">Select all that apply</div><div class="stem">Select <b>ALL</b> expressions that are equal to <span class="frac"><span>1</span><span>16</span></span>.</div></div></div>
+    <div class="q-body"><div class="chips " data-multi><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">4<sup>−2</sup></span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">2<sup>−4</sup></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">−16</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">(−4)<sup>−2</sup></span></button><button type="button" class="chip" data-v="4" aria-pressed="false"><span class="L">E</span><span class="cv">−4<sup>−2</sup></span></button><button type="button" class="chip" data-v="5" aria-pressed="false"><span class="L">F</span><span class="cv"><span class="frac"><span>2<sup>8</sup></span><span>2<sup>4</sup></span></span></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="6">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q8" data-i="7">
+    <div class="q-top"><span class="qn">8</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which expression is equivalent to the expression below?<div class='center math' style='font-size:13pt;margin:4px 0'><span class="frac"><span>(x<sup>5</sup>y<sup>−2</sup>)<sup>3</sup></span><span>x<sup>2</sup>y<sup>−4</sup></span></span></div></div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv"><span class="frac"><span>x<sup>13</sup></span><span>y<sup>2</sup></span></span></span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">x<sup>13</sup>y<sup>2</sup></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv"><span class="frac"><span>x<sup>6</sup></span><span>y<sup>8</sup></span></span></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv"><span class="frac"><span>x<sup>17</sup></span><span>y<sup>10</sup></span></span></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="7">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div></section><section class="part"><div class="part-h"><span class="tag">Part 3</span><h2>Equations &amp; Inequalities</h2><span class="std">NC.8.EE.7</span></div><div class="tip"><b class="lbl">REMEMBER</b> Distribute. Combine like terms. Get the variable on one side. Then check. For inequalities, multiply or divide by a negative → <b>flip the sign</b>.</div>
+  <div class="q" id="q9" data-i="8">
+    <div class="q-top"><span class="qn">9</span><div class="q-text"><div class="q-type">Type your answer</div><div class="stem">Solve for <i>x</i>.<div class='center math' style='font-size:13pt;margin:4px 0'>4(x − 3) + 2x = 2x + 8</div></div></div></div>
+    <div class="q-body"><div class="row"><label class="lab" for="in8">Your answer</label><input class="box wide" id="in8" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer"></div><p class="typehelp">Fractions: <code>5/3</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="8">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q10" data-i="9">
+    <div class="q-top"><span class="qn">10</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">How many solutions does this equation have?<div class='center math' style='font-size:13pt;margin:4px 0'>2(3x − 5) + 4 = 6x − 6</div></div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">No solution</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">Exactly one solution, x = 0</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">Exactly one solution, x = −6</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">Infinitely many solutions</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="9">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q11" data-i="10">
+    <div class="q-top"><span class="qn">11</span><div class="q-text"><div class="q-type">Type your answer</div><div class="stem">Solve for <i>x</i>.<div class='center math' style='font-size:13pt;margin:4px 0'><span class="frac"><span>2</span><span>3</span></span>x − 4 = <span class="frac"><span>1</span><span>6</span></span>x + 5</div></div></div></div>
+    <div class="q-body"><div class="row"><label class="lab" for="in10">Your answer</label><input class="box wide" id="in10" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer"></div><p class="typehelp">Fractions: <code>5/3</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="10">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q12" data-i="11">
+    <div class="q-top"><span class="qn">12</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Jordan has $85. He buys a jacket for $34 and wants to spend the rest on T-shirts that cost $12 each. What is the <b>greatest</b> number of T-shirts Jordan can buy?</div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">4</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">4.25</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">5</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">7</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="11">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div></section><section class="part"><div class="part-h"><span class="tag">Part 4</span><h2>Functions</h2><span class="std">NC.8.F.1</span></div><div class="tip"><b class="lbl">REMEMBER</b> A function gives each input <b>exactly one</b> output. If an x repeats with a <b>different</b> y, it is NOT a function. A repeated y is OK.</div>
+  <div class="q" id="q13" data-i="12">
+    <div class="q-top"><span class="qn">13</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which table represents <i>y</i> as a function of <i>x</i>?</div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv"><table class='vtable'><tr><th>x</th><td>1</td><td>2</td><td>1</td><td>3</td></tr><tr><th>y</th><td>4</td><td>5</td><td>6</td><td>7</td></tr></table></span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv"><table class='vtable'><tr><th>x</th><td>2</td><td>4</td><td>6</td><td>8</td></tr><tr><th>y</th><td>5</td><td>5</td><td>5</td><td>5</td></tr></table></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv"><table class='vtable'><tr><th>x</th><td>-1</td><td>0</td><td>-1</td><td>2</td></tr><tr><th>y</th><td>3</td><td>3</td><td>4</td><td>5</td></tr></table></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv"><table class='vtable'><tr><th>x</th><td>5</td><td>5</td><td>5</td><td>5</td></tr><tr><th>y</th><td>1</td><td>2</td><td>3</td><td>4</td></tr></table></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="12">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q14" data-i="13">
+    <div class="q-top"><span class="qn">14</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Which graph represents a function?</div></div></div>
+    <div class="q-body"><div class="chips grid4"><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv"><svg viewBox="0 0 128 128" width="128" height="128" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="114" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="24" y1="114" x2="24" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="34" y1="114" x2="34" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="44" y1="114" x2="44" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="54" y1="114" x2="54" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="64" y1="114" x2="64" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="74" y1="114" x2="74" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="84" y1="114" x2="84" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="114" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="104" y1="114" x2="104" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="114" y1="114" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="114" x2="114" y2="114" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="104" x2="114" y2="104" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="114" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="84" x2="114" y2="84" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="74" x2="114" y2="74" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="54" x2="114" y2="54" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="44" x2="114" y2="44" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="34" x2="114" y2="34" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="24" x2="114" y2="24" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#1E2D4F" stroke-width="1.6"/><line x1="64" y1="114" x2="64" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><circle cx="64" cy="64" r="30" fill="none" stroke="#c98f00" stroke-width="2.4"/></svg></span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv"><svg viewBox="0 0 128 128" width="128" height="128" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="114" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="24" y1="114" x2="24" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="34" y1="114" x2="34" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="44" y1="114" x2="44" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="54" y1="114" x2="54" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="64" y1="114" x2="64" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="74" y1="114" x2="74" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="84" y1="114" x2="84" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="114" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="104" y1="114" x2="104" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="114" y1="114" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="114" x2="114" y2="114" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="104" x2="114" y2="104" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="114" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="84" x2="114" y2="84" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="74" x2="114" y2="74" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="54" x2="114" y2="54" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="44" x2="114" y2="44" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="34" x2="114" y2="34" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="24" x2="114" y2="24" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#1E2D4F" stroke-width="1.6"/><line x1="64" y1="114" x2="64" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><polyline points="106.19999999999999,102.0 102.45,101.0 98.80000000000001,100.0 95.25,99.0 91.8,98.0 88.44999999999999,97.0 85.20000000000002,96.0 82.05000000000001,95.0 79.0,94.0 76.05,93.0 73.2,92.0 70.45,91.0 67.80000000000001,90.0 65.25,89.0 62.8,88.0 60.449999999999996,87.0 58.2,86.0 56.05,85.0 54.0,84.0 52.05,83.0 50.2,82.0 48.449999999999996,81.0 46.800000000000004,80.0 45.25,79.0 43.8,78.0 42.45,77.0 41.199999999999996,76.0 40.05,75.0 39.0,74.0 38.050000000000004,73.0 37.2,72.0 36.45,71.0 35.8,70.0 35.25,69.0 34.8,68.0 34.45,67.0 34.2,66.0 34.05,65.0 34.0,64.0 34.05,63.0 34.2,62.0 34.45,61.0 34.8,60.0 35.25,59.0 35.8,58.0 36.45,57.0 37.2,56.0 38.050000000000004,55.0 39.0,54.0 40.05,53.0 41.199999999999996,52.0 42.45,51.0 43.8,50.0 45.25,49.0 46.800000000000004,48.0 48.449999999999996,47.0 50.2,46.0 52.05,45.0 54.0,44.0 56.05,43.0 58.2,42.0 60.449999999999996,41.0 62.8,40.0 65.25,39.0 67.80000000000001,38.0 70.45,37.0 73.2,36.0 76.05,35.0 79.0,34.0 82.05000000000001,33.0 85.20000000000002,32.0 88.44999999999999,31.0 91.8,30.0 95.25,29.0 98.80000000000001,28.0 102.45,27.0 106.19999999999999,26.0" fill="none" stroke="#c98f00" stroke-width="2.4"/></svg></span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv"><svg viewBox="0 0 128 128" width="128" height="128" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="114" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="24" y1="114" x2="24" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="34" y1="114" x2="34" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="44" y1="114" x2="44" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="54" y1="114" x2="54" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="64" y1="114" x2="64" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="74" y1="114" x2="74" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="84" y1="114" x2="84" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="114" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="104" y1="114" x2="104" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="114" y1="114" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="114" x2="114" y2="114" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="104" x2="114" y2="104" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="114" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="84" x2="114" y2="84" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="74" x2="114" y2="74" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="54" x2="114" y2="54" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="44" x2="114" y2="44" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="34" x2="114" y2="34" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="24" x2="114" y2="24" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#1E2D4F" stroke-width="1.6"/><line x1="64" y1="114" x2="64" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><polyline points="24,34 54,94 64,84" fill="none"/><polyline points="18.000000000000004,38.800000000000004 64,94.0 110.0,38.800000000000004" fill="none" stroke="#c98f00" stroke-width="2.4"/></svg></span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv"><svg viewBox="0 0 128 128" width="128" height="128" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="114" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="24" y1="114" x2="24" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="34" y1="114" x2="34" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="44" y1="114" x2="44" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="54" y1="114" x2="54" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="64" y1="114" x2="64" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="74" y1="114" x2="74" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="84" y1="114" x2="84" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="94" y1="114" x2="94" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="104" y1="114" x2="104" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="114" y1="114" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="114" x2="114" y2="114" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="104" x2="114" y2="104" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="94" x2="114" y2="94" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="84" x2="114" y2="84" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="74" x2="114" y2="74" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="54" x2="114" y2="54" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="44" x2="114" y2="44" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="34" x2="114" y2="34" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="24" x2="114" y2="24" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="114" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="64" x2="114" y2="64" stroke="#1E2D4F" stroke-width="1.6"/><line x1="64" y1="114" x2="64" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><line x1="84" y1="110.0" x2="84" y2="18.000000000000004" stroke="#c98f00" stroke-width="2.4"/></svg></span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="13">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q15" data-i="14">
+    <div class="q-top"><span class="qn">15</span><div class="q-text"><div class="q-type">Select all that apply</div><div class="stem">Select <b>ALL</b> of the relations that are functions.</div></div></div>
+    <div class="q-body"><div class="chips col" data-multi><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">{(1, 2), (2, 3), (3, 4)}</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">{(2, 1), (2, 3), (4, 5)}</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">{(−3, 5), (0, 5), (3, 5)}</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">{(0, 0), (1, 1), (1, −1)}</span></button><button type="button" class="chip" data-v="4" aria-pressed="false"><span class="L">E</span><span class="cv">{(7, 2), (8, 2), (9, 3)}</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="14">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q16" data-i="15">
+    <div class="q-top"><span class="qn">16</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">The relation below is shown as a set of ordered pairs.<div class='center math' style='font-size:12pt;margin:4px 0'>{(2, 5), (4, 7), (<i>k</i>, 9), (6, 11)}</div>Which value of <i>k</i> would make the relation <b>NOT</b> a function?</div></div></div>
+    <div class="q-body"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">1</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">3</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">4</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">8</span></button></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="15">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div></section><section class="part"><div class="part-h"><span class="tag">Part 5</span><h2>Transformations</h2><span class="std">NC.8.G.3</span></div><div class="tip"><b class="lbl">REMEMBER</b> Translate: add or subtract. Reflect over x-axis: (x, −y). Over y-axis: (−x, y). Rotate 90° counterclockwise: (−y, x). 180°: (−x, −y). Dilate: multiply both by k.</div>
+  <div class="q" id="q17" data-i="16">
+    <div class="q-top"><span class="qn">17</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Triangle ABC is translated <b>4 units left</b> and <b>3 units down</b> to form triangle A′B′C′. What are the coordinates of <b>B′</b>?</div></div></div>
+    <div class="q-body"><div class="withfig"><div class="wf-main"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">(1, −2)</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">(9, −2)</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">(1, 4)</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">(2, −3)</span></button></div></div><div class="wf-fig" aria-hidden="true"><svg viewBox="0 0 215 181" width="215" height="181" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="167" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="31" y1="167" x2="31" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="48" y1="167" x2="48" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="65" y1="167" x2="65" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="82" y1="167" x2="82" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="99" y1="167" x2="99" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="116" y1="167" x2="116" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="133" y1="167" x2="133" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="150" y1="167" x2="150" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="167" y1="167" x2="167" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="184" y1="167" x2="184" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="201" y1="167" x2="201" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="167" x2="201" y2="167" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="150" x2="201" y2="150" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="133" x2="201" y2="133" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="116" x2="201" y2="116" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="201" y2="99" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="201" y2="82" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="65" x2="201" y2="65" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="48" x2="201" y2="48" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="31" x2="201" y2="31" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="201" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="201" y2="99" stroke="#1E2D4F" stroke-width="1.6"/><line x1="99" y1="167" x2="99" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="31" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="48" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="65" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="82" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="116" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="133" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="150" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="167" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="184" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="201" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">6</text><text x="95" y="170" font-size="8.5" text-anchor="end" fill="#55607a">-4</text><text x="95" y="153" font-size="8.5" text-anchor="end" fill="#55607a">-3</text><text x="95" y="136" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="95" y="119" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="95" y="85" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="95" y="68" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="95" y="51" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="95" y="34" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="95" y="17" font-size="8.5" text-anchor="end" fill="#55607a">5</text><text x="198" y="95" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="104" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><polygon points="133,82 184,82 133,31" fill="#1E2D4F" fill-opacity="0.35" stroke="#1E2D4F" stroke-width="2"/><circle cx="133" cy="82" r="2.8" fill="#1E2D4F"/><text x="122" y="94" font-size="10.5" font-weight="700" fill="#1E2D4F">A</text><circle cx="184" cy="82" r="2.8" fill="#1E2D4F"/><text x="187" y="94" font-size="10.5" font-weight="700" fill="#1E2D4F">B</text><circle cx="133" cy="31" r="2.8" fill="#1E2D4F"/><text x="121" y="29" font-size="10.5" font-weight="700" fill="#1E2D4F">C</text></svg></div></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="16">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q18" data-i="17">
+    <div class="q-top"><span class="qn">18</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Triangle PQR is reflected across the <b>y-axis</b>. Which set of points are the vertices of P′Q′R′?</div></div></div>
+    <div class="q-body"><div class="withfig"><div class="wf-main"><div class="chips col"><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">P′(1, −3), Q′(4, −3), R′(4, −1)</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">P′(−1, 3), Q′(−4, 3), R′(−4, 1)</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">P′(−1, −3), Q′(−4, −3), R′(−4, −1)</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">P′(3, 1), Q′(3, 4), R′(1, 4)</span></button></div></div><div class="wf-fig" aria-hidden="true"><svg viewBox="0 0 198 164" width="198" height="164" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="150" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="31" y1="150" x2="31" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="48" y1="150" x2="48" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="65" y1="150" x2="65" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="82" y1="150" x2="82" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="99" y1="150" x2="99" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="116" y1="150" x2="116" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="133" y1="150" x2="133" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="150" y1="150" x2="150" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="167" y1="150" x2="167" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="184" y1="150" x2="184" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="150" x2="184" y2="150" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="133" x2="184" y2="133" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="116" x2="184" y2="116" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="184" y2="99" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="184" y2="82" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="65" x2="184" y2="65" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="48" x2="184" y2="48" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="31" x2="184" y2="31" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="184" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="184" y2="82" stroke="#1E2D4F" stroke-width="1.6"/><line x1="99" y1="150" x2="99" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="31" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="48" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="65" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="82" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="116" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="133" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="150" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="167" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="184" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="95" y="153" font-size="8.5" text-anchor="end" fill="#55607a">-4</text><text x="95" y="136" font-size="8.5" text-anchor="end" fill="#55607a">-3</text><text x="95" y="119" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="95" y="102" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="95" y="68" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="95" y="51" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="95" y="34" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="95" y="17" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="181" y="78" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="104" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><polygon points="116,31 167,31 167,65" fill="#1E2D4F" fill-opacity="0.35" stroke="#1E2D4F" stroke-width="2"/><circle cx="116" cy="31" r="2.8" fill="#1E2D4F"/><text x="105" y="28" font-size="10.5" font-weight="700" fill="#1E2D4F">P</text><circle cx="167" cy="31" r="2.8" fill="#1E2D4F"/><text x="171" y="28" font-size="10.5" font-weight="700" fill="#1E2D4F">Q</text><circle cx="167" cy="65" r="2.8" fill="#1E2D4F"/><text x="171" y="77" font-size="10.5" font-weight="700" fill="#1E2D4F">R</text></svg></div></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="17">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q19" data-i="18">
+    <div class="q-top"><span class="qn">19</span><div class="q-text"><div class="q-type">Multiple choice</div><div class="stem">Point M(3, −2) is rotated <b>90° counterclockwise</b> about the origin. What are the coordinates of M′?</div></div></div>
+    <div class="q-body"><div class="withfig"><div class="wf-main"><div class="chips "><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">(2, 3)</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">(−2, −3)</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">(−3, 2)</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">(3, 2)</span></button></div></div><div class="wf-fig" aria-hidden="true"><svg viewBox="0 0 198 164" width="198" height="164" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="150" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="31" y1="150" x2="31" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="48" y1="150" x2="48" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="65" y1="150" x2="65" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="82" y1="150" x2="82" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="99" y1="150" x2="99" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="116" y1="150" x2="116" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="133" y1="150" x2="133" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="150" y1="150" x2="150" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="167" y1="150" x2="167" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="184" y1="150" x2="184" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="150" x2="184" y2="150" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="133" x2="184" y2="133" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="116" x2="184" y2="116" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="184" y2="99" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="184" y2="82" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="65" x2="184" y2="65" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="48" x2="184" y2="48" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="31" x2="184" y2="31" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="184" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="184" y2="82" stroke="#1E2D4F" stroke-width="1.6"/><line x1="99" y1="150" x2="99" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="31" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="48" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="65" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="82" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="116" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="133" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="150" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="167" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="184" y="93" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="95" y="153" font-size="8.5" text-anchor="end" fill="#55607a">-4</text><text x="95" y="136" font-size="8.5" text-anchor="end" fill="#55607a">-3</text><text x="95" y="119" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="95" y="102" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="95" y="68" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="95" y="51" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="95" y="34" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="95" y="17" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="181" y="78" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="104" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><circle cx="150" cy="116" r="4" fill="#1E2D4F"/><text x="156" y="120" font-size="10.5" font-weight="700" fill="#1E2D4F">M</text></svg></div></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="18">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div>
+  <div class="q" id="q20" data-i="19">
+    <div class="q-top"><span class="qn">20</span><div class="q-text"><div class="q-type">Select all that apply</div><div class="stem">Rectangle WXYZ is dilated by a scale factor of <span class="frac"><span>1</span><span>2</span></span> centered at the origin. Select <b>ALL</b> true statements.</div></div></div>
+    <div class="q-body"><div class="withfig"><div class="wf-main"><div class="chips col" data-multi><button type="button" class="chip" data-v="0" aria-pressed="false"><span class="L">A</span><span class="cv">W′ is at (1, 0.5).</span></button><button type="button" class="chip" data-v="1" aria-pressed="false"><span class="L">B</span><span class="cv">Z′ is at (4, 8).</span></button><button type="button" class="chip" data-v="2" aria-pressed="false"><span class="L">C</span><span class="cv">The image has side lengths 2 and 1.5.</span></button><button type="button" class="chip" data-v="3" aria-pressed="false"><span class="L">D</span><span class="cv">The image is congruent to WXYZ.</span></button><button type="button" class="chip" data-v="4" aria-pressed="false"><span class="L">E</span><span class="cv">Every angle of the image still measures 90°.</span></button></div></div><div class="wf-fig" aria-hidden="true"><svg viewBox="0 0 164 130" width="164" height="130" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="116" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="31" y1="116" x2="31" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="48" y1="116" x2="48" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="65" y1="116" x2="65" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="82" y1="116" x2="82" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="99" y1="116" x2="99" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="116" y1="116" x2="116" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="133" y1="116" x2="133" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="150" y1="116" x2="150" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="116" x2="150" y2="116" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="150" y2="99" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="82" x2="150" y2="82" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="65" x2="150" y2="65" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="48" x2="150" y2="48" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="31" x2="150" y2="31" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="150" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="99" x2="150" y2="99" stroke="#1E2D4F" stroke-width="1.6"/><line x1="31" y1="116" x2="31" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="48" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="65" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="82" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="99" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="116" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="133" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">6</text><text x="150" y="110" font-size="8.5" text-anchor="middle" fill="#55607a">7</text><text x="27" y="119" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="27" y="85" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="27" y="68" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="27" y="51" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="27" y="34" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="27" y="17" font-size="8.5" text-anchor="end" fill="#55607a">5</text><text x="147" y="95" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="36" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><polygon points="65,82 133,82 133,31 65,31" fill="#1E2D4F" fill-opacity="0.35" stroke="#1E2D4F" stroke-width="2"/><circle cx="65" cy="82" r="2.8" fill="#1E2D4F"/><text x="53" y="94" font-size="10.5" font-weight="700" fill="#1E2D4F">W</text><circle cx="133" cy="82" r="2.8" fill="#1E2D4F"/><text x="136" y="94" font-size="10.5" font-weight="700" fill="#1E2D4F">X</text><circle cx="133" cy="31" r="2.8" fill="#1E2D4F"/><text x="136" y="28" font-size="10.5" font-weight="700" fill="#1E2D4F">Y</text><circle cx="65" cy="31" r="2.8" fill="#1E2D4F"/><text x="53" y="28" font-size="10.5" font-weight="700" fill="#1E2D4F">Z</text></svg></div></div>
+      <div class="qact"><button type="button" class="btn sm chk" data-i="19">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+    </div>
+    <div class="res" aria-live="polite"></div>
+  </div></section>
+
+<section class="submit" id="submitbox" aria-live="polite">
+  <h2>Submit to Mr. Allen</h2>
+  <p class="msg" id="smsg">Your FIRST check on each question is your score. Questions you did not check get graded when you submit.</p>
+  <div class="btns"><button type="button" class="btn" id="sbtn">Submit</button></div>
+  <div class="score" id="scorebox">
+    <div class="big" id="bigscore"></div>
+    <table class="bystd" id="bystd"></table>
+    <div class="qgrid" id="qgrid"></div>
+    <p class="msg" id="sendmsg"></p>
+    <div class="btns">
+      <button type="button" class="btn ghost" id="resend" hidden>Try sending again</button>
+      <button type="button" class="btn ghost" id="again">Start a new attempt</button>
+    </div>
+  </div>
+</section>
+</section>
+</div>
+
+<script src="../benchmark-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.BENCHMARK_CONFIG || {};
+  var BENCH = 'NC Check-In Benchmark Review';
+  var NAME_KEY = 'fluencyLabStudentName', CLASS_KEY = 'benchmarkClass';
+  var QD = [{"id": "1", "std": "NC.8.NS.1", "label": "Select all irrational", "kind": "multi", "correct": [1, 3, 5], "key": "B, D, F", "why": "√20 is irrational because 20 is not a perfect square. π never ends and never repeats. 0.1010010001… never ends and has no block that repeats. <b>Not irrational:</b> √49 = 7; 0.<span class='bar'>37</span> repeats (= 37/99); −5/8 is already a fraction.", "fb": {"pick": {"0": "√49 = 7, so it is rational.", "2": "0.3737… repeats, so it is rational.", "4": "−5/8 is already a fraction, so it is rational."}, "miss": {"1": "√20 is irrational. 20 is not a perfect square.", "3": "π is irrational. Its decimal never ends and never repeats.", "5": "0.1010010001… never repeats the same block, so it is irrational."}}, "opts": ["√49", "√20", "0.37", "π", "−58", "0.1010010001… (pattern: one more 0 each time)"]}, {"id": "2", "std": "NC.8.NS.1", "label": "Repeating decimal 1.6(rep) to a fraction", "kind": "num", "correct": [], "key": "<span class=\"frac\"><span>5</span><span>3</span></span> (or 1<span class=\"frac\"><span>2</span><span>3</span></span>)", "why": "Let x = 1.666…  Then 10x = 16.666…  Subtract: 10x − x = 15, so 9x = 15 and x = <span class=\"frac\"><span>15</span><span>9</span></span> = <span class=\"frac\"><span>5</span><span>3</span></span>. Shortcut: 1 + 0.<span class='bar'>6</span> = 1 + <span class=\"frac\"><span>6</span><span>9</span></span> = 1<span class=\"frac\"><span>2</span><span>3</span></span> = <span class=\"frac\"><span>5</span><span>3</span></span>.", "ans": [5, 3], "simplest": true, "hints": [[[16, 10], "1.666… is not 1.6. The 6 repeats forever. 1.666… = 1 + 6/9 = 5/3."], [[2, 3], "You forgot the whole number 1. 1 + 2/3 = 5/3."], [[167, 100], "1.67 is a rounded decimal. Write the exact fraction: 1 + 6/9 = 5/3."], [[1667, 1000], "That is a rounded decimal. Write the exact fraction: 1 + 6/9 = 5/3."], [[6, 9], "You forgot the whole number 1. 1 + 6/9 = 1 2/3 = 5/3."]]}, {"id": "3", "std": "NC.8.NS.1", "label": "Fraction equal to 0.27(rep)", "kind": "mc", "correct": [1], "key": "B", "why": "x = 0.2727…, 100x = 27.2727…, so 99x = 27 and x = <span class=\"frac\"><span>27</span><span>99</span></span> = <span class=\"frac\"><span>3</span><span>11</span></span>. <b>Traps:</b> A is 0.27 (stops); C = 0.285714…; D = 0.3 exactly.", "fb": {"0": "27/100 = 0.27. That decimal stops. 0.2727… keeps going.", "2": "2/7 = 0.285714…, not 0.2727….", "3": "27/90 = 0.3. Two digits repeat, so put 27 over 99: 27/99 = 3/11."}, "opts": ["27100", "311", "27", "2790"]}, {"id": "4", "std": "NC.8.NS.1", "label": "True statement about rational/irrational", "kind": "mc", "correct": [2], "key": "C", "why": "7² = 49 and 8² = 64, so √50 is between 7 and 8 and is not a whole number — it is irrational. A is false (1/3 = 0.333… repeats). B is false: it repeats, so it's rational (16/99). D is false: 22/7 is only an <i>approximation</i> of π.", "fb": {"0": "Not every fraction stops. 1/3 = 0.333… repeats.", "1": "0.161616… repeats, so it is rational. It equals 16/99.", "3": "22/7 is close to π, but not equal. π is irrational."}, "opts": ["Every fraction has a decimal that terminates (ends).", "0.161616… is irrational because it never ends.", "√50 is irrational because 50 is not a perfect square.", "π is rational because π = 22/7."]}, {"id": "5", "std": "NC.8.EE.1", "label": "Exponent rules: numeric value", "kind": "mc", "correct": [1], "key": "B", "why": "Top: 3<sup>4 + (−6)</sup> = 3<sup>−2</sup>. Divide: 3<sup>−2 − 2</sup> = 3<sup>−4</sup> = <span class=\"frac\"><span>1</span><span>3<sup>4</sup></span></span> = <span class=\"frac\"><span>1</span><span>81</span></span>. <b>Traps:</b> −81 treats the negative exponent as a negative number; 1/9 forgets to subtract the 2 in the denominator.", "fb": {"0": "A negative exponent does not make the number negative. 3⁻⁴ = 1/81.", "2": "Subtract the bottom exponent too: −2 − 2 = −4. So the answer is 3⁻⁴ = 1/81.", "3": "The exponent is negative, so flip it: 3⁻⁴ = 1/3⁴ = 1/81."}, "opts": ["−81", "181", "19", "81"]}, {"id": "6", "std": "NC.8.EE.1", "label": "Power, product and zero exponent", "kind": "num", "correct": [], "key": "4", "why": "(2³)² = 2⁶ (multiply exponents). 2⁶ · 2⁻⁴ = 2² (add exponents). 7⁰ = 1. So 2² · 1 = <b>4</b>.", "ans": [4, 1], "hints": [[[64, 1], "(2³)² = 2⁶ = 64 is only the first step. Now multiply by 2⁻⁴: 2⁶⁻⁴ = 2² = 4."], [[0, 1], "7⁰ is 1, not 0. So the answer is 4 × 1 = 4."], [[28, 1], "7⁰ is 1, not 7. So the answer is 4 × 1 = 4."], [[2, 1], "Power to a power: MULTIPLY. (2³)² = 2⁶. Then 2⁶ · 2⁻⁴ = 2² = 4."], [[1, 4], "6 + (−4) = 2, a positive exponent. 2² = 4."]]}, {"id": "7", "std": "NC.8.EE.1", "label": "Select all equal to 1/16", "kind": "multi", "correct": [0, 1, 3], "key": "A, B, D", "why": "4⁻² = 1/4² = 1/16 ✓. 2⁻⁴ = 1/2⁴ = 1/16 ✓. (−4)⁻² = 1/(−4)² = 1/16 ✓ (the negative is inside the parentheses, so it gets squared). <b>Not equal:</b> −16; −4⁻² = −(1/16); 2⁸/2⁴ = 2⁴ = 16.", "fb": {"pick": {"2": "−16 is negative. 1/16 is positive.", "4": "−4⁻² means −(4⁻²) = −1/16. The negative sign is outside the power.", "5": "2⁸ ÷ 2⁴ = 2⁴ = 16, not 1/16."}, "miss": {"0": "4⁻² = 1/4² = 1/16. It belongs.", "1": "2⁻⁴ = 1/2⁴ = 1/16. It belongs.", "3": "(−4)⁻² = 1/(−4)² = 1/16. A negative number squared is positive."}}, "opts": ["4−2", "2−4", "−16", "(−4)−2", "−4−2", "2824"]}, {"id": "8", "std": "NC.8.EE.1", "label": "Simplify with variables", "kind": "mc", "correct": [0], "key": "A", "why": "Power of a power: (x⁵y⁻²)³ = x¹⁵y⁻⁶. Divide: x<sup>15−2</sup> = x¹³ and y<sup>−6−(−4)</sup> = y⁻². So x¹³y⁻² = <span class=\"frac\"><span>x<sup>13</sup></span><span>y<sup>2</sup></span></span>. <b>Traps:</b> B forgets the negative exponent means flip; C adds 5 + 3 instead of multiplying; D multiplies instead of dividing.", "fb": {"1": "y⁻² has a negative exponent. Move it to the bottom: x¹³/y².", "2": "Power to a power means MULTIPLY: (x⁵)³ = x¹⁵, not x⁸.", "3": "When you divide, SUBTRACT the exponents: x¹⁵ ÷ x² = x¹³."}, "opts": ["x13y2", "x13y2", "x6y8", "x17y10"]}, {"id": "9", "std": "NC.8.EE.7", "label": "Solve: distribute, variables on both sides", "kind": "num", "correct": [], "key": "x = 5", "why": "Distribute: 4x − 12 + 2x = 2x + 8. Combine: 6x − 12 = 2x + 8. Subtract 2x: 4x − 12 = 8. Add 12: 4x = 20. Divide: x = 5. <b>Check:</b> 4(2) + 10 = 18 and 10 + 8 = 18 ✓", "ans": [5, 1], "hints": [[[11, 4], "Distribute to BOTH terms: 4(x − 3) = 4x − 12, not 4x − 3."], [[5, 2], "Subtract 2x from both sides (do not add it): 6x − 2x = 4x. Then 4x = 20."], [[-5, 1], "Check the signs. 4x − 12 = 8, so 4x = 20 and x = 5."], [[20, 1], "One more step: 4x = 20, so x = 20 ÷ 4 = 5."]]}, {"id": "10", "std": "NC.8.EE.7", "label": "How many solutions?", "kind": "mc", "correct": [3], "key": "D", "why": "Left side: 6x − 10 + 4 = 6x − 6. Now 6x − 6 = 6x − 6. Subtract 6x: −6 = −6, which is always <b>true</b>. Both sides are identical → infinitely many solutions.", "fb": {"0": "No solution happens when you get a FALSE statement, like 6 = 5. Here you get −6 = −6. That is true.", "1": "The x terms cancel: 6x − 6 = 6x − 6. Both sides are the same, so every x works.", "2": "The x terms cancel: 6x − 6 = 6x − 6. Both sides are the same, so every x works."}, "opts": ["No solution", "Exactly one solution, x = 0", "Exactly one solution, x = −6", "Infinitely many solutions"]}, {"id": "11", "std": "NC.8.EE.7", "label": "Solve with fractions", "kind": "num", "correct": [], "key": "x = 18", "why": "Multiply every term by the LCD, 6: 4x − 24 = x + 30. Subtract x: 3x − 24 = 30. Add 24: 3x = 54. x = 18. <b>Check:</b> <span class=\"frac\"><span>2</span><span>3</span></span>(18) − 4 = 8 and <span class=\"frac\"><span>1</span><span>6</span></span>(18) + 5 = 8 ✓", "ans": [18, 1], "hints": [[[54, 1], "One more step: 3x = 54, so x = 54 ÷ 3 = 18."], [[3, 1], "Multiply EVERY term by 6, including the 4 and the 5: 4x − 24 = x + 30."], [[-18, 1], "Check the signs. 3x = 54, so x = 18."]]}, {"id": "12", "std": "NC.8.EE.7", "label": "Word problem: inequality (T-shirts)", "kind": "mc", "correct": [0], "key": "A", "why": "Inequality: 34 + 12s ≤ 85. Subtract 34: 12s ≤ 51. Divide: s ≤ 4.25. He can't buy part of a shirt, so the greatest whole number is <b>4</b>. <b>Traps:</b> 4.25 ignores the context; 5 rounds up and costs $94; 7 ignores the jacket (85 ÷ 12).", "fb": {"1": "4.25 is not a whole T-shirt. Jordan can only buy whole shirts, so the answer is 4.", "2": "5 shirts cost $60. $34 + $60 = $94. That is more than $85.", "3": "Do not forget the $34 jacket. $85 − $34 = $51 left. 51 ÷ 12 = 4.25, so 4 shirts."}, "opts": ["4", "4.25", "5", "7"]}, {"id": "13", "std": "NC.8.F.1", "label": "Which table is a function?", "kind": "mc", "correct": [1], "key": "B", "why": "In B every input (2, 4, 6, 8) is different, so each has exactly one output. All outputs being 5 is fine. A: x = 1 → 4 and 6. C: x = −1 → 3 and 4. D: x = 5 has four outputs.", "fb": {"0": "In this table, x = 1 has two outputs: 4 and 6.", "2": "In this table, x = −1 has two outputs: 3 and 4.", "3": "In this table, x = 5 has four different outputs."}, "opts": ["x1213y4567", "x2468y5555", "x-10-12y3345", "x5555y1234"]}, {"id": "14", "std": "NC.8.F.1", "label": "Which graph is a function?", "kind": "mc", "correct": [2], "key": "C", "why": "Use the vertical line test. Graph C (the V shape) is crossed only once by any vertical line. A vertical line hits the circle (A) and the sideways U (B) twice, and graph D is itself a vertical line — x = 2 has infinitely many outputs.", "fb": {"0": "A vertical line crosses the circle in two places.", "1": "A vertical line crosses this sideways U in two places.", "3": "This graph is a vertical line. The input x = 2 has many outputs."}, "opts": ["", "", "", ""]}, {"id": "15", "std": "NC.8.F.1", "label": "Select all ordered pairs that are functions", "kind": "multi", "correct": [0, 2, 4], "key": "A, C, E", "why": "A, C, E: no x-value repeats (repeated y-values in C and E are OK). B: x = 2 → 1 and 3. D: x = 1 → 1 and −1.", "fb": {"pick": {"1": "B is not a function: x = 2 goes to 1 AND to 3.", "3": "D is not a function: x = 1 goes to 1 AND to −1."}, "miss": {"0": "A is a function: every x is different (1, 2, 3).", "2": "C is a function: the y repeats (5, 5, 5), but every x is different. That is OK.", "4": "E is a function: the y-value 2 repeats, but every x is different."}}, "opts": ["{(1, 2), (2, 3), (3, 4)}", "{(2, 1), (2, 3), (4, 5)}", "{(−3, 5), (0, 5), (3, 5)}", "{(0, 0), (1, 1), (1, −1)}", "{(7, 2), (8, 2), (9, 3)}"]}, {"id": "16", "std": "NC.8.F.1", "label": "Value of k that makes it NOT a function", "kind": "mc", "correct": [2], "key": "C", "why": "If k = 4, the input 4 would have two outputs, 7 and 9 — not a function. Any value of k that is not already an input (1, 3, 8) keeps it a function.", "fb": {"0": "k = 1 is a new input, so it is still a function. Look for an x that is ALREADY used.", "1": "k = 3 is a new input, so it is still a function. Look for an x that is ALREADY used.", "3": "k = 8 is a new input, so it is still a function. Look for an x that is ALREADY used."}, "opts": ["1", "3", "4", "8"]}, {"id": "17", "std": "NC.8.G.3", "label": "Translation: find B'", "kind": "mc", "correct": [0], "key": "A", "why": "B is at (5, 1). Left 4 → x: 5 − 4 = 1. Down 3 → y: 1 − 3 = −2. B′(1, −2). <b>Traps:</b> (9, −2) moved right; (1, 4) moved up; (2, −3) is where A goes.", "fb": {"1": "You moved right. Left means subtract from x: 5 − 4 = 1.", "2": "You moved up. Down means subtract from y: 1 − 3 = −2.", "3": "(2, −3) is where A goes. The question asks about B."}, "opts": ["(1, −2)", "(9, −2)", "(1, 4)", "(2, −3)"]}, {"id": "18", "std": "NC.8.G.3", "label": "Reflection over the y-axis", "kind": "mc", "correct": [1], "key": "B", "why": "Reflection across the y-axis: (x, y) → (−x, y). Only the x-coordinates change sign. A is a reflection across the x-axis; C is a 180° rotation; D swaps x and y.", "fb": {"0": "That is a reflection over the x-axis. Over the y-axis, the x changes sign.", "2": "Both signs changed. That is a 180° rotation.", "3": "You swapped x and y. A reflection over the y-axis does not swap them."}, "opts": ["P′(1, −3), Q′(4, −3), R′(4, −1)", "P′(−1, 3), Q′(−4, 3), R′(−4, 1)", "P′(−1, −3), Q′(−4, −3), R′(−4, −1)", "P′(3, 1), Q′(3, 4), R′(1, 4)"]}, {"id": "19", "std": "NC.8.G.3", "label": "Rotation 90 degrees counterclockwise", "kind": "mc", "correct": [0], "key": "A", "why": "90° counterclockwise: (x, y) → (−y, x) = (−(−2), 3) = (2, 3). Quadrant check: M is in IV; 90° counterclockwise moves it to I ✓. <b>Traps:</b> (−2, −3) is 90° clockwise; (−3, 2) is 180°; (3, 2) is a reflection over the x-axis.", "fb": {"1": "That is 90° clockwise. Counterclockwise uses (x, y) → (−y, x).", "2": "That is a 180° rotation. Both signs flipped.", "3": "That is a reflection over the x-axis."}, "opts": ["(2, 3)", "(−2, −3)", "(−3, 2)", "(3, 2)"]}, {"id": "20", "std": "NC.8.G.3", "label": "Dilation by 1/2: select all true", "kind": "multi", "correct": [0, 2, 4], "key": "A, C, E", "why": "Multiply each coordinate by ½: W(2, 1) → W′(1, 0.5) ✓; Z(2, 4) → Z′(1, 2), not (4, 8) (that is scale factor 2). Original sides are 4 and 3, so the image sides are 2 and 1.5 ✓. A dilation changes size, so the image is <b>similar, not congruent</b>. Angles never change in a dilation ✓.", "fb": {"pick": {"1": "Z(2, 4) times ½ is (1, 2). (4, 8) would be scale factor 2.", "3": "A dilation changes size. The image is similar, not congruent."}, "miss": {"0": "W(2, 1) times ½ is (1, 0.5). This one is true.", "2": "The sides 4 and 3 times ½ are 2 and 1.5. This one is true.", "4": "A dilation never changes angles. They stay 90°. This one is true."}}, "opts": ["W′ is at (1, 0.5).", "Z′ is at (4, 8).", "The image has side lengths 2 and 1.5.", "The image is congruent to WXYZ.", "Every angle of the image still measures 90°."]}];
+  var STD_NAMES = {"NC.8.NS.1": "Rational and irrational numbers", "NC.8.EE.1": "Exponent rules", "NC.8.EE.7": "Equations and inequalities", "NC.8.F.1": "What is a function?", "NC.8.G.3": "Transformations with coordinates"};
+  var L = 'ABCDEF';
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) {} return ''; }
+  function newSession() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  var session = newSession(), locked = false, lastPayload = null;
+  var st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
+
+  // ── tabs
+  function showTab(id) {
+    $$('.step').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
+    $$('.tabp').forEach(function (p) { p.hidden = p.id !== id; });
+    var top = $('.steps').getBoundingClientRect().top + window.pageYOffset - 70;
+    if (window.pageYOffset > top) window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+  $$('.step').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
+  $$('[data-go]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-go')); }); });
+  $$('.ntab').forEach(function (b) {
+    b.addEventListener('click', function () {
+      $$('.ntab').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); });
+      $$('.note').forEach(function (n) { n.hidden = n.id !== b.getAttribute('data-n'); });
+    });
+  });
+
+  // ── choices
+  $$('.chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var q = b.closest('.q'), i = +q.getAttribute('data-i');
+      if (st[i].done || locked) return;
+      var box = b.parentNode;
+      if (box.hasAttribute('data-multi')) b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+      else $$('.chip', box).forEach(function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+      $('.nudge', q).textContent = '';
+    });
+  });
+  function picked(i) { return $$('#q' + (i + 1) + ' .chip[aria-pressed="true"]').map(function (c) { return +c.getAttribute('data-v'); }).sort(); }
+
+  // ── numbers: "5/3", "1 2/3", "-4", "−4", "1.5", "x = 18"  →  [num, den] (exact)
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a || 1; }
+  function parseNum(t) {
+    t = String(t).replace(/[−–—]/g, '-').replace(/\s+/g, ' ').trim().replace(/^[a-z]\s*=\s*/i, '').trim();
+    var m;
+    if ((m = t.match(/^(-?)(\d+) (\d+)\s*\/\s*(\d+)$/))) { var d = +m[4]; if (!d) return null; return { n: (m[1] ? -1 : 1) * (+m[2] * d + +m[3]), d: d, mixed: true }; }
+    if ((m = t.match(/^(-?\d+)\s*\/\s*(-?\d+)$/))) { var d2 = +m[2]; if (!d2) return null; return { n: +m[1] * (d2 < 0 ? -1 : 1), d: Math.abs(d2), frac: true }; }
+    if ((m = t.match(/^(-?)(\d*)\.?(\d*)$/)) && (m[2] || m[3])) { var dec = m[3] || '', p = Math.pow(10, dec.length); return { n: (m[1] ? -1 : 1) * (+(m[2] || 0) * p + +(dec || 0)), d: p, dec: dec.length > 0 }; }
+    return null;
+  }
+  function eq(p, f) { return p && p.n * f[1] === f[0] * p.d; }
+
+  // ── grading: returns {ok, msgs[], answer}
+  function grade(i) {
+    var q = QD[i];
+    if (q.kind === 'num') {
+      var raw = $('#in' + i).value.trim();
+      if (!raw) return { blank: true, ok: false, msgs: ['You left this blank.'], answer: '' };
+      if (/\.\.\.|…/.test(raw)) return { ok: false, msgs: ['That is the repeating decimal. Write it as a fraction, like 5/3.'], answer: raw };
+      var p = parseNum(raw);
+      if (!p) return { ok: false, msgs: ['I could not read that. Type a number like 7, -2, 3/4, or 1 2/3.'], answer: raw };
+      if (eq(p, q.ans)) {
+        if (q.simplest && ((p.frac && gcd(p.n, p.d) !== 1) || p.dec)) return { ok: false, msgs: ['Right value! But the question asks for the fraction in simplest form. ' + (p.dec ? 'Write it as a fraction.' : 'Divide the top and bottom by ' + gcd(p.n, p.d) + '.')], answer: raw };
+        return { ok: true, msgs: [], answer: raw };
+      }
+      for (var h = 0; h < (q.hints || []).length; h++) if (eq(p, q.hints[h][0])) return { ok: false, msgs: [q.hints[h][1]], answer: raw };
+      return { ok: false, msgs: ['Check your work one step at a time.'], answer: raw };
+    }
+    var pk = picked(i), ans = pk.map(function (j) { return L[j]; }).join(', ');
+    if (!pk.length) return { blank: true, ok: false, msgs: ['You left this blank.'], answer: '' };
+    if (q.kind === 'mc') {
+      var j = pk[0];
+      if (q.correct.indexOf(j) >= 0) return { ok: true, msgs: [], answer: ans };
+      return { ok: false, msgs: [q.fb[j] || 'Look again at each choice.'], answer: ans };
+    }
+    var c = q.correct.slice().sort(), ok = pk.length === c.length && pk.every(function (v, k) { return v === c[k]; });
+    if (ok) return { ok: true, msgs: [], answer: ans };
+    var msgs = [];
+    pk.forEach(function (v) { if (c.indexOf(v) < 0 && q.fb.pick && q.fb.pick[v]) msgs.push('<b>' + L[v] + ':</b> ' + q.fb.pick[v]); });
+    c.forEach(function (v) { if (pk.indexOf(v) < 0 && q.fb.miss && q.fb.miss[v]) msgs.push('<b>' + L[v] + ':</b> ' + q.fb.miss[v]); });
+    var nr = pk.filter(function (v) { return c.indexOf(v) >= 0; }).length;
+    var lead = nr ? 'You got ' + nr + ' of the ' + c.length + ' right choices. ' : '';
+    if (!msgs.length) msgs.push('Judge each choice by itself: true or false?');
+    msgs[0] = lead + msgs[0];
+    return { ok: false, msgs: msgs, answer: ans };
+  }
+
+  function show(i, r) {
+    var q = QD[i], el = $('#q' + (i + 1)), res = $('.res', el);
+    st[i] = { done: true, ok: r.ok, answer: r.answer };
+    if (q.kind === 'num') { var inp = $('#in' + i); inp.disabled = true; inp.classList.add(r.ok ? 'right' : 'wrong'); }
+    else $$('.chip', el).forEach(function (c) {
+      var v = +c.getAttribute('data-v'), on = c.getAttribute('aria-pressed') === 'true', good = q.correct.indexOf(v) >= 0;
+      c.disabled = true;
+      if (good && on) c.classList.add('right'); else if (on) c.classList.add('wrong'); else if (good) c.classList.add('missed');
+    });
+    $('.chk', el).hidden = true;
+    res.className = 'res show ' + (r.ok ? 'ok' : 'no');
+    res.innerHTML = '<div class="head">' + (r.ok ? 'Correct!' : (r.blank ? 'Not answered' : 'Not yet')) + '</div>' +
+      (r.ok ? '' : '<div>' + r.msgs.join('<br>') + '</div>') +
+      '<div class="key"><b>Answer:</b> ' + q.key + '</div>' +
+      '<div class="why"><b>How to solve it:</b> ' + q.why + '</div>';
+    progress();
+  }
+
+  $$('.chk').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var i = +b.getAttribute('data-i'), r = grade(i);
+      if (r.blank) { $('#q' + (i + 1) + ' .nudge').textContent = QD[i].kind === 'num' ? 'Type an answer first.' : (QD[i].kind === 'multi' ? 'Tap at least one choice first.' : 'Tap a choice first.'); return; }
+      if (QD[i].kind === 'num' && !parseNum($('#in' + i).value) && !/\.\.\.|…/.test($('#in' + i).value)) { $('#q' + (i + 1) + ' .nudge').textContent = 'Type a number like 7, -2, 3/4, or 1 2/3.'; return; }
+      show(i, r);
+    });
+  });
+  $$('input.box').forEach(function (inp) {
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var b = inp.closest('.q').querySelector('.chk'); if (!b.hidden) b.click(); } });
+    inp.addEventListener('input', function () { inp.closest('.q').querySelector('.nudge').textContent = ''; });
+  });
+
+  function progress() {
+    var n = st.filter(function (s) { return s.done; }).length, r = st.filter(function (s) { return s.ok; }).length;
+    $('#progtxt').textContent = n + ' of ' + QD.length + ' checked';
+    $('#progok').textContent = r + ' right';
+    $('#pbar').style.width = (100 * n / QD.length) + '%';
+  }
+
+  // ── name + class
+  var nameEl = $('#sname');
+  nameEl.value = store(NAME_KEY);
+  function pickClass(c) { $$('.cls').forEach(function (b) { b.setAttribute('aria-pressed', b.textContent === c ? 'true' : 'false'); }); }
+  function chosenClass() { var b = $('.cls[aria-pressed="true"]'); return b ? b.textContent : ''; }
+  $$('.cls').forEach(function (b) { b.addEventListener('click', function () { if (!locked) pickClass(b.textContent); }); });
+  pickClass(store(CLASS_KEY));
+
+  function smsg(t, kind) { var el = $('#smsg'); el.textContent = t; el.className = 'msg' + (kind ? ' ' + kind : ''); }
+  var armedBlank = false;
+  $('#sbtn').addEventListener('click', function () {
+    if (locked) return;
+    var name = nameEl.value.replace(/\s+/g, ' ').trim();
+    if (name.length < 3 || name.indexOf(' ') < 0) {
+      smsg('Type your first AND last name at the top first.', 'warn');
+      nameEl.focus(); nameEl.scrollIntoView({ block: 'center', behavior: 'smooth' }); return;
+    }
+    var cls = chosenClass();
+    if (!cls) { smsg('Tap your class at the top first.', 'warn'); $('.cls').focus(); $('.classes').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    var open = QD.map(function (q, i) { return i; }).filter(function (i) { return !st[i].done && grade(i).blank; }).map(function (i) { return '#' + (i + 1); });
+    if (open.length && !armedBlank) {
+      armedBlank = true;
+      smsg('You have not answered ' + open.join(', ') + '. Go back and answer, or tap Submit anyway.', 'warn');
+      $('#sbtn').textContent = 'Submit anyway'; return;
+    }
+    store(NAME_KEY, name); store(CLASS_KEY, cls);
+    finish(name, cls);
+  });
+
+  function finish(name, cls) {
+    QD.forEach(function (q, i) { if (!st[i].done) show(i, grade(i)); });
+    locked = true;
+    $$('.cls, .chip, .q input').forEach(function (el) { el.disabled = true; });
+    var items = [], byStd = {}, score = 0;
+    QD.forEach(function (q, i) {
+      if (st[i].ok) score++;
+      var b = byStd[q.std] = byStd[q.std] || { r: 0, n: 0 }; b.n++; if (st[i].ok) b.r++;
+      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0 });
+    });
+    $('#sbtn').hidden = true;
+    smsg('Here is your score. Tap a red number to go back to that question.', '');
+    $('#bigscore').innerHTML = score + ' <small>out of ' + QD.length + ' (' + Math.round(100 * score / QD.length) + '%)</small>';
+    $('#bystd').innerHTML = '<tr><th>Standard</th><th>Skill</th><th style="text-align:right">Right</th></tr>' +
+      Object.keys(byStd).map(function (s) {
+        var b = byStd[s], tip = b.r === b.n ? 'Ready' : (b.r >= b.n - 1 ? 'Review the notes' : 'Ask for help');
+        return '<tr><td><code>' + s + '</code></td><td>' + STD_NAMES[s] + ' <span class="small">· ' + tip + '</span></td><td class="p">' + b.r + ' / ' + b.n + '</td></tr>';
+      }).join('');
+    $('#qgrid').innerHTML = QD.map(function (q, i) { return '<a href="#q' + (i + 1) + '" class="' + (st[i].ok ? 'r' : 'w') + '" aria-label="Question ' + (i + 1) + (st[i].ok ? ' correct' : ' not correct') + '">' + (i + 1) + '</a>'; }).join('');
+    $('#scorebox').classList.add('show');
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items };
+    send();
+    $('#submitbox').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+
+  function sendmsg(t, kind) { var el = $('#sendmsg'); el.textContent = t; el.className = 'msg' + (kind ? ' ' + kind : ''); }
+  function send() {
+    var rb = $('#resend');
+    rb.hidden = true;
+    if (!CFG.ENDPOINT) { sendmsg('Sending is not switched on yet. Show this screen to Mr. Allen.', 'warn'); return; }
+    sendmsg('Sending to Mr. Allen…', '');
+    fetch(CFG.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(lastPayload) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.ok) sendmsg('Sent ✓ Mr. Allen has your results, ' + res.name + ' (attempt ' + res.attempt + ').', 'good');
+        else { sendmsg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') + '. Tap Try sending again, or tell Mr. Allen.', 'warn'); rb.hidden = false; }
+      })
+      .catch(function () { sendmsg('Could not reach Mr. Allen\'s sheet. Check the internet, then tap Try sending again.', 'warn'); rb.hidden = false; });
+  }
+  $('#resend').addEventListener('click', send);
+
+  $('#again').addEventListener('click', function () {
+    session = newSession(); lastPayload = null; locked = false; armedBlank = false;
+    st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
+    $$('.q input').forEach(function (i) { i.value = ''; i.disabled = false; i.classList.remove('right', 'wrong'); });
+    $$('.chip').forEach(function (b) { b.disabled = false; b.setAttribute('aria-pressed', 'false'); b.classList.remove('right', 'wrong', 'missed'); });
+    $$('.cls').forEach(function (b) { b.disabled = false; });
+    $$('.chk').forEach(function (b) { b.hidden = false; });
+    $$('.nudge').forEach(function (n) { n.textContent = ''; });
+    $$('.res').forEach(function (r) { r.className = 'res'; r.innerHTML = ''; });
+    $('#scorebox').classList.remove('show');
+    $('#sbtn').hidden = false; $('#sbtn').textContent = 'Submit';
+    smsg('New attempt. Your FIRST check on each question is your score.', '');
+    progress();
+    $('#q1').scrollIntoView({ block: 'center', behavior: 'smooth' });
+  });
+
+  // for automated checks
+  window.__bench = { QD: QD, parseNum: parseNum, grade: grade, state: function () { return st; } };
+})();
+
+</script>
+</body>
+</html>
