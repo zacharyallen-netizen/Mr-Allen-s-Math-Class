@@ -348,6 +348,21 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
   function newSession() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
   var session = newSession(), locked = false, lastPayload = null;
 
+  // ── active-time clock: counts only while the page is on screen and the student did something in the last 60 seconds
+  var TM = { test: 0, study: 0, q: {}, cur: null, last: Date.now(), on: true };
+  ['pointerdown', 'pointermove', 'keydown', 'input', 'wheel', 'scroll', 'touchstart'].forEach(function (ev) {
+    window.addEventListener(ev, function () { TM.last = Date.now(); }, { passive: true, capture: true });
+  });
+  setInterval(function () {
+    if (!TM.on || document.hidden || Date.now() - TM.last > 60000) return;
+    if (true) { TM.test++; if (TM.cur !== null && true) TM.q[TM.cur] = (TM.q[TM.cur] || 0) + 1; }
+    else TM.study++;
+  }, 1000);
+  function resetClock() { TM.test = 0; TM.study = 0; TM.q = {}; TM.cur = null; TM.on = true; TM.last = Date.now(); }
+  ['pointerdown', 'focusin', 'input'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { var q = e.target.closest && e.target.closest('.q'); if (q) TM.cur = q.id.replace('q', ''); }, true);
+  });
+
   // ── math display helpers
   function sn(c, e) { return '<span class="m">' + c + ' × 10<sup>' + String(e).replace('-', M) + '</sup></span>'; }
   function sup(s) { return '<sup>' + s + '</sup>'; }
@@ -701,7 +716,7 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
       box.innerHTML = '<div class="head">' + (r.ok ? 'Correct' : 'Not yet') + '</div>' +
         (r.ok ? '' : '<div>' + r.why + '</div>') +
         '<div class="key"><b>Answer:</b> ' + (q.keyHTML || q.key) + '</div>';
-      items.push({ id: q.id, std: q.std, label: q.label, answer: q.read(), ok: r.ok ? 1 : 0 });
+      items.push({ id: q.id, std: q.std, label: q.label, answer: q.read(), ok: r.ok ? 1 : 0, secs: TM.q[q.id] || 0 });
     });
     lockAll(true);
     $('#sbtn').hidden = true;
@@ -711,7 +726,8 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
     $('#bystd').innerHTML = '<tr><th>Standard</th><th>Skill</th><th style="text-align:right">Right</th></tr>' +
       Object.keys(byStd).sort().map(function (s) { return '<tr><td><code>' + s + '</code></td><td>' + NAMES[s] + '</td><td class="p">' + byStd[s].r + ' / ' + byStd[s].n + '</td></tr>'; }).join('');
     $('#scorebox').classList.add('show');
-    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: Q.length, items: items };
+    TM.on = false;
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: Q.length, items: items, testSecs: TM.test, studySecs: TM.study };
     send();
     $('#submitbox').scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
@@ -733,7 +749,7 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
   $('#resend').addEventListener('click', send);
 
   $('#again').addEventListener('click', function () {
-    session = newSession(); lastPayload = null; placed = [];
+    session = newSession(); lastPayload = null; placed = []; resetClock();
     $$('.q input').forEach(function (i) { if (i.type === 'radio') i.checked = false; else i.value = ''; });
     $$('.chip[aria-pressed]').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); });
     $$('.res').forEach(function (r) { r.className = 'res'; r.innerHTML = ''; });
@@ -746,7 +762,7 @@ table.bystd td.p{font:600 15px var(--mono);text-align:right}
   });
 
   // for automated checks
-  window.__bench = { Q: Q, parseMono: parseMono };
+  window.__bench = { Q: Q, parseMono: parseMono, clock: TM };
 })();
 </script>
 </body>

@@ -95,3 +95,29 @@ assert(r2.ok && sub2.data[0][9] === 'Class' && sub2.data[1][9] === 'A4', 'old Sh
   const qa4 = s4.getSheetByName('Question Analysis').data;
   assert(qa4.some(r => r[0] === 'NC Check-In Benchmark Review — Version 2'), 'Question Analysis keeps Version 2 questions separate');
 }
+
+// ── Time spent and the RUSHED flag
+{
+  const G5 = load(__dirname + '/BenchmarkTracker.gs'); G5.setup();
+  const s5 = Object.values(G5.__books)[0];
+  s5.getSheetByName('Roster').getRange(2, 1, 3, 5).setValues([['B5', 'Cruz', 'Eva', '1', ''], ['B5', 'Diaz', 'Omar', '2', ''], ['B5', 'Fox', 'Ivy', '3', '']]);
+  const it = secs => secs.map((s, i) => ({ id: String(i + 1), std: 'NC.8.F.1', label: 'Q' + (i + 1), answer: 'A', ok: 1, secs: s }));
+  const p5 = (name, ses, secs, test, study) => JSON.parse(G5.doPost({ postData: { contents: JSON.stringify({ ...base, name, period: 'B5', session: ses, items: it(secs), testSecs: test, studySecs: study }) } }).s);
+  p5('Eva Cruz', 'e', [40, 55, 70, 35], 240, 300);       // careful
+  p5('Omar Diaz', 'o', [3, 2, 4, 30], 45, 0);             // 3 of 4 quick
+  p5('Ivy Fox', 'i', [12, 11, 13, 12], 48, 10);           // none quick, but 12 sec a question on average
+  const gb5 = s5.getSheetByName('Gradebook').data, h = gb5[0];
+  const r = l => gb5.find(x => x[1] === l), col = n => h.indexOf(n);
+  assert(r('Cruz')[5] === 'Done' && r('Cruz')[col('Minutes on questions')] === 4 && r('Cruz')[col('Minutes on tips/notes')] === 5, 'minutes recorded (4 on questions, 5 on notes)');
+  assert(r('Diaz')[5] === 'Done — RUSHED' && r('Diaz')[col('Quick answers (under 10 sec)')] === '3 of 4', 'quick answers flag RUSHED');
+  assert(r('Fox')[5] === 'Done — RUSHED', 'very low average time flags RUSHED');
+  const sm = s5.getSheetByName('Class Summary').data, sh = sm[0];
+  assert(/Omar Diaz/.test(sm[1][sh.indexOf('Flagged RUSHED')]) && !/Eva Cruz/.test(sm[1][sh.indexOf('Flagged RUSHED')]), 'Class Summary lists who rushed');
+  const qa5 = s5.getSheetByName('Question Analysis').data;
+  assert(qa5[1][7] === Math.round((40 + 3 + 12) / 3), 'Question Analysis average seconds');
+  const resp5 = s5.getSheetByName('Responses').data;
+  assert(resp5[1][10] === 40, 'seconds saved per answer');
+  // a page that does not send time (older page) is never flagged
+  JSON.parse(G5.doPost({ postData: { contents: JSON.stringify({ ...base, name: 'Eva Cruz', period: 'B5', session: 'e2', items: [{ id: '1', std: 'NC.8.F.1', label: 'Q1', answer: 'A', ok: 1 }] }) } }).s);
+  assert(s5.getSheetByName('Gradebook').data.find(x => x[1] === 'Cruz')[5] === 'Done', 'no time sent → not flagged');
+}

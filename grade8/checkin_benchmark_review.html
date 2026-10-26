@@ -622,6 +622,21 @@ input.box.wrong{border-color:var(--no);background:var(--no-bg)}
   var session = newSession(), locked = false, lastPayload = null;
   var st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
 
+  // ── active-time clock: counts only while the page is on screen and the student did something in the last 60 seconds
+  var TM = { test: 0, study: 0, q: {}, cur: null, last: Date.now(), on: true };
+  ['pointerdown', 'pointermove', 'keydown', 'input', 'wheel', 'scroll', 'touchstart'].forEach(function (ev) {
+    window.addEventListener(ev, function () { TM.last = Date.now(); }, { passive: true, capture: true });
+  });
+  setInterval(function () {
+    if (!TM.on || document.hidden || Date.now() - TM.last > 60000) return;
+    if (!document.getElementById('tPrac').hidden) { TM.test++; if (TM.cur !== null && !st[TM.cur].done) TM.q[TM.cur] = (TM.q[TM.cur] || 0) + 1; }
+    else TM.study++;
+  }, 1000);
+  function resetClock() { TM.test = 0; TM.study = 0; TM.q = {}; TM.cur = null; TM.on = true; TM.last = Date.now(); }
+  ['pointerdown', 'focusin', 'input'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { var q = e.target.closest && e.target.closest('.q'); if (q) TM.cur = +q.getAttribute('data-i'); }, true);
+  });
+
   // ── tabs
   function showTab(id) {
     $$('.step').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
@@ -773,7 +788,7 @@ input.box.wrong{border-color:var(--no);background:var(--no-bg)}
     QD.forEach(function (q, i) {
       if (st[i].ok) score++;
       var b = byStd[q.std] = byStd[q.std] || { r: 0, n: 0 }; b.n++; if (st[i].ok) b.r++;
-      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0 });
+      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0, secs: TM.q[i] || 0 });
     });
     $('#sbtn').hidden = true;
     smsg('Here is your score. Tap a red number to go back to that question.', '');
@@ -785,7 +800,8 @@ input.box.wrong{border-color:var(--no);background:var(--no-bg)}
       }).join('');
     $('#qgrid').innerHTML = QD.map(function (q, i) { return '<a href="#q' + (i + 1) + '" class="' + (st[i].ok ? 'r' : 'w') + '" aria-label="Question ' + (i + 1) + (st[i].ok ? ' correct' : ' not correct') + '">' + (i + 1) + '</a>'; }).join('');
     $('#scorebox').classList.add('show');
-    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items };
+    TM.on = false;
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items, testSecs: TM.test, studySecs: TM.study };
     send();
     $('#submitbox').scrollIntoView({ block: 'start', behavior: 'smooth' });
   }
@@ -807,7 +823,7 @@ input.box.wrong{border-color:var(--no);background:var(--no-bg)}
   $('#resend').addEventListener('click', send);
 
   $('#again').addEventListener('click', function () {
-    session = newSession(); lastPayload = null; locked = false; armedBlank = false;
+    session = newSession(); lastPayload = null; locked = false; armedBlank = false; resetClock();
     st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
     $$('.q input').forEach(function (i) { i.value = ''; i.disabled = false; i.classList.remove('right', 'wrong'); });
     $$('.chip').forEach(function (b) { b.disabled = false; b.setAttribute('aria-pressed', 'false'); b.classList.remove('right', 'wrong', 'missed'); });
@@ -823,7 +839,7 @@ input.box.wrong{border-color:var(--no);background:var(--no-bg)}
   });
 
   // for automated checks
-  window.__bench = { QD: QD, parseNum: parseNum, grade: grade, state: function () { return st; } };
+  window.__bench = { QD: QD, parseNum: parseNum, grade: grade, state: function () { return st; }, clock: TM };
 })();
 
 </script>

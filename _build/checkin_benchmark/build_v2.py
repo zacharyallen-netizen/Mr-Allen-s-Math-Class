@@ -350,6 +350,18 @@ PAGE_JS = r"""
   var session = newSession(), cur = 0, locked = false, lastPayload = null;
   var st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
 
+  // ── active-time clock: counts only while the page is on screen and the student did something in the last 60 seconds
+  var TM = { test: 0, study: 0, q: {}, cur: null, last: Date.now(), on: true };
+  ['pointerdown', 'pointermove', 'keydown', 'input', 'wheel', 'scroll', 'touchstart'].forEach(function (ev) {
+    window.addEventListener(ev, function () { TM.last = Date.now(); }, { passive: true, capture: true });
+  });
+  setInterval(function () {
+    if (!TM.on || document.hidden || Date.now() - TM.last > 60000) return;
+    if (!document.getElementById('tP').hidden) { TM.test++; if (TM.cur !== null && !st[TM.cur].done) TM.q[TM.cur] = (TM.q[TM.cur] || 0) + 1; }
+    else TM.study++;
+  }, 1000);
+  function resetClock() { TM.test = 0; TM.study = 0; TM.q = {}; TM.cur = null; TM.on = true; TM.last = Date.now(); }
+
   // tabs
   function showTab(id) {
     $$('.step').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
@@ -379,7 +391,7 @@ PAGE_JS = r"""
     $$('#dots .dot').forEach(function (d) { d.addEventListener('click', function () { go(+d.getAttribute('data-i')); }); });
   }
   function go(i) {
-    stopTalk(); cur = Math.max(0, Math.min(QD.length - 1, i));
+    stopTalk(); cur = Math.max(0, Math.min(QD.length - 1, i)); TM.cur = cur;
     $$('.qc').forEach(function (c) { c.hidden = +c.getAttribute('data-i') !== cur; });
     dots();
     var top = $('#dots').getBoundingClientRect().top + window.pageYOffset - 70;
@@ -458,14 +470,15 @@ PAGE_JS = r"""
     QD.forEach(function (q, i) {
       if (st[i].ok) score++;
       var b = by[q.std] = by[q.std] || { r: 0, n: 0 }; b.n++; if (st[i].ok) b.r++;
-      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0 });
+      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0, secs: TM.q[i] || 0 });
     });
     $('#sbtn').hidden = true;
     smsg('Here is your score. Tap a red number above to look at that question again.', '');
     $('#bigscore').innerHTML = score + ' <small>out of ' + QD.length + '</small>';
     $('#bystd').innerHTML = Object.keys(by).map(function (s) { return '<tr><td>' + NAMES[s] + '</td><td class="p">' + by[s].r + ' / ' + by[s].n + '</td></tr>'; }).join('');
     $('#scorebox').classList.add('show');
-    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items };
+    TM.on = false;
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items, testSecs: TM.test, studySecs: TM.study };
     send();
   }
   function sendmsg(t, k) { var e = $('#sendmsg'); e.textContent = t; e.className = 'msg' + (k ? ' ' + k : ''); }
@@ -483,7 +496,7 @@ PAGE_JS = r"""
   }
   $('#resend').addEventListener('click', send);
   $('#again').addEventListener('click', function () {
-    session = newSession(); locked = false; armed = false; lastPayload = null;
+    session = newSession(); locked = false; armed = false; lastPayload = null; resetClock();
     st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
     $$('.ch').forEach(function (b) { b.disabled = false; b.setAttribute('aria-pressed', 'false'); b.classList.remove('right', 'wrong'); });
     $$('.chk').forEach(function (b) { b.hidden = false; });
@@ -492,8 +505,8 @@ PAGE_JS = r"""
     $('#scorebox').classList.remove('show'); $('#sbtn').hidden = false; $('#sbtn').textContent = 'Submit';
     smsg('New try. Start with question 1.', ''); progress(); go(0);
   });
-  go(0); progress();
-  window.__bench = { QD: QD, state: function () { return st; }, go: go };
+  go(0); progress(); TM.cur = 0;
+  window.__bench = { QD: QD, state: function () { return st; }, go: go, clock: TM };
 })();
 """
 

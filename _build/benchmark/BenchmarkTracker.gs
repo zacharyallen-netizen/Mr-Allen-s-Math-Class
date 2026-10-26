@@ -68,12 +68,19 @@ var CHECK_TAB  = 'Check Names';
 var ROSTER_HEAD = ['Class', 'Last name', 'First name', 'Student #', 'Other names they might type (separate with commas)'];
 var NAVY = '#1E2D4F', GOLD = '#FFC107';
 
-var SUBS_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Score', 'Out of', 'Percent', 'By standard', 'Session', 'Class'];
-var RESP_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Question', 'Standard', 'Skill', 'Student answer', 'Correct', 'Class'];
+var SUBS_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Score', 'Out of', 'Percent', 'By standard', 'Session', 'Class', 'Minutes on questions', 'Minutes on tips/notes', 'Quick answers'];
+var RESP_HEAD = ['Submitted', 'Student', 'Benchmark', 'Attempt', 'Question', 'Standard', 'Skill', 'Student answer', 'Correct', 'Class', 'Seconds'];
 var GRADE_HEAD = ['Class', 'Student', 'Benchmark', 'Best %', 'Latest %', 'Attempts', 'Last submitted'];
 
 /** The classes students choose from on the website, in the order the Gradebook lists them. */
 var CLASSES = ['A1', 'A2', 'A4', 'B5', 'B6'];
+
+/** An answer given in fewer seconds than this counts as a "quick answer". */
+var QUICK_SECS = 10;
+/** Flag as rushed when at least this share of answers were quick… */
+var RUSH_SHARE = 0.5;
+/** …or when the average time per question is under this many seconds. */
+var RUSH_AVG_SECS = 15;
 
 var STD_OK = /^NC\.8\.(NS\.[1-2]|EE\.[1-8]|F\.[1-5]|G\.[1-9]|SP\.[1-4])$/;
 
@@ -85,7 +92,7 @@ function setup() {
   tab_(ss, GRADE_TAB, GRADE_HEAD);
   tab_(ss, SUBS_TAB, SUBS_HEAD);
   tab_(ss, RESP_TAB, RESP_HEAD);
-  tab_(ss, QA_TAB, ['Benchmark', 'Question', 'Standard', 'Skill', 'Students', '% right', 'Most common wrong answer']);
+  tab_(ss, QA_TAB, ['Benchmark', 'Question', 'Standard', 'Skill', 'Students', '% right', 'Most common wrong answer', 'Average seconds']);
   writeReadMe_(ss);
   rebuild_(ss);
   var extra = ss.getSheetByName('Sheet1');
@@ -113,7 +120,8 @@ function doPost(e) {
         std: STD_OK.test(std) ? std : '',
         label: clip_(it.label, 80),
         answer: clip_(it.answer, 120),
-        ok: it.ok ? 1 : 0
+        ok: it.ok ? 1 : 0,
+        secs: secs_(it.secs)
       };
     });
     if (!items.length) return json_({ ok: false, error: 'no answers' });
@@ -135,9 +143,12 @@ function doPost(e) {
         var b = bySt[it.std] = bySt[it.std] || { r: 0, n: 0 }; b.r += it.ok; b.n++;
       });
       var byText = Object.keys(bySt).sort().map(function (s) { return s.replace('NC.8.', '') + ' ' + bySt[s].r + '/' + bySt[s].n; }).join(' · ');
-      subs.appendRow([now, name, bench, attempt, score, total, Math.round(100 * score / total) / 100, byText, session, cls]);
+      var testS = secs_(d.testSecs), studyS = secs_(d.studySecs);
+      var quick = items.filter(function (it) { return it.secs !== '' && it.secs < QUICK_SECS && it.answer && it.answer !== '(blank)'; }).length;
+      subs.appendRow([now, name, bench, attempt, score, total, Math.round(100 * score / total) / 100, byText, session, cls,
+        testS === '' ? '' : Math.round(testS / 6) / 10, studyS === '' ? '' : Math.round(studyS / 6) / 10, testS === '' ? '' : quick]);
       subs.getRange(subs.getLastRow(), 7).setNumberFormat('0%');
-      var block = items.map(function (it) { return [now, name, bench, attempt, it.id, it.std, it.label, it.answer, it.ok, cls]; });
+      var block = items.map(function (it) { return [now, name, bench, attempt, it.id, it.std, it.label, it.answer, it.ok, cls, it.secs]; });
       resp.getRange(resp.getLastRow() + 1, 1, block.length, RESP_HEAD.length).setValues(block);
       rebuild_(ss);
       return json_({ ok: true, name: name, score: score, total: total, attempt: attempt });
@@ -156,11 +167,11 @@ function refreshReports() { rebuild_(book_()); }
 
 // ───────────────────────── reports ─────────────────────────
 function rebuild_(ss) {
-  var subs = rows_(tab_(ss, SUBS_TAB, SUBS_HEAD));
+  var subs = rows_(tab_(ss, SUBS_TAB, SUBS_HEAD), SUBS_HEAD.length);
   // A student who taps Submit again in the same attempt resends it: keep only the newest row
   // for each student + benchmark + attempt + question.
   var seen = {}, resp = [];
-  rows_(tab_(ss, RESP_TAB, RESP_HEAD)).reverse().forEach(function (r) {
+  rows_(tab_(ss, RESP_TAB, RESP_HEAD), RESP_HEAD.length).reverse().forEach(function (r) {
     var k = [r[1], r[2], r[3], r[4]].join('\u0001');
     if (!seen[k]) { seen[k] = 1; resp.push(r); }
   });
@@ -175,25 +186,27 @@ function rebuild_(ss) {
   resp.forEach(function (r) {
     if (Number(r[3]) !== 1) return;
     var k = r[2] + '\u0001' + r[4];
-    var q = Q[k] = Q[k] || { bench: r[2], id: r[4], std: r[5], label: r[6], n: 0, right: 0, wrong: {} };
+    var q = Q[k] = Q[k] || { bench: r[2], id: r[4], std: r[5], label: r[6], n: 0, right: 0, wrong: {}, secs: [] };
     q.n++; if (Number(r[8])) q.right++;
     else { var a = String(r[7] || '(blank)'); q.wrong[a] = (q.wrong[a] || 0) + 1; }
+    if (r[10] !== '' && r[10] !== undefined) q.secs.push(Number(r[10]));
   });
   var qs = Object.keys(Q).map(function (k) { return Q[k]; }).sort(function (a, b) {
     return a.bench < b.bench ? -1 : a.bench > b.bench ? 1 : (parseFloat(a.id) || 0) - (parseFloat(b.id) || 0);
   });
   var qOut = qs.map(function (q) {
     var top = Object.keys(q.wrong).sort(function (a, b) { return q.wrong[b] - q.wrong[a]; })[0];
-    return [q.bench, q.id, q.std, q.label, q.n, Math.round(100 * q.right / q.n) / 100, top ? top + ' (' + q.wrong[top] + ')' : ''];
+    return [q.bench, q.id, q.std, q.label, q.n, Math.round(100 * q.right / q.n) / 100, top ? top + ' (' + q.wrong[top] + ')' : '',
+      q.secs.length ? Math.round(q.secs.reduce(function (a, b) { return a + b; }, 0) / q.secs.length) : ''];
   });
   var qa = ss.getSheetByName(QA_TAB) || ss.insertSheet(QA_TAB);
   qa.clear();
-  write_(qa, ['Benchmark', 'Question', 'Standard', 'Skill', 'Students', '% right', 'Most common wrong answer'], qOut);
+  write_(qa, ['Benchmark', 'Question', 'Standard', 'Skill', 'Students', '% right', 'Most common wrong answer', 'Average seconds'], qOut);
   if (qOut.length) {
     qa.getRange(2, 6, qOut.length, 1).setNumberFormat('0%');
-    qa.getRange(2, 1, qOut.length, 7).setBackgrounds(qOut.map(function (r) {
+    qa.getRange(2, 1, qOut.length, 8).setBackgrounds(qOut.map(function (r) {
       var p = r[5]; var c = p >= 0.8 ? '#DCF2E3' : p >= 0.6 ? '#FFF4CC' : '#FADBD8';
-      return [null, null, null, null, null, c, null];
+      return [null, null, null, null, null, c, null, null];
     }));
   }
 }
@@ -321,7 +334,7 @@ function gradebookRoster_(ss, roster, subs, resp) {
     g.best = Math.max(g.best, pct);
     g.tries[r[1] + '#' + r[2] + '#' + r[3]] = 1;
     g.typed[r[1]] = 1;
-    if (!g.latest || r[0] >= g.latest.when) g.latest = { when: r[0], pct: pct, name: r[1], bench: r[2], attempt: Number(r[3]) || 0 };
+    if (!g.latest || r[0] >= g.latest.when) g.latest = { when: r[0], pct: pct, name: r[1], bench: r[2], attempt: Number(r[3]) || 0, row: r };
   });
 
   // % by standard on each student's latest attempt
@@ -336,7 +349,8 @@ function gradebookRoster_(ss, roster, subs, resp) {
   });
   var stds = Object.keys(stdSet).sort();
   var head = ['Class', 'Last name', 'First name', 'Student #', 'Benchmark', 'Status', 'Best %', 'Latest %', 'Attempts', 'Last submitted']
-    .concat(stds.map(function (s) { return s + ' %'; })).concat(['Name typed']);
+    .concat(stds.map(function (s) { return s + ' %'; }))
+    .concat(['Minutes on questions', 'Minutes on tips/notes', 'Quick answers (under ' + QUICK_SECS + ' sec)', 'Name typed']);
 
   var students = roster.slice().sort(function (a, b) {
     var ca = clsOrder_(a.cls), cb = clsOrder_(b.cls);
@@ -350,15 +364,16 @@ function gradebookRoster_(ss, roster, subs, resp) {
       var g = G[K(s.id, bench)], m = latestStd[K(s.id, bench)] || {};
       if (!g) {
         rows.push([s.cls, s.last, s.first, s.num, bench, bench ? 'Not submitted' : 'No benchmarks yet', '', '', 0, '']
-          .concat(stds.map(function () { return ''; })).concat(['']));
+          .concat(stds.map(function () { return ''; })).concat(['', '', '', '']));
         return;
       }
       var typed = Object.keys(g.typed), check = typed.some(function (t) { return flagged[t]; });
-      var status = (g.v2 ? 'Done (Version 2)' : 'Done') + (check ? ' — check name' : '');
+      var lr = g.latest.row, rush = rushed_(lr);
+      var status = (g.v2 ? 'Done (Version 2)' : 'Done') + (rush ? ' — RUSHED' : '') + (check ? ' — check name' : '');
       rows.push([s.cls, s.last, s.first, s.num, bench, status, g.best, g.latest.pct,
         Object.keys(g.tries).length, g.latest.when]
         .concat(stds.map(function (st) { return m[st] ? Math.round(100 * m[st].r / m[st].n) / 100 : ''; }))
-        .concat([typed.join(', ')]));
+        .concat([lr[10], lr[11], lr[12] === '' ? '' : lr[12] + ' of ' + lr[5], typed.join(', ')]));
     });
   });
 
@@ -369,7 +384,7 @@ function gradebookRoster_(ss, roster, subs, resp) {
 
   // Class Summary
   var sumHead = ['Class', 'Benchmark', 'On roster', 'Submitted', 'Not submitted yet', 'Class average (best %)', 'Class average (latest %)']
-    .concat(stds.map(function (s) { return s + ' avg %'; }));
+    .concat(stds.map(function (s) { return s + ' avg %'; })).concat(['Average minutes on questions', 'Flagged RUSHED']);
   var sum = [];
   benches.forEach(function (bench) {
     CLASSES.forEach(function (c) {
@@ -378,7 +393,10 @@ function gradebookRoster_(ss, roster, subs, resp) {
       var done = mine.filter(function (r) { return r[5] !== 'Not submitted'; });
       var avg = function (j) { var v = done.map(function (r) { return r[j]; }).filter(function (x) { return x !== ''; }); return v.length ? Math.round(100 * v.reduce(function (a, b) { return a + b; }, 0) / v.length) / 100 : ''; };
       var missing = mine.filter(function (r) { return r[5] === 'Not submitted'; }).map(function (r) { return r[2] + ' ' + r[1]; });
-      sum.push([c, bench, mine.length, done.length, missing.join(', '), avg(6), avg(7)].concat(stds.map(function (s, k) { return avg(10 + k); })));
+      var mins = done.map(function (r) { return r[10 + stds.length]; }).filter(function (x) { return x !== ''; });
+      var rushers = done.filter(function (r) { return /RUSHED/.test(r[5]); }).map(function (r) { return r[2] + ' ' + r[1]; });
+      sum.push([c, bench, mine.length, done.length, missing.join(', '), avg(6), avg(7)].concat(stds.map(function (s, k) { return avg(10 + k); }))
+        .concat([mins.length ? Math.round(10 * mins.reduce(function (a, b) { return a + b; }, 0) / mins.length) / 10 : '', rushers.join(', ')]));
     });
   });
   var sh = ss.getSheetByName(SUMMARY_TAB) || ss.insertSheet(SUMMARY_TAB);
@@ -387,7 +405,7 @@ function gradebookRoster_(ss, roster, subs, resp) {
   if (sum.length) {
     sh.getRange(2, 6, sum.length, 2 + stds.length).setNumberFormat('0%');
     sh.getRange(2, 1, sum.length, sumHead.length).setBackgrounds(sum.map(function (r) {
-      return r.map(function (v, j) { return j >= 5 && v !== '' ? pctColor_(v) : null; });
+      return r.map(function (v, j) { return j >= 5 && j < 7 + stds.length && v !== '' ? pctColor_(v) : (j === sumHead.length - 1 && v ? '#FADBD8' : null); });
     }));
     sh.getRange(2, 5, sum.length, 1).setWrap(true);
     sh.setColumnWidth(5, 320);
@@ -425,6 +443,7 @@ function writeGrades_(ss, name, head, rows, nStd) {
     var none = r[5] === 'Not submitted';
     return r.map(function (v, j) {
       if (none) return '#F1F2F5';
+      if (j === 5 && /RUSHED/.test(r[5])) return '#FADBD8';
       if (j === 5 && /check name/.test(r[5])) return '#FFF4CC';
       if ((j === 6 || j === 7 || (j >= 10 && j < 10 + nStd)) && v !== '') return pctColor_(v);
       return null;
@@ -447,6 +466,7 @@ function writeReadMe_(ss) {
     ['Roster — your class lists (A1, A2, A4, B5, B6). One row per student: Class, Last name, First name, Student #, and other names they might type. Student names stay in this private Sheet, never on the website.'],
     ['Gradebook — every student on the Roster, for every benchmark, grouped by class. Status says Done, Done (Version 2), or Not submitted (gray). Version 2 of a review counts toward the same benchmark. Best % and Latest % are out of 100. The NC standard columns show the % right on that standard in the latest attempt. Green = 80% or more, yellow = 60–79%, red = below 60%. "Name typed" shows what the student typed.'],
     ['A1, A2, A4, B5, B6 — the same Gradebook, one tab per class.'],
+    ['TIME — the page counts only ACTIVE time: the page is open on screen and the student did something in the last 60 seconds. "Minutes on questions" and "Minutes on tips/notes" are from the latest attempt. A "quick answer" took under ' + QUICK_SECS + ' seconds. Status shows RUSHED (red) when half or more answers were quick, or the average was under ' + RUSH_AVG_SECS + ' seconds a question. Change QUICK_SECS, RUSH_SHARE or RUSH_AVG_SECS at the top of the script if you want.'],
     ['Class Summary — for each class and benchmark: how many submitted, who has not submitted yet, the class average, and the class average on each standard.'],
     ['Check Names — any submission whose typed name did not match the Roster. Type that name in the Roster\'s "Other names" column next to the right student, then run refreshReports. It also lists close matches to double-check.'],
     ['Submissions — one row every time a student taps Submit. Attempt 1 is the first try. Each new try counts as a new attempt.'],
@@ -497,10 +517,24 @@ function style_(sh, n) {
   sh.setFrozenRows(1);
 }
 
-function rows_(sh) {
+function rows_(sh, n) {
   var last = sh.getLastRow();
   if (last < 2) return [];
-  return sh.getRange(2, 1, last - 1, 10).getValues();
+  return sh.getRange(2, 1, last - 1, n || 10).getValues();
+}
+
+/** seconds sent by the page: a whole number 0–36000, or '' when the page did not time it */
+function secs_(v) {
+  if (v === null || v === undefined || v === '') return '';
+  var n = Math.round(Number(v));
+  return isFinite(n) && n >= 0 ? Math.min(n, 36000) : '';
+}
+
+/** Rushed? Uses the latest attempt's Submissions row. */
+function rushed_(r) {
+  var mins = r[10], quick = r[12], total = Number(r[5]) || 0;
+  if (mins === '' || !total) return false;
+  return (quick !== '' && quick >= Math.ceil(total * RUSH_SHARE)) || (mins * 60 / total) < RUSH_AVG_SECS;
 }
 
 function cleanName_(s) {
