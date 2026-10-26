@@ -44,7 +44,7 @@
  *  ROSTER (one time, then whenever a student joins or leaves)
  *   On the Roster tab, one row per student: Class (A1, A2, A4, B5, B6),
  *   Last name, First name, Student # (optional), and Other names they
- *   might type (optional, separate with commas, e.g. "Gwen Arena").
+ *   might type (optional, separate with commas, e.g. "Kit Stone").
  *   Then run  refreshReports  once (or wait for the next submission).
  *
  *  If you change this script later: Deploy → Manage deployments →
