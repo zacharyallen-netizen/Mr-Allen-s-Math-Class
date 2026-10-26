@@ -50,5 +50,32 @@ assert(r.ok && ss.getSheetByName('Submissions').data.slice(-1)[0][9] === '', 'un
 const G2 = load(__dirname + '/BenchmarkTracker.gs'); G2.setup();
 const ss2 = Object.values(G2.__books)[0]; const sub2 = ss2.getSheetByName('Submissions');
 sub2.data[0] = sub2.data[0].slice(0, 9); sub2.data[0][9] = '';
-const r2 = JSON.parse(G2.doPost({ postData: { contents: JSON.stringify({ ...base, name: 'Ann Lee', period: '8A', session: 'q', items: items([1, 0]) }) } }).s);
-assert(r2.ok && sub2.data[0][9] === 'Class' && sub2.data[1][9] === '8A', 'old Sheet header upgraded with Class');
+const r2 = JSON.parse(G2.doPost({ postData: { contents: JSON.stringify({ ...base, name: 'Ann Lee', period: 'A4', session: 'q', items: items([1, 0]) }) } }).s);
+assert(r2.ok && sub2.data[0][9] === 'Class' && sub2.data[1][9] === 'A4', 'old Sheet header upgraded with Class');
+
+// ── Roster: made-up names only (real names live in Mr. Allen's private Sheet, never in this repo)
+{
+  const G3 = load(__dirname + '/BenchmarkTracker.gs'); G3.setup();
+  const s3 = Object.values(G3.__books)[0];
+  assert(!!s3.getSheetByName('Roster'), 'setup makes a Roster tab');
+  s3.getSheetByName('Roster').getRange(2, 1, 6, 5).setValues([
+    ['A1', 'Rivera', 'Ana Sofia', '111', ''], ['A1', 'Rivera', 'Mateo', '112', ''], ['A2', 'Lopez-Grant', 'Maya', '113', ''],
+    ['B6', 'Stone', 'Kristopher', '114', 'Kit Stone'], ['B5', 'Ng', 'Leo', '115', ''], ['8A', 'Old', 'Class', '116', '']]);
+  const p3 = (name, period, ses, oks) => JSON.parse(G3.doPost({ postData: { contents: JSON.stringify({ ...base, name, period, session: ses, items: items(oks) }) } }).s);
+  p3('ana rivera', 'A1', 'r1', [1, 1, 0]); p3('Ana Sofia Rivera', 'A1', 'r2', [1, 1, 1]);
+  p3('Maya Lopez', 'A2', 'r3', [1, 0, 0]); p3('Kit Stone', 'B6', 'r4', [0, 1, 1]);
+  p3('Leonard Ng', 'B5', 'r5', [1, 1, 1]); p3('Zed Nobody', 'A1', 'r6', [1, 1, 1]);
+  const gb3 = s3.getSheetByName('Gradebook').data;
+  const row = (l, f) => gb3.find(r => r[1] === l && r[2] === f);
+  assert(gb3.length === 1 + 5, 'Gradebook lists every rostered student (8A row ignored)');
+  assert(row('Rivera', 'Ana Sofia')[5] === 'Done' && row('Rivera', 'Ana Sofia')[8] === 2 && row('Rivera', 'Ana Sofia')[6] === 1, 'two spellings combine into one student, 2 attempts, best 100%');
+  assert(row('Rivera', 'Mateo')[5] === 'Not submitted', 'sibling not mixed up');
+  assert(row('Lopez-Grant', 'Maya')[5] === 'Done', 'hyphenated last name matched from one part');
+  assert(row('Stone', 'Kristopher')[5] === 'Done', 'nickname matched through Other names');
+  assert(row('Ng', 'Leo')[5] === 'Done (check name)', 'close match flagged to check');
+  const chk = s3.getSheetByName('Check Names').data;
+  assert(chk.some(r => r[0] === 'Zed Nobody') && chk.some(r => r[0] === 'Leonard Ng'), 'Check Names lists unmatched and close matches');
+  assert(s3.getSheetByName('A1').data.length === 3 && s3.getSheetByName('B6').data.length === 2, 'one tab per class');
+  const sum = s3.getSheetByName('Class Summary').data;
+  assert(sum.some(r => r[0] === 'A1' && r[2] === 2 && r[3] === 1 && /Mateo Rivera/.test(r[4])), 'Class Summary counts and lists who is missing');
+}

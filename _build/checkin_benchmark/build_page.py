@@ -176,8 +176,6 @@ page = f'''<!DOCTYPE html>
     <button type="button" class="cls" aria-pressed="false">A4</button>
     <button type="button" class="cls" aria-pressed="false">B5</button>
     <button type="button" class="cls" aria-pressed="false">B6</button>
-    <button type="button" class="cls" aria-pressed="false">8A</button>
-    <button type="button" class="cls" aria-pressed="false">8B</button>
   </div>
 </div>
 
