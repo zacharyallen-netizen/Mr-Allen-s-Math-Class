@@ -28,6 +28,8 @@ Test it without Google: `cd tracker && node test_tracker.js` (a strict stand-in 
 `tracker/calib.js` re-runs the calibration of the practice cut-offs.
 
 ## Benchmark Tracker (Google Apps Script, separate Sheet)
+Printable handouts/bell ringers: see `materials/README.md`.
+
 `benchmark/BenchmarkTracker.gs` receives results from the interactive benchmark reviews (`grade8/q1_benchmark_review.html`);
 its address goes in `/benchmark-config.js`. Tests: `node benchmark/test_benchmark_tracker.js`;
 page end to end (serve the repo on 127.0.0.1:8765 first): `python3 benchmark/check_page.py`, then
