@@ -293,7 +293,7 @@ function matchName_(typed, typedCls, roster) {
 
 function gradebookRoster_(ss, roster, subs, resp) {
   var benches = [];
-  subs.forEach(function (r) { if (r[2] && benches.indexOf(r[2]) < 0) benches.push(r[2]); });
+  subs.forEach(function (r) { var b = baseBench_(r[2]); if (b && benches.indexOf(b) < 0) benches.push(b); });
 
   // match every typed name once
   var M = {}, unmatched = {}, flagged = {};
@@ -314,22 +314,24 @@ function gradebookRoster_(ss, roster, subs, resp) {
       return;
     }
     if (m.how === 'check') flagged[r[1]] = m.s;
-    var g = G[K(m.s.id, r[2])] = G[K(m.s.id, r[2])] || { best: 0, latest: null, tries: {}, typed: {} };
+    var bb = baseBench_(r[2]);
+    var g = G[K(m.s.id, bb)] = G[K(m.s.id, bb)] || { best: 0, latest: null, tries: {}, typed: {}, v2: false };
+    if (bb !== r[2]) g.v2 = true;
     var pct = Number(r[6]) || 0;
     g.best = Math.max(g.best, pct);
-    g.tries[r[1] + '#' + r[3]] = 1;
+    g.tries[r[1] + '#' + r[2] + '#' + r[3]] = 1;
     g.typed[r[1]] = 1;
-    if (!g.latest || r[0] >= g.latest.when) g.latest = { when: r[0], pct: pct, name: r[1], attempt: Number(r[3]) || 0 };
+    if (!g.latest || r[0] >= g.latest.when) g.latest = { when: r[0], pct: pct, name: r[1], bench: r[2], attempt: Number(r[3]) || 0 };
   });
 
   // % by standard on each student's latest attempt
   var stdSet = {}, latestStd = {};
   resp.forEach(function (r) {
     var m = M[r[1]]; if (!m || !r[5]) return;
-    var g = G[K(m.s.id, r[2])];
-    if (!g || g.latest.name !== r[1] || g.latest.attempt !== Number(r[3])) return;
+    var bb = baseBench_(r[2]), g = G[K(m.s.id, bb)];
+    if (!g || g.latest.name !== r[1] || g.latest.bench !== r[2] || g.latest.attempt !== Number(r[3])) return;
     stdSet[r[5]] = 1;
-    var o = latestStd[K(m.s.id, r[2])] = latestStd[K(m.s.id, r[2])] || {};
+    var o = latestStd[K(m.s.id, bb)] = latestStd[K(m.s.id, bb)] || {};
     var b = o[r[5]] = o[r[5]] || { r: 0, n: 0 }; b.r += Number(r[8]) || 0; b.n++;
   });
   var stds = Object.keys(stdSet).sort();
@@ -352,7 +354,8 @@ function gradebookRoster_(ss, roster, subs, resp) {
         return;
       }
       var typed = Object.keys(g.typed), check = typed.some(function (t) { return flagged[t]; });
-      rows.push([s.cls, s.last, s.first, s.num, bench, check ? 'Done (check name)' : 'Done', g.best, g.latest.pct,
+      var status = (g.v2 ? 'Done (Version 2)' : 'Done') + (check ? ' — check name' : '');
+      rows.push([s.cls, s.last, s.first, s.num, bench, status, g.best, g.latest.pct,
         Object.keys(g.tries).length, g.latest.when]
         .concat(stds.map(function (st) { return m[st] ? Math.round(100 * m[st].r / m[st].n) / 100 : ''; }))
         .concat([typed.join(', ')]));
@@ -422,12 +425,15 @@ function writeGrades_(ss, name, head, rows, nStd) {
     var none = r[5] === 'Not submitted';
     return r.map(function (v, j) {
       if (none) return '#F1F2F5';
-      if (j === 5 && r[5] === 'Done (check name)') return '#FFF4CC';
+      if (j === 5 && /check name/.test(r[5])) return '#FFF4CC';
       if ((j === 6 || j === 7 || (j >= 10 && j < 10 + nStd)) && v !== '') return pctColor_(v);
       return null;
     });
   }));
 }
+
+/** "X — Version 2" counts toward the same benchmark X in the Gradebook and Class Summary. */
+function baseBench_(b) { return String(b || '').replace(/\s*[—–-]\s*Version 2\s*$/i, ''); }
 
 function pctColor_(v) { return v >= 0.8 ? '#DCF2E3' : v >= 0.6 ? '#FFF4CC' : '#FADBD8'; }
 
@@ -439,7 +445,7 @@ function writeReadMe_(ss) {
     ['Results from the interactive benchmark reviews on the class website. Only benchmarks come here.'],
     [''],
     ['Roster — your class lists (A1, A2, A4, B5, B6). One row per student: Class, Last name, First name, Student #, and other names they might type. Student names stay in this private Sheet, never on the website.'],
-    ['Gradebook — every student on the Roster, for every benchmark, grouped by class. Status says Done or Not submitted (gray). Best % and Latest % are out of 100. The NC standard columns show the % right on that standard in the latest attempt. Green = 80% or more, yellow = 60–79%, red = below 60%. "Name typed" shows what the student typed.'],
+    ['Gradebook — every student on the Roster, for every benchmark, grouped by class. Status says Done, Done (Version 2), or Not submitted (gray). Version 2 of a review counts toward the same benchmark. Best % and Latest % are out of 100. The NC standard columns show the % right on that standard in the latest attempt. Green = 80% or more, yellow = 60–79%, red = below 60%. "Name typed" shows what the student typed.'],
     ['A1, A2, A4, B5, B6 — the same Gradebook, one tab per class.'],
     ['Class Summary — for each class and benchmark: how many submitted, who has not submitted yet, the class average, and the class average on each standard.'],
     ['Check Names — any submission whose typed name did not match the Roster. Type that name in the Roster\'s "Other names" column next to the right student, then run refreshReports. It also lists close matches to double-check.'],

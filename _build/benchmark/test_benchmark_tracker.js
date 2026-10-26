@@ -72,10 +72,26 @@ assert(r2.ok && sub2.data[0][9] === 'Class' && sub2.data[1][9] === 'A4', 'old Sh
   assert(row('Rivera', 'Mateo')[5] === 'Not submitted', 'sibling not mixed up');
   assert(row('Lopez-Grant', 'Maya')[5] === 'Done', 'hyphenated last name matched from one part');
   assert(row('Stone', 'Kristopher')[5] === 'Done', 'nickname matched through Other names');
-  assert(row('Ng', 'Leo')[5] === 'Done (check name)', 'close match flagged to check');
+  assert(row('Ng', 'Leo')[5] === 'Done — check name', 'close match flagged to check');
   const chk = s3.getSheetByName('Check Names').data;
   assert(chk.some(r => r[0] === 'Zed Nobody') && chk.some(r => r[0] === 'Leonard Ng'), 'Check Names lists unmatched and close matches');
   assert(s3.getSheetByName('A1').data.length === 3 && s3.getSheetByName('B6').data.length === 2, 'one tab per class');
   const sum = s3.getSheetByName('Class Summary').data;
   assert(sum.some(r => r[0] === 'A1' && r[2] === 2 && r[3] === 1 && /Mateo Rivera/.test(r[4])), 'Class Summary counts and lists who is missing');
+}
+
+// ── Version 2 counts toward the same benchmark
+{
+  const G4 = load(__dirname + '/BenchmarkTracker.gs'); G4.setup();
+  const s4 = Object.values(G4.__books)[0];
+  s4.getSheetByName('Roster').getRange(2, 1, 2, 5).setValues([['A1', 'Rivera', 'Ana', '1', ''], ['A1', 'Park', 'Jun', '2', '']]);
+  const p4 = (name, bench, ses, oks) => JSON.parse(G4.doPost({ postData: { contents: JSON.stringify({ ...base, benchmark: bench, name, period: 'A1', session: ses, items: items(oks) }) } }).s);
+  p4('Ana Rivera', 'NC Check-In Benchmark Review', 'a', [1, 0]);
+  p4('Jun Park', 'NC Check-In Benchmark Review — Version 2', 'b', [1, 1, 1, 0]);
+  const gb4 = s4.getSheetByName('Gradebook').data;
+  assert(gb4.length === 3 && gb4.every((r, i) => !i || r[4] === 'NC Check-In Benchmark Review'), 'Version 2 shares the benchmark row (no extra Not submitted rows)');
+  const jun = gb4.find(r => r[1] === 'Park');
+  assert(jun[5] === 'Done (Version 2)' && jun[6] === 0.75, 'Version 2 status and score');
+  const qa4 = s4.getSheetByName('Question Analysis').data;
+  assert(qa4.some(r => r[0] === 'NC Check-In Benchmark Review — Version 2'), 'Question Analysis keeps Version 2 questions separate');
 }

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NC Check-In Benchmark Review — Version 2 — Mr. Allen's Math Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E2D4F;--ink:#1B2333;--muted:#5B6475;--gold:#FFC107;--gold-line:#E0A800;--gold-text:#8A6100;--gold-soft:#FFF6D6;
+--bg:#F7F7F4;--line:#E3E5EA;--line-2:#D5D9E0;--ok:#15803D;--ok-bg:#E8F5EC;--no:#B42318;--no-bg:#FBEAE8;
+--serif:"Source Serif 4",Georgia,"Times New Roman",serif;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+sup{font-size:.68em;line-height:0;position:relative;vertical-align:baseline;top:-.55em}
+.rad{border-top:2px solid currentColor;padding:1px 2px 0;margin-left:1px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.2}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px 1px}
+.fr>span:last-child{padding:1px 4px 0}
+.expr{font:600 1.25em var(--serif);color:var(--navy);white-space:nowrap;margin-left:4px}
+table.vt{border-collapse:collapse;font:600 18px var(--serif);margin:10px auto}
+table.vt th,table.vt td{border:2px solid var(--navy);padding:6px 14px;text-align:center}
+table.vt th{background:var(--navy);color:#fff;font-style:italic}
+table.vt td.hit{background:#FBEAE8;color:var(--no)}
+table.rules{border-collapse:collapse;width:100%;font-size:16px}
+table.rules td{border-bottom:1px solid var(--line);padding:9px 8px;vertical-align:middle}
+table.rules td:first-child{font-weight:700;color:var(--navy)}
+table.rules td:last-child{font:600 18px var(--serif);color:var(--navy)}
+.two{display:flex;flex-wrap:wrap;gap:12px}.two>div{flex:1 1 200px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font:600 18px/1.7 var(--serif);color:var(--navy)}
+.two b{font:700 14px var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.steps2{display:flex;flex-direction:column;gap:6px;font:600 20px var(--serif);color:var(--navy)}
+.steps2 span{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.small{font-size:14px;color:var(--muted)} .c{text-align:center}
+
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+:focus-visible{outline:3px solid var(--gold-line);outline-offset:3px}
+.wrap{max-width:760px;margin:0 auto;padding:28px 16px 96px}
+.back-link{display:inline-flex;color:var(--muted);text-decoration:none;font-size:15px;font-weight:500;margin:0 0 18px}
+.eyebrow{color:var(--gold-text);font:600 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;margin:0 0 10px}
+h1{font:600 clamp(28px,5vw,38px)/1.15 var(--serif);color:var(--navy);margin:0 0 6px}
+.ver{display:inline-block;font:600 14px var(--sans);color:var(--navy);background:var(--gold-soft);border:1px solid var(--gold-line);border-radius:999px;padding:3px 12px;margin:0 0 12px}
+.lede{color:var(--muted);margin:0}
+.hdr{border-bottom:1px solid var(--line);padding:0 0 20px;margin:0 0 20px}
+.links{margin-top:14px}.links a{font:600 15px var(--sans);color:var(--navy);text-decoration:none;border:1px solid var(--line-2);background:#fff;border-radius:8px;padding:12px 14px;display:inline-flex;min-height:44px;align-items:center}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 20px}
+.step{font:600 16px/1 var(--sans);color:var(--navy);background:#fff;border:1px solid var(--line-2);border-radius:999px;min-height:48px;padding:0 18px 0 8px;display:inline-flex;align-items:center;gap:10px;cursor:pointer}
+.step .n{width:30px;height:30px;border-radius:50%;display:inline-grid;place-items:center;background:#EEF1F7;font:700 14px var(--sans)}
+.step[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.step[aria-selected="true"] .n{background:var(--gold);color:var(--navy)}
+h2{font:600 24px/1.25 var(--serif);color:var(--navy);margin:4px 0 12px}
+.scard{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin:0 0 12px}
+.scard .num{flex:none;width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--gold);font:700 18px/40px var(--sans);text-align:center}
+.scard b{font-size:19px;color:var(--navy)}
+.ncard,.qc,.namebox,.submit{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin:0 0 16px}
+.qhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font:600 13px var(--mono);color:#fff;background:var(--navy);border-radius:6px;padding:4px 8px}
+.qof{margin-left:auto;font:600 14px var(--sans);color:var(--muted)}
+.idea{font-size:19px;margin:0 0 12px}
+.nex{background:#FAFAF8;border:1px dashed var(--line-2);border-radius:10px;padding:12px}
+.tip{margin:12px 0 10px;font-size:16px;color:var(--ink)}
+.exbox{background:var(--gold-soft);border-left:5px solid var(--gold);border-radius:8px;padding:12px 14px;margin:0 0 16px}
+.exlab{font:700 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--gold-text);margin-bottom:4px}
+.exbody{font-size:18px;line-height:1.7}
+.ask{font-size:20px;font-weight:600;color:var(--ink);margin:0 0 12px}
+.fig{display:flex;justify-content:center;margin:4px 0 14px}
+svg{max-width:100%;height:auto}
+.chs{display:flex;flex-direction:column;gap:10px}
+.chs.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.ch{display:flex;align-items:center;gap:14px;font:600 22px/1.3 var(--serif);color:var(--navy);background:#fff;border:2px solid var(--line-2);border-radius:12px;min-height:60px;padding:10px 16px;cursor:pointer;text-align:left;touch-action:manipulation;width:100%}
+.ch.g{flex-direction:column;padding:10px 6px}
+.ch .L{flex:none;width:32px;height:32px;border-radius:50%;border:2px solid var(--line-2);font:700 15px/28px var(--sans);text-align:center;color:var(--muted)}
+.ch[aria-pressed="true"]{border-color:var(--navy);background:#EEF1F7}
+.ch[aria-pressed="true"] .L{background:var(--navy);border-color:var(--navy);color:#fff}
+.ch.right{border-color:var(--ok);background:var(--ok-bg)} .ch.right .L{background:var(--ok);border-color:var(--ok);color:#fff}
+.ch.wrong{border-color:var(--no);background:var(--no-bg)} .ch.wrong .L{background:var(--no);border-color:var(--no);color:#fff}
+.ch:disabled{cursor:default}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:16px 0 0}
+.btn{font:600 17px var(--sans);color:#fff;background:var(--navy);border:0;border-radius:10px;padding:12px 22px;min-height:52px;cursor:pointer}
+.btn.ghost{background:#fff;color:var(--navy);border:1.5px solid var(--line-2)}
+.btn:disabled{opacity:.45;cursor:default}
+.listen{font:600 15px var(--sans);color:var(--navy);background:#fff;border:1.5px solid var(--line-2);border-radius:999px;min-height:44px;padding:0 16px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.listen:before{content:"";width:0;height:0;border-left:10px solid var(--navy);border-top:6px solid transparent;border-bottom:6px solid transparent}
+.listen.on{background:var(--navy);color:#fff}.listen.on:before{border-left-color:var(--gold)}
+.exbox .listen{margin-top:8px;background:transparent}
+.nudge{color:var(--no);font-weight:600;font-size:16px}
+.res{display:none;margin:14px 0 0;border-radius:10px;padding:14px 16px;font-size:17px}
+.res.show{display:block}.res.ok{background:var(--ok-bg);border-left:5px solid var(--ok)}.res.no{background:var(--no-bg);border-left:5px solid var(--no)}
+.res .head{font:700 20px var(--sans)} .res.ok .head{color:var(--ok)} .res.no .head{color:var(--no)}
+.res .why{margin-top:6px}
+.nav2{display:flex;justify-content:space-between;gap:10px;margin:18px 0 0;border-top:1px solid var(--line);padding-top:16px}
+.dots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 14px}
+.dot{width:40px;height:40px;border-radius:50%;border:2px solid var(--line-2);background:#fff;font:700 15px var(--sans);color:var(--navy);cursor:pointer}
+.dot.cur{border-color:var(--navy);box-shadow:0 0 0 2px var(--gold)}
+.dot.r{background:var(--ok);border-color:var(--ok);color:#fff}.dot.w{background:var(--no);border-color:var(--no);color:#fff}
+.namebox label,.lbl2{display:block;font:600 17px var(--sans);color:var(--navy);margin:0 0 8px}
+.namebox input{width:100%;max-width:420px;font:18px var(--sans);padding:12px 14px;border:1.5px solid var(--line-2);border-radius:8px;min-height:50px}
+.lbl2{margin-top:16px}
+.classes{display:flex;flex-wrap:wrap;gap:8px}
+.cls{font:600 18px var(--mono);color:var(--navy);background:#fff;border:2px solid var(--line-2);border-radius:8px;min-width:64px;min-height:50px;cursor:pointer}
+.cls[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.submit h2{margin-top:0}
+.msg{font-size:17px;color:var(--muted);margin:8px 0}.msg.warn{color:var(--no);font-weight:600}.msg.good{color:var(--ok);font-weight:600}
+.score{display:none}.score.show{display:block}
+.big{font:600 46px/1 var(--serif);color:var(--navy);margin:8px 0}.big small{font-size:20px;color:var(--muted)}
+table.bystd{border-collapse:collapse;width:100%;font-size:16px;margin:10px 0}
+table.bystd td{border-bottom:1px solid var(--line);padding:9px 6px}
+table.bystd td.p{text-align:right;font:600 16px var(--mono)}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.next{display:flex;justify-content:flex-end;margin-top:18px}
+@media (max-width:560px){.chs.grid3{grid-template-columns:1fr}.qof{margin-left:0;width:100%}.wrap{padding-top:20px}}
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<script src="../site-bar.js"></script>
+<div class="wrap">
+<a class="back-link" href="index.html">← 8th Grade Home</a>
+<header class="hdr">
+  <div class="eyebrow">NC Check-In Benchmark</div>
+  <h1>NC Check-In Benchmark Review</h1>
+  <div class="ver">Version 2</div>
+  <p class="lede">First, read the tips. Next, read the notes. Then answer 10 questions, one at a time. Each question has an example to help you.</p>
+  <div class="links"><a href="NC_CheckIn_Benchmark_Review_V2.pdf">Printable version (PDF)</a></div>
+</header>
+
+<nav class="steps" role="tablist" aria-label="Sections">
+  <button type="button" role="tab" class="step" data-tab="tS" aria-selected="true"><span class="n">1</span>Tips</button>
+  <button type="button" role="tab" class="step" data-tab="tN" aria-selected="false"><span class="n">2</span>Notes</button>
+  <button type="button" role="tab" class="step" data-tab="tP" aria-selected="false"><span class="n">3</span>Questions</button>
+</nav>
+
+<section class="tabp" id="tS" role="tabpanel">
+  <h2>5 Test Tips</h2>
+  <div class="scard"><span class="num">1</span><div><b>Read it two times.</b><br>Read the question. Then read it again, slowly.</div></div><div class="scard"><span class="num">2</span><div><b>Look at the example.</b><br>Each question has an example. Do the same steps.</div></div><div class="scard"><span class="num">3</span><div><b>Cross out wrong answers.</b><br>If you know an answer is wrong, cross it out.</div></div><div class="scard"><span class="num">4</span><div><b>Check your answer.</b><br>Put your answer back in. Does it work?</div></div><div class="scard"><span class="num">5</span><div><b>Do not leave it blank.</b><br>Pick your best answer. Then go on.</div></div>
+  <div class="next"><button type="button" class="btn" data-go="tN">Next: Notes →</button></div>
+</section>
+
+<section class="tabp" id="tN" role="tabpanel" hidden>
+  <section class="ncard"><div class="qhead"><span class="tag">NC.8.NS.1</span></div><h2>Rational &amp; Irrational Numbers</h2>
+<p class="idea"><b>Rational</b> = can be a fraction. The decimal <b>stops</b> or <b>repeats</b>.<br><b>Irrational</b> = the decimal <b>never stops</b> and <b>never repeats</b>.</p><div class="nex"><div class='two'><div><b>Rational</b><br>5 &nbsp; <span class="fr"><span>1</span><span>2</span></span> &nbsp; 0.25 &nbsp; 0.333… &nbsp; √<span class='rad'>16</span></div><div><b>Irrational</b><br>π &nbsp; √<span class='rad'>2</span> &nbsp; √<span class='rad'>7</span></div></div></div><p class="tip"><b>Tip:</b> Square root of a perfect square (1, 4, 9, 16, 25…) → rational. Not a perfect square → irrational.</p>
+<button type="button" class="listen" data-say="Rational numbers can be written as a fraction. The decimal stops or repeats. Irrational numbers never stop and never repeat. The square root of a perfect square is rational.">Listen</button></section><section class="ncard"><div class="qhead"><span class="tag">NC.8.EE.1</span></div><h2>Exponent Rules</h2>
+<p class="idea">An exponent tells how many times to multiply the base. 2<sup>3</sup> = 2 × 2 × 2 = 8.</p><div class="nex"><table class='rules'><tr><td>Multiply</td><td>add exponents</td><td>2<sup>3</sup> · 2<sup>4</sup> = 2<sup>7</sup></td></tr><tr><td>Divide</td><td>subtract exponents</td><td>5<sup>6</sup> ÷ 5<sup>2</sup> = 5<sup>4</sup></td></tr><tr><td>Zero</td><td>always 1</td><td>9<sup>0</sup> = 1</td></tr><tr><td>Negative</td><td>flip it</td><td>2<sup>−3</sup> = <span class="fr"><span>1</span><span>8</span></span></td></tr></table></div><p class="tip"><b>Tip:</b> A negative exponent does NOT make a negative number.</p>
+<button type="button" class="listen" data-say="An exponent tells how many times to multiply. When you multiply, add the exponents. When you divide, subtract. Anything to the zero power is 1. A negative exponent means flip it.">Listen</button></section><section class="ncard"><div class="qhead"><span class="tag">NC.8.EE.7</span></div><h2>Solving Equations</h2>
+<p class="idea">Do the <b>opposite</b> operation to both sides until x is alone.</p><div class="nex"><div class='steps2'><span>3x + 4 = 19</span><span>− 4 → 3x = 15</span><span>÷ 3 → <b>x = 5</b></span></div></div><p class="tip"><b>Tip:</b> Always check: put your answer back in. 3(5) + 4 = 19 ✓</p>
+<button type="button" class="listen" data-say="To solve, do the opposite operation to both sides until x is alone. Then check your answer by putting it back in.">Listen</button></section><section class="ncard"><div class="qhead"><span class="tag">NC.8.F.1</span></div><h2>What Is a Function?</h2>
+<p class="idea">A <b>function</b> gives each x <b>only one</b> y.</p><div class="nex"><table class="vt"><tr><th>x</th><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>4</td><td>4</td><td>6</td></tr></table><div class='small c'>Function ✓ — each x is used once. (A y can repeat.)</div><table class="vt"><tr><th>x</th><td class=hit>1</td><td class=hit>1</td><td>2</td></tr><tr><th>y</th><td>3</td><td>4</td><td>5</td></tr></table><div class='small c'>NOT a function ✗ — x = 1 goes to two y's.</div></div><p class="tip"><b>Tip:</b> Graph? Use the vertical line test: touches only once → function.</p>
+<button type="button" class="listen" data-say="A function gives each x only one y. If one x goes to two different y's, it is not a function. On a graph, use the vertical line test.">Listen</button></section><section class="ncard"><div class="qhead"><span class="tag">NC.8.G.3</span></div><h2>Moving Points</h2>
+<p class="idea">Use the rule. Then check on the grid.</p><div class="nex"><table class='rules'><tr><td>Right / left</td><td>change <b>x</b></td><td>(2, 3) right 4 → (6, 3)</td></tr><tr><td>Up / down</td><td>change <b>y</b></td><td>(2, 3) down 1 → (2, 2)</td></tr><tr><td>Flip over x-axis</td><td><b>y</b> changes sign</td><td>(4, 2) → (4, −2)</td></tr><tr><td>Flip over y-axis</td><td><b>x</b> changes sign</td><td>(4, 2) → (−4, 2)</td></tr></table></div><p class="tip"><b>Tip:</b> Right and up are plus. Left and down are minus.</p>
+<button type="button" class="listen" data-say="To move a point right or left, change x. Up or down, change y. To flip over the x-axis, y changes sign. To flip over the y-axis, x changes sign.">Listen</button></section>
+  <div class="next"><button type="button" class="btn" data-go="tP">Next: Questions →</button></div>
+</section>
+
+<section class="tabp" id="tP" role="tabpanel" hidden>
+  <div class="namebox">
+    <label for="sname">Your first and last name</label>
+    <input id="sname" type="text" autocomplete="name" placeholder="First and last name">
+    <span class="lbl2" id="clslabel">Your class</span>
+    <div class="classes" role="group" aria-labelledby="clslabel">
+      <button type="button" class="cls" aria-pressed="false">A1</button>
+      <button type="button" class="cls" aria-pressed="false">A2</button>
+      <button type="button" class="cls" aria-pressed="false">A4</button>
+      <button type="button" class="cls" aria-pressed="false">B5</button>
+      <button type="button" class="cls" aria-pressed="false">B6</button>
+    </div>
+  </div>
+  <p class="msg c" id="progtxt" aria-live="polite"></p>
+  <div class="dots" id="dots"></div>
+  
+<article class="qc" id="qc0" data-i="0" hidden>
+  <div class="qhead"><span class="tag">NC.8.NS.1</span><span class="qof">Question 1 of 10</span></div>
+  <h2>Rational or irrational?</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">√<span class='rad'>9</span> = 3. 3 is a whole number. So √<span class='rad'>9</span> is <b>rational</b>.</div>
+    <button type="button" class="listen" data-say="Example. The square root of 9 is 3. 3 is a whole number. So the square root of 9 is rational.">Listen</button></div>
+  <div class="ask">Is √<span class='rad'>25</span> rational or irrational?</div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 95 117" width="95" height="117" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif"><rect x="4" y="4" width="87" height="87" rx="6" fill="#FFF6D6" stroke="#E0A800"/><circle cx="17.5" cy="17.5" r="5" fill="#1E2D4F"/><circle cx="32.5" cy="17.5" r="5" fill="#1E2D4F"/><circle cx="47.5" cy="17.5" r="5" fill="#1E2D4F"/><circle cx="62.5" cy="17.5" r="5" fill="#1E2D4F"/><circle cx="77.5" cy="17.5" r="5" fill="#1E2D4F"/><circle cx="17.5" cy="32.5" r="5" fill="#1E2D4F"/><circle cx="32.5" cy="32.5" r="5" fill="#1E2D4F"/><circle cx="47.5" cy="32.5" r="5" fill="#1E2D4F"/><circle cx="62.5" cy="32.5" r="5" fill="#1E2D4F"/><circle cx="77.5" cy="32.5" r="5" fill="#1E2D4F"/><circle cx="17.5" cy="47.5" r="5" fill="#1E2D4F"/><circle cx="32.5" cy="47.5" r="5" fill="#1E2D4F"/><circle cx="47.5" cy="47.5" r="5" fill="#1E2D4F"/><circle cx="62.5" cy="47.5" r="5" fill="#1E2D4F"/><circle cx="77.5" cy="47.5" r="5" fill="#1E2D4F"/><circle cx="17.5" cy="62.5" r="5" fill="#1E2D4F"/><circle cx="32.5" cy="62.5" r="5" fill="#1E2D4F"/><circle cx="47.5" cy="62.5" r="5" fill="#1E2D4F"/><circle cx="62.5" cy="62.5" r="5" fill="#1E2D4F"/><circle cx="77.5" cy="62.5" r="5" fill="#1E2D4F"/><circle cx="17.5" cy="77.5" r="5" fill="#1E2D4F"/><circle cx="32.5" cy="77.5" r="5" fill="#1E2D4F"/><circle cx="47.5" cy="77.5" r="5" fill="#1E2D4F"/><circle cx="62.5" cy="77.5" r="5" fill="#1E2D4F"/><circle cx="77.5" cy="77.5" r="5" fill="#1E2D4F"/><text x="47.5" y="111" font-size="12" text-anchor="middle" fill="#1E2D4F">25 dots make a 5 by 5 square</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">Rational</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">Irrational</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Is the square root of 25 rational or irrational? A: Rational. B: Irrational.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back" disabled>← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc1" data-i="1" hidden>
+  <div class="qhead"><span class="tag">NC.8.NS.1</span><span class="qof">Question 2 of 10</span></div>
+  <h2>Find the irrational number</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">π = 3.14159… It never ends and never repeats. So π is <b>irrational</b>.</div>
+    <button type="button" class="listen" data-say="Example. Pi is 3.14159 and so on. It never ends and never repeats. So pi is irrational.">Listen</button></div>
+  <div class="ask">Which number is <b>irrational</b>?</div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 330 72" width="330" height="72" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif"><rect x="8" y="8" width="56" height="40" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/><text x="36" y="34" font-size="17" font-weight="600" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">1</text><rect x="72" y="8" width="56" height="40" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/><text x="100" y="34" font-size="17" font-weight="600" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">4</text><rect x="136" y="8" width="56" height="40" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/><text x="164" y="34" font-size="17" font-weight="600" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">9</text><rect x="200" y="8" width="56" height="40" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/><text x="228" y="34" font-size="17" font-weight="600" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">16</text><rect x="264" y="8" width="56" height="40" rx="7" fill="#EEF1F7" stroke="#1E2D4F"/><text x="292" y="34" font-size="17" font-weight="600" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">25</text><text x="165.0" y="66" font-size="12" text-anchor="middle" fill="#5B6475">Perfect squares: 1, 4, 9, 16, 25 … Is 7 on the list?</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">0.5</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">√<span class='rad'>7</span></span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv"><span class="fr"><span>1</span><span>4</span></span></span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Which number is irrational? A: 0.5. B: the square root of 7. C: one fourth.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc2" data-i="2" hidden>
+  <div class="qhead"><span class="tag">NC.8.EE.1</span><span class="qof">Question 3 of 10</span></div>
+  <h2>Multiply: add the exponents</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">3<sup>2</sup> · 3<sup>5</sup> = 3<sup>2 + 5</sup> = <b>3<sup>7</sup></b>. Same base → <b>add</b> the exponents.</div>
+    <button type="button" class="listen" data-say="Example. 3 squared times 3 to the 5th equals 3 to the 2 plus 5, which is 3 to the 7th. Same base, so add the exponents.">Listen</button></div>
+  <div class="ask">Simplify. <span class='expr'>2<sup>3</sup> · 2<sup>4</sup></span></div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 262 70" width="262" height="70" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif"><circle cx="20" cy="26" r="13" fill="#1E2D4F"/><text x="20" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="50" cy="26" r="13" fill="#1E2D4F"/><text x="50" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="80" cy="26" r="13" fill="#1E2D4F"/><text x="80" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><text x="114" y="32" font-size="18" fill="#1E2D4F">·</text><circle cx="132" cy="26" r="13" fill="#B07D00"/><text x="132" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="162" cy="26" r="13" fill="#B07D00"/><text x="162" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="192" cy="26" r="13" fill="#B07D00"/><text x="192" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><circle cx="222" cy="26" r="13" fill="#B07D00"/><text x="222" y="31" font-size="13" font-weight="700" text-anchor="middle" fill="#fff">2</text><text x="131.0" y="64" font-size="12" text-anchor="middle" fill="#5B6475">3 twos times 4 twos. Count all the twos.</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">2<sup>7</sup></span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">2<sup>12</sup></span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">4<sup>7</sup></span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Simplify 2 to the 3rd times 2 to the 4th. A: 2 to the 7th. B: 2 to the 12th. C: 4 to the 7th.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc3" data-i="3" hidden>
+  <div class="qhead"><span class="tag">NC.8.EE.1</span><span class="qof">Question 4 of 10</span></div>
+  <h2>Negative exponent: flip it</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">3<sup>−2</sup> = <span class="fr"><span>1</span><span>3<sup>2</sup></span></span> = <b><span class="fr"><span>1</span><span>9</span></span></b>. A negative exponent means <b>flip</b>.</div>
+    <button type="button" class="listen" data-say="Example. 3 to the negative 2 equals 1 over 3 squared, which is 1 ninth. A negative exponent means flip.">Listen</button></div>
+  <div class="ask">What is <span class='expr'>2<sup>−3</sup></span>?</div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 300 80" width="300" height="80" xmlns="http://www.w3.org/2000/svg" font-family="Source Serif 4, Georgia, serif"><text x="40" y="48" font-size="26" font-weight="600" fill="#1E2D4F">2<tspan dy="-12" font-size="16">−3</tspan></text><path d="M95 40 C130 10, 160 10, 195 40" fill="none" stroke="#B07D00" stroke-width="2.5" marker-end="url(#fa)"/><defs><marker id="fa" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8z" fill="#B07D00"/></marker></defs><text x="145" y="18" font-size="12" text-anchor="middle" fill="#8A6100" font-family="Inter, sans-serif">flip it</text><text x="232" y="30" font-size="20" font-weight="600" text-anchor="middle" fill="#1E2D4F">1</text><line x1="210" y1="38" x2="254" y2="38" stroke="#1E2D4F" stroke-width="2"/><text x="228" y="62" font-size="20" font-weight="600" text-anchor="middle" fill="#1E2D4F">2<tspan dy="-9" font-size="13">3</tspan></text><text x="150" y="76" font-size="11" text-anchor="middle" fill="#5B6475" font-family="Inter, sans-serif">The negative sign goes away when you flip.</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv"><span class="fr"><span>1</span><span>8</span></span></span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">−8</span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">−6</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="What is 2 to the negative 3? A: 1 eighth. B: negative 8. C: negative 6.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc4" data-i="4" hidden>
+  <div class="qhead"><span class="tag">NC.8.EE.7</span><span class="qof">Question 5 of 10</span></div>
+  <h2>Solve a two-step equation</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">2x + 1 = 11<br>Subtract 1: 2x = 10<br>Divide by 2: <b>x = 5</b></div>
+    <button type="button" class="listen" data-say="Example. 2x plus 1 equals 11. Subtract 1. 2x equals 10. Divide by 2. x equals 5.">Listen</button></div>
+  <div class="ask">Solve. <span class='expr'>3x + 4 = 19</span></div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 340 92" width="340" height="92" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif"><rect x="10.0" y="10" width="81.21052631578948" height="36" rx="5" fill="#EEF1F7" stroke="#1E2D4F"/><text x="50.60526315789474" y="34" font-size="16" font-style="italic" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">x</text><rect x="94.21052631578948" y="10" width="81.21052631578948" height="36" rx="5" fill="#EEF1F7" stroke="#1E2D4F"/><text x="134.81578947368422" y="34" font-size="16" font-style="italic" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">x</text><rect x="178.42105263157896" y="10" width="81.21052631578948" height="36" rx="5" fill="#EEF1F7" stroke="#1E2D4F"/><text x="219.0263157894737" y="34" font-size="16" font-style="italic" text-anchor="middle" fill="#1E2D4F" font-family="Source Serif 4, Georgia, serif">x</text><rect x="262.63157894736844" y="10" width="67.36842105263158" height="36" rx="5" fill="#FFF6D6" stroke="#E0A800"/><text x="296.3157894736842" y="34" font-size="16" font-weight="600" text-anchor="middle" fill="#1E2D4F">4</text><line x1="10" y1="58" x2="330" y2="58" stroke="#1E2D4F"/><line x1="10" y1="53" x2="10" y2="63" stroke="#1E2D4F"/><line x1="330" y1="53" x2="330" y2="63" stroke="#1E2D4F"/><text x="170.0" y="80" font-size="14" font-weight="600" text-anchor="middle" fill="#1E2D4F">all together = 19</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">x = 5</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">x = 7</span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">x = 15</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Solve. 3x plus 4 equals 19. A: x = 5. B: x = 7. C: x = 15.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc5" data-i="5" hidden>
+  <div class="qhead"><span class="tag">NC.8.EE.7</span><span class="qof">Question 6 of 10</span></div>
+  <h2>Variables on both sides</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">4x + 1 = 2x + 9<br>Subtract 2x: 2x + 1 = 9<br>Subtract 1: 2x = 8<br>Divide by 2: <b>x = 4</b></div>
+    <button type="button" class="listen" data-say="Example. 4x plus 1 equals 2x plus 9. Subtract 2x. 2x plus 1 equals 9. Subtract 1. 2x equals 8. Divide by 2. x equals 4.">Listen</button></div>
+  <div class="ask">Solve. <span class='expr'>5x − 2 = 3x + 8</span></div>
+  
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">x = 5</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">x = 3</span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">x = 10</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Solve. 5x minus 2 equals 3x plus 8. A: x = 5. B: x = 3. C: x = 10.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc6" data-i="6" hidden>
+  <div class="qhead"><span class="tag">NC.8.F.1</span><span class="qof">Question 7 of 10</span></div>
+  <h2>Is the table a function?</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">A function gives each x <b>only one</b> y. <table class="vt"><tr><th>x</th><td>1</td><td>2</td><td>3</td></tr><tr><th>y</th><td>4</td><td>5</td><td>6</td></tr></table>Each x is used once. This <b>is</b> a function.</div>
+    <button type="button" class="listen" data-say="Example. A function gives each x only one y. In this table, each x is used once. This is a function.">Listen</button></div>
+  <div class="ask">Is this table a function?<table class="vt"><tr><th>x</th><td>1</td><td>1</td><td>2</td></tr><tr><th>y</th><td>3</td><td>4</td><td>5</td></tr></table></div>
+  
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">Yes</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">No</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Is this table a function? x is 1, 1, 2. y is 3, 4, 5. A: Yes. B: No.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc7" data-i="7" hidden>
+  <div class="qhead"><span class="tag">NC.8.F.1</span><span class="qof">Question 8 of 10</span></div>
+  <h2>Vertical line test</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">Slide a straight up-and-down line across the graph. If it touches the graph <b>only once</b> everywhere, it <b>is</b> a function.</div>
+    <button type="button" class="listen" data-say="Example. Slide a straight up and down line across the graph. If it touches the graph only once everywhere, it is a function.">Listen</button></div>
+  <div class="ask">Which graph is a <b>function</b>?</div>
+  
+  <div class="chs grid3"><button type="button" class="ch g" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv"><svg viewBox="0 0 138 138" width="138" height="138" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="124" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="25" y1="124" x2="25" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="36" y1="124" x2="36" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="47" y1="124" x2="47" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="58" y1="124" x2="58" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="69" y1="124" x2="69" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="80" y1="124" x2="80" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="91" y1="124" x2="91" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="102" y1="124" x2="102" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="113" y1="124" x2="113" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="124" y1="124" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="124" x2="124" y2="124" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="113" x2="124" y2="113" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="102" x2="124" y2="102" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="91" x2="124" y2="91" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="80" x2="124" y2="80" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="58" x2="124" y2="58" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="47" x2="124" y2="47" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="36" x2="124" y2="36" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="25" x2="124" y2="25" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#1E2D4F" stroke-width="1.6"/><line x1="69" y1="124" x2="69" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><line x1="18.400000000000006" y1="105.30000000000001" x2="119.6" y2="54.7" stroke="#c98f00" stroke-width="2.4"/></svg></span></button><button type="button" class="ch g" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv"><svg viewBox="0 0 138 138" width="138" height="138" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="124" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="25" y1="124" x2="25" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="36" y1="124" x2="36" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="47" y1="124" x2="47" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="58" y1="124" x2="58" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="69" y1="124" x2="69" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="80" y1="124" x2="80" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="91" y1="124" x2="91" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="102" y1="124" x2="102" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="113" y1="124" x2="113" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="124" y1="124" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="124" x2="124" y2="124" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="113" x2="124" y2="113" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="102" x2="124" y2="102" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="91" x2="124" y2="91" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="80" x2="124" y2="80" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="58" x2="124" y2="58" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="47" x2="124" y2="47" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="36" x2="124" y2="36" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="25" x2="124" y2="25" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#1E2D4F" stroke-width="1.6"/><line x1="69" y1="124" x2="69" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><circle cx="69" cy="69" r="33" fill="none" stroke="#c98f00" stroke-width="2.4"/></svg></span></button><button type="button" class="ch g" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv"><svg viewBox="0 0 138 138" width="138" height="138" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="124" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="25" y1="124" x2="25" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="36" y1="124" x2="36" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="47" y1="124" x2="47" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="58" y1="124" x2="58" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="69" y1="124" x2="69" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="80" y1="124" x2="80" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="91" y1="124" x2="91" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="102" y1="124" x2="102" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="113" y1="124" x2="113" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="124" y1="124" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="124" x2="124" y2="124" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="113" x2="124" y2="113" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="102" x2="124" y2="102" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="91" x2="124" y2="91" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="80" x2="124" y2="80" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="58" x2="124" y2="58" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="47" x2="124" y2="47" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="36" x2="124" y2="36" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="25" x2="124" y2="25" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="124" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="69" x2="124" y2="69" stroke="#1E2D4F" stroke-width="1.6"/><line x1="69" y1="124" x2="69" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><line x1="91" y1="119.6" x2="91" y2="18.400000000000006" stroke="#c98f00" stroke-width="2.4"/></svg></span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Which graph is a function? A: a slanted line. B: a circle. C: a straight up and down line.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc8" data-i="8" hidden>
+  <div class="qhead"><span class="tag">NC.8.G.3</span><span class="qof">Question 9 of 10</span></div>
+  <h2>Slide a point (translation)</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">Move (1, 1) right 2. Right means <b>add to x</b>. (1 + 2, 1) = <b>(3, 1)</b>.</div>
+    <button type="button" class="listen" data-say="Example. Move the point 1, 1 right 2. Right means add to x. 1 plus 2 is 3. The new point is 3, 1.">Listen</button></div>
+  <div class="ask">Point P is at (2, 3). Move it <b>right 4</b>. Where does it land?</div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 256 161" width="256" height="161" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="147" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="33" y1="147" x2="33" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="52" y1="147" x2="52" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="71" y1="147" x2="71" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="90" y1="147" x2="90" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="109" y1="147" x2="109" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="128" y1="147" x2="128" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="147" y1="147" x2="147" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="166" y1="147" x2="166" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="185" y1="147" x2="185" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="204" y1="147" x2="204" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="223" y1="147" x2="223" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="242" y1="147" x2="242" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="147" x2="242" y2="147" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="128" x2="242" y2="128" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="109" x2="242" y2="109" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="90" x2="242" y2="90" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="71" x2="242" y2="71" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="52" x2="242" y2="52" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="33" x2="242" y2="33" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="242" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="109" x2="242" y2="109" stroke="#1E2D4F" stroke-width="1.6"/><line x1="109" y1="147" x2="109" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="33" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="52" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="71" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="90" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="128" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="147" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="166" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="185" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="204" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="223" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">6</text><text x="242" y="120" font-size="8.5" text-anchor="middle" fill="#55607a">7</text><text x="105" y="150" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="105" y="131" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="105" y="93" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="105" y="74" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="105" y="55" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="105" y="36" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="105" y="17" font-size="8.5" text-anchor="end" fill="#55607a">5</text><text x="239" y="105" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="114" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><circle cx="147" cy="52" r="5" fill="#1E2D4F"/><text x="154" y="45" font-size="12" font-weight="700" fill="#1E2D4F">P (2, 3)</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">(6, 3)</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">(2, 7)</span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">(−2, 3)</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Point P is at 2, 3. Move it right 4. Where does it land? A: 6, 3. B: 2, 7. C: negative 2, 3.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Next →</button></div>
+</article>
+<article class="qc" id="qc9" data-i="9" hidden>
+  <div class="qhead"><span class="tag">NC.8.G.3</span><span class="qof">Question 10 of 10</span></div>
+  <h2>Flip over the x-axis (reflection)</h2>
+  <div class="exbox"><div class="exlab">Example</div><div class="exbody">Reflect (3, 5) over the x-axis. The <b>y</b> changes sign. (3, 5) → <b>(3, −5)</b>.</div>
+    <button type="button" class="listen" data-say="Example. Reflect the point 3, 5 over the x-axis. The y changes sign. 3, 5 becomes 3, negative 5.">Listen</button></div>
+  <div class="ask">Point A is at (4, 2). Reflect it over the <b>x-axis</b>. Where does it land?</div>
+  <div class="fig" aria-hidden="true"><svg viewBox="0 0 218 180" width="218" height="180" xmlns="http://www.w3.org/2000/svg" font-family="Inter" ><line x1="14" y1="166" x2="14" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="33" y1="166" x2="33" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="52" y1="166" x2="52" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="71" y1="166" x2="71" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="90" y1="166" x2="90" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="109" y1="166" x2="109" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="128" y1="166" x2="128" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="147" y1="166" x2="147" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="166" y1="166" x2="166" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="185" y1="166" x2="185" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="204" y1="166" x2="204" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="166" x2="204" y2="166" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="147" x2="204" y2="147" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="128" x2="204" y2="128" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="109" x2="204" y2="109" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="90" x2="204" y2="90" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="71" x2="204" y2="71" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="52" x2="204" y2="52" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="33" x2="204" y2="33" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="14" x2="204" y2="14" stroke="#d5dae4" stroke-width="1"/><line x1="14" y1="90" x2="204" y2="90" stroke="#1E2D4F" stroke-width="1.6"/><line x1="109" y1="166" x2="109" y2="14" stroke="#1E2D4F" stroke-width="1.6"/><text x="14" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">-5</text><text x="33" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">-4</text><text x="52" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">-3</text><text x="71" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">-2</text><text x="90" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">-1</text><text x="128" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">1</text><text x="147" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">2</text><text x="166" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">3</text><text x="185" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">4</text><text x="204" y="101" font-size="8.5" text-anchor="middle" fill="#55607a">5</text><text x="105" y="169" font-size="8.5" text-anchor="end" fill="#55607a">-4</text><text x="105" y="150" font-size="8.5" text-anchor="end" fill="#55607a">-3</text><text x="105" y="131" font-size="8.5" text-anchor="end" fill="#55607a">-2</text><text x="105" y="112" font-size="8.5" text-anchor="end" fill="#55607a">-1</text><text x="105" y="74" font-size="8.5" text-anchor="end" fill="#55607a">1</text><text x="105" y="55" font-size="8.5" text-anchor="end" fill="#55607a">2</text><text x="105" y="36" font-size="8.5" text-anchor="end" fill="#55607a">3</text><text x="105" y="17" font-size="8.5" text-anchor="end" fill="#55607a">4</text><text x="201" y="86" font-size="10" font-style="italic" text-anchor="end" fill="#1E2D4F">x</text><text x="114" y="24" font-size="10" font-style="italic" fill="#1E2D4F">y</text><line x1="14" y1="90" x2="204" y2="90" stroke="#E0A800" stroke-width="4" opacity=".7"/><text x="200" y="106" font-size="11" text-anchor="end" fill="#8A6100" font-weight="700">x-axis (the mirror)</text><circle cx="185" cy="52" r="5" fill="#1E2D4F"/><text x="192" y="45" font-size="12" font-weight="700" fill="#1E2D4F">A (4, 2)</text></svg></div>
+  <div class="chs"><button type="button" class="ch" data-j="0" aria-pressed="false"><span class="L">A</span><span class="cv">(4, −2)</span></button><button type="button" class="ch" data-j="1" aria-pressed="false"><span class="L">B</span><span class="cv">(−4, 2)</span></button><button type="button" class="ch" data-j="2" aria-pressed="false"><span class="L">C</span><span class="cv">(2, 4)</span></button></div>
+  <div class="acts"><button type="button" class="listen" data-say="Point A is at 4, 2. Reflect it over the x-axis. Where does it land? A: 4, negative 2. B: negative 4, 2. C: 2, 4.">Listen to the question</button>
+    <button type="button" class="btn chk">Check my answer</button><span class="nudge" aria-live="polite"></span></div>
+  <div class="res" aria-live="polite"></div>
+  <div class="nav2"><button type="button" class="btn ghost back">← Back</button>
+    <button type="button" class="btn nxt">Finish →</button></div>
+</article>
+  <section class="submit" id="submitbox" aria-live="polite">
+    <h2>Submit to Mr. Allen</h2>
+    <p class="msg" id="smsg">When you finish all 10, tap Submit.</p>
+    <div class="btns"><button type="button" class="btn" id="sbtn">Submit</button></div>
+    <div class="score" id="scorebox">
+      <div class="big" id="bigscore"></div>
+      <table class="bystd" id="bystd"></table>
+      <p class="msg" id="sendmsg"></p>
+      <div class="btns"><button type="button" class="btn ghost" id="resend" hidden>Try sending again</button>
+        <button type="button" class="btn ghost" id="again">Try again</button></div>
+    </div>
+  </section>
+</section>
+</div>
+<script src="../benchmark-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CFG = window.BENCHMARK_CONFIG || {};
+  var BENCH = "NC Check-In Benchmark Review — Version 2", QD = [{"id": "1", "std": "NC.8.NS.1", "label": "V2: Rational or irrational?", "ans": 0, "fb": {"1": "25 is a perfect square. √25 = 5, a whole number. Whole numbers are rational."}, "why": "√25 = 5, because 5 × 5 = 25. 5 is a whole number, so √25 is rational."}, {"id": "2", "std": "NC.8.NS.1", "label": "V2: Find the irrational number", "ans": 1, "fb": {"0": "0.5 stops. It equals 1/2, so it is rational.", "2": "1/4 is a fraction, so it is rational."}, "why": "7 is not a perfect square, so √7 = 2.6457… never ends and never repeats. It is irrational."}, {"id": "3", "std": "NC.8.EE.1", "label": "V2: Multiply: add the exponents", "ans": 0, "fb": {"1": "You multiplied 3 × 4. When you multiply powers with the same base, ADD: 3 + 4 = 7.", "2": "Keep the base the same. The base stays 2. Only the exponents add."}, "why": "Same base, so add the exponents: 3 + 4 = 7. The answer is 2<sup>7</sup>."}, {"id": "4", "std": "NC.8.EE.1", "label": "V2: Negative exponent: flip it", "ans": 0, "fb": {"1": "A negative exponent does not make the number negative. It means flip: 1/2³ = 1/8.", "2": "Do not multiply 2 × −3. Flip it: 2⁻³ = 1/2³ = 1/8."}, "why": "Flip it: 2<sup>−3</sup> = <span class=\"fr\"><span>1</span><span>2<sup>3</sup></span></span>. 2 × 2 × 2 = 8, so the answer is <span class=\"fr\"><span>1</span><span>8</span></span>."}, {"id": "5", "std": "NC.8.EE.7", "label": "V2: Solve a two-step equation", "ans": 0, "fb": {"1": "Check it: 3(7) + 4 = 25, not 19. Subtract 4 first: 3x = 15. Then divide by 3.", "2": "3x = 15 is one step away. Divide by 3: x = 5."}, "why": "Subtract 4 from both sides: 3x = 15. Divide both sides by 3: x = 5. Check: 3(5) + 4 = 19 ✓"}, {"id": "6", "std": "NC.8.EE.7", "label": "V2: Variables on both sides", "ans": 0, "fb": {"1": "After you subtract 3x, you get 2x − 2 = 8. ADD 2 to both sides: 2x = 10.", "2": "2x = 10 is one step away. Divide by 2: x = 5."}, "why": "Subtract 3x: 2x − 2 = 8. Add 2: 2x = 10. Divide by 2: x = 5. Check: 5(5) − 2 = 23 and 3(5) + 8 = 23 ✓"}, {"id": "7", "std": "NC.8.F.1", "label": "V2: Is the table a function?", "ans": 1, "fb": {"0": "Look at x = 1. It goes to 3 AND to 4. One x with two y's is NOT a function."}, "why": "x = 1 has two outputs, 3 and 4. A function can give each x only one y, so this is NOT a function."}, {"id": "8", "std": "NC.8.F.1", "label": "V2: Vertical line test", "ans": 0, "fb": {"1": "A vertical line touches the circle in 2 places. That is NOT a function.", "2": "This graph IS a vertical line. It touches itself everywhere. NOT a function."}, "why": "Any vertical line crosses the slanted line only once, so it is a function. The circle and the vertical line fail the test."}, {"id": "9", "std": "NC.8.G.3", "label": "V2: Slide a point (translation)", "ans": 0, "fb": {"1": "You added 4 to y. That moves UP. Right changes x: 2 + 4 = 6.", "2": "You subtracted. That moves LEFT. Right means add: 2 + 4 = 6."}, "why": "Right 4 means add 4 to x: 2 + 4 = 6. The y stays 3. The answer is (6, 3)."}, {"id": "10", "std": "NC.8.G.3", "label": "V2: Flip over the x-axis (reflection)", "ans": 0, "fb": {"1": "That is a flip over the y-axis. Over the x-axis, the y changes sign.", "2": "You swapped x and y. A reflection does not swap. Only the y changes sign."}, "why": "Over the x-axis, x stays the same and y changes sign: (4, 2) → (4, −2). The point is now below the x-axis."}], NAMES = {"NC.8.NS.1": "Rational & Irrational", "NC.8.EE.1": "Exponents", "NC.8.EE.7": "Equations", "NC.8.F.1": "Functions", "NC.8.G.3": "Transformations"};
+  var NAME_KEY = 'fluencyLabStudentName', CLASS_KEY = 'benchmarkClass', L = 'ABC';
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k) || ''; localStorage.setItem(k, v); } catch (e) {} return ''; }
+  function newSession() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+  var session = newSession(), cur = 0, locked = false, lastPayload = null;
+  var st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
+
+  // tabs
+  function showTab(id) {
+    $$('.step').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
+    $$('.tabp').forEach(function (p) { p.hidden = p.id !== id; });
+    stopTalk(); window.scrollTo({ top: $('.steps').offsetTop - 60, behavior: 'smooth' });
+  }
+  $$('.step').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-tab')); }); });
+  $$('[data-go]').forEach(function (b) { b.addEventListener('click', function () { showTab(b.getAttribute('data-go')); }); });
+
+  // read aloud
+  var canTalk = 'speechSynthesis' in window;
+  function stopTalk() { if (canTalk) { try { speechSynthesis.cancel(); } catch (e) {} } $$('.listen.on').forEach(function (b) { b.classList.remove('on'); }); }
+  $$('.listen').forEach(function (b) {
+    if (!canTalk) { b.hidden = true; return; }
+    b.addEventListener('click', function () {
+      var was = b.classList.contains('on'); stopTalk(); if (was) return;
+      var u = new SpeechSynthesisUtterance(b.getAttribute('data-say')); u.rate = 0.9;
+      u.onend = function () { b.classList.remove('on'); }; b.classList.add('on'); speechSynthesis.speak(u);
+    });
+  });
+
+  // one question at a time
+  function dots() {
+    $('#dots').innerHTML = QD.map(function (q, i) {
+      return '<button type="button" class="dot' + (i === cur ? ' cur' : '') + (st[i].done ? (st[i].ok ? ' r' : ' w') : '') + '" data-i="' + i + '" aria-label="Question ' + (i + 1) + '">' + (i + 1) + '</button>';
+    }).join('');
+    $$('#dots .dot').forEach(function (d) { d.addEventListener('click', function () { go(+d.getAttribute('data-i')); }); });
+  }
+  function go(i) {
+    stopTalk(); cur = Math.max(0, Math.min(QD.length - 1, i));
+    $$('.qc').forEach(function (c) { c.hidden = +c.getAttribute('data-i') !== cur; });
+    dots();
+    var top = $('#dots').getBoundingClientRect().top + window.pageYOffset - 70;
+    if (Math.abs(window.pageYOffset - top) > 40) window.scrollTo({ top: top, behavior: 'smooth' });
+  }
+  $$('.qc').forEach(function (c) {
+    var i = +c.getAttribute('data-i');
+    $$('.ch', c).forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (st[i].done || locked) return;
+        $$('.ch', c).forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        $('.nudge', c).textContent = '';
+      });
+    });
+    $('.chk', c).addEventListener('click', function () { check(i); });
+    $('.back', c).addEventListener('click', function () { go(i - 1); });
+    $('.nxt', c).addEventListener('click', function () {
+      if (i < QD.length - 1) go(i + 1);
+      else { $('#submitbox').scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+    });
+  });
+  function picked(i) { var b = $('#qc' + i + ' .ch[aria-pressed="true"]'); return b ? +b.getAttribute('data-j') : -1; }
+  function grade(i) {
+    var q = QD[i], j = picked(i);
+    if (j < 0) return { blank: true, ok: false, msg: 'You did not answer this one.', answer: '' };
+    if (j === q.ans) return { ok: true, msg: '', answer: L[j] };
+    return { ok: false, msg: q.fb[j] || 'Look at the example again.', answer: L[j] };
+  }
+  function show(i, r) {
+    var q = QD[i], c = $('#qc' + i);
+    st[i] = { done: true, ok: r.ok, answer: r.answer };
+    $$('.ch', c).forEach(function (b) {
+      var j = +b.getAttribute('data-j'); b.disabled = true;
+      if (j === q.ans) b.classList.add('right'); else if (b.getAttribute('aria-pressed') === 'true') b.classList.add('wrong');
+    });
+    $('.chk', c).hidden = true;
+    var res = $('.res', c);
+    res.className = 'res show ' + (r.ok ? 'ok' : 'no');
+    res.innerHTML = '<div class="head">' + (r.ok ? 'Correct! Great job.' : (r.blank ? 'Not answered' : 'Not yet')) + '</div>' +
+      (r.ok ? '' : '<div>' + r.msg + '</div>') + '<div class="why"><b>Answer: ' + L[q.ans] + '.</b> ' + q.why + '</div>';
+    dots(); progress();
+  }
+  function check(i) {
+    var r = grade(i);
+    if (r.blank) { $('#qc' + i + ' .nudge').textContent = 'Tap an answer first.'; return; }
+    show(i, r);
+  }
+  function progress() {
+    var n = st.filter(function (s) { return s.done; }).length;
+    $('#progtxt').textContent = n + ' of ' + QD.length + ' done';
+  }
+
+  // name, class, submit
+  var nameEl = $('#sname'); nameEl.value = store(NAME_KEY);
+  function pickClass(c) { $$('.cls').forEach(function (b) { b.setAttribute('aria-pressed', b.textContent === c ? 'true' : 'false'); }); }
+  function chosenClass() { var b = $('.cls[aria-pressed="true"]'); return b ? b.textContent : ''; }
+  $$('.cls').forEach(function (b) { b.addEventListener('click', function () { if (!locked) pickClass(b.textContent); }); });
+  pickClass(store(CLASS_KEY));
+  function smsg(t, k) { var e = $('#smsg'); e.textContent = t; e.className = 'msg' + (k ? ' ' + k : ''); }
+  var armed = false;
+  $('#sbtn').addEventListener('click', function () {
+    if (locked) return;
+    var name = nameEl.value.replace(/\s+/g, ' ').trim();
+    if (name.length < 3 || name.indexOf(' ') < 0) { smsg('Type your first AND last name at the top.', 'warn'); nameEl.focus(); nameEl.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    var cls = chosenClass();
+    if (!cls) { smsg('Tap your class at the top.', 'warn'); $('.classes').scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+    var open = QD.map(function (q, i) { return i; }).filter(function (i) { return !st[i].done && picked(i) < 0; });
+    if (open.length && !armed) { armed = true; smsg('You did not answer question ' + open.map(function (i) { return i + 1; }).join(', ') + '. Go back, or tap Submit again.', 'warn'); $('#sbtn').textContent = 'Submit anyway'; return; }
+    store(NAME_KEY, name); store(CLASS_KEY, cls); finish(name, cls);
+  });
+  function finish(name, cls) {
+    QD.forEach(function (q, i) { if (!st[i].done) show(i, grade(i)); });
+    locked = true; stopTalk();
+    $$('.cls').forEach(function (b) { b.disabled = true; });
+    var items = [], by = {}, score = 0;
+    QD.forEach(function (q, i) {
+      if (st[i].ok) score++;
+      var b = by[q.std] = by[q.std] || { r: 0, n: 0 }; b.n++; if (st[i].ok) b.r++;
+      items.push({ id: q.id, std: q.std, label: q.label, answer: st[i].answer || '(blank)', ok: st[i].ok ? 1 : 0 });
+    });
+    $('#sbtn').hidden = true;
+    smsg('Here is your score. Tap a red number above to look at that question again.', '');
+    $('#bigscore').innerHTML = score + ' <small>out of ' + QD.length + '</small>';
+    $('#bystd').innerHTML = Object.keys(by).map(function (s) { return '<tr><td>' + NAMES[s] + '</td><td class="p">' + by[s].r + ' / ' + by[s].n + '</td></tr>'; }).join('');
+    $('#scorebox').classList.add('show');
+    lastPayload = { code: CFG.CODE, kind: 'benchmark', benchmark: BENCH, name: name, period: cls, session: session, score: score, total: QD.length, items: items };
+    send();
+  }
+  function sendmsg(t, k) { var e = $('#sendmsg'); e.textContent = t; e.className = 'msg' + (k ? ' ' + k : ''); }
+  function send() {
+    $('#resend').hidden = true;
+    if (!CFG.ENDPOINT) { sendmsg('Sending is not switched on yet. Show this screen to Mr. Allen.', 'warn'); return; }
+    sendmsg('Sending to Mr. Allen…', '');
+    fetch(CFG.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(lastPayload) })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res && res.ok) sendmsg('Sent ✓ Mr. Allen has your results, ' + res.name + '.', 'good');
+        else { sendmsg('That did not go through. Tap Try sending again, or tell Mr. Allen.', 'warn'); $('#resend').hidden = false; }
+      })
+      .catch(function () { sendmsg('Could not reach Mr. Allen\'s sheet. Check the internet, then tap Try sending again.', 'warn'); $('#resend').hidden = false; });
+  }
+  $('#resend').addEventListener('click', send);
+  $('#again').addEventListener('click', function () {
+    session = newSession(); locked = false; armed = false; lastPayload = null;
+    st = QD.map(function () { return { done: false, ok: false, answer: '' }; });
+    $$('.ch').forEach(function (b) { b.disabled = false; b.setAttribute('aria-pressed', 'false'); b.classList.remove('right', 'wrong'); });
+    $$('.chk').forEach(function (b) { b.hidden = false; });
+    $$('.res').forEach(function (r) { r.className = 'res'; r.innerHTML = ''; });
+    $$('.cls').forEach(function (b) { b.disabled = false; });
+    $('#scorebox').classList.remove('show'); $('#sbtn').hidden = false; $('#sbtn').textContent = 'Submit';
+    smsg('New try. Start with question 1.', ''); progress(); go(0);
+  });
+  go(0); progress();
+  window.__bench = { QD: QD, state: function () { return st; }, go: go };
+})();
+</script>
+</body>
+</html>

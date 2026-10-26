@@ -35,6 +35,8 @@ page end to end (serve the repo on 127.0.0.1:8765 first): `python3 benchmark/che
 NC Check-In review (`grade8/checkin_benchmark_review.html`, NS.1 · EE.1 · EE.7 · F.1 · G.3): built by
 `checkin_benchmark/build_page.py` from the same content as the printable packet (`checkin_benchmark/checkin_pdf.py`,
 fonts via FONT_DIR; the answer key is written outside the repo on purpose). Same payload as Q1.
+Version 2 (10 questions, one at a time, examples, read-aloud): `checkin_benchmark/build_v2.py` builds the page and PDF;
+its results count toward the same benchmark in the Gradebook ("Done (Version 2)"). Check: `python3 checkin_benchmark/check_v2.py`.
 Check: `python3 checkin_benchmark/check_page.py` (server on 8765), then `node benchmark/check_payload.js checkin_benchmark/payload_*.json`.
 
 ## Site checks
