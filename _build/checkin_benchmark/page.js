@@ -75,7 +75,7 @@
     if (q.kind === 'num') {
       var raw = $('#in' + i).value.trim();
       if (!raw) return { blank: true, ok: false, msgs: ['You left this blank.'], answer: '' };
-      if (/\.\.\.|…/.test(raw)) return { ok: false, msgs: ['That is the repeating decimal. Write it as a fraction, like 5/3.'], answer: raw };
+      if (/\.\.\.|…/.test(raw)) return { ok: false, msgs: ["That is the repeating decimal. Use the 9's rule to write it as a fraction."], answer: raw };
       var p = parseNum(raw);
       if (!p) return { ok: false, msgs: ['I could not read that. Type a number like 7, -2, 3/4, or 1 2/3.'], answer: raw };
       if (eq(p, q.ans)) {

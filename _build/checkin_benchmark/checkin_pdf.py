@@ -304,12 +304,20 @@ def notes():
         <div class="small" style="margin-top:4px">√ of a whole number that is NOT a perfect square → irrational.</div></div>
     </div>
     <div class="card"><div class="figrow"><div style="flex:1"><h3>Where numbers live</h3>Every real number is <b>either</b> rational <b>or</b> irrational — never both. Integers, whole numbers, and natural numbers are all <b>inside</b> the rational box.<div class="small" style="margin-top:6px">√49 = 7, so it's a natural number — even with a square root sign!</div></div>{numsys()}</div></div>
-    <div class="card"><h3>Repeating decimal → fraction (the algebra way)</h3>
+    <div class="card"><h3>Repeating decimal → fraction: the 9's Rule</h3>
       <div class="cols">
-        <div class="ex">x = 0.<span class="bar">27</span> = 0.2727…<br>100x = 27.2727… &nbsp;<span class="small">(2 digits repeat → ×100)</span><br>100x − x = 27<br>99x = 27 → x = {fr(27,99)} = <b>{fr(3,11)}</b></div>
-        <div class="ex">x = 0.1<span class="bar">3</span> = 0.1333…<br>100x = 13.333… &nbsp; 10x = 1.333…<br>100x − 10x = 12<br>90x = 12 → x = {fr(12,90)} = <b>{fr(2,15)}</b></div>
+        <div><ol style="margin:2px 0 0;padding-left:20px">
+          <li><b>Count</b> the repeating digits.</li>
+          <li><b>Denominator</b> = that many 9's (one 9 for each repeating digit).</li>
+          <li><b>Numerator</b> = the repeating digits.</li>
+          <li><b>Simplify.</b></li></ol></div>
+        <div class="ex">0.<span class="bar">27</span> = 0.272727…<br>2 digits repeat → 99<br>{fr(27,99)} = <b>{fr(3,11)}</b> &nbsp;<span class="small">(÷ 9)</span></div>
       </div>
-      <div class="small" style="margin-top:5px"><b>Shortcut:</b> when the repeat starts right after the decimal point, put the repeating digits over that many 9s: 0.<span class="bar">4</span> = {fr(4,9)}, 0.<span class="bar">27</span> = {fr(27,99)}. For 1.<span class="bar">6</span>, keep the 1: 1 + {fr(6,9)} = 1{fr(2,3)} = {fr(5,3)}.</div>
+      <table class="t" style="margin-top:8px"><tr><th>Repeating digits</th><th>Denominator</th><th>Example</th></tr>
+        <tr><td>1 digit</td><td class="math">9</td><td class="math">0.<span class="bar">3</span> = {fr(3,9)} = {fr(1,3)}</td></tr>
+        <tr><td>2 digits</td><td class="math">99</td><td class="math">0.<span class="bar">45</span> = {fr(45,99)} = {fr(5,11)}</td></tr>
+        <tr><td>3 digits</td><td class="math">999</td><td class="math">0.<span class="bar">125</span> = {fr(125,999)}</td></tr></table>
+      <div class="small" style="margin-top:6px"><b>Remember:</b> the 9's rule works when the decimal starts repeating right after the decimal point. Always simplify your fraction.</div>
     </div>"""
     ee1 = f"""
     <div class="pb"></div>{sec("EE.1", "Integer Exponents", "Quick Refresher")}
@@ -444,12 +452,12 @@ add("NS.1", "Select All That Apply", "Select <b>ALL</b> of the numbers that are 
     ["√49", "√20", "0.<span class='bar'>37</span>", "π", f"−{fr(5,8)}", "0.1010010001… <span class='small'>(pattern: one more 0 each time)</span>"], cols=2,
     ans="B, D, F", correct=[1, 3, 5],
     why="√20 is irrational because 20 is not a perfect square. π never ends and never repeats. 0.1010010001… never ends and has no block that repeats. <b>Not irrational:</b> √49 = 7; 0.<span class='bar'>37</span> repeats (= 37/99); −5/8 is already a fraction.")
-add("NS.1", "Numeric Entry", "Write the repeating decimal 1.<span class='bar'>6</span> = 1.666… as a fraction in simplest form.", entry=True,
-    ans=f"{fr(5,3)} &nbsp;(or 1{fr(2,3)})",
-    why=f"Let x = 1.666…  Then 10x = 16.666…  Subtract: 10x − x = 15, so 9x = 15 and x = {fr(15,9)} = {fr(5,3)}. Shortcut: 1 + 0.<span class='bar'>6</span> = 1 + {fr(6,9)} = 1{fr(2,3)} = {fr(5,3)}.")
+add("NS.1", "Numeric Entry", "Use the 9's rule. Write the repeating decimal 0.<span class='bar'>36</span> = 0.363636… as a fraction in simplest form.", entry=True,
+    ans=f"{fr(4,11)}",
+    why=f"Two digits repeat (36), so the denominator is two 9's: {fr(36,99)}. Simplify by dividing the top and bottom by 9: {fr(4,11)}.")
 add("NS.1", "Multiple Choice", "Which fraction is equal to 0.<span class='bar'>27</span> = 0.272727… ?",
     [fr(27,100), fr(3,11), fr(2,7), fr(27,90)], cols=2, ans="B", correct=[1],
-    why=f"x = 0.2727…, 100x = 27.2727…, so 99x = 27 and x = {fr(27,99)} = {fr(3,11)}. <b>Traps:</b> A is 0.27 (stops); C = 0.285714…; D = 0.3 exactly.")
+    why=f"9's rule: 2 digits repeat (27), so use two 9's: {fr(27,99)}. Simplify (÷ 9): {fr(3,11)}. <b>Traps:</b> A is 0.27 (it stops); C = 0.285714…; D uses 90 instead of 99.")
 add("NS.1", "Multiple Choice", "Which statement is true?",
     ["Every fraction has a decimal that terminates (ends).", "0.161616… is irrational because it never ends.", "√50 is irrational because 50 is not a perfect square.", "π is rational because π = 22/7."], cols=1, ans="C", correct=[2],
     why="7² = 49 and 8² = 64, so √50 is between 7 and 8 and is not a whole number — it is irrational. A is false (1/3 = 0.333… repeats). B is false: it repeats, so it's rational (16/99). D is false: 22/7 is only an <i>approximation</i> of π.")

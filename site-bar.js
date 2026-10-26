@@ -11,6 +11,7 @@
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
     { label: "I Can Targets",  href: "grade8/targets/index.html",    section: "grade8/targets/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
+    { label: "Benchmarks",     href: "grade8/benchmarks.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
     { label: "Class Info",     href: "class-information.html" }
   ];

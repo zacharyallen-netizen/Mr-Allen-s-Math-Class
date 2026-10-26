@@ -13,7 +13,7 @@ def check(c, m):
     print(('ok   ' if c else 'FAIL ') + m)
     if not c: fails.append(m)
 
-NUM_RIGHT = {1: ['5/3', '1 2/3', '−5/3'.replace('−', '')], 5: ['4', '4.0', '8/2'], 8: ['5', 'x = 5', 'x=5'], 10: ['18', 'x = 18', '36/2']}
+NUM_RIGHT = {1: ['4/11', '4 / 11'], 5: ['4', '4.0', '8/2'], 8: ['5', 'x = 5', 'x=5'], 10: ['18', 'x = 18', '36/2']}
 
 def answer(p, QD, i, right=True, variant=0):
     q = QD[i]

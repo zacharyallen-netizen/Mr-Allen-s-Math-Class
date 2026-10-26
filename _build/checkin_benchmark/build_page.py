@@ -14,7 +14,7 @@ L = "ABCDEF"
 STD_NAMES = {"NC.8.NS.1": "Rational and irrational numbers", "NC.8.EE.1": "Exponent rules",
              "NC.8.EE.7": "Equations and inequalities", "NC.8.F.1": "What is a function?",
              "NC.8.G.3": "Transformations with coordinates"}
-LABELS = ["Select all irrational", "Repeating decimal 1.6(rep) to a fraction", "Fraction equal to 0.27(rep)",
+LABELS = ["Select all irrational", "9's rule: 0.36(rep) to a fraction", "Fraction equal to 0.27(rep)",
           "True statement about rational/irrational", "Exponent rules: numeric value", "Power, product and zero exponent",
           "Select all equal to 1/16", "Simplify with variables", "Solve: distribute, variables on both sides",
           "How many solutions?", "Solve with fractions", "Word problem: inequality (T-shirts)",
@@ -50,9 +50,10 @@ WRONG = {
 }
 # Numeric entry: exact answers and detectable mistakes, as [num, den] fractions
 NUMKEY = {
- 1: {"ans": [5, 3], "simplest": True, "hints": [[[16, 10], "1.666… is not 1.6. The 6 repeats forever. 1.666… = 1 + 6/9 = 5/3."],
-      [[2, 3], "You forgot the whole number 1. 1 + 2/3 = 5/3."], [[167, 100], "1.67 is a rounded decimal. Write the exact fraction: 1 + 6/9 = 5/3."],
-      [[1667, 1000], "That is a rounded decimal. Write the exact fraction: 1 + 6/9 = 5/3."], [[6, 9], "You forgot the whole number 1. 1 + 6/9 = 1 2/3 = 5/3."]]},
+ 1: {"ans": [4, 11], "simplest": True, "hints": [[[36, 100], "0.36 stops, but 0.3636… repeats. Use the 9's rule: two repeating digits → 36/99. Then simplify."],
+      [[36, 90], "Two digits repeat, so use two 9's: 99, not 90. 36/99 = 4/11."], [[4, 9], "Both digits repeat. The block is 36, so start with 36/99. Then simplify to 4/11."],
+      [[99, 36], "Flip it: the repeating digits go on TOP. 36/99 = 4/11."], [[364, 1000], "That decimal stops. Use the 9's rule: 36/99 = 4/11."],
+      [[12, 33], "Right value, but keep simplifying: 12 ÷ 3 = 4 and 33 ÷ 3 = 11. 4/11."]]},
  5: {"ans": [4, 1], "hints": [[[64, 1], "(2³)² = 2⁶ = 64 is only the first step. Now multiply by 2⁻⁴: 2⁶⁻⁴ = 2² = 4."],
       [[0, 1], "7⁰ is 1, not 0. So the answer is 4 × 1 = 4."], [[28, 1], "7⁰ is 1, not 7. So the answer is 4 × 1 = 4."],
       [[2, 1], "Power to a power: MULTIPLY. (2³)² = 2⁶. Then 2⁶ · 2⁻⁴ = 2² = 4."], [[1, 4], "6 + (−4) = 2, a positive exponent. 2² = 4."]]},
@@ -80,7 +81,7 @@ for i, q in enumerate(Q):
     if kind == "num":
         body = (f'<div class="row"><label class="lab" for="in{i}">Your answer</label>'
                 f'<input class="box wide" id="in{i}" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type your answer"></div>'
-                f'<p class="typehelp">Fractions: <code>5/3</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>')
+                f'<p class="typehelp">Fractions: <code>4/11</code> · Mixed numbers: <code>1 2/3</code> · Negatives: <code>-4</code></p>')
     else:
         cls = "col" if q["cols"] == 1 else ("grid4" if q["cols"] == 4 else "")
         body = f'<div class="chips {cls}"{" data-multi" if multi else ""}>' + "".join(
@@ -135,7 +136,7 @@ page = f'''<!DOCTYPE html>
 <!-- SITE-BAR -->
 <script src="../site-bar.js"></script>
 <div class="wrap">
-<a class="back-link" href="index.html">← 8th Grade Home</a>
+<a class="back-link" href="benchmarks.html">← Benchmarks</a>
 
 <header class="hdr">
   <div class="eyebrow">NC Check-In Benchmark</div>
