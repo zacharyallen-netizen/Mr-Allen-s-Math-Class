@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check-In Tutorial: Transformations &amp; Functions — Mr. Allen's Math Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E2D4F;--ink:#1B2333;--muted:#5B6475;--gold:#FFC107;--gold-line:#E0A800;--gold-text:#8A6100;--gold-soft:#FFF6D6;
+--bg:#F7F7F4;--line:#E3E5EA;--line-2:#D5D9E0;--ok:#15803D;--ok-bg:#E8F5EC;--no:#B42318;--no-bg:#FBEAE8;--blue:#1D4ED8;--blue-soft:#E8EEFC;
+--serif:"Source Serif 4",Georgia,"Times New Roman",serif;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+.back-link{display:inline-flex;color:var(--muted);text-decoration:none;font-size:15px;font-weight:500;margin:0 0 18px;min-height:44px;align-items:center}
+.back-link:hover{color:var(--navy)}
+h1,h2,h3{font-family:var(--serif);color:var(--navy);font-weight:600;line-height:1.2}
+h1{font-size:32px;margin:0 0 8px}
+h2{font-size:26px;margin:0 0 4px}
+h3{font-size:20px;margin:22px 0 8px}
+.lede{color:var(--muted);margin:0 0 20px}
+.std{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:0 0 16px}
+.part{margin:36px 0 0;scroll-margin-top:70px}
+.part-head{border-left:4px solid var(--gold-line);padding:2px 0 2px 14px;margin:0 0 16px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line-2);border-radius:8px;background:#fff;color:var(--navy);text-decoration:none;font-weight:600;font-size:15px}
+.jump a:hover{border-color:var(--navy)}
+.jump a span{font:600 13px var(--mono);color:var(--muted);margin-left:8px}
+.key{background:var(--gold-soft);border-left:4px solid var(--gold-line);border-radius:6px;padding:12px 14px;margin:12px 0}
+.key b{color:var(--navy)}
+ul.steps{margin:8px 0;padding-left:22px}
+ul.steps li{margin:4px 0}
+.mono{font-family:var(--mono);font-weight:600}
+table.rules{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+table.rules th,table.rules td{border:1px solid var(--line-2);padding:8px 10px;text-align:left;vertical-align:top}
+table.rules th{background:#F1F3F7;color:var(--navy);font-weight:600}
+table.rules td.r{font:600 15px var(--mono);white-space:nowrap;color:var(--navy)}
+.tablewrap{overflow-x:auto}
+.label-try{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
+.two{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media(min-width:720px){.two{grid-template-columns:340px 1fr}}
+svg.grid{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.readout{background:#F1F3F7;border-radius:8px;padding:12px 14px;min-height:96px}
+.readout .big{font:600 24px var(--mono);color:var(--navy)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+button{font:600 15px var(--sans);min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--line-2);background:#fff;color:var(--navy);cursor:pointer}
+button:hover{border-color:var(--navy)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.small{min-width:44px;padding:0 10px;font-family:var(--mono)}
+.stepper{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
+.stepper .v{font:600 18px var(--mono);min-width:34px;text-align:center}
+table.xy{border-collapse:collapse;font:600 15px var(--mono);margin:8px 0}
+table.xy th,table.xy td{border:1px solid var(--line-2);padding:6px 10px;text-align:center}
+table.xy th{font-family:var(--sans);background:#F1F3F7;color:var(--navy)}
+.q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:0 0 16px}
+.q .qn{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.q .qt{font-weight:600;color:var(--ink);margin:0 0 10px}
+.q .tag{display:inline-block;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;margin-left:6px;color:var(--muted);vertical-align:2px}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-height:48px;padding:8px 12px;font-weight:500;font-size:16px;color:var(--ink)}
+.opt .let{font:600 14px var(--mono);color:var(--muted);min-width:22px}
+.opt.sel{border-color:var(--navy);background:var(--blue-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt table.xy{margin:0}
+.opts.tables{grid-template-columns:1fr}@media(min-width:560px){.opts.tables{grid-template-columns:1fr 1fr}}
+.opt{min-width:0}
+@media(max-width:480px){table.rules{font-size:14px}table.rules th,table.rules td{padding:6px 7px}table.rules td.r{font-size:13px}}
+.entry{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:600 22px var(--mono);color:var(--navy);margin:8px 0}
+.entry label{font:500 13px var(--sans);color:var(--muted);display:block}
+.entry input{font:600 20px var(--mono);width:84px;min-height:48px;padding:4px 8px;border:1px solid var(--line-2);border-radius:8px;text-align:center;color:var(--navy)}
+.fb{margin:10px 0 0;padding:10px 14px;border-radius:8px;display:none}
+.fb.ok{display:block;background:var(--ok-bg);color:#0E5A2B;border-left:4px solid var(--ok)}
+.fb.no{display:block;background:var(--no-bg);color:#7A1810;border-left:4px solid var(--no)}
+.qfig{margin:6px 0 10px}
+.score{margin:24px auto 0;max-width:360px;background:var(--navy);color:#fff;border-radius:10px;padding:10px 16px;text-align:center;font-weight:600;font-size:15px;box-shadow:0 4px 14px rgba(30,45,79,.18)}
+.score .mono{color:var(--gold)}
+#summary{display:none}
+#summary.show{display:block}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--navy)}
+.small-note{font-size:14px;color:var(--muted)}
+.vocab{display:grid;grid-template-columns:1fr;gap:6px 18px;margin:8px 0 0}
+@media(min-width:620px){.vocab{grid-template-columns:1fr 1fr}}
+.vocab div{padding:8px 0;border-bottom:1px solid var(--line)}
+.vocab b{color:var(--navy);display:block}
+.big-idea{font:600 19px var(--serif);color:var(--navy);margin:0 0 4px}
+.mist{list-style:none;margin:8px 0 0;padding:0}
+.mist li{border-left:4px solid var(--no);background:#FDF5F4;border-radius:6px;padding:10px 12px;margin:8px 0}
+.mist li b{color:#7A1810}
+.mist li .fix{display:block;color:#0E5A2B;margin-top:2px}
+.skills{margin:8px 0 0;padding-left:22px}.skills li{margin:4px 0}
+.tabs2{display:grid;grid-template-columns:1fr;gap:16px}@media(min-width:720px){.tabs2{grid-template-columns:1fr 1fr}}
+.tabs2 .card{margin:0}
+.howto{border:1px solid var(--line);border-left:4px solid var(--blue);}
+.howto ol{margin:6px 0 0;padding-left:22px}.howto li{margin:4px 0}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px}
+.talk{display:none;background:var(--blue-soft);border-radius:8px;padding:10px 14px;margin:10px 0;color:#1E3A8A}
+.talk b{color:var(--blue)}
+.reveal{display:none}
+.whyall{margin:8px 0 0;padding-left:20px;font-size:15px}.whyall li{margin:3px 0}
+body.class-mode{font-size:20px}
+body.class-mode .wrap{max-width:1100px}
+body.class-mode .talk,body.class-mode .reveal{display:block}
+body.class-mode .reveal{display:inline-flex;align-items:center}
+body.class-mode .q .qt{font-size:22px}
+body.class-mode svg.grid{max-width:440px}
+body.class-mode .opt{font-size:20px;min-height:56px}
+body.class-mode .score{display:none}
+@media(min-width:720px){body.class-mode .two{grid-template-columns:440px 1fr}}
+</style>
+</head>
+<body>
+<!-- SITE-BAR -->
+<script src="../site-bar.js"></script>
+<div class="wrap">
+<a class="back-link" href="benchmarks.html">← Benchmarks</a>
+<div class="std">NC Check-In Tutorial · NC.8.G.3 · NC.8.F.1</div>
+<h1>Transformations &amp; Functions</h1>
+<p class="lede">A short review before the Check-In. Each part has the big idea, words to know, notes, a tool to try, common mistakes, and quick checks. You can try again if you miss one. Nothing is sent or saved.</p>
+<nav class="jump" aria-label="Parts of this tutorial">
+<a href="#p1">1. Coordinates <span>3 checks</span></a>
+<a href="#p2">2. Transformations <span>5 checks</span></a>
+<a href="#p3">3. Functions <span>5 checks</span></a>
+</nav>
+<div class="card howto">
+<div class="modebar"><button id="classMode" aria-pressed="false">Turn on Class mode</button><span class="small-note">For the board: bigger text, talk prompts, and a Show answer button.</span></div>
+<b>Doing this together as a class</b>
+<ol>
+<li>Put this page on the board and turn on <b>Class mode</b>.</li>
+<li>Read the <b>Big idea</b> and <b>Words to know</b> together. Students say each word in their own words.</li>
+<li>Use the <b>Try it</b> tool. Have students predict first, then tap to check.</li>
+<li>For each check: everyone answers on a whiteboard or paper. Read the <b>Talk it over</b> question with a partner. Then tap <b>Show answer</b>. It explains why each wrong choice is wrong.</li>
+</ol>
+<p class="small-note" style="margin:8px 0 0">On their own devices, students can work alone. Nothing is sent or saved.</p>
+</div>
+
+<!-- ============ PART 1 ============ -->
+<section class="part" id="p1">
+<div class="part-head"><div class="std">Part 1 · Warm-up for transformations</div><h2>Reading Coordinates</h2></div>
+<div class="card"><div class="label-try">Big idea</div><p class="big-idea">Every point has one address. Read x first, then y.</p><h3 style="margin-top:14px">Words to know</h3><div class="vocab"><div><b>Coordinate plane</b>A grid made by two number lines that cross.</div><div><b>x-axis</b>The flat (horizontal) number line.</div><div><b>y-axis</b>The up-and-down (vertical) number line.</div><div><b>Origin</b>The point (0, 0), where the axes cross.</div><div><b>Ordered pair</b>Two numbers (x, y) that name a point. Order matters.</div><div><b>Quadrant</b>One of the 4 parts of the grid: I, II, III, IV.</div></div></div>
+
+<div class="card">
+<p style="margin-top:0">A <b>coordinate</b> is an address on the grid. It is written as <span class="mono">(x, y)</span>.</p>
+<ul class="steps">
+<li>Always start at the <b>origin</b>, <span class="mono">(0, 0)</span>. That is where the two axes cross.</li>
+<li><b>x comes first.</b> It tells you to go <b>right</b> (positive) or <b>left</b> (negative).</li>
+<li><b>y comes second.</b> It tells you to go <b>up</b> (positive) or <b>down</b> (negative).</li>
+</ul>
+<div class="key"><b>Memory tip:</b> You walk down the hall (x) before you take the elevator (y). Right or left first. Then up or down.</div>
+<p>The axes split the grid into 4 <b>quadrants</b>. They are numbered I, II, III, IV, going counterclockwise from the top right.</p>
+<div class="tablewrap"><table class="rules">
+<tr><th>Quadrant</th><th>x is…</th><th>y is…</th><th>Example</th></tr>
+<tr><td>I (top right)</td><td>positive</td><td>positive</td><td class="r">(3, 2)</td></tr>
+<tr><td>II (top left)</td><td>negative</td><td>positive</td><td class="r">(−3, 2)</td></tr>
+<tr><td>III (bottom left)</td><td>negative</td><td>negative</td><td class="r">(−3, −2)</td></tr>
+<tr><td>IV (bottom right)</td><td>positive</td><td>negative</td><td class="r">(3, −2)</td></tr>
+</table></div>
+</div>
+
+<div class="card">
+<div class="label-try">Try it</div>
+<p style="margin-top:0">Tap any spot where grid lines cross. Watch how the coordinates are made.</p>
+<div class="two">
+<svg class="grid" id="coordGrid" viewBox="0 0 340 340" role="img" aria-label="Coordinate grid from negative 6 to 6. Tap a spot to see its coordinates."></svg>
+<div class="readout" id="coordOut" aria-live="polite"><span class="small-note">Tap the grid to start.</span></div>
+</div>
+</div>
+<div class="tabs2"><div class="card"><div class="label-try">Skills you need</div><ul class="skills"><li>Find the coordinates of a vertex on a shape.</li><li>Plot a point from its coordinates.</li><li>Tell the quadrant from the signs of x and y.</li></ul></div><div class="card"><div class="label-try" style="color:var(--no)">Common mistakes</div><ul class="mist"><li><b>Mistake:</b> Reading y first, so (1, −2) becomes (−2, 1).<span class="fix">Fix: Walk first (x: right or left), then ride the elevator (y: up or down).</span></li><li><b>Mistake:</b> Going the wrong way for a negative.<span class="fix">Fix: Negative x means left. Negative y means down.</span></li><li><b>Mistake:</b> Counting the axis line as 1.<span class="fix">Fix: Start counting at 0. Count the jumps, not the lines.</span></li><li><b>Mistake:</b> Saying a point on an axis is in a quadrant.<span class="fix">Fix: Points like (0, 4) or (−3, 0) sit on an axis. They are in no quadrant.</span></li></ul></div></div><div style="height:16px"></div>
+<div id="qs1"></div>
+</section>
+
+<!-- ============ PART 2 ============ -->
+<section class="part" id="p2">
+<div class="part-head"><div class="std">Part 2 · NC.8.G.3</div><h2>Transformations on the Grid</h2></div>
+<div class="card"><div class="label-try">Big idea</div><p class="big-idea">A rule tells you how every vertex moves. Move each vertex, then connect them.</p><h3 style="margin-top:14px">Words to know</h3><div class="vocab"><div><b>Transformation</b>A move or change of a shape.</div><div><b>Pre-image / Image</b>The shape before the move / the shape after.</div><div><b>Prime (A′)</b>The mark for a moved point. Say “A prime.”</div><div><b>Vertex</b>A corner of a shape. Plural: vertices.</div><div><b>Translation</b>A slide. Every point moves the same way.</div><div><b>Reflection</b>A flip over a line, like a mirror.</div><div><b>Rotation</b>A turn around a point. Clockwise goes the way clock hands go.</div><div><b>Dilation</b>A stretch or shrink by a scale factor k.</div><div><b>Congruent</b>Same size and same shape.</div><div><b>Similar</b>Same shape. The size can be different.</div></div></div>
+
+<div class="card">
+<p style="margin-top:0">A <b>transformation</b> moves or changes a shape. The starting shape is the <b>pre-image</b>. The new shape is the <b>image</b>. We mark the image with a prime: point A becomes <b>A′</b> (say “A prime”).</p>
+<p>To move a shape, move <b>each vertex</b> (corner) with the rule. Then connect the new vertices.</p>
+<div class="tablewrap"><table class="rules">
+<tr><th>Transformation</th><th>Rule</th><th>What happens</th></tr>
+<tr><td>Translation (slide)</td><td class="r">(x + a, y + b)</td><td>Add to x to go right. Add to y to go up. Subtract to go left or down.</td></tr>
+<tr><td>Reflection over the x-axis</td><td class="r">(x, −y)</td><td>Flip up and down. Change the sign of <b>y</b>.</td></tr>
+<tr><td>Reflection over the y-axis</td><td class="r">(−x, y)</td><td>Flip left and right. Change the sign of <b>x</b>.</td></tr>
+<tr><td>Rotation 90° clockwise</td><td class="r">(y, −x)</td><td>Switch x and y. Then change the sign of the new y.</td></tr>
+<tr><td>Rotation 90° counterclockwise</td><td class="r">(−y, x)</td><td>Switch x and y. Then change the sign of the new x.</td></tr>
+<tr><td>Rotation 180°</td><td class="r">(−x, −y)</td><td>Change both signs.</td></tr>
+<tr><td>Dilation by scale factor k</td><td class="r">(kx, ky)</td><td>Multiply both by k. k &gt; 1 gets bigger. k &lt; 1 gets smaller.</td></tr>
+</table></div>
+<p class="small-note">All rotations and dilations here are about the origin.</p>
+<div class="key"><b>Same size or not?</b> Slides, flips, and turns keep the same size and shape. The image is <b>congruent</b>. A dilation changes the size but keeps the shape. The image is <b>similar</b>.</div>
+</div>
+
+<div class="card">
+<div class="label-try">Try it</div>
+<p style="margin-top:0">Pick a transformation. Watch triangle ABC move. Compare the coordinates in the table.</p>
+<div class="btnrow" id="tfBtns" role="group" aria-label="Choose a transformation"></div>
+<div id="tfStep" style="display:none"><span class="stepper">a <button class="small" data-d="a-1" aria-label="a minus 1">−</button><span class="v" id="aVal">3</span><button class="small" data-d="a1" aria-label="a plus 1">+</button></span><span class="stepper">b <button class="small" data-d="b-1" aria-label="b minus 1">−</button><span class="v" id="bVal">−4</span><button class="small" data-d="b1" aria-label="b plus 1">+</button></span></div>
+<div class="two" style="margin-top:8px">
+<svg class="grid" id="tfGrid" viewBox="0 0 340 340" role="img" aria-label="Triangle ABC and its image on a grid"></svg>
+<div class="readout" id="tfOut" aria-live="polite"></div>
+</div>
+</div>
+<div class="tabs2"><div class="card"><div class="label-try">Skills you need</div><ul class="skills"><li>Write the coordinates of every vertex first.</li><li>Use the rule on each vertex to find the image.</li><li>Name the transformation by comparing before and after coordinates.</li><li>Decide if the image is congruent or similar.</li></ul></div><div class="card"><div class="label-try" style="color:var(--no)">Common mistakes</div><ul class="mist"><li><b>Mistake:</b> Changing the sign of x for a flip over the x-axis.<span class="fix">Fix: Over the x-axis, the y changes: (x, −y). The axis you flip over keeps its number.</span></li><li><b>Mistake:</b> Mixing up clockwise and counterclockwise.<span class="fix">Fix: Clockwise (y, −x). Counterclockwise (−y, x). Check: a shape in Quadrant I turns clockwise into Quadrant IV.</span></li><li><b>Mistake:</b> Moving the wrong way in a translation.<span class="fix">Fix: x + 4 is right 4. y − 3 is down 3.</span></li><li><b>Mistake:</b> Adding for a dilation.<span class="fix">Fix: A dilation multiplies: (kx, ky). Adding is a slide.</span></li><li><b>Mistake:</b> Thinking a flipped or turned shape is not congruent.<span class="fix">Fix: Slides, flips, and turns never change size. Only a dilation does.</span></li></ul></div></div><div style="height:16px"></div>
+<div id="qs2"></div>
+</section>
+
+<!-- ============ PART 3 ============ -->
+<section class="part" id="p3">
+<div class="part-head"><div class="std">Part 3 · NC.8.F.1</div><h2>Is It a Function?</h2></div>
+<div class="card"><div class="label-try">Big idea</div><p class="big-idea">A function gives each input exactly one output.</p><h3 style="margin-top:14px">Words to know</h3><div class="vocab"><div><b>Input</b>The x-value. What goes in.</div><div><b>Output</b>The y-value. What comes out.</div><div><b>Relation</b>Any set of input and output pairs.</div><div><b>Function</b>A relation where each input has exactly one output.</div><div><b>Mapping diagram</b>Arrows that show which input goes to which output.</div><div><b>Vertical line test</b>If an up-and-down line hits a graph more than once, it is not a function.</div></div></div>
+
+<div class="card">
+<p style="margin-top:0">A <b>function</b> is a rule where <b>each input (x) has exactly one output (y)</b>.</p>
+<div class="key"><b>The one test:</b> Does any x-value go to two different y-values? If yes, it is <b>not</b> a function. Outputs <b>can</b> repeat. Inputs can’t go two places.</div>
+<div class="tablewrap"><table class="rules">
+<tr><th>If you see a…</th><th>Check this</th></tr>
+<tr><td>Table</td><td>Look at the x column. If an x repeats with a different y, it is not a function.</td></tr>
+<tr><td>List of ordered pairs</td><td>Look at the first numbers. Same as a table.</td></tr>
+<tr><td>Mapping diagram</td><td>Each input may have only <b>one</b> arrow leaving it.</td></tr>
+<tr><td>Graph</td><td>Use the <b>vertical line test</b>. If any up-and-down line hits the graph more than once, it is not a function.</td></tr>
+</table></div>
+</div>
+
+<div class="card">
+<div class="label-try">Try it · Vertical line test</div>
+<p style="margin-top:0">Slide the vertical line across the graph. Count how many times it hits.</p>
+<div class="btnrow" role="group" aria-label="Choose a graph"><button id="vA" class="on" aria-pressed="true">Graph A</button><button id="vB" aria-pressed="false">Graph B</button></div>
+<div class="two">
+<svg class="grid" id="vltGrid" viewBox="0 0 340 340" role="img" aria-label="Graph with a movable vertical line"></svg>
+<div>
+<label for="vltX" class="small-note">Move the line: x = <span class="mono" id="vltXv">−5</span></label>
+<input type="range" id="vltX" min="-6" max="6" step="0.5" value="-5">
+<div class="readout" id="vltOut" aria-live="polite"></div>
+</div>
+</div>
+</div>
+<div class="tabs2"><div class="card"><div class="label-try">Skills you need</div><ul class="skills"><li>Check a table or list of pairs for a repeated x.</li><li>Check that each input in a mapping has one arrow.</li><li>Use the vertical line test on a graph.</li><li>Explain why something is or is not a function.</li></ul></div><div class="card"><div class="label-try" style="color:var(--no)">Common mistakes</div><ul class="mist"><li><b>Mistake:</b> Saying it is not a function because a y repeats.<span class="fix">Fix: Outputs can repeat. Only check the inputs (x).</span></li><li><b>Mistake:</b> Checking the y column instead of the x column.<span class="fix">Fix: Look for the same x with two different y’s.</span></li><li><b>Mistake:</b> Using a horizontal line on a graph.<span class="fix">Fix: The test uses a vertical (up-and-down) line.</span></li><li><b>Mistake:</b> Counting arrows that land on an output.<span class="fix">Fix: Count the arrows that leave each input. One each is a function.</span></li></ul></div></div><div style="height:16px"></div>
+<div id="qs3"></div>
+</section>
+
+<section class="card" id="summary" aria-live="polite"></section>
+<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">13</span> · Answered <span class="mono" id="doneN">0</span></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var NS="http://www.w3.org/2000/svg";
+function M(n){return n<0?"−"+Math.abs(n):String(n);}           // true minus
+function P(p){return "("+M(p[0])+", "+M(p[1])+")";}
+var C={navy:"#1E2D4F",muted:"#5B6475",line:"#E3E5EA",axis:"#5B6475",gold:"#E0A800",blue:"#1D4ED8",red:"#B42318",green:"#15803D"};
+
+/* ---------- grid drawing (every picture is built from its own numbers) ---------- */
+function Grid(R){ // R = max |coord|
+  var pad=22,W=340,u=(W-2*pad)/(2*R);
+  this.R=R;this.u=u;
+  this.X=function(x){return pad+(x+R)*u;};
+  this.Y=function(y){return pad+(R-y)*u;};
+  var s="",i,step=R>6?2:1;
+  for(i=-R;i<=R;i++){
+    s+='<line x1="'+this.X(i)+'" y1="'+this.Y(-R)+'" x2="'+this.X(i)+'" y2="'+this.Y(R)+'" stroke="'+C.line+'" stroke-width="1"/>';
+    s+='<line x1="'+this.X(-R)+'" y1="'+this.Y(i)+'" x2="'+this.X(R)+'" y2="'+this.Y(i)+'" stroke="'+C.line+'" stroke-width="1"/>';
+  }
+  s+='<line x1="'+this.X(-R)+'" y1="'+this.Y(0)+'" x2="'+this.X(R)+'" y2="'+this.Y(0)+'" stroke="'+C.axis+'" stroke-width="1.6"/>';
+  s+='<line x1="'+this.X(0)+'" y1="'+this.Y(-R)+'" x2="'+this.X(0)+'" y2="'+this.Y(R)+'" stroke="'+C.axis+'" stroke-width="1.6"/>';
+  for(i=-R;i<=R;i+=step){ if(i===0) continue;
+    s+='<text x="'+this.X(i)+'" y="'+(this.Y(0)+12)+'" font-size="9.5" text-anchor="middle" fill="'+C.muted+'" font-family="Inter,system-ui,sans-serif">'+M(i)+'</text>';
+    s+='<text x="'+(this.X(0)-4)+'" y="'+(this.Y(i)+3.5)+'" font-size="9.5" text-anchor="end" fill="'+C.muted+'" font-family="Inter,system-ui,sans-serif">'+M(i)+'</text>';
+  }
+  s+='<text x="'+(this.X(R)+2)+'" y="'+(this.Y(0)-5)+'" font-size="11" font-style="italic" text-anchor="end" fill="'+C.navy+'" font-family="Georgia,serif">x</text>';
+  s+='<text x="'+(this.X(0)+6)+'" y="'+(this.Y(R)+8)+'" font-size="11" font-style="italic" fill="'+C.navy+'" font-family="Georgia,serif">y</text>';
+  this.base=s;
+}
+Grid.prototype.poly=function(pts,o){
+  o=o||{};var self=this,col=o.color||C.navy;
+  var d=pts.map(function(p){return self.X(p[0])+","+self.Y(p[1]);}).join(" ");
+  var s='<polygon points="'+d+'" fill="'+col+'" fill-opacity="'+(o.fo==null?0.12:o.fo)+'" stroke="'+col+'" stroke-width="2"'+(o.dash?' stroke-dasharray="5 4"':'')+'/>';
+  var cx=0,cy=0;pts.forEach(function(p){cx+=p[0];cy+=p[1];});cx/=pts.length;cy/=pts.length;
+  pts.forEach(function(p,i){
+    s+='<circle cx="'+self.X(p[0])+'" cy="'+self.Y(p[1])+'" r="3.2" fill="'+col+'"/>';
+    if(o.labels){
+      var dx=p[0]-cx,dy=p[1]-cy,L=Math.sqrt(dx*dx+dy*dy)||1;
+      var lx=Math.max(10,Math.min(330,self.X(p[0])+dx/L*13)),ly=Math.max(14,Math.min(334,self.Y(p[1])-dy/L*13+4));
+      s+='<text x="'+lx+'" y="'+ly+'" font-size="13" font-weight="700" text-anchor="middle" fill="'+col+'" font-family="Inter,system-ui,sans-serif" paint-order="stroke" stroke="#fff" stroke-width="3">'+o.labels[i]+'</text>';
+    }
+  });
+  return s;
+};
+function svgWrap(inner,label){return '<svg class="grid" viewBox="0 0 340 340" role="img" aria-label="'+label+'">'+inner+'</svg>';}
+function shapeFig(R,shapes,label){var g=new Grid(R),s=g.base;shapes.forEach(function(sh){s+=g.poly(sh.pts,sh);});return svgWrap(s,label);}
+
+/* ---------- Part 1 explorer ---------- */
+(function(){
+  var svg=document.getElementById("coordGrid"),g=new Grid(6),out=document.getElementById("coordOut");
+  svg.innerHTML=g.base+'<g id="cgMark"></g>';
+  function quad(x,y){if(x===0&&y===0)return "It is the origin.";if(x===0)return "It is on the y-axis (not in a quadrant).";if(y===0)return "It is on the x-axis (not in a quadrant).";
+    return "It is in Quadrant "+(x>0?(y>0?"I":"IV"):(y>0?"II":"III"))+".";}
+  function show(x,y){
+    var m='';
+    if(x!==0) m+='<line x1="'+g.X(0)+'" y1="'+g.Y(0)+'" x2="'+g.X(x)+'" y2="'+g.Y(0)+'" stroke="'+C.blue+'" stroke-width="3.5"/>';
+    if(y!==0) m+='<line x1="'+g.X(x)+'" y1="'+g.Y(0)+'" x2="'+g.X(x)+'" y2="'+g.Y(y)+'" stroke="'+C.gold+'" stroke-width="3.5"/>';
+    m+='<circle cx="'+g.X(x)+'" cy="'+g.Y(y)+'" r="6" fill="'+C.navy+'"/>';
+    document.getElementById("cgMark").innerHTML=m;
+    var hx=x===0?"Do not go left or right.":'<span style="color:'+C.blue+';font-weight:600">Go '+(x>0?"right ":"left ")+Math.abs(x)+'.</span>';
+    var hy=y===0?"Do not go up or down.":'<span style="color:#8A6100;font-weight:600">Go '+(y>0?"up ":"down ")+Math.abs(y)+'.</span>';
+    out.innerHTML='<div class="big">'+P([x,y])+'</div><div>Start at (0, 0). '+hx+' Then '+hy.charAt(0).toLowerCase()+hy.slice(1)+'</div><div class="small-note">'+quad(x,y)+'</div>';
+  }
+  svg.addEventListener("click",function(e){
+    var pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;var q=pt.matrixTransform(svg.getScreenCTM().inverse());
+    var x=Math.round((q.x-22)/g.u-6),y=Math.round(6-(q.y-22)/g.u);
+    x=Math.max(-6,Math.min(6,x));y=Math.max(-6,Math.min(6,y));show(x,y);
+  });
+  window.__coordShow=show;
+})();
+
+/* ---------- Part 2 explorer ---------- */
+(function(){
+  var tri=[[1,1],[4,1],[1,3]],a=3,b=-4,cur="tr";
+  var T={
+    tr:{n:"Translate",rule:function(){return "(x "+(a<0?"− "+(-a):"+ "+a)+", y "+(b<0?"− "+(-b):"+ "+b)+")";},f:function(p){return [p[0]+a,p[1]+b];},size:"same"},
+    rx:{n:"Reflect over x-axis",rule:function(){return "(x, −y)";},f:function(p){return [p[0],-p[1]];},size:"same"},
+    ry:{n:"Reflect over y-axis",rule:function(){return "(−x, y)";},f:function(p){return [-p[0],p[1]];},size:"same"},
+    cw:{n:"Rotate 90° clockwise",rule:function(){return "(y, −x)";},f:function(p){return [p[1],-p[0]];},size:"same"},
+    ccw:{n:"Rotate 90° counterclockwise",rule:function(){return "(−y, x)";},f:function(p){return [-p[1],p[0]];},size:"same"},
+    r180:{n:"Rotate 180°",rule:function(){return "(−x, −y)";},f:function(p){return [-p[0],-p[1]];},size:"same"},
+    d2:{n:"Dilate × 2",rule:function(){return "(2x, 2y)";},f:function(p){return [2*p[0],2*p[1]];},size:"big"},
+    dh:{n:"Dilate × ½",rule:function(){return "(½x, ½y)";},f:function(p){return [p[0]/2,p[1]/2];},size:"small"}
+  };
+  var box=document.getElementById("tfBtns");
+  Object.keys(T).forEach(function(k){var bt=document.createElement("button");bt.textContent=T[k].n;bt.dataset.k=k;bt.setAttribute("aria-pressed","false");
+    bt.addEventListener("click",function(){cur=k;draw();});box.appendChild(bt);});
+  document.getElementById("tfStep").addEventListener("click",function(e){var d=e.target.dataset&&e.target.dataset.d;if(!d)return;
+    if(d[0]==="a")a=Math.max(-4,Math.min(4,a+Number(d.slice(1))));else b=Math.max(-4,Math.min(4,b+Number(d.slice(1))));draw();});
+  function fmt(n){return n===0.5?"½":(n===1.5?"1½":M(n));}
+  function draw(){
+    var t=T[cur],img=tri.map(t.f),g=new Grid(8);
+    [].forEach.call(box.children,function(bt){var on=bt.dataset.k===cur;bt.classList.toggle("on",on);bt.setAttribute("aria-pressed",on);});
+    document.getElementById("tfStep").style.display=cur==="tr"?"block":"none";
+    document.getElementById("aVal").textContent=M(a);document.getElementById("bVal").textContent=M(b);
+    document.getElementById("tfGrid").innerHTML=g.base+g.poly(tri,{labels:["A","B","C"]})+g.poly(img,{color:C.gold,fo:0.25,labels:["A′","B′","C′"]});
+    var rows=["A","B","C"].map(function(L,i){return "<tr><td>"+L+" "+P(tri[i])+"</td><td>"+L+"′ ("+fmt(img[i][0])+", "+fmt(img[i][1])+")</td></tr>";}).join("");
+    var sz=t.size==="same"?"Same size and shape → <b>congruent</b>.":(t.size==="big"?"Twice as big, same shape → <b>similar</b>.":"Half as big, same shape → <b>similar</b>.");
+    document.getElementById("tfOut").innerHTML='<div class="small-note">Rule</div><div class="big">'+t.rule()+'</div><table class="xy"><tr><th>Pre-image</th><th>Image</th></tr>'+rows+'</table><div>'+sz+'</div>'+(cur==="tr"?'<div class="small-note">Use − and + to change a (left/right) and b (down/up).</div>':'');
+  }
+  draw();
+  window.__tf=function(k){cur=k;draw();};
+})();
+
+/* ---------- Part 3 explorer: vertical line test ---------- */
+(function(){
+  var g=new Grid(6),which="A",svg=document.getElementById("vltGrid"),sl=document.getElementById("vltX");
+  function curve(){var pts=[],t;
+    if(which==="A"){for(t=-6;t<=6.001;t+=0.25)pts.push([t,Math.abs(t)-2]);}   // y = |x| − 2
+    else{for(t=-4.5;t<=4.501;t+=0.25)pts.push([0.5*t*t-3,t]);}                 // x = ½y² − 3
+    return pts.filter(function(p){return Math.abs(p[0])<=6&&Math.abs(p[1])<=6;});}
+  function hits(x){
+    if(which==="A")return [[x,Math.abs(x)-2]];
+    if(x<-3)return [];var y=Math.sqrt(2*(x+3));if(y===0)return [[x,0]];return [[x,y],[x,-y]].filter(function(p){return Math.abs(p[1])<=6;});}
+  function draw(){
+    var x=Number(sl.value),h=hits(x),pts=curve();
+    var s=g.base+'<polyline points="'+pts.map(function(p){return g.X(p[0])+","+g.Y(p[1]);}).join(" ")+'" fill="none" stroke="'+C.navy+'" stroke-width="2.5"/>';
+    var col=h.length>1?C.red:C.blue;
+    s+='<line x1="'+g.X(x)+'" y1="'+g.Y(6)+'" x2="'+g.X(x)+'" y2="'+g.Y(-6)+'" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 4"/>';
+    h.forEach(function(p){s+='<circle cx="'+g.X(p[0])+'" cy="'+g.Y(p[1])+'" r="6" fill="'+col+'"/>';});
+    svg.innerHTML=s;
+    document.getElementById("vltXv").textContent=M(x);
+    var msg=h.length===0?"The line misses the graph here. Keep sliding.":(h.length===1?"The line hits the graph <b>1 time</b>. One x, one y.":"The line hits the graph <b>2 times</b>. One x has two y-values: "+P([x,+h[0][1].toFixed(1)])+" and "+P([x,+h[1][1].toFixed(1)])+".");
+    var verdict=which==="A"?"Every vertical line hits Graph A only once. <b>Graph A is a function.</b>":"Some vertical lines hit Graph B twice. <b>Graph B is not a function.</b>";
+    document.getElementById("vltOut").innerHTML='<div>'+msg+'</div><div class="small-note" style="margin-top:8px">'+verdict+'</div>';
+  }
+  sl.addEventListener("input",draw);
+  ["A","B"].forEach(function(k){var bt=document.getElementById("v"+k);bt.addEventListener("click",function(){which=k;
+    document.getElementById("vA").classList.toggle("on",k==="A");document.getElementById("vB").classList.toggle("on",k==="B");
+    document.getElementById("vA").setAttribute("aria-pressed",k==="A");document.getElementById("vB").setAttribute("aria-pressed",k==="B");draw();});});
+  draw();
+})();
+
+/* ---------- quick checks ---------- */
+function tbl(xs,ys){return '<table class="xy"><tr><th>x</th>'+xs.map(function(v){return "<td>"+M(v)+"</td>";}).join("")+'</tr><tr><th>y</th>'+ys.map(function(v){return "<td>"+M(v)+"</td>";}).join("")+'</tr></table>';}
+function mapping(ins,outs,arrows){
+  var s='<svg class="grid" viewBox="0 0 340 220" role="img" aria-label="Mapping diagram">';
+  s+='<rect x="40" y="20" width="80" height="185" rx="40" fill="#F1F3F7" stroke="'+C.navy+'" stroke-width="1.5"/><rect x="220" y="20" width="80" height="185" rx="40" fill="#F1F3F7" stroke="'+C.navy+'" stroke-width="1.5"/>';
+  s+='<text x="80" y="14" text-anchor="middle" font-size="12" fill="'+C.muted+'" font-family="Inter,sans-serif">Input (x)</text><text x="260" y="14" text-anchor="middle" font-size="12" fill="'+C.muted+'" font-family="Inter,sans-serif">Output (y)</text>';
+  function yy(i,n){return 40+i*(145/(n-1||1));}
+  s+='<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="'+C.navy+'"/></marker></defs>';
+  arrows.forEach(function(a){s+='<line x1="96" y1="'+(yy(a[0],ins.length)-4)+'" x2="238" y2="'+(yy(a[1],outs.length)-4)+'" stroke="'+C.navy+'" stroke-width="1.6" marker-end="url(#ah)"/>';});
+  ins.forEach(function(v,i){s+='<text x="80" y="'+yy(i,ins.length)+'" text-anchor="middle" font-size="16" font-weight="600" fill="'+C.navy+'" font-family="JetBrains Mono,ui-monospace,monospace">'+M(v)+'</text>';});
+  outs.forEach(function(v,i){s+='<text x="260" y="'+yy(i,outs.length)+'" text-anchor="middle" font-size="16" font-weight="600" fill="'+C.navy+'" font-family="JetBrains Mono,ui-monospace,monospace">'+M(v)+'</text>';});
+  return s+'</svg>';
+}
+function dotsFig(R,pts,label){var g=new Grid(R),s=g.base;pts.forEach(function(p){s+='<circle cx="'+g.X(p[0])+'" cy="'+g.Y(p[1])+'" r="5" fill="'+C.navy+'"/>';});return svgWrap(s,label);}
+
+var QS={
+qs1:[
+ {id:"c1",talk:'Which number tells you right or left? Which tells you up or down?',type:"xy",tag:"Numeric entry",text:"Triangle ABC is shown. What are the coordinates of vertex C?",
+  fig:function(){return shapeFig(6,[{pts:[[-4,3],[2,5],[1,-2]],labels:["A","B","C"]}],"Triangle ABC on a grid");},
+  ans:[1,-2],
+  wrong:function(x,y){if(x===-2&&y===1)return "You switched x and y. Read x first: go right or left. Then read y: go up or down.";
+    if(Math.abs(x)===1&&Math.abs(y)===2)return "The numbers are right, but check a sign. C is right of the y-axis and below the x-axis.";
+    return "Start at (0, 0). Count how far right or left to reach C. Then count up or down.";},
+  ok:"C is at (1, −2): right 1, down 2."},
+ {id:"c2",talk:'How can the signs of x and y tell you the quadrant without looking?',type:"mc",tag:"Multiple choice",text:"Rectangle PQRS is shown. Which quadrant is the rectangle in?",
+  fig:function(){return shapeFig(6,[{pts:[[-5,-1],[-2,-1],[-2,-4],[-5,-4]],labels:["P","Q","R","S"]}],"Rectangle PQRS on a grid");},
+  opts:[{h:"Quadrant I",why:"Quadrant I is top right. This rectangle is on the left and below the x-axis."},
+        {h:"Quadrant II",why:"Quadrant II is top left. This rectangle is below the x-axis, so y is negative."},
+        {h:"Quadrant III",ok:1},
+        {h:"Quadrant IV",why:"Quadrant IV is bottom right. This rectangle is left of the y-axis, so x is negative."}],
+  ok:"Every vertex has a negative x and a negative y. That is Quadrant III."},
+ {id:"c3",talk:'Which choice would you pick if you read y first? Why is that a trap?',type:"mc",tag:"Multiple choice",text:"Which vertex of trapezoid DEFG is at (−3, 4)?",
+  fig:function(){return shapeFig(6,[{pts:[[4,-3],[3,4],[-3,4],[-4,-3]],labels:["D","E","F","G"]}],"Trapezoid DEFG on a grid");},
+  opts:[{h:"D",why:"D is at (4, −3). It looks like you read y first. x always comes first."},
+        {h:"E",why:"E is at (3, 4). The x-value is −3, so go left, not right."},
+        {h:"F",ok:1},
+        {h:"G",why:"G is at (−4, −3). Go left 3, then up 4."}],
+  ok:"Left 3, then up 4 lands on F."}
+],
+qs2:[
+ {id:"t1",talk:'What does “− 3” in the rule tell you to do? Which way does the shape move?',type:"xy",tag:"Numeric entry",text:"Triangle JKL is translated using the rule (x + 4, y − 3). What are the coordinates of K′?",
+  fig:function(){return shapeFig(6,[{pts:[[-3,2],[0,5],[1,1]],labels:["J","K","L"]}],"Triangle JKL on a grid");},
+  ans:[4,2],
+  wrong:function(x,y){if(x===-4&&y===8)return "You moved the wrong way. +4 means right 4. −3 means down 3.";
+    if(x===2&&y===4)return "You switched x and y. Write x first.";
+    if(x===0&&y===5)return "That is K before the move. Now use the rule: add 4 to x and subtract 3 from y.";
+    if(x===4&&y===8)return "x is right. For y, the rule says y − 3. Subtract 3 from 5.";
+    if(x===-4&&y===2)return "y is right. For x, the rule says x + 4. Add 4 to 0.";
+    return "First find K: (0, 5). Then add 4 to x and subtract 3 from y.";},
+  ok:"K is (0, 5). (0 + 4, 5 − 3) = (4, 2)."},
+ {id:"t2",talk:'Compare P and P′. What changed and what stayed the same?',type:"mc",tag:"Multiple choice",text:"Triangle PQR was transformed to triangle P′Q′R′. Which transformation was used?",
+  fig:function(){return shapeFig(6,[{pts:[[2,1],[5,1],[5,3]],labels:["P","Q","R"]},{pts:[[-2,1],[-5,1],[-5,3]],labels:["P′","Q′","R′"],color:C.gold,fo:0.25}],"Triangle PQR and its image");},
+  opts:[{h:"Reflection over the x-axis",why:"A flip over the x-axis would move the shape below the x-axis. The y-values did not change here."},
+        {h:"Reflection over the y-axis",ok:1},
+        {h:"Rotation 180° about the origin",why:"A 180° turn changes both signs. Here the y-values stayed the same."},
+        {h:"Translation 7 units left",why:"Check P. Sliding 7 left would put P′ at (−5, 1), not (−2, 1). Also, the image is flipped."}],
+  ok:"P(2, 1) → P′(−2, 1). Only x changed sign, so it was flipped over the y-axis."},
+ {id:"t3",talk:'Clockwise or counterclockwise: which quadrant should the image land in?',type:"mc",tag:"Multiple choice",text:"Triangle DEF is rotated 90° clockwise about the origin. What are the coordinates of F′?",
+  fig:function(){return shapeFig(6,[{pts:[[2,1],[5,1],[2,4]],labels:["D","E","F"]}],"Triangle DEF on a grid");},
+  opts:[{h:"(4, −2)",ok:1},
+        {h:"(−4, 2)",why:"That is a 90° counterclockwise turn: (−y, x). Clockwise is (y, −x)."},
+        {h:"(−2, −4)",why:"That is a 180° turn: both signs change. A 90° turn switches x and y."},
+        {h:"(2, −4)",why:"That is a flip over the x-axis. A 90° turn switches x and y."}],
+  ok:"F is (2, 4). Clockwise rule (y, −x): (4, −2)."},
+ {id:"t4",talk:'Did the shape change size? What does that tell you about congruent and similar?',type:"sa",tag:"Select all",text:"Rectangle WXYZ was dilated to make W′X′Y′Z′. Select <b>all</b> true statements.",
+  fig:function(){return shapeFig(8,[{pts:[[-1,1],[2,1],[2,3],[-1,3]],labels:["W","X","Y","Z"]},{pts:[[-2,2],[4,2],[4,6],[-2,6]],labels:["W′","X′","Y′","Z′"],color:C.gold,fo:0.18}],"Rectangle WXYZ and its dilation");},
+  opts:[{h:"The scale factor is 2.",ok:1},{h:"The image is congruent to the pre-image.",why:"Congruent means same size. The image is bigger."},
+        {h:"The image is similar to the pre-image.",ok:1},{h:"The angles stay the same.",ok:1},
+        {h:"The rule is (x + 2, y + 2).",why:"Adding 2 would slide the shape, not grow it. W(−1, 1) → W′(−2, 2) means multiply by 2."}],
+  ok:"W(−1, 1) → W′(−2, 2): each coordinate × 2. Bigger, same shape, same angles: similar, not congruent."},
+ {id:"t5",talk:'Over the x-axis, which number keeps its value? Which one flips?',type:"mc",tag:"Find the error",text:"Maya reflected triangle MNO over the <b>x-axis</b>. Her answer: M′(−1, 2), N′(−4, 3), O′(−2, 5). What is her mistake?",
+  fig:function(){return shapeFig(6,[{pts:[[1,2],[4,3],[2,5]],labels:["M","N","O"]}],"Triangle MNO on a grid");},
+  opts:[{h:"She changed the sign of x. Over the x-axis, change the sign of y.",ok:1},
+        {h:"She should have switched x and y.",why:"Switching x and y is part of a 90° rotation, not a reflection."},
+        {h:"She should have changed both signs.",why:"Changing both signs is a 180° rotation."},
+        {h:"There is no mistake.",why:"Her image is on the left side. A flip over the x-axis moves the shape below the x-axis."}],
+  ok:"Over the x-axis the rule is (x, −y). The right answer is M′(1, −2), N′(4, −3), O′(2, −5)."}
+],
+qs3:[
+ {id:"f1",talk:'Which column do you check: x or y? Is a repeated y a problem?',type:"mc",tag:"Multiple choice",cls:"tables",text:"Which table shows a function?",
+  opts:[{h:tbl([1,2,2,3],[4,5,6,7]),why:"x = 2 goes to 5 and to 6. One input has two outputs."},
+        {h:tbl([1,2,3,4],[5,5,5,5]),ok:1},
+        {h:tbl([0,1,0,2],[3,4,5,6]),why:"x = 0 goes to 3 and to 5. One input has two outputs."},
+        {h:tbl([3,3,3,3],[1,2,3,4]),why:"x = 3 goes to four different outputs."}],
+  ok:"Every x is different, so each input has one output. The y-values repeat, and that is OK."},
+ {id:"f2",talk:'Count the arrows leaving each input. What do you notice about 4?',type:"mc",tag:"Multiple choice",text:"Does this mapping diagram show a function?",
+  fig:function(){return mapping([-1,0,2,5],[3,4,7],[[0,0],[1,1],[2,1],[3,2]]);},
+  opts:[{h:"Yes. Each input has exactly one arrow.",ok:1},
+        {h:"No. Two inputs go to 4.",why:"Two inputs can share an output. Check the inputs: each one has only one arrow."},
+        {h:"No. There are more inputs than outputs.",why:"The number of outputs does not matter. Only check that each input has one arrow."}],
+  ok:"0 and 2 both go to 4, and that is allowed. No input has two arrows."},
+ {id:"f3",talk:'In each set, look only at the first numbers. Do any repeat?',type:"sa",tag:"Select all",text:"Select <b>all</b> the sets of ordered pairs that are functions.",
+  opts:[{h:"{(1, 2), (2, 3), (3, 4)}",ok:1},{h:"{(0, 5), (1, 5), (2, 5)}",ok:1},
+        {h:"{(4, 1), (4, 2), (5, 3)}",why:"x = 4 has two outputs, 1 and 2."},
+        {h:"{(−2, 0), (0, −2), (−2, 3)}",why:"x = −2 has two outputs, 0 and 3."}],
+  ok:"Look at the first numbers. The first two sets never repeat an x."},
+ {id:"f4",talk:'Where would you draw a vertical line to test this graph?',type:"mc",tag:"Multiple choice",text:"Does this graph show a function?",
+  fig:function(){return dotsFig(6,[[-4,1],[-2,3],[1,-2],[1,4],[4,0]],"Graph of five points");},
+  opts:[{h:"Yes",why:"Try the vertical line test at x = 1. It hits two points."},{h:"No",ok:1}],
+  ok:"(1, −2) and (1, 4) share x = 1. A vertical line there hits twice, so it is not a function."},
+ {id:"f5",talk:'Who is right, Jordan or the table? Use the words input and output.',type:"mc",tag:"Find the error",text:'Jordan says this table is <b>not</b> a function “because 1 shows up twice in the y row.” '+tbl([-2,-1,0,1],[4,1,0,1])+'Is Jordan right?',
+  opts:[{h:"No. Outputs can repeat. Each x has only one y, so it is a function.",ok:1},
+        {h:"Yes. A function can’t repeat any number.",why:"Only the inputs matter. Outputs may repeat."},
+        {h:"Yes. x = 1 has two outputs.",why:"x = 1 appears only once. It goes to 1."}],
+  ok:"The x-values −2, −1, 0, 1 are all different. It is a function."}
+]};
+
+var stats={},TOTAL=13;
+function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].done)d++;if(stats[k].first)n++;});
+  document.getElementById("scoreN").textContent=n;document.getElementById("doneN").textContent=d;
+  if(d===TOTAL)summary(n);}
+function summary(n){
+  var parts=[["qs1","Reading coordinates"],["qs2","Transformations"],["qs3","Functions"]],miss=[];
+  parts.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push(p[1]+" ("+m+" missed on the first try)");});
+  var el=document.getElementById("summary");el.classList.add("show");
+  if(document.body.classList.contains("class-mode")){el.innerHTML='<h3 style="margin-top:0">Great work, class. You finished all 13 checks!</h3><p>Before you go, say these out loud together:</p><ul class="steps"><li>Read <b>x first</b> (right or left), then <b>y</b> (up or down).</li><li>Move <b>every vertex</b> with the rule. Slides, flips, and turns are <b>congruent</b>. Dilations are <b>similar</b>.</li><li>A function gives <b>each input exactly one output</b>. Outputs can repeat.</li></ul>';return;}
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+   (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You are ready for these standards on the Check-In.</p>')+
+   '<p class="small-note">Want more practice? Go back to the <a href="benchmarks.html">Benchmarks page</a> for the full Check-In review.</p>';
+}
+function num(s){s=String(s).replace(/[−–—]/g,"-").replace(/\s+/g,"");if(!/^[-+]?\d+(\.\d+)?$/.test(s))return NaN;return Number(s);}
+function render(boxId){
+  var box=document.getElementById(boxId),qi=QS[boxId];
+  var start={qs1:1,qs2:4,qs3:9}[boxId];
+  qi.forEach(function(q,i){
+    stats[q.id]={done:false,first:false,tries:0};
+    var d=document.createElement("div");d.className="q";d.id="q-"+q.id;
+    var h='<div class="qn">Check '+(start+i)+'<span class="tag">'+q.tag+'</span></div><div class="qt">'+q.text+'</div>';
+    if(q.fig)h+='<div class="qfig">'+q.fig()+'</div>';
+    if(q.type==="xy"){
+      h+='<div class="entry">(<span><label for="'+q.id+'x">x</label><input id="'+q.id+'x" inputmode="text" autocomplete="off"></span>,<span><label for="'+q.id+'y">y</label><input id="'+q.id+'y" inputmode="text" autocomplete="off"></span>)</div>';
+    }else{
+      h+='<div class="opts'+(q.cls?" "+q.cls:"")+'">'+q.opts.map(function(o,j){return '<button class="opt" data-j="'+j+'" aria-pressed="false"><span class="let">'+"ABCDE"[j]+'</span><span>'+o.h+'</span></button>';}).join("")+'</div>';
+      if(q.type==="sa")h+='<div class="small-note">More than one answer may be right.</div>';
+    }
+    if(q.talk)h+='<div class="talk"><b>Talk it over:</b> '+q.talk+'</div>';
+    h+='<div class="btnrow"><button class="primary chk">Check</button><button class="reveal">Show answer</button></div><div class="fb" role="status"></div>';
+    d.innerHTML=h;box.appendChild(d);
+    var fb=d.querySelector(".fb");
+    if(q.type!=="xy")d.querySelector(".opts").addEventListener("click",function(e){
+      var b=e.target.closest(".opt");if(!b||stats[q.id].done)return;
+      if(q.type==="mc")[].forEach.call(d.querySelectorAll(".opt"),function(o){o.classList.remove("sel");o.setAttribute("aria-pressed","false");});
+      var on=!b.classList.contains("sel");b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on);});
+    d.querySelector(".reveal").addEventListener("click",function(){
+      var st=stats[q.id];
+      if(q.type==="xy"){d.querySelector("#"+q.id+"x").value=M(q.ans[0]);d.querySelector("#"+q.id+"y").value=M(q.ans[1]);}
+      else{[].forEach.call(d.querySelectorAll(".opt"),function(o,j){o.classList.toggle("sel",!!q.opts[j].ok);o.classList.toggle("right",!!q.opts[j].ok);o.setAttribute("aria-pressed",!!q.opts[j].ok);});}
+      var why="";
+      if(q.type!=="xy")why='<ul class="whyall">'+q.opts.map(function(o,j){return o.ok?"":"<li><b>"+"ABCDE"[j]+" is wrong:</b> "+o.why+"</li>";}).join("")+'</ul>';
+      fb.className="fb ok";fb.innerHTML="<b>Answer: "+(q.type==="xy"?P(q.ans):q.opts.map(function(o,j){return o.ok?"ABCDE"[j]:null;}).filter(Boolean).join(", "))+".</b> "+q.ok+why;
+      d.querySelector(".chk").disabled=true;if(!st.done){st.done=true;upd();}
+    });
+    d.querySelector(".chk").addEventListener("click",function(){
+      var st=stats[q.id];if(st.done)return;var good=false,msg="";
+      if(q.type==="xy"){
+        var xs=d.querySelector("#"+q.id+"x").value,ys=d.querySelector("#"+q.id+"y").value;
+        if(/,/.test(xs)&&!ys){var sp=xs.replace(/[()]/g,"").split(",");xs=sp[0];ys=sp[1]||"";}
+        var x=num(xs.replace(/[()]/g,"")),y=num(ys.replace(/[()]/g,""));
+        if(isNaN(x)||isNaN(y)){fb.className="fb no";fb.innerHTML="Type a number in both boxes. Use a minus sign for negatives, like −2.";return;}
+        good=(x===q.ans[0]&&y===q.ans[1]);if(!good)msg=q.wrong(x,y);
+      }else{
+        var sel=[].map.call(d.querySelectorAll(".opt.sel"),function(o){return +o.dataset.j;});
+        if(!sel.length){fb.className="fb no";fb.innerHTML="Pick an answer first.";return;}
+        if(q.type==="mc"){good=!!q.opts[sel[0]].ok;if(!good)msg=q.opts[sel[0]].why;}
+        else{var wrongSel=sel.filter(function(j){return !q.opts[j].ok;}),need=q.opts.filter(function(o){return o.ok;}).length,got=sel.filter(function(j){return q.opts[j].ok;}).length;
+          good=!wrongSel.length&&got===need;
+          if(!good)msg=wrongSel.length?q.opts[wrongSel[0]].why+(wrongSel.length>1?" Another choice is also wrong.":""):"Everything you picked is true. But there "+(need-got===1?"is 1 more true statement.":"are "+(need-got)+" more true statements.");}
+      }
+      st.tries++;
+      if(good){st.done=true;st.first=(st.tries===1);fb.className="fb ok";fb.innerHTML="<b>Yes!</b> "+q.ok;
+        d.querySelector(".chk").disabled=true;
+        if(q.type!=="xy")[].forEach.call(d.querySelectorAll(".opt.sel"),function(o){o.classList.add("right");});
+        upd();}
+      else{fb.className="fb no";fb.innerHTML="<b>Not yet.</b> "+msg+(st.tries>=2?' <span class="small-note">Answer: '+(q.type==="xy"?P(q.ans):q.opts.map(function(o,j){return o.ok?"ABCDE"[j]:null;}).filter(Boolean).join(", "))+'.</span>':" Try again.");}
+    });
+  });
+}
+render("qs1");render("qs2");render("qs3");
+var cm=document.getElementById("classMode");
+cm.addEventListener("click",function(){var on=!document.body.classList.contains("class-mode");document.body.classList.toggle("class-mode",on);
+  cm.setAttribute("aria-pressed",on);cm.textContent=on?"Turn off Class mode":"Turn on Class mode";cm.classList.toggle("on",on);});
+window.__QS=QS;
+})();
+</script>
+</body>
+</html>
