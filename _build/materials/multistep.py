@@ -140,6 +140,9 @@ B = {   # solve-for-x items: n: (plain equation, x, steps)
   4: ("-4(x + 2) = 20", -7, [("Distribute −4", "-4x - 8 = 20"), ("+8 both sides", "-4x = 28"), ("÷(−4) both sides", "x = -7")]),
   5: ("6x + 3 - 2x = 2x + 13", 5, [("Combine like terms", "4x + 3 = 2x + 13"), ("−2x both sides", "2x + 3 = 13"), ("−3 both sides", "2x = 10"), ("÷2 both sides", "x = 5")]),
   6: ("[3/4]x + 2 = 11", 12, [("−2 both sides", "[3/4]x = 9"), ("× reciprocal " + fr(4, 3) + " both sides", "x = 12")]),
+  7: ("5x - 3(x + 2) = 14", 10, [("Distribute −3", "5x - 3x - 6 = 14"), ("Combine like terms", "2x - 6 = 14"), ("+6 both sides", "2x = 20"), ("÷2 both sides", "x = 10")]),
+  9: ("4(2x - 3) - 5x = 2(x + 7) - 6", 20, [("Distribute both sides", "8x - 12 - 5x = 2x + 14 - 6"), ("Combine like terms", "3x - 12 = 2x + 8"),
+                                           ("−2x both sides", "x - 12 = 8"), ("+12 both sides", "x = 20")]),
   8: ("2(3x - 1) + 4 = 4(x + 5)", 9, [("Distribute both sides", "6x - 2 + 4 = 4x + 20"), ("Combine like terms", "6x + 2 = 4x + 20"),
                                        ("−4x both sides", "2x + 2 = 20"), ("−2 both sides", "2x = 18"), ("÷2 both sides", "x = 9")]),
 }
@@ -184,14 +187,9 @@ def back(key):
       mcq(1, MC1), mcq(2, MC2),
       solve_q(3, 1, key, WS), solve_q(4, 2, key, WS),
       solve_q(5, 2, key, WS), solve_q(6, 2, key, WS, ' <span class="small">Use the reciprocal.</span>'),
-      pq(7, 2, f'How many solutions? <span class="eqn">{html(HM)}</span>',
-         (show(HM_ST).replace("<b>", "").replace("</b>", "") + '<div class="stp">Both sides match. Always true.</div>' if key else "")
-         + mc(["No solution", "Exactly one", "Infinitely many"], 2, key, 1).replace('class="ops c1"', 'class="ops c1" style="position:absolute;right:9px;bottom:6px;width:42%"' if not key else 'class="ops c1"'), key, WS),
+      solve_q(7, 2, key, WS),
       solve_q(8, 3, key, WS),
-      pq(9, 3, '<b style="font-size:9pt;color:#1E2D4F">Word problem</b>',
-         '<div class="stem" style="margin-top:2px">Pizza Shop A charges <b>$8</b> to deliver plus <b>$11</b> for each pizza. Shop B charges <b>$2</b> to deliver plus <b>$13</b> for each pizza. '
-         'Write and solve an equation. How many pizzas make the cost the <b>same</b>?</div>'
-         + (show(WP_ST) + '<div class="stp">Both cost $41.</div>' if key else ""), key, WS, "3 pizzas", "Pizzas:"),
+      solve_q(9, 3, key, WS),
       pq(10, 3, '<b style="font-size:9pt;color:#1E2D4F">Find the error</b>',
          f'<div class="stem" style="margin-top:2px">Dev solved <span class="m">{html(ER)}</span>. His work: '
          '<span class="m" style="font-weight:500">5<i>x</i> − 2 = 3<i>x</i> + 6 → 2<i>x</i> − 2 = 6 → 2<i>x</i> = 8 → <i>x</i> = 4</span>. '

@@ -224,6 +224,8 @@ G = {
   3: ("3x - 2 < 10", "x < 4", [("+2 both sides", "3x < 12"), ("÷3 both sides", "x < 4")], (-1, 9)),
   4: ("-3x + 5 ≤ 17", "x ≥ -4", [("−5 both sides", "-3x ≤ 12"), ("÷(−3) both sides FLIP", "x ≥ -4")], (-7, 3)),
   5: ("2(x + 3) > 14", "x > 4", [("Distribute 2", "2x + 6 > 14"), ("−6 both sides", "2x > 8"), ("÷2 both sides", "x > 4")], (-1, 9)),
+  9: ("-2(x - 5) + 3x ≤ 4x - 8", "x ≥ 6", [("Distribute −2", "-2x + 10 + 3x ≤ 4x - 8"), ("Combine like terms", "x + 10 ≤ 4x - 8"),
+       ("−4x both sides", "-3x + 10 ≤ -8"), ("−10 both sides", "-3x ≤ -18"), ("÷(−3) both sides FLIP", "x ≥ 6")], (1, 11)),
   10: ("-5x + 2 > 17", "x < -3", [("−2 both sides", "-5x > 15"), ("÷(−5) both sides FLIP", "x < -3")], (-8, 2)),
 }
 for n, (p, a, st, rg) in G.items(): worked_ineq(p, a, st)
@@ -292,11 +294,7 @@ def back(key):
          + ('<div class="stp"><span class="sl">Distribute 3</span>3<i>x</i> + 6 = 3<i>x</i> + <i>k</i>. Both sides must match, so <i>k</i> = 6.<br>'
             'Any other <i>k</i> makes a FALSE statement (like 6 = 0).</div>' if key else ""), key, WS,
          corner(f'{ans_box("a) <i>k</i> =", "6", key, 54)}<br><span style="display:inline-block;height:5px"></span><br>{ans_box("b) <i>k</i> =", "any number but 6", key, 54)}', key)),
-      pq(9, 3, '<!--blk--> <b style="font-size:9pt;color:#1E2D4F">Word problem</b> &nbsp;Maya can spend <b>at most $50</b>. A movie ticket is <b>$8</b>. Snacks are <b>$6</b> each. '
-         'Write and solve an inequality. What is the <b>most</b> snacks she can buy?',
-         ('<div class="stp" style="margin-bottom:2px">Let <i>x</i> = number of snacks.</div>' + show(Q9_ST)
-            + '<div class="stp">8 + 6(7) = 50 ✓. 8 snacks would cost $56. Too much.</div>' if key else ""),
-         key, WS, corner(ans_box("Snacks:", "7", key), key)),
+      graph_q(9, 3, key, WS),
       graph_q(10, 3, key, WS, f'<!--blk--> <b style="font-size:9pt;color:#1E2D4F">Find the error</b> &nbsp;Jada\'s work: <span class="m" style="font-weight:500;white-space:nowrap">{html(G[10][0])}</span> <span class="m" style="font-weight:500;white-space:nowrap">→ −5<i>x</i> &gt; 15</span> <span class="m" style="font-weight:500;white-space:nowrap">→ <i>x</i> &gt; −3</span>. '
          'What did she do wrong? Solve and graph it the right way.',
          ('<div class="stp">She divided by −5 but did not flip the symbol.</div>' if key else "")),
