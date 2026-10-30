@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 6 Interactive Review — Mr. Allen's Math Class</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E2D4F;--ink:#1B2333;--muted:#5B6475;--gold:#FFC107;--gold-line:#E0A800;--gold-text:#8A6100;--gold-soft:#FFF6D6;
+--bg:#F7F7F4;--line:#E3E5EA;--line-2:#D5D9E0;--ok:#15803D;--ok-bg:#E8F5EC;--no:#B42318;--no-bg:#FBEAE8;--blue:#1D4ED8;--blue-soft:#E8EEFC;
+--serif:"Source Serif 4",Georgia,"Times New Roman",serif;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans)}
+.wrap{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+.back-link{display:inline-flex;color:var(--muted);text-decoration:none;font-size:15px;font-weight:500;margin:0 0 18px;min-height:44px;align-items:center}
+.back-link:hover{color:var(--navy)}
+h1,h2,h3{font-family:var(--serif);color:var(--navy);font-weight:600;line-height:1.2}
+h1{font-size:32px;margin:0 0 8px}
+h2{font-size:26px;margin:0 0 4px}
+h3{font-size:20px;margin:22px 0 8px}
+.lede{color:var(--muted);margin:0 0 20px}
+.std{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:0 0 16px}
+.part{margin:36px 0 0;scroll-margin-top:70px}
+.part-head{border-left:4px solid var(--gold-line);padding:2px 0 2px 14px;margin:0 0 16px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line-2);border-radius:8px;background:#fff;color:var(--navy);text-decoration:none;font-weight:600;font-size:15px}
+.jump a:hover{border-color:var(--navy)}
+.jump a span{font:600 13px var(--mono);color:var(--muted);margin-left:8px}
+.key{background:var(--gold-soft);border-left:4px solid var(--gold-line);border-radius:6px;padding:12px 14px;margin:12px 0}
+.key b{color:var(--navy)}
+ul.steps{margin:8px 0;padding-left:22px}
+ul.steps li{margin:4px 0}
+.mono{font-family:var(--mono);font-weight:600}
+table.rules{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
+table.rules th,table.rules td{border:1px solid var(--line-2);padding:8px 10px;text-align:left;vertical-align:top}
+table.rules th{background:#F1F3F7;color:var(--navy);font-weight:600}
+table.rules td.r{font:600 15px var(--mono);white-space:nowrap;color:var(--navy)}
+.tablewrap{overflow-x:auto}
+.label-try{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--blue);margin:0 0 6px}
+.two{display:grid;grid-template-columns:1fr;gap:16px;align-items:start}
+@media(min-width:720px){.two{grid-template-columns:340px 1fr}}
+svg.grid{width:100%;max-width:340px;height:auto;display:block;margin:0 auto;touch-action:manipulation}
+.readout{background:#F1F3F7;border-radius:8px;padding:12px 14px;min-height:96px}
+.readout .big{font:600 24px var(--mono);color:var(--navy)}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+button{font:600 15px var(--sans);min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--line-2);background:#fff;color:var(--navy);cursor:pointer}
+button:hover{border-color:var(--navy)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.small{min-width:44px;padding:0 10px;font-family:var(--mono)}
+.stepper{display:inline-flex;align-items:center;gap:6px;margin-right:14px}
+.stepper .v{font:600 18px var(--mono);min-width:34px;text-align:center}
+table.xy{border-collapse:collapse;font:600 15px var(--mono);margin:8px 0}
+table.xy th,table.xy td{border:1px solid var(--line-2);padding:6px 10px;text-align:center}
+table.xy th{font-family:var(--sans);background:#F1F3F7;color:var(--navy)}
+.q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px;margin:0 0 16px}
+.q .qn{font:600 13px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.q .qt{font-weight:600;color:var(--ink);margin:0 0 10px}
+.q .tag{display:inline-block;font:600 11px var(--sans);letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;margin-left:6px;color:var(--muted);vertical-align:2px}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-height:48px;padding:8px 12px;font-weight:500;font-size:16px;color:var(--ink)}
+.opt .let{font:600 14px var(--mono);color:var(--muted);min-width:22px}
+.opt.sel{border-color:var(--navy);background:var(--blue-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opt table.xy{margin:0}
+.opts.tables{grid-template-columns:1fr}@media(min-width:560px){.opts.tables{grid-template-columns:1fr 1fr}}
+.opt{min-width:0}
+@media(max-width:480px){table.rules{font-size:14px}table.rules th,table.rules td{padding:6px 7px}table.rules td.r{font-size:13px}}
+.entry{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:600 22px var(--mono);color:var(--navy);margin:8px 0}
+.entry label{font:500 13px var(--sans);color:var(--muted);display:block}
+.entry input{font:600 20px var(--mono);width:84px;min-height:48px;padding:4px 8px;border:1px solid var(--line-2);border-radius:8px;text-align:center;color:var(--navy)}
+.fb{margin:10px 0 0;padding:10px 14px;border-radius:8px;display:none}
+.fb.ok{display:block;background:var(--ok-bg);color:#0E5A2B;border-left:4px solid var(--ok)}
+.fb.no{display:block;background:var(--no-bg);color:#7A1810;border-left:4px solid var(--no)}
+.qfig{margin:6px 0 10px}
+.score{margin:24px auto 0;max-width:360px;background:var(--navy);color:#fff;border-radius:10px;padding:10px 16px;text-align:center;font-weight:600;font-size:15px;box-shadow:0 4px 14px rgba(30,45,79,.18)}
+.score .mono{color:var(--gold)}
+#summary{display:none}
+#summary.show{display:block}
+input[type=range]{width:100%;min-height:44px;accent-color:var(--navy)}
+.small-note{font-size:14px;color:var(--muted)}
+.vocab{display:grid;grid-template-columns:1fr;gap:6px 18px;margin:8px 0 0}
+@media(min-width:620px){.vocab{grid-template-columns:1fr 1fr}}
+.vocab div{padding:8px 0;border-bottom:1px solid var(--line)}
+.vocab b{color:var(--navy);display:block}
+.big-idea{font:600 19px var(--serif);color:var(--navy);margin:0 0 4px}
+.mist{list-style:none;margin:8px 0 0;padding:0}
+.mist li{border-left:4px solid var(--no);background:#FDF5F4;border-radius:6px;padding:10px 12px;margin:8px 0}
+.mist li b{color:#7A1810}
+.mist li .fix{display:block;color:#0E5A2B;margin-top:2px}
+.skills{margin:8px 0 0;padding-left:22px}.skills li{margin:4px 0}
+.tabs2{display:grid;grid-template-columns:1fr;gap:16px}@media(min-width:720px){.tabs2{grid-template-columns:1fr 1fr}}
+.tabs2 .card{margin:0}
+.howto{border:1px solid var(--line);border-left:4px solid var(--blue);}
+.howto ol{margin:6px 0 0;padding-left:22px}.howto li{margin:4px 0}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px}
+.talk{display:none;background:var(--blue-soft);border-radius:8px;padding:10px 14px;margin:10px 0;color:#1E3A8A}
+.talk b{color:var(--blue)}
+.reveal{display:none}
+.whyall{margin:8px 0 0;padding-left:20px;font-size:15px}.whyall li{margin:3px 0}
+body.class-mode{font-size:20px}
+body.class-mode .wrap{max-width:1100px}
+body.class-mode .talk,body.class-mode .reveal{display:block}
+body.class-mode .reveal{display:inline-flex;align-items:center}
+body.class-mode .q .qt{font-size:22px}
+body.class-mode svg.grid{max-width:440px}
+body.class-mode .opt{font-size:20px;min-height:56px}
+body.class-mode .score{display:none}
+@media(min-width:720px){body.class-mode .two{grid-template-columns:440px 1fr}}
+</style>
+<script src="../brand.js"></script>
+</head>
+<body>
+<!-- SITE-BAR -->
+<script src="../site-bar.js"></script>
+<div class="wrap">
+<a class="back-link" href="unit6.html">← Unit 6</a>
+<div class="std">Unit 6 Review · NC.8.F.1 – NC.8.F.5 · NC.8.EE.8</div>
+<h1>Unit 6 Interactive Review</h1>
+<p class="lede">25 questions on functions, slope, slope-intercept form, tables, word problems, comparing functions, graphs that tell a story, and systems. They go in the same order as the notes. Each part starts with a short reminder. You can try again if you miss one. At the end, send your work to Mr. Allen.</p>
+<nav class="jump" aria-label="Parts of this review">
+<a href="#p1">1. Functions <span>4</span></a>
+<a href="#p2">2. Slope <span>4</span></a>
+<a href="#p3">3. Slope-intercept form <span>3</span></a>
+<a href="#p4">4. Tables → equations <span>3</span></a>
+<a href="#p5">5. Real-world lines <span>3</span></a>
+<a href="#p6">6. Comparing functions <span>2</span></a>
+<a href="#p7">7. Graphs that tell a story <span>2</span></a>
+<a href="#p8">8. Systems of equations <span>4</span></a>
+</nav>
+<div class="card howto">
+<div class="modebar"><button id="classMode" aria-pressed="false">Turn on Class mode</button><span class="small-note">For the board: bigger text, talk prompts, and a Show answer button.</span></div>
+<b>Doing this together as a class</b>
+<ol>
+<li>Put this page on the board and turn on <b>Class mode</b>.</li>
+<li>Read the <b>Remember</b> box for each part together.</li>
+<li>For each question: everyone answers on a whiteboard or paper. Read the <b>Talk it over</b> question with a partner. Then tap <b>Show answer</b>. It explains why each wrong choice is wrong.</li>
+</ol>
+<p class="small-note" style="margin:8px 0 0">On their own devices, students work alone and send their work at the end.</p>
+</div>
+
+<section class="part" id="p1">
+<div class="part-head"><div class="std">Part 1 · NC.8.F.1 · Notes 6.1</div><h2>Functions</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<p class="big-idea">A function gives each input exactly one output.</p>
+<ul class="steps"><li>The input is x. The output is y.</li><li><b>Outputs may repeat.</b> Only an input with two different outputs breaks the rule.</li><li>Mapping diagram: count the arrows leaving each input. Graph: use the <b>vertical line test</b>.</li></ul></div>
+<div id="qs1"></div>
+</section>
+
+<section class="part" id="p2">
+<div class="part-head"><div class="std">Part 2 · NC.8.F.4 · Notes 6.2</div><h2>Slope</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<p class="big-idea">Slope = rate of change = rise over run = m.</p>
+<ul class="steps"><li>From a graph: count the <b>rise</b> (up or down), then the <b>run</b> (right). Down is a negative rise.</li><li>Slope formula: <span class="mono">m = (y₂ − y₁) ÷ (x₂ − x₁)</span>. Subtracting a negative means add.</li><li>Four types: positive ↗, negative ↘, zero (flat) →, undefined (vertical) ↕.</li></ul></div>
+<div id="qs2"></div>
+</section>
+
+<section class="part" id="p3">
+<div class="part-head"><div class="std">Part 3 · NC.8.F.3 · Slope-intercept notes</div><h2>Slope-Intercept Form</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<p class="big-idea">y = mx + b</p>
+<ul class="steps"><li><b>m</b> is the slope: the number in front of x.</li><li><b>b</b> is the y-intercept: where the line crosses the y-axis (when x = 0).</li><li>To test a point, plug in x and see if you get y.</li></ul></div>
+<div id="qs3"></div>
+</section>
+
+<section class="part" id="p4">
+<div class="part-head"><div class="std">Part 4 · NC.8.F.3 · NC.8.F.4 · Notes 6.3</div><h2>Tables → Equations</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<ul class="steps"><li>Slope from a table: <b>change in y ÷ change in x</b> (Δy ÷ Δx).</li><li><b>b</b> is y when x = 0. No x = 0 row? Use the shortcut <span class="mono">b = y − m·x</span>.</li><li>A table is <b>linear</b> when Δy ÷ Δx is the same every time. Always divide. Don’t just eyeball Δy.</li></ul></div>
+<div id="qs4"></div>
+</section>
+
+<section class="part" id="p5">
+<div class="part-head"><div class="std">Part 5 · NC.8.F.4 · Notes 6.4</div><h2>Linear Functions in Real-World Context</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<ul class="steps"><li><b>m</b> = rate of change. Key words: per, each, every.</li><li><b>b</b> = starting value (when x = 0). Key words: flat fee, sign-up fee, starting amount.</li><li>Going up over time (filling, earning): m is positive. Going down (draining, using up): m is negative.</li></ul></div>
+<div id="qs5"></div>
+</section>
+
+<section class="part" id="p6">
+<div class="part-head"><div class="std">Part 6 · NC.8.F.2 · Notes 6.5</div><h2>Comparing Functions</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<ul class="steps"><li>Find m and b for <b>both</b> functions first.</li><li>Rate of change: compare the slopes (m). Starting value: compare the y-intercepts (b).</li><li>When do they cost the same? Set the two equations equal.</li></ul></div>
+<div id="qs6"></div>
+</section>
+
+<section class="part" id="p7">
+<div class="part-head"><div class="std">Part 7 · NC.8.F.5 · Notes 6.6</div><h2>Graphs That Tell a Story</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<ul class="steps"><li>Read left to right. <b>Up</b> = increasing. <b>Down</b> = decreasing. <b>Flat</b> = staying the same.</li><li><b>Steeper</b> = faster change. Gentler = slower change.</li><li>Distance from home goes <b>down</b> when someone goes back home.</li></ul></div>
+<div id="qs7"></div>
+</section>
+
+<section class="part" id="p8">
+<div class="part-head"><div class="std">Part 8 · NC.8.EE.8 · Notes 6.7</div><h2>Systems of Equations</h2></div>
+<div class="card"><div class="label-try">Remember</div>
+<ul class="steps"><li>The solution is the point where the lines <b>cross</b>. It makes <b>both</b> equations true.</li><li>Different slopes: one solution. Same slope, different b: parallel, no solution. Same line: infinitely many.</li><li>Substitution: put the “y =” expression in place of y in the other equation. Solve for x, then find y.</li></ul></div>
+<div id="qs8"></div>
+</section>
+
+<section class="card" id="summary" aria-live="polite"></section>
+<div id="send"></div>
+<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">25</span> · Answered <span class="mono" id="doneN">0</span></div>
+</div>
+<style>
+.entry.one input{width:110px}
+svg.fig{width:100%;max-width:340px;height:auto;display:block;margin:0 auto}
+body.class-mode svg.fig{max-width:440px}
+svg.mini{width:100%;max-width:170px;height:auto;display:block}
+.opt .optin{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.qtabs{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:flex-start}
+.qtabs .cap{font:600 14px var(--sans);color:var(--navy);margin:0 0 4px;text-align:center}
+.eqbox{font:600 18px var(--mono);color:var(--navy);background:#F1F3F7;border:1px solid var(--line-2);border-radius:8px;padding:10px 14px;display:inline-block}
+table.xy td.q{color:var(--no)}
+</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+(function(){
+"use strict";
+function M(n){return n<0?"−"+Math.abs(n):String(n);} // true minus
+function P(p){return "("+M(p[0])+", "+M(p[1])+")";}
+var C={navy:"#1E2D4F",muted:"#5B6475",line:"#E3E5EA",axis:"#5B6475",gold:"#E0A800",goldT:"#8A6100",blue:"#1D4ED8",red:"#B42318",green:"#15803D"};
+function f1(n){return Math.round(n*10)/10;}
+var FONT='font-family="Inter,system-ui,sans-serif"',MONO='font-family="JetBrains Mono,ui-monospace,monospace"';
+function T(x,y,s,o){o=o||{};return '<text x="'+f1(x)+'" y="'+f1(y)+'" text-anchor="'+(o.a||"middle")+'" font-size="'+(o.size||13)+'" font-weight="'+(o.w||600)+'" fill="'+(o.col||C.navy)+'" '+(o.mono?MONO:FONT)+(o.halo?' paint-order="stroke" stroke="#fff" stroke-width="4"':'')+(o.it?' font-style="italic"':'')+'>'+s+'</text>';}
+/* slope-intercept text: m may be a number or [num,den] */
+function eq(m,b){var ms;
+  if(Array.isArray(m)){ms=(m[0]<0?"−":"")+Math.abs(m[0])+"/"+m[1]+"x";}
+  else ms=m===0?"":m===1?"x":m===-1?"−x":M(m)+"x";
+  var bs=b===0?"":(ms?(b<0?" − "+Math.abs(b):" + "+b):M(b));
+  return "y = "+(ms||"")+(bs||(ms?"":"0"));}
+function mval(m){return Array.isArray(m)?m[0]/m[1]:m;}
+
+/* ---------- coordinate grid (every picture is built from its own numbers) ---------- */
+function Grid(R){
+  var pad=22,W=340,u=(W-2*pad)/(2*R);this.R=R;this.u=u;
+  this.X=function(x){return pad+(x+R)*u;};this.Y=function(y){return pad+(R-y)*u;};
+  var s="",i,step=R>6?2:1;
+  for(i=-R;i<=R;i++){
+    s+='<line x1="'+this.X(i)+'" y1="'+this.Y(-R)+'" x2="'+this.X(i)+'" y2="'+this.Y(R)+'" stroke="'+C.line+'" stroke-width="1"/>';
+    s+='<line x1="'+this.X(-R)+'" y1="'+this.Y(i)+'" x2="'+this.X(R)+'" y2="'+this.Y(i)+'" stroke="'+C.line+'" stroke-width="1"/>';}
+  s+='<line x1="'+this.X(-R)+'" y1="'+this.Y(0)+'" x2="'+this.X(R)+'" y2="'+this.Y(0)+'" stroke="'+C.axis+'" stroke-width="1.6"/>';
+  s+='<line x1="'+this.X(0)+'" y1="'+this.Y(-R)+'" x2="'+this.X(0)+'" y2="'+this.Y(R)+'" stroke="'+C.axis+'" stroke-width="1.6"/>';
+  for(i=-R;i<=R;i+=step){if(i===0)continue;
+    s+='<text x="'+this.X(i)+'" y="'+(this.Y(0)+12)+'" font-size="9.5" text-anchor="middle" fill="'+C.muted+'" '+FONT+'>'+M(i)+'</text>';
+    s+='<text x="'+(this.X(0)-4)+'" y="'+(this.Y(i)+3.5)+'" font-size="9.5" text-anchor="end" fill="'+C.muted+'" '+FONT+'>'+M(i)+'</text>';}
+  s+='<text x="'+(this.X(R)+2)+'" y="'+(this.Y(0)-5)+'" font-size="11" font-style="italic" text-anchor="end" fill="'+C.navy+'" font-family="Georgia,serif">x</text>';
+  s+='<text x="'+(this.X(0)+6)+'" y="'+(this.Y(R)+8)+'" font-size="11" font-style="italic" fill="'+C.navy+'" font-family="Georgia,serif">y</text>';
+  this.base=s;}
+Grid.prototype.dot=function(p,col,r){return '<circle cx="'+f1(this.X(p[0]))+'" cy="'+f1(this.Y(p[1]))+'" r="'+(r||5)+'" fill="'+(col||C.navy)+'" stroke="#fff" stroke-width="1.5"/>';};
+/* line y = m x + b clipped to the grid; label = text placed near lx */
+Grid.prototype.line=function(m,b,col,o){o=o||{};var R=this.R,mv=mval(m),lo=-R,hi=R;
+  if(mv!==0){var x1=(-R-b)/mv,x2=(R-b)/mv;lo=Math.max(-R,Math.min(x1,x2));hi=Math.min(R,Math.max(x1,x2));}
+  var s='<line x1="'+f1(this.X(lo))+'" y1="'+f1(this.Y(mv*lo+b))+'" x2="'+f1(this.X(hi))+'" y2="'+f1(this.Y(mv*hi+b))+'" stroke="'+col+'" stroke-width="3"'+(o.dash?' stroke-dasharray="7 5"':'')+'/>';
+  if(o.label){var lx=o.lx,ly=mv*lx+b;s+=T(this.X(lx)+(o.dx||0),this.Y(ly)+(o.dy||-10),o.label,{col:col,size:13,mono:true,halo:true,a:o.a||"middle"});}
+  return s;};
+Grid.prototype.vline=function(x,col){return '<line x1="'+this.X(x)+'" y1="'+this.Y(-this.R)+'" x2="'+this.X(x)+'" y2="'+this.Y(this.R)+'" stroke="'+col+'" stroke-width="2.5" stroke-dasharray="6 4"/>';};
+function svgWrap(inner,label){return '<svg class="grid" viewBox="0 0 340 340" role="img" aria-label="'+label+'">'+inner+'</svg>';}
+function ptLabel(g,p,s,dx,dy,col){return T(g.X(p[0])+(dx||0),g.Y(p[1])+(dy||-10),s,{col:col||C.navy,size:13,mono:true,halo:true});}
+
+/* ---------- tables ---------- */
+function tbl(xs,ys,o){o=o||{};var hx=o.hx||"x",hy=o.hy||"y";
+  function cell(v){return v==="?"?'<td class="q">?</td>':"<td>"+(typeof v==="number"?M(v):v)+"</td>";}
+  if(o.vert)return '<table class="xy"><tr><th>'+hx+'</th><th>'+hy+'</th></tr>'+xs.map(function(x,i){return "<tr>"+cell(x)+cell(ys[i])+"</tr>";}).join("")+'</table>';
+  return '<div class="tablewrap"><table class="xy"><tr><th>'+hx+'</th>'+xs.map(cell).join("")+'</tr><tr><th>'+hy+'</th>'+ys.map(cell).join("")+'</tr></table></div>';}
+function center(h){return '<div class="qtabs">'+h+'</div>';}
+function capd(cap,h){return '<div><div class="cap">'+cap+'</div>'+h+'</div>';}
+
+/* ---------- mapping diagram built from ordered pairs ---------- */
+var mapN=0;
+function mapping(pairs,o){o=o||{};var id="ah"+(++mapN);
+  var ins=[],outs=[];pairs.forEach(function(p){if(ins.indexOf(p[0])<0)ins.push(p[0]);if(outs.indexOf(p[1])<0)outs.push(p[1]);});
+  ins.sort(function(a,b){return a-b;});outs.sort(function(a,b){return a-b;});
+  var W=o.mini?200:340,H=o.mini?170:220,lx=o.mini?45:80,rx=o.mini?155:260,ow=o.mini?56:80,top=o.mini?36:40,span=o.mini?100:145,fs=o.mini?14:16;
+  function yy(i,n){return n===1?top+span/2:top+i*(span/(n-1));}
+  var s='<svg class="'+(o.mini?"mini":"grid")+'" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+(o.label||"Mapping diagram")+'">';
+  s+='<rect x="'+(lx-ow/2)+'" y="20" width="'+ow+'" height="'+(H-35)+'" rx="'+(ow/2)+'" fill="#F1F3F7" stroke="'+C.navy+'" stroke-width="1.5"/>';
+  s+='<rect x="'+(rx-ow/2)+'" y="20" width="'+ow+'" height="'+(H-35)+'" rx="'+(ow/2)+'" fill="#F1F3F7" stroke="'+C.navy+'" stroke-width="1.5"/>';
+  s+=T(lx,13,"Input (x)",{size:11,w:500,col:C.muted})+T(rx,13,"Output (y)",{size:11,w:500,col:C.muted});
+  s+='<defs><marker id="'+id+'" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="'+C.navy+'"/></marker></defs>';
+  pairs.forEach(function(p){var a=ins.indexOf(p[0]),b=outs.indexOf(p[1]);
+    s+='<line x1="'+(lx+ow/2-10)+'" y1="'+f1(yy(a,ins.length)-4)+'" x2="'+(rx-ow/2+8)+'" y2="'+f1(yy(b,outs.length)-4)+'" stroke="'+C.navy+'" stroke-width="1.6" marker-end="url(#'+id+')"/>';});
+  ins.forEach(function(v,i){s+=T(lx,yy(i,ins.length)+1,M(v),{size:fs,mono:true});});
+  outs.forEach(function(v,i){s+=T(rx,yy(i,outs.length)+1,M(v),{size:fs,mono:true});});
+  return s+'</svg>';}
+
+/* ---------- first-quadrant chart for word problems ---------- */
+function chart(o){var W=340,H=250,L=52,R=16,Tp=14,B=46,pw=W-L-R,ph=H-Tp-B;
+  function X(x){return L+x/o.xmax*pw;}function Y(y){return Tp+ph-y/o.ymax*ph;}
+  var s='<svg class="fig" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+o.label+'">',v;
+  for(v=0;v<=o.xmax;v+=o.xstep){s+='<line x1="'+f1(X(v))+'" y1="'+Tp+'" x2="'+f1(X(v))+'" y2="'+(Tp+ph)+'" stroke="'+C.line+'"/>'+T(X(v),Tp+ph+15,M(v),{size:10.5,w:500,col:C.muted});}
+  for(v=0;v<=o.ymax;v+=o.ystep){s+='<line x1="'+L+'" y1="'+f1(Y(v))+'" x2="'+(L+pw)+'" y2="'+f1(Y(v))+'" stroke="'+C.line+'"/>'+T(L-6,Y(v)+3.5,M(v),{size:10.5,w:500,col:C.muted,a:"end"});}
+  s+='<line x1="'+L+'" y1="'+(Tp+ph)+'" x2="'+(L+pw)+'" y2="'+(Tp+ph)+'" stroke="'+C.axis+'" stroke-width="1.6"/><line x1="'+L+'" y1="'+Tp+'" x2="'+L+'" y2="'+(Tp+ph)+'" stroke="'+C.axis+'" stroke-width="1.6"/>';
+  s+=T(L+pw/2,H-8,o.xlab,{size:12,col:C.navy});
+  s+='<text transform="translate(13 '+(Tp+ph/2)+') rotate(-90)" text-anchor="middle" font-size="12" font-weight="600" fill="'+C.navy+'" '+FONT+'>'+o.ylab+'</text>';
+  (o.lines||[]).forEach(function(l){var x2=l.x2!=null?l.x2:o.xmax,y2=l.m*x2+l.b;if(y2>o.ymax){x2=(o.ymax-l.b)/l.m;y2=o.ymax;}if(y2<0){x2=-l.b/l.m;y2=0;}
+    s+='<line x1="'+X(0)+'" y1="'+f1(Y(l.b))+'" x2="'+f1(X(x2))+'" y2="'+f1(Y(y2))+'" stroke="'+l.col+'" stroke-width="3"/>';});
+  (o.pts||[]).forEach(function(p){s+='<circle cx="'+f1(X(p[0]))+'" cy="'+f1(Y(p[1]))+'" r="5" fill="'+(p[2]||C.navy)+'" stroke="#fff" stroke-width="1.5"/>';
+    if(p[3])s+=T(X(p[0])+(p[4]||0),Y(p[1])+(p[5]||-11),p[3],{size:12.5,mono:true,halo:true,col:p[2]||C.navy});});
+  return s+'</svg>';}
+
+/* ---------- story graph (no numbers) built from segment end points ---------- */
+function story(pts,labels,o){var W=340,H=230,L=40,R=16,Tp=14,B=40,pw=W-L-R,ph=H-Tp-B;
+  function X(x){return L+x/10*pw;}function Y(y){return Tp+ph-y/10*ph;}
+  var s='<svg class="fig" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+o.label+'">';
+  s+='<line x1="'+L+'" y1="'+(Tp+ph)+'" x2="'+(L+pw)+'" y2="'+(Tp+ph)+'" stroke="'+C.axis+'" stroke-width="1.8"/><line x1="'+L+'" y1="'+Tp+'" x2="'+L+'" y2="'+(Tp+ph)+'" stroke="'+C.axis+'" stroke-width="1.8"/>';
+  s+=T(L+pw/2,H-12,o.xlab,{size:12});
+  s+='<text transform="translate(20 '+(Tp+ph/2)+') rotate(-90)" text-anchor="middle" font-size="12" font-weight="600" fill="'+C.navy+'" '+FONT+'>'+o.ylab+'</text>';
+  s+='<polyline points="'+pts.map(function(p){return f1(X(p[0]))+","+f1(Y(p[1]));}).join(" ")+'" fill="none" stroke="'+C.blue+'" stroke-width="3.2" stroke-linejoin="round"/>';
+  for(var i=0;i<pts.length-1;i++){if(!labels[i])continue;
+    var mx=(pts[i][0]+pts[i+1][0])/2,my=(pts[i][1]+pts[i+1][1])/2,slope=(pts[i+1][1]-pts[i][1]);
+    s+='<line x1="'+f1(X(pts[i+1][0]))+'" y1="'+Tp+'" x2="'+f1(X(pts[i+1][0]))+'" y2="'+(Tp+ph)+'" stroke="'+C.line+'" stroke-dasharray="4 4"/>';
+    s+=T(X(mx)+(slope>0?-12:slope<0?12:0),Y(my)-12,labels[i],{size:15,w:700,col:C.goldT,halo:true});}
+  return s+'</svg>';}
+
+/* ================= QUESTIONS ================= */
+var QS={
+/* ---------- Part 1: Functions (NC.8.F.1) ---------- */
+qs1:[
+ {id:"f1",std:"NC.8.F.1",band:3,type:"mc",tag:"Multiple choice",talk:'Count the arrows leaving each input. Is it a problem that two arrows land on 5?',
+  text:"Does this mapping diagram show a function?",
+  fig:function(){return mapping([[-2,5],[1,0],[3,5],[6,8]],{label:"Mapping diagram: −2 to 5, 1 to 0, 3 to 5, 6 to 8"});},
+  opts:[{h:"Yes. Each input has exactly one arrow.",ok:1},
+        {h:"No. Two inputs go to the output 5.",why:"Outputs may repeat. −2 and 3 can both go to 5. Check the inputs: each one has only one arrow."},
+        {h:"No. There are more inputs than outputs.",why:"The number of outputs does not matter. Only check that each input has one arrow."}],
+  ok:"Every input (−2, 1, 3, 6) has one arrow. Two inputs share the output 5, and that is fine."},
+ {id:"f2",std:"NC.8.F.1",band:4,type:"sa",tag:"Select all",talk:'In each set, look only at the first numbers. Do any repeat with a different second number?',
+  text:"Each set of ordered pairs is shown as a mapping diagram. Select <b>all</b> the sets that are functions.",
+  fig:function(){var S=FSETS;return center(S.map(function(s,i){return capd("Set "+"ABCD"[i],mapping(s,{mini:true,label:"Set "+"ABCD"[i]+" mapping diagram"}));}).join(""));},
+  opts:null,ok:"Sets A and C are functions. In Set B the input 0 goes to 2 and to 5. In Set D the input 5 goes to 6 and to 7."},
+ {id:"f3",std:"NC.8.F.1",band:4,type:"mc",tag:"Multiple choice",talk:'Where would you slide a vertical line? Does it ever touch two points?',
+  text:"Does this graph show a function?",
+  fig:function(){var g=new Grid(6),s=g.base;FGRAPH.forEach(function(p){s+=g.dot(p);});return svgWrap(s,"Graph of five points");},
+  opts:[{h:"Yes. No y-value repeats.",why:"Look at the x-values instead. A vertical line at x = 2 touches (2, −3) and (2, 1)."},
+        {h:"No. A vertical line at x = 2 touches two points.",ok:1},
+        {h:"No. A horizontal line at y = 1 touches two points.",why:"The test uses a vertical line, not a horizontal one. Outputs (y) may repeat."},
+        {h:"Yes. The points are not in a straight line.",why:"A function does not have to be a straight line. Use the vertical line test."}],
+  ok:"(2, −3) and (2, 1) share the input 2. One input has two outputs, so it is not a function."},
+ {id:"f4",std:"NC.8.F.1",band:4,type:"num",tag:"Numeric entry",talk:'Which row of the table has the inputs? Which input shows up twice?',
+  text:"This table is <b>not</b> a function. Which input breaks the rule? Type just the number.",
+  fig:function(){return center(tbl(F4X,F4Y));},
+  ans:3,pre:"input =",
+  wrong:function(v){if(v===6||v===4)return "That number is an output (y). Look at the x row. Find the input that shows up twice.";
+    if(v===1||v===5)return "The input "+v+" shows up only once, so it has one output. Find the input that shows up twice.";
+    return "List the inputs: 1, 3, 5, 3. Which one repeats?";},
+  ok:"The inputs are 1, 3, 5, 3. The input 3 goes to 6 and also to 4. One input, two outputs."}
+],
+/* ---------- Part 2: Slope ---------- */
+qs2:[
+ {id:"s1",std:"NC.8.F.4",band:3,type:"num",frac:true,tag:"Numeric entry",talk:'Count up first, then right. Which number goes on top?',
+  text:"Find the slope of the line. Use the two dots. Write a fraction in simplest form, like 3/4.",
+  fig:function(){var g=new Grid(6),s=g.base,a=[-2,-1],b=[4,3];
+    s+=g.line([2,3],1/3,C.blue);
+    s+=g.dot(a)+g.dot(b)+ptLabel(g,a,P(a),36,16)+ptLabel(g,b,P(b),-30,-6);return svgWrap(s,"A line through (−2, −1) and (4, 3)");},
+  ans:2/3,pre:"m =",
+  wrong:function(v){if(Math.abs(v-1.5)<1e-9)return "You put the run on top. Slope is rise over run: up 4, right 6, so 4/6.";
+    if(Math.abs(v+2/3)<1e-9)return "Check the sign. The line goes up from left to right, so the slope is positive.";
+    if(v===4||v===6)return "That is just the "+(v===4?"rise":"run")+". Slope = rise ÷ run.";
+    return "From (−2, −1) count up 4 to y = 3. Then count right 6 to x = 4. Slope = 4/6. Simplify.";},
+  ok:"Rise: up 4 (from −1 to 3). Run: right 6 (from −2 to 4). Slope = 4/6 = 2/3."},
+ {id:"s2",std:"NC.8.F.4",band:4,type:"mc",tag:"Find the error",talk:'Look at the bottom of Ana’s fraction. What is 2 minus a negative 2?',
+  text:'Ana found the slope of the line through (−2, 5) and (2, −3). Her work: <span class="mono">m = (−3 − 5) ÷ (2 − 2) = −8 ÷ 0</span>. She says the slope is undefined. What is her mistake?',
+  fig:function(){var g=new Grid(6),s=g.base,a=[-2,5],b=[2,-3];s+=g.line(-2,1,C.blue);
+    s+=g.dot(a)+g.dot(b)+ptLabel(g,a,P(a),-38,4)+ptLabel(g,b,P(b),36,4);return svgWrap(s,"A line through (−2, 5) and (2, −3)");},
+  opts:[{h:"2 − (−2) is 4, not 0. The slope is −8 ÷ 4 = −2.",ok:1},
+        {h:"The x-values go on top. The slope is 4 ÷ (−8).",why:"The rise (change in y) goes on top. Only the bottom of her work is wrong."},
+        {h:"She must start with the point that has the smaller y-value.",why:"You can start with either point. Just use the same order on top and bottom."},
+        {h:"There is no mistake. The slope is undefined.",why:"Undefined slope is a vertical line. This line goes down from left to right, so the slope is negative."}],
+  ok:"Subtracting a negative means add: 2 − (−2) = 2 + 2 = 4. So m = −8 ÷ 4 = −2."},
+ {id:"s3",std:"NC.8.F.4",band:3,type:"mc",tag:"Multiple choice",talk:'Does this line go up, go down, stay flat, or go straight up and down?',
+  text:"A line goes through (−3, 2) and (5, 2). What type of slope does it have?",
+  fig:function(){var g=new Grid(6),s=g.base,a=[-3,2],b=[5,2];s+=g.line(0,2,C.blue);s+=g.dot(a)+g.dot(b)+ptLabel(g,a,P(a),0,-12)+ptLabel(g,b,P(b),-8,-12);return svgWrap(s,"A line through (−3, 2) and (5, 2)");},
+  opts:[{h:"Positive",why:"A positive slope goes up from left to right. This line does not go up at all."},
+        {h:"Negative",why:"A negative slope goes down from left to right. This line does not go down."},
+        {h:"Zero",ok:1},
+        {h:"Undefined",why:"Undefined is a vertical (up and down) line. This line is flat. Remember: Zero = flat, Undefined = Up and down."}],
+  ok:"Both points have y = 2, so the rise is 0. m = 0 ÷ 8 = 0. A flat line has zero slope."},
+ {id:"s4",std:"NC.8.F.4",band:4,type:"num",tag:"Numeric entry",talk:'How far is it from x = −1 to x = 3? Then how far up must you go?',
+  text:"A line goes through (−1, 2) and (3, y). Its slope is 2. What is y?",
+  fig:function(){var g=new Grid(10),s=g.base,a=[-1,2];s+=g.vline(3,C.gold)+T(g.X(3)+6,g.Y(-8),"x = 3",{a:"start",col:C.goldT,halo:true});
+    s+=g.dot(a)+ptLabel(g,a,P(a),-14,-12);return svgWrap(s,"The point (−1, 2) and the dashed line x = 3");},
+  ans:10,pre:"y =",
+  wrong:function(v){if(v===8)return "8 is the rise. Start at y = 2 and go up 8.";
+    if(v===6)return "Check the run: 3 − (−1) = 3 + 1 = 4, not 2. The rise is 2 × 4 = 8.";
+    if(v===4)return "Slope 2 means rise ÷ run = 2. The run is 4, so the rise is 8, not 2.";
+    return "Run: 3 − (−1) = 4. Rise = slope × run = 2 × 4 = 8. Then y = 2 + 8.";},
+  ok:"Run: 3 − (−1) = 4. Slope 2 means rise ÷ 4 = 2, so the rise is 8. y = 2 + 8 = 10. Check: (10 − 2) ÷ (3 − (−1)) = 8 ÷ 4 = 2 ✓"}
+],
+/* ---------- Part 3: Slope-intercept form ---------- */
+qs3:[
+ {id:"i1",std:"NC.8.F.3",band:3,type:"mc",tag:"Multiple choice",talk:'Where does the line cross the y-axis? Does it go uphill or downhill?',
+  text:"Which equation matches this graph?",
+  fig:function(){var g=new Grid(6),s=g.base;s+=g.line(-2,3,C.blue);s+=g.dot([0,3])+g.dot([1,1])+g.dot([2,-1]);return svgWrap(s,"A line through (0, 3), (1, 1) and (2, −1)");},
+  opts:[{h:'<span class="mono">'+eq(-2,3)+'</span>',ok:1},
+        {h:'<span class="mono">'+eq(2,3)+'</span>',why:"The line goes down from left to right, so the slope is negative."},
+        {h:'<span class="mono">'+eq(3,-2)+'</span>',why:"You switched m and b. The line crosses the y-axis at 3, so b = 3."},
+        {h:'<span class="mono">'+eq([-1,2],3)+'</span>',why:"You put the run on top. From (0, 3) the line goes down 2 for every 1 right, so m = −2."}],
+  ok:"It crosses the y-axis at 3, so b = 3. It goes down 2 for every 1 to the right, so m = −2."},
+ {id:"i2",std:"NC.8.F.3",band:3,type:"num",tag:"Numeric entry",talk:'What is half of 8? Then what does “− 3” tell you to do?',
+  text:'For <span class="mono">y = ½x − 3</span>, what is y when x = 8?',
+  fig:function(){return center(tbl([0,2,4,8],[-3,-2,-1,"?"],{hy:"y = ½x − 3"}));},
+  ans:1,pre:"y =",
+  wrong:function(v){if(v===4)return "½ · 8 = 4 is right. Now do the − 3: 4 − 3.";
+    if(v===13)return "You used ½ · 8 as 16? Half of 8 is 4. Then 4 − 3.";
+    if(v===7)return "Multiply first, then subtract: ½ · 8 = 4, and 4 − 3 = 1.";
+    if(v===-1||v===-7)return "Check the sign. ½ · 8 = 4, and 4 − 3 = 1.";
+    return "Plug in 8 for x: y = ½ · 8 − 3 = 4 − 3.";},
+  ok:"y = ½ · 8 − 3 = 4 − 3 = 1. The table goes up 1 each time x goes up 2."},
+ {id:"i3",std:"NC.8.F.3",band:4,type:"sa",tag:"Select all",talk:'Plug in each x. Be careful with negative times negative.',
+  text:'Select <b>all</b> the points that are on the line <span class="mono">y = −3x + 2</span>.',
+  fig:function(){var g=new Grid(6),s=g.base;s+=g.line(-3,2,C.blue,{label:"y = −3x + 2",lx:2.2,dx:10,dy:4,a:"start"});return svgWrap(s,"The line y = −3x + 2");},
+  opts:[{h:"(0, 2)",ok:1},
+        {h:"(1, 5)",why:"−3(1) + 2 = −1, not 5. Keep the negative sign on the 3."},
+        {h:"(−1, 5)",ok:1},
+        {h:"(2, −4)",ok:1},
+        {h:"(−2, −4)",why:"−3(−2) = +6, so y = 6 + 2 = 8. A negative times a negative is positive."}],
+  ok:"(0, 2): −3(0) + 2 = 2 ✓. (−1, 5): 3 + 2 = 5 ✓. (2, −4): −6 + 2 = −4 ✓."}
+],
+/* ---------- Part 4: Tables -> equations ---------- */
+qs4:[
+ {id:"t1",std:"NC.8.F.4",band:3,type:"mc",tag:"Multiple choice",talk:'How much does y change each time x goes up 1? What is y when x = 0?',
+  text:"Which equation matches this table?",
+  fig:function(){return center(tbl([0,1,2,3],[7,4,1,-2]));},
+  opts:[{h:'<span class="mono">'+eq(-3,7)+'</span>',ok:1},
+        {h:'<span class="mono">'+eq(3,7)+'</span>',why:"y goes down by 3 each row (7 → 4 → 1). When y decreases, the slope is negative."},
+        {h:'<span class="mono">'+eq(-3,-2)+'</span>',why:"b is y when x = 0. That is 7, not the last y-value."},
+        {h:'<span class="mono">'+eq(7,-3)+'</span>',why:"You switched m and b. The change (−3) is m. The start (7) is b."}],
+  ok:"Each time x goes up 1, y changes by −3, so m = −3. When x = 0, y = 7, so b = 7. Check x = 3: −3(3) + 7 = −2 ✓"},
+ {id:"t2",std:"NC.8.F.4",band:4,type:"num",tag:"Numeric entry",talk:'This table has no x = 0 row. How can you find b?',
+  text:"This table is linear. It has no x = 0 row. Find b, the y-intercept. Type just the number.",
+  fig:function(){return center(tbl([2,4,6,8],[3,8,13,18]));},
+  ans:-2,pre:"b =",
+  wrong:function(v){if(v===3)return "3 is y when x = 2. b is y when x = 0. Work backward, or use b = y − m·x.";
+    if(v===2.5)return "5/2 is the slope m. Now use it to find b: b = 3 − (5/2)(2).";
+    if(v===-7)return "y goes up 5 when x goes up 2, so m = 5 ÷ 2 = 5/2, not 5. Then b = 3 − (5/2)(2).";
+    if(v===2)return "Check the sign. b = 3 − 5 = −2.";
+    return "Slope: 5 ÷ 2 = 5/2. Use the row (2, 3): b = 3 − (5/2)(2) = 3 − 5.";},
+  ok:"m = (8 − 3) ÷ (4 − 2) = 5/2. Using (2, 3): b = 3 − (5/2)(2) = 3 − 5 = −2. So y = (5/2)x − 2. Check x = 8: 20 − 2 = 18 ✓"},
+ {id:"t3",std:"NC.8.F.3",band:4,type:"mc",tag:"Multiple choice",talk:'The x-values skip around. What do you have to divide each time?',
+  text:"Is this table linear? If it is, what is the slope?",
+  fig:function(){return center(tbl([1,3,4,7],[4,10,13,22],{vert:true}));},
+  opts:[{h:"Linear. The slope is 3.",ok:1},
+        {h:"Not linear. Δy is 6, then 3, then 9.",why:"The x-values are not evenly spaced. Divide each Δy by its Δx: 6 ÷ 2, 3 ÷ 1, 9 ÷ 3. They are all 3."},
+        {h:"Linear. The slope is 6.",why:"6 is Δy for the first step, but Δx was 2. Slope = 6 ÷ 2 = 3."},
+        {h:"Not linear. The x-values do not go up by 1.",why:"x does not have to go up by 1. Check Δy ÷ Δx each time. It is always 3."}],
+  ok:"Δx = 2, 1, 3. Δy = 6, 3, 9. Δy ÷ Δx = 3, 3, 3 every time. It is linear with slope 3 (y = 3x + 1)."}
+],
+/* ---------- Part 5: Real-world context ---------- */
+qs5:[
+ {id:"r1",std:"NC.8.F.4",band:3,type:"mc",tag:"Word problem",talk:'Which cost is paid once? Which cost repeats every month?',
+  text:"A gym charges a $35 sign-up fee plus $20 per month. Which equation shows the total cost y after x months?",
+  fig:function(){return chart({xmax:6,ymax:180,xstep:1,ystep:20,xlab:"Months (x)",ylab:"Total cost ($)",label:"Graph of gym cost: starts at 35 and goes up 20 each month",
+    lines:[{m:20,b:35,col:C.blue}],pts:[[0,35,C.blue,"(0, 35)",34,14],[1,55,C.blue],[2,75,C.blue]]});},
+  opts:[{h:'<span class="mono">y = 20x + 35</span>',ok:1},
+        {h:'<span class="mono">y = 35x + 20</span>',why:"You switched them. $20 per month is the rate (m). The $35 fee is paid once, so it is b."},
+        {h:'<span class="mono">y = 55x</span>',why:"The fee is paid only once. Don’t add it to the monthly cost."},
+        {h:'<span class="mono">y = 20x − 35</span>',why:"The sign-up fee adds to the cost. It is + 35, not − 35."}],
+  ok:"$20 per month is the rate, so m = 20. The $35 fee is the starting value, so b = 35. y = 20x + 35."},
+ {id:"r2",std:"NC.8.F.4",band:4,type:"mc",tag:"Word problem",talk:'Is the water going up or down? What does the number in front of x tell you?',
+  text:'A tank is draining. The gallons left after x minutes is <span class="mono">y = −6x + 90</span>. What does the −6 mean?',
+  fig:function(){return chart({xmax:15,ymax:100,xstep:3,ystep:10,xlab:"Minutes (x)",ylab:"Gallons left",label:"Graph of a tank draining from 90 gallons",
+    lines:[{m:-6,b:90,col:C.blue}],pts:[[0,90,C.blue,"(0, 90)",32,4],[5,60,C.blue,"(5, 60)",30,-6]]});},
+  opts:[{h:"The tank loses 6 gallons each minute.",ok:1},
+        {h:"The tank started with 6 gallons.",why:"The start is b, the y-intercept. The tank started with 90 gallons."},
+        {h:"The tank gains 6 gallons each minute.",why:"The slope is negative. The water goes down, so the tank loses water."},
+        {h:"The tank is empty after 6 minutes.",why:"After 6 minutes, y = −6(6) + 90 = 54 gallons. It is not empty yet."}],
+  ok:"m = −6 is the rate of change: 6 fewer gallons every minute. The graph goes down from 90 to 60 in 5 minutes."},
+ {id:"r3",std:"NC.8.F.4",band:4,type:"num",tag:"Word problem",talk:'How much more do the extra hours cost? What does 1 hour cost? What is left over?',
+  text:"A bike rental charges a fixed fee plus a rate per hour. 3 hours cost $85. 6 hours cost $145. What is the fixed fee? Type just the number.",
+  fig:function(){return center(tbl([0,3,6],["?","$85","$145"],{hx:"Hours",hy:"Cost",vert:true})+chart({xmax:7,ymax:200,xstep:1,ystep:25,xlab:"Hours (x)",ylab:"Cost ($)",label:"Two points: (3, 85) and (6, 145)",
+    pts:[[3,85,C.blue,"(3, 85)",0,-12],[6,145,C.blue,"(6, 145)",-10,-12]]}));},
+  ans:25,pre:"$",
+  wrong:function(v){if(v===20)return "20 is the rate: $20 per hour. The fixed fee is the cost at 0 hours: 85 − 3(20).";
+    if(v===60)return "60 is the cost of the 3 extra hours. Divide by 3 to get the rate. Then find the cost at 0 hours.";
+    if(v===85||v===145)return "That is a total cost. The fixed fee is the cost at 0 hours.";
+    return "Rate: (145 − 85) ÷ (6 − 3) = 20 per hour. 3 hours of riding cost 60. Fixed fee: 85 − 60.";},
+  ok:"Rate: (145 − 85) ÷ (6 − 3) = 60 ÷ 3 = $20 per hour. 3 hours of riding cost $60. Fixed fee: 85 − 60 = $25. Check: 20(6) + 25 = 145 ✓"}
+],
+/* ---------- Part 6: Comparing functions ---------- */
+qs6:[
+ {id:"c1",std:"NC.8.F.2",band:4,type:"sa",tag:"Select all",talk:'Find m and b for both functions first. Then compare.',
+  text:"Compare Function A and Function B. Select <b>all</b> the true statements.",
+  fig:function(){return center(capd("Function A",'<div class="eqbox">y = 2x + 5</div>')+capd("Function B",tbl([0,1,2,3],[1,4,7,10])));},
+  opts:[{h:"Function B has the greater rate of change.",ok:1},
+        {h:"Function A has the higher starting value.",ok:1},
+        {h:"Function A has the greater rate of change.",why:"A has m = 2. In B, y goes up 3 each time x goes up 1, so m = 3. 3 > 2."},
+        {h:"Function B starts at 4.",why:"The starting value is y when x = 0. For B that is 1."},
+        {h:"They have the same slope.",why:"A has slope 2. B has slope 3."}],
+  ok:"A: m = 2, b = 5. B: m = 3 (up 3 each row), b = 1 (when x = 0). B changes faster. A starts higher."},
+ {id:"c2",std:"NC.8.F.2",band:4,type:"num",tag:"Word problem",talk:'Write an equation for each place. When are the costs equal?',
+  text:"Bounce Park A costs $12 per visit. Bounce Park B costs a $30 fee plus $6 per visit. After how many visits do they cost the same? Type just the number.",
+  fig:function(){return center(tbl([0,1,2,3],["$0","$12","$24","…"].map(String),{hx:"Visits",hy:"Park A",vert:false})+tbl([0,1,2,3],["$30","$36","$42","…"],{hx:"Visits",hy:"Park B"}));},
+  ans:5,pre:"visits =",
+  wrong:function(v){if(v===60)return "60 is the cost when they match. The question asks for the number of visits.";
+    if(Math.abs(v-2.5)<1e-9)return "You divided 30 by 12. Park B also adds $6 each visit. Solve 12x = 6x + 30.";
+    if(Math.abs(v-30/18)<0.01)return "Subtract 6x from both sides, don’t add: 12x − 6x = 30, so 6x = 30.";
+    return "Park A: y = 12x. Park B: y = 6x + 30. Set them equal: 12x = 6x + 30.";},
+  ok:"Park A: y = 12x. Park B: y = 6x + 30. 12x = 6x + 30 → 6x = 30 → x = 5. Check: 12(5) = 60 and 6(5) + 30 = 60 ✓"}
+],
+/* ---------- Part 7: Qualitative graphs ---------- */
+qs7:[
+ {id:"g1",std:"NC.8.F.5",band:3,type:"mc",tag:"Multiple choice",talk:'Read each part left to right. Up, flat, or down? Steep or gentle?',
+  text:"The graph shows Dev’s distance from home. Which story matches the graph?",
+  fig:function(){return story([[0,0],[5,6],[7,6],[8.5,0]],["A","B","C"],{xlab:"Time",ylab:"Distance from home",label:"Distance graph: gentle rise, flat, then steep drop to zero"});},
+  opts:[{h:"Dev walks slowly to the park, plays there, then runs home.",ok:1},
+        {h:"Dev runs to the park, plays there, then walks slowly home.",why:"Part A is gentle (slow) and Part C is steep (fast). This story has the speeds switched."},
+        {h:"Dev walks to the park, stops, then keeps walking farther away.",why:"In Part C the line goes down. The distance from home is getting smaller, so Dev is going home."},
+        {h:"Dev walks up a hill, stands on top, then slides down.",why:"The graph is not a picture of the hill. It shows distance from home over time."}],
+  ok:"A: gentle up = moving away slowly. B: flat = not moving. C: steep down = going home fast."},
+ {id:"g2",std:"NC.8.F.5",band:4,type:"mc",tag:"Multiple choice",talk:'Which parts go down? Which one goes down the steepest?',
+  text:"The graph shows the water in a bathtub. In which part is the tub draining the <b>fastest</b>?",
+  fig:function(){return story([[0,0],[3,7],[5,7],[7.5,5],[9,0]],["A","B","C","D"],{xlab:"Time",ylab:"Water in tub",label:"Bathtub graph with parts A to D"});},
+  opts:[{h:"Part A",why:"Part A goes up. The tub is filling, not draining."},
+        {h:"Part B",why:"Part B is flat. The water stays the same."},
+        {h:"Part C",why:"Part C goes down, so the tub is draining. But it is gentle. Part D is steeper."},
+        {h:"Part D",ok:1}],
+  ok:"Down means draining. Part D is the steepest drop, so the water leaves fastest there."}
+],
+/* ---------- Part 8: Systems ---------- */
+qs8:[
+ {id:"y1",std:"NC.8.EE.8",band:3,type:"xy",tag:"Numeric entry",talk:'Put your finger where the lines cross. Read x first, then y.',
+  text:"Solve the system by graphing. Where do the two lines cross? Type the ordered pair.",
+  fig:function(){var g=new Grid(8),s=g.base;
+    s+=g.line(1,-2,C.blue,{label:"y = x − 2",lx:4.5,dx:8,dy:16,a:"start"})+g.line(-2,7,C.goldT,{label:"y = −2x + 7",lx:0.5,dx:12,dy:4,a:"start"});
+    return svgWrap(s,"The lines y = x − 2 and y = −2x + 7");},
+  ans:[3,1],
+  wrong:function(x,y){if(x===1&&y===3)return "You switched x and y. Read x first (right or left), then y (up or down).";
+    if(x===0&&(y===-2||y===7))return "That is where one line crosses the y-axis. Find where the two lines cross each other.";
+    return "Find the one point on both lines. Check it: it must make y = x − 2 and y = −2x + 7 true.";},
+  ok:"The lines cross at (3, 1). Check: 3 − 2 = 1 ✓ and −2(3) + 7 = 1 ✓"},
+ {id:"y2",std:"NC.8.EE.8",band:4,type:"mc",tag:"Multiple choice",talk:'Plug x = 2 and y = 5 into each equation. Are both true?',
+  text:'Is (2, 5) a solution of this system? <span class="mono">y = 3x − 1</span> and <span class="mono">y = −x + 6</span>',
+  fig:function(){var g=new Grid(8),s=g.base;
+    s+=g.line(3,-1,C.blue,{label:"y = 3x − 1",lx:-1,dx:-10,dy:4,a:"end"})+g.line(-1,6,C.goldT,{label:"y = −x + 6",lx:-1,dx:-8,dy:4,a:"end"});
+    s+=g.dot([2,5],C.red)+T(g.X(2)+8,g.Y(5)-8,"(2, 5)",{col:C.red,mono:true,halo:true,a:"start"});
+    return svgWrap(s,"The lines y = 3x − 1 and y = −x + 6 with the point (2, 5)");},
+  opts:[{h:"No. It works in y = 3x − 1 but not in y = −x + 6.",ok:1},
+        {h:"Yes. It works in y = 3x − 1.",why:"A solution must make both equations true. −(2) + 6 = 4, not 5."},
+        {h:"Yes. It works in both equations.",why:"Check the second one again: −(2) + 6 = 4. That is not 5."},
+        {h:"No. It does not work in y = 3x − 1.",why:"3(2) − 1 = 5, so it does work in the first one. It fails the second one."}],
+  ok:"EQ 1: 3(2) − 1 = 5 ✓. EQ 2: −(2) + 6 = 4, but y is 5 ✗. It must work in both, so it is not a solution."},
+ {id:"y3",std:"NC.8.EE.8",band:4,type:"mc",tag:"How many solutions",talk:'Compare the slopes. Then compare the y-intercepts.',
+  text:'How many solutions does this system have? <span class="mono">y = 3x + 2</span> and <span class="mono">y = 3x − 4</span>',
+  fig:function(){var g=new Grid(8),s=g.base;
+    s+=g.line(3,2,C.blue,{label:"y = 3x + 2",lx:-1.5,dx:-8,dy:0,a:"end"})+g.line(3,-4,C.goldT,{label:"y = 3x − 4",lx:3,dx:8,dy:4,a:"start"});
+    return svgWrap(s,"The lines y = 3x + 2 and y = 3x − 4");},
+  opts:[{h:"One solution",why:"One solution needs different slopes. Both slopes are 3."},
+        {h:"No solution",ok:1},
+        {h:"Infinitely many solutions",why:"That needs the same line. The y-intercepts are different (2 and −4)."},
+        {h:"Two solutions",why:"Two straight lines can’t cross twice. They cross once, never, or are the same line."}],
+  ok:"Same slope (3), different y-intercepts (2 and −4). The lines are parallel and never cross. No solution."},
+ {id:"y4",std:"NC.8.EE.8",band:4,type:"xy",tag:"Numeric entry",talk:'What can you put in place of y in the second equation?',
+  text:'Solve by substitution. Type the ordered pair. <span class="mono">y = 2x − 1</span> and <span class="mono">x + y = 11</span>',
+  fig:function(){var g=new Grid(10),s=g.base;
+    s+=g.line(2,-1,C.blue,{label:"y = 2x − 1",lx:-3,dx:-8,dy:4,a:"end"})+g.line(-1,11,C.goldT,{label:"x + y = 11",lx:9,dx:-2,dy:20,a:"end"});
+    return svgWrap(s,"The lines y = 2x − 1 and x + y = 11")+'<p class="small-note" style="text-align:center;margin:4px 0 0">Use the graph to check your answer.</p>';},
+  ans:[4,7],
+  wrong:function(x,y){if(x===7&&y===4)return "You switched x and y. x = 4, so y = 2(4) − 1 = 7.";
+    if(x===6&&y===11)return "You dropped the x. Put (2x − 1) in place of y: x + (2x − 1) = 11, so 3x − 1 = 11.";
+    if(x===4&&y!==7)return "x = 4 is right. Now plug it in: y = 2(4) − 1.";
+    if(Math.abs(x-10/3)<0.01)return "Add 1 to both sides, don’t subtract: 3x − 1 = 11, so 3x = 12.";
+    return "Put (2x − 1) in place of y: x + (2x − 1) = 11. Combine like terms, then solve for x.";},
+  ok:"x + (2x − 1) = 11 → 3x − 1 = 11 → 3x = 12 → x = 4. Then y = 2(4) − 1 = 7. Check: 4 + 7 = 11 ✓"}
+]};
+var FSETS=[[[1,4],[2,4],[3,4]],[[0,2],[1,3],[0,5]],[[-3,1],[-1,2],[1,3]],[[5,6],[6,5],[5,7]]];
+var FGRAPH=[[-4,2],[-1,4],[2,-3],[2,1],[5,0]];
+var F4X=[1,3,5,3],F4Y=[2,6,9,4];
+/* Set options are built from the same sets the diagram draws */
+(function(){var why={1:"In Set B the input 0 goes to 2 and to 5. One input, two outputs.",3:"In Set D the input 5 goes to 6 and to 7. One input, two outputs."};
+  function isF(s){var d={};return s.every(function(p){if(p[0] in d&&d[p[0]]!==p[1])return false;d[p[0]]=p[1];return true;});}
+  QS.qs1[1].opts=FSETS.map(function(s,i){return isF(s)?{h:"Set "+"ABCD"[i]+": {"+s.map(P).join(", ")+"}",ok:1}:{h:"Set "+"ABCD"[i]+": {"+s.map(P).join(", ")+"}",why:why[i]};});})();
+
+/* ================= ENGINE (from the Units 4–5 tutorial, plus an ordered-pair type) ================= */
+var ORDER=[["qs1","Functions"],["qs2","Slope"],["qs3","Slope-intercept form"],["qs4","Tables → equations"],["qs5","Real-world lines"],["qs6","Comparing functions"],["qs7","Graphs that tell a story"],["qs8","Systems of equations"]];
+var stats={},TOTAL=0;ORDER.forEach(function(p){TOTAL+=QS[p[0]].length;});
+function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].done)d++;if(stats[k].first)n++;});
+  document.getElementById("scoreN").textContent=n;document.getElementById("doneN").textContent=d;
+  if(d===TOTAL)summary(n);}
+function summary(n){
+  var miss=[];
+  ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[0].replace("qs","p")+'">'+p[1]+"</a> ("+m+" missed on the first try)");});
+  var el=document.getElementById("summary");el.classList.add("show");
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+   (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You are ready for the Unit 6 test.</p>')+
+   '<p class="small-note">Now send your work to Mr. Allen below.</p>';
+}
+function num(s){s=String(s).replace(/[−–—]/g,"-").replace(/[$°]/g,"").replace(/\s+/g,"").replace(/^[a-z]+=/i,"");
+  var fr=s.match(/^([-+]?\d+(?:\.\d+)?)\/([-+]?\d+(?:\.\d+)?)$/);
+  if(fr){var dn=Number(fr[2]);return dn===0?NaN:Number(fr[1])/dn;}
+  if(!/^[-+]?\d+(\.\d+)?$/.test(s))return NaN;return Number(s);}
+function same(a,b){return Math.abs(a-b)<1e-9;}
+function rec(q,ok){if(window.ScoreSend)ScoreSend.record(q.id,ok,{std:q.std,band:q.band||4,label:q.text.replace(/<[^>]+>/g,"").slice(0,80)});}
+function fracText(v){for(var d=1;d<=12;d++){var n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9)return d===1?M(n):M(n)+"/"+d;}return M(v);}
+function ansText(q){if(q.type==="num")return (q.pre?q.pre+" ":"")+(q.frac?fracText(q.ans):M(q.ans));if(q.type==="xy")return P(q.ans);
+  return q.opts.map(function(o,j){return o.ok?"ABCDE"[j]:null;}).filter(Boolean).join(", ");}
+var qnum=0;
+function render(boxId){
+  var box=document.getElementById(boxId),qi=QS[boxId];
+  qi.forEach(function(q){
+    qnum++;stats[q.id]={done:false,first:false,tries:0};
+    var d=document.createElement("div");d.className="q";d.id="q-"+q.id;
+    var h='<div class="qn">Question '+qnum+'<span class="tag">'+q.tag+'</span></div><div class="qt">'+q.text+'</div>';
+    if(q.fig)h+='<div class="qfig">'+q.fig()+'</div>';
+    if(q.type==="num"){
+      h+='<div class="entry one"><label for="'+q.id+'n" style="display:inline;font:600 20px var(--mono);color:var(--navy)">'+(q.pre||"")+'</label> <input id="'+q.id+'n" inputmode="'+(q.frac?"text":"decimal")+'" autocomplete="off"></div>';
+    }else if(q.type==="xy"){
+      h+='<div class="entry">(<span><label for="'+q.id+'x">x</label><input id="'+q.id+'x" inputmode="text" autocomplete="off"></span>,<span><label for="'+q.id+'y">y</label><input id="'+q.id+'y" inputmode="text" autocomplete="off"></span>)</div>';
+    }else{
+      h+='<div class="opts'+(q.cls?" "+q.cls:"")+'">'+q.opts.map(function(o,j){return '<button class="opt" data-j="'+j+'" aria-pressed="false"><span class="let">'+"ABCDE"[j]+'</span><span>'+o.h+'</span></button>';}).join("")+'</div>';
+      if(q.type==="sa")h+='<div class="small-note">More than one answer may be right.</div>';
+    }
+    if(q.talk)h+='<div class="talk"><b>Talk it over:</b> '+q.talk+'</div>';
+    h+='<div class="btnrow"><button class="primary chk">Check</button><button class="reveal">Show answer</button></div><div class="fb" role="status"></div>';
+    d.innerHTML=h;box.appendChild(d);
+    var fb=d.querySelector(".fb"),choice=(q.type==="mc"||q.type==="sa");
+    if(choice)d.querySelector(".opts").addEventListener("click",function(e){
+      var b=e.target.closest(".opt");if(!b||stats[q.id].done)return;
+      if(q.type==="mc")[].forEach.call(d.querySelectorAll(".opt"),function(o){o.classList.remove("sel");o.setAttribute("aria-pressed","false");});
+      var on=!b.classList.contains("sel");b.classList.toggle("sel",on);b.setAttribute("aria-pressed",on);});
+    d.querySelector(".reveal").addEventListener("click",function(){
+      var st=stats[q.id];
+      if(q.type==="num"){d.querySelector("#"+q.id+"n").value=q.frac?fracText(q.ans):M(q.ans);}
+      else if(q.type==="xy"){d.querySelector("#"+q.id+"x").value=M(q.ans[0]);d.querySelector("#"+q.id+"y").value=M(q.ans[1]);}
+      else{[].forEach.call(d.querySelectorAll(".opt"),function(o,j){o.classList.toggle("sel",!!q.opts[j].ok);o.classList.toggle("right",!!q.opts[j].ok);o.setAttribute("aria-pressed",!!q.opts[j].ok);});}
+      var why="";
+      if(choice)why='<ul class="whyall">'+q.opts.map(function(o,j){return o.ok?"":"<li><b>"+"ABCDE"[j]+" is wrong:</b> "+o.why+"</li>";}).join("")+'</ul>';
+      fb.className="fb ok";fb.innerHTML="<b>Answer: "+ansText(q)+".</b> "+q.ok+why;
+      d.querySelector(".chk").disabled=true;
+      if(!st.done){st.done=true;if(window.ScoreSend)ScoreSend.revealed();if(!st.tries)rec(q,false);upd();}
+    });
+    d.querySelector(".chk").addEventListener("click",function(){
+      var st=stats[q.id];if(st.done)return;var good=false,msg="";
+      if(q.type==="num"){
+        var v=num(d.querySelector("#"+q.id+"n").value);
+        if(isNaN(v)){fb.className="fb no";fb.innerHTML=q.frac?"Type a number or a fraction, like 3/4. Use a minus sign for negatives, like −2.":"Type a number. Use a minus sign for negatives, like −2.";return;}
+        good=same(v,q.ans);if(!good)msg=q.wrong(v);
+      }else if(q.type==="xy"){
+        var xs=d.querySelector("#"+q.id+"x").value,ys=d.querySelector("#"+q.id+"y").value;
+        if(/,/.test(xs)&&!ys){var sp=xs.replace(/[()]/g,"").split(",");xs=sp[0];ys=sp[1]||"";}
+        var x=num(xs.replace(/[()]/g,"")),y=num(ys.replace(/[()]/g,""));
+        if(isNaN(x)||isNaN(y)){fb.className="fb no";fb.innerHTML="Type a number in both boxes. Use a minus sign for negatives, like −2.";return;}
+        good=same(x,q.ans[0])&&same(y,q.ans[1]);if(!good)msg=q.wrong(x,y);
+      }else{
+        var sel=[].map.call(d.querySelectorAll(".opt.sel"),function(o){return +o.dataset.j;});
+        if(!sel.length){fb.className="fb no";fb.innerHTML="Pick an answer first.";return;}
+        if(q.type==="mc"){good=!!q.opts[sel[0]].ok;if(!good)msg=q.opts[sel[0]].why;}
+        else{var wrongSel=sel.filter(function(j){return !q.opts[j].ok;}),need=q.opts.filter(function(o){return o.ok;}).length,got=sel.filter(function(j){return q.opts[j].ok;}).length;
+          good=!wrongSel.length&&got===need;
+          if(!good)msg=wrongSel.length?q.opts[wrongSel[0]].why+(wrongSel.length>1?" Another choice is also wrong.":""):"Everything you picked is true. But there "+(need-got===1?"is 1 more right answer.":"are "+(need-got)+" more right answers.");}
+      }
+      st.tries++;rec(q,good);
+      if(good){st.done=true;st.first=(st.tries===1);fb.className="fb ok";fb.innerHTML="<b>Yes!</b> "+q.ok;
+        d.querySelector(".chk").disabled=true;
+        if(choice)[].forEach.call(d.querySelectorAll(".opt.sel"),function(o){o.classList.add("right");});
+        upd();}
+      else{fb.className="fb no";fb.innerHTML="<b>Not yet.</b> "+msg+(st.tries>=2?' <span class="small-note">Answer: '+ansText(q)+'.</span>':" Try again.");}
+    });
+  });
+}
+ORDER.forEach(function(p){render(p[0]);});
+if(window.ScoreSend)ScoreSend.setup({kind:'practice',unit:'6',page:'Unit 6 · Interactive Review',mount:'#send',std:'NC.8.F.1',band:4});
+var cm=document.getElementById("classMode");
+cm.addEventListener("click",function(){var on=!document.body.classList.contains("class-mode");document.body.classList.toggle("class-mode",on);
+  cm.setAttribute("aria-pressed",on);cm.textContent=on?"Turn off Class mode":"Turn on Class mode";cm.classList.toggle("on",on);});
+window.__QS=QS;
+})();
+</script>
+</body>
+</html>
