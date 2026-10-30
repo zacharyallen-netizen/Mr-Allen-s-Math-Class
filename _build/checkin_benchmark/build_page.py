@@ -131,6 +131,7 @@ page = f'''<!DOCTYPE html>
 <style>
 {CSS}
 </style>
+<script src="../brand.js"></script>
 </head>
 <body>
 <!-- SITE-BAR -->

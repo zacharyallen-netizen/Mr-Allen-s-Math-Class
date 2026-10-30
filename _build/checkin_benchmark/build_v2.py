@@ -519,6 +519,7 @@ page = f'''<!DOCTYPE html>
 <title>NC Check-In Benchmark Review — Version 2 — Mr. Allen's Math Class</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>{PAGE_CSS}</style>
+<script src="../brand.js"></script>
 </head>
 <body>
 <!-- SITE-BAR -->

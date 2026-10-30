@@ -179,6 +179,7 @@ def build(cfg):
 .dia svg{max-width:100%%;height:auto;vertical-align:middle}
 @media print{.dia svg{max-width:200px}.dia *{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 %(extra_css)s</style>
+<script src="../brand.js"></script>
 </head>
 <body>
 %(nav)s
