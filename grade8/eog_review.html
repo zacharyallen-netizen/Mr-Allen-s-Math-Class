@@ -78,6 +78,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
   stroke-width:1;
 }
 
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;margin:0 1px}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.sf>span:last-child{padding:0 2px}
 </style>
 <script src="../brand.js"></script>
 </head>
@@ -619,7 +620,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
     <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">¹⁄₂</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q31','2','U6')">4</button>
 </div>
-  <div class="feedback" id="q31-fb">m=(11−3)/(5−1)=⁸⁄₄=2</div>
+  <div class="feedback" id="q31-fb">m=<span class="sf"><span>11−3</span><span>5−1</span></span>=⁸⁄₄=2</div>
 </div>
 
 <button class="next-btn" id="next-btn" onclick="showNext()">Next Question →</button>
@@ -667,14 +668,14 @@ function eogAnswer(btn, qid, correct, unit) {
   if(btn.textContent.trim() === correct.trim()) {
     btn.classList.add('correct');
     fb.className = 'feedback show c';
-    fb.textContent = '✓ Correct! ' + fb.textContent;
+    fb.innerHTML = '✓ Correct! ' + fb.innerHTML;
     score++;
     unitScores[unit]++;
   } else {
     btn.classList.add('wrong');
     btns.forEach(function(b){ if(b.textContent.trim()===correct.trim()) b.classList.add('reveal'); });
     fb.className = 'feedback show w';
-    fb.textContent = '✗ ' + fb.textContent;
+    fb.innerHTML = '✗ ' + fb.innerHTML;
   }
   
   document.getElementById('prog-score').textContent = 'Score: ' + score;

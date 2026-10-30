@@ -399,7 +399,9 @@ def card_html(t, q):
              f'<div class="tg-top"><span class="tg-code">{esc(code)}</span>'
              f'<span class="pill {lv}">{esc(t["level"])} ({t["score"]})</span>'
              f'<span class="tg-done">✓ Solved</span></div>',
-             f'<p class="ican">{esc(t["ican"])}</p>']
+             f'<p class="ican">{markup(esc(t["ican"]))}</p>']
+    if t.get("kid"):
+        parts.append(f'<p class="ican-kid">In short: {markup(esc(t["kid"]))}</p>')
     if q is None:
         parts.append('<p class="stem"><i>Question coming soon.</i></p></article>')
         return "".join(parts)

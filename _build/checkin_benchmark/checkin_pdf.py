@@ -347,7 +347,7 @@ def notes():
     <table class="t"><tr><th>One solution</th><th>No solution</th><th>Infinitely many solutions</th></tr>
       <tr><td>You end with <b>x = a number</b>.</td><td>Variables cancel, you get a <b>false</b> statement.</td><td>Variables cancel, you get a <b>true</b> statement.</td></tr>
       <tr><td class="math">4x + 1 = 2x + 7<br>x = 3</td><td class="math">2(x + 3) = 2x + 5<br>6 = 5 ✗</td><td class="math">3(x + 2) = 3x + 6<br>6 = 6 ✓</td></tr>
-      <tr><td class="small">Different slopes (x-coefficients)</td><td class="small">Same x-coefficients, different constants</td><td class="small">Both sides are exactly the same</td></tr></table></div>
+      <tr><td class="small">The x's do not cancel.</td><td class="small">The x's cancel and you get something false.</td><td class="small">Both sides are exactly the same</td></tr></table></div>
     <div class="cols">
       <div class="card gold"><h3>Inequalities: same steps + ONE rule</h3>Multiply or divide both sides by a <b>negative</b> → <b>flip the sign</b>.
         <div class="ex" style="margin-top:5px">−3x + 7 &gt; 19<br>−3x &gt; 12<br>x <b>&lt;</b> −4 &nbsp;<span class="small">(÷ −3 → flip)</span></div>{numline_lt()}<div class="small">Open circle: −4 is NOT included (&lt;). Closed circle for ≤ or ≥.</div></div>
@@ -368,8 +368,8 @@ def notes():
     <div class="cols">
       <div class="card"><h3>Vocabulary</h3><table class="t">
         <tr><td><b>Relation</b></td><td>Any set of ordered pairs.</td></tr>
-        <tr><td><b>Input / Domain</b></td><td>The x-values (what goes in).</td></tr>
-        <tr><td><b>Output / Range</b></td><td>The y-values (what comes out).</td></tr>
+        <tr><td><b>Input</b></td><td>The x-values (what goes in).</td></tr>
+        <tr><td><b>Output</b></td><td>The y-values (what comes out).</td></tr>
         <tr><td><b>Function</b></td><td>A relation where no input has two different outputs.</td></tr></table></div>
       <div class="card gold"><h3>The ONE question to ask</h3><div style="font-size:11pt">"Does any <b>x</b> repeat with a <b>different y</b>?"</div>
         <ul class="tight"><li><b>Yes</b> → NOT a function.</li><li><b>No</b> → function.</li>
@@ -407,7 +407,7 @@ def notes():
         poly([(-x, y) for x, y in tri], "#FFC107", "#c98f00", ["A'", "B'", "C'"], dash=True, lab_off=[(3, 12), (-15, 12), (3, -3)])))
     g3 = f"""
     <div class="pb"></div>{sec("G.3", "Transformations with Coordinates", "Full Notes — New", True)}
-    <div class="ican"><b>I can</b> describe the effect of translations, reflections (over the x- or y-axis), rotations (90°, 180°, 270° about the origin), and dilations (about the origin) using coordinates.</div>
+    <div class="ican"><b>I can</b> move a shape on a grid and give the new points.</div>
     <div class="cols">
       <div class="card"><h3>Vocabulary</h3><table class="t">
         <tr><td><b>Pre-image</b></td><td>The original figure: A, B, C</td></tr>
@@ -451,7 +451,7 @@ def add(std, typ, stem, opts=None, cols=2, entry=None, fig=None, ans=None, corre
 add("NS.1", "Select All That Apply", "Select <b>ALL</b> of the numbers that are <b>irrational</b>.",
     ["√49", "√20", "0.<span class='bar'>37</span>", "π", f"−{fr(5,8)}", "0.1010010001… <span class='small'>(pattern: one more 0 each time)</span>"], cols=2,
     ans="B, D, F", correct=[1, 3, 5],
-    why="√20 is irrational because 20 is not a perfect square. π never ends and never repeats. 0.1010010001… never ends and has no block that repeats. <b>Not irrational:</b> √49 = 7; 0.<span class='bar'>37</span> repeats (= 37/99); −5/8 is already a fraction.")
+    why="√20 is irrational because 20 is not a perfect square. π never ends and never repeats. 0.1010010001… never ends and has no block that repeats. <b>Not irrational:</b> √49 = 7; 0.<span class='bar'>37</span> repeats (= <span class='frac'><span>37</span><span>99</span></span>); −<span class='frac'><span>5</span><span>8</span></span> is already a fraction.")
 add("NS.1", "Numeric Entry", "Use the 9's rule. Write the repeating decimal 0.<span class='bar'>36</span> = 0.363636… as a fraction in simplest form.", entry=True,
     ans=f"{fr(4,11)}",
     why=f"Two digits repeat (36), so the denominator is two 9's: {fr(36,99)}. Simplify by dividing the top and bottom by 9: {fr(4,11)}.")
@@ -459,18 +459,18 @@ add("NS.1", "Multiple Choice", "Which fraction is equal to 0.<span class='bar'>2
     [fr(27,100), fr(3,11), fr(2,7), fr(27,90)], cols=2, ans="B", correct=[1],
     why=f"9's rule: 2 digits repeat (27), so use two 9's: {fr(27,99)}. Simplify (÷ 9): {fr(3,11)}. <b>Traps:</b> A is 0.27 (it stops); C = 0.285714…; D uses 90 instead of 99.")
 add("NS.1", "Multiple Choice", "Which statement is true?",
-    ["Every fraction has a decimal that terminates (ends).", "0.161616… is irrational because it never ends.", "√50 is irrational because 50 is not a perfect square.", "π is rational because π = 22/7."], cols=1, ans="C", correct=[2],
-    why="7² = 49 and 8² = 64, so √50 is between 7 and 8 and is not a whole number — it is irrational. A is false (1/3 = 0.333… repeats). B is false: it repeats, so it's rational (16/99). D is false: 22/7 is only an <i>approximation</i> of π.")
+    ["Every fraction has a decimal that terminates (ends).", "0.161616… is irrational because it never ends.", "√50 is irrational because 50 is not a perfect square.", "π is rational because π = <span class='frac'><span>22</span><span>7</span></span>."], cols=1, ans="C", correct=[2],
+    why="7² = 49 and 8² = 64, so √50 is between 7 and 8 and is not a whole number — it is irrational. A is false (<span class='frac'><span>1</span><span>3</span></span> = 0.333… repeats). B is false: it repeats, so it's rational (<span class='frac'><span>16</span><span>99</span></span>). D is false: <span class='frac'><span>22</span><span>7</span></span> is only an <i>approximation</i> of π.")
 # EE.1
 add("EE.1", "Multiple Choice", "Which value is equal to the expression?<div class='center math' style='font-size:13pt;margin:4px 0'>" + fr("3<sup>4</sup> · 3<sup>−6</sup>", "3<sup>2</sup>") + "</div>",
     ["−81", fr(1,81), fr(1,9), "81"], cols=2, ans="B", correct=[1],
-    why=f"Top: 3<sup>4 + (−6)</sup> = 3<sup>−2</sup>. Divide: 3<sup>−2 − 2</sup> = 3<sup>−4</sup> = {fr(1,'3<sup>4</sup>')} = {fr(1,81)}. <b>Traps:</b> −81 treats the negative exponent as a negative number; 1/9 forgets to subtract the 2 in the denominator.")
+    why=f"Top: 3<sup>4 + (−6)</sup> = 3<sup>−2</sup>. Divide: 3<sup>−2 − 2</sup> = 3<sup>−4</sup> = {fr(1,'3<sup>4</sup>')} = {fr(1,81)}. <b>Traps:</b> −81 treats the negative exponent as a negative number; <span class='frac'><span>1</span><span>9</span></span> forgets to subtract the 2 in the denominator.")
 add("EE.1", "Numeric Entry", "What is the value of the expression?<div class='center math' style='font-size:13pt;margin:4px 0'>(2<sup>3</sup>)<sup>2</sup> · 2<sup>−4</sup> · 7<sup>0</sup></div>", entry=True,
     ans="4", why="(2³)² = 2⁶ (multiply exponents). 2⁶ · 2⁻⁴ = 2² (add exponents). 7⁰ = 1. So 2² · 1 = <b>4</b>.")
 add("EE.1", "Select All That Apply", f"Select <b>ALL</b> expressions that are equal to {fr(1,16)}.",
     ["4<sup>−2</sup>", "2<sup>−4</sup>", "−16", "(−4)<sup>−2</sup>", "−4<sup>−2</sup>", fr("2<sup>8</sup>", "2<sup>4</sup>")], cols=3,
     ans="A, B, D", correct=[0, 1, 3],
-    why=f"4⁻² = 1/4² = 1/16 ✓. 2⁻⁴ = 1/2⁴ = 1/16 ✓. (−4)⁻² = 1/(−4)² = 1/16 ✓ (the negative is inside the parentheses, so it gets squared). <b>Not equal:</b> −16; −4⁻² = −(1/16); 2⁸/2⁴ = 2⁴ = 16.")
+    why=f"4⁻² = <span class='frac'><span>1</span><span>4²</span></span> = <span class='frac'><span>1</span><span>16</span></span> ✓. 2⁻⁴ = <span class='frac'><span>1</span><span>2⁴</span></span> = <span class='frac'><span>1</span><span>16</span></span> ✓. (−4)⁻² = <span class='frac'><span>1</span><span>(−4)²</span></span> = <span class='frac'><span>1</span><span>16</span></span> ✓ (the negative is inside the parentheses, so it gets squared). <b>Not equal:</b> −16; −4⁻² = −(<span class='frac'><span>1</span><span>16</span></span>); <span class='frac'><span>2⁸</span><span>2⁴</span></span> = 2⁴ = 16.")
 add("EE.1", "Multiple Choice", "Which expression is equivalent to the expression below?<div class='center math' style='font-size:13pt;margin:4px 0'>" + fr("(x<sup>5</sup>y<sup>−2</sup>)<sup>3</sup>", "x<sup>2</sup>y<sup>−4</sup>") + "</div>",
     [fr("x<sup>13</sup>", "y<sup>2</sup>"), "x<sup>13</sup>y<sup>2</sup>", fr("x<sup>6</sup>", "y<sup>8</sup>"), fr("x<sup>17</sup>", "y<sup>10</sup>")], cols=2, ans="A", correct=[0],
     why=f"Power of a power: (x⁵y⁻²)³ = x¹⁵y⁻⁶. Divide: x<sup>15−2</sup> = x¹³ and y<sup>−6−(−4)</sup> = y⁻². So x¹³y⁻² = {fr('x<sup>13</sup>','y<sup>2</sup>')}. <b>Traps:</b> B forgets the negative exponent means flip; C adds 5 + 3 instead of multiplying; D multiplies instead of dividing.")
@@ -492,7 +492,7 @@ add("F.1", "Multiple Choice", "Which table represents <i>y</i> as a function of 
     why="In B every input (2, 4, 6, 8) is different, so each has exactly one output. All outputs being 5 is fine. A: x = 1 → 4 and 6. C: x = −1 → 3 and 4. D: x = 5 has four outputs.")
 add("F.1", "Multiple Choice", "Which graph represents a function?",
     [curve_graph("circle", u=10), curve_graph("sideparab", u=10), curve_graph("vee", u=10), curve_graph("vertical", u=10)], cols=4, ans="C", correct=[2],
-    why="Use the vertical line test. Graph C (the V shape) is crossed only once by any vertical line. A vertical line hits the circle (A) and the sideways U (B) twice, and graph D is itself a vertical line — x = 2 has infinitely many outputs.")
+    why="Use the vertical line test. Graph C (the V shape) is crossed only once by any vertical line. A vertical line hits the circle (A) twice. It also hits the sideways U (B) twice. Graph D is a vertical line, so x = 2 has many outputs.")
 add("F.1", "Select All That Apply", "Select <b>ALL</b> of the relations that are functions.",
     ["{(1, 2), (2, 3), (3, 4)}", "{(2, 1), (2, 3), (4, 5)}", "{(−3, 5), (0, 5), (3, 5)}", "{(0, 0), (1, 1), (1, −1)}", "{(7, 2), (8, 2), (9, 3)}"], cols=1,
     ans="A, C, E", correct=[0, 2, 4],

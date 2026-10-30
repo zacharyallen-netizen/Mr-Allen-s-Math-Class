@@ -26,15 +26,15 @@ def fr(a, b): return f'<span class="fr"><span>{a}</span><span>{b}</span></span>'
 
 # Specific, kind feedback for each wrong choice (house rule: name the mistake).
 WRONG = {
- 0: {"pick": {0: "√49 = 7, so it is rational.", 2: "0.3737… repeats, so it is rational.", 4: "−5/8 is already a fraction, so it is rational."},
+ 0: {"pick": {0: "√49 = 7, so it is rational.", 2: "0.3737… repeats, so it is rational.", 4: "−<span class='fr'><span>5</span><span>8</span></span> is already a fraction, so it is rational."},
      "miss": {1: "√20 is irrational. 20 is not a perfect square.", 3: "π is irrational. Its decimal never ends and never repeats.",
               5: "0.1010010001… never repeats the same block, so it is irrational."}},
- 2: {0: "27/100 = 0.27. That decimal stops. 0.2727… keeps going.", 2: "2/7 = 0.285714…, not 0.2727….", 3: "27/90 = 0.3. Two digits repeat, so put 27 over 99: 27/99 = 3/11."},
- 3: {0: "Not every fraction stops. 1/3 = 0.333… repeats.", 1: "0.161616… repeats, so it is rational. It equals 16/99.", 3: "22/7 is close to π, but not equal. π is irrational."},
- 4: {0: "A negative exponent does not make the number negative. 3⁻⁴ = 1/81.", 2: "Subtract the bottom exponent too: −2 − 2 = −4. So the answer is 3⁻⁴ = 1/81.", 3: "The exponent is negative, so flip it: 3⁻⁴ = 1/3⁴ = 1/81."},
- 6: {"pick": {2: "−16 is negative. 1/16 is positive.", 4: "−4⁻² means −(4⁻²) = −1/16. The negative sign is outside the power.", 5: "2⁸ ÷ 2⁴ = 2⁴ = 16, not 1/16."},
-     "miss": {0: "4⁻² = 1/4² = 1/16. It belongs.", 1: "2⁻⁴ = 1/2⁴ = 1/16. It belongs.", 3: "(−4)⁻² = 1/(−4)² = 1/16. A negative number squared is positive."}},
- 7: {1: "y⁻² has a negative exponent. Move it to the bottom: x¹³/y².", 2: "Power to a power means MULTIPLY: (x⁵)³ = x¹⁵, not x⁸.", 3: "When you divide, SUBTRACT the exponents: x¹⁵ ÷ x² = x¹³."},
+ 2: {0: "<span class='fr'><span>27</span><span>100</span></span> = 0.27. That decimal stops. 0.2727… keeps going.", 2: "<span class='fr'><span>2</span><span>7</span></span> = 0.285714…, not 0.2727….", 3: "<span class='fr'><span>27</span><span>90</span></span> = 0.3. Two digits repeat, so put 27 over 99: <span class='fr'><span>27</span><span>99</span></span> = <span class='fr'><span>3</span><span>11</span></span>."},
+ 3: {0: "Not every fraction stops. <span class='fr'><span>1</span><span>3</span></span> = 0.333… repeats.", 1: "0.161616… repeats, so it is rational. It equals <span class='fr'><span>16</span><span>99</span></span>.", 3: "<span class='fr'><span>22</span><span>7</span></span> is close to π, but not equal. π is irrational."},
+ 4: {0: "A negative exponent does not make the number negative. 3⁻⁴ = <span class='fr'><span>1</span><span>81</span></span>.", 2: "Subtract the bottom exponent too: −2 − 2 = −4. So the answer is 3⁻⁴ = <span class='fr'><span>1</span><span>81</span></span>.", 3: "The exponent is negative, so flip it: 3⁻⁴ = <span class='fr'><span>1</span><span>3⁴</span></span> = <span class='fr'><span>1</span><span>81</span></span>."},
+ 6: {"pick": {2: "−16 is negative. <span class='fr'><span>1</span><span>16</span></span> is positive.", 4: "−4⁻² means −(4⁻²) = −<span class='fr'><span>1</span><span>16</span></span>. The negative sign is outside the power.", 5: "2⁸ ÷ 2⁴ = 2⁴ = 16, not <span class='fr'><span>1</span><span>16</span></span>."},
+     "miss": {0: "4⁻² = <span class='fr'><span>1</span><span>4²</span></span> = <span class='fr'><span>1</span><span>16</span></span>. It belongs.", 1: "2⁻⁴ = <span class='fr'><span>1</span><span>2⁴</span></span> = <span class='fr'><span>1</span><span>16</span></span>. It belongs.", 3: "(−4)⁻² = <span class='fr'><span>1</span><span>(−4)²</span></span> = <span class='fr'><span>1</span><span>16</span></span>. A negative number squared is positive."}},
+ 7: {1: "y⁻² has a negative exponent. Move it to the bottom: <span class='fr'><span>x¹³</span><span>y²</span></span>.", 2: "Power to a power means MULTIPLY: (x⁵)³ = x¹⁵, not x⁸.", 3: "When you divide, SUBTRACT the exponents: x¹⁵ ÷ x² = x¹³."},
  9: {0: "No solution happens when you get a FALSE statement, like 6 = 5. Here you get −6 = −6. That is true.", 1: "The x terms cancel: 6x − 6 = 6x − 6. Both sides are the same, so every x works.", 2: "The x terms cancel: 6x − 6 = 6x − 6. Both sides are the same, so every x works."},
  11: {1: "4.25 is not a whole T-shirt. Jordan can only buy whole shirts, so the answer is 4.", 2: "5 shirts cost $60. $34 + $60 = $94. That is more than $85.", 3: "Do not forget the $34 jacket. $85 − $34 = $51 left. 51 ÷ 12 = 4.25, so 4 shirts."},
  12: {0: "In this table, x = 1 has two outputs: 4 and 6.", 2: "In this table, x = −1 has two outputs: 3 and 4.", 3: "In this table, x = 5 has four different outputs."},
@@ -50,10 +50,10 @@ WRONG = {
 }
 # Numeric entry: exact answers and detectable mistakes, as [num, den] fractions
 NUMKEY = {
- 1: {"ans": [4, 11], "simplest": True, "hints": [[[36, 100], "0.36 stops, but 0.3636… repeats. Use the 9's rule: two repeating digits → 36/99. Then simplify."],
-      [[36, 90], "Two digits repeat, so use two 9's: 99, not 90. 36/99 = 4/11."], [[4, 9], "Both digits repeat. The block is 36, so start with 36/99. Then simplify to 4/11."],
-      [[99, 36], "Flip it: the repeating digits go on TOP. 36/99 = 4/11."], [[364, 1000], "That decimal stops. Use the 9's rule: 36/99 = 4/11."],
-      [[12, 33], "Right value, but keep simplifying: 12 ÷ 3 = 4 and 33 ÷ 3 = 11. 4/11."]]},
+ 1: {"ans": [4, 11], "simplest": True, "hints": [[[36, 100], "0.36 stops, but 0.3636… repeats. Use the 9's rule: two repeating digits → <span class='fr'><span>36</span><span>99</span></span>. Then simplify."],
+      [[36, 90], "Two digits repeat, so use two 9's: 99, not 90. <span class='fr'><span>36</span><span>99</span></span> = <span class='fr'><span>4</span><span>11</span></span>."], [[4, 9], "Both digits repeat. The block is 36, so start with <span class='fr'><span>36</span><span>99</span></span>. Then simplify to <span class='fr'><span>4</span><span>11</span></span>."],
+      [[99, 36], "Flip it: the repeating digits go on TOP. <span class='fr'><span>36</span><span>99</span></span> = <span class='fr'><span>4</span><span>11</span></span>."], [[364, 1000], "That decimal stops. Use the 9's rule: <span class='fr'><span>36</span><span>99</span></span> = <span class='fr'><span>4</span><span>11</span></span>."],
+      [[12, 33], "Right value, but keep simplifying: 12 ÷ 3 = 4 and 33 ÷ 3 = 11. <span class='fr'><span>4</span><span>11</span></span>."]]},
  5: {"ans": [4, 1], "hints": [[[64, 1], "(2³)² = 2⁶ = 64 is only the first step. Now multiply by 2⁻⁴: 2⁶⁻⁴ = 2² = 4."],
       [[0, 1], "7⁰ is 1, not 0. So the answer is 4 × 1 = 4."], [[28, 1], "7⁰ is 1, not 7. So the answer is 4 × 1 = 4."],
       [[2, 1], "Power to a power: MULTIPLY. (2³)² = 2⁶. Then 2⁶ · 2⁻⁴ = 2² = 4."], [[1, 4], "6 + (−4) = 2, a positive exponent. 2² = 4."]]},
