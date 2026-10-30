@@ -128,6 +128,8 @@ table.rubric .lv5{background:var(--greenbg)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 .footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px}
 @media(max-width:640px){.match-grid{gap:14px}.pot-obj{font-size:3.6rem}.pot-sn{font-size:1.5rem}}
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;position:relative;margin:0 1px}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.sf>span:last-child{padding:0 2px}.sf>.sfx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 <script src="../brand.js"></script>
 </head>
@@ -188,7 +190,7 @@ table.rubric .lv5{background:var(--greenbg)}
     </div>
     <div>
       <label for="cIn2">Scientific notation → Standard form</label>
-      <input id="cIn2" placeholder="e.g. 3.8e26 or 2.0 x 10^-9" oninput="Conv.toStd()">
+      <input id="cIn2" placeholder="e.g. 3.8 × 10⁻⁹ (type 3.8 x 10^-9)" oninput="Conv.toStd()">
       <div class="out" id="cOut2" style="margin-top:8px">Type a value above…</div>
     </div>
   </div>
@@ -227,7 +229,7 @@ table.rubric .lv5{background:var(--greenbg)}
 
   <div class="proj-card">
     <h4>⭐ To earn a Level 5</h4>
-    <p style="margin:0">Compare and contrast your data with other data points using phrases like "greater than" or "times greater than." These require operations with scientific notation — so <b>show your work!</b></p>
+    <p style="margin:0">Compare two of your numbers. Say how many times bigger one is: "___ is about ___ times bigger than ___." Divide the bigger number by the smaller one to find it, and <b>show your division!</b></p>
   </div>
 
   <div class="exemplar">
@@ -385,7 +387,7 @@ var G1=(function(){
 var G2=(function(){
   var pairs=[
     {e:'x⁴ · x³',a:'x⁷'},{e:'(x²)⁵',a:'x¹⁰'},{e:'x⁹ ÷ x⁴',a:'x⁵'},
-    {e:'(2x³)²',a:'4x⁶'},{e:'(3x²)(4x⁵)',a:'12x⁷'},{e:'5⁻²',a:'1/25'}
+    {e:'(2x³)²',a:'4x⁶'},{e:'(3x²)(4x⁵)',a:'12x⁷'},{e:'5⁻²',a:'<span class="sf"><span>1</span><span class="sfx">/</span><span>25</span></span>'}
   ];
   var done=0;
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -518,7 +520,7 @@ var Conv=(function(){
     raw=raw.replace(/[\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]/g,function(ch){
       var map={'\u2070':'0','\u00b9':'1','\u00b2':'2','\u00b3':'3','\u2074':'4','\u2075':'5','\u2076':'6','\u2077':'7','\u2078':'8','\u2079':'9','\u207b':'-'};return map[ch]||ch; });
     var m=raw.match(/^(-?\d*\.?\d+)(e|x10\^?)(-?\d+)$/);
-    if(!m){ out.className='out err'; out.textContent='Try a form like 3.8e26 or 3.8 x 10^-9'; return; }
+    if(!m){ out.className='out err'; out.textContent='Type it like 3.8 x 10^-9'; return; }
     var exp=parseInt(m[3],10);
     out.className='out'; out.textContent=expand(m[1],exp);
   }

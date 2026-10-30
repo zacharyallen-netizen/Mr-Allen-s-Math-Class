@@ -88,6 +88,8 @@
   .tip b{color:var(--navy)}
   footer{text-align:center;color:#888;font-size:.78em;padding:24px;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
   @media print{.nav,.tryit .btn,.reveal .cue{display:none}.part{box-shadow:none;break-inside:avoid}}
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;position:relative;margin:0 1px}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.sf>span:last-child{padding:0 2px}.sf>.sfx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 <style id="vis-css">
 /* ── Pictures (VIS / geo-svg) ── */
@@ -169,18 +171,18 @@
     <div class="ordered" id="ordResult"></div>
     <div class="vfig" id="ordFig"></div><p class="vcap" id="ordCap"></p>
 
-    <div class="tip">📌 <b>Mixed number → decimal:</b> whole + (numerator ÷ denominator). Example: 3⅖ = 3 + (2÷5) = 3.4. &nbsp; <b>Line up decimals</b> to the same place before you compare — 2.25 vs 2.3 is easy to misread quickly.</div>
-    <div class="vfig" data-vis='{"t": "nl", "min": 3, "max": 4, "step": 0.5, "minor": 0.1, "W": 260, "trim": true, "pts": [{"x": 3.4, "lab": "3 2/5", "c": "gold"}], "alt": "3 and 2 fifths at 3.4 on a number line"}'></div><p class="vcap">3⅖ = 3 + (2 ÷ 5) = 3.4: four tenths past 3.</p>
+    <div class="tip">📌 <b>Mixed number → decimal:</b> whole + (numerator ÷ denominator). Example: 3<span class="sf"><span>2</span><span class="sfx">/</span><span>5</span></span> = 3 + (2÷5) = 3.4. &nbsp; <b>Line up decimals</b> to the same place before you compare — 2.25 vs 2.3 is easy to misread quickly.</div>
+    <div class="vfig" data-vis='{"t": "nl", "min": 3, "max": 4, "step": 0.5, "minor": 0.1, "W": 260, "trim": true, "pts": [{"x": 3.4, "lab": "3 2/5", "c": "gold"}], "alt": "3 and 2 fifths at 3.4 on a number line"}'></div><p class="vcap">3<span class="sf"><span>2</span><span class="sfx">/</span><span>5</span></span> = 3 + (2 ÷ 5) = 3.4: four tenths past 3.</p>
 
     <h3>⚠️ Error analysis</h3>
     <div class="reveal" id="errCard">
       <span class="cue">▸ tap to check the student's work</span><br>
-      To order <span class="mono">1.5, √2, ⁷⁄₄, √3</span>, a student wrote
-      <span class="mono">1.5 &lt; √2 &lt; √3 &lt; ⁷⁄₄</span>. Are they right?
+      To order <span class="mono">1.5, √2, <span class="sf"><span>7</span><span class="sfx">/</span><span>4</span></span>, √3</span>, a student wrote
+      <span class="mono">1.5 &lt; √2 &lt; √3 &lt; <span class="sf"><span>7</span><span class="sfx">/</span><span>4</span></span></span>. Are they right?
       <div class="hidden">
-        Convert first: 1.5 = 1.5, √2 ≈ 1.41, ⁷⁄₄ = 1.75, √3 ≈ 1.73.
+        Convert first: 1.5 = 1.5, √2 ≈ 1.41, <span class="sf"><span>7</span><span class="sfx">/</span><span>4</span></span> = 1.75, √3 ≈ 1.73.
         The student forgot that <b>√2 ≈ 1.41 is the smallest</b> — it belongs first, not second.
-        ✅ Correct order: <span class="mono">√2 &lt; 1.5 &lt; √3 &lt; ⁷⁄₄</span>.
+        ✅ Correct order: <span class="mono">√2 &lt; 1.5 &lt; √3 &lt; <span class="sf"><span>7</span><span class="sfx">/</span><span>4</span></span></span>.
         <div class="vfig" data-vis='{"t": "nl", "min": 1.3, "max": 1.8, "step": 0.1, "minor": 0.02, "W": 280, "trim": true, "pts": [{"x": 1.5, "lab": "1.5"}, {"x": 1.4142, "lab": "√2"}, {"x": 1.7321, "lab": "√3"}, {"x": 1.75, "lab": "7/4"}], "hops": [[1.5, 1.4142, "back!"], [1.4142, 1.7321], [1.7321, 1.75]], "alt": "the student order as hops; the first hop goes backward"}'></div><p class="vcap">The student’s order as hops: least to greatest should always move <b>right</b>.</p>
       </div>
     </div>
@@ -841,8 +843,8 @@
   // ---------- ordering ----------
   var ORD=[
     {disp:'√5', how:'4-step algorithm', dec:2.24, show:'≈ 2.24', x:Math.sqrt(5), lab:'√5'},
-    {disp:'2¼', how:'2 + (1 ÷ 4)', dec:2.25, show:'= 2.25', x:2.25, lab:'2 1/4'},
-    {disp:'7/3', how:'7 ÷ 3', dec:2.33, show:'≈ 2.33', x:7/3, lab:'7/3'},
+    {disp:'2<span class="sf"><span>1</span><span class="sfx">/</span><span>4</span></span>', how:'2 + (1 ÷ 4)', dec:2.25, show:'= 2.25', x:2.25, lab:'2 1/4'},
+    {disp:'<span class="sf"><span>7</span><span class="sfx">/</span><span>3</span></span>', how:'7 ÷ 3', dec:2.33, show:'≈ 2.33', x:7/3, lab:'7/3'},
     {disp:'2.1', how:'already a decimal', dec:2.10, show:'= 2.1', x:2.1, lab:'2.1'}
   ];
   function buildOrder(){

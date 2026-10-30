@@ -177,6 +177,8 @@
     body.answer-key input.answer{color:var(--good);font-weight:700;}
     body.answer-key .q.correct{background:#fff;}
   }
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;position:relative;margin:0 1px}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.sf>span:last-child{padding:0 2px}.sf>.sfx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 <script src="../brand.js"></script>
 </head>
@@ -397,8 +399,8 @@ function buildOrderLine(items,lo,hi,onChange){
 const BANDS = [
   { band:"3.0", label:"Score", name:"Basic Understanding", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
-      { no:1, prompt:'Write as a decimal: <span class="math">3/8</span>', label:"=", hint:"e.g. 0.5", type:'text', ans:'0.375', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
-      { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', ans:'1/4', check:valCheck(0.25,1e-6), why:"0.25 = 25/100 = 1/4 in simplest form." },
+      { no:1, prompt:'Write as a decimal: <span class="math"><span class="sf"><span>3</span><span class="sfx">/</span><span>8</span></span></span>', label:"=", hint:"e.g. 0.5", type:'text', ans:'0.375', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
+      { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', ans:'1/4', check:valCheck(0.25,1e-6), why:"0.25 = <span class=\"sf\"><span>25</span><span class=\"sfx\">/</span><span>100</span></span> = <span class=\"sf\"><span>1</span><span class=\"sfx\">/</span><span>4</span></span> in simplest form." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
       { no:3, prompt:'Classify: <span class="math">√144</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'R', check:classCheck('R'), why:"√144 = 12, a whole number, so it is rational." },
@@ -406,11 +408,11 @@ const BANDS = [
   ]},
   { band:"4.0", label:"Score", name:"Target Content", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
-      { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', ans:'2/3', check:valCheck(2/3,1e-4), why:"One digit repeats → put it over 9: 6/9 = 2/3." },
-      { no:5, prompt:'Write as a decimal: <span class="math">2<sup>5</sup>&frasl;<sub>6</sub></span> <span class="hint" style="display:inline">(2 and 5/6)</span>', label:"=", hint:"use … for the repeating part", type:'text', ans:'2.833…', check:valCheck(2.8333,0.005), why:"2 5/6 = 2 + 5/6 = 2.8333… (the 3 repeats)." },
+      { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', ans:'2/3', check:valCheck(2/3,1e-4), why:"One digit repeats → put it over 9: <span class=\"sf\"><span>6</span><span class=\"sfx\">/</span><span>9</span></span> = <span class=\"sf\"><span>2</span><span class=\"sfx\">/</span><span>3</span></span>." },
+      { no:5, prompt:'Write as a decimal: <span class="math">2<span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span></span> <span class="hint" style="display:inline">(2 and <span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span>)</span>', label:"=", hint:"use … for the repeating part", type:'text', ans:'2.833…', check:valCheck(2.8333,0.005), why:"2<span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2 + <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2.8333… (the 3 repeats)." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
-      { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"20 is not a perfect square, so √20 = 2√5 ≈ 4.47… — non-terminating and non-repeating, so irrational." },
+      { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"20 is not a perfect square, so √20 is irrational. √20 ≈ 4.47… never ends and never repeats." },
     ]},
     { code:"1.2b", hideCode:true, directive:"<em>Simplify each expression first,</em> then classify the result.", qs:[
       { no:7, prompt:'Classify: <span class="math">√3 × √27</span>', label:"Classification:", hint:"simplify, then R or IR", type:'text', ans:'R', check:classCheck('R'), why:"√3 × √27 = √81 = 9, a whole number, so rational." },
@@ -427,9 +429,9 @@ const BANDS = [
       { no:12, prompt:'Classify: <span class="math">3 + √5</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"√5 is irrational, and a rational number (3) plus an irrational number is irrational." },
     ]},
     { code:"1.4", title:"Ordering Real Numbers", directive:"Click the values in order from <em>least to greatest</em>. Each one drops onto the number line.", qs:[
-      { no:13, prompt:'Set: <span class="math">{ 0.6, √2, 1.5, 5/3 }</span>', type:'order', lo:0, hi:4,
+      { no:13, prompt:'Set: <span class="math">{ 0.6, √2, 1.5, <span class="sf"><span>5</span><span class="sfx">/</span><span>3</span></span> }</span>', type:'order', lo:0, hi:4,
         items:[{label:'0.6',value:0.6},{label:'√2',value:Math.SQRT2},{label:'1.5',value:1.5},{label:'5/3',value:5/3}],
-        why:"As decimals: 0.6, √2 ≈ 1.41, 1.5, 5/3 ≈ 1.67 → least to greatest: 0.6, √2, 1.5, 5/3." },
+        why:"As decimals: 0.6, √2 ≈ 1.41, 1.5, <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>3</span></span> ≈ 1.67 → least to greatest: 0.6, √2, 1.5, <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>3</span></span>." },
     ]},
     { code:"1.5", title:"Area", garden:true, directive:"A square garden has an area of 225 ft². Find the side length and the perimeter.", qs:[
       { no:14, prompt:'Find the side length and perimeter of the square garden.', type:'multi',
