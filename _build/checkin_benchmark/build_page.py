@@ -42,7 +42,7 @@ WRONG = {
  14: {"pick": {1: "B is not a function: x = 2 goes to 1 AND to 3.", 3: "D is not a function: x = 1 goes to 1 AND to −1."},
       "miss": {0: "A is a function: every x is different (1, 2, 3).", 2: "C is a function: the y repeats (5, 5, 5), but every x is different. That is OK.", 4: "E is a function: the y-value 2 repeats, but every x is different."}},
  15: {0: "k = 1 is a new input, so it is still a function. Look for an x that is ALREADY used.", 1: "k = 3 is a new input, so it is still a function. Look for an x that is ALREADY used.", 3: "k = 8 is a new input, so it is still a function. Look for an x that is ALREADY used."},
- 16: {1: "You moved right. Left means subtract from x: 5 − 4 = 1.", 2: "You moved up. Down means subtract from y: 1 − 3 = −2.", 3: "(2, −3) is where A goes. The question asks about B."},
+ 16: {1: "You moved right. Left means subtract from x: 5 − 4 = 1.", 2: "You moved up. Down means subtract from y: 1 − 3 = −2.", 3: "(−2, −2) is where A goes. The question asks about B."},
  17: {0: "That is a reflection over the x-axis. Over the y-axis, the x changes sign.", 2: "Both signs changed. That is a 180° rotation.", 3: "You swapped x and y. A reflection over the y-axis does not swap them."},
  18: {1: "That is 90° clockwise. Counterclockwise uses (x, y) → (−y, x).", 2: "That is a 180° rotation. Both signs flipped.", 3: "That is a reflection over the x-axis."},
  19: {"pick": {1: "Z(2, 4) times ½ is (1, 2). (4, 8) would be scale factor 2.", 3: "A dilation changes size. The image is similar, not congruent."},

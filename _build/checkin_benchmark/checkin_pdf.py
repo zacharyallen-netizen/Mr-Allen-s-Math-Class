@@ -504,8 +504,8 @@ add("F.1", "Multiple Choice", "The relation below is shown as a set of ordered p
 TRI = [(2, 1), (5, 1), (2, 4)]
 g17 = grid(-5, 6, -4, 5, u=17, body=poly(TRI, "#1E2D4F", "#1E2D4F", ["A", "B", "C"], lab_off=[(-11, 12), (3, 12), (-12, -2)]))
 add("G.3", "Multiple Choice", "Triangle ABC is translated <b>4 units left</b> and <b>3 units down</b> to form triangle A′B′C′. What are the coordinates of <b>B′</b>?",
-    ["(1, −2)", "(9, −2)", "(1, 4)", "(2, −3)"], cols=2, fig=g17, ans="A", correct=[0],
-    why="B is at (5, 1). Left 4 → x: 5 − 4 = 1. Down 3 → y: 1 − 3 = −2. B′(1, −2). <b>Traps:</b> (9, −2) moved right; (1, 4) moved up; (2, −3) is where A goes.")
+    ["(1, −2)", "(9, −2)", "(1, 4)", "(−2, −2)"], cols=2, fig=g17, ans="A", correct=[0],
+    why="B is at (5, 1). Left 4 → x: 5 − 4 = 1. Down 3 → y: 1 − 3 = −2. B′(1, −2). <b>Traps:</b> (9, −2) moved right; (1, 4) moved up; (−2, −2) is where A goes.")
 PQR = [(1, 3), (4, 3), (4, 1)]
 g18 = grid(-5, 5, -4, 4, u=17, body=poly(PQR, "#1E2D4F", "#1E2D4F", ["P", "Q", "R"], lab_off=[(-11, -3), (4, -3), (4, 12)]))
 add("G.3", "Multiple Choice", "Triangle PQR is reflected across the <b>y-axis</b>. Which set of points are the vertices of P′Q′R′?",

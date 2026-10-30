@@ -825,6 +825,8 @@ window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
     card.querySelector('.grid-svg').innerHTML = buildSVG(idx);
   });
   if (KEY) document.querySelectorAll('.si-ask').forEach(td => { td.textContent = td.dataset.key; });
+  // on paper you write, not type
+  document.querySelectorAll('.np-prompt').forEach(e => { e.innerHTML = e.innerHTML.replace(/\bType\b/g, 'Write'); });
   document.querySelectorAll('.reflection textarea').forEach(t => {
     const d = document.createElement('div');
     if (KEY) { d.className = 'pp-refl-key'; d.textContent = t.dataset.key || ''; }
