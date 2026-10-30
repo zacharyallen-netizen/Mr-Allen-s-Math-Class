@@ -20,6 +20,12 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 - **Easier versions** for some students are labeled only "Version 2" — never "EC", "modified", etc.
 - **Classes:** A1, A2, A4, B5, B6 (8th grade benchmarks). Math 1 is password-gated (see HOW_TO_UPDATE.txt).
 - Ask at most a few quick questions up front; if a new format is involved, offer a one-page sample first.
+- **Edits to existing material:** discuss and get approval first. Correct approved problems in place; never replace
+  or delete existing files, text or material unless Zach approves that specific removal.
+- **One PDF per document:** the duplicate "Guided Notes (Print PDF)" copies were removed (2026-10-30). Notes PDFs are
+  `UnitN_…_Notes_Blank.pdf` + `_AnswerKey.pdf`; build with `_build/notes_pdf.js` and "-" as the copy argument.
+- **Site-wide look:** most pages load `brand.js` (one line), which loads `brand.css` and sets fonts by role on screen
+  only. Not on the Arcade and its games, Math 1, or the Fluency Lab. New pages get the line before `</head>`.
 
 ## Privacy (hard rules)
 - **Never commit student names, rosters, IDs, or any student data.** The repo is public. The class roster lives
@@ -36,6 +42,8 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 | `_build/benchmark/BenchmarkTracker.gs` | Google Apps Script for benchmark results (tests: `node _build/benchmark/test_benchmark_tracker.js`). |
 | `benchmark-config.js` | Benchmark Tracker web-app URL + code. `tracker-config.js` = separate Score Tracker (Fluency Lab, pre-tests). |
 | `_build/materials/` | **Printable toolkit** — handouts, practice, bell ringers, keys, combine. Start from `new_handout_template.py`; read its README. |
+| `grade8/angles_pythagorean_tutorial.html` | Units 4–5 tutorial (sends to Score Tracker as unit "4-5"). |
+| `brand.js`, `brand.css` | Site-wide fonts/background (see Standing preferences). |
 | `HOW_TO_UPDATE.txt` | Zach's plain-language guide (keep it updated when workflows change). |
 
 ## Benchmark Tracker (Google)
