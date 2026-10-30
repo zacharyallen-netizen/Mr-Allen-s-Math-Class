@@ -22,7 +22,6 @@ async function make(b, query, out) {
   const b = await chromium.launch();
   await make(b, '?paper=1', 'Unit3_Equations_Notes_Blank.pdf');
   await make(b, '?paper=1&key=1', 'Unit3_Equations_Notes_AnswerKey.pdf');
-  fs.copyFileSync(SITE + 'Unit3_Equations_Notes_Blank.pdf', SITE + 'Unit_3_Equations_Guided_Notes.pdf');
-  console.log('copied blank → Unit_3_Equations_Guided_Notes.pdf');
+  // (no duplicate copy: the site keeps one PDF per notes page)
   await b.close();
 })();
