@@ -1169,5 +1169,32 @@ function ssRec(qid, ok){
   ScoreSend.record(qid, !!ok, { std:ssStd(qid), band:4, label:label });
 }
 </script>
+<script>
+/* Paper copy only (?paper=1, used by _build/notes_pdf.js; same idea as Unit_2_Exponent_Rules_Guided_Notes.html).
+   Practice problems get room to work + "Answer: ____" (filled in green in the key);
+   the "Back to Unit 2" / "Go to practice" buttons are dropped; a heading stays with the table under it. */
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  var st = document.createElement('style');
+  st.textContent = 'body.paper .u2-keep{break-inside:avoid}body.paper .u2-back{display:none!important}';
+  document.head.appendChild(st);
+  document.querySelectorAll('h3.sub').forEach(function (h) {
+    var grp = [h], n = h.nextElementSibling;
+    while (n && grp.length < 3 && n.tagName !== 'TABLE' && !/^H[1-3]$/.test(n.tagName)) { grp.push(n); n = n.nextElementSibling; }
+    if (n && n.tagName === 'TABLE') { grp.push(n); var w = document.createElement('div'); w.className = 'u2-keep'; h.before(w); grp.forEach(function (e) { w.appendChild(e); }); }
+  });
+  document.querySelectorAll('a[href="unit2.html"],a[href="#practice"]').forEach(function (a) { if (!a.classList.contains('back-link')) (a.parentElement || a).classList.add('u2-back'); });
+  document.querySelectorAll('.chk-q').forEach(function (c) {
+    if (/Click a rule, then its key phrase\./.test(c.textContent)) c.innerHTML = c.innerHTML.replace(/Click a rule, then its key phrase\./, 'Write the letter of each rule’s key phrase on the line.');
+  });
+  document.querySelectorAll('#practice .chk').forEach(function (c) {
+    var b = c.querySelector('.val-chk button'); if (!b) return;
+    var m = /\[\s*"([^"]*)"/.exec(b.getAttribute('onclick').replace(/&quot;/g, '"'));
+    var ans = m ? m[1].replace(/^-(?=\d)/, '−') : '';
+    c.insertAdjacentHTML('beforeend', '<div class="pp-block pp-wp"><div class="pp-lines"><div></div><div></div></div>' +
+      '<div class="pp-row"><b>Answer:</b> <span class="pp-line">' + (KEY ? ans : '&nbsp;') + '</span></div></div>');
+  });
+});
+</script>
+<script src="../paper.js"></script>
 </body>
 </html>

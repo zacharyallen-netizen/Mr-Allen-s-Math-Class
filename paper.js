@@ -80,7 +80,7 @@
     document.querySelectorAll('.chk-opts').forEach(function (box) {
       var btns = box.querySelectorAll('.chk-btn'), h = '<ol class="pp-mc">', ok = null;
       btns.forEach(function (b) { var m = (b.getAttribute('onclick') || '').match(/chk\('[^']*','([^']*)'/); if (m) ok = m[1]; });
-      btns.forEach(function (b) { var t = b.textContent.trim(); h += '<li class="' + (KEY && t === ok ? 'ok' : '') + '"><span class="o"></span>' + t + '</li>'; });
+      btns.forEach(function (b) { var t = b.textContent.trim(); h += '<li class="' + (KEY && t === ok ? 'ok' : '') + '"><span class="o"></span>' + (b.querySelector('.sf') ? b.innerHTML.trim() : t) + '</li>'; });   // keep stacked fractions
       box.outerHTML = h + '</ol>';
     });
 

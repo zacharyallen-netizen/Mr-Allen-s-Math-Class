@@ -1784,5 +1784,16 @@ function ssRec(qid, ok){
 })(this);
 
 </script>
+<script>
+/* Paper copy only (?paper=1, used by _build/notes_pdf.js): long tables may split between rows
+   (each row stays whole, the header repeats), so a big table does not leave an almost-empty page. */
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  var st = document.createElement('style');
+  st.textContent = 'body.paper table.pp-split{break-inside:auto!important}body.paper table.pp-split tr{break-inside:avoid}body.paper table.pp-split thead{display:table-header-group}';
+  document.head.appendChild(st);
+  document.querySelectorAll('table').forEach(function (t) { if (t.getBoundingClientRect().height > 220) t.classList.add('pp-split'); });
+});
+</script>
+<script src="../paper.js"></script>
 </body>
 </html>

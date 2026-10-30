@@ -1742,5 +1742,43 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { drawAll(document); }); else drawAll(document);
 })();
 </script>
+<script>
+/* Paper copy only (?paper=1, used by _build/notes_pdf.js → transformations-fill-in-the-blank.pdf).
+   Worked-example steps become write-in lines (filled in green in the key); "after you answer" hints are dropped;
+   on the student copy the image shown in practice pictures is hidden (the key shows it); the back buttons go. */
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  var st = document.createElement('style');
+  st.textContent = 'body.paper .step{cursor:default;border-style:solid!important;background:#fff!important}' +
+    'body.paper .step .placeholder{display:none!important}body.paper .step .hidden-content{display:inline!important}' +
+    'body.paper .pp-wl{display:inline-block;min-width:2.6in;border-bottom:1.5px solid #1E2D4F;height:1.1em;vertical-align:bottom}' +
+    'body.paper .tx-hint{display:none!important}body.paper .t8-back{display:none!important}' +
+    'body.paper .chk-graph,body.paper .example,body.paper .steps{break-inside:avoid}';
+  document.head.appendChild(st);
+  document.querySelectorAll('.step .hidden-content').forEach(function (h) {
+    if (!KEY) h.innerHTML = ' <span class="pp-wl"></span>'; else h.style.color = '#15803D';
+  });
+  if (KEY) { document.querySelectorAll('.step').forEach(function (s) { s.classList.add('revealed'); }); document.querySelectorAll('.chk').forEach(function (c) { c.classList.add('answered'); }); }
+  document.querySelectorAll('a[href="unit8.html"]').forEach(function (a) { if (!a.classList.contains('back-link')) (a.parentElement || a).classList.add('t8-back'); });
+  document.querySelectorAll('h3,h4,.ex-title,.example-title,div,span').forEach(function (h) { if (!h.children.length && /Click each step to reveal/.test(h.textContent)) h.textContent = h.textContent.replace(/\s*[—-]\s*Click each step to reveal/, ''); });
+  var SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹⁻', SUB = '₀₁₂₃₄₅₆₇₈₉';   // ¹⁄₂ → stacked fraction (same look as the site's .sf)
+  function un(t, set) { return t.split('').map(function (c) { var i = set.indexOf(c); return i < 0 ? c : (i === 10 ? '−' : String(i)); }).join(''); }
+  var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT), nodes = [];
+  while (walker.nextNode()) if (/[⁰¹²³⁴⁵⁶⁷⁸⁹]⁄[₀₁₂₃₄₅₆₇₈₉]/.test(walker.currentNode.nodeValue) && !walker.currentNode.parentElement.closest('svg,script,style')) nodes.push(walker.currentNode);
+  nodes.forEach(function (n) {
+    var span = document.createElement('span');
+    span.innerHTML = n.nodeValue.replace(/[&<>]/g, function (c) { return {'&': '&amp;', '<': '&lt;', '>': '&gt;'}[c]; }).replace(/([⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)⁄([₀₁₂₃₄₅₆₇₈₉]+)/g, function (m, a, b) {
+      return '<span style="display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.05;font-size:.85em;margin:0 1px"><span style="border-bottom:1.3px solid currentColor;padding:0 2px">' + un(a, SUP) + '</span><span>' + un(b, SUB) + '</span></span>';
+    });
+    n.replaceWith(span);
+  });
+  document.querySelectorAll('.chk-q').forEach(function (q) { q.innerHTML = q.innerHTML.replace(/\bType the\b/g, 'Write the'); });
+  document.querySelectorAll('.input-chk').forEach(function (box) {   // typed answers: blank boxes (key: the answer)
+    var b = box.querySelector('button'), m = b && /\[([^\]]*)\]/.exec(b.getAttribute('onclick') || ''), v = m ? m[1].split(',') : [];
+    box.querySelectorAll('input').forEach(function (inp, i) { inp.placeholder = ''; if (KEY && v[i] !== undefined) { inp.value = v[i].trim().replace(/^-/, '−'); inp.style.color = '#15803D'; inp.style.fontWeight = '700'; } });
+  });
+  document.querySelectorAll('.fig-key').forEach(function (k) { if (/^After you answer/i.test(k.textContent.trim())) k.style.display = 'none'; });
+});
+</script>
+<script src="../paper.js"></script>
 </body>
 </html>

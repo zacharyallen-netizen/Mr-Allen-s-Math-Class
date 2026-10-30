@@ -814,5 +814,43 @@ function openTab(id,btn){
 })();
 
 </script>
+<script>
+/* Paper copy only (?paper=1, used by _build/notes_pdf.js → unit7_worksheet.pdf / unit7_answer_key.pdf).
+   All tabs shown; answer buttons become ○ choices (the key marks the right one in green); feedback,
+   score boxes, tabs and the top links are dropped; each question stays on one page. */
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  var st = document.createElement('style');
+  st.textContent = 'body.paper .tab-pane{display:block!important;border:0!important;padding:0!important;margin:0 0 6px}' +
+    'body.paper .tabs,body.paper .score-box,body.paper .sb-local,body.paper .fb{display:none!important}' +
+    'body.paper .pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;align-items:start}body.paper .pp-grid>.qc{margin:0!important}' +
+    'body.paper .pfig{max-width:260px!important;margin:4px auto!important}body.paper .pfig svg{max-height:1.9in;width:auto!important;max-width:100%}' +
+    'body.paper .pfig-row>.pfig,body.paper .pfig-row>.pfig-box{max-width:240px!important}body.paper .pfig-cap{font-size:.8em}' +
+    'body.paper h2{break-after:avoid}body.paper .qc{break-inside:avoid;box-shadow:none!important;margin-bottom:8px!important}body.paper .tip,body.paper .study-step{break-inside:avoid}';
+  document.head.appendChild(st);
+  document.querySelectorAll('.tab-pane').forEach(function (pane) {   // questions two to a row
+    var run = [];
+    function flush() { if (run.length > 1) { var g = document.createElement('div'); g.className = 'pp-grid'; run[0].before(g); run.forEach(function (q) { g.appendChild(q); }); } run = []; }
+    Array.prototype.slice.call(pane.children).forEach(function (c) { if (c.classList.contains('qc')) run.push(c); else flush(); }); flush();
+  });
+  document.querySelectorAll('table.freq').forEach(function (t) {   // keep a table with the lines that introduce it
+    var box = t.parentElement; if (box && !box.classList.contains('tab-pane') && !box.classList.contains('qc')) box.style.breakInside = 'avoid';
+  });
+  var hdr = document.querySelector('.page-hdr'), nm = hdr && hdr.querySelector('.pp-name,.pp-keybar');
+  if (nm) hdr.after(nm);
+  document.querySelectorAll('.qc *').forEach(function (el) {   // web-only hints ("appears after you answer")
+    if (!el.children.length && /after you answer/i.test(el.textContent)) el.style.display = 'none';
+    else if (el.classList.contains('fig-key') && /^After you answer/i.test(el.textContent.trim())) el.style.display = 'none';
+  });
+  document.querySelectorAll('.qc .opts').forEach(function (box) {
+    var h = '<ol class="pp-mc">';
+    box.querySelectorAll('.ob').forEach(function (b) {
+      var m = /mc\(this,'[^']*','((?:[^'\\]|\\.)*)'\)/.exec(b.getAttribute('onclick') || ''), ok = m && b.textContent.trim() === m[1].replace(/\\'/g, "'").trim();
+      h += '<li class="' + (KEY && ok ? 'ok' : '') + '"><span class="o"></span>' + b.innerHTML.trim() + '</li>';
+    });
+    box.outerHTML = h + '</ol>';
+  });
+});
+</script>
+<script src="../paper.js"></script>
 </body>
 </html>
