@@ -82,8 +82,6 @@ for m in re.finditer(r'<a href="([^"]+)" class="unit-card"[^>]*>(.*?)</a>', gh, 
     title = re.sub(r'\s+', ' ', re.sub('<[^>]+>', '', t.group(1))).strip() if t else href
     gen.append(card(href, title, 'review'))
     seen.add(href)
-if 'Released Questions 2.pdf' not in seen:
-    gen.append(card('Released Questions 2.pdf', 'Released EOG Questions (Form R, PDF)', 'review'))
 body.append(section('general', 'General Resources', gen))
 
 btns = '\n'.join(['<button type="button" class="fbtn active" aria-pressed="true" onclick="filterType(\'all\',this)">All</button>'] + [
