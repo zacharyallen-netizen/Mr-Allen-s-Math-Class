@@ -1,6 +1,6 @@
 # Build brief — Mr. Allen's Math Class (shared rules for every builder)
 
-Repo: /home/claude/mr-allen-s-math-class  (static GitHub Pages site, 8th-grade math, IC Imagine, North Carolina)
+Repo: /home/claude/mr-allen-s-math-class  (static GitHub Pages site, 8th-grade math, North Carolina)
 Live: https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/
 Your scratch folder: /home/claude/mr-allen-s-math-class/_build/<your-task-name>/
 

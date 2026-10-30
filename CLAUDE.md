@@ -1,6 +1,6 @@
 # Mr. Allen's Math Class — instructions for Claude
 
-Zach Allen teaches 8th grade math (and NC Math 1) at IC Imagine, Asheville NC. This repo is his public
+Zach Allen teaches 8th grade math (and NC Math 1). This repo is his public
 GitHub Pages site: https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/
 Pushing to `main` publishes the site in about 2 minutes. He has authorized Claude to commit and push.
 

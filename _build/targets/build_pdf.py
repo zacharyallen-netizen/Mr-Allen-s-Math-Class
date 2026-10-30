@@ -43,7 +43,7 @@ tr.pri td{{background:#FFF4D1}} tr.sup td{{background:#E8F0FB}} tr.pri td.b,tr.s
 .key{{font-size:8.5pt;margin:0 0 8px;display:flex;align-items:center;gap:6px}} .sw{{display:inline-block;width:14px;height:14px;border:1px solid #c9d0dc;margin-left:8px}} .sw.pri{{background:#FFF4D1}} .sw.sup{{background:#E8F0FB}}
 .ft{{margin-top:10px;font-size:8pt;color:#5B6475}} .ft a{{color:#0563C1}}
 </style></head><body>
-<div class="hd"><h1>8th Grade Math — My Standards</h1><p>Mr. Allen's Math Class · IC Imagine · 2026–27 · Condensed I Can Tracker</p></div>
+<div class="hd"><h1>8th Grade Math — My Standards</h1><p>Mr. Allen's Math Class · Condensed I Can Tracker</p></div>
 <div class="id"><span>Name</span><span class="l"></span><span>Period</span><span class="l"></span></div>
 <div class="lv"><b>Scores:</b><span>5 Mastery</span><span>4 Proficient</span><span>3 Approaching</span><span>2 Developing</span><span>1 Beginning</span>
 <span style="border:0">Copy Mr. Allen's score into the box each quarter.</span></div>

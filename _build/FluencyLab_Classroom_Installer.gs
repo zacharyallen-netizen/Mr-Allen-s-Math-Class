@@ -1,7 +1,7 @@
 /**
  * ════════════════════════════════════════════════════════════════════
  *  FLUENCY LAB  →  GOOGLE CLASSROOM INSTALLER
- *  Mr. Allen's Math Class · IC Imagine
+ *  Mr. Allen's Math Class
  * ════════════════════════════════════════════════════════════════════
  *
  *  WHAT THIS DOES

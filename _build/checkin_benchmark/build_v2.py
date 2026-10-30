@@ -636,7 +636,7 @@ def pdf_q(i, q, key):
     return f'<div class="q"><div class="qh"><span class="qn">{i+1}</span><span class="tag">NC.8.{q["std"]}</span><b style="color:var(--navy)">{q["title"]}</b></div><div class="exbox"><div class="exlab">Example</div>{q["ex"]}</div>{body}{tail}</div>'
 
 def pdf_doc(key):
-    cover = f'''<div class="hero"><div class="s">IC Imagine • 8th Grade Math</div><h1>NC Check-In Benchmark Review</h1><div class="v">Version 2{" — Answer Key" if key else ""}</div></div>'''
+    cover = f'''<div class="hero"><div class="s">Mr. Allen's 8th Grade Math</div><h1>NC Check-In Benchmark Review</h1><div class="v">Version 2{" — Answer Key" if key else ""}</div></div>'''
     if key:
         return cover + '<h2 style="margin-top:18px">Answers</h2><p>' + " &nbsp; ".join(f"<b>{i+1}.</b> {L[q['ans']]}" for i, q in enumerate(Q)) + '</p>' + "".join(pdf_q(i, q, True) for i, q in enumerate(Q))
     s = cover + '<div class="namebar"><div>Name</div><div class="s">Date</div><div class="s">Class</div></div>'
@@ -646,7 +646,7 @@ def pdf_doc(key):
     return s
 
 from playwright.sync_api import sync_playwright
-footer = lambda label: f'<div style="width:100%;font-family:Inter;font-size:8px;color:#55607a;padding:0 0.6in;display:flex;justify-content:space-between"><span>IC Imagine • 8th Grade Math • {label}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
+footer = lambda label: f'<div style="width:100%;font-family:Inter;font-size:8px;color:#55607a;padding:0 0.6in;display:flex;justify-content:space-between"><span>Mr. Allen\'s 8th Grade Math • {label}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
 with sync_playwright() as p:
     b = p.chromium.launch()
     for key, path, label in [(False, os.path.join(REPO, "grade8", "NC_CheckIn_Benchmark_Review_V2.pdf"), "NC Check-In Review — Version 2"),

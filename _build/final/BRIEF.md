@@ -1,6 +1,6 @@
 # Final review brief — Mr. Allen's Math Class (READ-ONLY REVIEW)
 
-Repo: /home/claude/mr-allen-s-math-class (static GitHub Pages site, 8th-grade math, IC Imagine, NC; also NC Math 1 in math1/)
+Repo: /home/claude/mr-allen-s-math-class (static GitHub Pages site, 8th-grade math, NC; also NC Math 1 in math1/)
 Live: https://zacharyallen-netizen.github.io/Mr-Allen-s-Math-Class/
 
 ## ABSOLUTE RULE

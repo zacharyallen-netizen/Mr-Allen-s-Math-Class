@@ -1,5 +1,5 @@
 /* ============================================================
-   IC Imagine · NC Math 1 — script.js
+   NC Math 1 — script.js
    Shared interactions for guided notes + practice.
    ============================================================ */
 

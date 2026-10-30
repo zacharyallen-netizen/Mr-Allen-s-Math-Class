@@ -60,7 +60,7 @@ function stdTable(stdCode, unitLabel) {
 const kids = [];
 // ---- cover page
 kids.push(para([run('My I Can Tracker', { size: 52, bold: true, color: NAVY })], { heading: HeadingLevel.TITLE, after: 60 }));
-kids.push(para([run("8th Grade Math  ·  Mr. Allen  ·  2026–27", { size: 24, color: MUTED })], { after: 360 }));
+kids.push(para([run("8th Grade Math  ·  Mr. Allen", { size: 24, color: MUTED })], { after: 360 }));
 kids.push(para([run('Name: ______________________________     Period: ________', { size: 26 })], { after: 360 }));
 kids.push(para([run('How it works', { size: 30, bold: true, color: NAVY })], { after: 120 }));
 [['1.', 'Find the standard we are working on. Each standard has its own page.'],

@@ -91,7 +91,7 @@ def render(pages, path, landscape=False, footer="", fit=False):
                 while (z > 0.8 && sec.getBoundingClientRect().height > avail) { z -= 0.02; f.style.zoom = z; } } }""", avail)
         pg.pdf(path=path, print_background=True, landscape=landscape, format="Letter", prefer_css_page_size=True,
                display_header_footer=bool(footer), header_template="<div></div>",
-               footer_template=f'<div style="width:100%;font-family:Inter;font-size:7px;color:#8a93a8;padding:0 0.45in;display:flex;justify-content:space-between"><span>IC Imagine • 8th Grade Math • {footer}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>')
+               footer_template=f'<div style="width:100%;font-family:Inter;font-size:7px;color:#8a93a8;padding:0 0.45in;display:flex;justify-content:space-between"><span>Mr. Allen\'s 8th Grade Math • {footer}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>')
         n = pg.evaluate("document.querySelectorAll('section').length")
         b.close()
     return path

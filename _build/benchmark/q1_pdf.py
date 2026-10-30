@@ -111,7 +111,7 @@ mark {{ background:var(--gold-soft); border:1.4px solid var(--gold); color:var(-
 .teach b {{ color:var(--navy); }}
 '''
 
-def header(title, small=False, kicker='IC Imagine · 8th Grade Math', badge='Quarter 1'):
+def header(title, small=False, kicker="Mr. Allen's 8th Grade Math", badge='Quarter 1'):
     cls = 'hdr small' if small else 'hdr'
     return f'<div class="{cls}"><div><div class="kicker">{kicker}</div><h1>{title}</h1></div><div class="badge">{badge}</div></div>'
 
@@ -186,7 +186,7 @@ def back():
 def key():
     def k(n, std, question, steps, ans, wide=False):
         return f'<div class="kitem{" wide" if wide else ""}"><div class="q"><span class="qn">{n}</span><span class="val">{question}</span><span class="std">{std}</span></div><div class="s">{steps}</div><div class="a">Answer: <mark>{ans}</mark></div></div>'
-    h = header('Q1 Benchmark Review · Answer Key', small=True, kicker='IC Imagine · 8th Grade Math · Teacher Copy')
+    h = header('Q1 Benchmark Review · Answer Key', small=True, kicker="Mr. Allen's 8th Grade Math · Teacher Copy")
     h += '<div class="sec">' + sec_head(1, 'The Real Number System', 'NC.8.NS.1 · NC.8.NS.2') + '<div class="kgrid">'
     h += k(1, 'NC.8.NS.1', 'Select all irrational', f'{rt("64")} = 8, 0.{bar("6")} = {fr("2","3")}, 3.14159 ends, {M}{rt("25")} = {M}5 → all rational. {rt("18")} is not a perfect square; π ÷ 2 is still irrational.', f'B ({rt("18")}) and E ({fr("π","2")})')
     h += k(2, 'NC.8.NS.1', 'Rational or irrational?', f'6 + {rt("11")}: rational + irrational → irrational. {rt("5")} · {rt("5")} = 5 → rational. 4π: rational × irrational → irrational. 0.25 + {fr("3","4")} = 1 → rational.', 'Irrational, Rational, Irrational, Rational')
@@ -201,7 +201,7 @@ def key():
     h += '</div></div>'
     h += foot('Q1 Benchmark Review · Answer Key', 'Page 1 of 2')
     p1 = f'<div class="page key">{h}</div>'
-    h = header('Q1 Benchmark Review · Answer Key', small=True, kicker='IC Imagine · 8th Grade Math · Teacher Copy')
+    h = header('Q1 Benchmark Review · Answer Key', small=True, kicker="Mr. Allen's 8th Grade Math · Teacher Copy")
     h += '<div class="sec">' + sec_head(3, 'Scientific Notation', 'NC.8.EE.3 · NC.8.EE.4') + '<div class="kgrid">'
     h += k(9, 'NC.8.EE.3', 'Write in scientific notation', 'a. Point moves 9 places left. &nbsp;b. Point moves 5 places right.', f'a. {sn("3.04",9)} &nbsp; b. {sn("6.2",-5)}')
     h += k(10, 'NC.8.EE.4', 'Correct the notation', f'a. 48.5 → 4.85 (point moves left 1, exponent goes up 1). &nbsp;b. 0.73 → 7.3 (point moves right 1, exponent goes down 1).', f'a. {sn("4.85",7)} &nbsp; b. {sn("7.3",-4)}')

@@ -1,4 +1,4 @@
-# Math 1 review + rebuild brief (NC Math 1, IC Imagine, Mr. Allen)
+# Math 1 review + rebuild brief (NC Math 1, Mr. Allen)
 
 Repo: /home/claude/mr-allen-s-math-class   Math 1 lives in math1/. Do NOT git commit/push. Edit ONLY your assigned files.
 math1 pages are behind a light gate: in Playwright run  page.addInitScript(() => sessionStorage.setItem('m1ok','1'))  before goto.

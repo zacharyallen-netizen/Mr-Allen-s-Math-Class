@@ -486,7 +486,7 @@ def domain_page(d, targets, qs):
             o.append(card_html(t, qs.get(t["code"])))
         o.append("</section>")
     o.append("</main>")
-    o.append('<div class="site-footer">© 2026–27 · Mr. Allen\'s Math Class · IC Imagine</div>')
+    o.append('<div class="site-footer">© 2026–27 · Mr. Allen\'s Math Class</div>')
     o.append('<script src="targets.js"></script><script src="explore.js"></script>\n</body>\n</html>\n')
     return "\n".join(o)
 
@@ -534,7 +534,7 @@ def hub_page(targets):
     o.append("</table></div>")
     o.append('<p class="reset">Check marks are saved in this browser only. <button type="button" id="reset-all">Clear my check marks</button></p>')
     o.append("</main>")
-    o.append('<div class="site-footer">© 2026–27 · Mr. Allen\'s Math Class · IC Imagine</div>')
+    o.append('<div class="site-footer">© 2026–27 · Mr. Allen\'s Math Class</div>')
     o.append('<script src="targets.js"></script>\n</body>\n</html>\n')
     return "\n".join(o)
 

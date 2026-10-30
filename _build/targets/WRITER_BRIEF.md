@@ -1,6 +1,6 @@
 # Brief: write I Can Target practice questions (multiple choice)
 
-You are writing practice questions for Mr. Allen's 8th grade math website (NC Math 8, IC Imagine charter school, NC).
+You are writing practice questions for Mr. Allen's 8th grade math website (NC Math 8, NC).
 Many of his students are 2–4 grade levels behind, so wording must be **short, plain, and friendly** (about a
 grade 5–6 reading level). Accuracy matters more than anything: a wrong answer key or a wrong diagram is a serious bug.
 

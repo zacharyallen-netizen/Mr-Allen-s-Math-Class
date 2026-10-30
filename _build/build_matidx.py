@@ -147,7 +147,7 @@ PAGE = """<!DOCTYPE html>
 %(body)s
 <p class="mat-empty" id="mat-empty" hidden>Nothing of this kind yet.</p>
 </div>
-<div class="site-footer">© 2026–27 · Mr. Allen's Math Class · IC Imagine</div>
+<div class="site-footer">© 2026–27 · Mr. Allen's Math Class</div>
 <script>
 function filterType(t, btn){
   document.querySelectorAll('.fbtn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-pressed','false'); });

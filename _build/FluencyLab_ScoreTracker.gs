@@ -1,7 +1,7 @@
 /**
  * ════════════════════════════════════════════════════════════════════
  *  FLUENCY LAB  ·  SCORE TRACKER
- *  Mr. Allen's Math Class · IC Imagine
+ *  Mr. Allen's Math Class
  * ════════════════════════════════════════════════════════════════════
  *
  *  This receives Skill Check scores from your website and writes them

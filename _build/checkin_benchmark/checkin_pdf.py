@@ -253,7 +253,7 @@ def cover(key=False):
         <div class="opt"><span class="box" style="width:30px;border-radius:4px"></span> <b>Numeric Entry</b> — type your own answer.</div></div>
     </div>"""
     return f"""
-    <div class="hero"><div class="school">IC Imagine • 8th Grade Math</div>
+    <div class="hero"><div class="school">Mr. Allen's 8th Grade Math</div>
       <h1>NC Check-In Benchmark Review</h1><p>{sub}</p>
       <div class="tags"><span class="chip">NS.1</span><span class="chip">EE.1</span><span class="chip">EE.7</span><span class="chip">F.1</span><span class="chip">G.3</span></div></div>
     {namebar}
@@ -567,7 +567,7 @@ student = page("NC Check-In Review", cover() + strategies() + notes() + question
 key_summary = "<h3 style='margin:14px 0 6px'>Answer Summary</h3><table class='t'><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans'].split('&nbsp;')[0]}</b></td>" for i in range(10)) + "</tr><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10, 20)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans']}</b></td>" for i in range(10, 20)) + "</tr></table>"
 key = page("NC Check-In Review — Answer Key", cover(True) + key_summary + questions(True))
 
-footer = lambda label: f'<div style="width:100%;font-family:Inter;font-size:8px;color:#55607a;padding:0 0.6in;display:flex;justify-content:space-between"><span>IC Imagine • 8th Grade Math • {label}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
+footer = lambda label: f'<div style="width:100%;font-family:Inter;font-size:8px;color:#55607a;padding:0 0.6in;display:flex;justify-content:space-between"><span>Mr. Allen\'s 8th Grade Math • {label}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
 
 with sync_playwright() as p:
     b = p.chromium.launch()

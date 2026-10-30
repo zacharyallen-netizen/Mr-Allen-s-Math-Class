@@ -167,7 +167,7 @@ ${legend}
 ${nav}${o.revealAll ? '<p style="text-align:right"><button class="reveal-all" onclick="revealPage()">👁 Reveal all answers (for printing an answer key)</button></p>\n' : ''}${o.body}
 ${o.tail || ''}
 </div>
-<div class="site-footer">© 2026–27 · IC Imagine · NC Math 1 — Interactive Guided Notes</div>
+<div class="site-footer">© 2026–27 · NC Math 1 — Interactive Guided Notes</div>
 <script src="script.js"></script>
 <script>
 ${readLib('draw.js')}
