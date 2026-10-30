@@ -115,6 +115,7 @@ def gen_for(qid, q):
         if 'Vertical' in s: return vertical(g)
     if qid.startswith('u4pB'):
         g=int(re.search(r'given\s*(\d+)', s).group(1))
+        if 'Same-Side Interior' in s: return transversal('Co-Interior',g)
         for rel in ['Corresponding','Alternate Interior','Alternate Exterior','Co-Interior']:
             if rel in s: return transversal(rel,g)
     if qid.startswith('u4pC'):

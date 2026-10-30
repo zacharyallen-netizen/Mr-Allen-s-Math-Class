@@ -171,9 +171,9 @@ def build_from_label(lab):
     if m: return comp(int(m.group(1)),'Diagram: '+lab)
     m=re.match(r'Vertical Angles, given (\d+)°', lab)
     if m: return vertical(int(m.group(1)),'Diagram: '+lab)
-    m=re.match(r'(Corresponding|Alternate Interior|Alternate Exterior|Co-Interior), given (\d+)°', lab)
+    m=re.match(r'(Corresponding|Alternate Interior|Alternate Exterior|Co-Interior|Same-Side Interior), given (\d+)°', lab)
     if m:
-        rel=m.group(1); rel='Corresponding' if rel=='Corresponding' else rel
+        rel=m.group(1); rel='Co-Interior' if rel=='Same-Side Interior' else rel
         return transversal(rel,int(m.group(2)),'Diagram: '+lab)
     m=re.match(r'Angle Sum, given (\d+)°, (\d+)°', lab)
     if m: return angle_sum(int(m.group(1)),int(m.group(2)),'Diagram: '+lab)
