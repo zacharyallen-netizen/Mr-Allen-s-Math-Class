@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOC Practice — NC Math 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+/* question engine + look from grade8/unit6_review.html, on the Math 1 theme */
+:root{--line:#E3E5EA;--line-2:#D5D9E0;--gold-line:#E0A800;--gold-text:#8A6100;--gold-soft:#FFF6D6;
+--ok:#15803D;--ok-bg:#E8F5EC;--no:#B42318;--no-bg:#FBEAE8;--blue:#1D4ED8;--blue-soft:#E8EEFC;--muted2:#5B6475}
+.page-wrap{max-width:900px}
+h2,h3{font-family:var(--font-head);color:var(--navy);line-height:1.25}
+h2{font-size:1.45rem;margin:0 0 4px}
+.lede{color:var(--muted);margin:0 0 16px}
+.std{font:600 13px var(--font-body);letter-spacing:.06em;text-transform:uppercase;color:var(--gold-text)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin:0 0 16px}
+.part{margin:34px 0 0;scroll-margin-top:70px}
+.part-head{border-left:4px solid var(--gold-line);padding:2px 0 2px 14px;margin:0 0 14px}
+.part-head p{margin:6px 0 0;color:var(--ink)}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px}
+.jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line-2);border-radius:8px;background:#fff;color:var(--navy);text-decoration:none;font-weight:600;font-size:15px}
+.jump a:hover{border-color:var(--navy)}
+.jump a span{font:600 13px var(--font-mono);color:var(--muted);margin-left:8px}
+.mono{font-family:var(--font-mono);font-weight:600}
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}
+.tablewrap{overflow-x:auto;max-width:100%}
+table.xy{border-collapse:collapse;font:600 15px var(--font-mono);margin:8px auto}
+table.xy th,table.xy td{border:1px solid var(--line-2);padding:6px 10px;text-align:center}
+table.xy th{font-family:var(--font-body);background:#F1F3F7;color:var(--navy);font-size:14px}
+button{font:600 15px var(--font-body);min-height:44px;padding:0 14px;border-radius:8px;border:1px solid var(--line-2);background:#fff;color:var(--navy);cursor:pointer}
+button:hover{border-color:var(--navy)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+button.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+button:disabled{opacity:.55;cursor:default}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.q{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;margin:0 0 16px;scroll-margin-top:70px}
+.q .qn{font:600 13px var(--font-body);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.q .qt{font-weight:600;color:var(--ink);margin:0 0 10px}
+.tag{display:inline-block;font:600 11px var(--font-body);letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line-2);border-radius:4px;padding:1px 6px;color:var(--muted)}
+.tag.calc-no{border-color:#c9a3a0;color:#7A1810;background:#FDF5F4}
+.tag.calc-ok{border-color:#9cc8ab;color:#0E5A2B;background:#F1FAF3}
+.tag.stdtag{color:var(--gold-text);border-color:#e9d38d;background:var(--gold-soft)}
+.opts{display:grid;gap:8px;margin:10px 0}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;width:100%;min-height:48px;padding:8px 12px;font-weight:500;font-size:16px;color:var(--ink);min-width:0}
+.opt .let{font:600 14px var(--font-mono);color:var(--muted);min-width:22px}
+.opt>span:last-child{min-width:0;flex:1}
+.opt.sel{border-color:var(--navy);background:var(--blue-soft)}
+.opt.right{border-color:var(--ok);background:var(--ok-bg)}
+.opts.graphs{grid-template-columns:1fr 1fr}
+.opts.graphs .opt{flex-direction:column;align-items:flex-start;padding:6px}
+.opts.graphs svg{width:100%;height:auto;display:block}
+.entry{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:600 20px var(--font-mono);color:var(--navy);margin:8px 0}
+.entry input{font:600 20px var(--font-mono);width:150px;max-width:100%;min-height:48px;padding:4px 8px;border:1px solid var(--line-2);border-radius:8px;text-align:center;color:var(--navy)}
+.fb{margin:10px 0 0;padding:10px 14px;border-radius:8px;display:none}
+.fb.ok{display:block;background:var(--ok-bg);color:#0E5A2B;border-left:4px solid var(--ok)}
+.fb.no{display:block;background:var(--no-bg);color:#7A1810;border-left:4px solid var(--no)}
+.qfig{margin:6px 0 10px;text-align:center}
+.qfig svg.fig{width:100%;max-width:360px;height:auto;display:block;margin:0 auto}
+.eqbox{font:600 18px var(--font-mono);color:var(--navy);background:#F1F3F7;border:1px solid var(--line-2);border-radius:8px;padding:10px 14px;display:inline-block;max-width:100%;line-height:1.6}
+.big-paren{font-size:2em;font-weight:400;vertical-align:middle;line-height:1}
+.bul{margin:6px 0 10px;padding-left:22px}.bul li{margin:3px 0}
+.explain{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:10px 0 0;color:var(--ink)}
+.explain h4{margin:0 0 4px;font:700 14px var(--font-body);color:var(--navy);text-transform:uppercase;letter-spacing:.05em}
+.explain ol{margin:4px 0 6px;padding-left:22px}.explain li{margin:4px 0}
+.explain .cm{border-left:4px solid var(--no);background:#FDF5F4;border-radius:6px;padding:8px 12px;margin:8px 0 0;color:#5a1a12}
+.explain .cm b{color:#7A1810}
+.whyall{margin:8px 0 0;padding-left:20px;font-size:15px}.whyall li{margin:3px 0}
+.dtip{background:#F1FAF3;border:1px solid #cfe8d6;border-left:4px solid var(--ok);border-radius:8px;padding:8px 12px;margin:10px 0 0;font-size:15px}
+.dtip b{color:#0E5A2B}
+code.dz{font:600 14px var(--font-mono);background:#EEF1F6;border:1px solid #D5D9E0;border-radius:5px;padding:1px 6px;color:var(--navy);overflow-wrap:anywhere;word-break:break-word}
+.score{margin:24px auto 0;max-width:360px;background:var(--navy);color:#fff;border-radius:10px;padding:10px 16px;text-align:center;font-weight:600;font-size:15px}
+.score .mono{color:var(--gold)}
+#summary{display:none}#summary.show{display:block}
+.small-note{font-size:14px;color:var(--muted)}
+.modebar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 8px}
+.howto ol,.dcard ol{margin:6px 0 0;padding-left:22px}.howto li,.dcard li{margin:5px 0}
+.dcard{border-left:4px solid var(--ok)}
+/* click / match rows */
+.mrow{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;background:#FBFCFE}
+.mrow .mh{font:600 17px var(--font-mono);color:var(--navy);margin:0 0 8px;line-height:1.7}
+.mopts{display:flex;flex-wrap:wrap;gap:6px}
+.mopt{font-weight:500;font-size:15px;min-height:44px}
+.mopt.sel{border-color:var(--navy);background:var(--blue-soft);font-weight:700}
+.mopt.right{border-color:var(--ok);background:var(--ok-bg)}
+.preview{font:600 20px var(--font-mono);color:var(--navy);background:#F1F3F7;border-radius:8px;padding:10px 12px;margin:8px 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.preview .slot{display:inline-flex;align-items:center;justify-content:center;min-width:48px;min-height:40px;border:2px dashed #9AA6B8;border-radius:6px;padding:0 6px;background:#fff}
+.preview .slot.full{border-style:solid;border-color:var(--navy)}
+/* Desmos panel + floating dock */
+#dzCardPanel{margin:10px 0 0}
+#dzFab{position:fixed;right:16px;bottom:16px;z-index:300;background:var(--ok);color:#fff;border-color:var(--ok);border-radius:24px;padding:0 18px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#dzDock{position:fixed;left:0;right:0;bottom:0;height:60vh;z-index:310;background:#fff;border-top:3px solid var(--ok);box-shadow:0 -6px 20px rgba(0,0,0,.18);display:flex;flex-direction:column}
+#dzDock[hidden]{display:none}
+#dzDock .dh{display:flex;align-items:center;gap:10px;padding:6px 10px;flex-wrap:wrap}
+#dzDock .dh b{color:var(--navy);flex:1}
+#dzDock .dslot{flex:1;min-height:0;padding:0 8px 8px}
+#dzDock iframe{height:100%!important}
+body.dock-open .page-wrap{padding-bottom:62vh}
+@media(min-width:760px){#dzDock{left:auto;right:16px;bottom:16px;width:460px;height:70vh;border:1px solid var(--line-2);border-top:3px solid var(--ok);border-radius:10px}body.dock-open .page-wrap{padding-bottom:80px}}
+/* class mode */
+body.class-mode{font-size:20px}
+body.class-mode .q .qt{font-size:22px}
+body.class-mode .opt{font-size:20px;min-height:56px}
+body.class-mode .qfig svg.fig{max-width:460px}
+/* key mode (teacher answer key: ?key=1) */
+.keyonly{display:none}
+body.key-mode .keyonly{display:block}
+body.key-mode .nokey,body.key-mode .btnrow,body.key-mode .entry,body.key-mode #dzFab,body.key-mode #dzDock,body.key-mode .score,body.key-mode #send,body.key-mode .back-link{display:none!important}
+body.key-mode .part-head{break-after:avoid}
+body.key-mode .qt,body.key-mode .qfig,body.key-mode .explain li,body.key-mode .cm{break-inside:avoid}
+@media print{body.key-mode{font-size:13px}body.key-mode .q{padding:10px 12px;margin:0 0 10px}body.key-mode .qfig svg.fig{max-width:260px}body.key-mode .opts.graphs{max-width:420px}body.key-mode .opt{min-height:32px;padding:4px 8px;font-size:13px}body.key-mode .mopt{min-height:30px;font-size:12px}body.key-mode .page-hdr{padding:10px}body.key-mode .jump{display:none}body.key-mode .part{margin-top:14px}}
+@media(max-width:600px){.q,.card{padding:14px}.opts.graphs{gap:6px}.mrow .mh{font-size:16px}}
+@media print{#site-bar,.sb-local,#dzFab,#dzDock,.score,#send,#scoresend{display:none!important}
+ body{background:#fff}.q,.card{border-color:#bbb}.page-wrap{padding:0}}
+</style>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+
+<div class="page-wrap">
+<a href="index.html" class="back-link">← Back to NC Math 1</a>
+<div class="page-hdr">
+  <h1>EOC Practice — NC Math 1</h1>
+  <p>50 practice questions. Every skill on the end-of-course test, with a full explanation for each one.</p>
+  <p class="stds">Standards: N-RN.2 · A-SSE.3 · A-APR.1/3 · A-CED.1–4 · A-REI.3/4/6/11/12 · F-IF.2/4/6/8 · F-BF.1/2 · F-LE.1/3/5 · S-ID.3/6/7/8 · G-GPE.4/5/6</p>
+</div>
+<div class="card keyonly"><b>Answer key.</b> Every question shows its section, standard, answer, and the full step-by-step explanation.</div>
+
+<nav class="jump" aria-label="Sections">
+<a href="#p1">1. Number &amp; Quantity <span id="c1"></span></a>
+<a href="#p2">2. Algebra <span id="c2"></span></a>
+<a href="#p3">3. Functions <span id="c3"></span></a>
+<a href="#p4">4. Statistics <span id="c4"></span></a>
+<a href="#p5">5. Geometry <span id="c5"></span></a>
+</nav>
+
+<div class="card dcard nokey" id="desmos">
+<h2>Using Desmos</h2>
+<p style="margin:4px 0 8px">On the EOC, questions marked <span class="tag calc-ok">Calculator OK</span> let you use Desmos. Questions marked <span class="tag calc-no">No calculator</span> are done by hand.</p>
+<div class="btnrow" style="margin:0 0 6px"><button id="dzShow" class="primary" aria-expanded="false" aria-controls="dzCardPanel">Show calculator</button>
+<a href="https://www.desmos.com/calculator" target="_blank" rel="noopener" style="align-self:center;font-weight:600;color:var(--royal)">Open Desmos in a new tab</a></div>
+<div id="dzCardPanel" hidden><div id="dzCardSlot"></div><p class="small-note" id="dzCardNote" hidden>The calculator is open in the panel at the bottom of the screen.</p></div>
+<ol>
+<li><b>Open it.</b> Go to <b>desmos.com/calculator</b>, or use the Desmos button inside the test. You can also tap the green <b>Desmos</b> button at the bottom of this page.</li>
+<li><b>Use parentheses.</b> Type <code class="dz">3(2x-5)</code> and <code class="dz">20(0.8)^x</code>. Press the right arrow to get out of an exponent.</li>
+<li><b>Solve an equation.</b> Graph each side as its own line: <code class="dz">y=3x+5</code> and <code class="dz">y=-2x-10</code>. Click where they cross. The <b>x</b>-value of that point is the answer.</li>
+<li><b>Zeros and vertex.</b> Graph the function. Click the gray dots on the graph. Dots on the x-axis are the <b>zeros</b>. The top or bottom dot is the <b>vertex</b>.</li>
+<li><b>Tables.</b> Click <b>+</b> then <b>table</b>. Type the data in the x<sub>1</sub> and y<sub>1</sub> columns.</li>
+<li><b>Regression.</b> Under the table, type <code class="dz">y1~mx1+b</code> for a line of best fit. Type <code class="dz">y1~a·b^x1</code> for an exponential model. Read <b>r</b> (the <b>correlation coefficient</b>), <b>m</b>, <b>b</b>, and <b>a</b> in the box below it.</li>
+<li><b>Use the model.</b> After a regression, type <code class="dz">14m+b</code> to predict y when x = 14. Type <code class="dz">e1</code> to see the <b>residuals</b>.</li>
+<li><b>Sliders.</b> Type <code class="dz">y=mx+b</code> and click “add slider” to see what m and b do.</li>
+<li><b>Fraction toggle.</b> Type a number like <code class="dz">0.8</code>. Click the small fraction button next to the answer to see it as a fraction.</li>
+</ol>
+</div>
+
+<div class="card howto nokey">
+<div class="modebar"><button id="classMode" aria-pressed="false">Turn on Class mode</button><span class="small-note">For the board: bigger text.</span></div>
+<b>How this page works</b>
+<ol>
+<li>Work each question on paper first. Then type or click your answer and press <b>Check</b>.</li>
+<li>Wrong? Read the hint and try again. <b>Show answer</b> gives the full explanation.</li>
+<li>Your first-try score is at the bottom. Send your work to Mr. Allen when you finish.</li>
+</ol>
+</div>
+
+<section class="part" id="p1">
+<div class="part-head"><div class="std">Section 1 · N-RN.2</div><h2>Number &amp; Quantity</h2>
+<p>These questions use the <b>exponent rules</b>. For a power of a power, multiply the exponents. When you divide like bases, subtract the exponents.</p></div>
+<div id="qs1"></div>
+</section>
+
+<section class="part" id="p2">
+<div class="part-head"><div class="std">Section 2 · A-SSE · A-APR · A-CED · A-REI</div><h2>Algebra: Equations, Inequalities &amp; Polynomials</h2>
+<p>Write and solve equations, inequalities, and systems. Multiply and factor polynomials. In word problems, say what each variable stands for before you write anything.</p></div>
+<div id="qs2"></div>
+</section>
+
+<section class="part" id="p3">
+<div class="part-head"><div class="std">Section 3 · F-IF · F-BF · F-LE</div><h2>Functions: Linear, Exponential &amp; Quadratic</h2>
+<p><b>Linear</b> functions add the same amount each step. <b>Exponential</b> functions multiply by the same amount each step. <b>Quadratic</b> functions make a parabola with a highest or lowest point.</p></div>
+<div id="qs3"></div>
+</section>
+
+<section class="part" id="p4">
+<div class="part-head"><div class="std">Section 4 · S-ID</div><h2>Statistics</h2>
+<p>Describe data with its center and spread, and watch for <b>outliers</b>. Use Desmos to find the line of best fit, the correlation coefficient <b>r</b>, and the <b>residuals</b>.</p></div>
+<div id="qs4"></div>
+</section>
+
+<section class="part" id="p5">
+<div class="part-head"><div class="std">Section 5 · G-GPE</div><h2>Geometry: Coordinate Geometry</h2>
+<p>Use slope, midpoint, and distance on the coordinate plane. <b>Parallel</b> lines have the same slope. <b>Perpendicular</b> lines have slopes that are opposite reciprocals.</p></div>
+<div id="qs5"></div>
+</section>
+
+<section class="card nokey" id="summary" aria-live="polite"></section>
+<div id="send" class="nokey"></div>
+<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono" id="totN">50</span> · Answered <span class="mono" id="doneN">0</span></div>
+</div>
+
+<button id="dzFab" aria-controls="dzDock" aria-expanded="false">Desmos</button>
+<div id="dzDock" hidden role="dialog" aria-label="Desmos calculator">
+  <div class="dh"><b>Desmos calculator</b><a href="https://www.desmos.com/calculator" target="_blank" rel="noopener" style="font-size:14px;font-weight:600;color:var(--royal)">Open in a new tab</a><button id="dzClose">Close</button></div>
+  <div class="dslot" id="dzDockSlot"></div>
+</div>
+
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/*ITEMS*/
+(function(){
+"use strict";
+/* ================= helpers ================= */
+function M(n){return n<0?"−"+Math.abs(n):String(n);}                       // true minus
+function SF(n,d){return '<span class="sf"><span>'+n+'</span><span>'+d+'</span></span>';} // stacked fraction
+function P(a,b){return "("+M(a)+", "+M(b)+")";}
+function X2(v){return v+"<sup>2</sup>";}
+function DZ(s){return '<code class="dz">'+s+'</code>';}
+function money(n){return "$"+n.toLocaleString("en-US",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});}
+function cm(n){return n.toLocaleString("en-US");}
+var C={navy:"#1E2D4F",muted:"#5B6475",line:"#E3E5EA",axis:"#5B6475",gold:"#E0A800",goldT:"#8A6100",blue:"#1D4ED8",shade:"#C9D6F2",green:"#15803D",red:"#B42318"};
+function f1(n){return Math.round(n*10)/10;}
+var FONT='font-family="Inter,system-ui,sans-serif"';
+function T(x,y,s,o){o=o||{};return '<text x="'+f1(x)+'" y="'+f1(y)+'" text-anchor="'+(o.a||"middle")+'" font-size="'+(o.size||13)+'" font-weight="'+(o.w||600)+'" fill="'+(o.col||C.navy)+'" '+(o.it?'font-family="Georgia,serif" font-style="italic"':FONT)+(o.halo?' paint-order="stroke" stroke="#fff" stroke-width="4"':'')+'>'+s+'</text>';}
+function tbl(heads,cols,o){o=o||{};var n=cols[0].length,h='<div class="tablewrap"><table class="xy">';
+  if(o.horiz){heads.forEach(function(hd,i){h+='<tr><th>'+hd+'</th>'+cols[i].map(function(v){return '<td>'+v+'</td>';}).join("")+'</tr>';});}
+  else{h+='<tr>'+heads.map(function(x){return '<th>'+x+'</th>';}).join("")+'</tr>';
+    for(var r=0;r<n;r++)h+='<tr>'+cols.map(function(c){return '<td>'+c[r]+'</td>';}).join("")+'</tr>';}
+  return h+'</table></div>';}
+function grid6(m,b,side,label){ // y (>= or <=) m x + b on a −6..6 grid, solid line, shaded half-plane
+  var R=6,W=200,pad=14,u=(W-2*pad)/(2*R);
+  function X(x){return pad+(x+R)*u;}function Y(y){return pad+(R-y)*u;}
+  var s='<svg class="g6" viewBox="0 0 '+W+' '+W+'" role="img" aria-label="'+label+'">',i;
+  // clip the square to the half-plane (Sutherland–Hodgman)
+  var sq=[[-R,-R],[R,-R],[R,R],[-R,R]],inside=function(p){var d=p[1]-(m*p[0]+b);return side==="above"?d>=0:d<=0;},out=[];
+  for(i=0;i<4;i++){var A=sq[i],B=sq[(i+1)%4],ia=inside(A),ib=inside(B);
+    if(ia)out.push(A);
+    if(ia!==ib){var t=((m*A[0]+b)-A[1])/((B[1]-A[1])-m*(B[0]-A[0]));out.push([A[0]+t*(B[0]-A[0]),A[1]+t*(B[1]-A[1])]);}}
+  s+='<polygon points="'+out.map(function(p){return f1(X(p[0]))+","+f1(Y(p[1]));}).join(" ")+'" fill="'+C.shade+'"/>';
+  for(i=-R;i<=R;i++){s+='<line x1="'+X(i)+'" y1="'+Y(-R)+'" x2="'+X(i)+'" y2="'+Y(R)+'" stroke="#c9ced8" stroke-width=".7"/><line x1="'+X(-R)+'" y1="'+Y(i)+'" x2="'+X(R)+'" y2="'+Y(i)+'" stroke="#c9ced8" stroke-width=".7"/>';}
+  s+='<line x1="'+X(-R)+'" y1="'+Y(0)+'" x2="'+X(R)+'" y2="'+Y(0)+'" stroke="'+C.axis+'" stroke-width="1.5"/><line x1="'+X(0)+'" y1="'+Y(-R)+'" x2="'+X(0)+'" y2="'+Y(R)+'" stroke="'+C.axis+'" stroke-width="1.5"/>';
+  [-4,-2,2,4].forEach(function(v){s+=T(X(v),Y(0)+10,M(v),{size:8,w:500,col:C.muted})+T(X(0)-3,Y(v)+3,M(v),{size:8,w:500,col:C.muted,a:"end"});});
+  var lo=Math.max(-R,Math.min((-R-b)/m,(R-b)/m)),hi=Math.min(R,Math.max((-R-b)/m,(R-b)/m));
+  s+='<line x1="'+f1(X(lo))+'" y1="'+f1(Y(m*lo+b))+'" x2="'+f1(X(hi))+'" y2="'+f1(Y(m*hi+b))+'" stroke="'+C.navy+'" stroke-width="2.4"/>';
+  s+=T(X(R)-2,Y(0)-4,"x",{size:10,it:true,a:"end"})+T(X(0)+7,Y(R)+8,"y",{size:10,it:true});
+  return s+'</svg>';}
+function rect(w,h,top,side,label){ // labeled rectangle; w,h in px
+  var W=Math.max(w+120,220),H=h+56,x0=(W-w)/2,y0=26;
+  return '<svg class="fig" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+label+'" style="max-width:'+W+'px">'+
+   '<rect x="'+x0+'" y="'+y0+'" width="'+w+'" height="'+h+'" fill="#E8EEFC" stroke="'+C.navy+'" stroke-width="2"/>'+
+   T(x0+w/2,y0-8,top,{size:14})+T(x0+w+8,y0+h/2+5,side,{size:14,a:"start"})+'</svg>';}
+function twoRects(){
+  var s='<svg class="fig" viewBox="0 0 360 190" role="img" aria-label="Old garden: w by 3w plus 2. New garden: 2w by the old length plus 5." style="max-width:360px">';
+  s+=T(70,16,"Old garden",{size:13,col:C.muted})+'<rect x="20" y="40" width="100" height="40" fill="#E8EEFC" stroke="'+C.navy+'" stroke-width="2"/>'+T(70,34,"3w + 2",{size:13})+T(124,65,"w",{size:13,a:"start",it:true});
+  s+=T(250,16,"New garden",{size:13,col:C.muted})+'<rect x="185" y="40" width="130" height="80" fill="#FFF6D6" stroke="'+C.gold+'" stroke-width="2"/>'+T(250,34,"(3w + 2) + 5",{size:13})+T(319,85,"2w",{size:13,a:"start"});
+  return s+'</svg>';}
+function circles(){ // figure n has 2^(n−1) rows of 5 circles
+  var r=5.2,g=12,s='<svg class="fig" viewBox="0 0 340 150" role="img" aria-label="Pattern of circles: 5, 10, 20, then 40 circles in rows of 5" style="max-width:420px">',x0=8;
+  for(var k=1;k<=4;k++){var rows=Math.pow(2,k-1),base=118;
+    for(var rr=0;rr<rows;rr++)for(var c=0;c<5;c++)s+='<circle cx="'+f1(x0+r+c*g)+'" cy="'+f1(base-r-rr*g)+'" r="'+r+'" fill="#fff" stroke="'+C.navy+'" stroke-width="1.4"/>';
+    s+=T(x0+2*g+r,base+20,"Figure "+k,{size:11,col:C.muted});x0+=5*g+24;}
+  return s+'</svg>';}
+function eqbox(h){return '<div class="eqbox">'+h+'</div>';}
+
+/* ================= QUESTIONS =================
+   type: mc | num | match (rows of chips) | build (boxes filled from lists)
+   calc: true = Calculator OK, false = No calculator.  Every answer is checked in code (verify.py). */
+var S1=[
+ {id:"n1",std:"N-RN.2",calc:false,type:"num",
+  text:"What value of <i>n</i> makes this equation true?",
+  fig:function(){return eqbox('<span class="big-paren">(</span>'+SF("x<sup>3</sup>y<sup>7</sup>","x<sup>−2</sup>y<sup>4</sup>")+'<span class="big-paren">)</span><sup><i>n</i></sup> = x<sup>20</sup>y<sup>12</sup>');},
+  ans:4,pre:"n =",
+  wrong:function(v){if(v===20)return "Inside the parentheses, x<sup>3</sup> ÷ x<sup>−2</sup> is x<sup>3 − (−2)</sup> = x<sup>5</sup>, not x<sup>1</sup>. Subtracting a negative means add.";
+    if(v===15)return "Power to a power means <b>multiply</b> the exponents. 5 times what number is 20?";
+    if(v===5||v===3)return "That is an exponent inside the parentheses. Now find n so that (x<sup>5</sup>y<sup>3</sup>)<sup>n</sup> = x<sup>20</sup>y<sup>12</sup>.";
+    return "Simplify inside first: subtract the exponents of x, then of y. Then multiply by n.";},
+  ok:"Inside you get x<sup>5</sup>y<sup>3</sup>. Then 5n = 20 and 3n = 12, so n = 4.",
+  steps:["Simplify inside the parentheses first. When you divide like bases, <b>subtract</b> the exponents.",
+   "x: 3 − (−2) = 3 + 2 = 5. So the x part is x<sup>5</sup>.",
+   "y: 7 − 4 = 3. So the y part is y<sup>3</sup>.",
+   "Now the left side is (x<sup>5</sup>y<sup>3</sup>)<sup>n</sup>. A <b>power of a power</b> multiplies: x<sup>5n</sup>y<sup>3n</sup>.",
+   "Match the x exponents: 5n = 20, so n = 4.",
+   "Check with y: 3 · 4 = 12. ✓ So n = 4."],
+  cm:"Writing 3 − (−2) as 1. Subtracting a negative is adding: 3 − (−2) = 5."},
+ {id:"n2",std:"N-RN.2",calc:true,type:"num",
+  text:"Look at this expression. It can be written as x<sup><i>m</i></sup>. What is the value of <i>m</i>?",
+  fig:function(){return eqbox("((x<sup>2</sup>)<sup>4</sup>)<sup>3</sup>");},
+  ans:24,pre:"m =",
+  wrong:function(v){if(v===9)return "You added 2 + 4 + 3. For a power of a power, <b>multiply</b> the exponents.";
+    if(v===8)return "That is (x<sup>2</sup>)<sup>4</sup> = x<sup>8</sup>. There is one more power of 3 outside.";
+    if(v===11||v===14)return "You mixed adding and multiplying. Every step is a power of a power, so multiply: 2 · 4 · 3.";
+    return "Work from the inside out. Multiply the exponents each time.";},
+  ok:"2 · 4 = 8, then 8 · 3 = 24. So m = 24.",
+  steps:["Start inside: (x<sup>2</sup>)<sup>4</sup>. A <b>power of a power</b> means multiply the exponents: 2 · 4 = 8. That gives x<sup>8</sup>.",
+   "Next: (x<sup>8</sup>)<sup>3</sup>. Multiply again: 8 · 3 = 24.",
+   "So the expression is x<sup>24</sup>, and m = 24."],
+  cm:"Adding the exponents (2 + 4 + 3 = 9). Add exponents only when you multiply like bases, like x<sup>2</sup> · x<sup>4</sup>.",
+  dz:"Check with a number. Type "+DZ("((2^2)^4)^3")+" and "+DZ("2^24")+". If they match, m = 24 is right."}
+];
+
+var S2=[
+ {id:"a1",std:"A-REI.12",calc:false,type:"mc",cls:"graphs",
+  text:"Which graph shows y ≥ 3x − 2?",
+  opts:[{h:function(){return grid6(-3,2,"above","Line through (0, 2) going down, shaded above");},why:"This line goes <b>down</b> from left to right, so its slope is negative. The slope of y ≥ 3x − 2 is 3. The line should go up."},
+        {h:function(){return grid6(3,-2,"above","Line through (0, −2) going up, shaded above");},ok:1},
+        {h:function(){return grid6(3,-2,"below","Line through (0, −2) going up, shaded below");},why:"The line is right, but the shading is on the wrong side. Test (0, 0): 0 ≥ 3(0) − 2 is 0 ≥ −2. That is true, so (0, 0) must be shaded."},
+        {h:function(){return grid6(-3,2,"below","Line through (0, 2) going down, shaded below");},why:"Check the slope first. This line goes down, but the slope 3 goes up. The y-intercept should be −2, not 2."}],
+  ok:"The line has y-intercept −2 and slope 3. Since (0, 0) makes it true, the side with (0, 0) is shaded.",
+  steps:["Find the <b>y-intercept</b>: b = −2. The line crosses the y-axis at (0, −2).",
+   "Use the <b>slope</b>: m = 3 = "+SF(3,1)+". From (0, −2), go up 3 and right 1 to (1, 1). The line goes up from left to right.",
+   "The symbol is ≥, so the line is <b>solid</b>. Points on the line count.",
+   "Pick a <b>test point</b> that is not on the line, like (0, 0). Plug it in: 0 ≥ 3(0) − 2 means 0 ≥ −2. That is true.",
+   "Shade the side that has (0, 0). That is above the line. The answer is B."],
+  cm:"Shading the wrong side. Do not guess from the ≥ sign. Always test a point like (0, 0)."},
+ {id:"a2",std:"A-REI.4",calc:false,type:"num",
+  text:"What is the positive solution of this equation?",
+  fig:function(){return eqbox("x<sup>2</sup> − 30 = −5");},
+  ans:5,pre:"x =",
+  wrong:function(v){if(v===25)return "You stopped at x<sup>2</sup> = 25. Take the square root of both sides.";
+    if(v===-5)return "−5 is a solution, but the question asks for the <b>positive</b> one.";
+    if(v===35)return "Add 30 to both sides: −5 + 30 = 25, not 35. Then take the square root.";
+    return "Get x<sup>2</sup> alone first. Add 30 to both sides. Then take the square root.";},
+  ok:"x<sup>2</sup> = 25, so x = 5 or x = −5. The positive one is 5.",
+  steps:["Get x<sup>2</sup> by itself. Add 30 to both sides: x<sup>2</sup> = −5 + 30.",
+   "−5 + 30 = 25, so x<sup>2</sup> = 25.",
+   "<b>Take the square root</b> of both sides. Remember ±: x = 5 or x = −5.",
+   "The question asks for the positive value. x = 5.",
+   "Check: 5<sup>2</sup> − 30 = 25 − 30 = −5. ✓"],
+  cm:"Stopping at 25. That is the value of x<sup>2</sup>, not x."},
+ {id:"a3",std:"A-REI.6",calc:false,type:"num",
+  text:"Here is a system of equations. What is the <i>y</i>-value of its solution?",
+  fig:function(){return eqbox("3x + y = 11<br>−3x + 2y = −5");},
+  ans:2,pre:"y =",
+  wrong:function(v){if(v===3)return "3 is the x-value. The question asks for y.";
+    if(v===6)return "You found 3y = 6. Divide both sides by 3.";
+    if(v===-2)return "Check your signs when you add: 11 + (−5) = 6, which is positive.";
+    return "Add the two equations. The x terms cancel: 3x + (−3x) = 0.";},
+  ok:"Adding the equations gives 3y = 6, so y = 2. (The solution is (3, 2).)",
+  steps:["Look at the x terms: 3x and −3x. They are opposites, so use <b>elimination</b>. Add the equations.",
+   "Left sides: 3x + (−3x) + y + 2y = 3y. Right sides: 11 + (−5) = 6.",
+   "So 3y = 6. Divide by 3: y = 2.",
+   "Find x to check: 3x + 2 = 11, so 3x = 9 and x = 3.",
+   "Check in the second equation: −3(3) + 2(2) = −9 + 4 = −5. ✓ The y-value is 2."],
+  cm:"Giving the x-value (3) when the question asks for y. Read the question again before you answer."},
+ {id:"a4",std:"A-CED.3",calc:false,type:"mc",
+  text:"Jada has 15 coins. They are all dimes and quarters. The coins are worth $2.40 in all. Let <i>d</i> be the number of dimes and <i>q</i> be the number of quarters. Which system can you use to find <i>d</i> and <i>q</i>?",
+  opts:[{h:"d + q = 15<br>10d + 25q = 2.40",why:"The value equation mixes cents and dollars. 10d + 25q is in cents, but 2.40 is in dollars. Use 0.10 and 0.25."},
+        {h:"d + q = 15<br>0.10d + 0.25q = 2.40",ok:1},
+        {h:"d + q = 2.40<br>10d + 25q = 15",why:"The totals are switched. d + q counts coins, so it should equal 15."},
+        {h:"d + q = 2.40<br>0.10d + 0.25q = 15",why:"The totals are switched. The number of coins is 15. The value in dollars is 2.40."}],
+  ok:"One equation counts the coins (15). The other adds their value in dollars (2.40).",
+  steps:["Write one equation for the <b>number</b> of coins: d + q = 15.",
+   "Write one equation for the <b>value</b>. A dime is $0.10 and a quarter is $0.25.",
+   "Value of dimes + value of quarters = total value: 0.10d + 0.25q = 2.40.",
+   "Both equations use dollars or plain counts, so the units match. The answer is B.",
+   "Check: 9 dimes and 6 quarters is 15 coins, and 0.90 + 1.50 = 2.40. ✓"],
+  cm:"Mixing units, like 10d + 25q = 2.40. Use all cents (240) or all dollars (2.40), not both."},
+ {id:"a5",std:"A-CED.4",calc:false,type:"mc",
+  text:"The formula <i>d</i> = <i>rt</i> gives distance.<ul class=\"bul\"><li><i>r</i> is the rate (speed).</li><li><i>t</i> is the time.</li></ul>Which formula gives the rate?",
+  opts:[{h:"r = dt",why:"Undo multiplying by t with <b>division</b>, not more multiplying."},
+        {h:"r = d − t",why:"r and t are multiplied. Undo multiplying by dividing, not subtracting."},
+        {h:"r = "+SF("t","d"),why:"The fraction is upside down. Divide both sides of d = rt by t, so d stays on top."},
+        {h:"r = "+SF("d","t"),ok:1}],
+  ok:"Divide both sides of d = rt by t. That gives r = "+SF("d","t")+".",
+  steps:["We want r by itself. In d = rt, r is <b>multiplied</b> by t.",
+   "Undo multiplying by t: divide both sides by t.",
+   SF("d","t")+" = "+SF("rt","t")+". The t's cancel on the right.",
+   "So r = "+SF("d","t")+". The answer is D.",
+   "Check with numbers: 120 miles in 3 hours is 120 ÷ 3 = 40 miles per hour. ✓"],
+  cm:"Flipping the fraction (r = "+SF("t","d")+"). Test with easy numbers to be sure."},
+ {id:"a6",std:"A-CED.3",calc:false,type:"mc",
+  text:"A club sells T-shirts and hats to raise money.<ul class=\"bul\"><li>The club’s goal is a total profit of $1,500.</li><li>Each T-shirt sold makes a profit of $10.</li><li>Each hat sold makes a profit of $5.</li><li>The club can sell no more than 200 items.</li></ul>Let <i>x</i> be the number of T-shirts and <i>y</i> the number of hats. Which system shows how many of each the club must sell to reach its goal?",
+  opts:[{h:"10x + 5y > 1,500<br>x + y ≤ 200",why:"Making exactly $1,500 also reaches the goal. Use ≥, not >."},
+        {h:"10x + 5y > 1,500<br>x + y < 200",why:"Both signs are too strict. Exactly $1,500 meets the goal (≥), and exactly 200 items is allowed (≤)."},
+        {h:"10x + 5y ≥ 1,500<br>x + y ≤ 200",ok:1},
+        {h:"10x + 5y ≥ 1,500<br>x + y < 200",why:"“No more than 200” means 200 is allowed. Use ≤, not <."}],
+  ok:"Reaching the goal means the profit is $1,500 or more (≥). No more than 200 items means 200 or fewer (≤).",
+  steps:["Profit: each T-shirt makes $10 and each hat makes $5. Total profit = 10x + 5y.",
+   "To <b>reach</b> the goal, profit must be $1,500 or more. “Or more” means ≥: 10x + 5y ≥ 1,500.",
+   "Items: x + y counts all items sold. “No more than 200” means 200 or less: x + y ≤ 200.",
+   "The answer is C."],
+  cm:"Using > or <. Ask: does the exact number count? Here $1,500 reaches the goal, and 200 items is allowed."},
+ {id:"a7",std:"A-APR.3",calc:true,type:"match",
+  text:"Sort each equation by its solutions. Click one choice for each equation.",
+  cats:["only positive solutions","only negative solutions","one positive and one negative solution"],
+  rows:[{h:"x<sup>2</sup> + 5x + 6 = 0",ans:1},{h:"x<sup>2</sup> − x − 12 = 0",ans:2},{h:"x<sup>2</sup> − 9x + 20 = 0",ans:0}],
+  rowWhy:["x<sup>2</sup> + 5x + 6 = (x + 2)(x + 3). The solutions are −2 and −3. Remember to flip the signs.",
+          "x<sup>2</sup> − x − 12 = (x − 4)(x + 3). The solutions are 4 and −3: one of each.",
+          "x<sup>2</sup> − 9x + 20 = (x − 4)(x − 5). The solutions are 4 and 5. Both are positive."],
+  ok:"−2 and −3 are both negative. 4 and −3 are one of each. 4 and 5 are both positive.",
+  steps:["<b>Factor</b> each one. Find two numbers that multiply to c and add to b.",
+   "x<sup>2</sup> + 5x + 6: 2 · 3 = 6 and 2 + 3 = 5. So (x + 2)(x + 3) = 0. Set each factor to 0: x = −2 or x = −3. <b>Only negative.</b>",
+   "x<sup>2</sup> − x − 12: −4 · 3 = −12 and −4 + 3 = −1. So (x − 4)(x + 3) = 0. x = 4 or x = −3. <b>One of each.</b>",
+   "x<sup>2</sup> − 9x + 20: −4 · (−5) = 20 and −4 + (−5) = −9. So (x − 4)(x − 5) = 0. x = 4 or x = 5. <b>Only positive.</b>"],
+  cm:"Reading the solutions straight from the factors. (x + 2) = 0 gives x = −2, not 2. The sign flips.",
+  dz:"Type "+DZ("y=x^2+5x+6")+". Click the gray dots where the graph crosses the x-axis. Those are the solutions."},
+ {id:"a8",std:"A-APR.1",calc:true,type:"mc",
+  text:"A rectangle has width <i>x</i>. Its length is 4 units more than the width. Which expression gives the perimeter of the rectangle?",
+  fig:function(){return rect(180,80,"x + 4","x","Rectangle with length x + 4 and width x");},
+  opts:[{h:"x<sup>2</sup> + 4x",why:"That is the <b>area</b>: x(x + 4). Perimeter adds all four sides."},
+        {h:"2x + 4",why:"That adds only one width and one length. A rectangle has two of each."},
+        {h:"4x + 4",why:"You doubled the x’s but not the 4. Both lengths are x + 4, so the 4 is added twice."},
+        {h:"4x + 8",ok:1}],
+  ok:"Perimeter = x + (x + 4) + x + (x + 4) = 4x + 8.",
+  steps:["The width is x. The length is x + 4.",
+   "<b>Perimeter</b> is the distance around: add all four sides.",
+   "x + (x + 4) + x + (x + 4).",
+   "Combine like terms: x + x + x + x = 4x, and 4 + 4 = 8.",
+   "The perimeter is 4x + 8. The answer is D."],
+  cm:"Finding the area (x<sup>2</sup> + 4x) instead of the perimeter.",
+  dz:"Test a number. If x = 3, the sides are 3 and 7, so the perimeter is 20. Type "+DZ("4(3)+8")+" to see which choice also gives 20."},
+ {id:"a9",std:"A-REI.11",calc:true,type:"mc",
+  text:"For which <i>x</i>-value are the <i>y</i>-values of y = 2x + 1 and y = 20(0.8)<sup>x</sup> <b>about</b> equal?",
+  opts:[{h:"−0.50",why:"That is where y = 2x + 1 crosses the x-axis. Find where the two graphs cross each other."},
+        {h:"3.79",ok:1},{h:"4.32",why:"Check the line. You may have graphed y = 2x − 1. The line here is y = 2x + 1."},
+        {h:"8.58",why:"That is the y-value of the crossing point. The question asks for the x-value."}],
+  ok:"The graphs cross at about (3.79, 8.58). The x-value is 3.79.",
+  steps:["The y-values are equal where the two graphs <b>intersect</b>.",
+   "Graph both: y = 2x + 1 and y = 20(0.8)<sup>x</sup>.",
+   "Click the point where they cross. It is about (3.79, 8.58).",
+   "The question asks for x. The answer is 3.79.",
+   "Check: 2(3.79) + 1 = 8.58, and 20(0.8)<sup>3.79</sup> ≈ 8.58. ✓"],
+  cm:"Picking the y-value of the crossing point (8.58) instead of the x-value.",
+  dz:"Type "+DZ("y=2x+1")+" on line 1 and "+DZ("y=20(0.8)^x")+" on line 2. Click where they cross and read the x-value."},
+ {id:"a10",std:"A-CED.1",calc:true,type:"num",
+  text:"The width of a rectangle is 3 inches less than its length. The perimeter is 34 inches. What is the length, in inches?",
+  ans:10,pre:"length =",
+  wrong:function(v){if(v===7)return "7 is the width. The length is 3 more than the width.";
+    if(v===17)return "17 is half the perimeter, so it is length + width. Use 2L + 2(L − 3) = 34.";
+    if(v===8.5)return "34 ÷ 4 = 8.5 would be a square. Here the width is 3 less than the length.";
+    if(v===13)return "Check your signs. The width is L − 3, so 4L − 6 = 34. Add 6 to both sides.";
+    return "Let L be the length. The width is L − 3. Write 2L + 2(L − 3) = 34 and solve.";},
+  ok:"2L + 2(L − 3) = 34 gives 4L − 6 = 34, so L = 10. The width is 7.",
+  steps:["Let L be the length. The width is 3 less: L − 3.",
+   "Perimeter = 2(length) + 2(width): 2L + 2(L − 3) = 34.",
+   "Distribute: 2L + 2L − 6 = 34, so 4L − 6 = 34.",
+   "Add 6 to both sides: 4L = 40. Divide by 4: L = 10.",
+   "Check: width = 7. 2(10) + 2(7) = 20 + 14 = 34. ✓"],
+  cm:"Answering with the width (7) instead of the length.",
+  dz:"Use x for the length. Type "+DZ("y=2x+2(x-3)")+" and "+DZ("y=34")+". Click where they cross. The x-value is the length."},
+ {id:"a11",std:"A-CED.1",calc:true,type:"num",
+  text:"Marcus wants a smoothie.<ul class=\"bul\"><li>He has $6.00 to spend.</li><li>The cup costs $1.50.</li><li>The smoothie costs $0.55 per ounce.</li><li>All prices include tax.</li></ul>What is the greatest whole number of ounces he can buy?",
+  ans:8,pre:"ounces =",
+  wrong:function(v){if(v===9)return "Check 9 ounces: 1.50 + 0.55(9) = $6.45. That is more than $6.00. Round <b>down</b>.";
+    if(v===10||v===11)return "Don’t forget the $1.50 cup. Subtract it first: 6.00 − 1.50 = 4.50.";
+    if(Math.abs(v-8.18)<0.01||Math.abs(v-8.2)<0.01)return "He can only buy whole ounces. 8.18 is not whole. Round down.";
+    return "Write 1.50 + 0.55x ≤ 6.00 and solve. Then round down.";},
+  ok:"1.50 + 0.55x ≤ 6.00 gives x ≤ 8.18…, so the most is 8 ounces.",
+  steps:["Let x be the number of ounces. Cost = 1.50 + 0.55x.",
+   "He can spend $6.00 or less: 1.50 + 0.55x ≤ 6.00.",
+   "Subtract 1.50: 0.55x ≤ 4.50.",
+   "Divide by 0.55: x ≤ 8.18…",
+   "He needs a whole number that is not too big, so <b>round down</b>: 8 ounces.",
+   "Check: 1.50 + 0.55(8) = $5.90. ✓ And 9 ounces would cost $6.45, too much."],
+  cm:"Rounding 8.18 up to 9. When money runs out, round down.",
+  dz:"Type "+DZ("y=1.50+0.55x")+" and "+DZ("y=6")+". Click where they cross (about x = 8.18), then round down."},
+ {id:"a12",std:"A-REI.3",calc:true,type:"num",dec:true,
+  text:"Solve the equation for <i>m</i>.",
+  fig:function(){return eqbox("3(2m − 5) = 4(4m + 6)");},
+  ans:-3.9,pre:"m =",
+  wrong:function(v){if(v===3.9)return "Check the sign. −39 = 10m, so m is negative.";
+    if(Math.abs(v+0.9)<1e-9)return "Distribute fully: 3 · (−5) = −15 and 4 · 6 = 24. Then move the numbers: −15 − 24 = −39.";
+    if(Math.abs(v+1.1)<1e-9)return "Distribute to <b>both</b> terms in each set of parentheses: 3(2m − 5) = 6m − 15.";
+    return "Distribute first. Then get the m terms on one side and the numbers on the other.";},
+  ok:"6m − 15 = 16m + 24 gives −39 = 10m, so m = −3.9.",
+  steps:["<b>Distribute</b> on each side: 3(2m − 5) = 6m − 15 and 4(4m + 6) = 16m + 24.",
+   "Now 6m − 15 = 16m + 24.",
+   "Subtract 6m from both sides: −15 = 10m + 24.",
+   "Subtract 24 from both sides: −39 = 10m.",
+   "Divide by 10: m = −3.9 (or −"+SF(39,10)+").",
+   "Check: 3(2(−3.9) − 5) = 3(−12.8) = −38.4 and 4(4(−3.9) + 6) = 4(−9.6) = −38.4. ✓"],
+  cm:"Distributing to only the first term, like 3(2m − 5) = 6m − 5.",
+  dz:"Change m to x. Type "+DZ("y=3(2x-5)")+" and "+DZ("y=4(4x+6)")+". Click where they cross. The x-value is the answer."},
+ {id:"a13",std:"A-REI.6",calc:true,type:"match",
+  text:"Here are three systems of equations. How many solutions does each one have? Click one choice for each system.",
+  cats:["no solution","one solution","infinitely many solutions"],
+  rows:[{h:"y = "+SF(1,4)+"x + 3<br>4y = 20 − x",ans:1},{h:"y = "+SF(1,5)+"x + 3<br>5y = 25 + x",ans:0},{h:"y = "+SF(1,2)+"x + 3<br>4y = 2x + 12",ans:2}],
+  rowWhy:["Divide 4y = 20 − x by 4: y = −"+SF(1,4)+"x + 5. The slopes are different ("+SF(1,4)+" and −"+SF(1,4)+"), so the lines cross once.",
+          "Divide 5y = 25 + x by 5: y = "+SF(1,5)+"x + 5. Same slope, different y-intercepts (3 and 5). The lines are parallel: no solution.",
+          "Divide 4y = 2x + 12 by 4: y = "+SF(1,2)+"x + 3. That is the same line, so every point works: infinitely many."],
+  ok:"Put each second equation in y = mx + b form and compare slopes and y-intercepts.",
+  steps:["Write each second equation in <b>slope-intercept form</b> (y = mx + b). Divide every term by the number in front of y.",
+   "System 1: 4y = 20 − x becomes y = −"+SF(1,4)+"x + 5. Slopes "+SF(1,4)+" and −"+SF(1,4)+" are different. <b>One solution.</b>",
+   "System 2: 5y = 25 + x becomes y = "+SF(1,5)+"x + 5. Same slope, but b = 3 and b = 5. Parallel lines: <b>no solution</b>.",
+   "System 3: 4y = 2x + 12 becomes y = "+SF(1,2)+"x + 3. Same slope and same b. Same line: <b>infinitely many solutions</b>."],
+  cm:"Forgetting to divide every term by the number in front of y. In 4y = 20 − x, both 20 and −x get divided by 4.",
+  dz:"Type both equations of a system just as they are, like "+DZ("y=1/4x+3")+" and "+DZ("4y=20-x")+". One crossing point, parallel lines, or one line on top of the other tells you the answer."},
+ {id:"a14",std:"A-APR.1",calc:true,type:"mc",
+  text:"A garden is a rectangle. Its length is 2 feet more than 3 times its width, <i>w</i>. A new garden will be built. One side of the new garden will be 5 feet longer than the old length. The other side will be twice the old width. How many more square feet of area will the new garden have?",
+  fig:twoRects,
+  opts:[{h:"3w<sup>2</sup> + 2w",why:"That is the area of the <b>old</b> garden. Find the new area, then subtract the old area."},
+        {h:"6w<sup>2</sup> + 14w",why:"That is the area of the <b>new</b> garden. The question asks how much <b>more</b> it is. Subtract the old area."},
+        {h:"3w<sup>2</sup> + 12w",ok:1},
+        {h:"9w<sup>2</sup> + 16w",why:"You added the two areas. “How many more” means subtract: new − old."}],
+  ok:"New area − old area = (6w<sup>2</sup> + 14w) − (3w<sup>2</sup> + 2w) = 3w<sup>2</sup> + 12w.",
+  steps:["Old garden: width w, length 3w + 2. Old area = w(3w + 2) = 3w<sup>2</sup> + 2w.",
+   "New garden: one side is (3w + 2) + 5 = 3w + 7. The other side is 2w.",
+   "New area = 2w(3w + 7) = 6w<sup>2</sup> + 14w.",
+   "“How many more” means subtract: (6w<sup>2</sup> + 14w) − (3w<sup>2</sup> + 2w).",
+   "Subtract like terms: 6w<sup>2</sup> − 3w<sup>2</sup> = 3w<sup>2</sup> and 14w − 2w = 12w. The answer is 3w<sup>2</sup> + 12w."],
+  cm:"Stopping at the new area. The question asks for the difference.",
+  dz:"Test w = 2. Old: 2 by 8 = 16. New: 4 by 13 = 52. The difference is 36. Type "+DZ("3(2)^2+12(2)")+" and see that it gives 36."},
+ {id:"a15",std:"A-SSE.3",calc:true,type:"build",
+  text:"Build an expression that is equivalent to 12x<sup>2</sup> − 14x − 10. Click one choice for each box.",
+  rows:[{h:"Box 1",chips:["(2x","(4x","(6x"],ans:1},{h:"Box 2",chips:["− 2)","− 1)","+ 1)","+ 2)"],ans:3},
+        {h:"Box 3",chips:["(2x","(3x","(4x"],ans:1},{h:"Box 4",chips:["− 10)","− 5)","+ 5)","+ 10)"],ans:1}],
+  check:function(sel){var A=[2,4,6][sel[0]],B=[-2,-1,1,2][sel[1]],Cc=[2,3,4][sel[2]],D=[-10,-5,5,10][sel[3]];
+    var a=A*Cc,b=A*D+B*Cc,c=B*D;if(a===12&&b===-14&&c===-10)return "";
+    var got=M(a)+"x<sup>2</sup> "+(b<0?"− ":"+ ")+Math.abs(b)+"x "+(c<0?"− ":"+ ")+Math.abs(c);
+    if(a!==12)return "Multiply the first terms: they make "+got.split(" ")[0]+", not 12x<sup>2</sup>.";
+    if(c!==-10)return "Multiply the last terms: they make "+M(c)+", not −10.";
+    if(b===14)return "Your expression multiplies out to "+got+". The middle sign is wrong. Swap which number is negative.";
+    return "Your expression multiplies out to "+got+". The middle term should be −14x. Use the AC method to find the split.";},
+  ok:"(4x + 2)(3x − 5) = 12x<sup>2</sup> − 20x + 6x − 10 = 12x<sup>2</sup> − 14x − 10.",
+  steps:["Use the <b>AC method</b>. a = 12 and c = −10, so a·c = 12 · (−10) = −120.",
+   "Find two numbers that multiply to −120 and add to b = −14: −20 and 6.",
+   "Split the middle term: 12x<sup>2</sup> − 20x + 6x − 10.",
+   "Group: 4x(3x − 5) + 2(3x − 5).",
+   "Factor out (3x − 5): (4x + 2)(3x − 5).",
+   "Check by multiplying (box method): 12x<sup>2</sup> − 20x + 6x − 10 = 12x<sup>2</sup> − 14x − 10. ✓"],
+  cm:"Getting the middle sign wrong, like (4x − 2)(3x + 5). That gives +14x. Always multiply back to check.",
+  dz:"Type "+DZ("y=12x^2-14x-10")+" and "+DZ("y=(4x+2)(3x-5)")+". If you see only one graph, they are equivalent."},
+ {id:"a16",std:"A-CED.2",calc:true,type:"mc",
+  text:"A rectangle has a length of <i>x</i> units and a width of (<i>x</i> − 6) units. The length grows by 4 units, and the width grows by 2 units. This makes a new rectangle. Which equation gives the area, <i>y</i>, of the new rectangle?",
+  opts:[{h:"y = x<sup>2</sup> + 6x + 8",why:"You used x + 2 for the new width. The old width is x − 6, so the new width is x − 6 + 2 = x − 4."},
+        {h:"y = x<sup>2</sup> − 16",ok:1},
+        {h:"y = x<sup>2</sup> − 2x − 24",why:"You forgot to add 2 to the width. The new width is x − 4, not x − 6."},
+        {h:"y = x<sup>2</sup> − 8x + 16",why:"That is (x − 4)(x − 4). The new length is x + 4, not x − 4."}],
+  ok:"New length x + 4, new width x − 4. Area = (x + 4)(x − 4) = x<sup>2</sup> − 16.",
+  steps:["New length: x + 4.",
+   "New width: (x − 6) + 2 = x − 4.",
+   "Area = length · width = (x + 4)(x − 4).",
+   "Multiply (box method): x · x = x<sup>2</sup>, x · (−4) = −4x, 4 · x = 4x, 4 · (−4) = −16.",
+   "−4x + 4x = 0, so y = x<sup>2</sup> − 16. The answer is B."],
+  cm:"Adding 2 to x instead of to the old width (x − 6).",
+  dz:"Test x = 10. The new rectangle is 14 by 6, so the area is 84. Type "+DZ("10^2-16")+" to check choice B."},
+ {id:"a17",std:"A-REI.11",calc:true,type:"mc",
+  text:"Here are two functions.<div style=\"margin:8px 0\">"+eqbox("f(x) = 3x + 5<br>g(x) = −2x − 10")+"</div>For what value of <i>x</i> does f(x) = g(x)?",
+  opts:[{h:"−3",ok:1},{h:"−1",why:"Check how you moved the 5. 3x + 5 = −2x − 10 gives 5x = −10 − 5 = −15."},
+        {h:"1",why:"Test it: f(1) = 8 and g(1) = −12. They are not equal."},
+        {h:"3",why:"Check the sign. 5x = −15, so x is negative."}],
+  ok:"3x + 5 = −2x − 10 gives 5x = −15, so x = −3. Both equal −4 there.",
+  steps:["Set the functions equal: 3x + 5 = −2x − 10.",
+   "Add 2x to both sides: 5x + 5 = −10.",
+   "Subtract 5 from both sides: 5x = −15.",
+   "Divide by 5: x = −3.",
+   "Check: f(−3) = −9 + 5 = −4 and g(−3) = 6 − 10 = −4. ✓"],
+  cm:"Adding 5 instead of subtracting it: −10 + 5 = −5 gives x = −1.",
+  dz:"Type "+DZ("f(x)=3x+5")+" and "+DZ("g(x)=-2x-10")+". Click where the lines cross. The x-value is the answer."}
+];
+
+var S3=[
+ {id:"f1",std:"F-IF.8b",calc:false,type:"mc",
+  text:"A town uses f(x) = 2,500(1.15)<sup>x</sup> to predict its population <i>x</i> years from now. By what percent does it predict the population will grow each year?",
+  opts:[{h:"115%",why:"1.15 is the <b>growth factor</b> b. The rate is b − 1 = 0.15, which is 15%."},
+        {h:"85%",why:"85% would come from 1 − 0.15. That is for decay. Here b is more than 1, so it grows."},
+        {h:"15%",ok:1},{h:"1.5%",why:"0.15 as a percent is 15%, not 1.5%. Move the decimal two places."}],
+  ok:"b = 1.15 = 1 + r, so r = 0.15 = 15%.",
+  steps:["In y = a(b)<sup>x</sup>, the <b>growth factor</b> is b = 1.15.",
+   "For growth, b = 1 + r. So 1.15 = 1 + r.",
+   "Subtract 1: r = 0.15.",
+   "Change to a percent: 0.15 = 15%. The answer is C."],
+  cm:"Calling 115% the growth rate. 115% is the whole new amount. The growth is the extra 15%."},
+ {id:"f2",std:"F-LE.5",calc:false,type:"mc",
+  text:"A plumber uses y = 45x + 80 to estimate the cost of a job. Here <i>x</i> is the number of hours the job takes. What does the slope of the graph mean?",
+  opts:[{h:"The plumber charges $45 for each hour.",ok:1},
+        {h:"The plumber charges $80 for each hour.",why:"80 is b, the y-intercept. The slope is 45, the number multiplied by x."},
+        {h:"The plumber charges a flat fee of $45 no matter how long the job takes.",why:"45 is multiplied by x (hours), so it changes with time. A flat fee does not change."},
+        {h:"The plumber charges a flat fee of $80 no matter how long the job takes.",why:"That is true about 80, but 80 is the y-intercept. The question asks about the slope."}],
+  ok:"The slope is 45. It is the cost for each hour: $45 per hour.",
+  steps:["In y = mx + b, the <b>slope</b> m is the number multiplied by x. Here m = 45.",
+   "Slope is a <b>rate</b>: dollars per hour.",
+   "So the cost goes up $45 for each hour. The answer is A.",
+   "The 80 is the <b>y-intercept</b>: the cost when x = 0. That is the flat fee."],
+  cm:"Mixing up slope and y-intercept. The slope sits next to x. The y-intercept is the number alone."},
+ {id:"f3",std:"F-IF.2",calc:false,type:"num",
+  text:"Keisha walks dogs after school. The function f(x) = 15x + 180 gives her total money for a month when she walks <i>x</i> dogs. How much money will she make in a month when she walks 8 dogs?",
+  ans:300,pre:"$",
+  wrong:function(v){if(v===120)return "15 · 8 = 120 is just the part from the dogs. Add the 180 too.";
+    if(v===1560)return "Multiply first, then add: 15 · 8 + 180. Do not add 15 + 180 first.";
+    if(v===203)return "Put 8 in for x. 15x means 15 times x, so 15 · 8.";
+    return "Replace x with 8: f(8) = 15(8) + 180.";},
+  ok:"f(8) = 15(8) + 180 = 120 + 180 = 300. She makes $300.",
+  steps:["Replace x with 8: f(8) = 15(8) + 180.",
+   "Multiply first: 15 · 8 = 120.",
+   "Then add: 120 + 180 = 300.",
+   "Keisha makes $300."],
+  cm:"Forgetting the + 180. The 180 is part of every month’s total."},
+ {id:"f4",std:"F-IF.2",calc:false,type:"num",
+  text:"A function is f(x) = 3<sup>x</sup> + 5x. What is f(2)?",
+  ans:19,pre:"f(2) =",
+  wrong:function(v){if(v===16)return "3<sup>2</sup> means 3 · 3 = 9, not 3 · 2 = 6.";
+    if(v===13)return "3<sup>2</sup> means 3 · 3 = 9, not 6. And 5x means 5 times x, so 5 · 2 = 10.";
+    if(v===11)return "3<sup>2</sup> is 9, and 5 · 2 is 10. Add them: 9 + 10.";
+    return "Replace both x’s with 2: 3<sup>2</sup> + 5(2).";},
+  ok:"f(2) = 3<sup>2</sup> + 5(2) = 9 + 10 = 19.",
+  steps:["Replace every x with 2: f(2) = 3<sup>2</sup> + 5(2).",
+   "Exponent first: 3<sup>2</sup> = 3 · 3 = 9.",
+   "Multiply: 5(2) = 10.",
+   "Add: 9 + 10 = 19."],
+  cm:"Treating 3<sup>2</sup> as 3 · 2 = 6. An exponent means multiply the base by itself."},
+ {id:"f5",std:"F-IF.4",calc:false,type:"num",
+  text:"A shop rents kayaks. It charges a starting fee plus a cost for each hour. The table shows the total cost for different numbers of hours. What is the starting fee, in dollars?",
+  fig:function(){return tbl(["Hours","Total Cost"],[[2,5,8],["$13","$25","$37"]]);},
+  ans:5,pre:"$",
+  wrong:function(v){if(v===4)return "$4 is the cost per hour (the slope). The starting fee is the cost at 0 hours.";
+    if(v===13)return "$13 is the cost for 2 hours. Go back 2 hours to find the cost at 0 hours.";
+    if(v===6.5)return "13 ÷ 2 assumes there is no starting fee. Find the rate first, then go back to 0 hours.";
+    return "Find the cost per hour first. Then work back from 2 hours to 0 hours.";},
+  ok:"The cost goes up $4 per hour. Back up from 2 hours: 13 − 2(4) = 5. The fee is $5.",
+  steps:["Find the rate. From 2 to 5 hours (3 hours), the cost goes from $13 to $25, up $12.",
+   "Rate = "+SF("12","3")+" = $4 per hour. That is the <b>slope</b>.",
+   "The starting fee is the cost at <b>0 hours</b> (the y-intercept).",
+   "From 2 hours, go back 2 hours: 13 − 2 · 4 = 13 − 8 = 5.",
+   "Check with 8 hours: 5 + 4 · 8 = 37. ✓ The fee is $5."],
+  cm:"Using the first number in the table ($13). The table starts at 2 hours, not 0 hours."},
+ {id:"f6",std:"F-IF.8a",calc:false,type:"num",
+  text:"The function f(x) = −3x<sup>2</sup> + 12x models a grasshopper’s jump. f(x) is the height in centimeters, and <i>x</i> is how far it has moved forward, in centimeters. How far forward did the grasshopper move during the whole jump?",
+  ans:4,pre:"distance =",
+  wrong:function(v){if(v===2)return "2 is halfway: where the jump is highest. The jump ends where the height is 0 again.";
+    if(v===12)return "12 cm is the highest point of the jump (the vertex). The question asks how far forward it went.";
+    if(v===-4)return "Check the sign. −3x + 12 = 0 gives x = 4.";
+    return "The jump starts and ends at height 0. Factor and find the zeros.";},
+  ok:"−3x(x − 4) = 0 gives x = 0 and x = 4. It lands 4 cm forward.",
+  steps:["The grasshopper is on the ground when the height is 0. Set f(x) = 0: −3x<sup>2</sup> + 12x = 0.",
+   "Factor out the GCF, −3x: −3x(x − 4) = 0.",
+   "Set each factor to 0: x = 0 (the start) and x = 4 (the landing). These are the <b>zeros</b>.",
+   "It moved from x = 0 to x = 4, so 4 cm forward.",
+   "Note: the highest point is halfway between the zeros, at x = 2. That is not what the question asks."],
+  cm:"Answering with the vertex (x = 2 or height 12). The whole jump goes from one zero to the other."},
+ {id:"f7",std:"F-LE.5",calc:false,type:"mc",
+  text:"A tutor earns money each week. The function f(x) = 40x + 150 models her weekly pay when she teaches <i>x</i> lessons. What does the <i>y</i>-intercept of the graph mean?",
+  opts:[{h:"She earns $40 for each lesson.",why:"That is the meaning of the slope, 40. The y-intercept is the number alone, 150."},
+        {h:"She earns $150 each week, even with no lessons.",ok:1},
+        {h:"She teaches 40 lessons each week.",why:"40 is dollars per lesson, not a number of lessons. x is the number of lessons."},
+        {h:"She teaches 150 lessons each week.",why:"150 is dollars, not lessons. It is her pay when x = 0."}],
+  ok:"The y-intercept is f(0) = 150. With 0 lessons she still earns $150 a week.",
+  steps:["The <b>y-intercept</b> is the output when x = 0.",
+   "f(0) = 40(0) + 150 = 150.",
+   "x = 0 means 0 lessons. So she earns $150 a week before any lessons. That is a base pay.",
+   "The answer is B."],
+  cm:"Mixing up the slope (40 per lesson) and the y-intercept (150 to start)."},
+ {id:"f8",std:"F-IF.2",calc:true,type:"num",dec:true,
+  text:"The function v(x) = 360(0.85)<sup>x</sup> gives the value of a phone, in dollars, <i>x</i> years after it was bought. What is the phone worth 2 years after it was bought? Give dollars and cents.",
+  ans:260.10,pre:"$",
+  wrong:function(v){if(v===306)return "$306 is the value after 1 year. Use x = 2.";
+    if(v===252)return "The value does not drop by the same amount each year. It is multiplied by 0.85 each year: 360(0.85)<sup>2</sup>.";
+    if(v===612||Math.abs(v-520.2)<0.01)return "Do the exponent first: (0.85)<sup>2</sup> = 0.7225. Then multiply by 360.";
+    return "Replace x with 2: 360(0.85)<sup>2</sup>.";},
+  ok:"v(2) = 360(0.85)<sup>2</sup> = 360(0.7225) = 260.10. The phone is worth $260.10.",
+  steps:["Replace x with 2: v(2) = 360(0.85)<sup>2</sup>.",
+   "Exponent first: 0.85 · 0.85 = 0.7225.",
+   "Multiply: 360 · 0.7225 = 260.1.",
+   "In dollars and cents: $260.10."],
+  cm:"Multiplying 360 · 0.85 first and then squaring. Do the exponent before you multiply.",
+  dz:"Type "+DZ("360(0.85)^2")+". Desmos shows 260.1."},
+ {id:"f9",std:"F-BF.1a",calc:true,type:"mc",
+  text:"The table shows how much money Ben had saved at the end of each week. Which function gives the amount he has saved after <i>n</i> weeks, if the pattern keeps going?",
+  fig:function(){return tbl(["Week","Total Saved"],[[1,2,3,4,5],["$35","$53","$71","$89","$107"]]);},
+  opts:[{h:"f(n) = n + 18",why:"18 is added each week, so 18 goes with n: 18n. Test n = 1: 1 + 18 = 19, not 35."},
+        {h:"f(n) = 18n + 17",ok:1},
+        {h:"f(n) = 18n + 35",why:"35 is the amount at week 1, not week 0. Test n = 1: 18 + 35 = 53, not 35."},
+        {h:"f(n) = 35n",why:"That would add 35 each week. The table goes up by 18 each week."}],
+  ok:"The amount goes up $18 each week. At week 0 it would be 35 − 18 = 17. So f(n) = 18n + 17.",
+  steps:["Find the change each week: 53 − 35 = 18, 71 − 53 = 18. It goes up by 18 each time, so it is <b>linear</b> with slope 18.",
+   "Find the start (week 0). Go back one week from week 1: 35 − 18 = 17.",
+   "So f(n) = 18n + 17.",
+   "Check week 3: 18(3) + 17 = 54 + 17 = 71. ✓ The answer is B."],
+  cm:"Using the first value in the table (35) as the y-intercept. The table starts at week 1, not week 0.",
+  dz:"Make a table with weeks in x<sub>1</sub> and dollars in y<sub>1</sub>. Type "+DZ("y1~mx1+b")+". Desmos shows m = 18 and b = 17."},
+ {id:"f10",std:"F-BF.2",calc:true,type:"match",
+  text:"Each row shows a sequence in <b>recursive</b> form. Click the <b>explicit</b> formula that matches it.",
+  cats:["a<sub>n</sub> = n + 3","a<sub>n</sub> = 4n + 2","a<sub>n</sub> = −3n + 4","a<sub>n</sub> = 3n + 1"],
+  rows:[{h:"a<sub>1</sub> = 6, &nbsp;a<sub>n+1</sub> = a<sub>n</sub> + 4",ans:1},{h:"a<sub>1</sub> = 4, &nbsp;a<sub>n+1</sub> = a<sub>n</sub> + 3",ans:3},
+        {h:"a<sub>1</sub> = 4, &nbsp;a<sub>n+1</sub> = a<sub>n</sub> + 1",ans:0},{h:"a<sub>1</sub> = 1, &nbsp;a<sub>n+1</sub> = a<sub>n</sub> − 3",ans:2}],
+  rowWhy:["This one starts at 6 and adds 4: 6, 10, 14, … Use a<sub>n</sub> = 6 + (n − 1) · 4 = 4n + 2.",
+          "This one starts at 4 and adds 3: 4, 7, 10, … Use a<sub>n</sub> = 4 + (n − 1) · 3 = 3n + 1.",
+          "This one starts at 4 and adds 1: 4, 5, 6, … Use a<sub>n</sub> = 4 + (n − 1) · 1 = n + 3.",
+          "This one starts at 1 and subtracts 3: 1, −2, −5, … Use a<sub>n</sub> = 1 + (n − 1)(−3) = −3n + 4."],
+  ok:"Use a<sub>n</sub> = a<sub>1</sub> + (n − 1)d for each one, then simplify.",
+  steps:["The recursive form gives the first term a<sub>1</sub> and the <b>common difference</b> d (the number added each time).",
+   "The <b>explicit</b> form is a<sub>n</sub> = a<sub>1</sub> + (n − 1)d.",
+   "Row 1: 6 + (n − 1) · 4 = 6 + 4n − 4 = 4n + 2.",
+   "Row 2: 4 + (n − 1) · 3 = 4 + 3n − 3 = 3n + 1.",
+   "Row 3: 4 + (n − 1) · 1 = 4 + n − 1 = n + 3.",
+   "Row 4: 1 + (n − 1)(−3) = 1 − 3n + 3 = −3n + 4.",
+   "Check any one with n = 1. For row 4: −3(1) + 4 = 1. ✓"],
+  cm:"Using a<sub>1</sub> as the y-intercept, like 4n + 6 for row 1. The y-intercept is the term <b>before</b> a<sub>1</sub>: 6 − 4 = 2.",
+  dz:"Type "+DZ("a(n)=4n+2")+", then "+DZ("a(1)")+", "+DZ("a(2)")+", "+DZ("a(3)")+". You should see 6, 10, 14: start at 6 and add 4."},
+ {id:"f11",std:"F-IF.6",calc:true,type:"mc",
+  text:"Rosa dropped a ball from different heights. The table shows each drop height and how high the ball bounced the first time. What is the average rate of change of the bounce height as the drop height goes from 20 inches to 60 inches?",
+  fig:function(){return tbl(["Drop Height (inches)","Bounce Height (inches)"],[[20,30,40,50,60],[14,22,30,38,46]]);},
+  opts:[{h:"1.25",why:"The fraction is upside down. Rate of change = change in bounce ÷ change in drop = 32 ÷ 40."},
+        {h:"0.80",ok:1},
+        {h:"0.77",why:"That is 46 ÷ 60, one point only. Use the change between the two points: (46 − 14) ÷ (60 − 20)."},
+        {h:"0.70",why:"That is 14 ÷ 20, one point only. Use the change between the two points."}],
+  ok:"(46 − 14) ÷ (60 − 20) = 32 ÷ 40 = 0.80.",
+  steps:["<b>Average rate of change</b> = "+SF("change in y","change in x")+".",
+   "y is the bounce height (output). x is the drop height (input).",
+   "Change in y: 46 − 14 = 32. Change in x: 60 − 20 = 40.",
+   SF(32,40)+" = 0.80. The bounce goes up 0.8 inch for each inch of drop height."],
+  cm:"Putting the change in x on top (40 ÷ 32 = 1.25). The output always goes on top.",
+  dz:"Type "+DZ("(46-14)/(60-20)")+". Desmos shows 0.8."},
+ {id:"f12",std:"F-LE.1",calc:true,type:"mc",
+  text:"The table shows the price of a bus ride in five different years. Which model fits the data in the table?",
+  fig:function(){return tbl(["Year","Fare"],[[2004,2008,2012,2016,2020],["$1.20","$1.40","$1.60","$1.80","$2.00"]]);},
+  opts:[{h:"a linear model where the fare goes up $0.05 each year",ok:1},
+        {h:"an exponential model where the fare goes up $0.05 each year",why:"Adding the same amount each time is <b>linear</b>, not exponential."},
+        {h:"a linear model where the fare goes up 5% each year",why:"Going up by a percent is exponential, not linear. And the fare goes up by the same <b>amount</b>, $0.20 every 4 years."},
+        {h:"an exponential model where the fare goes up 5% each year",why:"Test it: 1.20 · 1.05<sup>4</sup> ≈ $1.46, not $1.40. The fare goes up by the same amount, so it is linear."}],
+  ok:"The fare goes up $0.20 every 4 years. That is the same amount each time (linear), and $0.20 ÷ 4 = $0.05 per year.",
+  steps:["Find the change between rows: 1.40 − 1.20 = 0.20, 1.60 − 1.40 = 0.20, and so on.",
+   "The same amount is <b>added</b> each time, so the model is <b>linear</b>.",
+   "The rows are 4 years apart. Per year: $0.20 ÷ 4 = $0.05.",
+   "So the fare goes up $0.05 each year. The answer is A."],
+  cm:"Forgetting that the years jump by 4. $0.20 is the change every 4 years, not every year.",
+  dz:"Make a table with the years in x<sub>1</sub> and fares in y<sub>1</sub>. Type "+DZ("y1~mx1+b")+". m = 0.05 and r = 1."},
+ {id:"f13",std:"F-IF.8a",calc:true,type:"num",
+  text:"Theo throws a ball straight up from a deck. The height of the ball, in feet, is h(x) = −16x<sup>2</sup> + 48x + 5, where <i>x</i> is the time in seconds. What is the greatest height the ball reaches, in feet?",
+  ans:41,pre:"height =",
+  wrong:function(v){if(v===1.5)return "1.5 seconds is <b>when</b> the ball is highest. Put 1.5 into h(x) to find the height.";
+    if(v===5)return "5 feet is where the ball starts (the y-intercept). Find the vertex.";
+    if(v===113)return "Check the sign: −16(1.5)<sup>2</sup> = −16(2.25) = −36. So −36 + 72 + 5 = 41.";
+    return "Find the time of the top with x = "+SF("−b","2a")+". Then put it into h(x).";},
+  ok:"The top is at x = "+SF("−48","2(−16)")+" = 1.5 s. h(1.5) = −36 + 72 + 5 = 41 feet.",
+  steps:["The greatest height is at the <b>vertex</b>.",
+   "Time of the top: x = "+SF("−b","2a")+" = "+SF("−48","2(−16)")+" = "+SF("−48","−32")+" = 1.5 seconds.",
+   "Put 1.5 into h(x): −16(1.5)<sup>2</sup> + 48(1.5) + 5.",
+   "(1.5)<sup>2</sup> = 2.25, and −16 · 2.25 = −36. 48 · 1.5 = 72.",
+   "−36 + 72 + 5 = 41. The ball reaches 41 feet."],
+  cm:"Stopping at x = 1.5. That is the time of the top, not the height.",
+  dz:"Type "+DZ("y=-16x^2+48x+5")+". Click the top gray dot. It shows (1.5, 41)."},
+ {id:"f14",std:"F-LE.3",calc:true,type:"num",
+  text:"What is the smallest positive whole number <i>x</i> that makes y = 2<sup>x</sup> greater than y = 3x?",
+  ans:4,pre:"x =",
+  wrong:function(v){if(v===3)return "At x = 3: 2<sup>3</sup> = 8 and 3(3) = 9. 8 is not greater than 9 yet.";
+    if(v===1||v===2)return "At x = "+v+": 2<sup>"+v+"</sup> = "+Math.pow(2,v)+" and 3("+v+") = "+(3*v)+". The exponential is still smaller.";
+    if(v===5)return "x = 5 works, but there is a smaller one. Try x = 4.";
+    return "Make a table: x = 1, 2, 3, 4, … Compare 2<sup>x</sup> and 3x each time.";},
+  ok:"At x = 4, 2<sup>4</sup> = 16 is greater than 3(4) = 12. At x = 3 it was 8 < 9.",
+  steps:["Make a table of values for both functions.",
+   "x = 1: 2 vs 3. x = 2: 4 vs 6. x = 3: 8 vs 9. The linear one is still bigger.",
+   "x = 4: 2<sup>4</sup> = 16 vs 3(4) = 12. Now 16 > 12.",
+   "So the smallest whole number is x = 4.",
+   "This shows a big idea: an <b>exponential</b> function will always pass a linear one in the end."],
+  cm:"Choosing x = 3 because 8 is close to 9. “Greater than” means it must be bigger.",
+  dz:"Type "+DZ("y=2^x")+" and "+DZ("y=3x")+". Click the right-side crossing point (about x = 3.3). The next whole number is 4."},
+ {id:"f15",std:"F-BF.1a",calc:true,type:"mc",
+  text:"Here is a pattern of circles. Which function gives the number of circles in figure <i>n</i>?",
+  fig:circles,
+  opts:[{h:"a<sub>n</sub> = 5(2)<sup>n</sup>",why:"Test n = 1: 5(2)<sup>1</sup> = 10. Figure 1 has 5 circles."},
+        {h:"a<sub>n</sub> = 5(2)<sup>n − 1</sup>",ok:1},
+        {h:"a<sub>n</sub> = 5 + 2<sup>n</sup>",why:"Test n = 2: 5 + 4 = 9. Figure 2 has 10. The 5 should be multiplied, not added."},
+        {h:"a<sub>n</sub> = 5 + 2<sup>n − 1</sup>",why:"Test n = 3: 5 + 4 = 9. Figure 3 has 20. The 5 should be multiplied, not added."}],
+  ok:"The counts are 5, 10, 20, 40. Start at 5 and double: a<sub>n</sub> = 5(2)<sup>n − 1</sup>.",
+  steps:["Count the circles: 5, 10, 20, 40.",
+   "Each figure has <b>twice</b> as many as the one before. Multiplying by 2 each time is <b>geometric</b> (exponential), with ratio r = 2.",
+   "The first term is a<sub>1</sub> = 5.",
+   "Geometric explicit form: a<sub>n</sub> = a<sub>1</sub> · r<sup>n − 1</sup> = 5(2)<sup>n − 1</sup>.",
+   "Check figure 4: 5(2)<sup>3</sup> = 5 · 8 = 40. ✓ The answer is B."],
+  cm:"Using an exponent of n instead of n − 1. Always test n = 1 to see that you get the first figure.",
+  dz:"Type "+DZ("a(n)=5(2)^(n-1)")+", then "+DZ("a(1)")+" and "+DZ("a(4)")+". You should get 5 and 40."},
+ {id:"f16",std:"F-BF.1b",calc:true,type:"mc",
+  text:"Ava wants to order a phone case and <i>x</i> custom stickers.<ul class=\"bul\"><li>At the first shop, the cost is g(x) = 0.08x + 12.40.</li><li>At the second shop, the cost is h(x) = 0.06x + 12.10.</li></ul>Which function gives the amount of money, m(x), Ava saves by buying from the second shop instead of the first?",
+  opts:[{h:"m(x) = 0.02x + 0.30",ok:1},
+        {h:"m(x) = 0.06x + 0.30",why:"That keeps the second shop’s rate. Subtract the rates too: 0.08 − 0.06 = 0.02."},
+        {h:"m(x) = 0.08x + 0.30",why:"That keeps the first shop’s rate. Subtract the rates too: 0.08 − 0.06 = 0.02."},
+        {h:"m(x) = 0.14x + 0.30",why:"You added the rates. Savings means subtract: 0.08 − 0.06."}],
+  ok:"Savings = g(x) − h(x) = (0.08 − 0.06)x + (12.40 − 12.10) = 0.02x + 0.30.",
+  steps:["The savings is how much more the first shop costs: m(x) = g(x) − h(x).",
+   "(0.08x + 12.40) − (0.06x + 12.10).",
+   "Subtract the x terms: 0.08x − 0.06x = 0.02x.",
+   "Subtract the numbers: 12.40 − 12.10 = 0.30.",
+   "m(x) = 0.02x + 0.30. The answer is A."],
+  cm:"Subtracting only the numbers and not the x terms.",
+  dz:"Type "+DZ("g(x)=0.08x+12.40")+" and "+DZ("h(x)=0.06x+12.10")+". Then type "+DZ("g(100)-h(100)")+" and compare with each choice at x = 100."},
+ {id:"f17",std:"F-IF.6",calc:true,type:"mc",
+  text:"A weather balloon is let go. The table shows its height at different times. What is the <b>approximate</b> average rate of change in its height from 4 to 8 minutes?",
+  fig:function(){return tbl(["Time (minutes)","Height (feet)"],[[0,2,4,6,8],[5,26,138,735,"3,890"]]);},
+  opts:[{h:"about 490 feet per minute",why:"That is 3,890 ÷ 8, from 0 minutes. Use the change from 4 to 8 minutes."},
+        {h:"about 940 feet per minute",ok:1},
+        {h:"about 970 feet per minute",why:"That is 3,890 ÷ 4. You need to subtract the height at 4 minutes first: 3,890 − 138."},
+        {h:"about 1,880 feet per minute",why:"Check the change in time. From 4 to 8 minutes is 4 minutes, not 2."}],
+  ok:"(3,890 − 138) ÷ (8 − 4) = 3,752 ÷ 4 = 938, about 940 feet per minute.",
+  steps:["<b>Average rate of change</b> = "+SF("change in height","change in time")+".",
+   "Height at 8 minutes: 3,890. Height at 4 minutes: 138. Change: 3,890 − 138 = 3,752 feet.",
+   "Change in time: 8 − 4 = 4 minutes.",
+   "3,752 ÷ 4 = 938. That is about 940 feet per minute. The answer is B."],
+  cm:"Dividing the last height by the time (3,890 ÷ 4). Subtract the two heights first.",
+  dz:"Type "+DZ("(3890-138)/(8-4)")+". Desmos shows 938."}
+];
+
+var S4=[
+ {id:"s1",std:"S-ID.7",calc:true,type:"mc",
+  text:"Nia rolled a ball down ramps of different lengths. She timed how long it took to reach the bottom. The equation y = 0.3x − 0.2 fits her data well. Here <i>x</i> is the ramp length in feet, and <i>y</i> is the time in seconds. What does the slope mean?",
+  opts:[{h:"The ball takes 0.3 second longer for each extra foot of ramp length.",ok:1},
+        {h:"The ball takes 0.3 second less for each extra foot of ramp length.",why:"The slope 0.3 is positive. A positive slope means the time goes <b>up</b>."},
+        {h:"The ball takes 0.2 second longer for each extra foot of ramp length.",why:"−0.2 is the y-intercept. The slope is 0.3, the number next to x."},
+        {h:"The ball takes 0.2 second less for each extra foot of ramp length.",why:"−0.2 is the y-intercept, not the slope. The slope is the number next to x."}],
+  ok:"The slope is 0.3 seconds per foot. It is positive, so each extra foot adds 0.3 second.",
+  steps:["The <b>slope</b> is the number next to x: 0.3.",
+   "Units of slope: "+SF("y units","x units")+" = seconds per foot.",
+   "It is positive, so as the ramp gets longer, the time goes up.",
+   "Each extra foot adds 0.3 second. The answer is A."],
+  cm:"Using the y-intercept (−0.2) as the slope.",
+  dz:"Type "+DZ("y=0.3x-0.2")+". Click the line at x = 1 and x = 2. The y-value goes up by 0.3."},
+ {id:"s2",std:"S-ID.8",calc:true,type:"mc",
+  text:"A bike shop tracked how much it spent on ads in five months and how many bikes it sold. When the number of bikes sold is modeled as a linear function of the money spent on ads, what is the correlation coefficient, to the nearest thousandth?",
+  fig:function(){return tbl(["Month","Money Spent on Ads","Bikes Sold"],[["March","April","May","June","July"],["$20,000","$45,000","$35,000","$28,000","$50,000"],[41,79,66,52,86]]);},
+  opts:[{h:"0.995",why:"That is r<sup>2</sup>. The correlation coefficient is r, not r<sup>2</sup>."},
+        {h:"0.996",why:"Check the table again. Make sure ad money is x and bikes sold is y, and every number is typed right."},
+        {h:"0.998",ok:1},{h:"0.999",why:"Round r = 0.99765… to three places: 0.998."}],
+  ok:"Linear regression gives r ≈ 0.99765, which rounds to 0.998.",
+  steps:["Put the data in a table. x = money spent on ads. y = bikes sold.",
+   "Run a <b>linear regression</b>: y<sub>1</sub> ~ mx<sub>1</sub> + b.",
+   "Read the <b>correlation coefficient</b> r ≈ 0.99765.",
+   "Round to the nearest thousandth: 0.998. The answer is C.",
+   "r is close to 1, so there is a strong positive linear relationship."],
+  cm:"Choosing r<sup>2</sup> (0.995) instead of r. Desmos shows both, so read the right one.",
+  dz:"Make a table: ad money in x<sub>1</sub> (type 20000, not $20,000), bikes in y<sub>1</sub>. Type "+DZ("y1~mx1+b")+" and read r."},
+ {id:"s3",std:"S-ID.3",calc:true,type:"mc",
+  text:"The table shows the prices of 12 pianos a store sold in one month. Which statement is true?",
+  fig:function(){var p=["$3,100","$2,850","$3,100","$3,400","$3,100","$2,700","$2,800","$2,900","$8,800","$3,100","$2,650","$3,050"];
+    return tbl(["","",""],[[p[0],p[3],p[6],p[9]],[p[1],p[4],p[7],p[10]],[p[2],p[5],p[8],p[11]]]).replace(/<tr><th><\/th><th><\/th><th><\/th><\/tr>/,"");},
+  opts:[{h:"The outlier makes the data gather more closely around the mean.",why:"An outlier does the opposite. It pulls the mean away from most of the data."},
+        {h:"The outlier makes the data more symmetric.",why:"One value far from the rest makes the data lopsided, not symmetric."},
+        {h:"The outlier makes the data strongly skewed to the left.",why:"The outlier ($8,800) is much <b>higher</b> than the rest. The long tail is on the right side."},
+        {h:"The outlier makes the data strongly skewed to the right.",ok:1}],
+  ok:"$8,800 is far above the others (about $2,650 to $3,400). That makes a long tail to the right.",
+  steps:["Most prices are between $2,650 and $3,400.",
+   "One price, $8,800, is far away from the rest. That is an <b>outlier</b>.",
+   "The outlier is on the <b>high</b> side, so the data has a long tail to the right.",
+   "A long tail on the right means <b>skewed right</b>. The outlier also pulls the mean up above the median.",
+   "The answer is D."],
+  cm:"Mixing up left and right. The skew is named for the side of the long tail, where the outlier is.",
+  dz:"Type the prices in a list: "+DZ("A=[3100,2850,3100,3400,3100,2700,2800,2900,8800,3100,2650,3050]")+". Then "+DZ("mean(A)")+" and "+DZ("median(A)")+". The mean is pulled higher."},
+ {id:"s4",std:"S-ID.6c",calc:true,type:"mc",
+  text:"Here is a set of data. Which equation models the data <b>best</b>?",
+  fig:function(){return tbl(["x","y"],[[0,1,2,3,4],[4,11,37,107,326]]);},
+  opts:[{h:"y = 3<sup>x</sup>",why:"At x = 0 this gives 1, but the table starts at 4. The starting value a should be about 4."},
+        {h:"y = 4<sup>x</sup>",why:"At x = 0 this gives 1, not 4. Also the y-values grow by about 3 times each step, not 4."},
+        {h:"y = 4(3)<sup>x</sup>",ok:1},
+        {h:"y = 3(4)<sup>x</sup>",why:"Test x = 4: 3(4)<sup>4</sup> = 768. The table shows 326. The values grow by about 3 times, not 4."}],
+  ok:"The data starts near 4 and is multiplied by about 3 each step. Exponential regression gives a ≈ 3.9 and b ≈ 3.0.",
+  steps:["Look at x = 0: y = 4. So the starting value a is about 4.",
+   "Divide each y by the one before: 11 ÷ 4 ≈ 2.8, 37 ÷ 11 ≈ 3.4, 107 ÷ 37 ≈ 2.9, 326 ÷ 107 ≈ 3.0. The <b>growth factor</b> b is about 3.",
+   "So y ≈ 4(3)<sup>x</sup>.",
+   "Check x = 4: 4(3)<sup>4</sup> = 4 · 81 = 324. Very close to 326. ✓ The answer is C."],
+  cm:"Switching a and b. In y = a(b)<sup>x</sup>, a is the start and b is the number you multiply by.",
+  dz:"Make a table with x<sub>1</sub> and y<sub>1</sub>. Type "+DZ("y1~a·b^x1")+" (type "+DZ("a*b^x1")+"). Desmos gives a ≈ 3.88 and b ≈ 3.03."},
+ {id:"s5",std:"S-ID.6b",calc:true,type:"mc",
+  text:"Here is a set of data. Which data point is closest to the line of best fit for the data?",
+  fig:function(){return tbl(["x","y"],[[20,35,40,55,70,90],[160,251,268,362,447,571]]);},
+  opts:[{h:"(20, 160)",ok:1},{h:"(35, 251)",why:"Its residual is about 5.3. Point (20, 160) has a smaller residual, about 2.1."},
+        {h:"(70, 447)",why:"Its residual is about −3.4. Compare sizes (ignore the sign): 2.1 is smaller."},
+        {h:"(90, 571)",why:"Its residual is about 3.6. Point (20, 160) has a smaller residual."}],
+  ok:"The residuals are about 2.1, 5.3, −3.4, and 3.6. The smallest in size is 2.1, at (20, 160).",
+  steps:["Find the <b>line of best fit</b> with linear regression: y ≈ 5.85x + 40.94.",
+   "A <b>residual</b> = actual − predicted. It tells how far a point is from the line.",
+   "(20, 160): predicted ≈ 157.93, residual ≈ 2.07.",
+   "(35, 251): residual ≈ 5.32. (70, 447): residual ≈ −3.41. (90, 571): residual ≈ 3.60.",
+   "The closest point has the residual nearest 0 (ignore the sign). That is (20, 160). The answer is A."],
+  cm:"Thinking a negative residual is closest. Compare the sizes: −3.4 is 3.4 away from the line.",
+  dz:"Make a table and type "+DZ("y1~mx1+b")+". Click “plot” next to residuals, or type "+DZ("e1")+" to list them. Pick the one closest to 0."},
+ {id:"s6",std:"S-ID.3",calc:true,type:"mc",
+  text:"Here is a data set.<div style=\"margin:8px 0\">"+eqbox("3, 5, 6, 8, 10, 11, 13, 16")+"</div>How would adding the value 54 change the data set?",
+  opts:[{h:"The mean would go up by 5, and the median would stay the same.",why:"The median does change. With 9 values, the middle is the 5th value, 10. Before it was 9."},
+        {h:"The mean would stay the same, and the median would go up by 5.",why:"An outlier pulls the mean a lot. The mean goes from 9 to 14."},
+        {h:"The mean would go up by 5, and the median would go up by 1.",ok:1},
+        {h:"The mean would go up by 1, and the median would stay the same.",why:"Find the new mean: 126 ÷ 9 = 14. That is up 5 from 9."}],
+  ok:"Mean: 9 → 14 (up 5). Median: 9 → 10 (up 1).",
+  steps:["Old <b>mean</b>: the sum is 72, and 72 ÷ 8 = 9.",
+   "Old <b>median</b>: the middle two are 8 and 10. Halfway between is 9.",
+   "New mean: 72 + 54 = 126, and 126 ÷ 9 = 14. That is 5 more.",
+   "New median: 9 values, so the middle is the 5th: 3, 5, 6, 8, <b>10</b>, 11, 13, 16, 54. That is 1 more.",
+   "The answer is C. The outlier moves the mean a lot and the median only a little."],
+  cm:"Thinking the median never changes. It moves a little because there is one more value.",
+  dz:"Type "+DZ("A=[3,5,6,8,10,11,13,16]")+" and "+DZ("B=[3,5,6,8,10,11,13,16,54]")+". Compare "+DZ("mean(A)")+", "+DZ("mean(B)")+", "+DZ("median(A)")+", "+DZ("median(B)")+"."},
+ {id:"s7",std:"S-ID.6b",calc:true,type:"mc",
+  text:"The table shows a town’s population in different years. In which year was the population farthest from the value predicted by the line of best fit?",
+  fig:function(){return tbl(["Year","Population"],[[2010,2012,2014,2016,2018],["18,000","26,000","31,000","42,000","53,000"]]);},
+  opts:[{h:"2010",why:"Its residual is 1,200. 2014 has a bigger one: −3,000."},{h:"2012",why:"Its residual is 600. That point is close to the line."},
+        {h:"2014",ok:1},{h:"2018",why:"Its residual is 1,800. 2014’s residual, −3,000, is bigger in size."}],
+  ok:"The residuals are 1,200, 600, −3,000, −600, and 1,800. The biggest in size is −3,000, in 2014.",
+  steps:["Run a <b>linear regression</b>: population ≈ 4,300(year) − 8,626,200.",
+   "Find each <b>residual</b> = actual − predicted.",
+   "2010: 1,200. 2012: 600. 2014: −3,000. 2016: −600. 2018: 1,800.",
+   "Farthest means the biggest size, no matter the sign: 3,000.",
+   "The answer is 2014."],
+  cm:"Ignoring negative residuals. A residual of −3,000 is 3,000 away from the line.",
+  dz:"Put years in x<sub>1</sub> and population in y<sub>1</sub>. Type "+DZ("y1~mx1+b")+", then "+DZ("e1")+" to see the residuals."},
+ {id:"s8",std:"S-ID.6a",calc:true,type:"mc",
+  text:"The table shows the number of libraries in nine towns and each town’s population. Use the line of best fit. To the nearest hundred, what is the predicted population of a town with 14 libraries?",
+  fig:function(){return tbl(["Number of Libraries","Population"],[[1,2,3,4,5,6,7,8,9],["80,400","104,600","121,300","160,200","198,700","224,500","262,900","296,300","351,800"]]);},
+  opts:[{h:"467,800",why:"That is the prediction for 13 libraries. Put 14 in for x."},
+        {h:"501,300",ok:1},
+        {h:"521,400",why:"That uses only the first and last points. Use the line of best fit from all nine points."},
+        {h:"925,700",why:"That is from an exponential model. The question asks for the linear line of best fit."}],
+  ok:"The line of best fit is y ≈ 33,470x + 32,728. At x = 14, y ≈ 501,308, so about 501,300.",
+  steps:["Put the data in a table: x = libraries, y = population.",
+   "Run a <b>linear regression</b> (y<sub>1</sub> ~ mx<sub>1</sub> + b). m ≈ 33,470 and b ≈ 32,727.8.",
+   "Put in x = 14: 33,470(14) + 32,727.8 ≈ 501,307.8.",
+   "Round to the nearest hundred: 501,300. The answer is B."],
+  cm:"Using just two points to draw the line. The line of best fit uses all the data.",
+  dz:"After "+DZ("y1~mx1+b")+", type "+DZ("14m+b")+". Desmos shows about 501,308."},
+ {id:"s9",std:"S-ID.8",calc:true,type:"mc",
+  text:"The table shows how many hours 10 students studied for a quiz and their quiz scores. Which statement describes the relationship between hours studied and quiz score?",
+  fig:function(){return tbl(["Hours Studied (x)","Quiz Score (y)"],[[2,4,1,5,6,1,3,6,2,6],[70,85,80,65,85,85,70,80,75,95]],{horiz:true});},
+  opts:[{h:"There is a strong negative relationship.",why:"r is about 0.27. It is positive, and it is not close to 1."},
+        {h:"There is a strong positive relationship.",why:"r is positive, but only about 0.27. A strong relationship has r close to 1."},
+        {h:"There is a weak negative relationship.",why:"r is about 0.27, which is positive. More hours goes with slightly higher scores."},
+        {h:"There is a weak positive relationship.",ok:1}],
+  ok:"r ≈ 0.27. Positive, but far from 1, so weak and positive.",
+  steps:["Put x (hours) and y (scores) in a table.",
+   "Run a <b>linear regression</b>. The <b>correlation coefficient</b> is r ≈ 0.27.",
+   "Sign: r is positive, so the relationship is <b>positive</b>.",
+   "Size: 0.27 is far from 1, so the relationship is <b>weak</b>.",
+   "The answer is D."],
+  cm:"Calling it strong because the line goes up. Strength comes from how close r is to 1 or −1.",
+  dz:"Make a table and type "+DZ("y1~mx1+b")+". Read r ≈ 0.273."}
+];
+
+var S5=[
+ {id:"g1",std:"G-GPE.5",calc:false,type:"num",
+  text:"A line y = mx + b goes through the point (3, 4). It is perpendicular to y = −"+SF(1,3)+"x + 2. What is the value of b?",
+  ans:-5,pre:"b =",
+  wrong:function(v){if(v===5)return "You used slope −"+SF(1,3)+". That makes a parallel line. Perpendicular slopes are opposite reciprocals.";
+    if(v===13)return "The opposite reciprocal of −"+SF(1,3)+" is +3, not −3. Flip the fraction AND change the sign.";
+    if(v===3)return "You flipped the slope but did not flip it all the way. The perpendicular slope is 3, so 4 = 3(3) + b.";
+    return "Find the perpendicular slope first. Then put (3, 4) into y = mx + b and solve for b.";},
+  ok:"Perpendicular slope: 3. Then 4 = 3(3) + b, so b = −5.",
+  steps:["The given slope is −"+SF(1,3)+".",
+   "<b>Perpendicular</b> lines have <b>opposite reciprocal</b> slopes. Flip "+SF(1,3)+" to "+SF(3,1)+" and change the sign: m = 3.",
+   "Put the point (3, 4) into y = mx + b: 4 = 3(3) + b.",
+   "4 = 9 + b. Subtract 9: b = −5.",
+   "The line is y = 3x − 5."],
+  cm:"Changing only the sign or only flipping. You must do both: −"+SF(1,3)+" becomes 3."},
+ {id:"g2",std:"G-GPE.6",calc:true,type:"mc",
+  text:"Point M is the midpoint of segment <span style=\"text-decoration:overline\">PQ</span>. P is at (−3, 4), and M is at (5, −2). What are the coordinates of Q?",
+  opts:[{h:"(1, 1)",why:"That is the midpoint of P and M. M is already the midpoint. Q is past M."},
+        {h:"(10, −4)",why:"That doubles M but does not subtract P. Use Q = 2M − P."},
+        {h:"(13, −8)",ok:1},
+        {h:"(8, −6)",why:"That is the change from P to M. Add that change to M to get Q."}],
+  ok:"From P to M is right 8 and down 6. Do it again from M: (5 + 8, −2 − 6) = (13, −8).",
+  steps:["Find how to move from P to M. x: 5 − (−3) = 8 (right 8). y: −2 − 4 = −6 (down 6).",
+   "The <b>midpoint</b> is halfway, so Q is the same move past M.",
+   "Q = (5 + 8, −2 + (−6)) = (13, −8).",
+   "Check: midpoint of (−3, 4) and (13, −8) is ("+SF("−3 + 13","2")+", "+SF("4 + (−8)","2")+") = (5, −2). ✓ The answer is C."],
+  cm:"Finding the midpoint of P and M. M is the middle, so Q is on the other side of M.",
+  dz:"Type "+DZ("((-3+13)/2,(4-8)/2)")+" to check that the midpoint of P and your Q is (5, −2)."},
+ {id:"g3",std:"G-GPE.4",calc:true,type:"num",
+  text:"Points F(<i>h</i>, <i>k</i>) and G(6, 2) are next to each other on parallelogram EFGH. Point F is above and to the left of point G. Side FG has a slope of −"+SF(3,4)+" and a length of 10. What is the value of <i>k</i>?",
+  ans:8,pre:"k =",
+  wrong:function(v){if(v===-2)return "−2 is h, the x-value of F. The question asks for k.";
+    if(v===5)return "Up 3 and left 4 makes a length of 5. The length must be 10, so double: up 6 and left 8.";
+    if(v===-4)return "F is <b>above</b> G, so go up from G: 2 + 6.";
+    if(v===14)return "That is moving right and up. F is to the left, so x goes down and y goes up.";
+    return "Slope −"+SF(3,4)+" with length 5 is up 3, left 4. Length 10 is twice that.";},
+  ok:"Up 6 and left 8 has slope −"+SF(3,4)+" and length 10. F = (6 − 8, 2 + 6) = (−2, 8). So k = 8.",
+  steps:["A slope of −"+SF(3,4)+" means: for every 4 units left, go 3 units up (or 4 right, 3 down).",
+   "A move of 3 and 4 makes a right triangle with a long side of 5 (3<sup>2</sup> + 4<sup>2</sup> = 5<sup>2</sup>).",
+   "We need a length of 10. That is 2 times 5, so double the move: 6 up and 8 left.",
+   "F is above and to the left of G. From G(6, 2): x = 6 − 8 = −2, y = 2 + 6 = 8.",
+   "F = (−2, 8), so k = 8. Check the distance: √(8<sup>2</sup> + 6<sup>2</sup>) = √100 = 10. ✓"],
+  cm:"Using a move of 3 and 4. That gives a length of 5, not 10.",
+  dz:"Type "+DZ("(6,2)")+" and "+DZ("(-2,8)")+" to plot them. Type "+DZ("distance((6,2),(-2,8))")+". It shows 10."},
+ {id:"g4",std:"G-GPE.5",calc:true,type:"mc",
+  text:"Which two points lie on a line that is parallel to the graph of y = 5 − 3x?",
+  opts:[{h:"(−2, 10) and (−3, 7)",why:"The slope is "+SF("7 − 10","−3 − (−2)")+" = "+SF("−3","−1")+" = 3. We need −3."},
+        {h:"(−2, 7) and (−3, 10)",ok:1},
+        {h:"(7, −2) and (10, −3)",why:"The slope is "+SF("−3 − (−2)","10 − 7")+" = −"+SF(1,3)+". That is not −3."},
+        {h:"(10, −2) and (7, −3)",why:"The slope is "+SF("−3 − (−2)","7 − 10")+" = "+SF(1,3)+". That is the perpendicular slope with the wrong sign."}],
+  ok:"Parallel lines have the same slope, −3. "+SF("10 − 7","−3 − (−2)")+" = "+SF(3,"−1")+" = −3.",
+  steps:["Write y = 5 − 3x as y = −3x + 5. The slope is −3.",
+   "<b>Parallel</b> lines have the <b>same slope</b>. We need two points with slope −3.",
+   "Use slope = "+SF("y<sub>2</sub> − y<sub>1</sub>","x<sub>2</sub> − x<sub>1</sub>")+" for each choice.",
+   "B: "+SF("10 − 7","−3 − (−2)")+" = "+SF(3,"−1")+" = −3. ✓",
+   "The others give 3, −"+SF(1,3)+", and "+SF(1,3)+". The answer is B."],
+  cm:"Reading the slope as 5. In y = 5 − 3x, the slope is the number next to x: −3.",
+  dz:"Type "+DZ("y=5-3x")+". Then type each pair as points, like "+DZ("(-2,7)")+" and "+DZ("(-3,10)")+". The right pair makes a line that looks parallel."},
+ {id:"g5",std:"G-GPE.5",calc:true,type:"build",
+  text:"Build the equation of the line that goes through (2, 5) and is perpendicular to 2x + 6y = 12. Click one choice for each box.",
+  pre:"y =",
+  rows:[{h:"Box 1",chips:["−3x","−"+SF(1,3)+"x",SF(1,3)+"x","3x"],ans:3},{h:"Box 2",chips:["+","−"],ans:1},{h:"Box 3",chips:["1","3","5","6"],ans:0}],
+  check:function(sel){var m=[-3,-1/3,1/3,3][sel[0]],b=(sel[1]===0?1:-1)*[1,3,5,6][sel[2]];
+    if(m===3&&b===-1)return "";
+    if(m===-1/3)return "−"+SF(1,3)+" is the slope of the given line. That makes a parallel line. Use the opposite reciprocal.";
+    if(m===1/3||m===-3)return "For perpendicular, flip −"+SF(1,3)+" AND change the sign. That gives 3.";
+    if(Math.abs(m*2+b-5)>1e-9)return "The slope 3 is right. Now check the point: 3(2) + b must equal 5, so b = −1.";
+    return "Try again.";},
+  ok:"The given line has slope −"+SF(1,3)+", so the perpendicular slope is 3. 5 = 3(2) + b gives b = −1. y = 3x − 1.",
+  steps:["Solve 2x + 6y = 12 for y. Subtract 2x: 6y = −2x + 12. Divide by 6: y = −"+SF(1,3)+"x + 2.",
+   "The given slope is −"+SF(1,3)+". The <b>opposite reciprocal</b> is 3.",
+   "Put (2, 5) into y = 3x + b: 5 = 3(2) + b, so 5 = 6 + b.",
+   "Subtract 6: b = −1.",
+   "The line is y = 3x − 1: Box 1 = 3x, Box 2 = −, Box 3 = 1."],
+  cm:"Reading the slope from 2x + 6y = 12 as 2. Solve for y first to find the slope.",
+  dz:"Type "+DZ("2x+6y=12")+" and "+DZ("y=3x-1")+". The lines should meet at a right angle, and (2, 5) should be on the second line."}
+];
+
+var SECTIONS=[["qs1","Number & Quantity",S1],["qs2","Algebra",S2],["qs3","Functions",S3],["qs4","Statistics",S4],["qs5","Geometry",S5]];
+
+/* ================= ENGINE (from grade8/unit6_review.html + click/match and build types) ================= */
+var KEY=/[?&]key=1\b/.test(location.search);
+if(KEY)document.body.classList.add("key-mode");
+var stats={},TOTAL=0,ALL=[];
+SECTIONS.forEach(function(s,i){TOTAL+=s[2].length;document.getElementById("c"+(i+1)).textContent=s[2].length;s[2].forEach(function(q){q.sec=s[1];ALL.push(q);});});
+document.getElementById("totN").textContent=TOTAL;
+function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].done)d++;if(stats[k].first)n++;});
+  document.getElementById("scoreN").textContent=n;document.getElementById("doneN").textContent=d;
+  if(d===TOTAL)summary(n);}
+function summary(n){
+  var miss=[];
+  SECTIONS.forEach(function(s,i){var m=s[2].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#p'+(i+1)+'">'+s[1]+"</a> ("+m+" missed on the first try)");});
+  var el=document.getElementById("summary");el.classList.add("show");
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+   (miss.length?'<p>Review these sections once more:</p><ul class="bul">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You got every question on the first try. You are ready for the EOC.</p>')+
+   '<p class="small-note">Now send your work to Mr. Allen below.</p>';}
+function num(s){s=String(s).replace(/[−–—]/g,"-").replace(/[$,]/g,"").replace(/\s+/g,"").replace(/^[a-z]+=/i,"");
+  var fr=s.match(/^([-+]?\d+(?:\.\d+)?)\/([-+]?\d+(?:\.\d+)?)$/);
+  if(fr){var dn=Number(fr[2]);return dn===0?NaN:Number(fr[1])/dn;}
+  if(!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s))return NaN;return Number(s);}
+function same(a,b){return Math.abs(a-b)<1e-9;}
+function plain(h){var d=document.createElement("div");d.innerHTML=String(h).replace(/<sup>/g,"^");return d.textContent.replace(/\s+/g," ").trim();}
+function rec(q,ok){if(window.ScoreSend)try{ScoreSend.record(q.id,ok,{std:"NC.M1."+q.std,band:4,label:plain(q.text).slice(0,80)});}catch(e){}}
+function optH(o){return typeof o.h==="function"?o.h():o.h;}
+function ansText(q){
+  if(q.type==="num")return (q.pre==="$"?"$"+(q.dec?q.ans.toFixed(2):cm(q.ans)):(q.pre?q.pre+" ":"")+M(q.ans));
+  if(q.type==="match")return q.rows.map(function(r,i){return "Row "+(i+1)+": "+q.cats[r.ans];}).join(" · ");
+  if(q.type==="build")return (q.pre?q.pre+" ":"")+q.rows.map(function(r){return r.chips[r.ans];}).join(" ");
+  var j=q.opts.findIndex(function(o){return o.ok;});return "ABCD"[j]+(q.cls?"":" ("+optH(q.opts[j])+")");}
+function explainHTML(q){return '<div class="explain"><h4>Step by step</h4><ol>'+q.steps.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ol><div class="cm"><b>Common mistake:</b> '+q.cm+'</div></div>';}
+function typeTag(q){return {mc:"Multiple choice",num:"Numeric entry",match:"Click to match",build:"Build the answer"}[q.type];}
+var qnum=0;
+function render(boxId,list){
+  var box=document.getElementById(boxId);
+  list.forEach(function(q){
+    qnum++;q.n=qnum;stats[q.id]={done:false,first:false,tries:0};
+    var d=document.createElement("div");d.className="q";d.id="q-"+q.id;
+    var h='<div class="qn">Question '+qnum+' <span class="tag">'+typeTag(q)+'</span><span class="tag '+(q.calc?"calc-ok":"calc-no")+'">'+(q.calc?"Calculator OK":"No calculator")+'</span><span class="tag stdtag">NC.M1.'+q.std+'</span></div><div class="qt">'+q.text+'</div>';
+    if(q.fig)h+='<div class="qfig">'+q.fig()+'</div>';
+    if(q.type==="num"){
+      h+='<div class="entry"><label for="'+q.id+'n">'+(q.pre||"")+'</label> <input id="'+q.id+'n" inputmode="text" autocomplete="off" spellcheck="false"></div>';
+    }else if(q.type==="match"||q.type==="build"){
+      if(q.type==="build")h+='<div class="preview" aria-live="polite">'+(q.pre?'<span>'+q.pre+'</span>':'')+q.rows.map(function(r,i){return '<span class="slot" data-i="'+i+'">'+(i+1)+'</span>';}).join("")+'</div>';
+      h+=q.rows.map(function(r,i){var chips=q.type==="build"?r.chips:q.cats;
+        return '<div class="mrow" data-i="'+i+'"><div class="mh">'+(q.type==="build"?r.h:r.h)+'</div><div class="mopts" role="group">'+chips.map(function(c,j){return '<button class="mopt" data-j="'+j+'" aria-pressed="false">'+c+'</button>';}).join("")+'</div></div>';}).join("");
+    }else{
+      h+='<div class="opts'+(q.cls?" "+q.cls:"")+'">'+q.opts.map(function(o,j){return '<button class="opt" data-j="'+j+'" aria-pressed="false"><span class="let">'+"ABCD"[j]+'</span><span>'+optH(o)+'</span></button>';}).join("")+'</div>';
+    }
+    if(q.calc&&q.dz)h+='<div class="dtip"><b>Desmos tip:</b> '+q.dz+'</div>';
+    h+='<div class="btnrow"><button class="primary chk">Check</button><button class="rev">Show answer</button></div><div class="fb" role="status"></div><div class="exwrap"></div>';
+    if(KEY)h+='<div class="keyonly fb ok" style="display:block"><b>'+q.sec+' · NC.M1.'+q.std+' · Answer: '+ansText(q)+'</b><br>'+q.ok+'</div>'+explainHTML(q);
+    d.innerHTML=h;box.appendChild(d);
+    var fb=d.querySelector(".fb"),ex=d.querySelector(".exwrap"),choice=(q.type==="mc");
+    function showEx(){if(!ex.innerHTML)ex.innerHTML=explainHTML(q);}
+    if(KEY){ // mark the right answers in the printed key
+      if(choice)[].forEach.call(d.querySelectorAll(".opt"),function(o,j){if(q.opts[j].ok)o.classList.add("right");});
+      if(q.rows)[].forEach.call(d.querySelectorAll(".mrow"),function(r,i){r.querySelectorAll(".mopt")[q.rows[i].ans].classList.add("right");});
+      if(q.type==="build")[].forEach.call(d.querySelectorAll(".slot"),function(s,i){s.innerHTML=q.rows[i].chips[q.rows[i].ans];s.classList.add("full");});
+    }
+    if(choice)d.querySelector(".opts").addEventListener("click",function(e){
+      var b=e.target.closest(".opt");if(!b||stats[q.id].done)return;
+      [].forEach.call(d.querySelectorAll(".opt"),function(o){o.classList.remove("sel");o.setAttribute("aria-pressed","false");});
+      b.classList.add("sel");b.setAttribute("aria-pressed","true");});
+    if(q.rows)[].forEach.call(d.querySelectorAll(".mrow"),function(row,i){row.addEventListener("click",function(e){
+      var b=e.target.closest(".mopt");if(!b||stats[q.id].done)return;
+      [].forEach.call(row.querySelectorAll(".mopt"),function(o){o.classList.remove("sel");o.setAttribute("aria-pressed","false");});
+      b.classList.add("sel");b.setAttribute("aria-pressed","true");
+      if(q.type==="build"){var sl=d.querySelector('.slot[data-i="'+i+'"]');sl.innerHTML=b.innerHTML;sl.classList.add("full");}});});
+    function picks(){return [].map.call(d.querySelectorAll(".mrow"),function(r){var s=r.querySelector(".mopt.sel");return s?+s.dataset.j:-1;});}
+    d.querySelector(".rev").addEventListener("click",function(){
+      var st=stats[q.id];
+      if(q.type==="num")d.querySelector("#"+q.id+"n").value=q.dec?String(q.ans):M(q.ans);
+      else if(q.rows)[].forEach.call(d.querySelectorAll(".mrow"),function(r,i){[].forEach.call(r.querySelectorAll(".mopt"),function(o,j){var on=j===q.rows[i].ans;o.classList.toggle("sel",on);o.classList.toggle("right",on);});
+        if(q.type==="build"){var sl=d.querySelector('.slot[data-i="'+i+'"]');sl.innerHTML=q.rows[i].chips[q.rows[i].ans];sl.classList.add("full");}});
+      else[].forEach.call(d.querySelectorAll(".opt"),function(o,j){o.classList.toggle("sel",!!q.opts[j].ok);o.classList.toggle("right",!!q.opts[j].ok);});
+      var why="";
+      if(choice)why='<ul class="whyall">'+q.opts.map(function(o,j){return o.ok?"":"<li><b>"+"ABCD"[j]+" is wrong:</b> "+o.why+"</li>";}).join("")+'</ul>';
+      if(q.type==="match")why='<ul class="whyall">'+q.rowWhy.map(function(w,i){return "<li><b>Row "+(i+1)+":</b> "+w+"</li>";}).join("")+'</ul>';
+      fb.className="fb ok";fb.innerHTML="<b>Answer: "+ansText(q)+".</b> "+q.ok+why;showEx();
+      d.querySelector(".chk").disabled=true;
+      if(!st.done){st.done=true;if(window.ScoreSend)ScoreSend.revealed();if(!st.tries)rec(q,false);upd();}
+    });
+    d.querySelector(".chk").addEventListener("click",function(){
+      var st=stats[q.id];if(st.done)return;var good=false,msg="";
+      if(q.type==="num"){
+        var v=num(d.querySelector("#"+q.id+"n").value);
+        if(isNaN(v)){fb.className="fb no";fb.innerHTML="Type a number. Use a minus sign for negatives, like −2. You can also type a fraction with a slash.";return;}
+        good=same(v,q.ans);if(!good)msg=q.wrong(v);
+      }else if(q.rows){
+        var p=picks();if(p.indexOf(-1)>=0){fb.className="fb no";fb.innerHTML=q.type==="build"?"Fill every box first.":"Pick a choice for every row first.";return;}
+        if(q.type==="build"){msg=q.check(p);good=!msg;}
+        else{var bad=p.map(function(j,i){return j===q.rows[i].ans?-1:i;}).filter(function(i){return i>=0;});good=!bad.length;
+          if(!good)msg="Row "+(bad[0]+1)+" is not right. "+q.rowWhy[bad[0]]+(bad.length>1?" Another row is also wrong.":"");}
+      }else{
+        var sel=[].map.call(d.querySelectorAll(".opt.sel"),function(o){return +o.dataset.j;});
+        if(!sel.length){fb.className="fb no";fb.innerHTML="Pick an answer first.";return;}
+        good=!!q.opts[sel[0]].ok;if(!good)msg=q.opts[sel[0]].why;
+      }
+      st.tries++;rec(q,good);
+      if(good){st.done=true;st.first=(st.tries===1);fb.className="fb ok";fb.innerHTML="<b>Yes!</b> "+q.ok;showEx();
+        d.querySelector(".chk").disabled=true;
+        [].forEach.call(d.querySelectorAll(".opt.sel,.mopt.sel"),function(o){o.classList.add("right");});
+        upd();}
+      else{fb.className="fb no";fb.innerHTML="<b>Not yet.</b> "+msg+(st.tries>=2?' <span class="small-note">Answer: '+ansText(q)+'.</span>':" Try again.");}
+    });
+    if(q.type==="num")d.querySelector("#"+q.id+"n").addEventListener("keydown",function(e){if(e.key==="Enter")d.querySelector(".chk").click();});
+  });
+}
+SECTIONS.forEach(function(s){render(s[0],s[2]);});
+if(window.ScoreSend&&!KEY)ScoreSend.setup({kind:'practice',unit:'M1 EOC',page:'EOC Practice · NC Math 1',mount:'#send',std:'NC.M1',band:4});
+var cmb=document.getElementById("classMode");
+cmb.addEventListener("click",function(){var on=!document.body.classList.contains("class-mode");document.body.classList.toggle("class-mode",on);
+  cmb.setAttribute("aria-pressed",on);cmb.textContent=on?"Turn off Class mode":"Turn on Class mode";cmb.classList.toggle("on",on);});
+
+/* ================= Desmos: one shared iframe, made on first open ================= */
+var dzFrame=null,cardOpen=false,dockOpen=false;
+var cardSlot=document.getElementById("dzCardSlot"),dockSlot=document.getElementById("dzDockSlot"),cardPanel=document.getElementById("dzCardPanel"),
+    showBtn=document.getElementById("dzShow"),fab=document.getElementById("dzFab"),dock=document.getElementById("dzDock"),note=document.getElementById("dzCardNote");
+function frame(){if(!dzFrame){var w=document.createElement("div");
+  w.innerHTML='<iframe src="https://www.desmos.com/calculator?embed" title="Desmos graphing calculator" loading="lazy" style="width:100%;height:480px;border:1px solid #ccc;border-radius:10px"></iframe>';
+  dzFrame=w.firstChild;}return dzFrame;}
+function place(){ // the dock wins while it is open
+  if(dockOpen){dockSlot.appendChild(frame());note.hidden=!cardOpen;}
+  else if(cardOpen){cardSlot.appendChild(frame());note.hidden=true;}}
+showBtn.addEventListener("click",function(){cardOpen=!cardOpen;cardPanel.hidden=!cardOpen;showBtn.textContent=cardOpen?"Hide calculator":"Show calculator";showBtn.setAttribute("aria-expanded",cardOpen);place();});
+function setDock(on){dockOpen=on;dock.hidden=!on;document.body.classList.toggle("dock-open",on);fab.setAttribute("aria-expanded",on);fab.textContent=on?"Hide Desmos":"Desmos";place();}
+fab.addEventListener("click",function(){setDock(!dockOpen);});
+document.getElementById("dzClose").addEventListener("click",function(){setDock(false);fab.focus();});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&dockOpen)setDock(false);});
+window.__EOC={items:ALL,stats:stats};
+})();
+
+</script>
+</body>
+</html>
