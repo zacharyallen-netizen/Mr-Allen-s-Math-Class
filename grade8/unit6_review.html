@@ -33,6 +33,8 @@ h3{font-size:20px;margin:22px 0 8px}
 ul.steps{margin:8px 0;padding-left:22px}
 ul.steps li{margin:4px 0}
 .mono{font-family:var(--mono);font-weight:600}
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}
 table.rules{border-collapse:collapse;width:100%;font-size:15px;margin:10px 0}
 table.rules th,table.rules td{border:1px solid var(--line-2);padding:8px 10px;text-align:left;vertical-align:top}
 table.rules th{background:#F1F3F7;color:var(--navy);font-weight:600}
@@ -169,7 +171,7 @@ body.class-mode .score{display:none}
 <section class="part" id="p4">
 <div class="part-head"><div class="std">Part 4 · NC.8.F.3 · NC.8.F.4 · Notes 6.3</div><h2>Tables → Equations</h2></div>
 <div class="card"><div class="label-try">Remember</div>
-<ul class="steps"><li>Slope from a table: <b>change in y ÷ change in x</b> (Δy ÷ Δx).</li><li><b>b</b> is y when x = 0. No x = 0 row? Use the shortcut <span class="mono">b = y − m·x</span>.</li><li>A table is <b>linear</b> when Δy ÷ Δx is the same every time. Always divide. Don’t just eyeball Δy.</li></ul></div>
+<ul class="steps"><li>Slope from a table: <b>change in y ÷ change in x</b> (Δy ÷ Δx).</li><li><b>b</b> is y when x = 0. No x = 0 row? Work backward up the table to x = 0.</li><li>A table is <b>linear</b> when Δy ÷ Δx is the same every time. Always divide. Don’t just eyeball Δy.</li></ul></div>
 <div id="qs4"></div>
 </section>
 
@@ -222,6 +224,7 @@ table.xy td.q{color:var(--no)}
 (function(){
 "use strict";
 function M(n){return n<0?"−"+Math.abs(n):String(n);} // true minus
+function SF(n,d){return '<span class="sf"><span>'+n+'</span><span>'+d+'</span></span>';} // stacked fraction (HTML only)
 function P(p){return "("+M(p[0])+", "+M(p[1])+")";}
 var C={navy:"#1E2D4F",muted:"#5B6475",line:"#E3E5EA",axis:"#5B6475",gold:"#E0A800",goldT:"#8A6100",blue:"#1D4ED8",red:"#B42318",green:"#15803D"};
 function f1(n){return Math.round(n*10)/10;}
@@ -229,7 +232,7 @@ var FONT='font-family="Inter,system-ui,sans-serif"',MONO='font-family="JetBrains
 function T(x,y,s,o){o=o||{};return '<text x="'+f1(x)+'" y="'+f1(y)+'" text-anchor="'+(o.a||"middle")+'" font-size="'+(o.size||13)+'" font-weight="'+(o.w||600)+'" fill="'+(o.col||C.navy)+'" '+(o.mono?MONO:FONT)+(o.halo?' paint-order="stroke" stroke="#fff" stroke-width="4"':'')+(o.it?' font-style="italic"':'')+'>'+s+'</text>';}
 /* slope-intercept text: m may be a number or [num,den] */
 function eq(m,b){var ms;
-  if(Array.isArray(m)){ms=(m[0]<0?"−":"")+Math.abs(m[0])+"/"+m[1]+"x";}
+  if(Array.isArray(m)){ms=(m[0]<0?"−":"")+SF(Math.abs(m[0]),m[1])+"x";}
   else ms=m===0?"":m===1?"x":m===-1?"−x":M(m)+"x";
   var bs=b===0?"":(ms?(b<0?" − "+Math.abs(b):" + "+b):M(b));
   return "y = "+(ms||"")+(bs||(ms?"":"0"));}
@@ -357,11 +360,11 @@ qs2:[
     s+=g.line([2,3],1/3,C.blue);
     s+=g.dot(a)+g.dot(b)+ptLabel(g,a,P(a),36,16)+ptLabel(g,b,P(b),-30,-6);return svgWrap(s,"A line through (−2, −1) and (4, 3)");},
   ans:2/3,pre:"m =",
-  wrong:function(v){if(Math.abs(v-1.5)<1e-9)return "You put the run on top. Slope is rise over run: up 4, right 6, so 4/6.";
+  wrong:function(v){if(Math.abs(v-1.5)<1e-9)return 'You put the run on top. Slope is rise over run: up 4, right 6, so <span class="sf"><span>4</span><span>6</span></span>.';
     if(Math.abs(v+2/3)<1e-9)return "Check the sign. The line goes up from left to right, so the slope is positive.";
     if(v===4||v===6)return "That is just the "+(v===4?"rise":"run")+". Slope = rise ÷ run.";
-    return "From (−2, −1) count up 4 to y = 3. Then count right 6 to x = 4. Slope = 4/6. Simplify.";},
-  ok:"Rise: up 4 (from −1 to 3). Run: right 6 (from −2 to 4). Slope = 4/6 = 2/3."},
+    return 'From (−2, −1) count up 4 to y = 3. Then count right 6 to x = 4. Slope = <span class="sf"><span>4</span><span>6</span></span>. Simplify.';},
+  ok:'Rise: up 4 (from −1 to 3). Run: right 6 (from −2 to 4). Slope = <span class="sf"><span>4</span><span>6</span></span> = <span class="sf"><span>2</span><span>3</span></span>.'},
  {id:"s2",std:"NC.8.F.4",band:4,type:"mc",tag:"Find the error",talk:'Look at the bottom of Ana’s fraction. What is 2 minus a negative 2?',
   text:'Ana found the slope of the line through (−2, 5) and (2, −3). Her work: <span class="mono">m = (−3 − 5) ÷ (2 − 2) = −8 ÷ 0</span>. She says the slope is undefined. What is her mistake?',
   fig:function(){var g=new Grid(6),s=g.base,a=[-2,5],b=[2,-3];s+=g.line(-2,1,C.blue);
@@ -434,12 +437,12 @@ qs4:[
   text:"This table is linear. It has no x = 0 row. Find b, the y-intercept. Type just the number.",
   fig:function(){return center(tbl([2,4,6,8],[3,8,13,18]));},
   ans:-2,pre:"b =",
-  wrong:function(v){if(v===3)return "3 is y when x = 2. b is y when x = 0. Work backward, or use b = y − m·x.";
-    if(v===2.5)return "5/2 is the slope m. Now use it to find b: b = 3 − (5/2)(2).";
-    if(v===-7)return "y goes up 5 when x goes up 2, so m = 5 ÷ 2 = 5/2, not 5. Then b = 3 − (5/2)(2).";
-    if(v===2)return "Check the sign. b = 3 − 5 = −2.";
-    return "Slope: 5 ÷ 2 = 5/2. Use the row (2, 3): b = 3 − (5/2)(2) = 3 − 5.";},
-  ok:"m = (8 − 3) ÷ (4 − 2) = 5/2. Using (2, 3): b = 3 − (5/2)(2) = 3 − 5 = −2. So y = (5/2)x − 2. Check x = 8: 20 − 2 = 18 ✓"},
+  wrong:function(v){if(v===3)return "3 is y when x = 2. b is y when x = 0. Work backward: x goes back 2, so y goes back 5.";
+    if(v===2.5)return '<span class="sf"><span>5</span><span>2</span></span> is the slope m. Now find b: work backward from (2, 3) to x = 0. x goes back 2, so y drops 5.';
+    if(v===-7)return 'y goes up 5 when x goes up 2, not when x goes up 1. From (2, 3), x goes back 2 to reach 0, so y drops 5, not 10.';
+    if(v===2)return "Check the sign. Going back to x = 0, y drops: 3 − 5 = −2.";
+    return 'Work backward from (2, 3). Each row back, x drops 2 and y drops 5. One row back gives x = 0, y = 3 − 5.';},
+  ok:'Each row, x goes up 2 and y goes up 5. Work backward from (2, 3): x goes back 2 to 0, and y drops 5: 3 − 5 = −2. So b = −2. (m = <span class="sf"><span>5</span><span>2</span></span>, so y = (<span class="sf"><span>5</span><span>2</span></span>)x − 2. Check x = 8: 20 − 2 = 18 ✓)'},
  {id:"t3",std:"NC.8.F.3",band:4,type:"mc",tag:"Multiple choice",talk:'The x-values skip around. What do you have to divide each time?',
   text:"Is this table linear? If it is, what is the slope?",
   fig:function(){return center(tbl([1,3,4,7],[4,10,13,22],{vert:true}));},
@@ -595,7 +598,8 @@ function num(s){s=String(s).replace(/[−–—]/g,"-").replace(/[$°]/g,"").rep
 function same(a,b){return Math.abs(a-b)<1e-9;}
 function rec(q,ok){if(window.ScoreSend)ScoreSend.record(q.id,ok,{std:q.std,band:q.band||4,label:q.text.replace(/<[^>]+>/g,"").slice(0,80)});}
 function fracText(v){for(var d=1;d<=12;d++){var n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9)return d===1?M(n):M(n)+"/"+d;}return M(v);}
-function ansText(q){if(q.type==="num")return (q.pre?q.pre+" ":"")+(q.frac?fracText(q.ans):M(q.ans));if(q.type==="xy")return P(q.ans);
+function fracHTML(v){for(var d=1;d<=12;d++){var n=Math.round(v*d);if(Math.abs(n/d-v)<1e-9)return d===1?M(n):(n<0?"−":"")+SF(Math.abs(n),d);}return M(v);}
+function ansText(q){if(q.type==="num")return (q.pre?q.pre+" ":"")+(q.frac?fracHTML(q.ans):M(q.ans));if(q.type==="xy")return P(q.ans);
   return q.opts.map(function(o,j){return o.ok?"ABCDE"[j]:null;}).filter(Boolean).join(", ");}
 var qnum=0;
 function render(boxId){

@@ -190,7 +190,6 @@ svg .mono{font-family:var(--mono)}
 
       <div class="label">Levels</div>
       <div class="levels" id="levels"></div>
-      <p class="std">Standards: NC.8.G.6 (explain the theorem and its converse), NC.8.G.7 (find unknown sides in 2D and 3D), NC.8.G.8 (distance between two points).</p>
     </section>
 
     <!-- INTRO -->
@@ -264,9 +263,9 @@ const LEVELS=[
     plan:[5,10,13,15,17],std:'NC.8.G.6 · NC.8.G.8'},
   {id:2,kind:'map',name:'Between the Squares',blurb:'Flights that are not whole numbers. Estimate, then round to the nearest tenth.',grid:[0,12,0,12],pos:[0,12],n:5,battery:36,
     plan:[13,20,29,41,52].map(Math.sqrt),std:'NC.8.G.8'},
-  {id:3,kind:'map',name:'Four Quadrants',blurb:'Drop-offs across the axes. Count carefully with |x₂ − x₁|.',grid:[-8,8,-8,8],pos:[-6,6],n:5,battery:42.5,std:'NC.8.G.8'},
+  {id:3,kind:'map',name:'Four Quadrants',blurb:'Drop-offs across the axes. Count the blocks: bigger x − smaller x.',grid:[-8,8,-8,8],pos:[-6,6],n:5,battery:42.5,std:'NC.8.G.8'},
   {id:4,kind:'corner',name:'Corner Inspector',blurb:'A builder needs square corners. Use the converse to test each one.',n:5,std:'NC.8.G.6'},
-  {id:5,kind:'mix',name:'Range Limit and 3D',blurb:'Find a missing leg. Then find the longest rod that fits in a box.',n:6,std:'NC.8.G.7'}
+  {id:5,kind:'mix',name:'Range Limit and 3D (Challenge)',blurb:'Challenge level. Find a missing leg. Then find the longest rod that fits in a box.',n:6,std:'NC.8.G.7'}
 ];
 const TRIPLE_LEGS=new Set(['3,4','4,3','6,8','8,6','5,12','12,5','8,15','15,8','9,12','12,9','12,16','16,12']);
 
@@ -350,7 +349,7 @@ function genOffers(L,A){
 
 /* ============ mistake detectors ============ */
 function legMis(v,ans,other,c1,c2,axis){
-  if(v<0&&-v===ans)return 'A distance is never negative. Drop the minus sign.';
+  if(v<0&&-v===ans)return 'A distance is never negative. Use bigger − smaller.';
   if(c1*c2<0&&v===Math.abs(Math.abs(c1)-Math.abs(c2))&&v!==ans)
     return 'Sign slip. '+M(c1)+' and '+M(c2)+' are on opposite sides of 0. Count from '+M(c1)+' to 0, then from 0 to '+M(c2)+'. Add the two parts.';
   if(v===other&&other!==ans)return axis==='x'?'That is the up-or-down distance. Across uses the x-coordinates.':'That is the across distance. Up or down uses the y-coordinates.';
@@ -429,15 +428,15 @@ function flightProb(L,A,B){
       label:'How far across? <span class="sub">(leg a, the x-distance)</span>',
       note:'A is at x = '+M(A.x)+'. '+B.name+' is at x = '+M(B.x)+'.',sym:'a =',ans:a,
       mis:v=>legMis(v,a,b,A.x,B.x,'x'),
-      gen:'Not yet. Subtract the x-coordinates: |'+M(B.x)+' − '+Pp(A.x)+'|.',
-      ok:()=> 'Yes. |'+M(B.x)+' − '+Pp(A.x)+'| = '+a+'. Leg a is '+a+' block'+(a===1?'':'s')+'.',
+      gen:'Not yet. Subtract the x-coordinates, bigger − smaller: '+M(Math.max(A.x,B.x))+' − '+Pp(Math.min(A.x,B.x))+'.',
+      ok:()=> 'Yes. '+M(Math.max(A.x,B.x))+' − '+Pp(Math.min(A.x,B.x))+' = '+a+'. Leg a is '+a+' block'+(a===1?'':'s')+'.',
       hint:crossX?('From x = '+M(A.x)+' to x = '+M(B.x)+' crosses the y-axis. Count to 0, then keep going.'):('Count the blocks from x = '+M(Math.min(A.x,B.x))+' to x = '+M(Math.max(A.x,B.x))+'. Or subtract: '+M(Math.max(A.x,B.x))+' − '+M(Math.min(A.x,B.x))+'.')}),
     numStep({key:'b',pre:'How far up or down? <span class="sub">(leg b, the y-distance)</span>',
       label:'How far '+ud+'? <span class="sub">(leg b, the y-distance)</span>',
       note:'A is at y = '+M(A.y)+'. '+B.name+' is at y = '+M(B.y)+'.',sym:'b =',ans:b,
       mis:v=>legMis(v,b,a,A.y,B.y,'y'),
-      gen:'Not yet. Subtract the y-coordinates: |'+M(B.y)+' − '+Pp(A.y)+'|.',
-      ok:()=> 'Yes. |'+M(B.y)+' − '+Pp(A.y)+'| = '+b+'. Leg b is '+b+' block'+(b===1?'':'s')+'.',
+      gen:'Not yet. Subtract the y-coordinates, bigger − smaller: '+M(Math.max(A.y,B.y))+' − '+Pp(Math.min(A.y,B.y))+'.',
+      ok:()=> 'Yes. '+M(Math.max(A.y,B.y))+' − '+Pp(Math.min(A.y,B.y))+' = '+b+'. Leg b is '+b+' block'+(b===1?'':'s')+'.',
       hint:crossY?('From y = '+M(A.y)+' to y = '+M(B.y)+' crosses the x-axis. Count to 0, then keep going.'):('Count the blocks from y = '+M(Math.min(A.y,B.y))+' to y = '+M(Math.max(A.y,B.y))+'. Or subtract: '+M(Math.max(A.y,B.y))+' − '+M(Math.min(A.y,B.y))+'.')}),
     numStep({pre:'Square leg a: a² = ?',label:'Square leg a. a² = '+S2(a)+' =',sym:'a² =',ans:a*a,
       mis:v=>sqMis(v,a),gen:'Not yet. '+S2(a)+' means '+a+' × '+a+'.',ok:()=> 'Yes. '+a+' × '+a+' = '+a*a+'.',
@@ -813,8 +812,8 @@ function showIntro(){
   }else if(L.id===3){
     const A={x:-3,y:2},B={x:4,y:-2,name:'B'};
     art=drawMap({W:360,grid:[-5,5,-4,4],A,offers:[B],chosen:B,legA:true,legB:true,a:7,b:4,flightP:1,cLabel:'c ≈ 8.1',dronePos:B}).svg;
-    vocab='<b>New idea.</b> Now points sit in all four quadrants. A leg can cross an axis. Use |x₂ − x₁|: subtract, then drop any minus sign. Subtracting a negative means adding: 4 − (−3) = 4 + 3 = 7, not 1.';
-    body=exampleRows([['Across','|4 − (−3)| = 7<small>count 3 to reach 0, then 4 more</small>'],['Down','|−2 − 2| = |−4| = 4'],['Add squares','49 + 16 = 65'],['Root','√65 = 8.062… ≈ 8.1']]);
+    vocab='<b>New idea.</b> Now points sit in all four quadrants. A leg can cross an axis. Count the blocks across: bigger x − smaller x. Subtracting a negative means adding: 4 − (−3) = 4 + 3 = 7, not 1.';
+    body=exampleRows([['Across','4 − (−3) = 7<small>count 3 to reach 0, then 4 more</small>'],['Down','2 − (−2) = 4'],['Add squares','49 + 16 = 65'],['Root','√65 = 8.062… ≈ 8.1']]);
   }else if(L.id===4){
     const P=cornerProb([9,12,15],'ft');
     art=drawCorner(P,360,true);
@@ -1156,7 +1155,7 @@ function drawHero(){
   el.innerHTML=drawMap({W,grid:[0,11,0,11],A,offers:[B],chosen:B,legA:true,legB:true,a:p[0],b:p[1],flightP:1,cLabel:'c = '+c,dronePos:B,aria:'Example flight'}).svg;
 }
 function renderHome(){
-  $('#levels').innerHTML=LEVELS.map(L=>'<div class="card lv"><span class="tag">Level '+L.id+' · '+L.std+'</span><h3>'+L.name+'</h3><p>'+L.blurb+'</p><div class="row"><span class="best">'+(BEST[L.id]!=null?'Best score <b>'+BEST[L.id]+'</b>':'Not played yet')+'</span><button type="button" class="btn" data-lv="'+L.id+'">Play</button></div></div>').join('');
+  $('#levels').innerHTML=LEVELS.map(L=>'<div class="card lv"><span class="tag">Level '+L.id+'</span><h3>'+L.name+'</h3><p>'+L.blurb+'</p><div class="row"><span class="best">'+(BEST[L.id]!=null?'Best score <b>'+BEST[L.id]+'</b>':'Not played yet')+'</span><button type="button" class="btn" data-lv="'+L.id+'">Play</button></div></div>').join('');
   drawHero();
 }
 $('#levels').addEventListener('click',e=>{const b=e.target.closest('button[data-lv]');if(b)startLevel(+b.dataset.lv);});
