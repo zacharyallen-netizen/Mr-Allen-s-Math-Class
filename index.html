@@ -18,9 +18,37 @@
 .course-desc{color:var(--muted);font-size:.95rem;margin-bottom:14px;}
 .course-cta{display:inline-block;background:var(--navy);color:var(--gold);font-weight:700;padding:9px 22px;border-radius:30px;font-size:.9rem;}
 .course-card:hover .course-cta{background:var(--gold);color:var(--navy);}
+
+/* Home-page rotating math-art background */
+body{background:var(--navy);}
+.bg-rotator{position:fixed;inset:0;z-index:-1;background:var(--navy);}
+.bg-rotator div{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.8s ease;}
+.bg-rotator div.show{opacity:1;}
+.bg-rotator::after{content:"";position:absolute;inset:0;background:rgba(22,32,58,.25);}
+.course-card,.feature-card{box-shadow:0 8px 28px rgba(0,0,0,.28);}
+.hero{background:rgba(22,32,58,.55);border:1px solid rgba(255,193,7,.55);padding:56px 24px 48px;margin-bottom:34px;box-shadow:0 8px 28px rgba(0,0,0,.28);}
+.hero h1{color:var(--gold);font-size:2.4rem;text-shadow:0 2px 12px rgba(0,0,0,.45);}
+.hero p{color:#e6ebf3;text-shadow:0 1px 8px rgba(0,0,0,.5);}
+.section-label{color:#fff;}
+.site-footer{color:#cdd5e0;}
+@media (prefers-reduced-motion:reduce){.bg-rotator div{transition:none;}}
 </style>
 </head>
 <body>
+<div class="bg-rotator" aria-hidden="true">
+  <div style="background-image:url('images/home-bg/bg1.jpg')"></div>
+  <div style="background-image:url('images/home-bg/bg2.jpg')"></div>
+  <div style="background-image:url('images/home-bg/bg3.jpg')"></div>
+  <div style="background-image:url('images/home-bg/bg4.jpg')"></div>
+</div>
+<script>
+(function(){
+  var s=document.querySelectorAll('.bg-rotator div'), i=Math.floor(Math.random()*s.length);
+  s[i].classList.add('show');
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  setInterval(function(){s[i].classList.remove('show'); i=(i+1)%s.length; s[i].classList.add('show');},9000);
+})();
+</script>
 <nav class="top-nav">
   <div class="nav-container">
     <span class="nav-title">🦅 <span>Mr. Allen's</span> Math Class</span>
