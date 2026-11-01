@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Graphing Practice — IC Imagine 8th Grade Math</title>
+<title>Graphing Practice — Mr. Allen's 8th Grade Math</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1E2D4F;--gold:#FFC107;--white:#fff;--lgray:#F4F4F4;--royal:#0056B3;--green:#22AC00;--dkgreen:#1a7000;--red:#cc2222}
@@ -45,25 +45,25 @@ canvas{border:2px solid #cdd5e0;border-radius:8px;cursor:crosshair;touch-action:
 .score-display{background:var(--navy);color:var(--gold);padding:6px 14px;border-radius:6px;font-family:'Arvo',serif;font-size:0.9em}
 .instructions{background:#fff8e1;border:2px solid var(--gold);border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.9em}
 .instructions strong{color:var(--navy)}
+@media(max-width:520px){.graph-area{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+canvas{max-width:100%;height:auto}
+.plan{margin:6px auto 0;max-width:420px}
+.plan svg{display:block;margin:0 auto}
+.plan-cap{font-size:.8em;color:#5a6680;text-align:center;font-weight:600;margin:2px 0 0}
+.plan-row{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center}
+.plan-row>div{flex:1 1 220px;max-width:300px}
 </style>
+<style id="u6-consistency">
+/* Unit 6 typography unified to the guided-notes look (Units 4 & 5) */
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif !important}
+h1,h2,h3,h4,h5,.sec-title,.concept-h,.title,.card-title,.hero h1,.page-hdr h1,.topic h2,.unit-card-title,.game-h{font-family:'Arvo','Georgia',serif !important}
+code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace !important}
+</style>
+<script src="../brand.js"></script>
 </head>
 <body>
-<nav class="top-nav">
-<div class="nav-container">
-  <span class="nav-title">🦅 <span>IC Imagine</span> 8th Grade Math</span>
-  <a class="nb" href="index.html">🏠 Home</a>
-  <a class="nb" href="unit1.html">U1</a>
-  <a class="nb" href="unit2.html">U2</a>
-  <a class="nb" href="unit3.html">U3</a>
-  <a class="nb" href="unit4.html">U4</a>
-  <a class="nb" href="unit5.html">U5</a>
-  <a class="nb active" href="unit6.html">U6</a>
-  <a class="nb" href="unit7.html">U7</a>
-  <a class="nb" href="unit8.html">U8</a>
-  <a class="nb" href="fluency.html">⚡ Fluency</a>
-  <a class="nb" href="volume.html">📦 U9</a>
-</div>
-</nav>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit1.html">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html" aria-current="page">U6</a> <a href="unit7.html">U7</a> <a href="unit8.html">U8</a> <a href="volume.html">U9</a> <a href="Fluency-Lab-Package/fluency-lab/index.html">Fluency</a></nav>
 <div class="wrap">
 <div class="page-hdr">
   <h1>📈 Graphing Practice — Lines &amp; Systems</h1>
@@ -77,12 +77,14 @@ canvas{border:2px solid #cdd5e0;border-radius:8px;cursor:crosshair;touch-action:
 
 <!-- SLOPE-INTERCEPT TAB -->
 <div id="t1" class="tab-pane active">
-<div class="tip"><strong>💡 How to graph y = mx + b:</strong> 1) Plot the y-intercept (0, b). 2) From there, use slope as rise/run to find a second point. 3) Click both points on the grid!</div>
+<div class="tip"><strong>💡 How to graph y = mx + b:</strong> 1) Plot the <b>y-intercept</b> (0, b). 2) From there, use slope as rise over run to find a second point. 3) Click both points on the grid!</div>
 <div class="instructions"><strong>Instructions:</strong> Click TWO points on the grid that lie on the given line. Then click "Check My Line" to see if you're correct!</div>
 
 <div class="problem-box" id="slope-box">
   <div class="problem-title" id="slope-counter">Problem 1 of 8</div>
   <div class="equation-display" id="slope-eq">y = 2x + 1</div>
+  <div class="plan" id="slope-plan"></div>
+  <p class="plan-cap">Read the equation: where to start, then how to step.</p>
 </div>
 
 <div class="graph-area">
@@ -114,6 +116,8 @@ canvas{border:2px solid #cdd5e0;border-radius:8px;cursor:crosshair;touch-action:
     <span class="eq1" id="sys-eq1">y = 2x + 1</span>
     <span class="eq2" id="sys-eq2">y = −x + 4</span>
   </div>
+  <div class="plan-row"><div class="plan" id="sys-plan1"></div><div class="plan" id="sys-plan2"></div></div>
+  <p class="plan-cap">Read each equation: where to start, then how to step.</p>
 </div>
 
 <div class="graph-area">
@@ -135,14 +139,18 @@ canvas{border:2px solid #cdd5e0;border-radius:8px;cursor:crosshair;touch-action:
 </div>
 </div>
 
+<div id="ss-mount"></div>
 </div>
 
+<script src="../geo-svg.js"></script>
 <script>
 function openTab(id,btn){document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active')});document.getElementById(id).classList.add('active');btn.classList.add('active');}
 
 // ========== GRID DRAWING ==========
 var RANGE = 8, PAD = 35;
 
+// the canvas may be shown smaller than 460 px (phones): keep its text readable and its clicks on target
+function canvasScale(canvas) { var w = canvas.getBoundingClientRect().width || Math.min(canvas.width, document.documentElement.clientWidth - 76); return w > 0 ? canvas.width / w : 1; }
 function drawGrid(canvas) {
   var ctx = canvas.getContext('2d');
   var s = canvas.width;
@@ -158,7 +166,7 @@ function drawGrid(canvas) {
     ctx.beginPath(); ctx.moveTo(x, PAD); ctx.lineTo(x, s-PAD); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(PAD, y); ctx.lineTo(s-PAD, y); ctx.stroke();
     if(i !== 0 && i % 2 === 0) {
-      ctx.fillStyle = '#75787B'; ctx.font = '11px Inter'; ctx.textAlign = 'center';
+      ctx.fillStyle = '#5D6673'; ctx.font = '600 ' + Math.round(12 * Math.max(1, canvasScale(canvas))) + 'px Inter'; ctx.textAlign = 'center';
       ctx.fillText(i, x, cy+16);
       ctx.textAlign = 'right'; ctx.fillText(i, cx-6, y+4);
     }
@@ -170,8 +178,9 @@ function gx(cx,gs,v){return cx+v*gs} function gy(cy,gs,v){return cy-v*gs}
 
 function snapToGrid(canvas, e, gs, cx, cy) {
   var rect = canvas.getBoundingClientRect();
-  var px = (e.clientX || e.touches[0].clientX) - rect.left;
-  var py = (e.clientY || e.touches[0].clientY) - rect.top;
+  var k = canvas.width / (rect.width || canvas.width);
+  var px = ((e.clientX || e.touches[0].clientX) - rect.left) * k;
+  var py = ((e.clientY || e.touches[0].clientY) - rect.top) * k;
   var gridX = Math.round((px - cx) / gs);
   var gridY = Math.round((cy - py) / gs);
   if(gridX >= -RANGE && gridX <= RANGE && gridY >= -RANGE && gridY <= RANGE)
@@ -185,7 +194,7 @@ function plotPoint(ctx, cx, cy, gs, x, y, color, r) {
   ctx.beginPath(); ctx.arc(px,py,r||6,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle = 'white'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.arc(px,py,r||6,0,Math.PI*2); ctx.stroke();
-  ctx.fillStyle = color; ctx.font = 'bold 11px Inter'; ctx.textAlign = 'center';
+  ctx.fillStyle = color; ctx.font = 'bold ' + Math.round(12 * Math.max(1, canvasScale(ctx.canvas))) + 'px Inter'; ctx.textAlign = 'center';
   ctx.fillText('('+x+','+y+')', px, py-12);
 }
 
@@ -205,6 +214,38 @@ function drawHLine(ctx, cx, cy, gs, b, color) {
   ctx.moveTo(gx(cx,gs,-RANGE), gy(cy,gs,b));
   ctx.lineTo(gx(cx,gs,RANGE), gy(cy,gs,b));
   ctx.stroke();
+}
+
+// ========== "READ THE EQUATION" PICTURE (drawn from each problem's own m and b) ==========
+// left: the y-axis with b marked (where to start); right: one slope step (rise over run). No grid line is drawn, so the answer is not shown.
+function planSVG(m, b, color, eq) {
+  if (!window.GEO) return '';
+  var F = new GEO.Fig(), C = GEO.colors, c = color || 'blue', u = 19, fmt = function (v) { return String(v).replace('-', '−'); };
+  var den = 1; while (den < 12 && Math.abs(m * den - Math.round(m * den)) > 1e-6) den++;
+  var rise = Math.round(m * den), run = den;
+  // y-axis strip
+  var lo = Math.min(-1, b - 2), hi = Math.max(1, b + 2), Y = function (v) { return -v * u; };
+  F.line([0, Y(lo) + 6], [0, Y(hi) - 8], { w: 2.2 }); F.arrowHead([0, Y(hi) - 10], 90, 'navy', 8);
+  for (var v = lo; v <= hi; v++) { F.line([-5, Y(v)], [5, Y(v)], { w: v === 0 ? 2.5 : 1.5, c: v === 0 ? 'navy' : 'gray' }); if (v % 2 === 0 || v === b) F.text(-10, Y(v) + 5, fmt(v), { size: 13, anchor: 'end', c: 'gray', weight: 600 }); }
+  F.ctext(0, Y(hi) - 24, 'y-axis', { size: 13, c: 'gray', weight: 600 });
+  F.dot([0, Y(b)], 'gold', 6.5);
+  F.text(12, Y(b) + 5, 'start (0, ' + fmt(b) + ')', { size: 15, c: 'gold', anchor: 'start' });
+  // one slope step
+  var mx = Math.max(Math.abs(rise), run), x0 = 150, s = mx <= 2 ? 34 : mx <= 3 ? 26 : 17;
+  var P0 = [x0, rise >= 0 ? 44 : -20], P1 = [x0 + run * s, P0[1]], P2 = [P1[0], P0[1] - rise * s];
+  F.dot(P0, c, 5);
+  F.line(P0, [P1[0] - 2, P1[1]], { c: 'green', w: 3 }); F.arrowHead(P1, 0, 'green', 9);
+  F.ctext((P0[0] + P1[0]) / 2, P0[1] + (rise >= 0 ? 18 : -14), 'right ' + run, { size: 15, c: 'green' });
+  if (rise !== 0) {
+    F.line(P1, [P2[0], P2[1] + (rise > 0 ? 2 : -2)], { c: 'gold', w: 3 }); F.arrowHead(P2, rise > 0 ? 90 : -90, 'gold', 9);
+    F.text(P1[0] + 9, (P1[1] + P2[1]) / 2 + 5, (rise > 0 ? 'up ' : 'down ') + Math.abs(rise), { size: 15, c: 'gold', anchor: 'start' });
+    F.dot(P2, c, 5);
+  } else F.text(P1[0] + 10, P1[1] + 5, 'up 0', { size: 14, c: 'gold', anchor: 'start' });
+  var VF = { '1/2': '½', '1/3': '⅓', '2/3': '⅔', '1/4': '¼', '3/4': '¾' }, fr = Math.abs(rise) + '/' + den;
+  var mTxt = 'm = ' + (den === 1 ? fmt(rise) : (rise < 0 ? '−' : '') + (VF[fr] || fr));
+  if (rise >= 0) F.ctext(x0 + run * s / 2 + 10, Math.min(P0[1], P2[1]) - 22, mTxt, { size: 15, c: c });
+  else F.ctext(x0 + run * s / 2 + 10, Math.max(P0[1], P2[1]) + 26, mTxt, { size: 15, c: c });
+  return F.svg('reading ' + eq + ': start at (0, ' + b + '), then ' + (rise >= 0 ? 'up ' : 'down ') + Math.abs(rise) + ' and right ' + run, { maxW: 300 });
 }
 
 // ========== SLOPE-INTERCEPT ==========
@@ -230,6 +271,7 @@ function initSlope() {
   document.getElementById('slope-next').style.display = 'none';
   var p = slopeProbs[slopeIdx];
   document.getElementById('slope-eq').textContent = p.eq;
+  document.getElementById('slope-plan').innerHTML = planSVG(p.m, p.b, 'blue', p.eq);
   document.getElementById('slope-counter').textContent = 'Problem '+(slopeIdx+1)+' of '+slopeProbs.length;
   
   // Click handler
@@ -281,6 +323,7 @@ function checkSlope() {
   }
   // Also check points aren't the same
   if(slopePoints[0].x === slopePoints[1].x && slopePoints[0].y === slopePoints[1].y) ok = false;
+  try{if(window.ScoreSend)ScoreSend.record('line'+(slopeIdx+1),ok,{std:'NC.8.F.3',label:'Graph '+p.eq});}catch(e){}
   
   if(ok) {
     r.className = 'result show correct';
@@ -350,6 +393,8 @@ function initSys() {
   var p = sysProbs[sysIdx];
   document.getElementById('sys-eq1').textContent = p.eq1;
   document.getElementById('sys-eq2').textContent = p.eq2;
+  document.getElementById('sys-plan1').innerHTML = planSVG(p.m1, p.b1, 'blue', p.eq1);
+  document.getElementById('sys-plan2').innerHTML = planSVG(p.m2, p.b2, 'red', p.eq2);
   document.getElementById('sys-counter').textContent = 'Problem '+(sysIdx+1)+' of '+sysProbs.length;
   
   c.onclick = function(e) {
@@ -400,6 +445,7 @@ function checkSystem() {
     if(Math.abs(p.m1 * sysLine1[i].x + p.b1 - sysLine1[i].y) > 0.01) ok1 = false;
     if(Math.abs(p.m2 * sysLine2[i].x + p.b2 - sysLine2[i].y) > 0.01) ok2 = false;
   }
+  try{if(window.ScoreSend)ScoreSend.record('sys'+(sysIdx+1),ok1&&ok2,{std:'NC.8.EE.8',label:'Solve by graphing: '+p.eq1+' and '+p.eq2});}catch(e){}
   
   if(ok1 && ok2) {
     r.className = 'result show correct';
@@ -448,4 +494,7 @@ window.addEventListener('load', function() { initSlope(); initSys(); });
 </script>
 
 
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'6', page:'Unit 6 · Graphing Practice', mount:'#ss-mount', std:'NC.8.F.3', band:4 }); </script>
 </body></html>

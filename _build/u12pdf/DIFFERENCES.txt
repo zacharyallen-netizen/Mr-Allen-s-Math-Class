@@ -1,0 +1,81 @@
+Unit 1 & Unit 2 pre-tests: printed PDF vs online HTML (before any changes, 2026-10-11)
+Method: pdfplumber text of each old PDF vs the HTML question data/DOM, plus every page rendered
+to PNG (before/*.png, before/sheet_*.png) and the HTML printed as-is (htmlprint_before/).
+
+------------------------------------------------------------------------------------------
+UNIT 1 FORM A  (Unit1_PreTest.html)
+Old PDFs linked on unit1.html: Unit_1_Pre-Test.pdf (3 pp) + Unit_1_Pre-Test_Answer_Key.pdf (2 pp).
+Hand-built separately from the HTML (different layout, page footers "Page x of 3").
+The new files requested (Unit1_PreTest.pdf / _AnswerKey.pdf) did not exist.
+  Questions 1-14: same numbers and same order (3/8, 0.25, √144, 0.6 repeating, 2 5/6, √20,
+    √3×√27, √32÷√2, √40, √95, −(√49−√36), 3+√5, {0.6, √2, 1.5, 5/3}, garden 225 ft²).
+  Text in the PDF that is NOT in the HTML:
+    - Standard blurbs under every section ("NC.8.NS.1 Understand that every number has a decimal
+      expansion...", "NC.8.NS.2 Use rational approximations...", "Estimate the value of
+      expressions involving: square roots and cube roots to the tenths; π to the hundredths.")
+    - "...Write fractions in simplest form and show your work."  (HTML: "...in simplest form.")
+    - "Now simplify each expression first, then classify the result." (HTML: "Simplify each
+      expression first, then classify the result.")
+    - 1.3 "Estimate each value to the nearest tenth, and plot it on the number line." (HTML:
+      "...nearest tenth by clicking the number line.")
+    - 5.0 1.2 "...then classify the result as Rational (R) or Irrational (IR)." (HTML: "...then
+      classify as Rational (R) or Irrational (IR).")
+    - 1.4 "Order the set from least to greatest." (HTML: "Click the values in order from least to
+      greatest. Each one drops onto the number line.")
+    - 1.5 adds "Show all work."
+    - Q9/Q10 have an extra "≈ ____" write-in line (HTML: plot on number line only).
+  Text in the HTML that is missing from the PDF:
+    - Subtitle "Answer each question, then check your work."
+    - All per-question hints: "e.g. 0.5", "simplest form, e.g. 1/4", "type R or IR",
+      "simplest form", "use … for the repeating part", "simplify, then R or IR",
+      Q4 "(the 6 repeats)", Q5 "(2 and 5/6)".
+    - Q14 prompt "Find the side length and perimeter of the square garden."
+  Diagrams:
+    - Q9/Q10 number lines in the PDF have NO labels (HTML: 6 / 6.5 / 7 and 9 / 9.5 / 10) and
+      different tick count/arrowheads.
+    - Q13 number line 0–4 matches.  Garden box matches (A = 225 ft²).
+  Rendering defects: Q4 repeating bar prints as a detached "‾" after "0.6" (text layer shows a
+    broken glyph "(cid:26)"); the text layer also carries a stray overline on "√36̅" (Q11) and
+    "0.6̅" (Q13, which is NOT a repeating decimal in the HTML).
+  Answer key: answers agree with the HTML's checkers/explanations; key shows no explanations
+    and no plotted number-line points.
+
+------------------------------------------------------------------------------------------
+UNIT 1 FORM B  (Unit1_PreTest_FormB.html)
+Old: Unit1_PreTest_FormB.pdf 2 pp, _AnswerKey.pdf 2 pp (hand-built). HTML printed: 6 pp.
+  Questions 1-14: same numbers and order (5/8, 0.75, √169, 0.3 repeating, 2 1/3, √50, √2×√8,
+    √75÷√3, √28, √60, 2+√16, 5+√7, {0.8, √3, 1.2, 7/5}, garden 196 ft²).
+  Same wording differences as Form A (standard blurbs, "show your work", "Now simplify...",
+    "plot it on the number line", "classify the result as", "Order the set...", "Show all work").
+  Subtitle differs: PDF "Answer each question. Show your work where directed." vs HTML
+    "Answer each question, then check your work."
+  Hints missing except "(the 3 repeats)" and "(2 and 1/3)"; Q14 prompt missing.
+  Q9/Q10 number lines unlabeled (HTML labels 5/5.5/6 and 7/7.5/8), extra "≈ ____" lines.
+  Q14 layout: question number printed after the garden box.
+  HTML print (no print CSS at all): 6 pages, prints top "Back to Unit 1" link, score bar
+    "0 / 14 correct", Check all/Reset buttons, a Check button under every question,
+    "Tap a mark..." readouts, clickable chips + "Clear placements", tiny input boxes, footer.
+
+------------------------------------------------------------------------------------------
+UNIT 2 EXPONENT RULES  (Unit_2_Pretest.html)
+Old: Unit2_PreTest_ExponentRules.pdf 4 pp, _AnswerKey.pdf 4 pp (printed from the HTML on 10/10).
+  Questions/vocab/reference box: text identical to the current HTML (vocab A–F, 5x³ box,
+    questions 1–18, same expressions).
+  Web chrome printed: site top bar "Mr. Allen · 8th Grade Math / 8th Grade Home / Back to Unit 2".
+  Vocabulary answer spots print as web dropdowns "– ⌄".
+  Q9/Q10 split across pages (labels "9. Divide:" on p2, the fractions on p3).
+  Page 4 is blank except a stray box edge.  (Current HTML prints 3 pp: bar gone, still splits 9/10.)
+  Answer key: not labeled "Answer Key" anywhere; answers only as small green "answer: ..." lines;
+    vocab shows letters in dropdowns with ✓.
+
+------------------------------------------------------------------------------------------
+RESOLUTION
+All six PDFs are now printed from the HTML itself by make_u12_pdfs.js (Letter, print media,
+margins .5in/.45in, footer "<test> · Page x of y", key footer adds "ANSWER KEY").
+  Unit1_PreTest.pdf 4 pp / _AnswerKey 4 pp; Unit1_PreTest_FormB.pdf 4 pp / _AnswerKey 4 pp;
+  Unit2_PreTest_ExponentRules.pdf 3 pp / _AnswerKey 3 pp.
+verify_pdfs.py: every question number found in order, each prompt + hint/label next to its number,
+all headings/directives/vocab present, blanks free of answers, keys contain every answer/solution.
+test_online.js: screen screenshots pixel-identical to the originals at 390 and 1280; no horizontal
+scroll; Check / Check all / Show answers / Reset work; no page errors.
+Old Unit_1_Pre-Test.pdf + Unit_1_Pre-Test_Answer_Key.pdf are no longer linked (left on disk).

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Tools — IC Imagine 8th Grade Math</title>
+<title>Interactive Tools — Mr. Allen's 8th Grade Math</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1E2D4F;--gold:#FFC107;--white:#fff;--lgray:#F4F4F4;--royal:#0056B3;--green:#22AC00;--dkgreen:#1a7000;--red:#cc2222}
@@ -30,24 +30,11 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
 canvas{border:2px solid #cdd5e0;border-radius:8px;max-width:100%}
 .tip{background:#e8f5e2;border-left:4px solid var(--green);padding:9px 13px;border-radius:0 8px 8px 0;margin:10px 0;font-size:0.9em}.tip strong{color:var(--dkgreen)}
 </style>
+<script src="../brand.js"></script>
 </head>
 <body>
-<nav class="top-nav">
-<div class="nav-container">
-  <span class="nav-title">🦅 <span>IC Imagine</span> 8th Grade Math</span>
-  <a class="nb" href="index.html">🏠 Home</a>
-  <a class="nb" href="unit1.html">U1</a>
-  <a class="nb" href="unit2.html">U2</a>
-  <a class="nb" href="unit3.html">U3</a>
-  <a class="nb" href="unit4.html">U4</a>
-  <a class="nb" href="unit5.html">U5</a>
-  <a class="nb" href="unit6.html">U6</a>
-  <a class="nb" href="unit7.html">U7</a>
-  <a class="nb" href="unit8.html">U8</a>
-  <a class="nb" href="fluency.html">⚡ Fluency</a>
-  <a class="nb" href="volume.html">📦 U9</a>
-</div>
-</nav>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit1.html">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html">U6</a> <a href="unit7.html">U7</a> <a href="unit8.html">U8</a> <a href="volume.html">U9</a> <a href="Fluency-Lab-Package/fluency-lab/index.html">Fluency</a></nav>
 <div class="wrap">
 <div class="page-hdr">
   <h1>🛠 Interactive Math Tools</h1>
@@ -195,7 +182,8 @@ function drawCP() {
   var gs = (s-2*pad)/(2*range);
   var cx = pad + range*gs, cy = pad + range*gs;
   
-  function gx(v){return cx+v*gs} function gy(v){return cy-v*gs}
+  function gx(v){return cx+v*gs} function sq(n){return n<0?'(\u2212'+(-n)+')²':n+'²';}
+function gy(v){return cy-v*gs}
   
   // Grid
   ctx.strokeStyle='#e0e0e0'; ctx.lineWidth=1;
@@ -238,8 +226,8 @@ function drawCP() {
   var dx=x2-x1, dy=y2-y1;
   var d = Math.sqrt(dx*dx+dy*dy);
   document.getElementById('cp-out').innerHTML = 
-    'Δx = '+dx+', Δy = '+dy+'<br>'+
-    'd = √('+dx+'² + '+dy+'²)<br>'+
+    'Δx = '+String(dx).replace('-','\u2212')+', Δy = '+String(dy).replace('-','\u2212')+'<br>'+
+    'd = √('+sq(dx)+' + '+sq(dy)+')<br>'+
     'd = √('+(dx*dx)+' + '+(dy*dy)+') = √'+(dx*dx+dy*dy)+'<br>'+
     '<span class="tool-result">d ≈ '+d.toFixed(2)+'</span>';
 }

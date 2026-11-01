@@ -8,7 +8,6 @@ individual files — you replace everything at once.
 
 WHAT'S NEW IN THIS VERSION
 --------------------------
-- IXL Lessons Reference page (all 77 lessons), styled to match the site
 - Materials Index page (every note, worksheet, project & answer key)
 - Both are linked from the 8th Grade home page and Class Info page
 - Math 1 is now password-protected (password: soar2027)
@@ -84,9 +83,196 @@ IMPORTANT — please read:
   grade8/ ................... 8th Grade Math (units, notes, games, PDFs)
     - index.html ............ 8th grade home
     - materials_index.html .. Index of all notes/worksheets/projects
-    - ixl_lessons_reference.html .. The 77 IXL lessons by unit
   math1/ ................... NC Math 1 (password-protected)
     - gate.html ............. The password screen
 
 
 Questions or something not working? Just ask.
+
+
+=====================================================
+  YOUR "MEET MR. ALLEN" PAGE  (about.html)
+=====================================================
+
+The page works right now with what we already have: your welcome
+letter, how you teach, what a class looks like, and your email.
+You can add more about yourself any time. Nothing shows up until
+you fill it in.
+
+STEP 1.  Open the file  about.html  in any text editor.
+
+STEP 2.  Scroll near the bottom and find the line:
+             const BIO = {
+
+STEP 3.  Type your words between the quote marks. For example:
+             yearsTeaching: "8",
+             interests: "Write your hobbies here.",
+
+         The boxes you can fill in:
+           photo ......... a picture, like "images/mr-allen.jpg"
+                           (add the picture to your repo first;
+                            square photos look best)
+           background .... a few sentences about you
+           education ..... your degrees or training
+           yearsTeaching . a number like "8" (shows as "8 years")
+           interests ..... what you like to do outside of school
+           favoriteMath .. your favorite math idea, and why
+           funFact ....... one fun fact about you
+
+STEP 4.  Save, then re-deploy (same steps as above).
+
+GOOD TO KNOW:
+- Any box left as ""  stays hidden. No empty boxes, no "TBD".
+- With no photo, the page shows a navy circle with "ZA".
+- Keep the quote marks and the comma at the end of each line.
+- Need a quote mark inside your text? Type  \"  instead.
+
+
+============================================================
+CHANGE THE LINKS IN THE TOP BAR (every page)
+============================================================
+The navy bar at the top of every page comes from ONE file:
+    site-bar.js   (in the main folder, next to index.html)
+
+STEP 1.  Open site-bar.js on GitHub and click the pencil.
+STEP 2.  Near the top is a list called LINKS. Each line is one link:
+           { label: "Arcade", href: "grade8/arcade.html" },
+         label .. the words in the bar
+         href ... the page, written from the main folder
+STEP 3.  Add, remove or reorder lines. Keep the commas.
+STEP 4.  Save. Every page on the site updates at once.
+
+GOOD TO KNOW:
+- The look of the hub pages (home, unit pages, class info) is in site.css.
+- Notes, practice pages and games keep their own look.
+
+
+============================================================
+PRE-TEST AND PRACTICE SCORES ("Send my work")
+============================================================
+Every pre-test and unit practice page ends with a "Send my work to
+Mr. Allen" box. It sends to the SAME Score Tracker as the Fluency Lab.
+
+The address lives in two files — if you ever make a NEW deployment,
+paste the new /exec address in both:
+    tracker-config.js                                   (pre-tests, practice)
+    grade8/Fluency-Lab-Package/fluency-lab/fluency-config.js  (Fluency Lab)
+
+The Sheet's tabs (Standards, Statistics, Settings, Read Me) explain
+themselves. Reports refresh every hour.
+
+
+============================================================
+BENCHMARK RESULTS (separate from the Score Tracker)
+============================================================
+The interactive benchmark reviews (8th Grade home → Benchmarks:
+the Q1 Benchmark Review and the NC Check-In Benchmark Review)
+send results to their OWN Google Sheet, "Benchmark Results —
+Mr. Allen's Math Class". Nothing from the Fluency Lab, pre-tests or
+practice goes there, and benchmarks never go to the Score Tracker.
+
+SET IT UP ONCE (about five minutes)
+STEP 1.  In Google Drive, make a new blank Google Sheet. Name it
+         "Benchmark Results". Then click Extensions -> Apps Script.
+         (If script.google.com -> New project gives an "internal
+         error", this way avoids it.)
+STEP 2.  Open _build/benchmark/BenchmarkTracker.gs on GitHub, copy all
+         of it, and paste it over everything in the editor. Save
+         (disk icon). Name the project "Benchmark Tracker".
+STEP 3.  In the dropdown at the top choose  setup  and press  Run.
+         Approve when Google asks. The new Sheet is in your Drive.
+STEP 4.  Deploy -> New deployment -> gear icon -> Web app.
+           Execute as: Me      Who has access: Anyone
+         Click Deploy. Copy the Web app URL (it ends in /exec).
+STEP 5.  Open benchmark-config.js (main folder) on GitHub, click the
+         pencil, and paste the URL between the quote marks after
+         ENDPOINT. Commit. (Or send the URL to Claude.)
+
+Until Step 5 is done, students still get their score and feedback,
+and the page tells them their results were not sent.
+
+UPDATE THE SCRIPT (when Claude changes BenchmarkTracker.gs)
+STEP 1.  Open the Benchmark Results Sheet -> Extensions -> Apps Script.
+STEP 2.  Select everything in the editor and delete it. Paste the new
+         _build/benchmark/BenchmarkTracker.gs. Save (disk icon).
+STEP 3.  Choose  setup  in the dropdown and press Run. (Adds any new
+         tabs. Your data is not touched.)
+STEP 4.  Deploy -> Manage deployments -> pencil -> Version: New version
+         -> Deploy. The /exec address stays the same, so the website
+         does not change.
+
+CLASS ROSTER (A1, A2, A4, B5, B6)
+  Student names live ONLY on the Roster tab of your private Sheet.
+  They are never put on the website (it is public).
+STEP 1.  Open the roster file Claude gave you
+         (Benchmark_Roster_A1-B6.xlsx). Click cell A1, press Ctrl+A
+         (Cmd+A), then Ctrl+C (Cmd+C).
+STEP 2.  In the Sheet, click the Roster tab, click cell A1, and paste.
+STEP 3.  Extensions -> Apps Script -> choose  refreshReports  -> Run.
+  New student? Add a row. Student left? Delete the row. Then run
+  refreshReports. A student types a nickname ("Kit" for Kristopher)?
+  Type it in the "Other names" column next to them.
+
+THE SHEET'S TABS
+  Roster .............. your class lists (you paste these in)
+  Gradebook ........... EVERY rostered student, every benchmark:
+                        Done / Not submitted, best %, latest %,
+                        attempts, % on each standard
+  A1 A2 A4 B5 B6 ...... the same Gradebook, one tab per class
+  Class Summary ....... per class: how many submitted, who is missing,
+                        class average, average on each standard
+  Check Names ......... typed names that did not match the Roster
+
+TIME SPENT (which students just clicked through)
+  The benchmark pages count ACTIVE time only: the page is open on
+  screen and the student did something in the last 60 seconds.
+  Gradebook ........... Minutes on questions, Minutes on tips/notes,
+                        Quick answers (under 10 sec). Status says
+                        RUSHED (red) when half or more answers were
+                        quick, or the average was under 15 seconds.
+  Class Summary ....... average minutes, and who was flagged RUSHED
+  Question Analysis ... average seconds on each question
+  Responses ........... seconds on every single answer
+  To change the limits, edit QUICK_SECS, RUSH_SHARE or RUSH_AVG_SECS
+  near the top of the script, then run refreshReports.
+  Submissions ......... one row each time a student taps Submit
+  Responses ........... every answer each student gave
+  Question Analysis ... % right on each question (first attempts)
+                        and the most common wrong answer
+  Read Me ............. what each tab means
+  Excel: File -> Download -> Microsoft Excel (.xlsx). Every tab comes along.
+
+
+============================================================
+ASKING CLAUDE FOR NEW MATERIALS (fast and cheap)
+============================================================
+Claude now has a saved toolkit (_build/materials) and an instruction
+file (CLAUDE.md) with your preferences: the 9's rule, two-sided
+handouts, separate answer keys, Check-In level, "Version 2" labels,
+classes A1-B6, no student data on the site. You don't need to repeat
+any of that.
+
+Start a NEW chat for each new job. Paste this and fill it in:
+
+  Topic & standard:   (e.g., Slope from tables and graphs, NC.8.F.4)
+  What to make:       handout (front notes + blank samples, back practice)
+                      / bell ringer (front & back) / web page
+  How many:           (e.g., 10 practice problems, 2 sets)
+  Not covered yet:    (anything to avoid)
+  Version 2 too?      yes / no
+  Website or PDF only:
+  Attach:             any example, old worksheet, or screenshot
+
+For a brand-new kind of page, ask for "a one-page sample first."
+For website fixes, send all your changes in ONE message.
+
+
+============================================================
+ONE LOOK FOR THE WHOLE SITE (brand.js)
+============================================================
+Most pages have this line near the top:
+    <script src="../brand.js"></script>
+It gives the page the same fonts and background as the home page
+(screen only; printing is not affected). It never changes words.
+The Arcade and its games, Math 1 and the Fluency Lab do not use it.
+To turn it off on one page, delete that line from the page.

@@ -137,15 +137,54 @@
     .controls{display:none}
     .ans input{border:0;border-bottom:1px solid #333;border-radius:0}
   }
+
+  /* ---- Answer key flag (shown only on the printed key) ---- */
+  .key-flag{display:none}
+
+  /* ---- Paper version: clean worksheet, no web controls (screen look is unchanged) ---- */
+  @media print{
+    @page{size:letter;margin:.5in .45in}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{font-size:15.5px}
+    .sheet{background:#fff;padding:0 4px}
+    .masthead h1{font-size:30px}
+    .rule-gold{margin:10px 0 14px}
+    .band{margin-top:14px;break-after:avoid;page-break-after:avoid}
+    .stripe{padding:10px 16px 10px}
+    .objline,.can,.prompt{break-after:avoid;page-break-after:avoid}
+    table.vocab tr,.refbox{break-inside:avoid;page-break-inside:avoid}
+    table.vocab td{padding:5px 10px}
+    .refbox{margin:10px 0 2px;padding:8px 14px 10px}
+    .mono5x{font-size:32px;margin:0}
+    .q{break-inside:avoid;page-break-inside:avoid;padding:8px 2px 10px}
+    .q .expr{font-size:19px;margin:6px 0 12px}
+    .ans input{width:2.1in;background:transparent;border-bottom:1.5px solid #333}
+    /* vocabulary dropdowns become write-in blanks */
+    .term select{-webkit-appearance:none;appearance:none;background:transparent;border:0;
+      border-bottom:1.5px solid #333;border-radius:0;width:2.4em;padding:2px 0;
+      text-align:center;text-align-last:center;font-weight:700}
+    .term select:has(option[value=""]:checked){color:transparent}
+    .fb{font-size:13px}
+    body.answers-shown .key-flag{display:inline-block;margin:8px 0 0;padding:3px 12px;border:2px solid var(--no);
+      color:var(--no);font-family:var(--mono);font-weight:700;letter-spacing:3px;text-transform:uppercase;font-size:14px;border-radius:4px}
+    /* key: the answer takes the place of the blank answer line */
+    body.answers-shown .ans{display:none}
+    body.answers-shown .qfb{font-size:14px;font-weight:700;min-height:2.1em;display:flex;align-items:center;gap:7px}
+    body.answers-shown .qfb .key{font-size:19px}
+  }
 </style>
+<script src="../brand.js"></script>
 </head>
 <body>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit2.html">← Unit 2</a></nav>
 <div class="sheet">
 
   <div class="masthead">
     <h1>Unit 2 Pre-Test</h1>
     <p class="sub">Exponent Rules &amp; Properties</p>
     <p class="std">Standard assessed: NC.8.EE.1</p>
+    <p class="key-flag">Answer Key</p>
   </div>
   <hr class="rule-gold">
   <div class="idline">
@@ -157,8 +196,8 @@
   <!-- ============ LEVEL 3.0 ============ -->
   <div class="band"><span class="lvl">SCORE</span><span class="num">3.0</span><span class="name">Basic Understanding</span></div>
   <div class="stripe">
-    <p class="objline"><span class="code">NC.8.EE.1</span> Develop and apply the properties of integer exponents to generate equivalent numerical expressions.</p>
-    <p class="can">• I can apply the properties of integer exponents to simplify expressions with numerical bases.</p>
+    <p class="objline"><span class="code">NC.8.EE.1</span></p>
+    <p class="can">• I can use exponent rules to simplify, like 2³ · 2⁴ = 2⁷.</p>
     <p class="prompt">Match each vocabulary term to its definition, then simplify each expression.</p>
 
     <table class="vocab" id="vocab">
@@ -193,8 +232,8 @@
   <!-- ============ LEVEL 4.0 ============ -->
   <div class="band"><span class="lvl">SCORE</span><span class="num">4.0</span><span class="name">Target Content</span></div>
   <div class="stripe">
-    <p class="objline"><span class="code">NC.8.EE.1</span> Develop and apply the properties of integer exponents to generate equivalent numerical expressions.</p>
-    <p class="can">• I can multiply and divide monomials using the properties of exponents.</p>
+    <p class="objline"><span class="code">NC.8.EE.1</span></p>
+    <p class="can">• I can multiply and divide monomials, like 3x² · 4x⁵ = 12x⁷.</p>
     <p class="prompt">Multiply, divide, or raise to a power. Simplify each monomial expression.</p>
     <div class="qgrid" data-level="target"></div>
   </div>
@@ -202,8 +241,8 @@
   <!-- ============ LEVEL 5.0 ============ -->
   <div class="band"><span class="lvl">SCORE</span><span class="num">5.0</span><span class="name">Advanced Content</span></div>
   <div class="stripe">
-    <p class="objline"><span class="code">NC.8.EE.1</span> Develop and apply the properties of integer exponents to generate equivalent numerical expressions.</p>
-    <p class="can">• I can simplify complex, multi-step monomial expressions, including zero and negative exponents.</p>
+    <p class="objline"><span class="code">NC.8.EE.1</span></p>
+    <p class="can">• I can simplify longer problems with zero and negative exponents.</p>
     <p class="prompt">Simplify using several exponent properties. Write answers with positive exponents.</p>
     <div class="qgrid" data-level="advanced"></div>
   </div>
@@ -258,9 +297,18 @@ const SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','�
 function canon(raw){
   if(raw==null) return '';
   let s=String(raw).toLowerCase().trim();
-  s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]/g,ch=>SUP[ch]);
+  s=s.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g,run=>'^'+[...run].map(ch=>SUP[ch]).join(''));  // 4⁵ -> 4^5
   s=s.replace(/\s+/g,'').replace(/\*\*/g,'^').replace(/[·*×⋅∙•]/g,'');
+  s=s.replace(/[\u2212\u2013]/g,'-').replace(/\^\((-?\d+)\)/g,'^$1');   // true minus; 10^(7) -> 10^7
   if(s==='') return '';
+  // a number base (no variables): compare by VALUE, so 4^5 and 1024 match and plain 4 does not
+  const NUM=/^[-+]?\d+(?:\.\d+)?(?:\^[-+]?\d+)?$/;
+  const val=t=>{const m=t.match(/^([-+]?\d+(?:\.\d+)?)(?:\^([-+]?\d+))?$/);return Math.pow(+m[1],m[2]===undefined?1:+m[2]);};
+  if(NUM.test(s)) return 'v'+(+val(s).toPrecision(12));
+  if(s.includes('/')){
+    const p=s.split('/');
+    if(p.length===2 && NUM.test(p[0]) && NUM.test(p[1])) return 'v'+(+(val(p[0])/val(p[1])).toPrecision(12));
+  }
   if(s.includes('/')){
     const i=s.indexOf('/');
     return mono(s.slice(0,i))+'/'+mono(s.slice(i+1));
@@ -310,6 +358,11 @@ function build(){
 }
 build();
 
+/* ---------- send to Mr. Allen (score-send.js): every graded question is recorded ---------- */
+const PT_BAND={basic:3,target:4,advanced:5};
+function ptLabel(q){const d=document.createElement('div');d.innerHTML=q.op+': '+String(q.expr).replace(/<sup>/g,'^').replace(/<span class="den">/g,' / ');return d.textContent.replace(/\s+/g,' ').trim().slice(0,80);}
+function ptRecord(q,ok){if(!window.ScoreSend)return;try{ScoreSend.record('q'+q.id,ok,{std:'NC.8.EE.1',band:PT_BAND[q.lvl],label:ptLabel(q)});}catch(e){}}
+
 /* ---------- grading ---------- */
 function check(){
   let levels={basic:[0,0],target:[0,0],advanced:[0,0]},vok=0;
@@ -334,9 +387,11 @@ function check(){
       levels[q.lvl][0]++;
       div.classList.add('correct');
       fb.innerHTML='✓ correct';fb.className='qfb ok';
+      ptRecord(q,true);
     }else{
       div.classList.add('wrong');
       fb.innerHTML='✗ answer: <span class="key">'+q.disp+'</span>';fb.className='qfb no';
+      ptRecord(q,false);
     }
   });
   const tot=levels.basic[0]+levels.target[0]+levels.advanced[0];
@@ -350,6 +405,7 @@ function check(){
 
 /* ---------- reveal ---------- */
 function reveal(){
+  document.body.classList.add('answers-shown');
   document.querySelectorAll('#vocab select').forEach(sel=>{
     sel.value=VOCAB[sel.dataset.term];
     const fb=sel.parentElement.querySelector('.fb');fb.textContent='✓';fb.className='fb ok';
@@ -364,10 +420,12 @@ function reveal(){
   });
   document.getElementById('scorebox').firstChild.textContent='Answers shown ';
   document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.revealed();
 }
 
 /* ---------- reset ---------- */
 function reset(){
+  document.body.classList.remove('answers-shown');
   document.querySelectorAll('#vocab select').forEach(s=>{s.value='';
     const fb=s.parentElement.querySelector('.fb');fb.textContent='';fb.className='fb';});
   QS.forEach(q=>{
@@ -377,11 +435,16 @@ function reset(){
   });
   document.getElementById('scorebox').firstChild.textContent='Not checked yet ';
   document.getElementById('lvls').textContent='';
+  if(window.ScoreSend)ScoreSend.reset();
 }
 
 document.getElementById('check').addEventListener('click',check);
 document.getElementById('reveal').addEventListener('click',reveal);
 document.getElementById('reset').addEventListener('click',reset);
 </script>
+<style>@media (max-width:760px){body>#scoresend{margin:24px 12px!important}}</style>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>if(window.ScoreSend)ScoreSend.setup({kind:'pretest',unit:'2',page:'Unit 2 Pre-Test — Exponent Rules & Properties',mount:'body',std:'NC.8.EE.1',band:4});</script>
 </body>
 </html>

@@ -33,10 +33,7 @@
 
 function buildM1Form() {
   var form = FormApp.create('Fluency Lab · Module 1 Fluency Check — Add & Subtract');
-  form.setDescription(
-    'Work each problem on paper using the standard algorithm (stack it, right to left, ' +
-    'carry or borrow when you need to). Pick your answer. You will see your score at the end — ' +
-    'and the worked steps for anything you miss. You are racing your own best, nobody else.');
+  form.setDescription('One column at a time. Pick an answer for each.');
   form.setIsQuiz(true);
   form.setProgressBar(true);
   form.setShuffleQuestions(false);
@@ -44,35 +41,24 @@ function buildM1Form() {
   // Name (not graded)
   form.addTextItem().setTitle('Your name').setRequired(true);
 
-  var RIGHT = 'Correct — clean work with the standard algorithm.';
+  var RIGHT = 'Correct.';
 
   // [prompt, [choices], correctIndex, incorrectFeedback]
   var Q = [
-    ['34 + 52 =', ['86','76','96','85'], 0,
-      'Line up ones under ones and tens under tens, then add each column: 4 + 2 = 6, 3 + 5 = 8  →  86.'],
-    ['47 + 38 =', ['75','85','715','815'], 1,
-      'Ones: 7 + 8 = 15 → write 5 and CARRY the 1. Tens: 1 + 4 + 3 = 8  →  85.'],
-    ['56 + 27 =', ['83','73','713','93'], 0,
-      'Ones: 6 + 7 = 13 → write 3, carry 1. Tens: 1 + 5 + 2 = 8  →  83. Don\u2019t forget the carry.'],
-    ['256 + 187 =', ['443','333','433','4313'], 0,
-      'Carry twice: 6 + 7 = 13 (write 3, carry 1); 1 + 5 + 8 = 14 (write 4, carry 1); 1 + 2 + 1 = 4  →  443.'],
-    ['368 + 254 =', ['622','512','632','5112'], 0,
-      'Ones: 8 + 4 = 12 (carry 1); tens: 1 + 6 + 5 = 12 (carry 1); hundreds: 1 + 3 + 2 = 6  →  622.'],
-    ['58 \u2212 23 =', ['35','81','25','45'], 0,
-      'Subtract each column, top minus bottom: 8 \u2212 3 = 5, 5 \u2212 2 = 3  →  35. (This one is subtraction, not addition.)'],
-    ['72 \u2212 48 =', ['24','36','34','26'], 0,
-      '2 \u2212 8 won\u2019t go, so borrow: 12 \u2212 8 = 4; the tens drop to 6; 6 \u2212 4 = 2  →  24. Always top minus bottom.'],
-    ['431 \u2212 176 =', ['255','345','265','355'], 0,
-      'Borrow where needed: 11 \u2212 6 = 5; then 2 \u2212 7 borrow → 12 \u2212 7 = 5; 3 \u2212 1 = 2  →  255. Never \u201Csubtract up.\u201D'],
-    ['402 \u2212 167 =', ['235','365','245','335'], 0,
-      'Borrow THROUGH the 0: hundreds 4 → 3, tens 0 → 10, then 10 → 9 and ones 2 → 12. Now 12 \u2212 7 = 5; 9 \u2212 6 = 3; 3 \u2212 1 = 2  →  235.'],
-    ['500 \u2212 146 =', ['354','446','364','344'], 0,
-      'Borrow through both zeros: ones 10 \u2212 6 = 4; tens 9 \u2212 4 = 5; hundreds 4 \u2212 1 = 3  →  354.'],
-    ['604 \u2212 238 =', ['366','434','376','356'], 0,
-      '0 tens can\u2019t give — borrow through: ones 14 \u2212 8 = 6; tens 9 \u2212 3 = 6; hundreds 5 \u2212 2 = 3  →  366.'],
-    ['A class library had 503 books. 167 were checked out. How many remain?',
-      ['336','464','346','326'], 0,
-      '503 \u2212 167: borrow through the 0 → ones 13 \u2212 7 = 6; tens 9 \u2212 6 = 3; hundreds 4 \u2212 1 = 3  →  336 books.'],
+    ["34 + 52", ["86", "76", "96", "85"], 0, "4 + 2 = 6. 3 + 5 = 8"],
+    ["47 + 38", ["75", "85", "715", "815"], 1, "7 + 8 = 15, carry 1. 1 + 4 + 3 = 8"],
+    ["56 + 27", ["83", "73", "713", "93"], 0, "6 + 7 = 13, carry 1. 1 + 5 + 2 = 8"],
+    ["256 + 187", ["443", "333", "433", "4313"], 0, "6 + 7 = 13, carry 1. 1 + 5 + 8 = 14, carry 1. 1 + 2 + 1 = 4"],
+    ["368 + 254", ["622", "512", "632", "5112"], 0, "8 + 4 = 12, carry 1. 1 + 6 + 5 = 12, carry 1. 1 + 3 + 2 = 6"],
+    ["58 − 23", ["35", "81", "25", "45"], 0, "8 − 3 = 5. 5 − 2 = 3"],
+    ["72 − 48", ["24", "36", "34", "26"], 0, "Borrow: 12 − 8 = 4. 6 − 4 = 2"],
+    ["431 − 176", ["255", "345", "265", "355"], 0, "Borrow: 11 − 6 = 5. Borrow: 12 − 7 = 5. 3 − 1 = 2"],
+    ["402 − 167", ["235", "365", "245", "335"], 0, "Borrow across the 0: 12 − 7 = 5. 9 − 6 = 3. 3 − 1 = 2"],
+    ["500 − 146", ["354", "446", "364", "344"], 0, "Borrow across the 0s: 10 − 6 = 4. 9 − 4 = 5. 4 − 1 = 3"],
+    ["604 − 238", ["366", "434", "376", "356"], 0, "Borrow across the 0: 14 − 8 = 6. 9 − 3 = 6. 5 − 2 = 3"],
+    ["503 − 167", ["336", "464", "346", "326"], 0, "Borrow across the 0: 13 − 7 = 6. 9 − 6 = 3. 4 − 1 = 3"],
+    ["485 + 678", ["1,163", "1,053", "1,153", "10,513"], 0, "5 + 8 = 13, carry 1. 1 + 8 + 7 = 16, carry 1. 1 + 4 + 6 = 11"],
+    ["317 − 189", ["128", "272", "138", "228"], 0, "Borrow: 17 − 9 = 8. Borrow: 10 − 8 = 2. 2 − 1 = 1"]
   ];
 
   Q.forEach(function (q, n) {

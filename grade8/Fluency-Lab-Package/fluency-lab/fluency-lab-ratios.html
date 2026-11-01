@@ -1,5 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Fluency Lab — Ratios</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Ratios</title>
 <style>
   :root{
     --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
@@ -14,170 +18,467 @@
     background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
     color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
     padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
-  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
   .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
   .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
   .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
   .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
-  .flame{font-size:14px;filter:grayscale(.15)}
   .brandmark{margin-left:auto;text-align:right;line-height:1.1}
   .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
   .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
-  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:22px;height:11px}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
   .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
   .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
   .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
   .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:30px 26px 26px;
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:20px 18px 20px;
     box-shadow:0 22px 50px -28px #000a;position:relative}
 
-  .fexpr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;
-    font-family:var(--mono);font-size:46px;font-weight:600;margin:16px 0 6px;gap:2px}
-  .fexpr .op{color:var(--muted);margin:0 12px}
-  .fexpr .lbl{color:var(--muted);font-size:26px;margin-right:12px;font-family:var(--sans);font-weight:600}
-  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 2px}
-  .frac .n{padding:0 10px 2px;border-bottom:3px solid var(--ink);line-height:1.15}
-  .frac .d{padding:2px 10px 0;line-height:1.15}
-  .frac.res{color:var(--mint)} .frac.res .n{border-bottom-color:var(--mint)}
-  .whole{padding:0 4px} .fexpr .res{color:var(--mint)}
-  @media(max-width:430px){.fexpr{font-size:34px}}
+  /* the ONE open box, sitting where the number goes */
+  .ibx{display:inline-block;vertical-align:middle;width:84px;height:52px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:30px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .ibx.sm{width:64px;height:44px;font-size:24px}
+  .ibx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .ibx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .6s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  .hl{color:var(--amber);background:#ffbb4d1f;border-radius:8px}
+  .mint{color:var(--mint)}
 
-  .answer-wrap{display:flex;flex-direction:column;align-items:center;margin-top:18px}
-  #answer{font-family:var(--mono);font-variant-numeric:tabular-nums;width:240px;text-align:center;
-    font-size:30px;font-weight:700;color:var(--ink);background:var(--bg2);border:2px solid var(--line);
-    border-radius:14px;padding:12px 10px;outline:none;transition:border-color .15s,box-shadow .15s}
-  #answer::placeholder{color:#5b6190;font-size:21px;font-weight:500}
-  #answer:focus{border-color:var(--sky);box-shadow:0 0 0 4px #63a8ef26}
-  #answer.correct{border-color:var(--mint);box-shadow:0 0 0 4px #39d99a2e}
-  #answer.wrong{border-color:var(--coral);box-shadow:0 0 0 4px #ff7a7026}
-  .hint{margin-top:8px;color:var(--muted);font-size:12.5px;min-height:16px}
-  .btn{font-family:var(--sans);font-size:17px;font-weight:650;color:#12132a;background:var(--mint);
-    border:none;border-radius:13px;padding:13px 22px;margin-top:14px;cursor:pointer;
-    transition:transform .12s,filter .15s;min-width:150px}
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .done{font-size:15px;line-height:1.4;color:var(--mint);font-weight:700;margin-bottom:8px}
+  .say .done:empty{display:none}
+  .say .done b{color:var(--mint)}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px}
+  .say .sub b{color:var(--amber);white-space:nowrap}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
   .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
-  .btn.sky{background:var(--sky);color:#0a1226}
-  .verdict{min-height:26px;margin-top:14px;text-align:center;font-weight:700;font-size:18px}
-  .verdict.good{color:var(--mint)} .verdict.help{color:var(--sky)}
-  .tip{margin-top:14px;color:var(--ink);background:#1b2145;border:1px solid #2f386f;border-left:3px solid var(--sky);
-    border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;display:none;text-align:left}
-  .tip.show{display:block} .tip b{color:var(--sky)}
+  .btn:disabled{opacity:.6;cursor:default}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .picks{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .picks:empty{display:none}
+  .pick{font-family:var(--sans);font-size:19px;font-weight:800;padding:12px 18px;border-radius:13px;border:2px solid var(--line);
+    background:var(--panel);color:var(--ink);min-width:132px;cursor:pointer;transition:border-color .15s,background .15s}
+  .pick:hover{border-color:var(--sky)}
+  .pick.bad{border-color:var(--coral);animation:shake .35s}
+  .pick.show{border-color:var(--amber);box-shadow:0 0 0 5px #ffbb4d2b}
+  .pick.ok{border-color:var(--mint);background:#16342a;color:var(--mint)}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb b{color:var(--amber)}
+
+  /* ── start / summary ── */
   .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
-    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:38px 30px;box-shadow:0 22px 50px -28px #000a}
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
   .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
-  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:22px}
-  .how{text-align:left;max-width:400px;margin:0 auto 26px;color:#cfd3f5;font-size:15px;line-height:1.65}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
   .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
   .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
   .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
   .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
   .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
   .hide{display:none!important}
+  .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-  .pop{animation:pop .3s ease}
-  @keyframes pop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+  /* ── the problem ── */
+  .ptext{text-align:center;font-size:24px;font-weight:700;line-height:1.35;margin:2px 0 4px}
+  .ptext .m{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .ptext .op{color:var(--muted);margin:0 6px;font-family:var(--mono)}
+  .ptext .op.c{margin:0 4px}
+  .ptext .nw{white-space:nowrap}
+  .ptext .mint{color:var(--mint)}
+  .ptext .qm{color:var(--amber)}
+  .frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-family:var(--mono);font-size:30px;line-height:1.1;margin:0 4px}
+  .frac>span{padding:0 6px}
+  .frac>span:first-child{border-bottom:3px solid var(--ink)}
+  .frac .sl{font-size:0;line-height:0}
+  @media (max-width:430px){.ptext{font-size:20px}.frac{font-size:26px}}
+  /* ratio table: one column per ratio, the same × or ÷ on both rows between them */
+  .rvis{display:flex;justify-content:center;margin:12px 0 4px}
+  .rt{display:inline-grid;gap:8px 4px;align-items:center;justify-items:center}
+  .rt .rlab{font-size:13px;color:var(--muted);font-weight:700;justify-self:end;padding-right:4px;white-space:nowrap}
+  .rt .cell{min-width:58px;height:50px;padding:0 8px;display:flex;align-items:center;justify-content:center;
+    font:700 24px var(--mono);font-variant-numeric:tabular-nums;border:2px solid var(--line);border-radius:10px;background:var(--bg2);color:var(--ink);transition:background .25s,border-color .25s}
+  .rt .cell.q{color:#5b6190;border-style:dashed}
+  .rt .cell.hot{color:var(--amber);border-color:var(--amber);background:#ffbb4d1f}
+  .rt .cell.new{color:var(--mint);border-color:var(--mint);background:#16342a}
+  .rt .cell.open{border:none;background:none;padding:0}
+  .rt .arr{display:flex;align-items:center;gap:3px;padding:0 2px;color:var(--sky);font:800 18px var(--sans);white-space:nowrap}
+  .rt .arr i{font-style:normal;color:var(--muted);font-weight:400}
+  .rt .arr.unk{color:#5b6190}
+  .rt .arr.hot{color:var(--amber)}
+  .rt .arr .ibx{width:56px;margin:0 6px 0 2px}
+  @media (max-width:430px){.rt .cell{min-width:48px;height:46px;font-size:21px;padding:0 6px}.rt .arr{font-size:16px}}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-ratios.html">Skill check →</a></nav>
 
-  #prob{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;font-family:var(--mono);
-    font-size:50px;font-weight:600;margin:18px 0 6px;gap:2px;min-height:72px}
-  #prob .op{color:var(--muted);margin:0 12px}
-  #prob .res{color:var(--mint)}
-  #prob sup{font-size:.5em;vertical-align:super;margin-left:1px}
-  #prob .lbl{font-family:var(--sans);font-size:24px;color:var(--muted);font-weight:600}
-  @media(max-width:430px){#prob{font-size:38px}}
-</style></head><body>
   <section id="start" class="screen">
-    <h1>Fluency Lab</h1><div class="sub">Ratios & Proportions · Module 7</div>
-    <div class="how">Simplify ratios, build equivalents, find <b>unit rates</b>, and solve <b>proportions</b> — the reasoning way, not a bare cross-multiply trick. Ratios are typed like <b>3:2</b>. Racing your own best.</div>
+    <h1>Fluency Lab</h1>
+    <div class="sub">Ratios &amp; Proportions · Module 7</div>
+    <ul class="how">
+      <li>Do the same to <b>both</b> numbers.</li>
+      <li>Type in the <b>glowing box</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Example: 2 : 3 = ? : 12</div>
+      <div class="rvis" id="exTable"></div>
+      <div class="excap">3 × 4 = 12, so 2 × 4 = <b>8</b>.</div>
+    </div>
     <button class="btn" onclick="startSet()">Start a set of 10</button>
   </section>
+
   <div id="play" class="hide">
     <div class="bar">
       <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
-      <div class="badge streak"><span class="flame">🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
-      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">SKILL PRACTICE · :</div></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">RATIOS &amp; PROPORTIONS</div></div>
     </div>
     <div class="dots" id="dots"></div>
     <section class="stage">
-      <div id="prob"></div>
-      <div class="answer-wrap">
-        <input id="answer" inputmode="text" autocomplete="off" aria-label="Your answer" />
-        <div class="hint" id="hint"></div>
-        <button class="btn" id="submit" onclick="submitAnswer()">Check</button>
+      <div class="ptext" id="prob" aria-live="polite"></div>
+      <div class="rvis" id="rvis"></div>
+      <div class="say">
+        <div class="done" id="done"></div>
+        <div class="where" id="where"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <div class="picks" id="picks"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="fb" id="fb" role="status"></div>
       </div>
-      <div class="verdict" id="verdict"></div>
-      <div class="tip" id="tip"></div>
     </section>
   </div>
+
   <section id="summary" class="screen hide">
-    <h1>Set complete</h1><div class="pb" id="pb">&nbsp;</div>
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
     <div class="statgrid">
-      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">correct / 10</div></div>
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try, of 10</div></div>
       <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
       <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
     </div>
     <div class="sub" id="s-note"></div>
     <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-ratios.html">Take the Skill check</a>
   </section>
+
 <script>
+/* ════════════════════════════════════════════════════════════════
+   RATIOS & PROPORTIONS — one box at a time
+   Every box sits in the ratio table where the
+   number goes. The × or ÷ is always done to BOTH rows.
+   ════════════════════════════════════════════════════════════════ */
 const SET_LEN=10;
-let level=1,streak=0,bestStreak=0,correctCount=0,index=0,recentMisses=0,levelReachedThisSet=1,sessionBest=0,current=null,answered=false,results=[];
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
 const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
 const pick=a=>a[Math.floor(Math.random()*a.length)];
-function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
 const $=id=>document.getElementById(id);
-function fmt(x){return (Math.round(x*1e6)/1e6).toString();}
-function numProb(display,ansVal,tip,opt){opt=opt||{};
-  return {display:display, placeholder:opt.placeholder||'answer', hint:opt.hint||'', ans:fmt(ansVal),
-    check:function(s){s=String(s).replace(/[^0-9.\-\/]/g,'');if(s==='')return false;var v;
-      if(s.indexOf('/')>-1){var p=s.split('/');v=parseFloat(p[0])/parseFloat(p[1]);}else v=parseFloat(s);
-      return isFinite(v)&&Math.abs(v-ansVal)<1e-4;},
-    worked:{display:display+' <span class="op">=</span> <span class="res">'+fmt(ansVal)+'</span>', tip:tip}};
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+const NUM=n=>String(n);
+const BOX_MODE='numeric';
+const ALLOW_NEG=false;
+const NUDGE='Look at the yellow numbers again.';
+const ENDNOTES=['Excellent! Same to both, every time.','Strong set. Keep going!',
+  'Good work. Find × or ÷ first.','Go again. It gets easier.'];
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+
+/* ---------- problems ----------
+   1 simplify   2 equivalent   3 unit rate (? : 1)   4 proportion, ? top left
+   5 proportion, ? in any spot   6 mix of 1–5
+   Proportion: cols = the two fractions in the order written, [top,bottom].
+   S = the full fraction, T = the one with the ?, (ur) = row of the ?.
+   T = S ÷ m (T is the small one) or T = S × m (T is the big one). */
+function makeProp(T,ur,big){
+  const x=rnd(2,9); let b; do{b=rnd(2,9);}while(b===x); const m=rnd(2,4);
+  const small=[x,b], large=[x*m,b*m], S=1-T, cols=[];
+  cols[T]=(big?large:small).slice(); cols[S]=(big?small:large).slice();
+  const ans=cols[T][ur]; cols[T][ur]=null;
+  return {kind:'prop',cols,T,S,ur,m,op:big?'×':'÷',ans};
 }
-function ratioProb(display,an,ad,tip){
-  return {display:display, placeholder:'e.g. 3:2', hint:'write it as a:b', ans:an+':'+ad,
-    check:function(s){var m=String(s).trim().match(/^(\d+)\s*:\s*(\d+)$/);if(!m)return false;var x=+m[1],y=+m[2];return y!==0&&x*ad===an*y;},
-    worked:{display:display+' <span class="op">=</span> <span class="res">'+an+':'+ad+'</span>', tip:tip}};
+function gen(L){
+  if(L===6) L=rnd(1,5);
+  if(L===1){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
+    return {kind:'simp',bn,bd,k,N:bn*k,D:bd*k};}
+  if(L===2){let bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);const k=rnd(2,6);
+    return {kind:'equiv',bn,bd,k,ans:bn*k};}
+  if(L===3){const rate=rnd(10,60),time=rnd(2,9),total=rate*time;
+    return {kind:'unit',rate,time,total,ans:rate};}
+  if(L===4) return makeProp(0,0,false);                 // ?/4 = 6/8
+  const T=rnd(0,1), ur=rnd(0,1), big=(T===0&&ur===0)||Math.random()<0.5;   // ? top left: big fraction, so not the level 4 shape
+  return makeProp(T,ur,big);
+}
+const m=t=>`<span class="m">${t}</span>`, colon=`<span class="op c">:</span>`;
+function frac(t,b){ return `<span class="frac"><span>${t}</span><i class="sl">/</i><span>${b}</span></span>`; }
+// the problem line; the ? turns into the answer when you finish
+function probH(p,done){
+  const A=v=>done?`<span class="mint">${v}</span>`:`<span class="qm">?</span>`;
+  if(p.kind==='simp')  return `Simplify ${m(p.N)}${colon}${m(p.D)}`+(done?` <span class="op">=</span> <span class="mint m nw">${p.bn}${colon}${p.bd}</span>`:'');
+  if(p.kind==='equiv') return `${m(p.bn)}${colon}${m(p.bd)} <span class="op">=</span> ${m(A(p.ans))}${colon}${m(p.bd*p.k)}`;
+  if(p.kind==='unit')  return `${m(p.total)}${colon}${m(p.time)} <span class="op">=</span> ${m(A(p.rate))}${colon}${m(1)}`;
+  const F=c=>frac(...[0,1].map(r=>p.cols[c][r]===null?A(p.ans):p.cols[c][r]));
+  return `${F(0)} <span class="op">=</span> ${F(1)}`;
 }
 
-const MOD={gen:function(L){
- var sp=function(t){return '<span class="op">'+t+'</span>';};
- if(L===1){var bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);var k=rnd(2,6);
-   return ratioProb('Simplify  '+(bn*k)+' : '+(bd*k),bn,bd,'<b>Divide both sides by their greatest common factor.</b> '+(bn*k)+':'+(bd*k)+' = '+bn+':'+bd+'.');}
- if(L===2){var bn,bd;do{bn=rnd(1,8);bd=rnd(1,8);}while(gcd(bn,bd)!==1||bn===bd);var k=rnd(2,6);
-   return numProb(bn+' : '+bd+'  =  ? : '+(bd*k),bn*k,'<b>'+bd+' × '+k+' = '+(bd*k)+', so do the same to the top:</b> '+bn+' × '+k+' = '+(bn*k)+'.',{placeholder:'a number'});}
- if(L===3){var rate=rnd(10,60),time=rnd(2,9),total=rate*time;
-   return numProb(total+' miles in '+time+' hours = ? miles per hour',rate,'<b>Divide to find one unit.</b> '+total+' ÷ '+time+' = '+rate+' miles per hour.',{placeholder:'a number'});}
- if(L===4){var x=rnd(2,9),b=rnd(2,9),m=rnd(2,4),c=x*m,d=b*m;
-   return numProb('? / '+b+'  =  '+c+' / '+d,x,'<b>'+d+' ÷ '+b+' = '+m+', so divide the top the same way:</b> '+c+' ÷ '+m+' = '+x+'.',{placeholder:'a number'});}
- if(L===5){var bn,bd;do{bn=rnd(1,5);bd=rnd(1,5);}while(bn===bd);var u=rnd(2,6),total=(bn+bd)*u,first=bn*u;
-   return numProb('Split '+total+' in the ratio '+bn+':'+bd+' — the first part is ?',first,'<b>'+bn+'+'+bd+' = '+(bn+bd)+' shares; each share = '+total+' ÷ '+(bn+bd)+' = '+u+'.</b> First part = '+bn+' × '+u+' = '+first+'.',{placeholder:'a number'});}
- var unit=rnd(2,9),q=rnd(2,6),p=unit*q,n=rnd(2,9),ans=unit*n;
- return numProb('If '+q+' items cost $'+p+', then '+n+' items cost $?',ans,'<b>Find the price of one:</b> '+p+' ÷ '+q+' = $'+unit+'. Then × '+n+' = $'+ans+'.',{placeholder:'a number'});
-}};
+/* ---------- the moves for one problem ---------- */
+const cellBox=(c,r)=>({c,r}), arrBox=(a,r)=>({a,r:r||0});
+// type a number into a table cell; then it turns mint
+function cellMove(o){ return Object.assign({kind:'type', after:async()=>{ const {c,r}=o.box;
+  V.cols[c][r]=o.expect; V.newc.push(`c${c}r${r}`); V.justKey=`c${c}r${r}`; draw(); await wait(450); return ''; }}, o); }
+// type the × or ÷ number in the row you are looking at; it is copied to the other row
+function arrMove(o){ const r=o.row||0; return Object.assign({kind:'type', box:arrBox(0,r), after:async()=>{
+  V.arrows[0].k=o.expect; V.pendRow=1-r; V.hotArr=true; draw();
+  await fly($('a0r'+r), $('a0r'+(1-r)), arrTxt(0), 20); V.pendRow=null; V.hotArr=true; draw(); await wait(250); return ''; }}, o); }
+const DIV='Divide the yellow numbers again.', MUL='Multiply the yellow numbers again.';
+function buildMoves(p){
+  if(p.kind==='simp') return [
+    arrMove({hl:['c0r0','c0r1'], expect:p.k, calc:`G(${p.N},${p.D})`,
+      say:`Biggest number that goes into <b>${p.N}</b> and <b>${p.D}</b>?`,
+      partial:v=>(v>1&&v<p.k&&p.N%v===0&&p.D%v===0)?`<b>${v}</b> works. Find a bigger one.`:'',
+      nudge:`It must go into both evenly.`}),
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.bn, calc:`${p.N}/${p.k}`,
+      say:`Divide the top: <b>${p.N} ÷ ${p.k}</b>`, nudge:DIV}),
+    cellMove({box:cellBox(1,1), hl:['c0r1','a0'], expect:p.bd, calc:`${p.D}/${p.k}`,
+      say:`Divide the bottom: <b>${p.D} ÷ ${p.k}</b>`, nudge:DIV})
+  ];
+  if(p.kind==='equiv'){ const B=p.bd*p.k; return [
+    arrMove({row:1, hl:['c0r1','c1r1'], expect:p.k, calc:`${B}/${p.bd}`,
+      say:`<b>${p.bd}</b> times what is <b>${B}</b>?`, nudge:`Count by ${p.bd}s to ${B}.`}),
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.ans, calc:`${p.bn}*${p.k}`,
+      say:`Same to the top: <b>${p.bn} × ${p.k}</b>`, nudge:MUL})
+  ]; }
+  if(p.kind==='unit') return [
+    cellMove({box:cellBox(1,0), hl:['c0r0','a0'], expect:p.rate, calc:`${p.total}/${p.time}`,
+      say:`Divide the top: <b>${p.total} ÷ ${p.time}</b>`, nudge:DIV})
+  ];
+  // proportion: find the × or ÷ on the full row, then do it to the other row
+  const {S,T,ur,m:k,op}=p, kr=1-ur, s=p.cols[S], t=p.cols[T], row=['top','bottom'];
+  return [
+    arrMove({row:kr, hl:[`c${S}r${kr}`,`c${T}r${kr}`], expect:k, calc:op==='×'?`${t[kr]}/${s[kr]}`:`${s[kr]}/${t[kr]}`,
+      say:op==='×'?`<b>${s[kr]}</b> times what is <b>${t[kr]}</b>?`:`Divide: <b>${s[kr]} ÷ ${t[kr]}</b>`,
+      nudge:op==='×'?`Count by ${s[kr]}s to ${t[kr]}.`:DIV}),
+    cellMove({box:cellBox(T,ur), hl:[`c${S}r${ur}`,'a0'], expect:p.ans, calc:`${s[ur]}${op==='×'?'*':'/'}${k}`,
+      say:`Same to the ${row[ur]}: <b>${s[ur]} ${op} ${k}</b>`, nudge:op==='×'?MUL:DIV})
+  ];
+}
+function answerText(){ const p=current;
+  if(p.kind==='simp')  return `${p.N} : ${p.D} = ${p.bn} : ${p.bd}`;
+  if(p.kind==='equiv') return `${p.bn} : ${p.bd} = ${p.ans} : ${p.bd*p.k}`;
+  if(p.kind==='unit')  return `${p.total} : ${p.time} = ${p.rate} : 1`;
+  const f=c=>p.cols[c].map(v=>v===null?p.ans:v).join('/');
+  return `${f(0)} = ${f(1)}`;
+}
 
-function nextProblem(){let L=level;if(level>1&&Math.random()<0.25)L=level-1;current=MOD.gen(L);answered=false;renderProblem();}
-function renderProblem(){$('prob').innerHTML=current.display;var inp=$('answer');inp.value='';inp.className='';inp.disabled=false;
-  inp.placeholder=current.placeholder||'';$('hint').textContent=current.hint||'';inp.focus();
-  $('verdict').textContent='';$('verdict').className='verdict';$('tip').className='tip';$('tip').innerHTML='';
-  var b=$('submit');b.textContent='Check';b.className='btn';b.onclick=submitAnswer;paintDots();}
-function paintDots(){var h='';for(var i=0;i<SET_LEN;i++){var c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+='<span class="'+c+'"></span>';}$('dots').innerHTML=h;}
-function startSet(){correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
-  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');updateHUD();nextProblem();}
-function submitAnswer(){if(answered)return;var s=$('answer').value.trim();if(s==='')return;
-  answered=true;$('answer').disabled=true;var right=current.check(s);results[index]=right;
-  if(right){correctCount++;streak++;bestStreak=Math.max(bestStreak,streak);recentMisses=0;$('answer').classList.add('correct');
-    var v=$('verdict');v.textContent=praise();v.className='verdict good pop';if(streak%3===0&&level<6){level++;recentMisses=0;}}
-  else{streak=0;recentMisses++;$('answer').classList.add('wrong');var v=$('verdict');v.textContent='Not yet — here’s the work:';v.className='verdict help';
-    $('prob').innerHTML=current.worked.display;$('tip').innerHTML=current.worked.tip;$('tip').classList.add('show');
-    if(recentMisses>=2&&level>1){level--;recentMisses=0;}}
-  levelReachedThisSet=Math.max(levelReachedThisSet,level);updateHUD();paintDots();
-  var b=$('submit');b.textContent=(index===SET_LEN-1)?'See results':'Next';b.className='btn '+(right?'':'sky');b.onclick=advance;}
-function advance(){index++;if(index>=SET_LEN){endSet();return;}nextProblem();}
-function praise(){return pick(['Nice.','Locked in.','Clean.','Sharp.','Yes — keep going.','That’s it.']);}
+/* ---------- drawing ---------- */
+let V={};
+function resetVisual(){
+  const p=current; V={open:null,hl:null,done:false,newc:[],justKey:null,hotArr:false,labels:null,cols:null,arrows:null,back:false};
+  if(p.kind==='simp'){ V.cols=[[p.N,p.D],[null,null]]; V.arrows=[{op:'÷',k:null}]; }
+  if(p.kind==='equiv'){ V.cols=[[p.bn,p.bd],[null,p.bd*p.k]]; V.arrows=[{op:'×',k:null}]; }
+  if(p.kind==='unit'){ V.cols=[[p.total,p.time],[null,1]]; V.arrows=[{op:'÷',k:p.time}]; }
+  if(p.kind==='prop'){ V.labels=['top','bottom']; V.cols=p.cols.map(c=>c.slice()); V.arrows=[{op:p.op,k:null}]; V.back=p.S===1; }
+}
+const arrTxt=a=>`${V.arrows[a].op} ${V.arrows[a].k}`;
+function isHot(key){ return Array.isArray(V.hl)&&V.hl.includes(key); }
+function cellH(c,r){
+  const v=V.cols[c][r], key=`c${c}r${r}`, o=V.open;
+  if(o&&o.box&&o.box.c===c&&o.box.r===r) return `<span class="cell open" id="${key}">${boxHTML(o,'sm')}</span>`;
+  const cls=['cell']; if(v===null) cls.push('q'); if(isHot(key)) cls.push('hot'); if(V.newc.includes(key)) cls.push('new'); if(V.justKey===key) cls.push('pop');
+  return `<span class="${cls.join(' ')}" id="${key}">${v===null?'?':v}</span>`;
+}
+// the arrow points from the full fraction to the one with the ?
+function arrH(a,r){
+  const A=V.arrows[a], o=V.open, here=o&&o.box&&o.box.a===a&&o.box.r===r, k=(a===0&&V.pendRow===r)?null:A.k;
+  const cls=['arr']; if(k===null && !here) cls.push('unk'); if(isHot('a'+a)||(V.hotArr&&a===0)) cls.push('hot');
+  const inner=here?`${A.op} ${boxHTML(o,'sm')}`:`${A.op} ${k===null?'?':k}`;
+  return V.back?`<span class="${cls.join(' ')}" id="a${a}r${r}"><i>←</i> ${inner}</span>`
+               :`<span class="${cls.join(' ')}" id="a${a}r${r}">${inner} <i>→</i></span>`;
+}
+function tableH(){
+  const n=V.cols.length; let h=`<div class="rt" style="grid-template-columns:${V.labels?'auto ':''}repeat(${2*n-1},auto)">`;
+  for(let r=0;r<2;r++){
+    if(V.labels) h+=`<span class="rlab">${V.labels[r]}</span>`;
+    for(let c=0;c<n;c++){ h+=cellH(c,r); if(c<n-1) h+=arrH(c,r); }
+  }
+  return h+'</div>';
+}
+function draw(){
+  $('prob').innerHTML=probH(current,V.done);
+  $('rvis').innerHTML=tableH();
+  // scale the table down if a phone screen is too narrow for it
+  const t=$('rvis').firstElementChild; if(t){ t.style.transform=''; const k=$('rvis').clientWidth/t.scrollWidth; if(k<1){ t.style.transform=`scale(${k})`; t.style.transformOrigin='center top'; } }
+  V.justKey=null; V.hotArr=false;
+}
+/* ---------- playing one problem: one move at a time ----------
+   A move is one of
+     • type — ONE glowing box in the picture, ONE short instruction
+     • pick — two buttons (e.g. positive / negative); tap the right one
+     • tap  — one button that plays a short animation
+   ------------------------------------------------------------- */
+let M=null;            // {mv, i, tries, busy, err}
+function boxHTML(m,cls){
+  return `<input class="ibx${cls?' '+cls:''}" id="box" inputmode="${BOX_MODE}" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="${m.max||5}" aria-label="answer">`;
+}
+function renderProblem(){
+  M={mv:buildMoves(current), i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  resetVisual();
+  paintDots(); showMove();
+}
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  V.open=m.kind==='type'?m:null; V.hl=m.hl||null;
+  if(m.enter) m.enter();
+  draw();
+  $('where').textContent=`Step ${M.i+1} of ${M.mv.length}`;
+  $('done').innerHTML=note?'✓ '+note:'';
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=m.sub||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'), pk=$('picks'); pk.innerHTML=''; go.classList.remove('hide'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus({preventScroll:true}); }
+  else if(m.kind==='pick'){
+    go.classList.add('hide');
+    pk.innerHTML=m.options.map((o,i)=>`<button class="pick" data-i="${i}">${o.label}</button>`).join('');
+    pk.querySelectorAll('.pick').forEach(b=>b.onclick=()=>choose(+b.dataset.i));
+  }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus({preventScroll:true}); }
+}
+// shrink a one-line row of math until it fits the card (never a sideways scroll)
+function fit(el){ if(!el) return; el.style.fontSize=''; let fs=parseFloat(getComputedStyle(el).fontSize), g=0;
+  while(el.scrollWidth>el.clientWidth+1 && fs>14 && g++<40){ fs-=2; el.style.fontSize=fs+'px'; } }
+function nextMove(note){ M.i++; G.si=M.i; if(M.i>=M.mv.length) finish(note); else showMove(note); }
+async function doTap(){
+  if(M.busy) return; M.busy=true; $('go').disabled=true;
+  const note=await M.mv[M.i].run();
+  M.busy=false; nextMove(note);
+}
+function readNum(s){ s=String(s).trim().replace(/[−–—]/g,'-'); return /^-?\d+$/.test(s)?+s:NaN; }
+function shake(el){ el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
+function say2(t){ $('fb').innerHTML=t; $('fb').className='fb no'; }
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const raw=box.value.trim();
+  if(raw===''||raw==='-'){ say2('Type a number in the glowing box.'); box.focus(); return; }
+  const v=readNum(raw);
+  if(v!==m.expect){
+    M.tries++; M.err=true; shake(box);
+    const part=m.partial?m.partial(v):'';
+    if(M.tries>=2){ say2(`Type <b>${NUM(m.expect)}</b>.`); box.placeholder=NUM(m.expect); }
+    else say2(part||('Not quite. '+(m.nudge||NUDGE)));
+    box.select(); return;
+  }
+  M.busy=true; V.open=null; $('fb').textContent='✓'; $('fb').className='fb yes';
+  V.typed=v;
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; nextMove(note);
+}
+async function choose(i){
+  if(M.busy) return; const m=M.mv[M.i], btns=[...document.querySelectorAll('#picks .pick')];
+  if(m.options[i].value!==m.expect){
+    M.tries++; M.err=true; shake(btns[i]);
+    const k=m.options.findIndex(o=>o.value===m.expect);
+    if(M.tries>=2){ say2(`Tap <b>${m.options[k].label}</b>.`); btns[k].classList.add('show'); }
+    else say2('Not quite. '+m.nudge);
+    return;
+  }
+  M.busy=true; btns.forEach(b=>b.disabled=true); btns[i].classList.add('ok');
+  $('fb').textContent='✓'; $('fb').className='fb yes';
+  const note=m.after?await m.after():''; draw();
+  M.busy=false; $('picks').innerHTML=''; nextMove(note);
+}
+function finish(note){
+  V.open=null; V.hl=null; V.done=true; draw();
+  const right=!M.err;
+  $('where').textContent='';
+  $('msg').innerHTML=`<span class="mint">✓ ${answerText()}</span>`;
+  $('done').innerHTML=''; $('sub').innerHTML='';
+  $('fb').textContent=''; $('fb').className='fb';
+  $('picks').innerHTML=''; $('go').classList.remove('hide'); $('go').disabled=false;
+  concludeProblem(right, $('go'));
+}
+// a number (or text) floats from one element to another
+async function fly(fromEl,toEl,text,size){
+  if(!fromEl||!toEl||reduce) return;
+  const ra=fromEl.getBoundingClientRect(), rz=toEl.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text; s.style.fontSize=(size||28)+'px';
+  document.body.appendChild(s);
+  const w=s.offsetWidth, h=s.offsetHeight;
+  s.style.left=(ra.left+ra.width/2-w/2)+'px'; s.style.top=(ra.top+ra.height/2-h/2)+'px';
+  s.getBoundingClientRect();
+  s.style.transform=`translate(${(rz.left+rz.width/2)-(ra.left+ra.width/2)}px,${(rz.top+rz.height/2)-(ra.top+ra.height/2)}px)`;
+  await wait(650); s.remove();
+}
+
+/* ---------- the set ---------- */
+function nextProblem(){ let L=level; if(level>1 && Math.random()<0.25) L=level-1; current=gen(L); renderProblem(); }
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.focus({preventScroll:true});
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let c='dot';if(i<index)c+=results[i]?' good':' miss';if(i===index)c+=' cur';h+=`<span class="${c}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
 function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
-function endSet(){$('play').classList.add('hide');$('summary').classList.remove('hide');
+function endSet(){
+  $('play').classList.add('hide');$('summary').classList.remove('hide');
   $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
-  var pb=$('pb');if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent='★ New personal best: '+correctCount+'/10';}else pb.textContent='Personal best this session: '+sessionBest+'/10';
-  $('s-note').textContent=correctCount>=9?'Excellent control. Strings of wins pushed your level up.':correctCount>=7?'Strong set — keep the streak going.':correctCount>=5?'Solid. Watch the method on the hard ones.':'Every miss showed the work. Run it again.';}
-document.addEventListener('keydown',function(e){if(e.key!=='Enter')return;if($('play').classList.contains('hide'))return;e.preventDefault();if(!answered)submitAnswer();else $('submit').click();});
-</script></body></html>
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount} of 10`;}
+  else pb.textContent=`Personal best this visit: ${sessionBest} of 10`;
+  $('s-note').textContent=correctCount>=9?ENDNOTES[0]:correctCount>=7?ENDNOTES[1]:correctCount>=5?ENDNOTES[2]:ENDNOTES[3];
+}
+// Enter = Check (or the tap button / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); const go=$('go'); if(!go.disabled && !go.classList.contains('hide')) go.click();
+});
+// only digits (and a minus sign at the front where it is allowed) in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  let v=t.value.replace(/[−–—]/g,'-');
+  v=ALLOW_NEG ? v.replace(/[^0-9-]/g,'').replace(/(?!^)-/g,'') : v.replace(/[^0-9]/g,'');
+  t.value=v.slice(0,+t.maxLength||5); t.classList.remove('bad'); $('fb').textContent=''; });
+/* ---------- worked example on the start screen: 2 : 3 = 8 : 12, finished ---------- */
+(function(){ V={open:null,hl:null,newc:['c1r0'],justKey:null,labels:null,cols:[[2,3],[8,12]],arrows:[{op:'×',k:4}]}; $('exTable').innerHTML=tableH(); V={}; })();
+</script>
+<script src="../../../tracker-config.js"></script>
+<script src="../../../score-send.js"></script>
+<script src="fluency-progress.js" data-module="Ratios &amp; Proportions"></script>
+</body>
+</html>

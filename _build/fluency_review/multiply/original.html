@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluency Lab — Multiply</title>
+<style>
+  :root{
+    --bg:#15172b; --bg2:#1b1e38; --panel:#222749; --panel-edge:#33396b;
+    --ink:#f1f3ff; --muted:#9aa0cf; --mint:#39d99a; --amber:#ffbb4d;
+    --sky:#63a8ef; --coral:#ff7a70; --line:#454c86; --radius:18px;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono","Roboto Mono",Menlo,Consolas,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--sans);
+    background:radial-gradient(1200px 600px at 50% -10%, #23285180 0%, transparent 60%),var(--bg);
+    color:var(--ink);min-height:100dvh;display:flex;flex-direction:column;align-items:center;
+    padding:20px 16px 40px;-webkit-font-smoothing:antialiased;}
+  .bar{width:100%;max-width:520px;display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .badge{display:flex;align-items:baseline;gap:7px;background:var(--bg2);border:1px solid var(--panel-edge);padding:8px 13px;border-radius:12px}
+  .badge .k{font-size:11px;letter-spacing:.04em;color:var(--muted)}
+  .badge .v{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums}
+  .badge.level .v{color:var(--sky)} .badge.streak .v{color:var(--amber)}
+  .brandmark{margin-left:auto;text-align:right;line-height:1.1}
+  .brandmark .n{font-weight:800;letter-spacing:.02em;font-size:14px}
+  .brandmark .s{font-size:10.5px;color:var(--muted);letter-spacing:.06em}
+  .dots{display:flex;gap:7px;justify-content:center;margin-bottom:16px;height:11px}
+  .dot{width:11px;height:11px;border-radius:50%;background:#2c3160;transition:transform .18s,background .18s}
+  .dot.good{background:var(--mint)} .dot.miss{background:var(--sky)}
+  .dot.cur{transform:scale(1.35);box-shadow:0 0 0 3px #63a8ef22}
+  .stage{width:100%;max-width:520px;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:22px 20px 22px;
+    box-shadow:0 22px 50px -28px #000a;position:relative}
+
+  /* ── the written problem ── */
+  .algo{font-family:var(--mono);font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;margin:4px 0 6px;line-height:1}
+  .algo .row{display:flex;justify-content:flex-end}
+  .algo .cell{position:relative;width:48px;height:56px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600;border-radius:10px;transition:background .25s,opacity .5s}
+  .algo .op{width:44px;height:56px;display:flex;align-items:center;justify-content:flex-start;color:var(--muted);font-size:38px;padding-left:4px}
+  .algo .small .cell,.algo .small .op{height:34px;font-size:22px;color:var(--amber);font-weight:800}
+  .algo .cell.col{background:#ffbb4d1f}                 /* the digits we are using */
+  .algo .cell.hot{color:var(--amber)}
+  .algo .cell.part{color:var(--sky)}                    /* a finished row (partial product) */
+  .algo .cell.done{color:var(--mint)}
+  .algo .cell.fade{opacity:0}
+  .ruleline{width:100%;height:4px;background:var(--ink);border-radius:2px;margin:6px 0 4px;opacity:.9}
+  /* 2-digit × 2-digit has more rows, so it is a little smaller */
+  .algo.big .cell,.algo.big .op{height:46px}
+  .algo.big .cell{font-size:38px}
+  .algo.big .small .cell,.algo.big .small .op{height:26px;font-size:19px}
+  .algo.big .pbx{top:2px;height:42px;font-size:28px}
+  .algo.big .ruleline{margin:4px 0 2px}
+  /* the ONE open box */
+  .pbx{position:absolute;right:3px;top:4px;height:48px;width:42px;padding:0;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;
+    font-size:32px;font-weight:700;color:var(--ink);background:#0f1230;border:3px solid var(--amber);border-radius:10px;outline:none;caret-color:var(--amber);
+    box-shadow:0 0 0 6px #ffbb4d2b;animation:glow 1.6s ease-in-out infinite}
+  .pbx.w2{width:90px}
+  .pbx.bad{border-color:var(--coral);box-shadow:0 0 0 6px #ff7a7030;animation:shake .35s}
+  .pbx::placeholder{color:#5b6190}
+  @keyframes glow{0%,100%{box-shadow:0 0 0 5px #ffbb4d22}50%{box-shadow:0 0 0 9px #ffbb4d33}}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  .fly{position:fixed;z-index:50;font-family:var(--mono);font-weight:800;color:var(--amber);pointer-events:none;
+    transition:transform .65s cubic-bezier(.4,.1,.2,1),opacity .3s;text-shadow:0 2px 10px #000}
+  .pop{animation:pop .35s ease}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+  @media (max-width:430px){.algo .cell{width:40px;font-size:38px}.algo .op{width:36px}.pbx{width:36px;font-size:28px}.pbx.w2{width:76px}
+    .algo.big .cell{font-size:34px}}
+
+  /* times tables: one line, one box */
+  .factline{font-family:var(--mono);font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;
+    font-size:56px;font-weight:700;margin:14px 0 8px;gap:12px}
+  .factline .x,.factline .eq{color:var(--muted)}
+  .factline .res{color:var(--mint)}
+  .factline .pbx{position:static;width:130px;height:68px;font-size:44px}
+  @media (max-width:430px){.factline{font-size:44px;gap:9px}.factline .pbx{width:104px;height:58px;font-size:36px}}
+
+  /* ── one instruction at a time ── */
+  .say{margin-top:12px;background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 16px 16px;text-align:left}
+  .say .note{font-size:15px;line-height:1.4;color:var(--mint);font-weight:600;padding:0 0 9px;margin:0 0 10px;border-bottom:1px dashed var(--panel-edge)}
+  .say .note:empty{display:none}
+  .say .note b{color:var(--mint)}
+  .say .note.in{animation:notein .4s ease}
+  @keyframes notein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .say .where{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--sky);font-weight:800;margin-bottom:6px}
+  .say .msg{font-size:20px;line-height:1.45;font-weight:600}
+  .say .msg b{color:var(--amber);white-space:nowrap}
+  .say .sub{font-size:15px;color:#cfd3f5;line-height:1.5;margin-top:6px;min-height:0}
+  .say .sub b{color:var(--amber)}
+  .btn{font-family:var(--sans);font-size:18px;font-weight:700;color:#12132a;background:var(--mint);
+    border:none;border-radius:13px;padding:13px 26px;margin-top:14px;cursor:pointer;transition:transform .12s,filter .15s;min-width:150px}
+  .btn:hover{filter:brightness(1.06)} .btn:active{transform:translateY(1px)}
+  .btn.amber{background:var(--amber)} .btn.sky{background:var(--sky);color:#0a1226}
+  .fb{min-height:24px;margin-top:10px;font-weight:700;font-size:17px;line-height:1.4}
+  .fb:empty{min-height:0;margin-top:0}
+  .fb.no{color:var(--coral)} .fb.yes{color:var(--mint)}
+  .fb.help{color:#cfe3ff;font-weight:600}
+  .fb.help b{color:var(--amber)}
+  .checkline{margin-top:12px;padding:10px 12px;border-radius:11px;background:#16342a;border:1px solid #2c6b54;color:#bff3dc;font-size:16px;line-height:1.45;display:none}
+  .checkline.show{display:block}
+  .checkline b{color:var(--mint)}
+
+  /* ── start / summary ── */
+  .screen{width:100%;max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel),#20244a);
+    border:1px solid var(--panel-edge);border-radius:var(--radius);padding:34px 26px;box-shadow:0 22px 50px -28px #000a}
+  .screen h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+  .screen .sub{color:var(--muted);font-size:14.5px;margin-bottom:20px}
+  .how{text-align:left;max-width:390px;margin:0 auto 22px;color:#cfd3f5;font-size:16px;line-height:1.6}
+  .how li{margin:4px 0 4px 18px}
+  .how b{color:var(--amber)}
+  .example{max-width:390px;margin:0 auto 22px}
+  .example .ttl{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--amber);font-weight:800;margin-bottom:8px}
+  .example .algo .cell{width:40px;height:48px;font-size:34px}.example .algo .op{width:36px;height:48px;font-size:30px}
+  .example .algo .small .cell,.example .algo .small .op{height:30px;font-size:19px}
+  .example .excap{font-size:15px;color:#cfd3f5;margin-top:8px;line-height:1.5;text-align:left}
+  .example .excap b{color:var(--amber)}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:8px 0 22px}
+  .stat{background:var(--bg2);border:1px solid var(--panel-edge);border-radius:14px;padding:16px 8px}
+  .stat .num{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .lab{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .pb{color:var(--amber);font-weight:700;margin-bottom:6px;min-height:22px}
+  #play{width:100%;max-width:520px;display:flex;flex-direction:column;align-items:center}
+  .hide{display:none!important}
+  .labnav{display:flex;justify-content:space-between;width:100%;max-width:640px;margin:0 auto 6px;padding:0 4px}
+  .labnav a{color:var(--sky);text-decoration:none;font-size:13px;font-weight:600}
+  .labnav a:hover{text-decoration:underline}
+  .btn.link{display:inline-block;text-decoration:none;margin-left:8px;background:transparent;color:var(--sky);border:1px solid var(--panel-edge)}
+  /* short or narrow screens (phones, Chromebooks): tighter spacing so the box AND the button fit on screen */
+  @media (max-width:430px), (max-height:720px){
+    body{padding-top:12px}
+    .bar{margin-bottom:10px} .dots{margin-bottom:10px}
+    .stage{padding:14px 14px 16px}
+    .say{margin-top:8px;padding:11px 13px 13px}
+    .say .msg{font-size:18px;line-height:1.38}
+    .say .sub{margin-top:4px}
+    .btn{margin-top:10px;padding:11px 24px}
+    .fb{margin-top:8px}
+    .algo.big .cell,.algo.big .op{height:40px}
+    .algo.big .cell{font-size:31px}
+    .algo.big .small .cell,.algo.big .small .op{height:22px;font-size:17px}
+    .algo.big .pbx{top:1px;height:38px;font-size:25px}
+  }
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<script src="../../../site-bar.js"></script>
+<nav class="labnav"><a href="index.html">← All skills</a><a href="quiz-multiply.html">Skill check →</a></nav>
+
+  <section id="start" class="screen">
+    <h1>Fluency Lab</h1>
+    <div class="sub">Multiply · Module 2</div>
+    <ul class="how">
+      <li>First, <b>times tables</b>: one box, type the answer.</li>
+      <li>Then bigger problems: multiply <b>one digit at a time</b>, from the <b>right</b>.</li>
+      <li>Only <b>one box</b> opens at a time. It glows.</li>
+      <li>Type the whole number, like <b>21</b>. The carry moves up for you.</li>
+      <li>You are only racing <b>your own best score</b>.</li>
+    </ul>
+    <div class="example">
+      <div class="ttl">Here is one worked out: 47 × 3</div>
+      <div class="algo" id="exPaper"></div>
+      <div class="excap">3 × 7 = <b>21</b>. Write the 1. Carry the <b>2</b>.<br>3 × 4 + 2 = <b>14</b>. Last digit, so write all of 14.<br>The answer is <b>141</b>.</div>
+    </div>
+    <button class="btn" onclick="startSet()">Start a set of 10</button>
+  </section>
+
+  <div id="play" class="hide">
+    <div class="bar">
+      <div class="badge level"><span class="k">Level</span><span class="v" id="lvl">1</span></div>
+      <div class="badge streak"><span>🔥</span><span class="v" id="strk">0</span><span class="k">streak</span></div>
+      <div class="brandmark"><div class="n">FLUENCY LAB</div><div class="s">MULTIPLY</div></div>
+    </div>
+    <div class="dots" id="dots"></div>
+    <section class="stage">
+      <div class="algo" id="algo" aria-live="polite"></div>
+      <div class="say">
+        <div class="note" id="note" aria-live="polite"></div>
+        <div class="where" id="where"></div>
+        <div class="msg" id="msg"></div>
+        <div class="sub" id="sub"></div>
+        <div class="fb" id="fb" role="status"></div>
+        <button class="btn" id="go">Check</button>
+        <div class="checkline" id="checkline"></div>
+      </div>
+    </section>
+  </div>
+
+  <section id="summary" class="screen hide">
+    <h1>Set complete</h1>
+    <div class="pb" id="pb">&nbsp;</div>
+    <div class="statgrid">
+      <div class="stat"><div class="num" id="s-acc">0</div><div class="lab">right first try / 10</div></div>
+      <div class="stat"><div class="num" id="s-best" style="color:var(--amber)">0</div><div class="lab">best streak</div></div>
+      <div class="stat"><div class="num" id="s-lvl" style="color:var(--sky)">1</div><div class="lab">level reached</div></div>
+    </div>
+    <div class="sub" id="s-note"></div>
+    <button class="btn" onclick="startSet()">Go again</button>
+    <a class="btn link" href="quiz-multiply.html">Take the Skill check</a>
+  </section>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   MULTIPLY — one box at a time
+   Each problem is a list of small moves. A move is either
+     • type  — one glowing box in the written problem, one short instruction
+     • tap   — a button (e.g. "Write 0", "Bring down") that plays a short animation
+   Levels 1–3: times tables (one box).
+   Levels 4–5: multiply digit by digit, right to left; carries fly up.
+   Level 6:    row 1 (ones digit), row 2 (tens digit, starts with a 0),
+               then add the two rows column by column.
+   ════════════════════════════════════════════════════════════════ */
+const SET_LEN=10;
+let level=1, streak=0, bestStreak=0, correctCount=0, index=0, recentMisses=0;
+let levelReachedThisSet=1, sessionBest=0, current=null, results=[];
+let G=null;            // {steps, si}  (read by fluency-progress.js)
+const rnd=(lo,hi)=>Math.floor(Math.random()*(hi-lo+1))+lo;
+const pick=arr=>arr[Math.floor(Math.random()*arr.length)];
+const $=id=>document.getElementById(id);
+const NAMES=['ones','tens','hundreds','thousands'];
+const fmt=n=>n.toLocaleString('en-US');
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+
+/* ---------- problems (same levels as before) ---------- */
+function mk(a,b){return {a,b,answer:a*b,fact:(a<=12&&b<=12)};}
+function maybeSwap(p){ if(Math.random()<0.5){const t=p.a;p.a=p.b;p.b=t;} return p; }
+function genEasy(){ return maybeSwap(mk(rnd(2,12),pick([0,1,2,5,10]))); }        // L1
+function genMed(){  return maybeSwap(mk(rnd(2,12),pick([3,4,6]))); }             // L2
+function genHard(){ return maybeSwap(mk(rnd(2,12),pick([7,8,9,11,12]))); }       // L3
+function gen2x1(){  return mk(rnd(13,99),rnd(3,9)); }                            // L4
+function gen3x1(){  return mk(rnd(105,899),rnd(3,9)); }                          // L5
+function gen2x2(){  return mk(rnd(13,89),rnd(13,89)); }                          // L6
+const GEN={1:genEasy,2:genMed,3:genHard,4:gen2x1,5:gen3x1,6:gen2x2};
+const isFact=p=>p.fact && p.a<=12 && p.b<=12;
+
+/* ---------- the board: everything written on the paper ---------- */
+// W = number of columns; every row is an array left→right (null = empty)
+function newBoard(p,big){
+  const W=String(p.answer).length;
+  const pad=n=>String(n).padStart(W,' ').split('').map(d=>d===' '?null:+d);
+  const empty=()=>Array(W).fill(null);
+  const rows={small:empty(), top:pad(p.a), bot:pad(p.b)};
+  let order;
+  if(big){ Object.assign(rows,{addc:empty(),p1:empty(),p2:empty(),sum:empty()});
+           order=['small','top','bot','rule','addc','p1','p2','rule','sum']; }
+  else   { rows.ans=empty(); order=['small','top','bot','rule','ans']; }
+  return {W, big, rows, order, hot:[], open:null, phase:'mul', fade:[], pop:null};
+}
+
+/* ---------- times tables: a helper for a miss ---------- */
+function factHelp(a,b){
+  const has=x=>a===x||b===x, o=x=>a===x?b:a;
+  if(has(0))  return `Anything times <b>0</b> is 0.`;
+  if(has(1))  return `Anything times <b>1</b> stays the same.`;
+  if(has(10)) return `Times 10: put a <b>0</b> on the end of ${o(10)}.`;
+  if(has(2))  return `Times 2 means double it: <b>${o(2)} + ${o(2)}</b>.`;
+  if(has(5)){ const k=o(5), s=[5,10,15].slice(0,Math.max(1,Math.min(3,k-1))).join(', ');
+              return `Count by 5s, <b>${k}</b> times: ${s}, …`; }
+  if(has(11)){ const k=o(11); return k<=9?`Times 11 with one digit: write the <b>${k}</b> twice.`
+                                         :`10 × ${k} = <b>${10*k}</b>. Add one more ${k}.`; }
+  if(has(9)){ const k=o(9); return `10 × ${k} = <b>${10*k}</b>. Take away one ${k}.`; }
+  if(has(4)){ const k=o(4); return `Double ${k} is <b>${2*k}</b>. Now double that.`; }
+  if(has(3)){ const k=o(3); return `Double ${k} is <b>${2*k}</b>. Add one more ${k}.`; }
+  if(has(6)){ const k=o(6); return `5 × ${k} = <b>${5*k}</b>. Add one more ${k}.`; }
+  if(has(8)){ const k=o(8); return `Double ${k} three times: <b>${2*k}</b>, <b>${4*k}</b>, …`; }
+  if(has(12)){ const k=o(12); return `10 × ${k} = <b>${10*k}</b>. Add 2 × ${k} = <b>${2*k}</b>.`; }
+  if(has(7)){ const k=o(7); return `5 × ${k} = <b>${5*k}</b>. Add two more ${k}s.`; }
+  return `Skip-count by ${b}, ${a} times.`;
+}
+function praise(){ return pick(['Nice.','Locked in.','Fast.','That’s the fact.','Sharp.','Yes — keep going.','Clean.']); }
+
+/* ---------- moves: multiply one row, digit by digit, right to left ---------- */
+// a × d (d is one digit). Answer digits go in row `out`, moved left by `shift`.
+function mulRow(B,mv,p,d,out,shift,where,multCol,firstSub){
+  const W=B.W, n=String(p.a).length; let carry=0;
+  for(let c=0;c<n;c++){
+    const gi=W-1-c, oc=gi-shift, digit=B.rows.top[gi], cin=carry;
+    const val=d*digit+cin, last=(c===n-1), cout=last?0:Math.floor(val/10);
+    const prod=`${d} × ${digit}${cin?` + ${cin}`:''}`;
+    const hot=[['top',gi],['bot',multCol]]; if(cin) hot.push(['small',gi]);
+    let sub=cin?`The small <b>${cin}</b> on top is the carry.`:(c===0&&firstSub?firstSub:'');
+    mv.push({kind:'type', where:where(c), hot, open:{row:out,col:oc,w:2}, expect:val, last,
+      say: cin?`Multiply, then add the carry: <b>${prod}</b>`:`Multiply: <b>${prod}</b>`, sub,
+      wrong:`${prod} = ${val}`,
+      partial: val>=10?String(val%10):null,
+      noCarry: cin?d*digit:null, cin,
+      after: async (b)=>{
+        const row=b.rows[out];
+        if(last){ String(val).split('').reverse().forEach((ch,k)=>row[oc-k]=+ch);
+          return val>=10?`Last digit, so all of <b>${val}</b> goes down.`:''; }
+        row[oc]=val%10;
+        if(val>=10){
+          await flyDigit(out,oc,'small',gi-1,String(cout));
+          b.rows.small[gi-1]=cout;
+          return `${val} is too big for one box. Keep the <b>${val%10}</b>. Carry the <b>${cout}</b>.`;
+        }
+        return '';
+      }});
+    carry=cout;
+  }
+}
+// a × 1 is the same number: one tap copies it into the row
+function copyRow(B,mv,p,out,shift,where,say,sub,note,multCol,zeroFirst){
+  const W=B.W, n=String(p.a).length;
+  mv.push({kind:'tap', where, button:'Write the row', hot:[['bot',multCol]], say, sub,
+    run: async (b,show)=>{
+      if(zeroFirst){ await clearCarries(b,show); b.rows[out][W-1]=0; b.pop=[out,W-1]; draw(); await wait(700); b.pop=null; }
+      for(let c=0;c<n;c++){ const gi=W-1-c;
+        await flyDigit('top',gi,out,gi-shift,String(b.rows.top[gi]),true);
+        b.rows[out][gi-shift]=b.rows.top[gi]; draw(); }
+      return note;
+    }});
+}
+async function clearCarries(b,show){
+  const cols=b.rows.small.map((v,i)=>v===null?-1:i).filter(i=>i>=0);
+  if(!cols.length) return;
+  show(`Row 1 is done, so its small carries are used up.`);
+  b.fade=cols.map(i=>['small',i]); draw(); await wait(900);
+  b.fade=[]; b.rows.small=b.rows.small.map(()=>null); draw();
+}
+
+function buildMoves(p){
+  const {a,b}=p, mv=[];
+  if(isFact(p)){
+    const B={fact:true, a, b, res:null, open:true};
+    mv.push({kind:'type', where:'Times tables', fact:true, open:{w:3}, expect:a*b,
+      say:`What is <b>${a} × ${b}</b>?`, sub:'', help:factHelp(a,b), wrong:`${a} × ${b} = ${a*b}`,
+      after: async (bd)=>{ bd.res=a*b; return praise(); }});
+    return {B,mv};
+  }
+  if(b<10){                                     // levels 4–5
+    const B=newBoard(p,false), n=String(a).length;
+    mulRow(B,mv,p,b,'ans',0,c=>`${NAMES[c]} digit · ${c+1} of ${n}`,B.W-1,'');
+    return {B,mv};
+  }
+  // level 6: 2-digit × 2-digit
+  const ob=b%10, tb=Math.floor(b/10);
+  if(ob===0){                                   // like 40: write the 0, then multiply by 4
+    const B=newBoard(p,false), W=B.W;
+    mv.push({kind:'tap', where:`times ${b}`, button:'Write 0', hot:[['bot',W-1]],
+      say:`The ones digit of ${b} is <b>0</b>.`, sub:`Press <b>Write 0</b> to start the answer.`,
+      run: async (bd)=>{ bd.rows.ans[W-1]=0; bd.pop=['ans',W-1]; draw(); await wait(500); bd.pop=null;
+        return `The answer starts with a <b>0</b>, because the ${tb} is really <b>${b}</b>.`; }});
+    if(tb===1) copyRow(B,mv,p,'ans',1,`times ${b}`,`Now the <b>1</b> in the tens place.`,`${a} × 1 = ${a}, so copy ${a}.`,'',W-2,false);
+    else mulRow(B,mv,p,tb,'ans',1,()=>`times ${b}`,W-2,'');
+    return {B,mv};
+  }
+  const B=newBoard(p,true), W=B.W;
+  // row 1: times the ones digit
+  if(ob===1) copyRow(B,mv,p,'p1',0,`Row 1 · times 1`,`The ones digit of ${b} is <b>1</b>.`,
+                     `${a} × 1 = ${a}, so row 1 is just <b>${a}</b>.`,'',W-1,false);
+  else mulRow(B,mv,p,ob,'p1',0,()=>`Row 1 · times ${ob}`,W-1,`First, multiply ${a} by the <b>${ob}</b> in ${b}.`);
+  // row 2: times the tens digit — it starts with a 0
+  const r2=`Row 2 · times ${tb*10}`;
+  if(tb===1){
+    copyRow(B,mv,p,'p2',1,r2,`Now the <b>1</b> in the tens place. It is really 10.`,
+      `${a} × 10 = ${a*10}: the same digits with a 0 on the end.`,`Row 2 is <b>${a*10}</b>.`,W-2,true);
+  } else {
+    mv.push({kind:'tap', where:r2, button:'Write 0', hot:[['bot',W-2]],
+      say:`Now multiply by the <b>${tb}</b> in the tens place.`, sub:`Press <b>Write 0</b> to start row 2.`,
+      run: async (bd,show)=>{ await clearCarries(bd,show);
+        bd.rows.p2[W-1]=0; bd.pop=['p2',W-1]; draw(); await wait(500); bd.pop=null;
+        return `Row 2 starts with a <b>0</b>, because the ${tb} is really <b>${tb*10}</b>.`; }});
+    mulRow(B,mv,p,tb,'p2',1,()=>r2,W-2,'');
+  }
+  addRows(B,mv,p);
+  return {B,mv};
+}
+// add row 1 + row 2, column by column, carrying like the add lab
+function addRows(B,mv,p){
+  const {a,b}=p, ob=b%10, W=B.W;
+  const p1=a*ob, p2=a*Math.floor(b/10)*10, sum=p1+p2;
+  const D=n=>String(n).padStart(W,' ').split('').map(ch=>ch===' '?null:+ch);
+  const T=D(p1), U=D(p2), n=String(p2).length; let carry=0;
+  for(let c=0;c<n;c++){
+    const gi=W-1-c, da=T[gi], db=U[gi], cin=carry, last=(c===n-1);
+    const where=`Add the rows · ${NAMES[c]}`;
+    if(c===0){                                      // row 2 always has a 0 here
+      mv.push({kind:'tap', phase:'add', where, button:'Bring down', hot:[['p1',gi],['p2',gi]],
+        say:`Now add the two rows, starting with the <b>ones</b>.`,
+        sub:`There is only a 0 under the <b>${da}</b>, so the ${da} comes straight down.`,
+        run: async (bd)=>{ await flyDigit('p1',gi,'sum',gi,String(da),true); bd.rows.sum[gi]=da; return ''; }});
+      continue;
+    }
+    const parts=(da===null?[]:[da]).concat([db]);
+    if(parts.length===1 && !cin){
+      mv.push({kind:'tap', phase:'add', where, button:'Bring down', hot:[['p2',gi]],
+        say:`Only one digit is in the <b>${NAMES[c]}</b>.`, sub:`Bring the <b>${db}</b> straight down.`,
+        run: async (bd)=>{ await flyDigit('p2',gi,'sum',gi,String(db),true); bd.rows.sum[gi]=db; return ''; }});
+      carry=0; continue;
+    }
+    const s=parts.reduce((x,y)=>x+y,0)+cin, cout=last?0:Math.floor(s/10);
+    const txt=parts.join(' + ')+(cin?` + ${cin}`:'');
+    const hot=[['p2',gi]]; if(da!==null) hot.push(['p1',gi]); if(cin) hot.push(['addc',gi]);
+    mv.push({kind:'type', phase:'add', where, hot, open:{row:'sum',col:gi,w:2}, expect:s,
+      say:`Add the <b>${NAMES[c]}</b>: <b>${txt}</b>`,
+      sub:cin?`The small <b>${cin}</b> is the carry.`:'',
+      wrong:`${txt} = ${s}`, partial:s>=10?String(s%10):null, add:true, last,
+      after: async (bd)=>{
+        if(last){ String(s).split('').reverse().forEach((ch,k)=>bd.rows.sum[gi-k]=+ch);
+          return s>=10?`Last column, so all of <b>${s}</b> goes down.`:''; }
+        bd.rows.sum[gi]=s%10;
+        if(s>=10){ await flyDigit('sum',gi,'addc',gi-1,String(cout)); bd.rows.addc[gi-1]=cout;
+          return `${s} is too big for one box. Keep the <b>${s%10}</b>. Carry the <b>${cout}</b>.`; }
+        return '';
+      }});
+    carry=cout;
+  }
+}
+
+/* ---------- does the answer make sense? (shown, no typing; exact, no rounding) ---------- */
+function checkLine(p){
+  return `✓ <b>Check:</b> ${fmt(p.answer)} ÷ ${p.b} = <b>${p.a}</b>. That is the top number.`;
+}
+
+/* ---------- drawing ---------- */
+let BOARD=null;
+const isHot=(row,i)=>BOARD.hot.some(h=>h[0]===row&&h[1]===i);
+function rowHTML(key){
+  const b=BOARD, arr=b.rows[key], small=(key==='small'||key==='addc');
+  const lead=key==='bot'?'×':(key==='p2'&&b.phase==='add'?'+':'');
+  let h=`<div class="row${small?' small':''}"><span class="op">${lead}</span>`;
+  arr.forEach((d,i)=>{
+    const c=[];
+    if(isHot(key,i)) c.push('hot','col');
+    if((key==='ans'||key==='sum') && d!==null) c.push('done');
+    if((key==='p1'||key==='p2') && d!==null && !isHot(key,i)) c.push('part');
+    if(b.fade.some(f=>f[0]===key&&f[1]===i)) c.push('fade');
+    if(b.pop && b.pop[0]===key && b.pop[1]===i) c.push('pop');
+    let inner=d===null?'':d;
+    const o=b.open;
+    if(o && o.row===key && o.col===i){
+      if(!small) c.push('col');
+      inner=`<input class="pbx${o.w===2?' w2':''}" id="box" inputmode="numeric" autocomplete="off" maxlength="${o.w}" aria-label="${o.label||'answer'}">`;
+    }
+    h+=`<span class="cell ${c.join(' ')}" data-row="${key}" data-col="${i}">${inner}</span>`;
+  });
+  return h+'</div>';
+}
+function draw(target){
+  const el=target||$('algo'), b=BOARD;
+  if(b.fact){
+    el.className='algo';
+    el.innerHTML=`<div class="factline"><span>${b.a}</span><span class="x">×</span><span>${b.b}</span><span class="eq">=</span>`
+      +(b.res!==null?`<span class="res pop">${b.res}</span>`
+        :b.open?`<input class="pbx" id="box" inputmode="numeric" autocomplete="off" maxlength="3" aria-label="answer">`:'')+`</div>`;
+    return;
+  }
+  el.className='algo'+(b.big?' big':'');
+  el.innerHTML=b.order.map(k=>k==='rule'?'<div class="ruleline"></div>':rowHTML(k)).join('');
+}
+function cellEl(row,col){ return document.querySelector(`#algo .cell[data-row="${row}"][data-col="${col}"]`); }
+// a digit floats from one cell to another
+async function flyDigit(fromRow,fromCol,toRow,toCol,text,big){
+  draw();
+  const a=cellEl(fromRow,fromCol), z=cellEl(toRow,toCol); if(!a||!z||reduce) return;
+  const ra=a.getBoundingClientRect(), rz=z.getBoundingClientRect();
+  const s=document.createElement('span'); s.className='fly'; s.textContent=text;
+  s.style.fontSize=(big?34:24)+'px';
+  s.style.left=(ra.left+ra.width/2-(big?10:7))+'px'; s.style.top=(ra.top+ra.height/2-(big?18:13))+'px';
+  document.body.appendChild(s); s.getBoundingClientRect();
+  s.style.transform=`translate(${rz.left-ra.left}px,${rz.top-ra.top}px)`;
+  await wait(680); s.remove();
+}
+
+/* ---------- playing one problem ---------- */
+let M=null;            // {mv, i, tries, busy, err}
+function renderProblem(){
+  const built=buildMoves(current);
+  BOARD=built.B; M={mv:built.mv, i:0, tries:0, busy:false, err:false};
+  G={steps:M.mv, si:0};
+  $('checkline').classList.remove('show'); $('checkline').innerHTML='';
+  paintDots(); showMove();
+}
+function showMove(note){
+  const m=M.mv[M.i]; M.tries=0;
+  if(!BOARD.fact){
+    BOARD.hot=m.hot||[]; if(m.phase) BOARD.phase=m.phase;
+    BOARD.open=m.kind==='type'?Object.assign({label:m.where},m.open):null;
+  }
+  draw();
+  $('where').textContent=m.where;
+  setNote(note);
+  $('msg').innerHTML=m.say;
+  $('sub').innerHTML=m.sub||'';
+  $('fb').textContent=''; $('fb').className='fb';
+  const go=$('go'); go.disabled=false;
+  if(m.kind==='tap'){ go.textContent=m.button; go.className='btn amber'; go.onclick=doTap; go.focus(); }
+  else { go.textContent='Check'; go.className='btn'; go.onclick=check; const box=$('box'); if(box) box.focus(); }
+  setTimeout(keepInView,60);
+}
+// the note about the move just done: its own small mint line, above the new instruction
+function setNote(t){ const n=$('note'); n.classList.remove('in'); n.innerHTML=t?'✓ '+t:''; if(t){ void n.offsetWidth; n.classList.add('in'); } }
+// phone keyboard open: scroll so the Check button is not hidden (never past the top of the problem)
+function keepInView(){
+  const vv=window.visualViewport, go=$('go'), st=document.querySelector('.stage');
+  if(!vv||!go||!st||$('play').classList.contains('hide')) return;
+  const need=go.getBoundingClientRect().bottom-vv.offsetTop-(vv.height-10);
+  if(need<=0) return;
+  const room=st.getBoundingClientRect().top-vv.offsetTop+parseFloat(getComputedStyle(st).paddingTop)-4;
+  if(room>0) window.scrollBy({top:Math.min(need,room),behavior:reduce?'auto':'smooth'});
+}
+if(window.visualViewport) visualViewport.addEventListener('resize',()=>setTimeout(keepInView,50));
+async function doTap(){
+  if(M.busy) return; M.busy=true; const m=M.mv[M.i];
+  $('go').disabled=true; setNote('');
+  const show=t=>{ $('sub').innerHTML=t; };
+  const note=await m.run(BOARD,show); draw();
+  $('go').disabled=false; M.busy=false;
+  M.i++; G.si=M.i;
+  if(M.i>=M.mv.length) finish(note); else showMove(note);
+}
+async function check(){
+  if(M.busy) return; const m=M.mv[M.i], box=$('box'); if(!box) return;
+  const v=box.value.trim(), fb=$('fb');
+  if(v===''){ fb.textContent='Type a number in the glowing box.'; fb.className='fb no'; box.focus(); return; }
+  if(+v!==m.expect){
+    M.tries++; M.err=true; box.classList.remove('bad'); void box.offsetWidth; box.classList.add('bad');
+    if(M.tries>=2){ fb.innerHTML=`It is <b>${m.wrong}</b>. Type <b>${m.expect}</b> to keep going.`; box.placeholder=String(m.expect); }
+    else if(m.fact){ fb.innerHTML=`Not quite. Try this: ${m.help}`; }
+    else if(m.partial && v===m.partial){ fb.innerHTML=m.last?`Close! This is the last one, so type <b>both</b> digits.`:`Close! Type the <b>whole</b> number (both digits). We carry next.`; }
+    else if(m.noCarry!==null && m.noCarry!==undefined && +v===m.noCarry){ fb.innerHTML=`Almost! Now add the small carry, <b>${m.cin}</b>.`; }
+    else { fb.innerHTML='Not quite. '+(m.add?'Add the yellow numbers again, one at a time.':m.cin?`Multiply the two big yellow digits, then add the small <b>${m.cin}</b>.`:'Multiply the yellow numbers again.'); }
+    fb.className='fb help';
+    box.select(); return;
+  }
+  M.busy=true; if(BOARD.fact) BOARD.open=false; else BOARD.open=null;
+  fb.textContent='✓'; fb.className='fb yes'; setNote('');
+  const note=await m.after(BOARD); draw();
+  M.busy=false; M.i++; G.si=M.i;
+  if(M.i>=M.mv.length) finish(note); else showMove(note);
+}
+function finish(note){
+  const right=!M.err, p=current;
+  if(!BOARD.fact){ BOARD.hot=[]; BOARD.open=null; }
+  draw();
+  $('where').textContent='Done';
+  const eq=`${p.a} × ${p.b} = ${fmt(p.answer)}`;
+  if(BOARD.fact){
+    $('msg').innerHTML=right?`✓ <b>${eq}</b>. ${note}`:`✓ Done. <b>${eq}</b>`;
+    $('sub').innerHTML=right?'':'Say it to yourself once to lock it in.';
+  } else {
+    $('msg').innerHTML=(right?'✓ Solved it! ':'✓ Done. ')+`<b>${eq}</b>`;
+    setNote(note); $('sub').innerHTML='';
+    $('checkline').innerHTML=checkLine(p); $('checkline').classList.add('show');
+  }
+  $('fb').textContent=''; $('fb').className='fb';
+  concludeProblem(right, $('go'));
+}
+
+/* ---------- the set ---------- */
+function nextProblem(){ let useLevel=level; if(level>1 && Math.random()<0.25) useLevel=level-1; current=GEN[useLevel](); renderProblem(); }
+function concludeProblem(right, btn){
+  results[index]=right;
+  if(right){ correctCount++; streak++; bestStreak=Math.max(bestStreak,streak); recentMisses=0;
+    if(streak>0 && streak%3===0 && level<6){level++; recentMisses=0;} }
+  else { streak=0; recentMisses++; if(recentMisses>=2 && level>1){level--; recentMisses=0;} }
+  levelReachedThisSet=Math.max(levelReachedThisSet,level);
+  updateHUD(); paintDots();
+  btn.textContent=(index===SET_LEN-1)?'See results':'Next problem →';
+  btn.className='btn '+(right?'':'sky'); btn.onclick=advance; btn.disabled=false; btn.focus();
+}
+function advance(){ index++; if(index>=SET_LEN){endSet();return;} nextProblem(); }
+function paintDots(){ let h=''; for(let i=0;i<SET_LEN;i++){let cls='dot';if(i<index)cls+=results[i]?' good':' miss';if(i===index)cls+=' cur';h+=`<span class="${cls}"></span>`;} $('dots').innerHTML=h; }
+function startSet(){
+  correctCount=0;index=0;streak=0;bestStreak=0;recentMisses=0;levelReachedThisSet=level;results=[];
+  $('start').classList.add('hide');$('summary').classList.add('hide');$('play').classList.remove('hide');
+  updateHUD();nextProblem();
+}
+function updateHUD(){$('lvl').textContent=level;$('strk').textContent=streak;}
+function endSet(){
+  $('play').classList.add('hide');const s=$('summary');s.classList.remove('hide');
+  $('s-acc').textContent=correctCount;$('s-best').textContent=bestStreak;$('s-lvl').textContent=levelReachedThisSet;
+  const pb=$('pb');
+  if(correctCount>sessionBest){sessionBest=correctCount;pb.textContent=`★ New personal best: ${correctCount}/10`;}
+  else pb.textContent=`Personal best this visit: ${sessionBest}/10`;
+  $('s-note').textContent=correctCount>=9?'Excellent! Clean work, digit by digit.':correctCount>=7?'Strong set. A few more first-try answers and you level up.'
+    :correctCount>=5?'Good work. Watch the carries — that is where the points are.':'Every problem showed you the steps. Go again — it gets easier.';
+}
+// Enter = Check (or Write 0 / Bring down / Next)
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter' || $('play').classList.contains('hide')) return;
+  e.preventDefault(); if(!$('go').disabled) $('go').click();
+});
+// only digits in the box
+document.addEventListener('input',e=>{ const t=e.target; if(t.id!=='box') return;
+  t.value=t.value.replace(/[^0-9]/g,'').slice(0,+t.maxLength||2); t.classList.remove('bad'); $('fb').textContent=''; $('fb').className='fb'; });
+
+/* ---------- worked example on the start screen: 47 × 3, finished ---------- */
+(function(){ BOARD=newBoard(mk(47,3),false); BOARD.rows.small=[null,2,null]; BOARD.rows.ans=[1,4,1]; draw($('exPaper')); BOARD=null; })();
+</script>
+<script src="../../../tracker-config.js"></script>
+<script src="../../../score-send.js"></script>
+<script src="fluency-progress.js" data-module="Multiply"></script>
+</body>
+</html>

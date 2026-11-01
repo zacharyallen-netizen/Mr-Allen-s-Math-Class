@@ -23,6 +23,13 @@ header.top p{margin:0;opacity:.85;font-size:.95rem}
 .audio-ctrl button{background:rgba(255,255,255,.16);color:#fff;border:none;border-radius:8px;padding:7px 11px;font-size:.9rem;cursor:pointer;font-weight:600}
 .audio-ctrl button:hover{background:rgba(255,255,255,.3)}
 .audio-ctrl button.on{background:var(--gold2);color:var(--navy)}
+/* phones: back link and sound buttons sit in their own row above the title */
+@media(max-width:640px){
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;padding-top:12px}
+  header.top .backlink,header.top .audio-ctrl{position:static}
+  header.top h1,header.top p{flex-basis:100%}
+  header.top h1{margin-top:8px}
+}
 .subnav{position:sticky;top:0;z-index:50;background:var(--navy);display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:9px 8px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
 .subnav a{color:#fff;text-decoration:none;font-size:.82rem;font-weight:600;padding:5px 10px;border-radius:7px;opacity:.9}
 .subnav a:hover{background:rgba(255,255,255,.16);opacity:1}
@@ -121,9 +128,13 @@ table.rubric .lv5{background:var(--greenbg)}
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:9999}
 .footer{text-align:center;color:var(--muted);font-size:.82rem;margin-top:30px}
 @media(max-width:640px){.match-grid{gap:14px}.pot-obj{font-size:3.6rem}.pot-sn{font-size:1.5rem}}
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;position:relative;margin:0 1px}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}.sf>span:last-child{padding:0 2px}.sf>.sfx{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
+<script src="../brand.js"></script>
 </head>
 <body>
+<script src="../site-bar.js"></script>
 <header class="top">
   <a class="backlink" href="unit2.html">← Back to Unit 2</a>
   <div class="audio-ctrl">
@@ -135,9 +146,6 @@ table.rubric .lv5{background:var(--greenbg)}
 </header>
 
 <nav class="subnav">
-  <a href="#g1">🗂️ Rule Sorter</a>
-  <a href="#g2">🔗 Match &amp; Simplify</a>
-  <a href="#g3">🧱 Build the Answer</a>
   <a href="#pot">🔭 Powers of Ten</a>
   <a href="#conv">🔢 Converter</a>
   <a href="#earth">🌍 Earth from Space</a>
@@ -146,46 +154,8 @@ table.rubric .lv5{background:var(--greenbg)}
 
 <div class="wrap">
 
-<!-- ============ GAME 1: RULE SORTER ============ -->
-<section class="block" id="g1">
-  <h2 class="game-h"><span class="ico">🗂️</span> Game 1 · Rule Sorter</h2>
-  <p class="game-sub">Drag each expression into the bin for the rule that applies. You don't have to simplify — just pick the right rule!</p>
-  <div class="scorebar">
-    <span class="score" id="g1score">0 of 10 sorted</span>
-    <button class="btn gold" onclick="G1.reset()">↻ New Round</button>
-    <span class="win-msg" id="g1win">🎉 All sorted — nice work!</span>
-  </div>
-  <div class="tray" id="g1tray"></div>
-  <div class="bins" id="g1bins"></div>
-</section>
 
-<!-- ============ GAME 2: MATCH & SIMPLIFY ============ -->
-<section class="block" id="g2">
-  <h2 class="game-h"><span class="ico">🔗</span> Game 2 · Match &amp; Simplify</h2>
-  <p class="game-sub">Drag each expression from the left onto its simplified answer on the right.</p>
-  <div class="scorebar">
-    <span class="score" id="g2score">0 of 6 matched</span>
-    <button class="btn gold" onclick="G2.reset()">↻ New Round</button>
-    <span class="win-msg" id="g2win">🎉 Perfect match!</span>
-  </div>
-  <div class="match-grid">
-    <div class="match-col"><h4>Expressions</h4><div id="g2left"></div></div>
-    <div class="match-col"><h4>Simplified</h4><div id="g2right"></div></div>
-  </div>
-</section>
 
-<!-- ============ GAME 3: BUILD THE ANSWER ============ -->
-<section class="block" id="g3">
-  <h2 class="game-h"><span class="ico">🧱</span> Game 3 · Build the Answer</h2>
-  <p class="game-sub">Drag the correct chips into the answer slots. Watch the coefficient — the power hits it too!</p>
-  <div class="scorebar">
-    <span class="score" id="g3score">0 of 5 built</span>
-    <button class="btn gold" onclick="G3.reset()">↻ New Round</button>
-    <span class="win-msg" id="g3win">🎉 All built correctly!</span>
-  </div>
-  <div id="g3area"></div>
-  <div class="tray" id="g3tray"></div>
-</section>
 
 <!-- ============ POWERS OF TEN ============ -->
 <section class="block" id="pot">
@@ -220,7 +190,7 @@ table.rubric .lv5{background:var(--greenbg)}
     </div>
     <div>
       <label for="cIn2">Scientific notation → Standard form</label>
-      <input id="cIn2" placeholder="e.g. 3.8e26 or 2.0 x 10^-9" oninput="Conv.toStd()">
+      <input id="cIn2" placeholder="e.g. 3.8 × 10⁻⁹ (type 3.8 x 10^-9)" oninput="Conv.toStd()">
       <div class="out" id="cOut2" style="margin-top:8px">Type a value above…</div>
     </div>
   </div>
@@ -259,14 +229,14 @@ table.rubric .lv5{background:var(--greenbg)}
 
   <div class="proj-card">
     <h4>⭐ To earn a Level 5</h4>
-    <p style="margin:0">Compare and contrast your data with other data points using phrases like "greater than" or "times greater than." These require operations with scientific notation — so <b>show your work!</b></p>
+    <p style="margin:0">Compare two of your numbers. Say how many times bigger one is: "___ is about ___ times bigger than ___." Divide the bigger number by the smaller one to find it, and <b>show your division!</b></p>
   </div>
 
   <div class="exemplar">
     <b>Worked comparison (from the exemplar):</b><br>
-    Sirius A produces <code>2.5 × 10²⁷</code> W; the Sun produces <code>3.8 × 10²⁶</code> W.<br>
-    (2.5 × 10²⁷) ÷ (3.8 × 10²⁶) = (2.5 ÷ 3.8) × 10¹ ≈ 0.66 × 10¹ = <b>6.6</b><br>
-    → Sirius A gives off about <b>6.6 times</b> more energy than our Sun.
+    Sirius A produces about <code>9.5 × 10²⁷</code> W; the Sun produces <code>3.8 × 10²⁶</code> W.<br>
+    (9.5 × 10²⁷) ÷ (3.8 × 10²⁶) = (9.5 ÷ 3.8) × 10¹ = 2.5 × 10¹ = <b>25</b><br>
+    → Sirius A gives off about <b>25 times</b> more energy than our Sun.
   </div>
 
   <h3 style="margin-top:22px;color:var(--navy)">Project Rubric</h3>
@@ -417,7 +387,7 @@ var G1=(function(){
 var G2=(function(){
   var pairs=[
     {e:'x⁴ · x³',a:'x⁷'},{e:'(x²)⁵',a:'x¹⁰'},{e:'x⁹ ÷ x⁴',a:'x⁵'},
-    {e:'(2x³)²',a:'4x⁶'},{e:'(3x²)(4x⁵)',a:'12x⁷'},{e:'5⁻²',a:'1/25'}
+    {e:'(2x³)²',a:'4x⁶'},{e:'(3x²)(4x⁵)',a:'12x⁷'},{e:'5⁻²',a:'<span class="sf"><span>1</span><span class="sfx">/</span><span>25</span></span>'}
   ];
   var done=0;
   function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
@@ -506,9 +476,9 @@ var POT=(function(){
     {o:'💇',n:'Human hair (width)',sn:'7 × 10⁻⁵ m',std:'0.00007 m',b:'About 35,000 times wider than a DNA strand.'},
     {o:'⏳',n:'Grain of sand',sn:'5 × 10⁻⁴ m',std:'0.0005 m',b:'Just big enough to see clearly.'},
     {o:'🧍',n:'Human',sn:'1.7 × 10⁰ m',std:'≈ 1.7 m',b:'Our everyday reference point — the middle of the cosmic scale.'},
-    {o:'🏈',n:'Football field',sn:'1 × 10² m',std:'100 m',b:'A hundred meters, goal line to goal line.'},
+    {o:'🏈',n:'Football field',sn:'≈ 1 × 10² m',std:'≈ 91 m',b:'About 100 yards (91 m), goal line to goal line.'},
     {o:'🏔️',n:'Mount Everest',sn:'8.8 × 10³ m',std:'8,800 m',b:'The tallest mountain above sea level.'},
-    {o:'🌍',n:'Earth (diameter)',sn:'1.3 × 10⁷ m',std:'12,700,000 m',b:'Our home planet, about 12,700 km across.'},
+    {o:'🌍',n:'Earth (diameter)',sn:'1.27 × 10⁷ m',std:'12,700,000 m',b:'Our home planet, about 12,700 km across.'},
     {o:'☀️',n:'Sun (diameter)',sn:'1.4 × 10⁹ m',std:'1,400,000,000 m',b:'About 109 Earths would fit across the Sun.'},
     {o:'🛰️',n:'Earth → Sun distance',sn:'1.5 × 10¹¹ m',std:'150,000,000,000 m',b:'Light takes about 8 minutes to cross this gap.'},
     {o:'✨',n:'One light-year',sn:'9.5 × 10¹⁵ m',std:'9,500,000,000,000,000 m',b:'How far light travels in a single year.'},
@@ -550,7 +520,7 @@ var Conv=(function(){
     raw=raw.replace(/[\u2070\u00b9\u00b2\u00b3\u2074-\u2079\u207b]/g,function(ch){
       var map={'\u2070':'0','\u00b9':'1','\u00b2':'2','\u00b3':'3','\u2074':'4','\u2075':'5','\u2076':'6','\u2077':'7','\u2078':'8','\u2079':'9','\u207b':'-'};return map[ch]||ch; });
     var m=raw.match(/^(-?\d*\.?\d+)(e|x10\^?)(-?\d+)$/);
-    if(!m){ out.className='out err'; out.textContent='Try a form like 3.8e26 or 3.8 x 10^-9'; return; }
+    if(!m){ out.className='out err'; out.textContent='Type it like 3.8 x 10^-9'; return; }
     var exp=parseInt(m[3],10);
     out.className='out'; out.textContent=expand(m[1],exp);
   }
@@ -573,7 +543,7 @@ var Conv=(function(){
 })();
 
 /* ================= INIT ================= */
-G1.reset(); G2.reset(); G3.reset(); POT.set(7);
+POT.set(7);
 window.addEventListener('resize',function(){var c=document.getElementById('confetti');c.width=innerWidth;c.height=innerHeight;});
 </script>
 </body>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Line Detective — IC Imagine 8th Grade Math</title>
+<title>Line Detective — Mr. Allen's 8th Grade Math</title>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#1B2A4A;--gold:#C8A951;--light-bg:#F0F4FA;--light-gold:#FDF8EC;--green:#22AC00;--red:#C62828;--gray:#666;--border:#D0D7E3}
@@ -83,10 +83,14 @@ header p{color:#b8c8e8;font-size:.9rem;margin-top:.5rem;max-width:600px;margin-l
   .eq-grid{grid-template-columns:1fr 1fr}
   .status-bar{flex-direction:column;align-items:flex-start;gap:.4rem}
 }
+/* stacked fractions */
+.sf{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;font-size:.9em;font-style:normal}.sf>span:first-child{border-bottom:1.5px solid currentColor;padding:0 2px}
 </style>
 </head>
 <body>
-<a href="unit6.html" class="back-to-unit6">← Back to Unit 6</a>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit6.html">← Unit 6</a></nav>
+
 <style>
 .back-to-unit6{position:fixed;top:12px;left:12px;z-index:9999;display:inline-block;padding:8px 14px;background:linear-gradient(135deg,#1E2D4F,#0d1f3f);color:#FFC107;font-family:'Arvo',Georgia,serif;font-weight:bold;font-size:13px;border-radius:8px;border:2px solid #FFC107;text-decoration:none;box-shadow:0 2px 8px rgba(0,0,0,0.3);transition:all .2s}
 .back-to-unit6:hover{background:#FFC107;color:#1E2D4F;transform:translateY(-1px)}
@@ -127,7 +131,7 @@ header p{color:#b8c8e8;font-size:.9rem;margin-top:.5rem;max-width:600px;margin-l
   <h2>🔍 Detective Clues</h2>
   <div class="locked-msg" id="lockedMsg"><strong>🔒 Graph all 8 lines</strong> to unlock the detective clues!</div>
   <div id="cluesList" style="display:none">
-    <p>Use your graph above to crack each case. Type the letter(s) of the matching line(s). For multiple lines, separate with commas (e.g. "A, C").</p>
+    <p>Use your graph above to crack each case. Type the letter(s) of the matching line(s). For more than one line, use commas or spaces (e.g. "A, C" or "A C").</p>
     <div id="clues"></div>
     <div class="scoreboard">
       <h3>🏆 Cases Solved</h3>
@@ -162,8 +166,8 @@ var cluesUnlocked = false;
 var CLUES = [
   { id:1,  text:'Which two lines are PARALLEL with slope 1?', answer:'A,D', hint:'Parallel = same slope. Which two have m = 1?' },
   { id:2,  text:'Which two lines are PARALLEL with slope 2?', answer:'B,F', hint:'Look for two lines where m = 2.' },
-  { id:3,  text:'Which line is PERPENDICULAR to Line A?', answer:'C', hint:'Line A has slope 1. Perpendicular slope = negative reciprocal = −1.' },
-  { id:4,  text:'Which line is PERPENDICULAR to Line B?', answer:'E', hint:'Line B has slope 2. Negative reciprocal of 2 = −1/2.' },
+  { id:3,  text:'<b>Challenge:</b> Which line is PERPENDICULAR to Line A?', answer:'C', hint:'Line A has slope 1. Perpendicular slope = negative reciprocal = −1.' },
+  { id:4,  text:'<b>Challenge:</b> Which line is PERPENDICULAR to Line B?', answer:'E', hint:'Line B has slope 2. Negative reciprocal of 2 = −<span class="sf"><span>1</span><span>2</span></span>.' },
   { id:5,  text:'Which THREE lines all pass through (2, 3)?', answer:'A,C,G', hint:'Plug x = 2 into each equation. Which give y = 3?' },
   { id:6,  text:'Which THREE lines all pass through (2, 2)?', answer:'B,E,H', hint:'Plug x = 2 into each equation. Which give y = 2?' },
   { id:7,  text:'Which line is horizontal?', answer:'G', hint:'Horizontal = slope 0. Which equation has no x?' },
@@ -362,7 +366,7 @@ CLUES.forEach(function(clue) {
   var div = document.createElement('div');
   div.className = 'clue';
   div.id = 'clue-' + clue.id;
-  var ph = clue.type === 'point' ? 'x, y' : 'Letter(s)';
+  var ph = clue.type === 'point' ? 'x, y' : 'e.g. C, H';
   div.innerHTML = '<div><span class="clue-num">' + clue.id + '</span><span class="clue-text">' + clue.text + '</span></div>' +
     '<div class="input-row"><input type="text" id="ans-' + clue.id + '" placeholder="' + ph + '">' +
     '<button class="btn btn-navy btn-sm" onclick="checkClue(' + clue.id + ')">Check</button>' +
@@ -382,10 +386,18 @@ function checkClue(id) {
   var el = document.getElementById('clue-'+id);
   var correct = false;
   if (clue.type === 'point') {
-    var clean = input.replace(/[() ]/g,'');
+    var clean = input.replace(/[\u2212\u2013\u2014]/g,'-').replace(/[()\s]/g,'');
     correct = clean === clue.answer;
   } else {
-    var norm = input.toUpperCase().replace(/[^A-H,]/g,'').split(',').map(function(s){return s.trim();}).filter(Boolean).sort().join(',');
+    // Accept "A, D", "A D", "AD", "D,A", "A and D", "Lines A & D" ...
+    var words = input.toUpperCase().match(/[A-Z]+/g) || [];
+    var letters = [], bad = false;
+    words.forEach(function(w){
+      if (w === 'AND' || w === 'LINE' || w === 'LINES') return;
+      if (/^[A-H]+$/.test(w)) letters = letters.concat(w.split(''));
+      else bad = true;
+    });
+    var norm = bad ? '' : letters.filter(function(l,i){return letters.indexOf(l)===i;}).sort().join(',');
     correct = norm === clue.answer.split(',').sort().join(',');
   }
   if (correct) {
@@ -399,7 +411,5 @@ function checkClue(id) {
 // Init
 renderGraph();
 </script>
-
-<a href="index.html" title="8th Grade Home" style="position:fixed;bottom:20px;left:20px;z-index:9998;width:52px;height:52px;border-radius:50%;background:#1E2D4F;border:3px solid #FFC107;display:flex;align-items:center;justify-content:center;font-size:1.5em;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,.3)">🏠</a>
 </body>
 </html>
