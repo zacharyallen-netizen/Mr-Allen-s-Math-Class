@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Estimating Square &amp; Cube Roots — Mr. Allen's 8th Grade Math</title>
+<title>Estimating Square Roots — Mr. Allen's 8th Grade Math</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -110,7 +110,7 @@
 <nav class="sb-local" aria-label="On this page"><a href="unit1.html" aria-current="page">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html">U6</a> <a href="unit7.html">U7</a> <a href="unit8.html">U8</a> <a href="unit9.html">U9</a> <a href="tools.html">Tools</a></nav>
 
 <header>
-  <h1>Estimating <span class="em">Square &amp; Cube Roots</span></h1>
+  <h1>Estimating <span class="em" id="h1em">Square Roots</span></h1>
   <span class="std">NC.8.NS.2 · estimate roots to the nearest tenth · locate &amp; order on a number line</span>
   <p>Pick a root, watch it land between two whole numbers, run the 4-step algorithm, then order a mixed set by turning everything into a decimal.</p>
 </header>
@@ -122,9 +122,9 @@
     <h2><span class="num">1</span> Place it on a number line</h2>
     <p class="lead">A non-perfect root always sits <b>between two consecutive whole numbers</b>. Pick one and see where it falls.</p>
 
-    <div class="grp"><div class="pick-label">Square roots</div>
+    <div class="grp" id="sqGrp"><div class="pick-label">Square roots</div>
       <div class="picker" id="sqPicker"></div></div>
-    <div class="grp"><div class="pick-label">Cube roots</div>
+    <div class="grp" id="cuGrp" hidden><div class="pick-label">Cube roots</div>
       <div class="picker" id="cuPicker"></div></div>
 
     <div class="nlwrap">
@@ -137,7 +137,7 @@
 
   <section class="part">
     <h2><span class="num">2</span> The 4-step algorithm</h2>
-    <p class="lead">Same idea, but it gives you a <b>decimal to the nearest tenth</b>. It works the same for cube roots — just use cubes.</p>
+    <p class="lead">Same idea, but it gives you a <b>decimal to the nearest tenth</b>.<span id="cuNote" hidden> It works the same for cube roots — just use cubes.</span></p>
 
     <div class="formula" id="formula"></div>
     <div class="steps" id="algoSteps"></div>
@@ -712,6 +712,11 @@
   "use strict";
   var NAVY="#1E2D4F", GOLD="#FFC107", GOLDDP="#c8980a", INK="#1b1f26", GREY="#b9b4a3";
   function $(id){return document.getElementById(id);}
+  // Cube roots live in the Unit 1 Cubes tutorial: this page shows them only when opened with ?roots=cube
+  var CUBE=/[?&]roots=cube/.test(location.search);
+  if(CUBE){ $('sqGrp').hidden=true; $('cuGrp').hidden=false; $('cuNote').hidden=false; $('h1em').textContent='Cube Roots';
+    document.title='Estimating Cube Roots — Mr. Allen\'s 8th Grade Math';
+  }
 
   // featured values where the 4-step estimate matches the true nearest tenth
   var SQ=[3,5,7,8,30,40,45,50,60,90];
@@ -815,7 +820,7 @@
   // ---------- try it ----------
   var tryC=null;
   function newTry(){
-    var all=SQ.map(function(n){return['sq',n];}).concat(CU.map(function(n){return['cu',n];}));
+    var all=CUBE?CU.map(function(n){return['cu',n];}):SQ.map(function(n){return['sq',n];});
     var pick=all[Math.floor(Math.random()*all.length)];
     tryC=compute(pick[0],pick[1]);
     $('tryPrompt').innerHTML='Estimate <b>'+radHTML(tryC)+'</b> to the nearest tenth using the algorithm.';
@@ -883,7 +888,7 @@
   $('ordReveal').onclick=revealOrder;
   $('errCard').onclick=function(){this.classList.toggle('open');};
   // default selection
-  select('sq',45,$('sqPicker').children[6]);  // √45
+  if(CUBE) select('cu',30,$('cuPicker').children[0]); else select('sq',45,$('sqPicker').children[6]);  // ∛30 or √45
   newTry();
 })();
 </script>
@@ -891,7 +896,7 @@
 <script src="../score-send.js"></script>
 <script>
 /* Send-my-work tracker: the "Your turn" estimates. */
-if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'1', page:'Unit 1 · Estimating Roots · Your turn', mount:'#ss-mount', std:'NC.8.NS.2', band:4 });
+if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'1', page:(/[?&]roots=cube/.test(location.search)?'Unit 1 · Cubes Tutorial · Estimating cube roots':'Unit 1 · Estimating Roots · Your turn'), mount:'#ss-mount', std:'NC.8.NS.2', band:4 });
 </script>
 </body>
 </html>
