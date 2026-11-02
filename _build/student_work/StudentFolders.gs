@@ -2,16 +2,18 @@
  * ════════════════════════════════════════════════════════════════════
  *  Mr. Allen's Math Class — Student Folders
  *
- *  Makes one Drive folder per student (inside the Tracker folder), each with
- *    • a Google Docs copy of every Student Self-Assessment form, and
- *    • a copy of "2627 Standards w/ Targets Tracker: Student Template",
- *  filled in with the student's name, period and the scores from
- *  "2627 Standards Progress Tracker - Teacher Version".
+ *  2627 Student Folders → Period → Student, each student folder holding:
+ *    • Standards Tracker (scores from "2627 Standards Progress Tracker - Teacher Version")
+ *    • I Can Tracker (Tabbed) with name and period
+ *    • Fluency Results — their own Fluency Lab Skill Checks and Flashpoint (view only)
+ *    • Fluency Lab Tracker (printable PDF)
+ *    • Self-Assessments/ — a Google Docs copy of every Student Self-Assessment form
  *
  *  It only READS the teacher tracker. It never changes it.
  *
  *  HOW TO USE  (add this as a second file in the Student Work script project:
  *               Files  +  → Script → name it StudentFolders → paste → Save)
+ *   0. Left sidebar: Services  +  → choose "Drive API" → Add   (one time)
  *
  *   1. Run  buildStudentFolders
  *        Builds the folders. 62 students × ~24 files takes a while, so it
@@ -33,10 +35,13 @@ var SF = {
   TEMPLATE_DOC_ID : '1F1T6sXo_pxFejkfzm0yaLg9Ctct4IGB_QRuel1-rsr0',   // Standards w/ Targets Tracker: Student Template
   FORMS_FOLDER_ID : '1CgqhfvH-Pzp2NReqTopZslD93bl4Xohi',  // 2627 Student Self Assessment Forms
   TRACKER_FOLDER  : '1_1rVzrfvl-qstStMR3kEgZ-Y13nDvA3b',  // 2627 Student Standards Data Tracker
+  FLUENCY_PDF_ID  : '1gWWEIUsyXFhZKk5NNQlSr4PcLOHYyTd-',  // 2627 Fluency Lab Tracker .pdf (printable)
+  ICAN_DOC_ID     : '1gttB95Szivg3uf4ZKjtsdFFgG1TvaVuUFROZ1oD4peA',  // 2627 I Can Tracker (Tabbed): Student Template
   ROOT_NAME       : '2627 Student Folders',
+  FORMS_SUB       : 'Self-Assessments',
   DOMAIN          : 'icimagine.org',
   LOG_TAB         : 'Student Folders',
-  MAX_MS          : 4.5 * 60 * 1000
+  MAX_MS          : 3.5 * 60 * 1000   // leaves room under Google's 6-minute limit
 };
 var LEVELS = { 1: 'Beginning', 2: 'Developing', 3: 'Approaching', 4: 'Proficient', 5: 'Mastery' };
 var SCORE_LINE = "Mr. Allen's score: ";
@@ -69,7 +74,8 @@ function runBatch_(mode) {
   var props = PropertiesService.getScriptProperties();
   var key = 'sf_done_' + mode, done = JSON.parse(props.getProperty(key) || '{}');
 
-  var data = readTracker_();                 // {students:[{key,name,period,scores:{},ticks:{}}], stds:[...]}
+  var data = readTracker_();                 // {students:[{key,name,period,scores:{},ticks:{}}]}
+  var fl = readFluency_();
   var forms = mode === 'build' ? listForms_() : null;
   var root = mode === 'build' ? childFolder_(DriveApp.getFolderById(SF.TRACKER_FOLDER), SF.ROOT_NAME) : null;
   var log = logSheet_();
@@ -77,61 +83,159 @@ function runBatch_(mode) {
   for (var i = 0; i < data.students.length; i++) {
     var s = data.students[i];
     if (done[s.key]) continue;
-    if (Date.now() - t0 > SF.MAX_MS) {
-      props.setProperty(key, JSON.stringify(done));
-      ScriptApp.newTrigger(fn).timeBased().after(60 * 1000).create();
-      return 'Paused after ' + Object.keys(done).length + ' of ' + data.students.length + ' students; continues in 1 minute.';
-    }
-    var row = logRow_(log, s);
-    var folder;
-    if (mode === 'build') {
-      folder = childFolder_(childFolder_(root, s.period), s.name);
-      var made = buildOne_(folder, s, forms);
-      writeLog_(log, row, s, folder, made + ' files', '');
-    } else {
-      var id = folderIdFromLink_(log.getRange(row, 4).getValue());
-      if (!id) continue;
-      folder = DriveApp.getFolderById(id);
-      fillFolder_(folder, s);
-      log.getRange(row, 5).setValue('Scores updated ' + stamp_());
+    if (Date.now() - t0 > SF.MAX_MS) return pause_(props, key, done, fn, 1, 'Paused after ' + Object.keys(done).length + ' of ' + data.students.length + ' students; continues in 1 minute.');
+    var row = logRow_(log, s), status = String(log.getRange(row, 5).getValue());
+    try {
+      var folder;
+      if (mode === 'build') {
+        if (/v2/.test(status)) { done[s.key] = 1; continue; }                  // already complete
+        folder = childFolder_(childFolder_(root, s.period), s.name);
+        var made = buildOne_(folder, s, forms, fl, /files/.test(status));
+        writeLog_(log, row, s, folder, made + ' files v2');
+      } else {
+        var id = folderIdFromLink_(log.getRange(row, 4).getValue());
+        if (!id) continue;
+        folder = DriveApp.getFolderById(id);
+        fillFolder_(folder, s);
+        fluencySheet_(folder, s, fl);
+        log.getRange(row, 5).setValue('Scores updated ' + stamp_() + ' v2');
+      }
+    } catch (e) {                                           // a Google hiccup: note it and try again in 2 minutes
+      log.getRange(row, 5).setValue('Retrying: ' + String(e.message || e).slice(0, 120));
+      return pause_(props, key, done, fn, 2, 'Stopped on ' + s.name + ' (' + e.message + '); retrying in 2 minutes.');
     }
     done[s.key] = 1;
+    props.setProperty(key, JSON.stringify(done));   // save progress after every student
   }
   props.deleteProperty(key);
   return (mode === 'build' ? 'Built ' : 'Updated ') + data.students.length + ' students.';
 }
 
+function pause_(props, key, done, fn, minutes, msg) {
+  props.setProperty(key, JSON.stringify(done));
+  ScriptApp.newTrigger(fn).timeBased().after(minutes * 60 * 1000).create();
+  return msg;
+}
+
 // ───────────────────────────── one student ─────────────────────────────
 
-function buildOne_(folder, s, forms) {
-  var count = 0;
-  var trackerName = 'Standards Tracker — ' + s.name;
-  if (!folder.getFilesByName(trackerName).hasNext()) {
-    DriveApp.getFileById(SF.TEMPLATE_DOC_ID).makeCopy(trackerName, folder);
-  }
+// Student folder:  Standards Tracker · I Can Tracker · Fluency Results · Fluency Lab Tracker (PDF)
+//                  Self-Assessments/  (one form per standard)
+function buildOne_(folder, s, forms, fl, alreadyFilled) {
+  var sub = childFolder_(folder, SF.FORMS_SUB), count = 0;
+  // Standards Tracker (filled with scores)
+  var tName = 'Standards Tracker — ' + s.name, t = firstFile_(folder, tName);
+  if (!t) t = DriveApp.getFileById(SF.TEMPLATE_DOC_ID).makeCopy(tName, folder);
+  if (!alreadyFilled) { var td = DocumentApp.openById(t.getId()); fillTracker_(td.getBody(), s); td.saveAndClose(); }
   count++;
+  // Self-assessment forms → Self-Assessments subfolder
   forms.forEach(function (f) {
-    var name = f.std + ' Self-Assessment — ' + s.name;
-    if (!folder.getFilesByName(name).hasNext()) convertCopy_(f.id, name, folder.getId());
+    var name = f.std + ' Self-Assessment — ' + s.name, top = firstFile_(folder, name), inSub = firstFile_(sub, name), id = null;
+    if (top) { top.moveTo(sub); if (!alreadyFilled) id = top.getId(); }
+    else if (!inSub) id = withRetry_(function () { return convertCopy_(f.id, name, sub.getId()); });
+    else if (!alreadyFilled) id = inSub.getId();
+    if (id) { var d = DocumentApp.openById(id); fillForm_(d.getBody(), s, f.std); d.saveAndClose(); }
     count++;
   });
-  fillFolder_(folder, s);
-  return count;
+  // I Can Tracker (Tabbed) with name and period
+  var iName = 'I Can Tracker — ' + s.name;
+  if (!firstFile_(folder, iName)) {
+    var ic = DriveApp.getFileById(SF.ICAN_DOC_ID).makeCopy(iName, folder), idoc = DocumentApp.openById(ic.getId()), b = idoc.getBody();
+    b.replaceText('Name: _+', 'Name: ' + s.name); b.replaceText('Period: _+', 'Period: ' + s.period.replace('Period ', ''));
+    idoc.saveAndClose();
+  }
+  count++;
+  // Printable Fluency Lab tracker
+  var pName = 'Fluency Lab Tracker (printable) — ' + s.name + '.pdf';
+  if (!firstFile_(folder, pName)) DriveApp.getFileById(SF.FLUENCY_PDF_ID).makeCopy(pName, folder);
+  count++;
+  // Fluency results from the Fluency Lab sheet
+  fluencySheet_(folder, s, fl);
+  return count + 1;
 }
 
 function fillFolder_(folder, s) {
-  var it = folder.getFiles();
-  while (it.hasNext()) {
-    var f = it.next();
-    if (f.getMimeType() !== MimeType.GOOGLE_DOCS) continue;
-    var title = f.getName(), doc = DocumentApp.openById(f.getId()), body = doc.getBody();
-    if (title.indexOf('Standards Tracker') === 0) fillTracker_(body, s);
-    else {
-      var m = title.match(/^(NC\.8\.[A-Z]+\.\d+)/);
-      if (m) fillForm_(body, s, m[1]);
+  [folder, childFolder_(folder, SF.FORMS_SUB)].forEach(function (fd) {
+    var it = fd.getFiles();
+    while (it.hasNext()) {
+      var f = it.next();
+      if (f.getMimeType() !== MimeType.GOOGLE_DOCS) continue;
+      var title = f.getName(), m = title.match(/^(NC\.8\.[A-Z]+\.\d+) Self-Assessment/);
+      if (title.indexOf('Standards Tracker') !== 0 && !m) continue;
+      var doc = DocumentApp.openById(f.getId()), body = doc.getBody();
+      if (m) fillForm_(body, s, m[1]); else fillTracker_(body, s);
+      doc.saveAndClose();
     }
-    doc.saveAndClose();
+  });
+}
+
+function firstFile_(folder, name) { var it = folder.getFilesByName(name); return it.hasNext() ? it.next() : null; }
+
+function withRetry_(fn) {
+  for (var k = 0; k < 4; k++) {
+    try { return fn(); } catch (e) { if (k === 3) throw e; Utilities.sleep(2000 * (k + 1)); }
   }
+}
+
+// ───────────────────────────── Fluency results ─────────────────────────────
+
+var MODULES = ['Add & Subtract', 'Multiply', 'Divide', 'Fractions', 'Decimals & Percents', 'Integers', 'Ratios & Proportions', 'Expressions & Order of Operations'];
+
+function readFluency_() {
+  var ss = SpreadsheetApp.openById(FLUENCY_ID), out = { scores: [], flash: {}, flashHead: [], alias: {} };
+  var r = ss.getSheetByName('Roster'), rv = r ? r.getDataRange().getValues() : [];
+  for (var i = 1; i < rv.length; i++) {
+    var n = String(rv[i][0]).trim(); if (!n) continue;
+    out.alias[n] = [n].concat(String(rv[i][2] || '').split(',').map(function (x) { return x.trim(); }).filter(String));
+  }
+  var sc = ss.getSheetByName('Scores'), sv = sc ? sc.getDataRange().getValues() : [];
+  for (var j = 1; j < sv.length; j++) if (sv[j][1]) out.scores.push({ when: sv[j][0], who: String(sv[j][1]), skill: String(sv[j][2]), score: sv[j][3], of: sv[j][4], pct: sv[j][5] });
+  var fp = ss.getSheetByName('Flashpoint'), fv = fp ? fp.getDataRange().getValues() : [];
+  if (fv.length) out.flashHead = fv[0].map(function (h) { return String(h).replace(/\s+/g, ' '); });
+  for (var k = 1; k < fv.length; k++) if (fv[k][0]) out.flash[String(fv[k][0]).trim()] = fv[k];
+  return out;
+}
+
+function isStudent_(typed, s, fl) {
+  var t = String(typed).toLowerCase().replace(/\s+/g, ' ').trim(), names = fl.alias[s.name] || [s.name];
+  for (var i = 0; i < names.length; i++) if (t === names[i].toLowerCase()) return true;
+  var parts = s.name.toLowerCase().split(' '), first = parts[0], last = parts[parts.length - 1];
+  return t.indexOf(first) >= 0 && t.indexOf(last) >= 0;
+}
+
+function sbg_(p) { return p >= 1 ? '4–5 (5 if you reached Level 6)' : p >= .8 ? '4 Mastery' : p >= .65 ? '3 Getting there' : p >= .4 ? '2 Partly' : '1 Starting'; }
+
+function fluencySheet_(folder, s, fl) {
+  var name = 'Fluency Results — ' + s.name, f = firstFile_(folder, name), ss;
+  if (f) ss = SpreadsheetApp.openById(f.getId());
+  else { ss = SpreadsheetApp.create(name); DriveApp.getFileById(ss.getId()).moveTo(folder); }
+  var sh = ss.getSheets()[0]; sh.clear(); sh.setName('My Fluency');
+  var mine = fl.scores.filter(function (r) { return isStudent_(r.who, s, fl); });
+  var rows = [['Fluency Lab — My Results', '', '', '', '', ''], [s.name + ' · ' + s.period + ' · updated ' + stamp_(), '', '', '', '', ''], ['', '', '', '', '', ''],
+              ['Module', 'Skill', 'Skill Check tries', 'Best %', 'SBG level (best)', 'Last try']];
+  MODULES.forEach(function (m, i) {
+    var t = mine.filter(function (r) { return r.skill === m; }), best = null, last = '';
+    t.forEach(function (r) { var p = Number(r.pct) || (r.of ? r.score / r.of : 0); if (best === null || p > best) best = p; if (!last || r.when > last) last = r.when; });
+    rows.push([i + 1, m, t.length || '', best === null ? '' : best, best === null ? 'not yet' : sbg_(best), last]);
+  });
+  rows.push(['', '', '', '', '', ''], ['Flashpoint', '', '', '', '', '']);
+  var fr = null; Object.keys(fl.flash).forEach(function (k) { if (isStudent_(k, s, fl)) fr = fl.flash[k]; });
+  for (var L = 1; L <= 5; L++) {
+    var c = 2 + (L - 1) * 2;
+    rows.push(['Level ' + L, 'Best right (of 20)', fr ? fr[c] : '', 'Stars', fr ? fr[c + 1] : '', '']);
+  }
+  rows.push(['Best points', fr ? fr[12] : '', 'Rounds played', fr ? fr[13] : '', 'Last played', fr ? fr[14] : '']);
+  rows.push(['', '', '', '', '', ''], ['All my Skill Checks', '', '', '', '', ''], ['Date', 'Skill', 'Score', 'Out of', 'Percent', '']);
+  mine.sort(function (a, b) { return a.when < b.when ? 1 : -1; }).forEach(function (r) { rows.push([r.when, r.skill, r.score, r.of, r.pct, '']); });
+  if (!mine.length) rows.push(['No Skill Checks sent yet.', '', '', '', '', '']);
+  sh.getRange(1, 1, rows.length, 6).setValues(rows);
+  sh.getRange('A1').setFontSize(16).setFontWeight('bold'); sh.getRange('A4:F4').setFontWeight('bold').setBackground('#1E2D4F').setFontColor('#FFFFFF');
+  sh.getRange(5, 4, 8, 1).setNumberFormat('0%');
+  [14, 22, 23].forEach(function (r) { if (r <= rows.length) sh.getRange(r, 1, 1, 6).setFontWeight('bold'); });
+  sh.setColumnWidth(2, 240); sh.setColumnWidth(5, 220); sh.setFrozenRows(4);
+  sh.getProtections(SpreadsheetApp.ProtectionType.SHEET).forEach(function (x) { x.remove(); });
+  var pr = sh.protect().setDescription('Filled in by Mr. Allen');            // students can look, not change
+  pr.removeEditors(pr.getEditors()); if (pr.canDomainEdit()) pr.setDomainEdit(false);
 }
 
 function fillForm_(body, s, std) {
@@ -265,25 +369,16 @@ function listForms_() {
 // ───────────────────────────── Drive helpers ─────────────────────────────
 
 // Copy a file, converting it to a Google Doc (default) or Sheet. Returns the new id.
+// Uses the Drive API service (left sidebar: Services + → Drive API → Add).
 function convertCopy_(id, name, parentId, mime) {
   var body = { name: name, mimeType: mime || MimeType.GOOGLE_DOCS };
   if (parentId) body.parents = [parentId];
-  var res = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + id + '/copy?supportsAllDrives=true', {
-    method: 'post', contentType: 'application/json', payload: JSON.stringify(body),
-    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true
-  });
-  if (res.getResponseCode() >= 300) throw new Error('Copy failed (' + res.getResponseCode() + '): ' + res.getContentText().slice(0, 200));
-  return JSON.parse(res.getContentText()).id;
+  return Drive.Files.copy(body, id, { supportsAllDrives: true }).id;
 }
 
 function share_(folderId, email) {
-  var res = UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + folderId +
-      '/permissions?sendNotificationEmail=false&supportsAllDrives=true', {
-    method: 'post', contentType: 'application/json',
-    payload: JSON.stringify({ role: 'writer', type: 'user', emailAddress: email }),
-    headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() }, muteHttpExceptions: true
-  });
-  if (res.getResponseCode() >= 300) throw new Error(JSON.parse(res.getContentText()).error.message);
+  Drive.Permissions.create({ role: 'writer', type: 'user', emailAddress: email }, folderId,
+    { sendNotificationEmail: false, supportsAllDrives: true });
 }
 
 function childFolder_(parent, name) {
