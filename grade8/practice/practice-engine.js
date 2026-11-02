@@ -118,7 +118,7 @@
     sec.probs.forEach(function (p) {
       var id = 's' + si + 'p' + p.n; total++;
       html.push('<div class="pr-card" id="' + id + '" data-si="' + si + '">' +
-        '<div class="pr-num">Problem ' + p.n + '</div><div class="pr-q">' + p.q + '</div>' +
+        '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + '</div><div class="pr-q">' + p.q + '</div>' +
         (p.fig ? '<img class="pr-fig" src="' + p.fig + '" alt="Figure for problem ' + p.n + '" loading="lazy"' +
           (p.size ? ' width="' + Math.round(p.size[0] / 2) + '" height="' + Math.round(p.size[1] / 2) + '"' : '') + '>' : '') +
         '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +
@@ -148,7 +148,7 @@
     }
     if (card.classList.contains('done')) return;
     var v = inp.value.trim(); if (!v) { inp.focus(); return; }
-    var ok = check(v, p.ans), tries = Number(card.dataset.tries || 0) + 1;
+    var ok = check(v, p.ans) || (p.alt || []).some(function (x) { return check(v, x); }), tries = Number(card.dataset.tries || 0) + 1;
     card.dataset.tries = tries;
     try { if (window.ScoreSend) ScoreSend.record(card.id, ok, { std: sec.std, band: 3, label: sec.title.replace(/^[A-Z]\.\s*/, '') + ' #' + p.n }); } catch (x) {}
     if (ok) {

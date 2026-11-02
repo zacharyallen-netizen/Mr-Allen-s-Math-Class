@@ -1,11 +1,12 @@
 import json
 G='/home/claude/mr-allen-s-math-class/grade8/'
 SETS=json.load(open('/tmp/claude-0/-home-claude/71df80c8-d29a-5b9a-96ce-5a924999e656/scratchpad/prac2/sets.json'))
-LABEL={'Practice1':'Practice 1','Practice2':'Practice 2','Practice':'Practice'}
+LABEL={'Practice1':'Practice 1','Practice2':'Practice 2','Practice':'Practice','Problems':'Practice Problems 5.1–5.4'}
 out={}
 for key,s in SETS.items():
     topic=key.split('_')[1:-1]; tag=key.split('_')[-1]
     name=f"Unit {s['unit']} · "+(' '.join(topic)+' ' if topic else '')+LABEL[tag]
+    if key=='Unit5_Practice_Problems': name='Unit 5 · Practice Problems 5.1–5.4'
     fn=key+'_Interactive.html'
     d={'unit':s['unit'],'pdf':s['pdf'],'data':s['data']}
     stds=sorted({x['std'] for x in s['data']['secs']})
