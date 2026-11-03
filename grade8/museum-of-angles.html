@@ -108,25 +108,26 @@ button,input,select{font:inherit;color:inherit}
 /* art layers */
 .lbl{font:800 15px var(--f-body);fill:#fff;stroke:var(--ink);stroke-width:4px;paint-order:stroke;pointer-events:none}
 .vlet{font:800 16px var(--f-head);fill:#fff6dc;stroke:var(--ink);stroke-width:4px;paint-order:stroke;pointer-events:none}
-.wg path{fill:rgba(12,16,32,.62);stroke:var(--gold);stroke-width:1.5}
+.wg path{fill:rgba(255,255,255,0);stroke:none;transition:fill .15s}
 .wg.click{cursor:pointer}
-.wg.click:hover path{fill:rgba(242,193,78,.42)}
-.wg.sel path{fill:rgba(90,200,255,.6);stroke:var(--cyan);stroke-width:2.5}
-.wg.ok path{fill:rgba(102,232,164,.7);stroke:#d6ffe9}
-.wg.bad path{fill:rgba(255,110,120,.7)}
-.wg.mark path{fill:rgba(242,193,78,.55);animation:pulse 1.4s ease-in-out infinite}
-.wg.given path{fill:rgba(242,193,78,.28)}
-.wg .nb circle{fill:var(--ink);stroke:var(--gold);stroke-width:1.5}
-.wg .nb text{font:800 12.5px var(--f-mono);fill:var(--gold);text-anchor:middle;dominant-baseline:central}
+.wg.click:hover path,.wg.click:focus path{fill:rgba(255,240,200,.30)}
+.wg.sel path{fill:rgba(90,200,255,.55);stroke:var(--cyan);stroke-width:2.5}
+.wg.ok path{fill:rgba(102,232,164,.68);stroke:#d6ffe9;stroke-width:2}
+.wg.bad path{fill:rgba(255,110,120,.68);stroke:#ffd6da;stroke-width:2}
+.wg.mark path{fill:rgba(242,193,78,.55);stroke:#fff1c6;stroke-width:1.5;animation:pulse 1.4s ease-in-out infinite}
+.wg.given path{fill:rgba(255,236,190,.16)}
+.wg .nb text{font:italic 700 12.5px var(--f-head);fill:#fff4dc;stroke:rgba(20,14,8,.85);stroke-width:3px;paint-order:stroke;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.wg .nb .hit{fill:rgba(0,0,0,0)}
 .pill{pointer-events:none}
-.pill rect{fill:rgba(11,13,24,.9);stroke:var(--gold);stroke-width:1.2}
-.pill text{font:800 13.5px var(--f-mono);fill:#fff;text-anchor:middle;dominant-baseline:central}
-.pill.q rect{fill:var(--gold)} .pill.q text{fill:var(--ink)}
+.pill rect{fill:#efe3c4;stroke:#3a2a18;stroke-width:1.6}
+.pill .in{fill:none;stroke:rgba(58,42,24,.45);stroke-width:.8}
+.pill text{font:700 13.5px var(--f-mono);fill:#2a1e10;text-anchor:middle;dominant-baseline:central}
+.pill.q rect{fill:var(--gold);stroke:#5a4210} .pill.q text{fill:var(--ink)}
 .shape{cursor:default}
 .shape.click{cursor:pointer}
-.shape.click:hover polygon{stroke-width:4}
-.shape.ok polygon{stroke:var(--good)!important;stroke-width:4}
-.shape.bad polygon{stroke:var(--bad)!important;stroke-width:4}
+.shape.click:hover polygon:first-child{stroke:#fff6dc}
+.shape.ok polygon:first-child{stroke:var(--good)!important;stroke-width:5}
+.shape.bad polygon:first-child{stroke:var(--bad)!important;stroke-width:5}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
 
 /* flash */
@@ -299,15 +300,42 @@ const HINTS={
 };
 
 /* ---------- drawing helpers ---------- */
-const wire=(p,q,w)=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="#0b0d18" stroke-width="${(w||3.5)+4.5}" stroke-linecap="round"/><line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="#f2c14e" stroke-width="${w||3.5}" stroke-linecap="round"/>`;
+/* Lines are drawn in the artwork's own style (lead came, paint bars, beams, ink), so the
+   geometry is part of the picture instead of sitting on top of it. */
+const STY={
+  lead:{c:'#17110c',w:10,hi:'rgba(255,240,210,.16)'},
+  bar:{c:'#141414',w:9,cap:'butt'},
+  beam:{c:'#3e2616',w:7,hi:'rgba(255,214,160,.28)'},
+  steel:{c:'#262b36',w:6,hi:'rgba(205,215,235,.32)'},
+  bronze:{c:'#3a2a18',w:5,hi:'rgba(240,200,140,.30)'},
+  ink:{c:'#e6efff',w:2.6},
+  inkd:{c:'rgba(230,239,255,.55)',w:1.6,dash:'7 6'},
+};
+let LS='lead';
+const wire=(p,q,w,sty)=>{const s=STY[sty||LS],W=w||s.w,L=(c,ww,ex)=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="${c}" stroke-width="${ww}" stroke-linecap="${s.cap||'round'}" ${ex||''}/>`;
+  return L(s.c,W,s.dash?`stroke-dasharray="${s.dash}"`:'')+(s.hi?L(s.hi,Math.max(1,W*.22)):'')};
+/* distance from point to segment */
+function segDist(P,A,B){const vx=B[0]-A[0],vy=B[1]-A[1],L2=vx*vx+vy*vy||1;let k=((P[0]-A[0])*vx+(P[1]-A[1])*vy)/L2;k=Math.max(0,Math.min(1,k));return dist(P,[A[0]+vx*k,A[1]+vy*k])}
+const dirGap=(a,b)=>{const d=Math.abs(norm(a-b))%180;return Math.min(d,180-d)};
+/* Decoy lines in the same style: never through a vertex used by a find (stay minD away),
+   never close to parallel with a key line (>= 14°) or with each other (>= 10°). */
+function decoys(n,avoid,dirs,o){o=o||{};const box=o.box||[0,0,600,450],minD=o.minD||58,out=[],used=[];
+  for(let k=0;k<400&&out.length<n;k++){
+    const d=ri(0,179),c=[ri(box[0]+20,box[2]-20),ri(box[1]+20,box[3]-20)];
+    if(dirs.some(a=>dirGap(a,d)<14)||used.some(a=>dirGap(a,d)<10))continue;
+    const len=o.len||900,A=add(c,u(d),len/2),B=add(c,u(d+180),len/2);
+    if(avoid.some(P=>segDist(P,A,B)<minD))continue;
+    used.push(d);out.push(wire(A,B,o.w,o.sty))}
+  return out.length?`<g class="dc">${out.join('')}</g>`:'';
+}
 const lineThrough=(P,d,L1,L2)=>wire(add(P,u(d),L1),add(P,u(d+180),L2==null?L1:L2));
 const poly=(pts,fill,stroke,sw,extra)=>`<polygon points="${pts.map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="${fill}" stroke="${stroke||'none'}" stroke-width="${sw||0}" ${extra||''}/>`;
 function wedgeAt(id,V,P1,P2,o){let d1=dirOf(V,P1),d2=dirOf(V,P2),s=norm(d2-d1),a=d1;if(s>180){s=360-s;a=d2}return Object.assign({id,v:V,a,s,r:30},o||{})}
 function wedgeDir(id,V,a,s,o){return Object.assign({id,v:V,a:norm(a),s,r:32},o||{})}
 const meas=g=>Math.round(g.s);
 function wedgePath(g){const r=g.r,s0=add(g.v,u(g.a),r),e=add(g.v,u(g.a+g.s),r);return `M${f1(g.v[0])},${f1(g.v[1])} L${f1(s0[0])},${f1(s0[1])} A${r},${r} 0 ${g.s>180?1:0} 0 ${f1(e[0])},${f1(e[1])} Z`}
-function rightMark(V,d,k){k=k||12;const a=add(V,u(d),k),b=add(add(V,u(d),k),u(d+90),k),c=add(V,u(d+90),k);return `<polyline points="${[a,b,c].map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="none" stroke="#fff6dc" stroke-width="2"/>`}
-function tick(P,Q){const m=[(P[0]+Q[0])/2,(P[1]+Q[1])/2],d=dirOf(P,Q)+90;return `<line x1="${f1(add(m,u(d),7)[0])}" y1="${f1(add(m,u(d),7)[1])}" x2="${f1(add(m,u(d),-7)[0])}" y2="${f1(add(m,u(d),-7)[1])}" stroke="#fff6dc" stroke-width="3"/>`}
+function rightMark(V,d,k,col){k=k||12;const a=add(V,u(d),k),b=add(add(V,u(d),k),u(d+90),k),c=add(V,u(d+90),k);return `<polyline points="${[a,b,c].map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="none" stroke="${col||'#fff6dc'}" stroke-width="2.5"/>`}
+function tick(P,Q,col){const m=[(P[0]+Q[0])/2,(P[1]+Q[1])/2],d=dirOf(P,Q)+90;return `<line x1="${f1(add(m,u(d),7)[0])}" y1="${f1(add(m,u(d),7)[1])}" x2="${f1(add(m,u(d),-7)[0])}" y2="${f1(add(m,u(d),-7)[1])}" stroke="${col||'#fff6dc'}" stroke-width="3"/>`}
 const txt=(p,s,cls)=>`<text x="${f1(p[0])}" y="${f1(p[1])}" class="${cls||'vlet'}" text-anchor="middle" dominant-baseline="central">${s}</text>`;
 function triPoints(A,B,C,box,rot,flip){
   const b=Math.sin(B*D)/Math.sin(C*D);
@@ -352,7 +380,7 @@ function quilt(){
   for(let by=0;by<2;by++)for(let bx=0;bx<2;bx++){const [c1,c2]=pal[by*2+bx];const X=bx*300,Y=by*225;
     s+=`<rect x="${X}" y="${Y}" width="300" height="225" fill="${c2}"/>`;
     for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=X+i*75,y=Y+j*75;const o=Math.random()<.5;
-      s+=poly(o?[[x,y],[x+75,y],[x,y+75]]:[[x+75,y],[x+75,y+75],[x,y+75]],c1,'none',0,'opacity=".35"')}
+      s+=poly(o?[[x,y],[x+75,y],[x,y+75]]:[[x+75,y],[x+75,y+75],[x,y+75]],c1,'rgba(43,33,18,.55)',1.5,'opacity=".62"')}
     s+=`<rect x="${X+4}" y="${Y+4}" width="292" height="217" fill="none" stroke="#2b2112" stroke-width="3" stroke-dasharray="7 5"/>`}
   return s+'<rect width="600" height="450" fill="rgba(20,14,30,.25)"/>';
 }
@@ -379,31 +407,33 @@ function parallel(al,opts){opts=opts||{};
   const m={};g.forEach(w=>m[w.id]=meas(w));
   return {g,rels,lines,m,al,p,t};
 }
+function glassScene(P,n){const I1=P.g[0].v,I2=P.g[4].v;return `<g clip-path="url(#arch)">${decoys(n==null?3:n,[I1,I2],[P.p,P.t],{sty:'lead',w:5})}${P.lines}</g>`}
 const PAIRS={corr:[['1','5'],['2','6'],['3','7'],['4','8']],altint:[['3','6'],['4','5']],altext:[['1','8'],['2','7']],ssi:[['3','5'],['4','6']]};
 
 /* ---------- room generators ---------- */
 const G5='NC.8.G.5';
 function genGrid(){
+  LS='bar';
   const P=[185,215],th1=ri(8,32),a=pick([ri(50,76),ri(104,130)]),X=cross(P,th1,a,null,36);
   const Q=[408,372],c=ri(24,66);
   const lines=lineThrough(P,th1,170)+lineThrough(P,th1+a,170)+wire(Q,[575,372])+wire(Q,[408,206])+wire(Q,add(Q,u(c),170));
   const g=[...X.g,wedgeDir('5',Q,0,c,{r:44}),wedgeDir('6',Q,c,90-c,{r:44})];
   const rels=Object.assign({},X.rels,relTable([['comp',[['5','6']]]]));
-  const scene={bg:mondrian(),lines:lines+rightMark(Q,0,14),g,rels};
+  const scene={bg:mondrian(),lines:decoys(3,[P,Q],[th1,th1+a,0,90,c],{minD:64,w:5})+lines+rightMark(Q,0,16,'#141414'),g,rels};
   return [
     {type:'pair',kind:'Vertical angles',prompt:'Tap a pair of <b>vertical angles</b>.',accept:[['1','3'],['2','4']],hint:'vertical',want:'vertical',scene,why:'Vertical angles are across from each other where two lines cross.'},
     {type:'num',kind:'Linear pair',prompt:`m∠1 = ${a}°. What is <b>m∠2</b>?`,show:{1:a+'°'},mark:'2',answer:180-a,hint:'linear',scene,why:`∠1 and ∠2 form a linear pair, so 180 ${MINUS} ${a} = ${180-a}°.`},
-    {type:'pair',kind:'Complementary angles',prompt:'The gold corner is a right angle. Tap the two angles that are <b>complementary</b>.',accept:[['5','6']],hint:'complementary',want:'comp',scene,why:'∠5 and ∠6 together fill the 90° corner.'},
+    {type:'pair',kind:'Complementary angles',prompt:'The corner with the small square is a right angle. Tap the two angles that are <b>complementary</b>.',accept:[['5','6']],hint:'complementary',want:'comp',scene,why:'∠5 and ∠6 together fill the 90° corner.'},
     {type:'num',kind:'Complementary angles',prompt:`m∠5 = ${c}°. What is <b>m∠6</b>?`,show:{5:c+'°'},mark:'6',answer:90-c,hint:'complementary',scene,why:`Complementary angles add to 90°: 90 ${MINUS} ${c} = ${90-c}°.`},
     {type:'pair',kind:'Adjacent angles',prompt:'Tap two <b>adjacent</b> angles that form a <b>linear pair</b>.',accept:[['1','2'],['2','3'],['3','4'],['1','4']],hint:'adjacent',want:'linear',scene,why:'They share a vertex and a side, and together they make a straight line.'},
   ];
 }
 function genGlass(){
-  const P=parallel(),scene={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  LS='lead';const P=parallel(),scene={bg:stainedGlass(),lines:glassScene(P),g:P.g,rels:P.rels};
   const pr=pick(Object.keys(PAIRS)),pair=pick(PAIRS[pr]),sw=Math.random()<.5?pair:[pair[1],pair[0]];
   const eq=pr!=='ssi';
   return [
-    {type:'pair',kind:'Parallel lines',prompt:'The two long lines are parallel. Tap a pair of <b>corresponding angles</b>.',accept:PAIRS.corr,hint:'corr',want:'corr',scene,why:'Corresponding angles sit in the same position at each crossing.'},
+    {type:'pair',kind:'Parallel lines',prompt:'The two thickest lines that never cross are parallel. Tap a pair of <b>corresponding angles</b>.',accept:PAIRS.corr,hint:'corr',want:'corr',scene,why:'Corresponding angles sit in the same position at each crossing.'},
     {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>alternate interior angles</b>.',accept:PAIRS.altint,hint:'altint',want:'altint',scene,why:'Between the parallel lines, on opposite sides of the transversal.'},
     {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>alternate exterior angles</b>.',accept:PAIRS.altext,hint:'altext',want:'altext',scene,why:'Outside the parallel lines, on opposite sides of the transversal.'},
     {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>same-side interior angles</b>.',accept:PAIRS.ssi,hint:'ssi',want:'ssi',scene,why:'Between the parallel lines, on the same side of the transversal.'},
@@ -419,16 +449,16 @@ function genMosaic(){
   const k=ri(24,66);const T3=triPoints(90,k,90-k,bx(2),ri(0,359),Math.random()<.5);
   let a4,b4,c4,big;do{[a4,b4,c4]=triangleAngles(28);const s=[a4,b4,c4].slice().sort((x,y)=>y-x);big=s[0]-s[1]>=12}while(!big);
   const T4=triPoints(a4,b4,c4,bx(3),ri(0,359),Math.random()<.5);
-  const fill='rgba(250,244,228,.82)',st='#2b2112';
+  const fab=['#c9603f','#3f7f8c','#7c9a3a','#8a4f9e'],st='#2b2112',stitch=T=>poly(T,'none','rgba(250,240,215,.7)',1.3,'stroke-dasharray="5 4"');
   const g=[...triWedges(['1','2','3'],T1),...triWedges(['4','5','6'],T2),...triWedges(['7','8','9'],T3),...triWedges(['10','11','12'],T4)];
-  const lines=[T1,T2,T3,T4].map(T=>poly(T,fill,st,3.5)).join('')+tick(T2[0],T2[1])+tick(T2[0],T2[2])+rightMark(T3[0],dirOf(T3[0],T3[1]),13);
+  const lines=[T1,T2,T3,T4].map((T,i)=>poly(T,fab[i],st,3.5)+stitch(T)).join('')+tick(T2[0],T2[1],'#2b2112')+tick(T2[0],T2[2],'#2b2112')+rightMark(T3[0],dirOf(T3[0],T3[1]),13,'#2b2112');
   const scene={bg:quilt(),lines,g,rels:{}};
   const largest=[['10',a4],['11',b4],['12',c4]].sort((x,y)=>y[1]-x[1])[0][0];
   return [
-    {type:'num',kind:'Triangle Sum',prompt:`In the top-left triangle, m∠1 = ${a1}° and m∠2 = ${b1}°. What is <b>m∠3</b>?`,show:{1:a1+'°',2:b1+'°'},mark:'3',answer:c1,hint:'trisum',scene,why:`180 ${MINUS} ${a1} ${MINUS} ${b1} = ${c1}°.`},
-    {type:'num',kind:'Isosceles triangle',prompt:`The top-right triangle is isosceles (tick marks show equal sides). m∠4 = ${ap}°. What is <b>m∠5</b>?`,show:{4:ap+'°'},mark:'5',answer:(180-ap)/2,hint:'isosceles',scene,why:`The base angles are equal: (180 ${MINUS} ${ap}) ÷ 2 = ${(180-ap)/2}°.`},
-    {type:'num',kind:'Right triangle',prompt:`The bottom-left triangle has a right angle at ∠7. m∠8 = ${k}°. What is <b>m∠9</b>?`,show:{7:'90°',8:k+'°'},mark:'9',answer:90-k,hint:'right',scene,why:`180 ${MINUS} 90 ${MINUS} ${k} = ${90-k}°.`},
-    {type:'tap',kind:'Triangle Sum',prompt:`In the bottom-right triangle, m∠10 = ${a4}° and m∠11 = ${b4}°. Tap the <b>largest</b> angle of that triangle.`,show:{10:a4+'°',11:b4+'°'},accept:[largest],hint:'trisum',scene,
+    {type:'num',kind:'Triangle Sum',prompt:`In the patch with ∠1, ∠2 and ∠3, m∠1 = ${a1}° and m∠2 = ${b1}°. What is <b>m∠3</b>?`,show:{1:a1+'°',2:b1+'°'},mark:'3',answer:c1,hint:'trisum',scene,why:`180 ${MINUS} ${a1} ${MINUS} ${b1} = ${c1}°.`},
+    {type:'num',kind:'Isosceles triangle',prompt:`The patch with ∠4, ∠5 and ∠6 is isosceles (tick marks show equal sides). m∠4 = ${ap}°. What is <b>m∠5</b>?`,show:{4:ap+'°'},mark:'5',answer:(180-ap)/2,hint:'isosceles',scene,why:`The base angles are equal: (180 ${MINUS} ${ap}) ÷ 2 = ${(180-ap)/2}°.`},
+    {type:'num',kind:'Right triangle',prompt:`The patch with ∠7, ∠8 and ∠9 has a right angle at ∠7. m∠8 = ${k}°. What is <b>m∠9</b>?`,show:{7:'90°',8:k+'°'},mark:'9',answer:90-k,hint:'right',scene,why:`180 ${MINUS} 90 ${MINUS} ${k} = ${90-k}°.`},
+    {type:'tap',kind:'Triangle Sum',prompt:`In the patch with ∠10, ∠11 and ∠12, m∠10 = ${a4}° and m∠11 = ${b4}°. Tap the <b>largest</b> angle of that patch.`,show:{10:a4+'°',11:b4+'°'},accept:[largest],hint:'trisum',scene,
       why:`∠12 = 180 ${MINUS} ${a4} ${MINUS} ${b4} = ${c4}°, so the largest is ∠${largest}.`},
   ];
 }
@@ -445,8 +475,12 @@ function genRoof(){
   const dy=b.P[0][1];bg+=`<rect x="300" y="${f1(dy)}" width="300" height="10" fill="#5a5f6e"/>`;
   for(let x=300;x<600;x+=60)bg+=`<rect x="${x+24}" y="${f1(dy+10)}" width="12" height="${f1(372-dy-10)}" fill="#4a4f5c"/>`;
   bg+=poly(h.P,'#b0473a','#2b1a10',3)+poly(b.P,'rgba(140,150,170,.35)','#c9cfdb',3);
-  const lines=wire(h.P[0],h.P[1])+wire(h.P[1],h.P[2])+wire(h.P[0],h.P[2])+`<line x1="${f1(h.P[1][0])}" y1="${f1(h.P[1][1])}" x2="${f1(h.E[0])}" y2="${f1(h.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`+
-    wire(b.P[0],b.P[1])+wire(b.P[1],b.P[2])+wire(b.P[0],b.P[2])+`<line x1="${f1(b.P[1][0])}" y1="${f1(b.P[1][1])}" x2="${f1(b.E[0])}" y2="${f1(b.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`;
+  // bridge posts: vertical steel members that touch the truss sides away from the numbered corners
+  let posts='';const bx0=b.P[0][0],bx1=b.P[1][0],apx=b.P[2];
+  const topAt=x=>{const A=x<=apx[0]?b.P[0]:b.P[1];const k=(x-A[0])/(apx[0]-A[0]);return A[1]+(apx[1]-A[1])*k};
+  for(let i=1;i<=4;i++){const x=bx0+(bx1-bx0)*i/5;if(b.P.some(V=>Math.abs(V[0]-x)<44))continue;const yt=topAt(x);if(b.P[0][1]-yt<26)continue;posts+=wire([x,b.P[0][1]],[x,yt],4,'steel')}
+  const lines=wire(h.P[0],h.P[1],0,'beam')+wire(h.P[1],h.P[2],0,'beam')+wire(h.P[0],h.P[2],0,'beam')+wire(h.P[1],h.E,0,'beam')+
+    posts+wire(b.P[0],b.P[1],0,'steel')+wire(b.P[1],b.P[2],0,'steel')+wire(b.P[0],b.P[2],0,'steel')+wire(b.P[1],b.E,0,'steel');
   const scene={bg,lines,g:[...h.g,...b.g],rels:{}};
   return [
     {type:'pair',kind:'Exterior Angle Theorem',prompt:'On the house, <b>∠4</b> is an exterior angle. Tap its two <b>remote interior angles</b>.',accept:[['1','2']],hint:'ext',scene,why:'The remote interior angles are the two inside angles that are not next to ∠4.'},
@@ -468,15 +502,15 @@ function genAA(){
   const order=shuffle(cands),letters=['Q','R','S'];
   let g=[],lines='',top='';
   const P=triPoints(a,b,c,box(0),ri(0,359),false);
-  g.push(...triWedges(['p0','p1','p2'],P,[{plain:1},{plain:1},{plain:1}]));lines+=poly(P,'rgba(242,193,78,.25)','#f2c14e',3);top+=txt([box(0).x+16,14],'P');
+  g.push(...triWedges(['p0','p1','p2'],P,[{plain:1},{plain:1},{plain:1}]));lines+=poly(P,'#7a4b8c','#c9a24a',5)+poly(P,'none','rgba(30,18,8,.6)',1.5);top+=txt([box(0).x+16,14],'P');
   const showP={p0:a+'°',p1:b+'°'};const showAll=Object.assign({},showP);
   order.forEach((o,i)=>{const T=triPoints(o.ang[0],o.ang[1],o.ang[2],box(i+1),ri(0,359),Math.random()<.5);const ids=['c'+i+'0','c'+i+'1','c'+i+'2'];
-    g.push(...triWedges(ids,T,[{plain:1},{plain:1},{plain:1}]));lines+=poly(T,'rgba(159,227,255,.16)','#9fe3ff',3);top+=txt([box(i+1).x+16,14],letters[i]);
+    g.push(...triWedges(ids,T,[{plain:1},{plain:1},{plain:1}]));lines+=poly(T,['#2f6f7e','#a4553a','#5d7a35'][i],'#a9864a',5)+poly(T,'none','rgba(30,18,8,.6)',1.5);top+=txt([box(i+1).x+16,14],letters[i]);
     o.show.forEach(k=>showAll[ids[k]]=o.ang[k]+'°');o.letter=letters[i]});
   // nested triangle
   const nb={x:150,y:236,w:300,h:210,pad:18};const [A,B,C]=triangleAngles(38);const N=triPoints(B,C,A,nb,0,false);// N[0]=B (left), N[1]=C (right), N[2]=A (top)
   const t=.5,Dp=add(N[2],[N[0][0]-N[2][0],N[0][1]-N[2][1]],t),Ep=add(N[2],[N[1][0]-N[2][0],N[1][1]-N[2][1]],t);
-  lines+=poly(N,'rgba(250,244,228,.12)','#f6efe0',3)+wire(Dp,Ep,3);
+  lines+=poly(N,'rgba(196,150,90,.16)','none',0)+wire(N[0],N[1],0,'bronze')+wire(N[1],N[2],0,'bronze')+wire(N[2],N[0],0,'bronze')+wire(Dp,Ep,4,'bronze');
   top+=txt(add(N[2],[0,-14]),'A')+txt(add(N[0],[-14,8]),'B')+txt(add(N[1],[14,8]),'C')+txt(add(Dp,[-16,0]),'D')+txt(add(Ep,[16,0]),'E');
   g.push(wedgeAt('nA',N[2],N[0],N[1],{r:24,name:'A',out:1}),wedgeAt('nB',N[0],N[2],N[1],{r:24,name:'ABC',out:1}),wedgeAt('nD',Dp,N[2],Ep,{r:20,name:'ADE',out:1}),wedgeAt('nE',Ep,N[2],Dp,{r:20,name:'AED',out:1}));
   const bg=gallery()+'<line x1="0" y1="232" x2="600" y2="232" stroke="rgba(242,193,78,.3)"/>';
@@ -496,19 +530,19 @@ function eqPair(x,equal){// two expressions equal (or summing to 180)
   return {A:60,B:equal?60:120,m1:1,b1:60-x,m2:2,b2:(equal?60:120)-2*x};
 }
 function genAlgebra(){
-  const bg=blueprint(),P=[300,225];
+  LS='ink';const bg=blueprint(),P=[300,225];const cons=(av,dirs)=>decoys(4,av,dirs,{sty:'inkd',minD:60});
   const x1=ri(6,18),q1=eqPair(x1,true),C1=cross(P,ri(10,30),q1.A,null,40);const th1=C1.g[0].a;
-  const s1={bg,lines:lineThrough(P,th1,250)+lineThrough(P,th1+q1.A,250),g:C1.g,rels:C1.rels};
+  const s1={bg,lines:cons([P],[th1,th1+q1.A])+lineThrough(P,th1,250)+lineThrough(P,th1+q1.A,250),g:C1.g,rels:C1.rels};
   const x2=ri(8,22),q2=eqPair(x2,false),C2=cross(P,ri(10,30),q2.A,null,40);const th2=C2.g[0].a;
-  const s2={bg,lines:lineThrough(P,th2,250)+lineThrough(P,th2+q2.A,250),g:C2.g,rels:C2.rels};
+  const s2={bg,lines:cons([P],[th2,th2+q2.A])+lineThrough(P,th2,250)+lineThrough(P,th2+q2.A,250),g:C2.g,rels:C2.rels};
   const x3=ri(6,16);let q3;do{q3=eqPair(x3,true)}while(q3.A<48||q3.A>132);const PL=parallel(q3.A);
-  const s3={bg,lines:PL.lines,g:PL.g,rels:PL.rels};
+  const s3={bg,lines:cons([PL.g[0].v,PL.g[4].v],[PL.p,PL.t])+PL.lines,g:PL.g,rels:PL.rels};
   const x4=ri(5,14);let t;for(let k=0;k<300;k++){const [A,B,C]=triangleAngles(30),m=[ri(1,4),ri(1,4),ri(1,4)],b=[A-m[0]*x4,B-m[1]*x4,C-m[2]*x4];if(b.every(v=>Math.abs(v)<=80&&v!==0)){t={ang:[A,B,C],m,b};break}}
   if(!t)t={ang:[60,60,60],m:[1,1,1],b:[60-x4,60-x4,60-x4]};
   const TP=triPoints(t.ang[0],t.ang[1],t.ang[2],{x:60,y:20,w:480,h:410,pad:40},ri(0,359),false);
-  const s4={bg,lines:poly(TP,'rgba(255,255,255,.08)','#f2c14e',3.5),g:triWedges(['1','2','3'],TP).map(w=>Object.assign(w,{r:34})),rels:{}};
+  const s4={bg,lines:cons(TP,[dirOf(TP[0],TP[1]),dirOf(TP[1],TP[2]),dirOf(TP[0],TP[2])])+poly(TP,'rgba(255,255,255,.06)','none',0)+wire(TP[0],TP[1])+wire(TP[1],TP[2])+wire(TP[2],TP[0]),g:triWedges(['1','2','3'],TP).map(w=>Object.assign(w,{r:34})),rels:{}};
   const x5=ri(8,20),q5=eqPair(x5,false),C5=cross(P,ri(10,30),q5.A,null,40);const th5=C5.g[0].a;
-  const s5={bg,lines:lineThrough(P,th5,250)+lineThrough(P,th5+q5.A,250),g:C5.g,rels:C5.rels};
+  const s5={bg,lines:cons([P],[th5,th5+q5.A])+lineThrough(P,th5,250)+lineThrough(P,th5+q5.A,250),g:C5.g,rels:C5.rels};
   return [
     {type:'num',kind:'Vertical angles',prompt:`∠1 and ∠3 are vertical angles. Write an equation and solve for <b>x</b>.`,show:{1:expr(q1.m1,q1.b1),3:expr(q1.m2,q1.b2)},answer:x1,unit:'x =',hint:'vertical',scene:s1,
       why:`Vertical angles are equal: ${expr(q1.m1,q1.b1).slice(0,-1)} = ${expr(q1.m2,q1.b2).slice(0,-1)}, so x = ${x1}. Each angle is ${q1.A}°.`},
@@ -524,7 +558,7 @@ function genAlgebra(){
 }
 function genForger(){
   // Round A: parallel lines with m∠2 shown
-  const P=parallel(),al=P.m['2'],sa={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  LS='lead';const P=parallel(),al=P.m['2'],sa={bg:stainedGlass(),lines:glassScene(P),g:P.g,rels:P.rels};
   const trueA=shuffle([
     `∠${pick(PAIRS.corr).join(' and ∠')} are corresponding angles.`,
     `m∠6 = ${al}° because ∠2 and ∠6 are corresponding angles.`,
@@ -542,7 +576,7 @@ function genForger(){
   const guideA=`<div class="guide"><b>Gallery guide card</b> (m∠2 = ${al}°)<ol>${claimsA.map(x=>`<li>${x.c}</li>`).join('')}</ol></div>`;
   // Round B: triangle with exterior angle
   const L=ri(30,58),R=ri(34,62),T=180-L-R,ext=L+T,h=roofTri(L,R,{x:120,y:40,w:300,h:330,pad:20},['1','2','3','4']);
-  const sb={bg:gallery(),lines:poly(h.P,'rgba(176,71,58,.55)','#2b1a10',3)+wire(h.P[0],h.P[1])+wire(h.P[1],h.P[2])+wire(h.P[0],h.P[2])+`<line x1="${f1(h.P[1][0])}" y1="${f1(h.P[1][1])}" x2="${f1(h.E[0])}" y2="${f1(h.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`,g:h.g,rels:{}};
+  const sb={bg:gallery(),lines:poly(h.P,'rgba(176,71,58,.55)','none',0)+decoys(2,h.P,[0,dirOf(h.P[0],h.P[2]),dirOf(h.P[1],h.P[2])],{sty:'bronze',w:3,minD:60})+wire(h.P[0],h.P[1],0,'bronze')+wire(h.P[1],h.P[2],0,'bronze')+wire(h.P[0],h.P[2],0,'bronze')+wire(h.P[1],h.E,0,'bronze'),g:h.g,rels:{}};
   const trueB=shuffle([`m∠3 = 180 ${MINUS} ${L} ${MINUS} ${T} = ${R}° by the Triangle Sum Theorem.`,`∠1 and ∠2 are the remote interior angles for ∠4.`,`∠3 and ∠4 form a linear pair.`]).slice(0,2);
   const falseB=pick([
     {c:`m∠4 = 180 ${MINUS} (${L} + ${T}) = ${R}° by the Exterior Angle Theorem.`,fix:`The Exterior Angle Theorem says m∠4 = ${L} + ${T} = ${ext}°.`,bad:[`m∠4 = ${L} ${MINUS} ${T}°.`,`m∠4 = 180°.`]},
@@ -563,7 +597,7 @@ const EDGES=(()=>{const e=[];const add2=(k,pairs)=>pairs.forEach(([a,b])=>{e.pus
   add2('vertical',[['1','4'],['2','3'],['5','8'],['6','7']]);add2('linear',[['1','2'],['1','3'],['2','4'],['3','4'],['5','6'],['5','7'],['6','8'],['7','8']]);
   add2('corr',PAIRS.corr);add2('altint',PAIRS.altint);add2('altext',PAIRS.altext);add2('ssi',PAIRS.ssi);return e})();
 function genVault(){
-  const P=parallel(),sA={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  LS='lead';const P=parallel(),sA={bg:stainedGlass(),lines:glassScene(P),g:P.g,rels:P.rels};
   let path;for(let k=0;k<500;k++){const s=String(ri(1,8));const seen=[s],used=[];let cur=s,ok=true;const steps=[];
     for(let i=0;i<3;i++){const opts=EDGES.filter(e=>e.a===cur&&!seen.includes(e.b)&&!used.includes(e.k)&&(i>0||e.k!=='linear'));if(!opts.length){ok=false;break}const e=pick(opts);steps.push(e);seen.push(e.b);used.push(e.k);cur=e.b}
     if(ok&&steps.some(e=>['corr','altint','altext','ssi'].includes(e.k))){path={s,steps};break}}
@@ -575,7 +609,7 @@ function genVault(){
   const L=ri(32,60),R=ri(36,64),T=180-L-R,ext=L+T;
   const TP=triPoints(L,R,T,{x:110,y:70,w:360,h:290,pad:10},0,false);const E=add(TP[1],[1,0],70);
   const up1=add(TP[2],[TP[2][0]-TP[0][0],TP[2][1]-TP[0][1]],.35),up2=add(TP[2],[TP[2][0]-TP[1][0],TP[2][1]-TP[1][1]],.35);
-  const lines=poly(TP,'rgba(242,193,78,.12)','none',0)+wire(TP[0],up1)+wire(TP[1],up2)+wire(TP[0],E);
+  const lines=poly(TP,'rgba(196,150,90,.14)','none',0)+decoys(2,[TP[0],TP[1],TP[2]],[0,dirOf(TP[0],TP[2]),dirOf(TP[1],TP[2])],{sty:'bronze',w:3,minD:62})+wire(TP[0],up1,0,'bronze')+wire(TP[1],up2,0,'bronze')+wire(TP[0],E,0,'bronze');
   const g=[wedgeAt('1',TP[0],TP[1],TP[2],{r:30}),wedgeAt('2',TP[2],TP[0],TP[1],{r:26}),wedgeAt('3',TP[1],TP[0],TP[2],{r:28}),wedgeAt('4',TP[1],E,TP[2],{r:42}),wedgeAt('5',TP[2],up1,up2,{r:26})];
   const sB={bg:gallery(),lines,g,rels:{}};
   finds.push({type:'reason',kind:'Vault lock B · step 1 of 3',prompt:`m∠5 = ${T}° and m∠1 = ${L}°. Find <b>m∠2</b> and pick the reason.`,show:{5:T+'°',1:L+'°'},mark:'2',answer:T,reason:['vertical'],hint:'vertical',scene:sB,why:`∠2 and ∠5 are vertical angles, so m∠2 = ${T}°.`});
@@ -604,7 +638,8 @@ function randTri(x0,x1,y0,y1){for(let k=0;k<500;k++){const p=[[ri(x0,x1),ri(y0,y
 const TF={rx:p=>[p[0],-p[1]],ry:p=>[-p[0],p[1]],r180:p=>[-p[0],-p[1]],ccw:p=>[-p[1],p[0]],cw:p=>[p[1],-p[0]]};
 const mapT=(T,f)=>T.map(f);
 const sameSet=(A,B)=>{const a=A.map(p=>p.join()).sort().join('|'),b=B.map(p=>p.join()).sort().join('|');return a===b};
-function figHTML(T,col,letters,lab){let s=poly(T.map(p=>[X(p[0]),Y(p[1])]),col+'40',col,3);
+function tile(P,col){return poly(P,col+'a8','#120e1a',3.5)+poly(P,'none',col,1.4,'stroke-dasharray="1 0" opacity=".9"')}
+function figHTML(T,col,letters,lab){let s=tile(T.map(p=>[X(p[0]),Y(p[1])]),col);
   if(letters)T.forEach((p,i)=>{const c=[T.reduce((a,q)=>a+q[0],0)/3,T.reduce((a,q)=>a+q[1],0)/3];const d=[p[0]-c[0],p[1]-c[1]],n=Math.hypot(...d)||1;
     s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" fill="${col}"/>`+txt([X(p[0])+d[0]/n*15,Y(p[1])-d[1]/n*15],letters[i])});
   if(lab){const c=[T.reduce((a,q)=>a+q[0],0)/3,T.reduce((a,q)=>a+q[1],0)/3];s+=txt([X(c[0]),Y(c[1])],lab)}
@@ -791,15 +826,15 @@ function drawArt(){
     if(st.done&&f.accept&&(f.type==='pair'||f.type==='tap')&&st.okSel&&st.okSel.includes(g.id))cls.push('ok');
     const L=labelFor(g,f);const r=g.r,lp=add(g.v,u(g.a+g.s/2),r+(g.s<30?24:16));
     let inner='';
-    if(L&&!L.pill)inner=`<g class="nb"><circle cx="${f1(lp[0])}" cy="${f1(lp[1])}" r="${f1(11*Z)}"/><text x="${f1(lp[0])}" y="${f1(lp[1])}" style="font-size:${f1(12.5*Z)}px">${esc(L.t)}</text></g>`;
+    if(L&&!L.pill)inner=`<g class="nb"><circle class="hit" cx="${f1(lp[0])}" cy="${f1(lp[1])}" r="${f1(12*Z)}"/><text x="${f1(lp[0])}" y="${f1(lp[1])}" style="font-size:${f1(12.5*Z)}px">${esc(L.t)}</text></g>`;
     wed+=`<g class="${cls.join(' ')}" data-id="${g.id}" ${click?`tabindex="0" role="button" aria-pressed="${R.sel.includes(g.id)}"`:''} aria-label="Angle ${esc(g.name||g.id)}${L&&L.pill?', '+esc(L.t):''}"><path d="${wedgePath(g)}"/>${inner}</g>`;
     if(L&&L.pill){const w=(L.t.length*8.1+14)*Z;let p=g.out?add(g.v,u(g.a+g.s/2+180),16+w*.32):add(g.v,u(g.a+g.s/2),r+(g.s<30?30:24)+w*.18);const hh=12*Z;p=[Math.max(w/2+3,Math.min(600-w/2-3,p[0])),Math.max(hh+1,Math.min(449-hh,p[1]))];
-      lab+=`<g class="pill ${L.q?'q':''}"><rect x="${f1(p[0]-w/2)}" y="${f1(p[1]-hh)}" width="${f1(w)}" height="${f1(2*hh)}" rx="${f1(hh)}"/><text x="${f1(p[0])}" y="${f1(p[1])}" style="font-size:${f1(13.5*Z)}px">${esc(L.t)}</text></g>`}
+      lab+=`<g class="pill ${L.q?'q':''}"><rect x="${f1(p[0]-w/2)}" y="${f1(p[1]-hh)}" width="${f1(w)}" height="${f1(2*hh)}" rx="${f1(3*Z)}"/><rect class="in" x="${f1(p[0]-w/2+2.5*Z)}" y="${f1(p[1]-hh+2.5*Z)}" width="${f1(w-5*Z)}" height="${f1(2*hh-5*Z)}" rx="${f1(1.5*Z)}"/><text x="${f1(p[0])}" y="${f1(p[1])}" style="font-size:${f1(13.5*Z)}px">${esc(L.t)}</text></g>`}
   });
   let shp='';
   (sc.shapes||[]).forEach(s=>{const clickS=f.type==='tapShape'&&!st.done;const cls=['shape'];if(clickS)cls.push('click');if(st.done&&f.accept&&f.accept.includes(s.id))cls.push('ok');if(st.badShape===s.id&&!st.done)cls.push('bad');
     const c=[s.pts.reduce((a,q)=>a+q[0],0)/3,s.pts.reduce((a,q)=>a+q[1],0)/3];
-    shp+=`<g class="${cls.join(' ')}" data-shape="${s.id}" ${clickS?'tabindex="0" role="button"':''} aria-label="Figure ${s.num}">${poly(s.pts.map(p=>[X(p[0]),Y(p[1])]),s.col+'40',s.col,3)}<circle cx="${X(c[0])}" cy="${Y(c[1])}" r="12" fill="#0b0d18" stroke="${s.col}" stroke-width="2"/><text x="${X(c[0])}" y="${Y(c[1])}" text-anchor="middle" dominant-baseline="central" style="font:800 13px var(--f-mono);fill:${s.col}">${s.num}</text></g>`});
+    shp+=`<g class="${cls.join(' ')}" data-shape="${s.id}" ${clickS?'tabindex="0" role="button"':''} aria-label="Figure ${s.num}">${tile(s.pts.map(p=>[X(p[0]),Y(p[1])]),s.col)}<rect x="${X(c[0])-10}" y="${Y(c[1])-11}" width="20" height="22" rx="2" fill="#efe3c4" stroke="#3a2a18" stroke-width="1.4"/><text x="${X(c[0])}" y="${Y(c[1])}" text-anchor="middle" dominant-baseline="central" style="font:700 13.5px var(--f-mono);fill:#2a1e10">${s.num}</text></g>`});
   $('#art').innerHTML=(sc.bg||'')+(sc.lines||'')+wed+shp+(sc.top||'')+lab;
   $('#art').setAttribute('aria-label',R.plaque);
 }
