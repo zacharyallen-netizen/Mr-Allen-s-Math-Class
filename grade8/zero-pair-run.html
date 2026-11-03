@@ -228,6 +228,8 @@ button.cx:focus-visible .tile,button.cx:hover .tile{outline:2px solid #fff;outli
 .total.ok{color:var(--good)}
 .bmode{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 @media (max-width:620px){.bmode{grid-template-columns:1fr}.grp{min-width:52px;min-height:54px}}
+@keyframes nudgeP{0%,100%{box-shadow:0 0 0 0 rgba(255,193,7,.0);outline-color:var(--tu)}50%{box-shadow:0 0 0 7px rgba(255,193,7,.35);outline-color:#fff3c4}}
+.nudge{outline:3px solid var(--tu)!important;outline-offset:2px;animation:nudgeP 1.2s ease-in-out infinite}
 @media (max-width:940px){
   #app{grid-template-columns:minmax(0,1fr)}
   #logPanel{grid-column:1;grid-row:auto;position:static}
@@ -278,7 +280,7 @@ button.cx:focus-visible .tile,button.cx:hover .tile{outline:2px solid #fff;outli
       <div id="coach" hidden aria-live="polite"><div class="ct"><span class="cs" id="coachStep"></span><span id="coachTxt"></span></div><div class="cb"><button class="btn primary" id="coachBtn" type="button" hidden></button><button class="linkbtn" id="coachExit" type="button">Exit tutorial</button></div></div>
       <div id="prompt">
         <div id="msg" aria-live="polite"></div>
-        <button class="btn" id="bHint" type="button">Hint</button>
+        <button class="btn" id="bHint" type="button">Show me</button>
       </div>
       <div id="helpBox" hidden aria-live="polite"></div>
       <div id="mat">
@@ -302,7 +304,7 @@ button.cx:focus-visible .tile,button.cx:hover .tile{outline:2px solid #fff;outli
     <div>
       <p class="eyebrow">Unit 3 · Solving equations</p>
       <h1 class="title">Zero Pair <span>Run</span></h1>
-      <p class="lede">At each gate, pick the next step from the equations flowchart, then do it with algebra tiles: drag tiles onto both sides, make zero pairs by hand, and check your answer with tiles. Take the time you need. Clean solves move you up a level.</p>
+      <p class="lede">Pick the next step from the flowchart. Then undo it with the inverse operation on both sides. Get x alone!</p>
     </div>
     <div class="legend">
       <span><i class="tile tx"><b>x</b></i> x tile</span>
@@ -311,11 +313,10 @@ button.cx:focus-visible .tile,button.cx:hover .tile{outline:2px solid #fff;outli
       <span>A tile and its opposite add up to 0, so they cancel out.</span>
     </div>
     <fieldset>
-      <legend class="label">Build each equation with tiles first</legend>
-      <div class="bmode" id="bmGrid">
-        <button type="button" class="lv" data-bm="auto"><span><b>Auto</b><br>Starts at Level 3, after the basics</span></button>
-        <button type="button" class="lv" data-bm="on"><span><b>Always</b><br>Every equation</span></button>
-        <button type="button" class="lv" data-bm="off"><span><b>Off</b><br>Tiles are set up for you</span></button>
+      <legend class="label">Extras (optional)</legend>
+      <div class="bmode" id="bmGrid" style="grid-template-columns:1fr 1fr">
+        <button type="button" class="lv" data-ex="build" aria-pressed="false"><span><b>Build it first</b><br>Make each equation with tiles before solving</span></button>
+        <button type="button" class="lv" data-ex="check" aria-pressed="false"><span><b>Check with tiles</b><br>Put your answer back in at the end</span></button>
       </div>
     </fieldset>
     <fieldset>
@@ -359,7 +360,7 @@ const G={mode:'steady',level:store.level||1,score:0,streak:0,prog:0,shields:3,L:
   phase:'menu',need:null,cur:null,mistakes:0,hints:0,log:[],add:{L:[],R:[]},armed:null,md:{op:null,neg:false,v:null},
   sel:null,zp:null,rows:null,timer:null,busy:false,lastKey:'',autoNext:null,
   stage:'add',pairSel:null,pairsMade:0,addAmt:null,bld:null,grp:null,chk:null,chkDone:false};
-if(!store.bm)store.bm='auto';
+if(!store.ex)store.ex={build:false,check:false};
 if(/[?&]test=1/.test(location.search))window.__G=G;
 
 /* ---------- math helpers ---------- */
@@ -517,7 +518,7 @@ function termInner(t,S,i){
   const z=G.zp&&G.zp[S];
   if(pairing()&&(t.t==='x'||t.t==='1')&&i!=null){
     const id=`t:${S}:${i}`,sel=G.pairSel===id;
-    return tilesHTML(t.t,t.c,{cls:'pk'+(sel?' psel':''),attr:k=>`data-pt="${id}" data-drag="pt:${id}" data-drop="pt:${id}" tabindex="0" role="button" aria-label="${label({t:t.t,c:Math.sign(t.c)})} tile, ${S==='L'?'left':'right'} side"`});
+    return tilesHTML(t.t,t.c,{zp:z?(t.t==='x'?z.x:z.u):0,cls:'pk'+(sel?' psel':''),attr:k=>`data-pt="${id}" data-drag="pt:${id}" data-drop="pt:${id}" tabindex="0" role="button" aria-label="${label({t:t.t,c:Math.sign(t.c)})} tile, ${S==='L'?'left':'right'} side"`});
   }
   if(t.t==='x')return tilesHTML('x',t.c,{zp:z?z.x:0});
   if(t.t==='1')return tilesHTML('1',t.c,{zp:z?z.u:0});
@@ -578,7 +579,7 @@ function sideHTML(S){
   return tag+h;
 }
 function renderMat(){
-  const adding=(((G.phase==='addsub'||G.phase==='move')&&G.stage==='add')||G.phase==='build')&&!G.busy;
+  const adding=G.phase==='build'&&!G.busy;
   for(const S of ['L','R']){
     const el=S==='L'?$('#sideL'):$('#sideR');
     el.innerHTML=sideHTML(S);
@@ -593,7 +594,7 @@ function renderMat(){
     const k=a=>a.map(q=>q.k+q.s).sort().join(','),same=k(G.add.L)===k(G.add.R);
     if(!same){mat.classList.add('unbal',G.add.L.length>=G.add.R.length?'tiltL':'tiltR');if(G.add.L.length===G.add.R.length)mat.classList.remove('tiltL')}
     else mat.classList.add('bal');
-    mat.insertAdjacentHTML('afterbegin',`<div class="balbadge ${same?'good':'bad'}">${same?'⚖ Balanced: both sides got the same tiles':'⚖ Not balanced yet: add the same tiles to both sides'}</div>`);
+    mat.insertAdjacentHTML('afterbegin',`<div class="balbadge ${same?'good':'bad'}">${same?'⚖ Balanced':'⚖ Do the same to the other side'}</div>`);
   }
   $('#eqline').textContent=pairing()&&G.eqFrozen?G.eqFrozen:G.phase==='check'&&G.orig?`${fmt(G.orig.L)} = ${fmt(G.orig.R)}   with x = ${num(G.x)}`:(G.L.length||G.R.length?`${fmt(G.L)} = ${fmt(G.R)}`:'');
   renderHelp();
@@ -632,13 +633,13 @@ function renderTray(){
   renderHelp();
   if(p==='build'){
     T.innerHTML=binHTML()+`<div class="trayset"><button type="button" class="btn" id="bUndo" ${dis}>Undo</button><button type="button" class="btn" id="bClear" ${dis}>Clear</button><button type="button" class="btn primary" id="bBuild" ${dis}>Check my build</button></div>`;
-  }else if((p==='addsub'||p==='move')&&G.stage==='add'){
-    T.innerHTML=binHTML()+`<div class="trayset"><button type="button" class="btn" id="bUndo" ${dis}>Undo</button><button type="button" class="btn" id="bClear" ${dis}>Clear</button><button type="button" class="btn primary" id="bReady" ${dis}>Ready to cancel →</button></div>`;
   }else if(p==='addsub'||p==='move'){
-    T.innerHTML=`<div class="trayset"><span class="opdisp" style="font-size:16px;min-width:0">Pairs made: ${G.pairsMade}</span>${G.pairsMade>=3?`<button type="button" class="btn" id="bPairRest" ${dis}>Pair the rest for me</button>`:''}</div>`;
+    const a=G.as,u=p==='move'?'x':'',disp=`${a.sign||'?'} ${a.v?(a.v===1&&u?'':a.v)+u:'?'+u}`;
+    T.innerHTML=`<div class="trayset pad" role="group" aria-label="Operation"><button type="button" class="btn opb ${a.sign==='+'?'armed':''}" data-as="+" ${dis}>+ Add</button><button type="button" class="btn opb ${a.sign===M?'armed':''}" data-as="${M}" ${dis}>${M} Subtract</button></div>
+    <div class="trayset pad" role="group" aria-label="Number">${[1,2,3,4,5,6,7,8,9].map(d=>`<button type="button" class="btn padb ${a.v===d?'armed':''}" data-asv="${d}" ${dis}>${d}${u}</button>`).join('')}</div>
+    <div class="trayset"><span class="opdisp">${disp}</span><button type="button" class="btn primary" id="bApplyAS" ${dis}>Do it to both sides</button></div>`;
   }else if(p==='muldiv'&&G.grp){
-    const g=G.grp,stage=grpStage();
-    T.innerHTML=`<div class="trayset">${stage>=2&&g.dealt>=g.n?`<button type="button" class="btn" id="bDeal" ${dis}>Deal the rest for me</button>`:''}<button type="button" class="btn" id="bGrpReset" ${dis}>Start over</button></div>`;
+    T.innerHTML=`<div class="trayset"><button type="button" class="btn" id="bGrpReset" ${dis}>Start over</button></div>`;
   }else if(p==='check'){
     const left=chkLeft();
     T.innerHTML=left?`<div class="trayset"><button type="button" class="btn" id="bChkAll" ${dis}>Replace all x tiles</button><button type="button" class="btn" id="bNext">Skip to next gate ›</button></div>`:`<button type="button" class="btn primary big" id="bNext">Next gate ›</button>`;
@@ -648,8 +649,9 @@ function renderTray(){
     <div class="trayset" role="group" aria-label="Number"><button type="button" class="btn padb ${md.neg?'armed':''}" data-neg="1" aria-pressed="${md.neg}" ${G.busy?'disabled':''}>${M} sign</button>${[1,2,3,4,5,6,7,8,9].map(d=>`<button type="button" class="btn padb ${md.v===d?'armed':''}" data-d="${d}" ${G.busy?'disabled':''}>${d}</button>`).join('')}</div>
     <div class="trayset"><span class="opdisp">${disp}</span><button type="button" class="btn primary" id="bApply" ${G.busy?'disabled':''}>Apply to both sides</button></div>`;
   }else if(p==='solved'){
-    T.innerHTML=`<button type="button" class="btn primary big" id="bCheck">✓ Check with tiles</button><button type="button" class="btn big" id="bNext">Next gate ›</button>`;
+    T.innerHTML=`<button type="button" class="btn primary big" id="bNext">Next gate ›</button>${store.ex.check?'<button type="button" class="btn big" id="bCheck">✓ Check with tiles</button>':''}`;
   }else T.innerHTML='';
+  nudge();
 }
 function setMsg(text,cls){const m=$('#msg');m.className=cls||'';m.textContent=text}
 function reason(id,yes){
@@ -684,7 +686,7 @@ function newProblem(){
 function startChoose(){
   G.phase='choose';G.need=nextStep();G.cur=null;G.add={L:[],R:[]};G.armed=null;G.sel=null;G.zp=null;G.rows=null;G.busy=false;G.grp=null;G.stage='add';G.pairSel=null;
   renderDoors();renderMat();renderTray();renderLog();
-  setMsg('Which flowchart step is next? Start at step 1 and check each one in order.');
+  setMsg('Which step is next? Start at 1.');
   const d=$('#doors');const dur=900;
   d.style.transition='none';d.classList.add('far');void d.offsetWidth;
   d.style.transition=`transform ${dur}ms cubic-bezier(.2,.7,.2,1), opacity ${dur}ms ease-out`;
@@ -703,17 +705,17 @@ function chooseStep(id,el,ev){
     const r=el.getBoundingClientRect();
     crack(ev&&ev.clientX?ev.clientX:r.left+r.width/2,ev&&ev.clientY?ev.clientY:r.top+r.height/2);pulse('bad');
     el.classList.remove('wrong');void el.offsetWidth;el.classList.add('wrong');
-    showWalk(`${STEP[id].name} is not next. Walk the flowchart from the top:`,'bad');
+    showWalk('Not that one. Check from the top:','bad');
   }
 }
 function startWork(id){
-  G.busy=false;G.phase=id;G.add={L:[],R:[]};G.armed=null;G.sel=null;G.md={op:null,neg:false,v:null};G.stage='add';G.pairSel=null;G.pairsMade=0;G.grp=null;
+  G.busy=false;G.phase=id;G.add={L:[],R:[]};G.armed=null;G.sel=null;G.md={op:null,neg:false,v:null};G.as={sign:null,v:null};G.stage='add';G.pairSel=null;G.pairsMade=0;G.grp=null;
   renderDoors();renderMat();renderTray();
-  if(id==='dist'){const g=[...G.L,...G.R].find(t=>t.t==='g');setMsg(`Tap each term inside the parentheses to multiply it by ${num(g.a)}.`)}
-  else if(id==='comb')setMsg('Tap two like terms on the same side to combine them. Opposite tiles cancel out.');
-  else if(id==='move')setMsg('Get rid of the x tiles on the right side. Drag the opposite tile from the bin onto a side (or tap a tile, then tap a side). Add the same tiles to BOTH sides, then tap Ready to cancel.');
-  else if(id==='addsub')setMsg('Get rid of the number next to x. Drag the opposite tile from the bin onto a side (or tap a tile, then tap a side). Add the same tiles to BOTH sides, then tap Ready to cancel.');
-  else setMsg('Undo what is being done to x. Choose divide or multiply, choose the number, then apply it to both sides.');
+  if(id==='dist'){const g=[...G.L,...G.R].find(t=>t.t==='g');setMsg(`Tap each term in the ( ) to multiply by ${num(g.a)}.`)}
+  else if(id==='comb')setMsg('Tap two like terms to put them together.');
+  else if(id==='move'){const d=sumX(G.R);setMsg(`Undo the ${label(X(d))} on the right side.`)}
+  else if(id==='addsub'){const k=sumU(G.L);setMsg(`Undo the ${signedNum(k)} next to x.`)}
+  else{const xt=G.L.find(isX);setMsg(xt.t==='xf'?`x is divided by ${xt.n}. Undo it.`:`x is multiplied by ${num(xt.c)}. Undo it.`)}
 }
 function stepDone(entry){
   G.log.push(entry);G.log.push({type:'eq',L:fmt(G.L),R:fmt(G.R)});
@@ -735,7 +737,7 @@ function solved(){
   const r=$('#gate').getBoundingClientRect();shatter(r,cssVar('--tu'),22);sfx.win();pulse('gold');
   let leveled=false;
   if(clean&&!G.tut){G.prog++;if(G.prog>=3){G.prog=0;if(G.level<7){G.level++;leveled=true;store.level=G.level;save()}}}
-  setMsg(clean?`x = ${num(G.x)}. Clean solve! +${pts}`:`x = ${num(G.x)}. Gate cleared, +${pts}. Solve one with no mistakes or hints to fill a level bar.`,'good');
+  setMsg(clean?`x = ${num(G.x)}. Clean solve! +${pts}`:`x = ${num(G.x)} ✓  +${pts}`,'good');
   renderHud();renderDoors();renderMat();renderTray();renderLog();
   if(leveled)setTimeout(()=>showBanner(`Level ${G.level}`,LEVELS[G.level]),500);
   setTimeout(()=>{const b=$('#bNext');if(b)b.focus({preventScroll:true})},50);
@@ -902,7 +904,7 @@ function finishMd(opTxt,op,val){
 }
 
 /* ---------- build it first (unlocks after the basics) ---------- */
-function buildOn(){if(G.tut)return false;return store.bm==='on'||(store.bm==='auto'&&G.level>=3)}
+function buildOn(){return !G.tut&&!!store.ex.build}
 function buildable(){return ![...G.L,...G.R].some(q=>q.t==='g'||q.t==='xf')}
 const KEYS=[['xp','x',1],['xn','x',-1],['up','1',1],['un','1',-1]];
 function need(S){const r={xp:0,xn:0,up:0,un:0};for(const q of G[S]){if(q.t==='x'){if(q.c>0)r.xp+=q.c;else r.xn-=q.c}else if(q.t==='1'){if(q.c>0)r.up+=q.c;else r.un-=q.c}}return r}
@@ -937,9 +939,9 @@ function checkBuild(){
 function handsOnDiv(){return !G.tut&&G.level>=4}
 function startGrp(a,c,opTxt,val){
   const n=Math.abs(a);
-  G.grp={n,a,c,opTxt,val,x:Array(n).fill(-1),u:Array(Math.abs(c)).fill(-1),sel:null,dealt:0,bad:false};
+  G.grp={n,a,c,opTxt,val,x:Array.from({length:n},(_,i)=>i),u:Array(Math.abs(c)).fill(-1),sel:null,dealt:0,bad:false};
   G.busy=false;sfx.zap();pulse('good');
-  setMsg(`Right choice: divide both sides by ${num(a)}. Now do it with tiles: split each side into ${n} equal groups. Follow the steps above the mat.`,'good');
+  setMsg(`Share the tiles into ${n} equal groups. Tap a group to drop a tile in.`,'good');
   renderMat();renderTray();
 }
 function grpStage(){const g=G.grp;if(g.x.some(v=>v<0))return 1;if(g.u.some(v=>v<0))return 2;return 3}
@@ -964,7 +966,7 @@ function grpTap(id){
 }
 function grpToGroup(S,gi){
   const g=G.grp;
-  if(!g.sel){setMsg('Tap a tile first (or drag it), then tap a group.','bad');return}
+  if(!g.sel){if(S==='R'){const i=g.u.indexOf(-1);if(i>=0)grpPlace('R',i,gi);else setMsg('All the tiles are shared. Make the groups equal.','bad')}return}
   const [s2,i]=g.sel.split(':');
   if(s2!==S){setMsg(`That tile belongs to the ${s2==='L'?'left':'right'} side. Put it in a group on its own side.`,'bad');return}
   grpPlace(S,+i,gi);
@@ -980,7 +982,7 @@ function grpCheck(){
   const counts=[...Array(g.n)].map((_,gi)=>g.u.filter(v=>v===gi).length);
   if(counts.every(c=>c===counts[0])){grpFinish();return}
   g.bad=true;sfx.thud();pulse('bad');
-  setMsg(`Not equal yet: the groups have ${counts.join(', ')} tiles. Every group needs the same number. Tap a tile in a fuller group to take it back, then put it in an emptier group.`,'bad');
+  setMsg(`Not equal yet (${counts.join(', ')}). Tap a tile to take it back, then tap a smaller group.`,'bad');
   renderMat();
 }
 function grpDeal(){
@@ -990,7 +992,7 @@ function grpDeal(){
 }
 function grpFinish(){
   const g=G.grp;G.busy=true;sfx.zap();pulse('good');
-  setMsg(`Equal groups! Each group has one ${g.a<0?M+'x':'x'} on the left and ${num(g.c/g.n)} on the right.${g.a<0?' A negative x is the opposite of x, so next every tile flips to its opposite.':' One group from each side is the answer.'}`,'good');
+  setMsg(`Equal groups! One ${g.a<0?M+'x':'x'} = ${num(g.c/g.n)}.${g.a<0?' Now flip the signs.':''}`,'good');
   renderTray();
   setTimeout(()=>{G.grp=null;G.rows={mode:'div',n:g.n,a:g.a,c:g.c,flip:false};renderMat();renderTray();finishMd(g.opTxt,'÷',g.val)},RM?40:1300);
 }
@@ -1039,7 +1041,7 @@ function renderHelp(){
   }else if(G.phase==='muldiv'&&G.grp){
     const g=G.grp,st=grpStage(),placed=g.u.filter(v=>v>=0).length;
     const li=(i,txt)=>`<li class="${st>i?'done':st===i?'cur':'todo'}">${txt}${st>i?' ✓':''}</li>`;
-    h=`<h3>Divide with tiles · make ${g.n} equal groups</h3><ol>${li(1,`Put one ${g.a<0?M+'x':'x'} tile in each group on the LEFT side.`)}${li(2,`Share the ${Math.abs(g.c)} unit tiles on the RIGHT side equally. Deal them like cards: one into each group, then go around again. (${placed} of ${Math.abs(g.c)} placed)`)}${li(3,'When every group has the same number of tiles, one group from each side shows the answer.')}</ol><p style="margin:6px 0 0;color:var(--muted);font-size:13px">Tap a tile, then tap a group, or drag the tile into a group. Tap a tile in a group to take it back.</p>`;
+    h='';if(false)h=`<h3>Divide with tiles · make ${g.n} equal groups</h3><ol>${li(1,`Put one ${g.a<0?M+'x':'x'} tile in each group on the LEFT side.`)}${li(2,`Share the ${Math.abs(g.c)} unit tiles on the RIGHT side equally. Deal them like cards: one into each group, then go around again. (${placed} of ${Math.abs(g.c)} placed)`)}${li(3,'When every group has the same number of tiles, one group from each side shows the answer.')}</ol><p style="margin:6px 0 0;color:var(--muted);font-size:13px">Tap a tile, then tap a group, or drag the tile into a group. Tap a tile in a group to take it back.</p>`;
   }
   hb.innerHTML=h;hb.hidden=!h;
 }
@@ -1095,6 +1097,50 @@ function onDrop(src,dst){
   }
 }
 
+/* ---------- undo + / − with inverse-operation buttons ---------- */
+function applyAS(){
+  const a=G.as,mv=G.phase==='move';
+  if(!a.sign){setMsg('Pick + or '+M+' first.','bad');return}
+  if(!a.v){setMsg('Pick a number.','bad');return}
+  const amt=(a.sign==='+'?1:-1)*a.v;
+  const need=mv?-sumX(G.R):-sumU(G.L), have=mv?sumX(G.R):sumU(G.L);
+  const u=mv?'x':'';
+  if(amt!==need){
+    if(Math.sign(amt)!==Math.sign(need))return mistake(`${have>0?'+':M}${Math.abs(have)}${u} needs the opposite. Undo ${have>0?'adding':'subtracting'} with ${have>0?'subtracting ('+M+')':'adding (+)'}.`);
+    return mistake(`Use the same number: ${Math.abs(have)}${u}.`);
+  }
+  const tiles=()=>Array.from({length:a.v},()=>({k:mv?'x':'1',s:Math.sign(amt)}));
+  const aL={x:mv?amt:0,u:mv?0:amt};
+  G.addAmt={aL,aR:aL};G.eqFrozen=`${fmt(G.L)} = ${fmt(G.R)}`;G.busy=true;sfx.tick(1.1);
+  G.add={L:tiles(),R:[]};setMsg(`${a.sign}${a.v===1&&u?'':a.v}${u} on the left…`);renderMat();renderTray();
+  setTimeout(()=>{G.add.R=tiles();sfx.tick(1.3);setMsg(`…and on the right. Balanced!`,'good');renderMat();
+    setTimeout(()=>{G.stage='pair';setMsg('Opposites cancel to 0.','good');pairRest()},RM?40:650);
+  },RM?40:700);
+}
+/* ---------- "Show me": do the step for the student (counts as a hint) ---------- */
+function showMe(){
+  if(G.busy)return;const p=G.phase;
+  if(p==='choose'){G.hints++;const d=$(`.door[data-step="${G.need}"]`);showWalk('Here is the check, from the top:');if(d){d.classList.add('nudge');setTimeout(()=>chooseStep(G.need,d,null),RM?50:1400)}return}
+  if(p==='addsub'||p==='move'){G.hints++;const mv=p==='move',need=mv?-sumX(G.R):-sumU(G.L);G.as={sign:need>0?'+':M,v:Math.abs(need)};renderTray();setTimeout(applyAS,RM?50:600);return}
+  if(p==='dist'){G.hints++;const b=$('.iterm');if(b){b.click();setTimeout(()=>{const o=[...document.querySelectorAll('#popOpts .btn')];const S=b.dataset.s,i=+b.dataset.i,j=+b.dataset.j,g=G[S][i],it=g.in[j];const want=label(it.t==='x'?X(g.a*it.c):U(g.a*it.c));const ok=o.find(x=>x.textContent===want);if(ok)ok.click()},RM?50:500)}return}
+  if(p==='comb'){G.hints++;const S=needsComb(G.L)?'L':'R';const k=G[S].filter(isX).length>1?'x':'1';const idx=G[S].map((q,i)=>q.t===k?i:-1).filter(i=>i>=0);combTap(S,idx[0]);setTimeout(()=>combTap(S,idx[1]),RM?50:500);return}
+  if(p==='muldiv'&&G.grp){G.hints++;grpDeal();return}
+  if(p==='muldiv'){G.hints++;const xt=G.L.find(isX);G.md=xt.t==='xf'?{op:'×',neg:false,v:xt.n}:{op:'÷',neg:xt.c<0,v:Math.abs(xt.c)};renderTray();setTimeout(applyMd,RM?50:600);return}
+  if(p==='build'){G.bldHint=true;renderHelp();setMsg('The checklist shows how many of each tile you need.');return}
+}
+/* ---------- glowing cue on what to tap next ---------- */
+function nudge(){
+  document.querySelectorAll('.nudge').forEach(e=>e.classList.remove('nudge'));
+  if(G.busy||G.tut)return;const p=G.phase;let sel=null;
+  if(p==='addsub'||p==='move')sel=!G.as.sign?'[data-as]':!G.as.v?'[data-asv]':'#bApplyAS';
+  else if(p==='muldiv'&&G.grp)sel='.grp[data-grp^="R:"]';
+  else if(p==='muldiv')sel=!G.md.op?'[data-op]':!G.md.v?'[data-d]':'#bApply';
+  else if(p==='dist')sel='.iterm';
+  else if(p==='solved')sel='#bNext';
+  else if(p==='build')sel=sideOk('L')&&sideOk('R')?'#bBuild':null;
+  if(sel)document.querySelectorAll(sel).forEach(e=>e.classList.add('nudge'));
+}
+
 function hintFor(p){
   const {L,R}=G;
   if(p==='build'){G.bldHint=true;renderHelp();return 'Checklist on: it shows how many of each tile each side needs. Green means that kind of tile is done.'}
@@ -1143,20 +1189,20 @@ $('#tray').addEventListener('click',e=>{
   if(b.id==='bPairRest'){pairRest();return}
   if(b.id==='bBuild'){checkBuild();return}
   if(b.id==='bDeal'){grpDeal();return}
-  if(b.id==='bGrpReset'){G.grp.x.fill(-1);G.grp.u.fill(-1);G.grp.dealt=0;G.grp.bad=false;G.grp.sel=null;renderMat();renderTray();return}
+  if(b.id==='bGrpReset'){G.grp.u.fill(-1);G.grp.dealt=0;G.grp.bad=false;G.grp.sel=null;renderMat();renderTray();return}
   if(b.id==='bCheck'){startCheck();return}
   if(b.id==='bChkAll'){[...allItems(G.chk.L),...allItems(G.chk.R)].forEach(i=>{i.r=true});sfx.tick(1.3);chkAfter();return}
   if(b.dataset.op){G.md.op=b.dataset.op;sfx.tick(.9);renderTray();return}
+  if(b.dataset.as){G.as.sign=b.dataset.as;sfx.tick(.9);renderTray();return}
+  if(b.dataset.asv){G.as.v=+b.dataset.asv;sfx.tick(.9);renderTray();return}
+  if(b.id==='bApplyAS'){applyAS();return}
   if(b.dataset.neg){G.md.neg=!G.md.neg;sfx.tick(.9);renderTray();return}
   if(b.dataset.d){G.md.v=+b.dataset.d;sfx.tick(.9);renderTray();return}
   if(b.id==='bApply'){applyMd();return}
   if(b.id==='bNext'){newProblem()}
 });
 $('#mat').addEventListener('click',e=>{const s=e.target.closest('.side');if(s)G.lastSide=s.dataset.s},true);
-$('#bHint').addEventListener('click',()=>{
-  if(G.phase==='choose'){G.hints++;showWalk('Walk the flowchart from the top:');return}
-  const h=hintFor(G.phase);if(h){if(G.phase!=='build'&&G.phase!=='check')G.hints++;setMsg(h)}
-});
+$('#bHint').addEventListener('click',showMe);
 document.addEventListener('keydown',e=>{
   if(!$('#menu').hidden)return;
   if(G.phase==='choose'&&/^[1-5]$/.test(e.key)){const b=$(`.door[data-step="${STEPS[+e.key-1].id}"]`);if(b)chooseStep(b.dataset.step,b,null)}
@@ -1167,11 +1213,11 @@ $('#bSound').addEventListener('click',()=>{muted=!muted;store.muted=muted;save()
 /* menu */
 function renderMenu(){
   const first=!store.tutDone;$('#bTut').classList.toggle('primary',first);$('#bStart').classList.toggle('primary',!first);
-  document.querySelectorAll('[data-bm]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.bm===store.bm)));
+  document.querySelectorAll('[data-ex]').forEach(b=>b.setAttribute('aria-pressed',String(!!store.ex[b.dataset.ex])));
   $('#lvGrid').innerHTML=LEVELS.slice(1).map((n,i)=>`<button type="button" class="lv" data-lv="${i+1}" aria-pressed="${G.level===i+1}"><i>${i+1}</i><span>${n}</span></button>`).join('');
 }
 $('#lvGrid').addEventListener('click',e=>{const b=e.target.closest('[data-lv]');if(!b)return;G.level=+b.dataset.lv;store.level=G.level;save();renderMenu();previewSample()});
-$('#bmGrid').addEventListener('click',e=>{const b=e.target.closest('[data-bm]');if(!b)return;store.bm=b.dataset.bm;save();renderMenu()});
+$('#bmGrid').addEventListener('click',e=>{const b=e.target.closest('[data-ex]');if(!b)return;store.ex[b.dataset.ex]=!store.ex[b.dataset.ex];save();renderMenu()});
 function startRun(){
   const a=ac();if(a&&a.state==='suspended')a.resume();
   G.score=0;G.streak=0;G.prog=0;G.shields=3;G.lastKey='';
@@ -1191,19 +1237,17 @@ function previewSample(){
 const TUT_PROBS=[null,{L:[X(1),U(3)],R:[U(5)],x:2},{L:[X(2)],R:[U(8)],x:4}];
 const negCount=S=>G.add[S].filter(t=>t.k==='1'&&t.s<0).length;
 const TUT=[
- {t:'Every gate is an equation built from algebra tiles. A green bar is x. A yellow square is +1. Red tiles are negative. Your goal: get one x alone on the left side.',target:'#mat',btn:'Next'},
- {t:'First, pick the next step from the flowchart. Check the doors in order. 1: no parentheses, skip. 2: nothing to combine, skip. 3: x is only on the left, skip. 4: 3 is added to x. Tap door 4, Undo + / −.',target:'.door[data-step="addsub"]',done:()=>G.phase==='addsub'},
- {t:'To cancel +3, you need 3 negative tiles. Tap the −1 tile in the bin.',target:'[data-tt="3"]',done:()=>G.armed===3},
- {t:'Tap the LEFT side 3 times to add three −1 tiles. (You can also drag a tile from the bin onto a side.) Tap an added tile to take it back.',target:'#sideL',done:()=>negCount('L')>=3},
- {t:'An equation is a balance. See how the mat tips? Whatever you do to one side, you do to the other. Tap the RIGHT side 3 times.',target:'#sideR',done:()=>negCount('R')>=3},
- {t:'Both sides got the same tiles, so the mat is balanced again. Tap Ready to cancel.',target:'#bReady',done:()=>G.stage==='pair'||G.phase==='solved'},
- {t:'Now make zero pairs. A +1 and a −1 are opposites: together they make 0. Tap a red −1 tile, then tap a yellow +1 tile on the SAME side. The pair disappears. Keep pairing on both sides (or drag one tile onto its opposite).',target:'#mat',done:()=>G.phase==='solved'},
- {t:'x = 2. The worked solution writes each step the way you write it on paper: −3 under both sides. You can tap ✓ Check with tiles to prove it by putting 2 in for x. When you are ready, tap Next gate.',target:'#bNext',also:'#logPanel',done:()=>G.tut.prob===2},
- {t:'New gate: 2x = 8. Walk the flowchart: no parentheses, nothing to combine, x on one side, nothing added to x. But x is multiplied by 2. Tap door 5, Undo × / ÷.',target:'.door[data-step="muldiv"]',done:()=>G.phase==='muldiv'},
- {t:'Undo multiplying by dividing. Tap ÷ Divide.',target:'[data-op="÷"]',done:()=>G.md.op==='÷'},
- {t:'Divide by the number that multiplies x. Tap 2.',target:'[data-d="2"]',done:()=>G.md.op==='÷'&&G.md.v===2&&!G.md.neg},
- {t:'Tap Apply to both sides. Each side splits into 2 equal groups. One group from each side is the answer.',target:'#bApply',done:()=>G.phase==='solved'},
- {t:'That is the game: pick the step, then do it with tiles. From Level 3 you build each equation with tiles first, and from Level 4 you split the tiles into equal groups yourself when you divide. Later levels use the other doors. Distribute: tap each term inside the parentheses. Combine like terms: tap two matching terms on one side. Move variables: cancel the x tiles on the right side. Stuck? Tap Hint.',target:null,btn:'Start playing',end:true}
+ {t:'Get x alone. Green bar = x. Yellow = +1. Red = negative.',target:'#mat',btn:'Next'},
+ {t:'Which step is next? 1 no ( ). 2 nothing to combine. 3 x on one side. 4 yes: +3 is with x. Tap door 4.',target:'.door[data-step="addsub"]',done:()=>G.phase==='addsub'},
+ {t:'Undo +3 with its opposite. Tap − Subtract.',target:'[data-as="−"]',done:()=>G.as&&G.as.sign==='−'},
+ {t:'Tap 3.',target:'[data-asv="3"]',done:()=>G.as&&G.as.sign==='−'&&G.as.v===3},
+ {t:'Tap Do it to both sides. Watch: the left gets −3, then the right. +3 and −3 cancel to 0.',target:'#bApplyAS',done:()=>G.phase==='solved'},
+ {t:'x = 2! Tap Next gate.',target:'#bNext',also:'#logPanel',done:()=>G.tut.prob===2},
+ {t:'2x = 8. x is multiplied by 2. Tap door 5.',target:'.door[data-step="muldiv"]',done:()=>G.phase==='muldiv'},
+ {t:'Undo × with ÷. Tap ÷ Divide.',target:'[data-op="÷"]',done:()=>G.md.op==='÷'},
+ {t:'Tap 2.',target:'[data-d="2"]',done:()=>G.md.op==='÷'&&G.md.v===2&&!G.md.neg},
+ {t:'Tap Apply to both sides.',target:'#bApply',done:()=>G.phase==='solved'},
+ {t:'That’s it: pick the step, then undo it on both sides. Stuck? Tap Show me.',target:null,btn:'Start playing',end:true}
 ];
 function tutShow(){
   document.querySelectorAll('.coach-on').forEach(e=>e.classList.remove('coach-on'));

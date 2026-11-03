@@ -75,8 +75,9 @@
     var root = host.attachShadow ? host.attachShadow({ mode: 'open' }) : host;
     root.innerHTML = '<style>' +
       ':host{all:initial}' +
-      '.t{font:600 12.5px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#E8EEFF;background:rgba(14,20,44,.88);border:1px solid rgba(160,190,255,.35);border-radius:18px;padding:6px 10px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.35);max-width:calc(100vw - 20px)}' +
+      '.t{font:600 12.5px/1.2 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#E8EEFF;background:rgba(14,20,44,.88);border:1px solid rgba(160,190,255,.35);border-radius:18px;padding:5px 9px;display:flex;gap:8px;align-items:center;box-shadow:0 4px 14px rgba(0,0,0,.35);max-width:calc(100vw - 20px)}' +
       '.t.need{background:#FFF4CC;color:#3A2E00;border-color:#E0A800}' +
+      'input{max-width:44vw}' +
       'button{font:inherit;color:inherit;background:none;border:0;padding:2px 4px;cursor:pointer;text-decoration:underline}' +
       'input{font:500 13px system-ui,sans-serif;padding:4px 6px;border:1px solid #9AA4BF;border-radius:6px;width:150px}' +
       '.min{padding:6px 9px}' +
@@ -87,8 +88,13 @@
       var name = get(NAME_KEY), min = get(HIDE_KEY) === '1' && name && !edit;
       box.className = 't' + (name ? '' : ' need') + (min ? ' min' : '');
       if (min) { box.innerHTML = '<button type="button" data-a="open" aria-label="Arcade player: ' + esc(name) + '">🎮</button>'; return; }
-      if (edit || !name) {
-        box.innerHTML = '<span>' + (name ? 'Your name:' : 'Type your first and last name so Mr. Allen sees your arcade play:') + '</span>' +
+      if (!edit && !name) {
+        box.className = 't need';
+        box.innerHTML = '<button type="button" data-a="edit" style="text-decoration:none">🎮 Add your name</button>';
+        return;
+      }
+      if (edit) {
+        box.innerHTML = '<span>First and last name:</span>' +
           '<input type="text" autocomplete="name" maxlength="60" aria-label="First and last name" value="' + esc(name) + '"><button type="button" data-a="save">Save</button>';
         var inp = box.querySelector('input');
         inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(); e.stopPropagation(); });
