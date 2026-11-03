@@ -3,8 +3,8 @@
  *  Mr. Allen's Math Class — Student Folders
  *
  *  2627 Student Folders → Period → Student, each student folder holding:
- *    • Standards Tracker (scores from "2627 Standards Progress Tracker - Teacher Version")
- *    • I Can Tracker (Tabbed) with name and period
+ *    • I Can Tracker (Tabbed) with name and period. Since Nov 2026 this is the ONE
+ *      tracker: the old Standards Tracker was merged into it (see MergeTrackers).
  *    • Fluency Results — their own Fluency Lab Skill Checks and Flashpoint (view only)
  *    • Fluency Lab Tracker (printable PDF)
  *    • Self-Assessments/ — a Google Docs copy of every Student Self-Assessment form
@@ -24,8 +24,8 @@
  *      and fix any that are wrong.
  *   3. Run  shareStudentFolders
  *        Shares each folder with that one student (can edit, no email sent).
- *   4. Whenever the teacher tracker changes, run  updateStudentScores
- *        Rewrites only the score lines and checks off targets you marked ✓.
+ *   4. Whenever the teacher tracker changes, run  updateTrackers  (MergeTrackers)
+ *      and  updateStudentScores  (Self-Assessment score lines, Fluency Results).
  *        Anything students typed stays.
  * ════════════════════════════════════════════════════════════════════
  */
@@ -119,15 +119,11 @@ function pause_(props, key, done, fn, minutes, msg) {
 
 // ───────────────────────────── one student ─────────────────────────────
 
-// Student folder:  Standards Tracker · I Can Tracker · Fluency Results · Fluency Lab Tracker (PDF)
+// Student folder:  I Can Tracker · Fluency Results · Fluency Lab Tracker (PDF)
 //                  Self-Assessments/  (one form per standard)
 function buildOne_(folder, s, forms, fl, alreadyFilled) {
   var sub = childFolder_(folder, SF.FORMS_SUB), count = 0;
-  // Standards Tracker (filled with scores)
-  var tName = 'Standards Tracker — ' + s.name, t = firstFile_(folder, tName);
-  if (!t) t = DriveApp.getFileById(SF.TEMPLATE_DOC_ID).makeCopy(tName, folder);
-  if (!alreadyFilled) { var td = DocumentApp.openById(t.getId()); fillTracker_(td.getBody(), s); td.saveAndClose(); }
-  count++;
+  // (The separate Standards Tracker is no longer made: it was merged into the I Can Tracker.)
   // Self-assessment forms → Self-Assessments subfolder
   forms.forEach(function (f) {
     var name = f.std + ' Self-Assessment — ' + s.name, top = firstFile_(folder, name), inSub = firstFile_(sub, name), id = null;
@@ -161,9 +157,9 @@ function fillFolder_(folder, s) {
       var f = it.next();
       if (f.getMimeType() !== MimeType.GOOGLE_DOCS) continue;
       var title = f.getName(), m = title.match(/^(NC\.8\.[A-Z]+\.\d+) Self-Assessment/);
-      if (title.indexOf('Standards Tracker') !== 0 && !m) continue;
+      if (!m) continue;                                  // trackers: run updateTrackers (MergeTrackers)
       var doc = DocumentApp.openById(f.getId()), body = doc.getBody();
-      if (m) fillForm_(body, s, m[1]); else fillTracker_(body, s);
+      fillForm_(body, s, m[1]);
       doc.saveAndClose();
     }
   });
