@@ -175,7 +175,8 @@ function clearScore_(cell) {
     var ch = cell.getChild(i);
     if (ch.getType() !== DocumentApp.ElementType.PARAGRAPH) continue;
     if (!ICAN.SCORE_RE.test(ch.asParagraph().getText().trim())) continue;
-    if (cell.getNumChildren() > 1) cell.removeChild(ch); else ch.asParagraph().setText('');
+    if (cell.getNumChildren() === 1) cell.appendParagraph('').setAlignment(DocumentApp.HorizontalAlignment.CENTER);   // setText('') is rejected
+    cell.removeChild(ch);
   }
 }
 

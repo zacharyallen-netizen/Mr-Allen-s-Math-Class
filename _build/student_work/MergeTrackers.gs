@@ -126,7 +126,7 @@ function runMerge_(archive) {
         var checks = old ? readChecks_(DocumentApp.openById(old.getId()).getBody()) : {};
         var doc = DocumentApp.openById(file.getId());
         upgradeICan_(doc);
-        fillICan_(doc, s);
+        fillGrid_(doc, s);
         var marked = mergeOne_(doc, s, checks);
         doc.saveAndClose();
         var note = (old ? Object.keys(checks).length + ' checks carried over' : 'no old tracker') + ' · ' + marked + ' marked';
@@ -245,13 +245,21 @@ function setHowTo_(body) {
   var i = body.getChildIndex(head) + 1;
   var nextEl = i < body.getNumChildren() ? body.getChild(i) : null;
   if (nextEl && nextEl.getType() === DocumentApp.ElementType.LIST_ITEM &&
-      nextEl.asListItem().getText().indexOf(MT.HOWTO[0].slice(0, 20)) === 0) return;   // already done
+      nextEl.asListItem().getText().indexOf(MT.HOWTO[0].slice(0, 20)) === 0) {        // already done: just fix bold
+    for (var j = i; j < body.getNumChildren() && body.getChild(j).getType() === DocumentApp.ElementType.LIST_ITEM; j++) {
+      var tt = body.getChild(j).asListItem().editAsText(), str = tt.getText(), d = str.indexOf('.');
+      if (d > 0 && d < str.length - 1) { tt.setBold(0, d, true); tt.setBold(d + 1, str.length - 1, false); }
+    }
+    return;
+  }
   while (i < body.getNumChildren() && body.getChild(i).getType() === DocumentApp.ElementType.LIST_ITEM) body.removeChild(body.getChild(i));
   var first = null;
   MT.HOWTO.forEach(function (t, k) {
     var li = body.insertListItem(i + k, t);
     if (!first) { first = li; li.setGlyphType(DocumentApp.GlyphType.NUMBER); } else li.setListId(first);
-    li.editAsText().setBold(false).setBold(0, t.indexOf('.'), true);
+    var tx = li.editAsText(), dot = t.indexOf('.');
+    tx.setBold(0, dot, true);
+    tx.setBold(dot + 1, t.length - 1, false);
   });
 }
 
@@ -318,6 +326,34 @@ function readChecks_(body) {
     }
   }
   return out;
+}
+
+// Same as fillICan_ (ICanTrackers), but safe to run again: a cell that holds only
+// a score is emptied without setText(''), which Google rejects.
+function fillGrid_(doc, s) {
+  var tbl = glanceTable_(doc.getTabs()[0].asDocumentTab().getBody());
+  if (!tbl) throw new Error('Could not find the "My progress at a glance" table');
+  for (var r = 1; r < tbl.getNumRows(); r++) {
+    var row = tbl.getRow(r);
+    if (row.getNumCells() < ICAN.FIRST + 5) continue;
+    var m = row.getCell(0).getText().trim().match(/^NC\.8\.[A-Z]+\.\d+/);
+    if (!m) continue;
+    for (var k = 0; k < 5; k++) clearGridScore_(row.getCell(ICAN.FIRST + k));
+    var v = s.scores[m[0]];
+    if (v === undefined || v === null || v === '') continue;
+    var n = Math.floor(Number(v));
+    if (n >= 1 && n <= 5) putScore_(row.getCell(ICAN.FIRST + n - 1), Number(v));
+  }
+}
+
+function clearGridScore_(cell) {
+  for (var i = cell.getNumChildren() - 1; i >= 0; i--) {
+    var ch = cell.getChild(i);
+    if (ch.getType() !== DocumentApp.ElementType.PARAGRAPH) continue;
+    if (!ICAN.SCORE_RE.test(ch.asParagraph().getText().trim())) continue;
+    if (cell.getNumChildren() === 1) cell.appendParagraph('').setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    cell.removeChild(ch);
+  }
 }
 
 function findPara_(body, text) {
