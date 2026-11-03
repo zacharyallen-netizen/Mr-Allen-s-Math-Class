@@ -471,6 +471,8 @@ body::after {
 </style>
 </head>
 <body>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="UFO Blaster" data-unit="6"></script>
 <script src="../site-bar.js"></script>
 <h1 style="position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0">UFO Blaster — Slope-Intercept Defense</h1>
 <div class="game-wrap">
@@ -539,7 +541,7 @@ body::after {
     <div class="panel">
       <h2>&gt; MISSION BRIEFING</h2>
       <div class="desc">
-        Hostile UFOs have invaded the grid! Your plasma cannon fires in a perfectly straight line. Aim your shot by entering a line in <b style="color:var(--cyan)">slope-intercept form</b>.
+        Hostile UFOs have invaded the grid! Your plasma cannon fires in a perfectly straight line. Aim your shot by entering a line in <b style="color:var(--cyan)">slope-intercept form</b>, y = mx + b. No flat (y = #) or vertical (x = #) lines.
       </div>
       <div class="desc" style="color:#9aa2c8;font-size:15px;">
         If your line passes through a UFO's coordinates, it's vaporized. Clear all targets to advance. Waste no shots!
@@ -618,10 +620,10 @@ const LEVELS = [
     hint: "Big rise per run. y = 3x − 3"
   },
   {
-    name: "Horizontal Wall",
-    desc: "All at the same altitude!",
-    ufos: [[-4, 4], [-1, 4], [2, 4], [5, 4]],   // y = 4
-    hint: "Same y value for all. y = 4 (flat line)"
+    name: "Falling Wall",
+    desc: "They drop one unit for every step right.",
+    ufos: [[-2, 6], [0, 4], [3, 1], [5, -1]],   // y = -x + 4
+    hint: "Down 1 for every 1 right. Where does it cross the y-axis?"
   },
   {
     name: "Gentle Slope",
@@ -966,7 +968,9 @@ function renderTargetList() {
 
 // ============================================================
 // EQUATION PARSER
-// Accepts: "2x+3", "y=2x+3", "-x+5", "x", "5", "3x", "-3x-2", "0.5x + 1", "x/2 + 1"
+// Slope-intercept form only (mx + b, x term first, slope not 0).
+// Accepts: "2x+3", "y=2x+3", "-x+5", "x", "3x", "-3x-2", "0.5x + 1", "1/2x + 1", "x/2 + 1"
+// Rejects: "5" / "y=5" / "0x+5" (flat), "x=3" (vertical), "3+2x" (not mx + b order)
 // Returns { m, b } or { error }
 // ============================================================
 function parseEquation(raw) {
@@ -981,6 +985,12 @@ function parseEquation(raw) {
   s = s.replace(/[−–—]/g, '-');
   if (!s) return { error: "Equation can't be empty." };
 
+  // Slope-intercept only: no vertical (x = #) or flat (y = #) lines, x term first.
+  if (s.includes('=')) return { error: "Vertical lines like x = 3 can't be fired. Use slope-intercept form, y = mx + b." };
+  if (!s.includes('x')) return { error: "Flat lines like y = 5 can't be fired. Your line needs a slope: y = mx + b, like 2x + 3." };
+  const SLOPE_INTERCEPT = /^[+-]?(\d+(\.\d+)?|\.\d+|\d+\/\d+|\([+-]?\d+\/\d+\))?x(\/\d+)?([+-](\d+(\.\d+)?|\.\d+|\d+\/\d+))?$/;
+  if (!SLOPE_INTERCEPT.test(s)) return { error: "Write it in slope-intercept form, mx + b, with the x term first (for example 2x + 3, not 3 + 2x)." };
+
   // Fraction slopes written the textbook way: "1/2x", "(1/2)x", "-3/4x" -> decimal slope
   s = s.replace(/\(?([+-]?\d+)\/(\d+)\)?x/g, (_, a, b) => `${parseInt(a) / parseInt(b)}x`);
 
@@ -992,7 +1002,7 @@ function parseEquation(raw) {
   });
 
   // Also a standalone fraction constant like "1/2"
-  s = s.replace(/([+-]?\d+)\/(\d+)(?!x)/g, (_, a, b) => String(parseInt(a) / parseInt(b)));
+  s = s.replace(/([+-]?\d+)\/(\d+)(?!x)/g, (_, a, b) => (a[0] === '+' ? '+' : '') + String(parseInt(a) / parseInt(b)));
 
   // Insert a '+' before any '-' that's not at the start, so we can split on '+'
   // Then split. First handle the edge where leading char is '-'.
@@ -1025,6 +1035,7 @@ function parseEquation(raw) {
       b += c;
     }
   }
+  if (m === 0) return { error: "A slope of 0 makes a flat line, and flat lines can't be fired. Use a slope that isn't 0." };
   return { m, b };
 }
 
@@ -1251,7 +1262,7 @@ function handleFire() {
   const parsed = parseEquation(raw);
   if (parsed.error) {
     sfxError();
-    setFeedback('warn', 'INPUT ERROR', parsed.error + ' Accepted: <b>2x+3</b>, <b>-x+1</b>, <b>5</b>, <b>0.5x+1</b>, <b>x/2+1</b>');
+    setFeedback('warn', 'INPUT ERROR', parsed.error + ' Accepted: <b>2x+3</b>, <b>-x+1</b>, <b>3x</b>, <b>0.5x+1</b>, <b>1/2x+1</b>');
     return;
   }
   const { m, b } = parsed;
@@ -1264,6 +1275,7 @@ function handleFire() {
 
   setTimeout(() => {
     const hits = fireLaser(m, b);
+    try { if (window.ArcadeSend) ArcadeSend.answer(hits.length > 0); } catch (e) {}
     if (hits.length === 0) {
       sfxMiss();
       shakeMiss();
@@ -1320,6 +1332,7 @@ function formatEq(m, b) {
 
 function showLevelClear(lastHits, lastPts, shotBonus) {
   sfxLevelClear();
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Level ' + (state.levelIdx + 1) + ' · ' + LEVELS[state.levelIdx].name, score: state.score, details: 'Cleared in ' + state.shots + ' shot' + (state.shots === 1 ? '' : 's') }); } catch (e) {}
   const overlay = document.getElementById('overlay');
   document.getElementById('overlay-title').textContent = 'LEVEL CLEAR!';
   const extra = shotBonus > 0 ? ` One-shot bonus: +${shotBonus}!` : '';

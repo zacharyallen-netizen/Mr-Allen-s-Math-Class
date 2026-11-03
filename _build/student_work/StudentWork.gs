@@ -53,6 +53,7 @@ function doPost(e) {
     var kind = String(d.kind || '');
     if (kind === 'homework') return homework_(d, name);
     if (kind === 'pretest' || kind === 'practice') return evidence_(d, name, kind);
+    if (kind === 'arcade') return arcade_(d, name);          // ArcadeLog.gs
     return json_({ ok: false, error: 'bad kind' });
   } catch (err) {
     return json_({ ok: false, error: String(err) });

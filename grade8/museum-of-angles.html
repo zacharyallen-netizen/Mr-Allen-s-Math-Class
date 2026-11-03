@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Museum of Angles · 8th Grade Math · Units 4 &amp; 8</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+/* Museum of Angles: a lobby with two wings (Angle Wing and Transformations Wing, plus the Vault).
+   Every room shows ORIGINAL artwork drawn by this page in SVG (nothing is copied from real paintings).
+   The art and the numbers change every time a room is played. */
+:root{
+  --wall:#14111c; --wall2:#1d1828; --panel:#221c2f; --panel2:#2a2339; --line:rgba(242,193,78,.22);
+  --gold:#f2c14e; --gold-d:#b98a22; --cream:#f6efe0; --muted:#b9b0c9; --ink:#0b0d18;
+  --good:#66e8a4; --bad:#ff8f8f; --cyan:#9fe3ff;
+  --f-head:'Fraunces',Georgia,serif; --f-body:'DM Sans','Segoe UI',system-ui,sans-serif; --f-mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1200px 600px at 50% -10%,#2b2340 0%,var(--wall) 60%) fixed,var(--wall);color:var(--cream);font:16px/1.45 var(--f-body)}
+button,input,select{font:inherit;color:inherit}
+#app{max-width:1280px;margin:0 auto;padding:14px 16px 30px}
+
+/* header */
+.hud{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.brand{font:800 26px/1.1 var(--f-head);letter-spacing:.01em;margin:0}
+.brand span{color:var(--gold)}
+.hud .spacer{flex:1}
+.gemcount{font:700 15px var(--f-mono);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.btn{background:var(--panel2);border:1px solid rgba(242,193,78,.4);border-radius:10px;padding:9px 14px;min-height:44px;cursor:pointer;font-weight:700;color:var(--cream)}
+.btn:hover{background:#352c48}
+.btn:focus-visible,.choice:focus-visible,.room:focus-visible,.wg:focus-visible,.shape:focus-visible{outline:3px solid var(--cyan);outline-offset:2px}
+.btn.primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn.primary:hover{background:#ffd56e}
+.btn.small{min-height:36px;padding:6px 10px;font-size:14px}
+
+/* lobby */
+.intro{background:linear-gradient(135deg,rgba(242,193,78,.12),rgba(242,193,78,.02));border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.intro h2{font:800 22px var(--f-head);margin:0 0 4px}
+.intro p{margin:0;color:var(--muted)}
+.wings{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wing{background:var(--wall2);border:1px solid var(--line);border-radius:16px;padding:14px}
+.wing h3{font:800 20px var(--f-head);margin:0 0 2px;display:flex;align-items:center;gap:8px}
+.wing .sub{color:var(--muted);font-size:14px;margin:0 0 12px}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.room{position:relative;text-align:left;display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:12px;border:1.5px solid rgba(242,193,78,.35);
+  background:linear-gradient(160deg,#2c2440,#201a2e);cursor:pointer;min-height:118px}
+.room:hover{border-color:var(--gold);background:linear-gradient(160deg,#382e52,#241d34)}
+.room .num{font:700 12px var(--f-mono);color:var(--gold);letter-spacing:.06em}
+.room .nm{font:800 17px/1.2 var(--f-head)}
+.room .tg{font-size:13px;color:var(--muted)}
+.room .gems{margin-top:auto;font:700 13px var(--f-mono);color:var(--cream)}
+.room.done{border-color:var(--good)}
+.room.done .num::after{content:" · CLEARED";color:var(--good)}
+.room.locked{opacity:.55;cursor:not-allowed;border-style:dashed}
+.room.locked .gems::before{content:"🔒 "}
+.room.vault{grid-column:1/-1;background:linear-gradient(160deg,#3a2c12,#1f1a10);border-color:var(--gold)}
+#sendMount{margin-top:18px}
+
+/* room */
+.roomhead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.roomhead h2{font:800 24px/1.15 var(--f-head);margin:0}
+.roomhead .tgt{font:700 13px var(--f-mono);color:var(--gold);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.roomgrid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,1fr);gap:16px;align-items:start}
+.frame{margin:0;position:relative;padding:14px;border-radius:6px;background:linear-gradient(145deg,#d9ac45,#8a6418 40%,#e8c160 60%,#9c721e);
+  box-shadow:0 18px 50px rgba(0,0,0,.6),inset 0 0 0 2px rgba(255,255,255,.25)}
+.frame::before{content:"";position:absolute;left:50%;top:-30px;width:70%;height:60px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(255,240,200,.35),transparent);pointer-events:none}
+.mat{background:#0f0d16;padding:8px;border-radius:2px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6)}
+#art{display:block;width:100%;height:auto;background:#1a1626;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.plaque{margin:10px auto 0;max-width:420px;text-align:center;background:linear-gradient(#efe2bf,#d6c08c);color:#2b2112;border-radius:4px;padding:6px 10px;font:600 14px/1.3 var(--f-head);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.plaque small{display:block;font:500 11px var(--f-body);opacity:.8}
+.hunt{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.hunt h3{margin:0;font:800 15px var(--f-body);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+#huntList{list-style:none;margin:0;padding:0;display:flex;gap:6px;flex-wrap:wrap}
+#huntList li{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;border:1.5px solid rgba(242,193,78,.3);background:rgba(255,255,255,.03);font:700 14px var(--f-mono);color:var(--muted)}
+#huntList li.now{border-color:var(--gold);color:var(--cream);box-shadow:0 0 0 2px rgba(242,193,78,.25)}
+#huntList li.gem{border-color:var(--good);background:rgba(102,232,164,.14);color:var(--good)}
+#huntList li.shown{border-color:var(--muted)}
+#prompt{font-size:18px;line-height:1.45}
+#prompt b{color:var(--gold)}
+#prompt .kind{display:block;font:700 12px var(--f-mono);letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.guide{background:#f3ead4;color:#2b2112;border-radius:8px;padding:10px 12px;font-size:15px;margin-top:8px}
+#prompt .guide b{color:#7a4b00}
+.guide ol{margin:6px 0 0;padding-left:22px}
+.guide li{margin:3px 0}
+#inputArea{display:flex;flex-direction:column;gap:8px}
+.choice{text-align:left;padding:10px 12px;border-radius:10px;border:1.5px solid rgba(242,193,78,.35);background:rgba(255,255,255,.04);cursor:pointer;min-height:44px;font-size:15px}
+.choice:hover{border-color:var(--gold);background:rgba(242,193,78,.1)}
+.choice.bad{border-color:var(--bad);background:rgba(255,110,120,.12)}
+.choice.ok{border-color:var(--good);background:rgba(102,232,164,.15)}
+.irow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:700 18px var(--f-mono)}
+.irow input{width:92px;padding:9px 10px;border-radius:9px;border:1.5px solid rgba(242,193,78,.45);background:#120f1b;font:700 18px var(--f-mono);text-align:center}
+.irow input.wide{width:120px}
+.irow select{padding:9px 10px;border-radius:9px;border:1.5px solid rgba(242,193,78,.45);background:#120f1b;max-width:100%;font-size:15px}
+.tapnote{color:var(--muted);font-size:14px}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap}
+#hintBox{background:#1a2238;border:1px solid rgba(159,227,255,.35);border-radius:10px;padding:10px 12px;display:flex;gap:12px;align-items:flex-start}
+#hintBox svg{flex:none;width:160px;height:110px;background:#0f1426;border-radius:8px}
+#hintBox .ht b{color:var(--cyan)}
+#fb{min-height:24px;font-size:15px}
+#fb.good{color:var(--good)} #fb.bad{color:var(--bad)} #fb.info{color:var(--muted)}
+#fb .nextrow{margin-top:8px}
+
+/* art layers */
+.lbl{font:800 15px var(--f-body);fill:#fff;stroke:var(--ink);stroke-width:4px;paint-order:stroke;pointer-events:none}
+.vlet{font:800 16px var(--f-head);fill:#fff6dc;stroke:var(--ink);stroke-width:4px;paint-order:stroke;pointer-events:none}
+.wg path{fill:rgba(12,16,32,.62);stroke:var(--gold);stroke-width:1.5}
+.wg.click{cursor:pointer}
+.wg.click:hover path{fill:rgba(242,193,78,.42)}
+.wg.sel path{fill:rgba(90,200,255,.6);stroke:var(--cyan);stroke-width:2.5}
+.wg.ok path{fill:rgba(102,232,164,.7);stroke:#d6ffe9}
+.wg.bad path{fill:rgba(255,110,120,.7)}
+.wg.mark path{fill:rgba(242,193,78,.55);animation:pulse 1.4s ease-in-out infinite}
+.wg.given path{fill:rgba(242,193,78,.28)}
+.wg .nb circle{fill:var(--ink);stroke:var(--gold);stroke-width:1.5}
+.wg .nb text{font:800 12.5px var(--f-mono);fill:var(--gold);text-anchor:middle;dominant-baseline:central}
+.pill{pointer-events:none}
+.pill rect{fill:rgba(11,13,24,.9);stroke:var(--gold);stroke-width:1.2}
+.pill text{font:800 13.5px var(--f-mono);fill:#fff;text-anchor:middle;dominant-baseline:central}
+.pill.q rect{fill:var(--gold)} .pill.q text{fill:var(--ink)}
+.shape{cursor:default}
+.shape.click{cursor:pointer}
+.shape.click:hover polygon{stroke-width:4}
+.shape.ok polygon{stroke:var(--good)!important;stroke-width:4}
+.shape.bad polygon{stroke:var(--bad)!important;stroke-width:4}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* flash */
+#flash{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0}
+#flash.good{animation:fl 1s ease-out;box-shadow:inset 0 0 160px 40px rgba(102,232,164,.75)}
+#flash.bad{animation:fl .8s ease-out;box-shadow:inset 0 0 160px 40px rgba(255,90,100,.75)}
+#flash.gold{animation:fl 1.6s ease-out;box-shadow:inset 0 0 220px 70px rgba(242,193,78,.85)}
+@keyframes fl{0%{opacity:0}15%{opacity:1}100%{opacity:0}}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(8,6,14,.78);backdrop-filter:blur(4px);overflow:auto}
+.card{width:min(560px,100%);background:var(--panel);border:1px solid rgba(242,193,78,.5);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.card h2{font:800 26px var(--f-head);margin:0}
+.card p{margin:0;color:var(--muted)}
+.card ol{margin:0;padding-left:22px} .card li{margin:4px 0}
+.bigstat{display:flex;gap:12px;flex-wrap:wrap}
+.bigstat div{flex:1;min-width:120px;background:var(--wall2);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.bigstat b{display:block;font:800 28px var(--f-mono);color:var(--gold)}
+
+@media (max-width:900px){
+  .roomgrid{grid-template-columns:minmax(0,1fr)}
+  .wings{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:520px){
+  #app{padding:10px 10px 24px}
+  .brand{font-size:21px}
+  .frame{padding:8px}.mat{padding:4px}
+  .rooms{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .room{min-height:104px;padding:10px}.room .nm{font-size:15px}
+  #prompt{font-size:16.5px}
+  #hintBox{flex-direction:column}
+  .roomhead h2{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="hud">
+    <h1 class="brand">Museum of <span>Angles</span></h1>
+    <span class="spacer"></span>
+    <span class="gemcount" id="gemTotal" aria-live="polite">💎 0</span>
+    <button class="btn small" id="bLobby" type="button" hidden>Lobby</button>
+    <button class="btn small" id="bSound" type="button" aria-pressed="true">Sound on</button>
+  </header>
+
+  <main id="lobby">
+    <section class="intro">
+      <h2>Welcome to the gallery</h2>
+      <p>Every room is a treasure hunt hidden in original artwork. Tap angles and figures, type measures, and collect a gem 💎 for each find. The art and the numbers are new every visit. Rooms in each wing open in order.</p>
+    </section>
+    <div class="wings">
+      <section class="wing" aria-labelledby="wa"><h3 id="wa">📐 Angle Wing</h3><p class="sub">Unit 4 · NC.8.G.5 · angle relationships, triangles, similarity</p><div class="rooms" id="roomsA"></div></section>
+      <section class="wing" aria-labelledby="wt"><h3 id="wt">🔁 Transformations Wing</h3><p class="sub">Unit 8 · NC.8.G.1–G.4 · reflections, translations, rotations, dilations</p><div class="rooms" id="roomsT"></div></section>
+    </div>
+    <div id="sendMount"></div>
+  </main>
+
+  <main id="room" hidden>
+    <div class="roomhead"><h2 id="rTitle"></h2><span class="tgt" id="rTarget"></span></div>
+    <div class="roomgrid">
+      <figure class="frame">
+        <div class="mat"><svg id="art" viewBox="0 0 600 450" role="img" aria-label="Artwork"></svg></div>
+        <figcaption class="plaque" id="plaque"></figcaption>
+      </figure>
+      <section class="hunt" aria-label="Hunt list">
+        <h3>Hunt list</h3>
+        <ol id="huntList" aria-label="Finds"></ol>
+        <div id="prompt" aria-live="polite"></div>
+        <div id="inputArea"></div>
+        <div class="btnrow">
+          <button class="btn primary" id="bCheck" type="button">Check</button>
+          <button class="btn" id="bHint" type="button">Hint</button>
+          <button class="btn" id="bShow" type="button" hidden>Show answer</button>
+        </div>
+        <div id="hintBox" hidden></div>
+        <div id="fb" aria-live="polite"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="coach" class="overlay" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="coachT">
+    <h2 id="coachT">How to play</h2>
+    <div id="coachBody"></div>
+    <div class="btnrow"><button class="btn primary" id="coachGo" type="button">Start the hunt</button></div>
+  </div>
+</div>
+<div id="summary" class="overlay" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="sumT">
+    <h2 id="sumT">Room cleared!</h2>
+    <div class="bigstat"><div><b id="sumGems"></b>gems</div><div><b id="sumFirst"></b>right on the first try</div></div>
+    <p id="sumTxt"></p>
+    <div class="btnrow">
+      <button class="btn primary" id="sumNext" type="button">Next room</button>
+      <button class="btn" id="sumAgain" type="button">Play again (new art)</button>
+      <button class="btn" id="sumLobby" type="button">Back to lobby</button>
+    </div>
+  </div>
+</div>
+<div id="flash" aria-hidden="true"></div>
+
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const D=Math.PI/180;
+const norm=d=>((d%360)+360)%360;
+const u=d=>[Math.cos(d*D),-Math.sin(d*D)];               // screen unit vector; d = degrees counterclockwise
+const add=(p,v,k=1)=>[p[0]+v[0]*k,p[1]+v[1]*k];
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+const dirOf=(a,b)=>norm(Math.atan2(-(b[1]-a[1]),b[0]-a[0])/D);
+const f1=n=>Math.round(n*10)/10;
+const MINUS='−';
+const sgn=n=>n<0?MINUS+Math.abs(n):String(n);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+/* ---------- storage ---------- */
+const KEY='museum-of-angles';
+let store={};try{store=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){store={}}
+store.rooms=store.rooms||{};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+const ALL=/[?&]all=1/.test(location.search);
+
+/* ---------- sound + flash ---------- */
+let AC=null,muted=!!store.muted;
+function tone(f,d,v,type,f2,delay){try{if(muted)return;AC=AC||new (window.AudioContext||window.webkitAudioContext)();const t=AC.currentTime+(delay||0),o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+d);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
+const sfx={good(){tone(660,.12,.07,'triangle');tone(990,.18,.06,'triangle',null,.09)},bad(){tone(180,.25,.12,'sine',90)},tap(){tone(880,.04,.03,'triangle')},
+  gold(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.22,.06,'triangle',null,i*.1))}};
+function flash(kind){const f=$('#flash');f.className='';void f.offsetWidth;f.className=kind}
+
+/* ---------- reasons & hints ---------- */
+const REASONS={vertical:'Vertical angles are congruent',linear:'Linear pair (the two angles add to 180°)',corr:'Corresponding angles are congruent',
+  altint:'Alternate interior angles are congruent',altext:'Alternate exterior angles are congruent',ssi:'Same-side interior angles add to 180°',
+  sse:'Same-side exterior angles add to 180°',trisum:'Triangle Sum Theorem (angles add to 180°)',ext:'Exterior Angle Theorem (exterior = sum of the two remote interior angles)'};
+const HINTS={
+  vertical:['Vertical angles','When two lines cross, the angles <b>across from each other</b> are vertical angles. They are always <b>equal</b>.'],
+  linear:['Linear pair','Two angles side by side that make a <b>straight line</b> add to <b>180°</b>.'],
+  adjacent:['Adjacent angles','Adjacent angles share a <b>vertex</b> and a <b>side</b>, and they don’t overlap. A linear pair is two adjacent angles on a straight line.'],
+  complementary:['Complementary angles','Two angles are complementary when they add to <b>90°</b>, like the two parts of a right-angle corner.'],
+  corr:['Corresponding angles','Same <b>position</b> at each crossing (for example, both “top left”). With parallel lines they are <b>equal</b>.'],
+  altint:['Alternate interior angles','<b>Between</b> the parallel lines, on <b>opposite sides</b> of the transversal (a Z shape). They are <b>equal</b>.'],
+  altext:['Alternate exterior angles','<b>Outside</b> the parallel lines, on <b>opposite sides</b> of the transversal. They are <b>equal</b>.'],
+  ssi:['Same-side interior angles','<b>Between</b> the parallel lines, on the <b>same side</b> of the transversal (a C shape). They add to <b>180°</b>.'],
+  trisum:['Triangle Sum Theorem','The three angles of any triangle add to <b>180°</b>. Missing angle = 180 − (the other two).'],
+  isosceles:['Isosceles triangle','The tick marks show two equal sides. The angles across from them (the base angles) are <b>equal</b>. Base angle = (180 − top angle) ÷ 2.'],
+  right:['Right triangle','The square marks a 90° angle, so the other two angles add to <b>90°</b>.'],
+  ext:['Exterior Angle Theorem','An exterior angle equals the <b>sum of the two remote interior angles</b> (the two inside angles that are <b>not</b> next to it). It also forms a linear pair with the angle next to it.'],
+  aa:['Angle-Angle (AA) similarity','If <b>two angles</b> of one triangle equal two angles of another, the triangles are <b>similar</b> (same shape, maybe a different size). Find the third angle with 180 − the other two.'],
+  nested:['Parallel segment inside a triangle','A segment parallel to one side cuts off a smaller triangle. The top angle is <b>shared</b>, and the parallel segment makes <b>corresponding angles</b> equal, so the triangles are similar (AA).'],
+  algebra:['Write an equation','Decide how the two angles are related: <b>equal</b> (vertical, corresponding, alternate) or <b>adding to 180°</b> (linear pair, same-side interior) or adding to 180° in a triangle. Write the equation, then solve for x.'],
+  forger:['Check each claim','For each claim, ask: Is the angle pair named correctly? Should those angles be <b>equal</b> or add to <b>180°</b>? Is the arithmetic right?'],
+  chain:['Work one step at a time','Use the angle you just found. Name the relationship between it and the next angle, then decide: equal, or adds to 180°?'],
+  reflectx:['Reflection over the x-axis','The mirror is the x-axis. x stays the same and y changes sign: <b>(x, y) → (x, −y)</b>.'],
+  reflecty:['Reflection over the y-axis','The mirror is the y-axis. y stays the same and x changes sign: <b>(x, y) → (−x, y)</b>.'],
+  translate:['Translation (slide)','Every point moves the same amount. Right/left changes x, up/down changes y: <b>(x, y) → (x + a, y + b)</b>.'],
+  rot90ccw:['Rotation 90° counterclockwise','About the origin: <b>(x, y) → (−y, x)</b>. Swap the coordinates, then change the sign of the new x.'],
+  rot90cw:['Rotation 90° clockwise','About the origin: <b>(x, y) → (y, −x)</b>. Swap the coordinates, then change the sign of the new y.'],
+  rot180:['Rotation 180°','About the origin: <b>(x, y) → (−x, −y)</b>. Both signs change.'],
+  rigid:['Rigid transformations','Reflections, translations and rotations keep <b>side lengths, angle measures and area</b> the same, so the image is <b>congruent</b>. Only the position (and maybe the facing) changes.'],
+  dilation:['Dilation about the origin','Multiply both coordinates by the scale factor k: <b>(x, y) → (kx, ky)</b>. Angles stay the same; lengths are multiplied by k, so the image is <b>similar</b>.'],
+};
+
+/* ---------- drawing helpers ---------- */
+const wire=(p,q,w)=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="#0b0d18" stroke-width="${(w||3.5)+4.5}" stroke-linecap="round"/><line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="#f2c14e" stroke-width="${w||3.5}" stroke-linecap="round"/>`;
+const lineThrough=(P,d,L1,L2)=>wire(add(P,u(d),L1),add(P,u(d+180),L2==null?L1:L2));
+const poly=(pts,fill,stroke,sw,extra)=>`<polygon points="${pts.map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="${fill}" stroke="${stroke||'none'}" stroke-width="${sw||0}" ${extra||''}/>`;
+function wedgeAt(id,V,P1,P2,o){let d1=dirOf(V,P1),d2=dirOf(V,P2),s=norm(d2-d1),a=d1;if(s>180){s=360-s;a=d2}return Object.assign({id,v:V,a,s,r:30},o||{})}
+function wedgeDir(id,V,a,s,o){return Object.assign({id,v:V,a:norm(a),s,r:32},o||{})}
+const meas=g=>Math.round(g.s);
+function wedgePath(g){const r=g.r,s0=add(g.v,u(g.a),r),e=add(g.v,u(g.a+g.s),r);return `M${f1(g.v[0])},${f1(g.v[1])} L${f1(s0[0])},${f1(s0[1])} A${r},${r} 0 ${g.s>180?1:0} 0 ${f1(e[0])},${f1(e[1])} Z`}
+function rightMark(V,d,k){k=k||12;const a=add(V,u(d),k),b=add(add(V,u(d),k),u(d+90),k),c=add(V,u(d+90),k);return `<polyline points="${[a,b,c].map(p=>f1(p[0])+','+f1(p[1])).join(' ')}" fill="none" stroke="#fff6dc" stroke-width="2"/>`}
+function tick(P,Q){const m=[(P[0]+Q[0])/2,(P[1]+Q[1])/2],d=dirOf(P,Q)+90;return `<line x1="${f1(add(m,u(d),7)[0])}" y1="${f1(add(m,u(d),7)[1])}" x2="${f1(add(m,u(d),-7)[0])}" y2="${f1(add(m,u(d),-7)[1])}" stroke="#fff6dc" stroke-width="3"/>`}
+const txt=(p,s,cls)=>`<text x="${f1(p[0])}" y="${f1(p[1])}" class="${cls||'vlet'}" text-anchor="middle" dominant-baseline="central">${s}</text>`;
+function triPoints(A,B,C,box,rot,flip){
+  const b=Math.sin(B*D)/Math.sin(C*D);
+  let pts=[[0,0],[1,0],[b*Math.cos(A*D),b*Math.sin(A*D)]];
+  const c=Math.cos((rot||0)*D),s=Math.sin((rot||0)*D);
+  pts=pts.map(([x,y])=>{if(flip)x=-x;return [x*c-y*s,-(x*s+y*c)]});
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),pad=box.pad==null?26:box.pad;
+  const w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);
+  const k=Math.min((box.w-2*pad)/w,(box.h-2*pad)/h)*(box.scale||1);
+  const ox=box.x+box.w/2-(Math.min(...xs)+Math.max(...xs))/2*k,oy=box.y+box.h/2-(Math.min(...ys)+Math.max(...ys))/2*k;
+  return pts.map(([x,y])=>[ox+x*k,oy+y*k]);
+}
+function triWedges(ids,P,o){o=(o||[{},{},{}]).map(x=>Object.assign({out:1},x));const r=v=>Math.max(16,Math.min(30,.27*Math.min(...P.filter(q=>q!==P[v]).map(q=>dist(q,P[v])))));
+  return [wedgeAt(ids[0],P[0],P[1],P[2],Object.assign({r:r(0)},o&&o[0])),wedgeAt(ids[1],P[1],P[0],P[2],Object.assign({r:r(1)},o&&o[1])),wedgeAt(ids[2],P[2],P[0],P[1],Object.assign({r:r(2)},o&&o[2]))]}
+function triangleAngles(minA){minA=minA||28;let a,b,c;do{a=ri(minA,100);b=ri(minA,100);c=180-a-b}while(c<minA);return [a,b,c]}
+const expr=(m,b)=>`(${m===1?'':m}x${b>0?' + '+b:b<0?' '+MINUS+' '+(-b):''})°`;
+
+/* ---------- backgrounds (original generated art) ---------- */
+function mondrian(){
+  const out=[];(function split(x,y,w,h,d){
+    if(d>=4||(w<130&&h<120)||(d>1&&Math.random()<.22)){out.push([x,y,w,h]);return}
+    if(w>=h){const c=x+w*(.3+Math.random()*.4);split(x,y,c-x,h,d+1);split(c,y,x+w-c,h,d+1)}
+    else{const c=y+h*(.3+Math.random()*.4);split(x,y,w,c-y,d+1);split(x,c,w,y+h-c,d+1)}
+  })(0,0,600,450,0);
+  const pal=['#f2eadb','#f2eadb','#f2eadb','#e9e1d0','#c8382c','#2a4d9b','#e8b931','#f2eadb','#1d1d22'];
+  return out.map(([x,y,w,h])=>`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="${pick(pal)}" stroke="#141414" stroke-width="7"/>`).join('')+
+    `<rect width="600" height="450" fill="rgba(10,12,24,.18)"/>`;
+}
+function stainedGlass(){
+  const pal=['#b3202e','#1f5fae','#e0a21b','#2f8f5b','#6b3fa0','#d2601f','#2aa6b8'],pts=[];
+  for(let r=0;r<=8;r++){pts.push([]);for(let c=0;c<=10;c++){const ed=r===0||r===8||c===0||c===10;pts[r].push([c*60+(ed?0:ri(-16,16)),r*56.25+(ed?0:ri(-14,14))])}}
+  let s='<defs><clipPath id="arch"><path d="M40,450 L40,170 Q40,20 300,14 Q560,20 560,170 L560,450 Z"/></clipPath></defs><rect width="600" height="450" fill="#2a2420"/>';
+  s+='<g clip-path="url(#arch)">';
+  for(let r=0;r<8;r++)for(let c=0;c<10;c++){const a=pts[r][c],b=pts[r][c+1],d=pts[r+1][c],e=pts[r+1][c+1];const flip=Math.random()<.5;
+    const t1=flip?[a,b,e]:[a,b,d],t2=flip?[a,e,d]:[b,e,d];
+    s+=poly(t1,pick(pal),'#14100e',3,'opacity=".88"')+poly(t2,pick(pal),'#14100e',3,'opacity=".88"')}
+  s+='<rect width="600" height="450" fill="rgba(10,10,20,.22)"/></g><path d="M40,450 L40,170 Q40,20 300,14 Q560,20 560,170 L560,450" fill="none" stroke="#5b4b3a" stroke-width="10"/>';
+  return s;
+}
+function quilt(){
+  const pal=[['#7a2e3a','#d9b28c'],['#2e4f6b','#c9d6c2'],['#5b6b2e','#e6d39a'],['#4b2e6b','#d8c3e6']];let s='';
+  for(let by=0;by<2;by++)for(let bx=0;bx<2;bx++){const [c1,c2]=pal[by*2+bx];const X=bx*300,Y=by*225;
+    s+=`<rect x="${X}" y="${Y}" width="300" height="225" fill="${c2}"/>`;
+    for(let i=0;i<4;i++)for(let j=0;j<3;j++){const x=X+i*75,y=Y+j*75;const o=Math.random()<.5;
+      s+=poly(o?[[x,y],[x+75,y],[x,y+75]]:[[x+75,y],[x+75,y+75],[x,y+75]],c1,'none',0,'opacity=".35"')}
+    s+=`<rect x="${X+4}" y="${Y+4}" width="292" height="217" fill="none" stroke="#2b2112" stroke-width="3" stroke-dasharray="7 5"/>`}
+  return s+'<rect width="600" height="450" fill="rgba(20,14,30,.25)"/>';
+}
+function blueprint(){let s='<rect width="600" height="450" fill="#173a6b"/>';for(let x=0;x<=600;x+=25)s+=`<line x1="${x}" y1="0" x2="${x}" y2="450" stroke="rgba(255,255,255,${x%100?'.08':'.18'})"/>`;for(let y=0;y<=450;y+=25)s+=`<line x1="0" y1="${y}" x2="600" y2="${y}" stroke="rgba(255,255,255,${y%100?'.08':'.18'})"/>`;return s}
+function gallery(){return '<rect width="600" height="450" fill="#2b2436"/><rect y="380" width="600" height="70" fill="#3a2e24"/>'+[80,300,520].map(x=>`<ellipse cx="${x}" cy="0" rx="120" ry="200" fill="rgba(255,236,190,.07)"/>`).join('')}
+
+/* ---------- reusable figures ---------- */
+const PAIRNAME={vertical:'vertical angles',linear:'a linear pair',corr:'corresponding angles',altint:'alternate interior angles',altext:'alternate exterior angles',ssi:'same-side interior angles',sse:'same-side exterior angles',comp:'complementary angles'};
+const EQUALREL={vertical:1,corr:1,altint:1,altext:1};
+function relTable(list){const t={};list.forEach(([k,pairs])=>pairs.forEach(([a,b])=>{t[a+'-'+b]=k;t[b+'-'+a]=k}));return t}
+function cross(P,th1,a,ids,r){ids=ids||['1','2','3','4'];
+  const g=[wedgeDir(ids[0],P,th1,a,{r}),wedgeDir(ids[1],P,th1+a,180-a,{r}),wedgeDir(ids[2],P,th1+180,a,{r}),wedgeDir(ids[3],P,th1+a+180,180-a,{r})];
+  const rels=relTable([['vertical',[[ids[0],ids[2]],[ids[1],ids[3]]]],['linear',[[ids[0],ids[1]],[ids[1],ids[2]],[ids[2],ids[3]],[ids[0],ids[3]]]]]);
+  return {g,rels};
+}
+function parallel(al,opts){opts=opts||{};
+  const p=opts.p!=null?opts.p:ri(-10,10); al=al||pick([ri(48,74),ri(106,132)]); const t=p+al;
+  const C=opts.C||[300,225],gap=opts.gap||88,I1=add(C,u(t),gap),I2=add(C,u(t+180),gap),r=opts.r||32;
+  let lines=lineThrough(I1,p,340)+lineThrough(I2,p,340)+lineThrough(C,t,260);
+  const at=(I,b)=>[wedgeDir(String(b+1),I,t,180-al,{r}),wedgeDir(String(b+2),I,p,al,{r}),wedgeDir(String(b+3),I,p+180,al,{r}),wedgeDir(String(b+4),I,t+180,180-al,{r})];
+  const g=[...at(I1,0),...at(I2,4)];
+  const rels=relTable([['vertical',[['1','4'],['2','3'],['5','8'],['6','7']]],['linear',[['1','2'],['1','3'],['2','4'],['3','4'],['5','6'],['5','7'],['6','8'],['7','8']]],
+    ['corr',[['1','5'],['2','6'],['3','7'],['4','8']]],['altint',[['3','6'],['4','5']]],['altext',[['1','8'],['2','7']]],['ssi',[['3','5'],['4','6']]],['sse',[['1','7'],['2','8']]]]);
+  const m={};g.forEach(w=>m[w.id]=meas(w));
+  return {g,rels,lines,m,al,p,t};
+}
+const PAIRS={corr:[['1','5'],['2','6'],['3','7'],['4','8']],altint:[['3','6'],['4','5']],altext:[['1','8'],['2','7']],ssi:[['3','5'],['4','6']]};
+
+/* ---------- room generators ---------- */
+const G5='NC.8.G.5';
+function genGrid(){
+  const P=[185,215],th1=ri(8,32),a=pick([ri(50,76),ri(104,130)]),X=cross(P,th1,a,null,36);
+  const Q=[408,372],c=ri(24,66);
+  const lines=lineThrough(P,th1,170)+lineThrough(P,th1+a,170)+wire(Q,[575,372])+wire(Q,[408,206])+wire(Q,add(Q,u(c),170));
+  const g=[...X.g,wedgeDir('5',Q,0,c,{r:44}),wedgeDir('6',Q,c,90-c,{r:44})];
+  const rels=Object.assign({},X.rels,relTable([['comp',[['5','6']]]]));
+  const scene={bg:mondrian(),lines:lines+rightMark(Q,0,14),g,rels};
+  return [
+    {type:'pair',kind:'Vertical angles',prompt:'Tap a pair of <b>vertical angles</b>.',accept:[['1','3'],['2','4']],hint:'vertical',want:'vertical',scene,why:'Vertical angles are across from each other where two lines cross.'},
+    {type:'num',kind:'Linear pair',prompt:`m∠1 = ${a}°. What is <b>m∠2</b>?`,show:{1:a+'°'},mark:'2',answer:180-a,hint:'linear',scene,why:`∠1 and ∠2 form a linear pair, so 180 ${MINUS} ${a} = ${180-a}°.`},
+    {type:'pair',kind:'Complementary angles',prompt:'The gold corner is a right angle. Tap the two angles that are <b>complementary</b>.',accept:[['5','6']],hint:'complementary',want:'comp',scene,why:'∠5 and ∠6 together fill the 90° corner.'},
+    {type:'num',kind:'Complementary angles',prompt:`m∠5 = ${c}°. What is <b>m∠6</b>?`,show:{5:c+'°'},mark:'6',answer:90-c,hint:'complementary',scene,why:`Complementary angles add to 90°: 90 ${MINUS} ${c} = ${90-c}°.`},
+    {type:'pair',kind:'Adjacent angles',prompt:'Tap two <b>adjacent</b> angles that form a <b>linear pair</b>.',accept:[['1','2'],['2','3'],['3','4'],['1','4']],hint:'adjacent',want:'linear',scene,why:'They share a vertex and a side, and together they make a straight line.'},
+  ];
+}
+function genGlass(){
+  const P=parallel(),scene={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  const pr=pick(Object.keys(PAIRS)),pair=pick(PAIRS[pr]),sw=Math.random()<.5?pair:[pair[1],pair[0]];
+  const eq=pr!=='ssi';
+  return [
+    {type:'pair',kind:'Parallel lines',prompt:'The two long lines are parallel. Tap a pair of <b>corresponding angles</b>.',accept:PAIRS.corr,hint:'corr',want:'corr',scene,why:'Corresponding angles sit in the same position at each crossing.'},
+    {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>alternate interior angles</b>.',accept:PAIRS.altint,hint:'altint',want:'altint',scene,why:'Between the parallel lines, on opposite sides of the transversal.'},
+    {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>alternate exterior angles</b>.',accept:PAIRS.altext,hint:'altext',want:'altext',scene,why:'Outside the parallel lines, on opposite sides of the transversal.'},
+    {type:'pair',kind:'Parallel lines',prompt:'Tap a pair of <b>same-side interior angles</b>.',accept:PAIRS.ssi,hint:'ssi',want:'ssi',scene,why:'Between the parallel lines, on the same side of the transversal.'},
+    {type:'num',kind:'Use a measure',prompt:`m∠${sw[0]} = ${P.m[sw[0]]}°. What is <b>m∠${sw[1]}</b>?`,show:{[sw[0]]:P.m[sw[0]]+'°'},mark:sw[1],answer:P.m[sw[1]],hint:pr,scene,
+      why:`∠${sw[0]} and ∠${sw[1]} are ${PAIRNAME[pr]}, so they ${eq?'are equal':`add to 180°: 180 ${MINUS} ${P.m[sw[0]]} = ${P.m[sw[1]]}°`}.`},
+  ];
+}
+function genMosaic(){
+  const bx=(i)=>({x:(i%2)*300+8,y:Math.floor(i/2)*225+8,w:284,h:209,pad:34});
+  const [a1,b1,c1]=triangleAngles(30);const T1=triPoints(a1,b1,c1,bx(0),ri(0,359),Math.random()<.5);
+  const ap=pick([30,36,40,44,50,56,60,64,70,76,80,90,100]);const T2=triPoints(ap,(180-ap)/2,(180-ap)/2,bx(1),ri(-20,20)+90,false);
+  // T2: vertex 0 = apex (angle ap), vertices 1 and 2 = base angles
+  const k=ri(24,66);const T3=triPoints(90,k,90-k,bx(2),ri(0,359),Math.random()<.5);
+  let a4,b4,c4,big;do{[a4,b4,c4]=triangleAngles(28);const s=[a4,b4,c4].slice().sort((x,y)=>y-x);big=s[0]-s[1]>=12}while(!big);
+  const T4=triPoints(a4,b4,c4,bx(3),ri(0,359),Math.random()<.5);
+  const fill='rgba(250,244,228,.82)',st='#2b2112';
+  const g=[...triWedges(['1','2','3'],T1),...triWedges(['4','5','6'],T2),...triWedges(['7','8','9'],T3),...triWedges(['10','11','12'],T4)];
+  const lines=[T1,T2,T3,T4].map(T=>poly(T,fill,st,3.5)).join('')+tick(T2[0],T2[1])+tick(T2[0],T2[2])+rightMark(T3[0],dirOf(T3[0],T3[1]),13);
+  const scene={bg:quilt(),lines,g,rels:{}};
+  const largest=[['10',a4],['11',b4],['12',c4]].sort((x,y)=>y[1]-x[1])[0][0];
+  return [
+    {type:'num',kind:'Triangle Sum',prompt:`In the top-left triangle, m∠1 = ${a1}° and m∠2 = ${b1}°. What is <b>m∠3</b>?`,show:{1:a1+'°',2:b1+'°'},mark:'3',answer:c1,hint:'trisum',scene,why:`180 ${MINUS} ${a1} ${MINUS} ${b1} = ${c1}°.`},
+    {type:'num',kind:'Isosceles triangle',prompt:`The top-right triangle is isosceles (tick marks show equal sides). m∠4 = ${ap}°. What is <b>m∠5</b>?`,show:{4:ap+'°'},mark:'5',answer:(180-ap)/2,hint:'isosceles',scene,why:`The base angles are equal: (180 ${MINUS} ${ap}) ÷ 2 = ${(180-ap)/2}°.`},
+    {type:'num',kind:'Right triangle',prompt:`The bottom-left triangle has a right angle at ∠7. m∠8 = ${k}°. What is <b>m∠9</b>?`,show:{7:'90°',8:k+'°'},mark:'9',answer:90-k,hint:'right',scene,why:`180 ${MINUS} 90 ${MINUS} ${k} = ${90-k}°.`},
+    {type:'tap',kind:'Triangle Sum',prompt:`In the bottom-right triangle, m∠10 = ${a4}° and m∠11 = ${b4}°. Tap the <b>largest</b> angle of that triangle.`,show:{10:a4+'°',11:b4+'°'},accept:[largest],hint:'trisum',scene,
+      why:`∠12 = 180 ${MINUS} ${a4} ${MINUS} ${b4} = ${c4}°, so the largest is ∠${largest}.`},
+  ];
+}
+function roofTri(L,R,box,ids){const P=triPoints(L,R,180-L-R,box,0,false);const E=add(P[1],[1,0],58);
+  const g=[wedgeAt(ids[0],P[0],P[1],P[2],{r:28}),wedgeAt(ids[1],P[2],P[0],P[1],{r:24}),wedgeAt(ids[2],P[1],P[0],P[2],{r:26}),wedgeAt(ids[3],P[1],E,P[2],{r:40})];return {P,E,g}}
+function genRoof(){
+  const L1=ri(28,52),R1=ri(32,58),h=roofTri(L1,R1,{x:14,y:70,w:210,h:190,pad:8},['1','2','3','4']);
+  const L2=ri(30,62),R2=ri(36,70),b=roofTri(L2,R2,{x:318,y:110,w:200,h:170,pad:8},['5','6','7','8']);
+  const T1=180-L1-R1,T2=180-L2-R2,ext1=L1+T1,ext2=L2+T2;
+  let bg='<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b3a6b"/><stop offset="1" stop-color="#e59a63"/></linearGradient></defs><rect width="600" height="450" fill="url(#sky)"/>';
+  bg+='<circle cx="520" cy="70" r="34" fill="#ffe3a3" opacity=".8"/><rect x="0" y="392" width="300" height="58" fill="#3b5a35"/><rect x="300" y="372" width="300" height="78" fill="#2a5f8a"/>';
+  const by=h.P[0][1];bg+=`<rect x="${f1(h.P[0][0]+8)}" y="${f1(by)}" width="${f1(h.P[1][0]-h.P[0][0]-16)}" height="${f1(392-by)}" fill="#8c5a3c" stroke="#2b1a10" stroke-width="3"/>`;
+  bg+=`<rect x="${f1((h.P[0][0]+h.P[1][0])/2-18)}" y="${f1(392-62)}" width="36" height="62" fill="#3b2216"/><rect x="${f1(h.P[0][0]+24)}" y="${f1(by+26)}" width="34" height="30" fill="#ffd98a" stroke="#2b1a10" stroke-width="3"/>`;
+  const dy=b.P[0][1];bg+=`<rect x="300" y="${f1(dy)}" width="300" height="10" fill="#5a5f6e"/>`;
+  for(let x=300;x<600;x+=60)bg+=`<rect x="${x+24}" y="${f1(dy+10)}" width="12" height="${f1(372-dy-10)}" fill="#4a4f5c"/>`;
+  bg+=poly(h.P,'#b0473a','#2b1a10',3)+poly(b.P,'rgba(140,150,170,.35)','#c9cfdb',3);
+  const lines=wire(h.P[0],h.P[1])+wire(h.P[1],h.P[2])+wire(h.P[0],h.P[2])+`<line x1="${f1(h.P[1][0])}" y1="${f1(h.P[1][1])}" x2="${f1(h.E[0])}" y2="${f1(h.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`+
+    wire(b.P[0],b.P[1])+wire(b.P[1],b.P[2])+wire(b.P[0],b.P[2])+`<line x1="${f1(b.P[1][0])}" y1="${f1(b.P[1][1])}" x2="${f1(b.E[0])}" y2="${f1(b.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`;
+  const scene={bg,lines,g:[...h.g,...b.g],rels:{}};
+  return [
+    {type:'pair',kind:'Exterior Angle Theorem',prompt:'On the house, <b>∠4</b> is an exterior angle. Tap its two <b>remote interior angles</b>.',accept:[['1','2']],hint:'ext',scene,why:'The remote interior angles are the two inside angles that are not next to ∠4.'},
+    {type:'num',kind:'Exterior Angle Theorem',prompt:`m∠1 = ${L1}° and m∠2 = ${T1}°. What is <b>m∠4</b>?`,show:{1:L1+'°',2:T1+'°'},mark:'4',answer:ext1,hint:'ext',scene,why:`Exterior angle = sum of the remote interior angles: ${L1} + ${T1} = ${ext1}°.`},
+    {type:'num',kind:'Exterior Angle Theorem',prompt:`On the bridge, m∠8 = ${ext2}° and m∠5 = ${L2}°. What is <b>m∠6</b>?`,show:{8:ext2+'°',5:L2+'°'},mark:'6',answer:T2,hint:'ext',scene,why:`${ext2} ${MINUS} ${L2} = ${T2}°, because ∠5 + ∠6 = ∠8.`},
+    {type:'num',kind:'Linear pair',prompt:`m∠8 = ${ext2}°. What is <b>m∠7</b>, the inside angle next to it?`,show:{8:ext2+'°'},mark:'7',answer:R2,hint:'linear',scene,why:`∠7 and ∠8 form a linear pair: 180 ${MINUS} ${ext2} = ${R2}°.`},
+  ];
+}
+function genAA(){
+  const [a,b,c]=triangleAngles(35);
+  const box=i=>({x:i*150+4,y:24,w:142,h:200,pad:34,scale:i?(.62+Math.random()*.38):.92});
+  const cands=[{k:'sim',ang:[a,b,c],show:[1,2]}];
+  const key=s=>s.slice().sort((x,y)=>x-y).join(),PK=key([a,b,c]);
+  let one;for(let k=0;k<200;k++){const d=pick([-1,1])*ri(10,22);one=[a,b+d,c-d];if(one.every(v=>v>=22)&&key(one)!==PK)break}
+  cands.push({k:'one',ang:one,show:[0,1]});
+  let df;for(let k=0;k<400;k++){const a2=a+pick([-1,1])*ri(10,20),b2=b+pick([-1,1])*ri(10,20);df=[a2,b2,180-a2-b2];
+    if(df.every(v=>v>=22)&&!df.includes(a)&&!df.includes(b)&&!df.includes(c)&&key(df)!==key(one))break}
+  cands.push({k:'diff',ang:df,show:[0,1]});
+  const order=shuffle(cands),letters=['Q','R','S'];
+  let g=[],lines='',top='';
+  const P=triPoints(a,b,c,box(0),ri(0,359),false);
+  g.push(...triWedges(['p0','p1','p2'],P,[{plain:1},{plain:1},{plain:1}]));lines+=poly(P,'rgba(242,193,78,.25)','#f2c14e',3);top+=txt([box(0).x+16,14],'P');
+  const showP={p0:a+'°',p1:b+'°'};const showAll=Object.assign({},showP);
+  order.forEach((o,i)=>{const T=triPoints(o.ang[0],o.ang[1],o.ang[2],box(i+1),ri(0,359),Math.random()<.5);const ids=['c'+i+'0','c'+i+'1','c'+i+'2'];
+    g.push(...triWedges(ids,T,[{plain:1},{plain:1},{plain:1}]));lines+=poly(T,'rgba(159,227,255,.16)','#9fe3ff',3);top+=txt([box(i+1).x+16,14],letters[i]);
+    o.show.forEach(k=>showAll[ids[k]]=o.ang[k]+'°');o.letter=letters[i]});
+  // nested triangle
+  const nb={x:150,y:236,w:300,h:210,pad:18};const [A,B,C]=triangleAngles(38);const N=triPoints(B,C,A,nb,0,false);// N[0]=B (left), N[1]=C (right), N[2]=A (top)
+  const t=.5,Dp=add(N[2],[N[0][0]-N[2][0],N[0][1]-N[2][1]],t),Ep=add(N[2],[N[1][0]-N[2][0],N[1][1]-N[2][1]],t);
+  lines+=poly(N,'rgba(250,244,228,.12)','#f6efe0',3)+wire(Dp,Ep,3);
+  top+=txt(add(N[2],[0,-14]),'A')+txt(add(N[0],[-14,8]),'B')+txt(add(N[1],[14,8]),'C')+txt(add(Dp,[-16,0]),'D')+txt(add(Ep,[16,0]),'E');
+  g.push(wedgeAt('nA',N[2],N[0],N[1],{r:24,name:'A',out:1}),wedgeAt('nB',N[0],N[2],N[1],{r:24,name:'ABC',out:1}),wedgeAt('nD',Dp,N[2],Ep,{r:20,name:'ADE',out:1}),wedgeAt('nE',Ep,N[2],Dp,{r:20,name:'AED',out:1}));
+  const bg=gallery()+'<line x1="0" y1="232" x2="600" y2="232" stroke="rgba(242,193,78,.3)"/>';
+  const scene={bg,lines,g,rels:{},top};
+  const sim=order.find(o=>o.k==='sim'),why1=order.map(o=>`${o.letter}: ${o.ang.join('°, ')}°`).join(' · ');
+  return [
+    {type:'choice',kind:'AA similarity',prompt:'Find the missing angle in each triangle. Which triangle is <b>similar to triangle P</b>?',show:showAll,options:order.map(o=>({t:'Triangle '+o.letter,ok:o.k==='sim'})),hint:'aa',scene,
+      why:`All three angles: P: ${a}°, ${b}°, ${c}° · ${why1}. Only ${sim.letter} matches P.`},
+    {type:'choice',kind:'AA similarity',prompt:`Why is triangle ${sim.letter} similar to triangle P?`,show:showAll,options:shuffle([{t:'Two pairs of angles are congruent (AA), so the shapes match.',ok:true},{t:'They are the same size.',ok:false},{t:'Only one pair of angles is congruent.',ok:false},{t:'Their sides are the same length.',ok:false}]),hint:'aa',scene,why:'AA: two matching angles force the third to match, so the shape is the same.'},
+    {type:'choice',kind:'Parallel segment',prompt:'In the bottom picture, segment DE is parallel to BC. Are △ADE and △ABC similar?',show:{nA:A+'°',nB:B+'°'},options:shuffle([{t:'Yes. ∠A is shared, and ∠ADE ≅ ∠ABC because they are corresponding angles (AA).',ok:true},{t:'Yes, because DE is shorter than BC.',ok:false},{t:'No, because the triangles are different sizes.',ok:false},{t:'No, only one angle matches.',ok:false}]),hint:'nested',scene,why:'Shared angle + corresponding angles = AA.'},
+    {type:'num',kind:'Similar triangles',prompt:`m∠A = ${A}° and m∠ABC = ${B}°. What is <b>m∠AED</b>?`,show:{nA:A+'°',nB:B+'°'},mark:'nE',answer:C,hint:'nested',scene,why:`∠AED matches ∠ACB = 180 ${MINUS} ${A} ${MINUS} ${B} = ${C}°.`},
+  ];
+}
+function eqPair(x,equal){// two expressions equal (or summing to 180)
+  for(let k=0;k<200;k++){const A=ri(40,140),m1=ri(1,5),m2=equal?m1+ri(1,3):ri(1,5);const B=equal?A:180-A;const b1=A-m1*x,b2=B-m2*x;
+    if(Math.abs(b1)<=90&&Math.abs(b2)<=90&&b1!==0&&b2!==0)return {A,B,m1,b1,m2,b2}}
+  return {A:60,B:equal?60:120,m1:1,b1:60-x,m2:2,b2:(equal?60:120)-2*x};
+}
+function genAlgebra(){
+  const bg=blueprint(),P=[300,225];
+  const x1=ri(6,18),q1=eqPair(x1,true),C1=cross(P,ri(10,30),q1.A,null,40);const th1=C1.g[0].a;
+  const s1={bg,lines:lineThrough(P,th1,250)+lineThrough(P,th1+q1.A,250),g:C1.g,rels:C1.rels};
+  const x2=ri(8,22),q2=eqPair(x2,false),C2=cross(P,ri(10,30),q2.A,null,40);const th2=C2.g[0].a;
+  const s2={bg,lines:lineThrough(P,th2,250)+lineThrough(P,th2+q2.A,250),g:C2.g,rels:C2.rels};
+  const x3=ri(6,16);let q3;do{q3=eqPair(x3,true)}while(q3.A<48||q3.A>132);const PL=parallel(q3.A);
+  const s3={bg,lines:PL.lines,g:PL.g,rels:PL.rels};
+  const x4=ri(5,14);let t;for(let k=0;k<300;k++){const [A,B,C]=triangleAngles(30),m=[ri(1,4),ri(1,4),ri(1,4)],b=[A-m[0]*x4,B-m[1]*x4,C-m[2]*x4];if(b.every(v=>Math.abs(v)<=80&&v!==0)){t={ang:[A,B,C],m,b};break}}
+  if(!t)t={ang:[60,60,60],m:[1,1,1],b:[60-x4,60-x4,60-x4]};
+  const TP=triPoints(t.ang[0],t.ang[1],t.ang[2],{x:60,y:20,w:480,h:410,pad:40},ri(0,359),false);
+  const s4={bg,lines:poly(TP,'rgba(255,255,255,.08)','#f2c14e',3.5),g:triWedges(['1','2','3'],TP).map(w=>Object.assign(w,{r:34})),rels:{}};
+  const x5=ri(8,20),q5=eqPair(x5,false),C5=cross(P,ri(10,30),q5.A,null,40);const th5=C5.g[0].a;
+  const s5={bg,lines:lineThrough(P,th5,250)+lineThrough(P,th5+q5.A,250),g:C5.g,rels:C5.rels};
+  return [
+    {type:'num',kind:'Vertical angles',prompt:`∠1 and ∠3 are vertical angles. Write an equation and solve for <b>x</b>.`,show:{1:expr(q1.m1,q1.b1),3:expr(q1.m2,q1.b2)},answer:x1,unit:'x =',hint:'vertical',scene:s1,
+      why:`Vertical angles are equal: ${expr(q1.m1,q1.b1).slice(0,-1)} = ${expr(q1.m2,q1.b2).slice(0,-1)}, so x = ${x1}. Each angle is ${q1.A}°.`},
+    {type:'num',kind:'Linear pair',prompt:`∠1 and ∠2 form a linear pair. Solve for <b>x</b>.`,show:{1:expr(q2.m1,q2.b1),2:expr(q2.m2,q2.b2)},answer:x2,unit:'x =',hint:'linear',scene:s2,
+      why:`They add to 180: ${expr(q2.m1,q2.b1).slice(0,-1)} + ${expr(q2.m2,q2.b2).slice(0,-1)} = 180, so x = ${x2} (${q2.A}° and ${q2.B}°).`},
+    {type:'num',kind:'Parallel lines',prompt:`The long lines are parallel. ∠3 and ∠6 are alternate interior angles. Solve for <b>x</b>.`,show:{3:expr(q3.m1,q3.b1),6:expr(q3.m2,q3.b2)},answer:x3,unit:'x =',hint:'altint',scene:s3,
+      why:`Alternate interior angles are equal, so x = ${x3} and each angle is ${q3.A}°.`},
+    {type:'num',kind:'Triangle Sum',prompt:`The angles of the triangle are shown. Solve for <b>x</b>.`,show:{1:expr(t.m[0],t.b[0]),2:expr(t.m[1],t.b[1]),3:expr(t.m[2],t.b[2])},answer:x4,unit:'x =',hint:'trisum',scene:s4,
+      why:`The three angles add to 180, so x = ${x4} (${t.ang.join('°, ')}°).`},
+    {type:'num',kind:'Two relationships',prompt:`∠1 and ∠3 are vertical angles, and ∠3 and ∠4 form a linear pair. Use both facts to solve for <b>x</b>.`,show:{1:expr(q5.m1,q5.b1),4:expr(q5.m2,q5.b2)},answer:x5,unit:'x =',hint:'algebra',scene:s5,
+      why:`∠3 = ∠1, and ∠3 + ∠4 = 180, so ∠1 + ∠4 = 180. That gives x = ${x5}.`},
+  ];
+}
+function genForger(){
+  // Round A: parallel lines with m∠2 shown
+  const P=parallel(),al=P.m['2'],sa={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  const trueA=shuffle([
+    `∠${pick(PAIRS.corr).join(' and ∠')} are corresponding angles.`,
+    `m∠6 = ${al}° because ∠2 and ∠6 are corresponding angles.`,
+    `m∠3 = ${al}° because ∠2 and ∠3 are vertical angles.`,
+    `m∠1 = ${180-al}° because ∠1 and ∠2 form a linear pair.`,
+    `∠${pick(PAIRS.ssi).join(' and ∠')} are same-side interior angles, so they add to 180°.`,
+  ]).slice(0,2);
+  const falseA=pick([
+    {c:`∠3 and ∠6 are corresponding angles.`,fix:`∠3 and ∠6 are alternate interior angles.`,bad:[`∠3 and ∠6 are vertical angles.`,`∠3 and ∠6 add to 180°.`]},
+    {c:`m∠4 = ${al}° because ∠2 and ∠4 form a linear pair.`,fix:`∠2 and ∠4 form a linear pair, so m∠4 = 180 ${MINUS} ${al} = ${180-al}°.`,bad:[`m∠4 = ${al}° because they are vertical angles.`,`m∠4 = ${al+90}°.`]},
+    {c:`m∠7 = ${180-al}° because ∠2 and ∠7 are alternate exterior angles.`,fix:`Alternate exterior angles are congruent, so m∠7 = ${al}°.`,bad:[`∠2 and ∠7 are corresponding, so m∠7 = ${180-al}°.`,`m∠7 = ${al*2}°.`]},
+    {c:`∠4 and ∠6 are same-side interior angles, so they are equal.`,fix:`Same-side interior angles add to 180°, so m∠4 + m∠6 = 180°.`,bad:[`∠4 and ∠6 are vertical angles, so they are equal.`,`∠4 and ∠6 add to 90°.`]},
+  ]);
+  const claimsA=shuffle([...trueA.map(c=>({c,ok:false})),{c:falseA.c,ok:true}]);
+  const guideA=`<div class="guide"><b>Gallery guide card</b> (m∠2 = ${al}°)<ol>${claimsA.map(x=>`<li>${x.c}</li>`).join('')}</ol></div>`;
+  // Round B: triangle with exterior angle
+  const L=ri(30,58),R=ri(34,62),T=180-L-R,ext=L+T,h=roofTri(L,R,{x:120,y:40,w:300,h:330,pad:20},['1','2','3','4']);
+  const sb={bg:gallery(),lines:poly(h.P,'rgba(176,71,58,.55)','#2b1a10',3)+wire(h.P[0],h.P[1])+wire(h.P[1],h.P[2])+wire(h.P[0],h.P[2])+`<line x1="${f1(h.P[1][0])}" y1="${f1(h.P[1][1])}" x2="${f1(h.E[0])}" y2="${f1(h.E[1])}" stroke="#f2c14e" stroke-width="3.5" stroke-dasharray="8 5"/>`,g:h.g,rels:{}};
+  const trueB=shuffle([`m∠3 = 180 ${MINUS} ${L} ${MINUS} ${T} = ${R}° by the Triangle Sum Theorem.`,`∠1 and ∠2 are the remote interior angles for ∠4.`,`∠3 and ∠4 form a linear pair.`]).slice(0,2);
+  const falseB=pick([
+    {c:`m∠4 = 180 ${MINUS} (${L} + ${T}) = ${R}° by the Exterior Angle Theorem.`,fix:`The Exterior Angle Theorem says m∠4 = ${L} + ${T} = ${ext}°.`,bad:[`m∠4 = ${L} ${MINUS} ${T}°.`,`m∠4 = 180°.`]},
+    {c:`m∠4 = ${L} + ${R} = ${L+R}° because ∠1 and ∠3 are its remote interior angles.`,fix:`∠3 is next to ∠4, so it is not remote. m∠4 = ∠1 + ∠2 = ${ext}°.`,bad:[`m∠4 = ${L}° because it matches ∠1.`,`m∠4 = ${T+R}°.`]},
+    {c:`m∠4 = ${R}° because ∠3 and ∠4 are vertical angles.`,fix:`∠3 and ∠4 form a linear pair, so m∠4 = 180 ${MINUS} ${R} = ${ext}°.`,bad:[`∠3 and ∠4 are corresponding, so m∠4 = ${R}°.`,`m∠4 = ${R*2}°.`]},
+  ]);
+  const claimsB=shuffle([...trueB.map(c=>({c,ok:false})),{c:falseB.c,ok:true}]);
+  const guideB=`<div class="guide"><b>Gallery guide card</b><ol>${claimsB.map(x=>`<li>${x.c}</li>`).join('')}</ol></div>`;
+  const nA=claimsA.findIndex(x=>x.ok)+1,nB=claimsB.findIndex(x=>x.ok)+1;
+  return [
+    {type:'choice',kind:'The Forger · error hunt',prompt:'The Forger wrote this guide card. One claim is <b>wrong</b>. Which one?'+guideA,show:{2:al+'°'},options:claimsA.map((x,i)=>({t:'Claim '+(i+1),ok:x.ok})),hint:'forger',scene:sa,why:`Claim ${nA} is the forgery.`},
+    {type:'choice',kind:'The Forger · fix it',prompt:`Fix the forgery. What should claim ${nA} say?`+guideA,show:{2:al+'°'},options:shuffle([{t:falseA.fix,ok:true},...falseA.bad.map(t=>({t,ok:false}))]),hint:'forger',scene:sa,why:falseA.fix},
+    {type:'choice',kind:'The Forger · error hunt',prompt:`Next painting: m∠1 = ${L}° and m∠2 = ${T}°. One claim is <b>wrong</b>. Which one?`+guideB,show:{1:L+'°',2:T+'°'},options:claimsB.map((x,i)=>({t:'Claim '+(i+1),ok:x.ok})),hint:'ext',scene:sb,why:`Claim ${nB} is the forgery.`},
+    {type:'choice',kind:'The Forger · fix it',prompt:`What should claim ${nB} say?`+guideB,show:{1:L+'°',2:T+'°'},options:shuffle([{t:falseB.fix,ok:true},...falseB.bad.map(t=>({t,ok:false}))]),hint:'ext',scene:sb,why:falseB.fix},
+  ];
+}
+const EDGES=(()=>{const e=[];const add2=(k,pairs)=>pairs.forEach(([a,b])=>{e.push({k,a,b},{k,a:b,b:a})});
+  add2('vertical',[['1','4'],['2','3'],['5','8'],['6','7']]);add2('linear',[['1','2'],['1','3'],['2','4'],['3','4'],['5','6'],['5','7'],['6','8'],['7','8']]);
+  add2('corr',PAIRS.corr);add2('altint',PAIRS.altint);add2('altext',PAIRS.altext);add2('ssi',PAIRS.ssi);return e})();
+function genVault(){
+  const P=parallel(),sA={bg:stainedGlass(),lines:P.lines,g:P.g,rels:P.rels};
+  let path;for(let k=0;k<500;k++){const s=String(ri(1,8));const seen=[s],used=[];let cur=s,ok=true;const steps=[];
+    for(let i=0;i<3;i++){const opts=EDGES.filter(e=>e.a===cur&&!seen.includes(e.b)&&!used.includes(e.k)&&(i>0||e.k!=='linear'));if(!opts.length){ok=false;break}const e=pick(opts);steps.push(e);seen.push(e.b);used.push(e.k);cur=e.b}
+    if(ok&&steps.some(e=>['corr','altint','altext','ssi'].includes(e.k))){path={s,steps};break}}
+  const finds=[];const known={[path.s]:P.m[path.s]+'°'};
+  path.steps.forEach((e,i)=>{const show=Object.assign({},known);
+    finds.push({type:'reason',kind:`Vault lock A · step ${i+1} of 3`,prompt:(i===0?`m∠${path.s} = ${P.m[path.s]}°. `:'')+`Use ∠${e.a} to find <b>m∠${e.b}</b>, and pick the reason.`,show,mark:e.b,answer:P.m[e.b],reason:[e.k],hint:'chain',scene:sA,
+      why:`∠${e.a} and ∠${e.b} are ${PAIRNAME[e.k]}, so m∠${e.b} = ${P.m[e.b]}°.`});known[e.b]=P.m[e.b]+'°'});
+  // lock B: triangle, vertical angle at the top, exterior angle at the right
+  const L=ri(32,60),R=ri(36,64),T=180-L-R,ext=L+T;
+  const TP=triPoints(L,R,T,{x:110,y:70,w:360,h:290,pad:10},0,false);const E=add(TP[1],[1,0],70);
+  const up1=add(TP[2],[TP[2][0]-TP[0][0],TP[2][1]-TP[0][1]],.35),up2=add(TP[2],[TP[2][0]-TP[1][0],TP[2][1]-TP[1][1]],.35);
+  const lines=poly(TP,'rgba(242,193,78,.12)','none',0)+wire(TP[0],up1)+wire(TP[1],up2)+wire(TP[0],E);
+  const g=[wedgeAt('1',TP[0],TP[1],TP[2],{r:30}),wedgeAt('2',TP[2],TP[0],TP[1],{r:26}),wedgeAt('3',TP[1],TP[0],TP[2],{r:28}),wedgeAt('4',TP[1],E,TP[2],{r:42}),wedgeAt('5',TP[2],up1,up2,{r:26})];
+  const sB={bg:gallery(),lines,g,rels:{}};
+  finds.push({type:'reason',kind:'Vault lock B · step 1 of 3',prompt:`m∠5 = ${T}° and m∠1 = ${L}°. Find <b>m∠2</b> and pick the reason.`,show:{5:T+'°',1:L+'°'},mark:'2',answer:T,reason:['vertical'],hint:'vertical',scene:sB,why:`∠2 and ∠5 are vertical angles, so m∠2 = ${T}°.`});
+  finds.push({type:'reason',kind:'Vault lock B · step 2 of 3',prompt:`Now find the exterior angle <b>m∠4</b> and pick the reason.`,show:{5:T+'°',1:L+'°',2:T+'°'},mark:'4',answer:ext,reason:['ext'],hint:'ext',scene:sB,why:`m∠4 = m∠1 + m∠2 = ${L} + ${T} = ${ext}°.`});
+  finds.push({type:'reason',kind:'Vault lock B · step 3 of 3',prompt:`Last lock: find <b>m∠3</b> and pick a reason.`,show:{5:T+'°',1:L+'°',2:T+'°',4:ext+'°'},mark:'3',answer:R,reason:['linear','trisum'],hint:'chain',scene:sB,why:`∠3 and ∠4 form a linear pair (180 ${MINUS} ${ext} = ${R}°). The Triangle Sum gives the same answer.`});
+  return finds;
+}
+
+/* ---------- transformations ---------- */
+const U=24,OX=300,OY=225;
+const X=x=>OX+x*U,Y=y=>OY-y*U;
+function plane(){
+  let s='<rect width="600" height="450" fill="#231d2e"/>';
+  for(let i=-12;i<=12;i++)for(let j=-9;j<=9;j++)if((i+j)%2===0)s+=`<rect x="${X(i)-U/2}" y="${Y(j)-U/2}" width="${U}" height="${U}" fill="rgba(255,255,255,.025)"/>`;
+  for(let x=-12;x<=12;x++)s+=`<line x1="${X(x)}" y1="0" x2="${X(x)}" y2="450" stroke="rgba(242,193,78,${x%2?'.09':'.16'})"/>`;
+  for(let y=-9;y<=9;y++)s+=`<line x1="0" y1="${Y(y)}" x2="600" y2="${Y(y)}" stroke="rgba(242,193,78,${y%2?'.09':'.16'})"/>`;
+  s+=`<line x1="0" y1="${OY}" x2="600" y2="${OY}" stroke="#f6efe0" stroke-width="2"/><line x1="${OX}" y1="0" x2="${OX}" y2="450" stroke="#f6efe0" stroke-width="2"/>`;
+  s+=`<text x="590" y="${OY-8}" class="lbl" text-anchor="end">x</text><text x="${OX+10}" y="16" class="lbl">y</text>`;
+  for(let x=-10;x<=10;x+=2)if(x)s+=`<text x="${X(x)}" y="${OY+15}" text-anchor="middle" style="font:600 11px var(--f-mono);fill:#cfc5df">${x}</text>`;
+  for(let y=-8;y<=8;y+=2)if(y)s+=`<text x="${OX-6}" y="${Y(y)+4}" text-anchor="end" style="font:600 11px var(--f-mono);fill:#cfc5df">${y}</text>`;
+  return s;
+}
+function randTri(x0,x1,y0,y1){for(let k=0;k<500;k++){const p=[[ri(x0,x1),ri(y0,y1)],[ri(x0,x1),ri(y0,y1)],[ri(x0,x1),ri(y0,y1)]];
+  const ar=Math.abs((p[1][0]-p[0][0])*(p[2][1]-p[0][1])-(p[2][0]-p[0][0])*(p[1][1]-p[0][1]))/2;
+  if(ar>=2.5&&new Set(p.map(q=>q.join())).size===3&&!p.some(q=>q[0]===0||q[1]===0))return p}return [[x0,y0],[x0+2,y0],[x0,y0+2]]}
+const TF={rx:p=>[p[0],-p[1]],ry:p=>[-p[0],p[1]],r180:p=>[-p[0],-p[1]],ccw:p=>[-p[1],p[0]],cw:p=>[p[1],-p[0]]};
+const mapT=(T,f)=>T.map(f);
+const sameSet=(A,B)=>{const a=A.map(p=>p.join()).sort().join('|'),b=B.map(p=>p.join()).sort().join('|');return a===b};
+function figHTML(T,col,letters,lab){let s=poly(T.map(p=>[X(p[0]),Y(p[1])]),col+'40',col,3);
+  if(letters)T.forEach((p,i)=>{const c=[T.reduce((a,q)=>a+q[0],0)/3,T.reduce((a,q)=>a+q[1],0)/3];const d=[p[0]-c[0],p[1]-c[1]],n=Math.hypot(...d)||1;
+    s+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="4" fill="${col}"/>`+txt([X(p[0])+d[0]/n*15,Y(p[1])-d[1]/n*15],letters[i])});
+  if(lab){const c=[T.reduce((a,q)=>a+q[0],0)/3,T.reduce((a,q)=>a+q[1],0)/3];s+=txt([X(c[0]),Y(c[1])],lab)}
+  return s}
+const COLS=['#9fe3ff','#ff9ad5','#b6f28a','#ffb46b'];
+const inB=T=>T.every(p=>Math.abs(p[0])<=11&&Math.abs(p[1])<=8);
+function tapScene(pre,cands,preLetters){const order=shuffle(cands);
+  return {scene:{bg:plane(),lines:figHTML(pre,'#f2c14e',preLetters||['A','B','C']),g:[],shapes:order.map((c,i)=>({id:c.k,pts:c.T,col:COLS[i],num:String(i+1)})),rels:{}},order}}
+function coordAns(p){return p}
+const fmtPt=p=>`(${sgn(p[0])}, ${sgn(p[1])})`;
+function genMirror(){
+  const T=randTri(-7,-2,2,7),[A,B]=T;const c=[{k:'rx',T:mapT(T,TF.rx)},{k:'ry',T:mapT(T,TF.ry)},{k:'r180',T:mapT(T,TF.r180)}];
+  const ts=tapScene(T,c),base={bg:plane(),lines:figHTML(T,'#f2c14e',['A','B','C']),g:[],rels:{}};
+  const NAME={rx:'a reflection over the x-axis',ry:'a reflection over the y-axis',r180:'a 180° rotation'};
+  return [
+    {type:'tapShape',kind:'Reflections',prompt:'Tap the image of figure ABC after a <b>reflection over the x-axis</b>.',accept:['rx'],names:NAME,hint:'reflectx',scene:ts.scene,why:'Reflecting over the x-axis flips the figure up/down: (x, y) → (x, −y).',std:'NC.8.G.3'},
+    {type:'coord',kind:'Reflections',prompt:`Reflect figure ABC over the <b>y-axis</b>. What are the coordinates of <b>A′</b>?`,answer:TF.ry(A),hint:'reflecty',scene:base,why:`A${fmtPt(A)} → A′${fmtPt(TF.ry(A))}: x changes sign.`,std:'NC.8.G.3'},
+    {type:'choice',kind:'Reflections',prompt:'Which rule describes a <b>reflection over the x-axis</b>?',options:shuffle([{t:'(x, y) → (x, −y)',ok:true},{t:'(x, y) → (−x, y)',ok:false},{t:'(x, y) → (−x, −y)',ok:false},{t:'(x, y) → (y, x)',ok:false}]),hint:'reflectx',scene:base,why:'Over the x-axis, only y changes sign.',std:'NC.8.G.3'},
+    {type:'coord',kind:'Reflections',prompt:`Reflect figure ABC over the <b>x-axis</b>. What are the coordinates of <b>B′</b>?`,answer:TF.rx(B),hint:'reflectx',scene:base,why:`B${fmtPt(B)} → B′${fmtPt(TF.rx(B))}.`,std:'NC.8.G.3'},
+  ];
+}
+function genSlide(){
+  const T=randTri(-8,-4,-7,-3),a=ri(3,8),b=ri(3,8),I=T.map(p=>[p[0]+a,p[1]+b]);
+  const s1={bg:plane(),lines:figHTML(T,'#f2c14e',['A','B','C'])+figHTML(I,'#9fe3ff',['A′','B′','C′']),g:[],rels:{}};
+  const c=pick([-1,1])*ri(2,6),d=pick([-1,1])*ri(2,6),B=T[1];
+  const base={bg:plane(),lines:figHTML(T,'#f2c14e',['A','B','C']),g:[],rels:{}};
+  const T3=randTri(-2,1,-2,1);let e,f;do{e=ri(2,6);f=ri(2,5)}while(e===f);
+  const cand=[{k:'ok',T:T3.map(p=>[p[0]-e,p[1]+f])},{k:'swap',T:T3.map(p=>[p[0]-f,p[1]+e])},{k:'sign',T:T3.map(p=>[p[0]+e,p[1]-f])}];
+  const ts=tapScene(T3,cand);
+  return [
+    {type:'rule',kind:'Translations',prompt:'Figure ABC slid to figure A′B′C′. Complete the <b>rule</b>.',answer:[a,b],hint:'translate',scene:s1,why:`Every point moved ${a} right and ${b} up: (x + ${a}, y + ${b}).`,std:'NC.8.G.3'},
+    {type:'coord',kind:'Translations',prompt:`Translate figure ABC using <b>(x, y) → (x ${c<0?MINUS+' '+(-c):'+ '+c}, y ${d<0?MINUS+' '+(-d):'+ '+d})</b>. Where does <b>B</b> land?`,answer:[B[0]+c,B[1]+d],hint:'translate',scene:base,why:`B${fmtPt(B)} → ${fmtPt([B[0]+c,B[1]+d])}.`,std:'NC.8.G.3'},
+    {type:'tapShape',kind:'Translations',prompt:`Tap the image of ABC after <b>(x, y) → (x ${MINUS} ${e}, y + ${f})</b>.`,accept:['ok'],names:{swap:`(x ${MINUS} ${f}, y + ${e}): the numbers were swapped`,sign:`(x + ${e}, y ${MINUS} ${f}): the directions were flipped`},hint:'translate',scene:ts.scene,why:`${e} left and ${f} up.`,std:'NC.8.G.3'},
+    {type:'choice',kind:'Translations',prompt:'Which statement about a translation is <b>true</b>?',options:shuffle([{t:'The image has the same size and shape (congruent).',ok:true},{t:'The image is larger than the original.',ok:false},{t:'The image is turned to face a new direction.',ok:false},{t:'The angles of the image change.',ok:false}]),hint:'rigid',scene:s1,why:'A slide moves every point the same way, so nothing about the size or shape changes.',std:'NC.8.G.1'},
+  ];
+}
+function genTurn(){
+  const T=randTri(2,7,1,6),[A,B]=T;const c=[{k:'ccw',T:mapT(T,TF.ccw)},{k:'cw',T:mapT(T,TF.cw)},{k:'r180',T:mapT(T,TF.r180)}];
+  const ts=tapScene(T,c),base={bg:plane(),lines:figHTML(T,'#f2c14e',['A','B','C']),g:[],rels:{}};
+  const NAME={cw:'a 90° clockwise rotation',r180:'a 180° rotation'};
+  return [
+    {type:'tapShape',kind:'Rotations',prompt:'Tap the image of ABC after a <b>90° counterclockwise</b> rotation about the origin.',accept:['ccw'],names:NAME,hint:'rot90ccw',scene:ts.scene,why:'(x, y) → (−y, x) turns the figure a quarter turn to the left.',std:'NC.8.G.3'},
+    {type:'coord',kind:'Rotations',prompt:'Rotate ABC <b>180°</b> about the origin. What are the coordinates of <b>A′</b>?',answer:TF.r180(A),hint:'rot180',scene:base,why:`A${fmtPt(A)} → ${fmtPt(TF.r180(A))}.`,std:'NC.8.G.3'},
+    {type:'choice',kind:'Rotations',prompt:'Which rule is a <b>90° clockwise</b> rotation about the origin?',options:shuffle([{t:'(x, y) → (y, −x)',ok:true},{t:'(x, y) → (−y, x)',ok:false},{t:'(x, y) → (−x, −y)',ok:false},{t:'(x, y) → (x, −y)',ok:false}]),hint:'rot90cw',scene:base,why:'Swap the coordinates, then change the sign of the new y.',std:'NC.8.G.3'},
+    {type:'coord',kind:'Rotations',prompt:'Rotate ABC <b>90° counterclockwise</b> about the origin. Where does <b>B</b> land?',answer:TF.ccw(B),hint:'rot90ccw',scene:base,why:`B${fmtPt(B)} → ${fmtPt(TF.ccw(B))}.`,std:'NC.8.G.3'},
+  ];
+}
+function genCongruence(){
+  const A=randTri(-8,-4,2,6);const DESC={rx:'reflect over the x-axis',ry:'reflect over the y-axis',r180:'rotate 180° about the origin'};
+  let first,a,b,B;for(let k=0;k<300;k++){first=pick(['rx','ry','r180']);a=ri(-3,3);b=ri(-3,3);if(!a&&!b)continue;B=mapT(A,TF[first]).map(p=>[p[0]+a,p[1]+b]);if(inB(B))break}
+  const tr=(x,y)=>`translate ${x?(Math.abs(x)+' '+(x>0?'right':'left')):''}${x&&y?' and ':''}${y?(Math.abs(y)+' '+(y>0?'up':'down')):''}`;
+  const opts=[{t:`${DESC[first]}, then ${tr(a,b)}`,ok:true}];
+  for(const o of shuffle(['rx','ry','r180'].filter(o=>o!==first))){const I=mapT(A,TF[o]).map(p=>[p[0]+a,p[1]+b]);if(!sameSet(I,B))opts.push({t:`${DESC[o]}, then ${tr(a,b)}`,ok:false});if(opts.length>=3)break}
+  const a2=a?-a:2,b2=b;const I2=mapT(A,TF[first]).map(p=>[p[0]+a2,p[1]+b2]);if(!sameSet(I2,B)&&opts.length<4)opts.push({t:`${DESC[first]}, then ${tr(a2,b2)}`,ok:false});
+  opts.push({t:`dilate by a scale factor of 2, then ${tr(a,b)}`,ok:false});
+  const s1={bg:plane(),lines:figHTML(A,'#f2c14e',null,'A')+figHTML(B,'#9fe3ff',null,'B'),g:[],rels:{}};
+  const S=randTri(-8,-6,5,7);const cen=S.map(p=>[p[0]+8,p[1]-7]);
+  const cong=mapT(cen,TF.ccw).map(p=>[p[0]+6,p[1]+4]);const dil=cen.map(p=>[2*p[0],2*p[1]]).map(p=>[p[0]-4,p[1]-6]);const str=cen.map(p=>[2*p[0],p[1]]).map(p=>[p[0]+4,p[1]-5]);
+  const fit=T=>{let dx=0,dy=0;const mx=Math.max(...T.map(p=>p[0])),mn=Math.min(...T.map(p=>p[0])),my=Math.max(...T.map(p=>p[1])),mny=Math.min(...T.map(p=>p[1]));if(mx>10)dx=10-mx;if(mn<-10)dx=-10-mn;if(my>7)dy=7-my;if(mny<-7)dy=-7-mny;return T.map(p=>[p[0]+dx,p[1]+dy])};
+  const ts=tapScene(S,[{k:'cong',T:fit(cong)},{k:'dil',T:fit(dil)},{k:'str',T:fit(str)}],['','','']);ts.scene.lines=figHTML(S,'#f2c14e',null,'A');
+  return [
+    {type:'choice',kind:'Congruence',prompt:'Which sequence maps <b>figure A</b> onto <b>figure B</b>?',options:shuffle(opts),hint:'rigid',scene:s1,why:`${DESC[first]}, then ${tr(a,b)}.`,std:'NC.8.G.2'},
+    {type:'choice',kind:'Rigid transformations',prompt:'Rigid transformations keep many things the same. Which one is <b>NOT</b> always kept the same?',options:shuffle([{t:'The figure’s location on the grid',ok:true},{t:'Side lengths',ok:false},{t:'Angle measures',ok:false},{t:'Area',ok:false}]),hint:'rigid',scene:s1,why:'The figure moves, so its location changes; its size and shape don’t.',std:'NC.8.G.1'},
+    {type:'tapShape',kind:'Congruence',prompt:'Tap the figure that is <b>congruent</b> to figure A.',accept:['cong'],names:{dil:'a dilation: it is bigger, so it is similar but not congruent',str:'stretched in one direction only, so its shape changed'},hint:'rigid',scene:ts.scene,why:'It was rotated and slid, so its size and shape are the same.',std:'NC.8.G.2'},
+    {type:'choice',kind:'Congruence',prompt:'A figure is reflected over the y-axis and then translated 3 units down. Is the image congruent to the original?',options:shuffle([{t:'Yes. Reflections and translations are rigid motions, so size and shape stay the same.',ok:true},{t:'No. A reflection flips it, so it is a different shape.',ok:false},{t:'No. Moving it changes its size.',ok:false},{t:'Only if the translation happens first.',ok:false}]),hint:'rigid',scene:s1,why:'Any sequence of rigid motions produces a congruent image.',std:'NC.8.G.2'},
+  ];
+}
+function genScale(){
+  const k=pick([2,3,.5]);let T;
+  if(k===2)T=randTri(1,4,-4,4);else if(k===3)T=randTri(-3,3,1,2);else T=randTri(2,8,2,8).map(p=>[2*Math.round(p[0]/2)||2,2*Math.round(p[1]/2)||2]);
+  if(k===.5&&new Set(T.map(p=>p.join())).size<3)T=[[2,2],[6,2],[2,6]];
+  const I=T.map(p=>[p[0]*k,p[1]*k]);
+  const s1={bg:plane(),lines:figHTML(T,'#f2c14e',['A','B','C'])+figHTML(I,'#9fe3ff',['A′','B′','C′'])+`<circle cx="${OX}" cy="${OY}" r="5" fill="#ff9ad5"/>`,g:[],rels:{}};
+  const k2=pick([2,3,4]),Pt=[pick([-3,-2,-1,1,2,3]),pick([-2,-1,1,2])];
+  const base={bg:plane(),lines:figHTML([Pt,[Pt[0]+1,Pt[1]],[Pt[0],Pt[1]+(Pt[1]>0?1:-1)]],'#f2c14e',['A','','']),g:[],rels:{}};
+  const S=[[2,2],[4,2],[2,4]].map(p=>Math.random()<.5?p:[p[1],p[0]]);const S2=new Set(S.map(p=>p.join())).size<3?[[2,2],[4,2],[2,4]]:S;
+  const cands=[{k:'ok',T:S2.map(p=>[2*p[0],2*p[1]])},{k:'half',T:S2.map(p=>[p[0]/2,p[1]/2])},{k:'slide',T:S2.map(p=>[p[0]-9,p[1]+1])}];
+  const ts=tapScene(S2,cands);
+  return [
+    {type:'num',kind:'Dilations',prompt:'Figure ABC was dilated about the origin to make A′B′C′. What is the <b>scale factor</b>?',answer:k,unit:'k =',hint:'dilation',scene:s1,why:`Each coordinate was multiplied by ${k===.5?'1/2':k}.`,std:'NC.8.G.3'},
+    {type:'coord',kind:'Dilations',prompt:`Dilate point A about the origin with scale factor <b>${k2}</b>. What are the coordinates of <b>A′</b>?`,answer:[Pt[0]*k2,Pt[1]*k2],hint:'dilation',scene:base,why:`${fmtPt(Pt)} × ${k2} = ${fmtPt([Pt[0]*k2,Pt[1]*k2])}.`,std:'NC.8.G.3'},
+    {type:'choice',kind:'Dilations',prompt:'After a dilation, which of these <b>stays the same</b>?',options:shuffle([{t:'Angle measures',ok:true},{t:'Side lengths',ok:false},{t:'Perimeter',ok:false},{t:'Distance from the origin',ok:false}]),hint:'dilation',scene:s1,why:'Dilations stretch lengths but keep every angle, so the shape stays the same.',std:'NC.8.G.4'},
+    {type:'tapShape',kind:'Dilations',prompt:'Tap the image of ABC after a <b>dilation by a scale factor of 2</b> about the origin.',accept:['ok'],names:{half:'a dilation by 1/2: it got smaller',slide:'a translation: the size did not change'},hint:'dilation',scene:ts.scene,why:'Every coordinate was doubled.',std:'NC.8.G.3'},
+    {type:'choice',kind:'Similarity',prompt:'A figure is dilated by a scale factor of 3. The image is ___ to the original.',options:shuffle([{t:'similar, but not congruent',ok:true},{t:'congruent',ok:false},{t:'neither similar nor congruent',ok:false}]),hint:'dilation',scene:s1,why:'Same shape, different size: similar.',std:'NC.8.G.4'},
+  ];
+}
+
+/* ---------- rooms ---------- */
+const ROOMS=[
+  {id:'a1',wing:'A',n:'Room 1',name:'Grid Gallery',tg:'Vertical, supplementary, complementary, adjacent',target:'G.5-1',std:G5,band:3,gen:genGrid,art:['Composition in Red and Blue','Study of Crossing Lines','Primary Grid']},
+  {id:'a2',wing:'A',n:'Room 2',name:'Stained Glass Hall',tg:'Parallel lines and transversals',target:'G.5-2',std:G5,band:3,gen:genGlass,art:['Window of Parallels','Cathedral Light','The Transversal Window']},
+  {id:'a3',wing:'A',n:'Room 3',name:'Mosaic Room',tg:'Triangle Sum Theorem',target:'G.5-3',std:G5,band:3,gen:genMosaic,art:['Quilt of Triangles','Four Blocks','Patchwork 180']},
+  {id:'a4',wing:'A',n:'Room 4',name:'Rooftops & Bridges',tg:'Exterior Angle Theorem',target:'G.5-4',std:G5,band:3,gen:genRoof,art:['Evening Rooftop','Bridge at Dusk','Truss and Gable']},
+  {id:'a5',wing:'A',n:'Room 5',name:'Hidden Triangles',tg:'Angle-Angle (AA) similarity',target:'G.5-5',std:G5,band:3,gen:genAA,art:['Family of Triangles','Echoes','Nested Forms']},
+  {id:'a6',wing:'A',n:'Room 6',name:'Algebra Annex',tg:'Write and solve angle equations',target:'G.5-6',std:G5,band:4,gen:genAlgebra,art:['Blueprint for x','Plans and Proportions','Drafting Table']},
+  {id:'a7',wing:'A',n:'Room 7',name:'The Forger',tg:'Find and fix angle mistakes',target:'G.5-7',std:G5,band:4,gen:genForger,art:['Suspicious Window','A Questionable Rooftop','Forgery No. 7']},
+  {id:'av',wing:'A',n:'The Vault',name:'The Vault',tg:'Multi-step chains with reasons',target:'G.5-8 · G.5-9',std:G5,band:5,gen:genVault,vault:1,art:['The Vault Door','Locks of Light']},
+  {id:'t1',wing:'T',n:'Room T1',name:'Mirror Room',tg:'Reflections over the axes',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genMirror,art:['Floor Plan with Mirrors','Reflections on Tile']},
+  {id:'t2',wing:'T',n:'Room T2',name:'Slide Room',tg:'Translations and rules',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genSlide,art:['Sliding Exhibits','Moving Day']},
+  {id:'t3',wing:'T',n:'Room T3',name:'Turn Room',tg:'Rotations 90° and 180°',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genTurn,art:['The Turning Floor','Quarter Turns']},
+  {id:'t4',wing:'T',n:'Room T4',name:'Congruence Studio',tg:'Sequences of rigid motions',target:'NC.8.G.1 · G.2',std:'NC.8.G.2',band:4,gen:genCongruence,art:['Two of a Kind','Matching Pieces']},
+  {id:'t5',wing:'T',n:'Room T5',name:'Scale Studio',tg:'Dilations and similarity',target:'NC.8.G.3 · G.4',std:'NC.8.G.4',band:4,gen:genScale,art:['Grow and Shrink','Scaled Studies']},
+];
+const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));
+function unlocked(r){if(ALL)return true;const w=ROOMS.filter(x=>x.wing===r.wing),i=w.indexOf(r);return i===0||!!(store.rooms[w[i-1].id]&&store.rooms[w[i-1].id].done)}
+function totalGems(){return Object.values(store.rooms).reduce((a,r)=>a+(r.best||0),0)}
+
+/* ---------- lobby ---------- */
+function renderLobby(){
+  const card=r=>{const st=store.rooms[r.id]||{},lock=!unlocked(r),prev=ROOMS.filter(x=>x.wing===r.wing)[ROOMS.filter(x=>x.wing===r.wing).indexOf(r)-1];
+    return `<button type="button" class="room ${st.done?'done':''} ${lock?'locked':''} ${r.vault?'vault':''}" data-room="${r.id}" ${lock?'aria-disabled="true"':''}>
+      <span class="num">${r.n.toUpperCase()}</span><span class="nm">${r.vault?'🔐 ':''}${esc(r.name)}</span><span class="tg">${esc(r.tg)}</span>
+      <span class="gems">${lock?`Clear ${esc(prev.name)} to open`:st.total?`💎 ${st.best||0} / ${st.total} best`:'Not visited yet'}</span></button>`};
+  $('#roomsA').innerHTML=ROOMS.filter(r=>r.wing==='A').map(card).join('');
+  $('#roomsT').innerHTML=ROOMS.filter(r=>r.wing==='T').map(card).join('');
+  $('#gemTotal').textContent='💎 '+totalGems();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('.room');if(!b)return;const r=byId[b.dataset.room];
+  if(!unlocked(r)){sfx.bad();b.animate&&!RM&&b.animate([{transform:'translateX(-5px)'},{transform:'translateX(5px)'},{transform:'none'}],{duration:240});return}enterRoom(r)});
+
+/* ---------- room play ---------- */
+let R=null;
+function enterRoom(r){
+  const finds=r.gen();
+  R={room:r,finds,idx:0,state:finds.map(()=>({done:false,gem:false,first:null,tries:0})),sel:[],plaque:pick(r.art)+', No. '+ri(2,98)};
+  $('#lobby').hidden=true;$('#room').hidden=false;$('#bLobby').hidden=false;
+  $('#rTitle').textContent=(r.vault?'🔐 ':'')+r.name;$('#rTarget').textContent=r.target;
+  $('#plaque').innerHTML=`${esc(R.plaque)}<small>Original artwork drawn by the museum’s computer · new every visit</small>`;
+  renderFind();window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
+  const coachKey='coach_'+r.wing;
+  if((r.id==='a1'||r.id==='t1'||!store[coachKey])&&!store[coachKey]){showCoach(r.wing)}
+}
+function showCoach(w){
+  $('#coachBody').innerHTML=w==='A'?`<ol><li>Read the <b>find</b> on the hunt list.</li><li><b>Tap angles</b> in the artwork (they light up) or type a measure.</li><li>Each correct find earns a gem 💎. Wrong answers flash red and explain why.</li><li>Stuck? Tap <b>Hint</b> for a definition and a mini diagram.</li></ol>`
+    :`<ol><li>Figures sit on a coordinate grid on the gallery floor.</li><li><b>Tap a figure</b>, type coordinates like <b>(3, −2)</b>, or pick a rule.</li><li>Each correct find earns a gem 💎.</li><li>Tap <b>Hint</b> for the rule and a mini diagram.</li></ol>`;
+  $('#coach').hidden=false;$('#coachGo').focus();store['coach_'+w]=1;save();
+}
+$('#coachGo').addEventListener('click',()=>{$('#coach').hidden=true;focusInput()});
+
+function cur(){return R.finds[R.idx]}
+function renderFind(){
+  const f=cur(),st=R.state[R.idx];R.sel=[];
+  $('#huntList').innerHTML=R.finds.map((x,i)=>{const s=R.state[i];return `<li class="${i===R.idx?'now':''} ${s.gem?'gem':s.done?'shown':''}" aria-label="Find ${i+1}${s.gem?', gem collected':s.done?', answer shown':''}">${s.gem?'💎':s.done?'✓':i+1}</li>`}).join('');
+  $('#prompt').innerHTML=`<span class="kind">Find ${R.idx+1} of ${R.finds.length} · ${esc(f.kind)}</span>${f.prompt}`;
+  $('#hintBox').hidden=true;$('#bShow').hidden=st.tries<3||st.done;
+  $('#fb').className='info';$('#fb').innerHTML=st.done?'':'';
+  renderInput();drawArt();
+}
+function renderInput(){
+  const f=cur(),A=$('#inputArea'),st=R.state[R.idx];let h='';
+  const dis=st.done?'disabled':'';
+  if(f.type==='pair')h=`<p class="tapnote">Tap two angles in the artwork. Tap an angle again to unselect it.</p>`;
+  else if(f.type==='tap')h=`<p class="tapnote">Tap one angle in the artwork.</p>`;
+  else if(f.type==='tapShape')h=`<p class="tapnote">Tap a numbered figure on the grid.</p>`;
+  else if(f.type==='num')h=`<label class="irow">${f.unit||'Answer:'} <input id="iNum" inputmode="decimal" autocomplete="off" ${dis} aria-label="Your answer">${f.unit?'':'°'}</label>`;
+  else if(f.type==='coord')h=`<div class="irow">( <input id="iX" inputmode="numeric" autocomplete="off" aria-label="x-coordinate" ${dis}> , <input id="iY" inputmode="numeric" autocomplete="off" aria-label="y-coordinate" ${dis}> )</div>`;
+  else if(f.type==='rule')h=`<div class="irow">(x, y) → (x + <input id="iX" inputmode="numeric" autocomplete="off" aria-label="Change in x" ${dis}> , y + <input id="iY" inputmode="numeric" autocomplete="off" aria-label="Change in y" ${dis}> )</div><p class="tapnote">Use a negative number for left or down.</p>`;
+  else if(f.type==='reason')h=`<label class="irow">m∠${esc(f.mark)} = <input id="iNum" inputmode="decimal" autocomplete="off" aria-label="Angle measure" ${dis}>°</label>
+    <label class="irow" style="font:600 15px var(--f-body)">Reason: <select id="iReason" ${dis}><option value="">Choose a reason…</option>${Object.entries(REASONS).map(([k,v])=>`<option value="${k}">${v}</option>`).join('')}</select></label>`;
+  else if(f.type==='choice')h=f.options.map((o,i)=>`<button type="button" class="choice" data-opt="${i}" ${dis}>${o.t}</button>`).join('');
+  A.innerHTML=h;
+  const typed=['num','coord','rule','reason'].includes(f.type);
+  $('#bCheck').hidden=!typed||st.done;
+  A.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')check()}));
+  A.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>check(+b.dataset.opt,b)));
+}
+function focusInput(){const i=$('#inputArea input:not([disabled]),#inputArea .choice:not([disabled])');if(i&&!R.state[R.idx].done)i.focus({preventScroll:true})}
+
+function labelFor(g,f,fresh){
+  const show=f.show||{},solved=R.state[R.idx].done;
+  const nm=g.name||g.id;
+  if(show[g.id]!=null)return {t:g.plain?show[g.id]:`∠${nm} = ${show[g.id]}`,pill:1};
+  if(f.mark===g.id)return {t:solved&&f.answer!=null?`∠${nm} = ${f.answer}°`:`∠${nm} = ?`,pill:1,q:!solved};
+  if(g.plain)return null;
+  if(g.name)return null;
+  return {t:g.id,pill:0};
+}
+function drawArt(){
+  const f=cur(),sc=f.scene,st=R.state[R.idx];
+  const click=(f.type==='pair'||f.type==='tap')&&!st.done;
+  let wed='',lab='';const Z=Math.min(1.8,Math.max(1,600/(($('#art').clientWidth||600))));
+  (sc.g||[]).forEach(g=>{
+    const cls=['wg'];if(click)cls.push('click');if(R.sel.includes(g.id))cls.push('sel');if(f.mark===g.id)cls.push(st.done?'ok':'mark');else if((f.show||{})[g.id]!=null)cls.push('given');
+    if(st.done&&f.accept&&(f.type==='pair'||f.type==='tap')&&st.okSel&&st.okSel.includes(g.id))cls.push('ok');
+    const L=labelFor(g,f);const r=g.r,lp=add(g.v,u(g.a+g.s/2),r+(g.s<30?24:16));
+    let inner='';
+    if(L&&!L.pill)inner=`<g class="nb"><circle cx="${f1(lp[0])}" cy="${f1(lp[1])}" r="${f1(11*Z)}"/><text x="${f1(lp[0])}" y="${f1(lp[1])}" style="font-size:${f1(12.5*Z)}px">${esc(L.t)}</text></g>`;
+    wed+=`<g class="${cls.join(' ')}" data-id="${g.id}" ${click?`tabindex="0" role="button" aria-pressed="${R.sel.includes(g.id)}"`:''} aria-label="Angle ${esc(g.name||g.id)}${L&&L.pill?', '+esc(L.t):''}"><path d="${wedgePath(g)}"/>${inner}</g>`;
+    if(L&&L.pill){const w=(L.t.length*8.1+14)*Z;let p=g.out?add(g.v,u(g.a+g.s/2+180),16+w*.32):add(g.v,u(g.a+g.s/2),r+(g.s<30?30:24)+w*.18);const hh=12*Z;p=[Math.max(w/2+3,Math.min(600-w/2-3,p[0])),Math.max(hh+1,Math.min(449-hh,p[1]))];
+      lab+=`<g class="pill ${L.q?'q':''}"><rect x="${f1(p[0]-w/2)}" y="${f1(p[1]-hh)}" width="${f1(w)}" height="${f1(2*hh)}" rx="${f1(hh)}"/><text x="${f1(p[0])}" y="${f1(p[1])}" style="font-size:${f1(13.5*Z)}px">${esc(L.t)}</text></g>`}
+  });
+  let shp='';
+  (sc.shapes||[]).forEach(s=>{const clickS=f.type==='tapShape'&&!st.done;const cls=['shape'];if(clickS)cls.push('click');if(st.done&&f.accept&&f.accept.includes(s.id))cls.push('ok');if(st.badShape===s.id&&!st.done)cls.push('bad');
+    const c=[s.pts.reduce((a,q)=>a+q[0],0)/3,s.pts.reduce((a,q)=>a+q[1],0)/3];
+    shp+=`<g class="${cls.join(' ')}" data-shape="${s.id}" ${clickS?'tabindex="0" role="button"':''} aria-label="Figure ${s.num}">${poly(s.pts.map(p=>[X(p[0]),Y(p[1])]),s.col+'40',s.col,3)}<circle cx="${X(c[0])}" cy="${Y(c[1])}" r="12" fill="#0b0d18" stroke="${s.col}" stroke-width="2"/><text x="${X(c[0])}" y="${Y(c[1])}" text-anchor="middle" dominant-baseline="central" style="font:800 13px var(--f-mono);fill:${s.col}">${s.num}</text></g>`});
+  $('#art').innerHTML=(sc.bg||'')+(sc.lines||'')+wed+shp+(sc.top||'')+lab;
+  $('#art').setAttribute('aria-label',R.plaque);
+}
+$('#art').addEventListener('click',e=>{const g=e.target.closest('.wg.click');if(g)return tapAngle(g.dataset.id);const s=e.target.closest('.shape.click');if(s)tapShape(s.dataset.shape)});
+$('#art').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const g=e.target.closest('.wg.click');if(g){e.preventDefault();tapAngle(g.dataset.id);setTimeout(()=>{const n=$(`#art .wg[data-id="${g.dataset.id}"]`);n&&n.focus()},0);return}
+  const s=e.target.closest('.shape.click');if(s){e.preventDefault();tapShape(s.dataset.shape)}});
+
+function relName(a,b){const sc=cur().scene,k=sc.rels&&sc.rels[a+'-'+b];return k?PAIRNAME[k]:null}
+function tapAngle(id){
+  const f=cur();if(R.state[R.idx].done)return;sfx.tap();
+  if(f.type==='tap'){R.sel=[id];drawArt();const ok=f.accept.includes(id);
+    grade(ok,ok?'':`∠${id} isn’t the one. ${f.why?'Think it through: use the hint if you need it.':''}`,[id]);return}
+  const i=R.sel.indexOf(id);if(i>=0)R.sel.splice(i,1);else R.sel.push(id);drawArt();
+  if(R.sel.length===2){const [a,b]=R.sel;const ok=f.accept.some(p=>(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a));
+    let msg='';if(!ok){const rn=relName(a,b);msg=rn?`∠${a} and ∠${b} are ${rn}, not ${f.want?PAIRNAME[f.want]:'the pair we need'}.`:`∠${a} and ∠${b} aren’t that kind of pair.`}
+    grade(ok,msg,[a,b])}
+}
+function tapShape(id){const f=cur();if(R.state[R.idx].done)return;const ok=f.accept.includes(id);
+  R.state[R.idx].badShape=ok?null:id;grade(ok,ok?'':`That figure shows ${f.names&&f.names[id]?f.names[id]:'a different move'}.`)}
+function parseNum(s){s=String(s||'').trim().replace(/[−–—]/g,'-').replace(/°/g,'').replace(/\s+/g,'');if(!s)return NaN;
+  const m=s.match(/^(-?\d+)\/(\d+)$/);if(m)return +m[1]/+m[2];if(!/^-?(\d+\.?\d*|\.\d+)$/.test(s))return NaN;return +s}
+function check(opt,btn){
+  const f=cur(),st=R.state[R.idx];if(st.done)return;
+  if(f.type==='choice'){const ok=!!f.options[opt].ok;if(!ok){btn.classList.add('bad');btn.disabled=true}else btn.classList.add('ok');grade(ok,ok?'':'Not that one.');return}
+  if(f.type==='num'){const v=parseNum($('#iNum').value);if(isNaN(v)){fb('Type a number first.','info');return}const ok=Math.abs(v-f.answer)<.01;
+    grade(ok,ok?'':`${v} isn’t it.${f.unit?'':' Check which angles are equal and which add to 180°.'}`);return}
+  if(f.type==='coord'||f.type==='rule'){const x=parseNum($('#iX').value),y=parseNum($('#iY').value);if(isNaN(x)||isNaN(y)){fb('Fill in both boxes.','info');return}
+    const ok=x===f.answer[0]&&y===f.answer[1];let m='';if(!ok){m=f.type==='rule'?'Count how far each point moved left/right, then up/down.':(x===f.answer[1]&&y===f.answer[0])?'Close: you have the numbers in the wrong order.':(Math.abs(x)===Math.abs(f.answer[0])&&Math.abs(y)===Math.abs(f.answer[1]))?'Close: check the signs.':'Not quite.'}
+    grade(ok,m);return}
+  if(f.type==='reason'){const v=parseNum($('#iNum').value),r=$('#iReason').value;if(isNaN(v)||!r){fb('Enter the measure and choose a reason.','info');return}
+    const okN=Math.abs(v-f.answer)<.01,okR=f.reason.includes(r);
+    grade(okN&&okR,okN?'The measure is right, but that reason doesn’t connect these two angles.':okR?'Good reason, but recheck the measure: equal, or adds to 180°?':'Recheck both the measure and the reason.');return}
+}
+function fb(h,cls){const e=$('#fb');e.className=cls||'info';e.innerHTML=h}
+function grade(ok,wrongMsg,sel){
+  const f=cur(),st=R.state[R.idx];st.tries++;
+  if(st.first===null){st.first=ok;try{if(window.ArcadeSend)ArcadeSend.answer(ok)}catch(e){}try{if(window.ScoreSend)ScoreSend.record(R.room.id+'-'+(R.idx+1),ok,{std:f.std||R.room.std,band:R.room.band,label:R.room.name+': '+f.kind})}catch(e){}}
+  else{try{if(window.ScoreSend&&ok)ScoreSend.record(R.room.id+'-'+(R.idx+1),true,{})}catch(e){}}
+  if(ok){st.done=true;st.gem=true;st.okSel=sel||null;flash('good');sfx.good();
+    fb(`💎 <b>Gem collected!</b> ${f.why||''}<div class="nextrow"><button class="btn primary" id="bNext" type="button">${R.state.every(s=>s.done)?'Finish room ›':'Next find ›'}</button></div>`,'good');
+    renderInput();drawArt();$('#bShow').hidden=true;
+    const n=$('#bNext');n.addEventListener('click',next);n.focus({preventScroll:true});
+    $('#huntList').children[R.idx].className='gem';$('#huntList').children[R.idx].textContent='💎';
+  }else{flash('bad');sfx.bad();
+    fb(`${wrongMsg||'Not quite.'} Try again.`,'bad');
+    if(sel){setTimeout(()=>{if(cur()===f&&!st.done){R.sel=[];drawArt()}},700)}
+    if(st.tries>=2)showHint();if(st.tries>=3)$('#bShow').hidden=false;
+    if(f.type==='tapShape')drawArt();
+  }
+}
+function answerText(f){
+  if(f.type==='pair')return `One answer: ∠${f.accept[0][0]} and ∠${f.accept[0][1]}.`;
+  if(f.type==='tap')return `∠${f.accept[0]}.`;
+  if(f.type==='tapShape'){const s=f.scene.shapes.find(x=>f.accept.includes(x.id));return `Figure ${s.num}.`}
+  if(f.type==='num')return `${f.unit||''} ${f.answer}${f.unit?'':'°'}.`;
+  if(f.type==='coord')return fmtPt(f.answer)+'.';
+  if(f.type==='rule')return `(x ${f.answer[0]<0?MINUS:'+'} ${Math.abs(f.answer[0])}, y ${f.answer[1]<0?MINUS:'+'} ${Math.abs(f.answer[1])}).`;
+  if(f.type==='reason')return `${f.answer}° · ${REASONS[f.reason[0]]}.`;
+  if(f.type==='choice')return f.options.find(o=>o.ok).t;
+}
+$('#bShow').addEventListener('click',()=>{const f=cur(),st=R.state[R.idx];if(st.done)return;st.done=true;st.gem=false;try{window.ScoreSend&&ScoreSend.revealed()}catch(e){}
+  if(f.type==='pair'||f.type==='tap')st.okSel=f.type==='pair'?f.accept[0]:[f.accept[0]];
+  fb(`Answer: <b>${answerText(f)}</b> ${f.why||''}<div class="nextrow"><button class="btn primary" id="bNext" type="button">${R.state.every(s=>s.done)?'Finish room ›':'Next find ›'}</button></div>`,'info');
+  renderInput();drawArt();$('#bShow').hidden=true;$('#huntList').children[R.idx].className='shown';$('#huntList').children[R.idx].textContent='✓';
+  const n=$('#bNext');n.addEventListener('click',next);n.focus({preventScroll:true})});
+$('#bCheck').addEventListener('click',()=>check());
+function next(){
+  if(R.state.every(s=>s.done))return finishRoom();
+  let i=R.idx;do{i=(i+1)%R.finds.length}while(R.state[i].done);R.idx=i;renderFind();focusInput();
+}
+function finishRoom(){
+  const gems=R.state.filter(s=>s.gem).length,firsts=R.state.filter(s=>s.first).length,n=R.finds.length,id=R.room.id;
+  const prev=store.rooms[id]||{};store.rooms[id]={done:true,best:Math.max(prev.best||0,gems),total:n};save();
+  try{if(window.ArcadeSend)ArcadeSend.round({level:R.room.name,score:totalGems(),details:`${R.room.name}: ${gems}/${n} gems, ${firsts}/${n} first try`})}catch(e){}
+  flash('gold');sfx.gold();
+  $('#sumGems').textContent=`${gems}/${n}`;$('#sumFirst').textContent=Math.round(firsts/n*100)+'%';
+  $('#sumT').textContent=R.room.vault?'The Vault is open!':'Room cleared!';
+  const w=ROOMS.filter(x=>x.wing===R.room.wing),nx=w[w.indexOf(R.room)+1];
+  $('#sumTxt').textContent=nx?`Next up: ${nx.name}. Every visit brings new art and new numbers.`:R.room.wing==='A'?'You cleared the whole Angle Wing. Try the Transformations Wing!':'You cleared the Transformations Wing. Try the Angle Wing and the Vault!';
+  $('#sumNext').hidden=!nx;$('#sumNext').onclick=()=>{$('#summary').hidden=true;enterRoom(nx)};
+  $('#summary').hidden=false;(nx?$('#sumNext'):$('#sumLobby')).focus();$('#gemTotal').textContent='💎 '+totalGems();
+}
+$('#sumAgain').addEventListener('click',()=>{$('#summary').hidden=true;enterRoom(R.room)});
+$('#sumLobby').addEventListener('click',()=>{$('#summary').hidden=true;toLobby()});
+$('#bLobby').addEventListener('click',toLobby);
+function toLobby(){$('#room').hidden=true;$('#lobby').hidden=false;$('#bLobby').hidden=true;renderLobby();window.scrollTo({top:0})}
+$('#bSound').addEventListener('click',()=>{muted=!muted;store.muted=muted;save();$('#bSound').textContent=muted?'Sound off':'Sound on';$('#bSound').setAttribute('aria-pressed',String(!muted))});
+$('#bHint').addEventListener('click',()=>{$('#hintBox').hidden?showHint():($('#hintBox').hidden=true)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#coach').hidden){$('#coach').hidden=true;focusInput()}});
+
+/* ---------- hint mini diagrams ---------- */
+function mini(key){
+  const W=(id,V,a,s,hl)=>`<path d="${wedgePath({v:V,a,s,r:16})}" fill="${hl?'rgba(159,227,255,.75)':'rgba(255,255,255,.08)'}" stroke="${hl?'#9fe3ff':'rgba(255,255,255,.3)'}"/>`;
+  const L=(p,q)=>`<line x1="${f1(p[0])}" y1="${f1(p[1])}" x2="${f1(q[0])}" y2="${f1(q[1])}" stroke="#f2c14e" stroke-width="2.5"/>`;
+  const thr=(P,d,l)=>L(add(P,u(d),l),add(P,u(d+180),l));
+  const par=(hl)=>{const p=0,t=62,I1=[92,38],I2=[62,82];let s=thr(I1,p,70)+thr(I2,p,70)+thr([77,60],t,62);
+    const at=(I,b)=>[[b+1,t,180-t],[b+2,p,t],[b+3,p+180,t],[b+4,t+180,180-t]].map(([id,a,sw])=>W(id,I,a,sw,hl.includes(id))).join('');return s+at(I1,0)+at(I2,4)};
+  const tri=(h,ext)=>{const P=[[22,92],[128,92],[58,22]];let s=`<polygon points="${P.map(p=>p.join(',')).join(' ')}" fill="rgba(242,193,78,.1)" stroke="#f2c14e" stroke-width="2.5"/>`;
+    const w=triWedges(['a','b','c'],P);w.forEach((g,i)=>s+=`<path d="${wedgePath(Object.assign({},g,{r:15}))}" fill="${h.includes(i)?'rgba(159,227,255,.75)':'rgba(255,255,255,.1)'}" stroke="#9fe3ff"/>`);
+    if(ext){s+=L(P[1],[156,92]);s+=`<path d="${wedgePath(wedgeAt('e',P[1],[156,92],P[2],{r:18}))}" fill="rgba(255,154,213,.7)" stroke="#ff9ad5"/>`}return s};
+  const grid=(A,B)=>{let s='';for(let i=0;i<=16;i++)s+=`<line x1="${i*10}" y1="0" x2="${i*10}" y2="110" stroke="rgba(242,193,78,.12)"/>`;for(let j=0;j<=11;j++)s+=`<line x1="0" y1="${j*10}" x2="160" y2="${j*10}" stroke="rgba(242,193,78,.12)"/>`;
+    s+=`<line x1="0" y1="55" x2="160" y2="55" stroke="#fff"/><line x1="80" y1="0" x2="80" y2="110" stroke="#fff"/>`;const P=T=>T.map(p=>`${80+p[0]*10},${55-p[1]*10}`).join(' ');
+    return s+`<polygon points="${P(A)}" fill="rgba(242,193,78,.35)" stroke="#f2c14e" stroke-width="2"/>`+(B?`<polygon points="${P(B)}" fill="rgba(159,227,255,.35)" stroke="#9fe3ff" stroke-width="2"/>`:'')};
+  const base=[[1,1],[4,1],[1,3]];
+  switch(key){
+    case 'vertical':return thr([80,55],25,60)+thr([80,55],100,50)+W(1,[80,55],25,75,1)+W(2,[80,55],100,105,0)+W(3,[80,55],205,75,1)+W(4,[80,55],280,105,0);
+    case 'linear':case 'adjacent':return thr([80,70],0,70)+L([80,70],add([80,70],u(55),60))+W(1,[80,70],0,55,1)+W(2,[80,70],55,125,1);
+    case 'complementary':return L([40,90],[140,90])+L([40,90],[40,10])+L([40,90],add([40,90],u(35),80))+W(1,[40,90],0,35,1)+W(2,[40,90],35,55,1);
+    case 'corr':return par(['2','6']);case 'altint':return par(['3','6']);case 'altext':return par(['1','8']);case 'ssi':return par(['3','5']);case 'chain':case 'forger':return par(['2','3','6']);
+    case 'trisum':case 'isosceles':case 'right':return tri([0,1,2]);
+    case 'ext':return tri([0,2],1);
+    case 'aa':case 'nested':return `<polygon points="10,95 70,95 25,40" fill="rgba(242,193,78,.2)" stroke="#f2c14e" stroke-width="2"/><polygon points="85,98 150,98 101,38" fill="rgba(159,227,255,.2)" stroke="#9fe3ff" stroke-width="2"/>`+txt([80,15],'same angles','lbl');
+    case 'algebra':return thr([80,55],20,60)+thr([80,55],95,50)+txt([80,20],'equal or 180?','lbl');
+    case 'reflectx':return grid(base,base.map(TF.rx));case 'reflecty':return grid(base,base.map(TF.ry));case 'translate':return grid(base.map(p=>[p[0]-6,p[1]-3]),base.map(p=>[p[0]-2,p[1]-1]));
+    case 'rot90ccw':return grid(base,base.map(TF.ccw));case 'rot90cw':return grid(base,base.map(TF.cw));case 'rot180':return grid(base,base.map(TF.r180));
+    case 'rigid':return grid(base.map(p=>[p[0]-6,p[1]]),base.map(TF.rx).map(p=>[p[0]+2,p[1]]));
+    case 'dilation':return grid([[1,1],[2,1],[1,2]],[[2,2],[4,2],[2,4]]);
+  }
+  return '';
+}
+function showHint(){const f=cur(),h=HINTS[f.hint]||HINTS.algebra;
+  $('#hintBox').innerHTML=`<svg viewBox="0 0 160 110" aria-hidden="true">${mini(f.hint)}</svg><div class="ht"><b>${h[0]}</b><br>${h[1]}</div>`;$('#hintBox').hidden=false}
+
+/* ---------- start ---------- */
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(R&&!$('#room').hidden)drawArt()},150)});
+$('#bSound').textContent=muted?'Sound off':'Sound on';$('#bSound').setAttribute('aria-pressed',String(!muted));
+renderLobby();
+try{if(window.ScoreSend)ScoreSend.setup({kind:'practice',unit:'4',page:'Museum of Angles',mount:'#sendMount',theme:'dark',std:G5,band:3,noun:'find'})}catch(e){}
+if(/[?&]test=1/.test(location.search))window.__MOA={ROOMS,genGrid,genGlass,genMosaic,genRoof,genAA,genAlgebra,genForger,genVault,genMirror,genSlide,genTurn,genCongruence,genScale,meas,enterRoom,get R(){return R},TF,parseNum};
+})();
+</script>
+<script src="../arcade-send.js" data-game="Museum of Angles" data-unit="4"></script>
+<script src="../site-bar.js"></script>
+</body>
+</html>
