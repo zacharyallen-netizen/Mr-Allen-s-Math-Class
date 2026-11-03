@@ -1599,6 +1599,7 @@ function handleSubmit(pr) {
   if (state.answered) return;
   const result = checkAnswer(pr);
   const fb = document.getElementById('feedback');
+  try { if (window.ArcadeSend && !pr.__arc && (result.ok || !result.reason || result.reason === 'Not quite right.')) { pr.__arc = true; ArcadeSend.answer(!!result.ok); } } catch (e) {}
 
   if (result.ok) {
     state.answered = true;
@@ -1701,6 +1702,7 @@ function updateHud() {
 
 /* ---------- ENDING ---------- */
 function showEnding() {
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Full mission', score: Math.round(state.oxygen), details: state.problemsSolved + '/' + SCENES.length + ' problems solved, ' + state.totalWrong + ' wrong, ' + state.totalHints + ' hints, ' + Math.round(state.oxygen) + '% oxygen left' }); } catch (e) {}
   const good = state.oxygen >= 40;
   const modal = document.getElementById('ending-modal');
   modal.classList.remove('good', 'bad');

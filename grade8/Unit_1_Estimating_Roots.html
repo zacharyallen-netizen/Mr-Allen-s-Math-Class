@@ -105,7 +105,6 @@
 </style>
 </head>
 <body>
-<script src="../arcade-send.js" data-game="Estimating Square &amp; Cube Roots" data-unit="1"></script>
 <script src="../site-bar.js"></script>
 
 <nav class="sb-local" aria-label="On this page"><a href="unit1.html" aria-current="page">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html">U6</a> <a href="unit7.html">U7</a> <a href="unit8.html">U8</a> <a href="unit9.html">U9</a> <a href="tools.html">Tools</a></nav>
@@ -832,6 +831,7 @@
     var v=parseFloat($('tryInput').value);
     if(isNaN(v)){$('tryFb').className='fb no';$('tryFb').textContent='Type a decimal like '+tryC.tenth.toFixed(1)+'.';return;}
     var fb=$('tryFb');
+    try{if(window.ArcadeSend&&!tryC.__arc){tryC.__arc=1;var __ok=Math.abs(v-tryC.tenth)<0.001;ArcadeSend.answer(__ok);if(__ok)ArcadeSend.round({level:'Estimate '+tryC.sym+tryC.n,details:'Estimated '+tryC.sym+tryC.n+' ≈ '+tryC.tenth.toFixed(1)})}}catch(e){}
     if(window.ScoreSend) ScoreSend.record('try-'+tryC.type+tryC.n, Math.abs(v-tryC.tenth)<0.001,   // Send-my-work tracker
       {std:'NC.8.NS.2', band:4, label:'Estimate '+tryC.sym+tryC.n+' to the nearest tenth'});
     if(Math.abs(v-tryC.tenth)<0.001){
@@ -895,6 +895,7 @@
 </script>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
+<script src="../arcade-send.js" data-game="Estimating Square &amp; Cube Roots" data-unit="1"></script>
 <script>
 /* Send-my-work tracker: the "Your turn" estimates. */
 if(window.ScoreSend) ScoreSend.setup({ kind:'practice', unit:'1', page:(/[?&]roots=cube/.test(location.search)?'Unit 1 · Cubes Tutorial · Estimating cube roots':'Unit 1 · Estimating Roots · Your turn'), mount:'#ss-mount', std:'NC.8.NS.2', band:4 });

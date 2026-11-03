@@ -1672,6 +1672,7 @@ function answerResult(correct, el, problem) {
   state.locked = true;
   const stat = state.stats[problem.category];
   stat.total++;
+  try { if (window.ArcadeSend) ArcadeSend.answer(!!correct); } catch (e) {}
   // Lock all hotspots/tiles
   stageEl.querySelectorAll('.hot').forEach(h => h.classList.add('locked'));
   tilesEl.querySelectorAll('.tile').forEach(t => t.disabled = true);
@@ -1777,6 +1778,7 @@ function endRun(victorious) {
   const totalCorrect  = state.stats.vert.correct + state.stats.par.correct + state.stats.tri.correct;
   const overallPct = totalAnswered ? Math.round(totalCorrect / totalAnswered * 100) : 0;
   $('final-pct').textContent = `${totalCorrect} / ${totalAnswered} correct · ${overallPct}%`;
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: victorious ? 'Run complete' : 'Run ended', score: state.score, details: `${totalCorrect}/${totalAnswered} correct, best streak x${state.maxStreak}` }); } catch (e) {}
   const bar = (barId, pctId, stat) => {
     const pct = stat.total ? Math.round(stat.correct / stat.total * 100) : 0;
     $(pctId).textContent = stat.total ? `${pct}%` : '—';

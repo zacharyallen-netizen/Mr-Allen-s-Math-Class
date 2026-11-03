@@ -806,6 +806,7 @@ function handleClick(card, btn) {
   if (state !== 'playing' || handLocked || card.isClicked) return;
   card.isClicked = true;
   btn.disabled = true;
+  try { if (window.ArcadeSend) ArcadeSend.answer(!!card.isCorrect); } catch (e) {}
 
   if (card.isCorrect) {
     btn.classList.add('correct');
@@ -858,6 +859,7 @@ function startGame() {
 function endGame() {
   state = 'over';
   clearInterval(timerId);
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: difficulty.charAt(0).toUpperCase() + difficulty.slice(1), score: score, details: 'Time attack, ' + difficulty }); } catch (e) {}
   const newBest = score > best;
   if (newBest) {
     best = score;

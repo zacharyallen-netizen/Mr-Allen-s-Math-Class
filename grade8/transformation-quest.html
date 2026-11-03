@@ -1289,6 +1289,7 @@ function checkWin() {
 function showPuzzleComplete() {
   const p = state.puzzle;
   const total = PUZZLES[state.level].length;
+  try { if (window.ArcadeSend) { ArcadeSend.answer(state.hintsUsed === 0); ArcadeSend.round({ level: 'Level ' + state.level + ' · ' + p.name, details: state.moves.length + ' move' + (state.moves.length === 1 ? '' : 's') + ', ' + state.hintsUsed + ' hint' + (state.hintsUsed === 1 ? '' : 's') }); } } catch (e) {}
   const isLast = state.puzzleIdx === total - 1;
 
   const statsEl = document.getElementById('puzzle-complete-stats');

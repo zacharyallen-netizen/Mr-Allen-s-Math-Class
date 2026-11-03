@@ -900,6 +900,7 @@ function tryMoveToFoundation(fIdx) {
   const card = stack[0];
   const f = state.foundations[fIdx];
   const check = canPlaceOnFoundation(card, f);
+  try { if (window.ArcadeSend) ArcadeSend.answer(!!check.ok); } catch (e) {}
   if (!check.ok) {
     showMessage(check.reason, 'error');
     shakeSelected();
@@ -919,6 +920,7 @@ function tryMoveToTableau(colIdx) {
   if (stack.length === 0) return;
   const col = state.tableau[colIdx];
   const check = canPlaceOnTableau(stack, col);
+  try { if (window.ArcadeSend) ArcadeSend.answer(!!check.ok); } catch (e) {}
   if (!check.ok) {
     showMessage(check.reason, 'error');
     shakeSelected();
@@ -986,8 +988,10 @@ function clickTableauCardWithSelection(colIdx, cardIdx) {
 
 function checkWin() {
   const total = state.foundations.reduce((s, f) => s + f.cards.length, 0);
+  try { if (window.ArcadeSend) ArcadeSend.set({ level: state.difficulty.charAt(0).toUpperCase() + state.difficulty.slice(1), score: total }); } catch (e) {}
   if (total === 28) {
     state.won = true;
+    try { if (window.ArcadeSend) ArcadeSend.round({ details: 'Won in ' + state.moves + ' moves' }); } catch (e) {}
     setTimeout(showWinModal, 450);
   }
 }

@@ -1453,6 +1453,9 @@ function updateAnsweredCount() {
   ];
   const completed = sections.filter(Boolean).length;
   document.getElementById('answered-count').textContent = completed;
+  try{if(window.ArcadeSend){ArcadeSend.set({level:`${Math.min(completed,10)} of 10 sections`,details:`${completed} sections done`});
+    if(completed>=10&&window.__u7prev!=null&&window.__u7prev<10)ArcadeSend.round({level:'Project complete',details:'All 10 sections done'});
+    window.__u7prev=completed}}catch(e){}
 }
 
 function saveData() {

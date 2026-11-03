@@ -1084,6 +1084,7 @@ function renderChallenge(c) {
 function handleSciSubmit(coef, exp, c) {
   const fb = document.getElementById('feedback');
   const result = checkSci(coef, exp, c.answer);
+  try { if (window.ArcadeSend && state.attempts === 0) ArcadeSend.answer(!!result.ok); } catch (e) {}
   if (result.ok) {
     if (!result.standard) {
       fb.className = 'feedback show note';
@@ -1102,6 +1103,7 @@ function handleSciSubmit(coef, exp, c) {
 function handleStdSubmit(val, c) {
   const fb = document.getElementById('feedback');
   const result = checkStd(val, c.answer);
+  try { if (window.ArcadeSend && state.attempts === 0) ArcadeSend.answer(!!result.ok); } catch (e) {}
   if (result.ok) {
     fb.className = 'feedback show ok';
     fb.innerHTML = `✓ Correct.`;
@@ -1113,6 +1115,7 @@ function handleStdSubmit(val, c) {
 
 function handleChoiceSubmit(idx, c) {
   const fb = document.getElementById('feedback');
+  try { if (window.ArcadeSend && state.attempts === 0) ArcadeSend.answer(!!c.options[idx].correct); } catch (e) {}
   if (c.options[idx].correct) {
     fb.className = 'feedback show ok';
     fb.innerHTML = `✓ Correct.`;
@@ -1216,6 +1219,7 @@ function renderEnding() {
   const integrity = Math.max(0, 100 - state.mistakes * 10);
   const total = SCENES.length;
   const cleared = total - state.mistakes;
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Full mission', score: integrity, details: 'Integrity ' + integrity + '%, ' + state.mistakes + ' mistakes, ' + mm + ':' + ss }); } catch (e) {}
 
   const root = document.getElementById('game-root');
   root.innerHTML = `

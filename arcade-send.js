@@ -18,7 +18,7 @@
    ─────────────────────────────────────────────────────────────── */
 (function () {
   if (window.ArcadeSend) return;
-  var CFG = window.TRACKER_CONFIG || {};
+  function cfg() { return window.TRACKER_CONFIG || {}; }   // read late: some pages load tracker-config.js after this file
   var NAME_KEY = 'fluencyLabStudentName', HIDE_KEY = 'arcadeSendMin';
   var me = document.currentScript || {};
   var ds = me.dataset || {};
@@ -32,7 +32,7 @@
 
   function flush() {
     tick();
-    var name = get(NAME_KEY);
+    var CFG = cfg(), name = get(NAME_KEY);
     if (!CFG.ENDPOINT || !name) return;
     var mins = S.ms / 60000;
     if (mins < 0.25 && !S.tries && !S.rounds) return;
@@ -66,8 +66,8 @@
   };
 
   /* small "Playing as" tag in the corner (shadow DOM, so it never changes the game's look) */
-  if (!CFG.ENDPOINT) return;
   function mount() {
+    if (!cfg().ENDPOINT) return;
     if (!document.body || document.getElementById('arcade-send')) return;
     var host = document.createElement('div'); host.id = 'arcade-send';
     host.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:2147483000';

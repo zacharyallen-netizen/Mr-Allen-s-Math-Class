@@ -497,7 +497,7 @@ function showItem(){
   const upd=()=>{scoreChip.textContent=SES.parts?(st.id===3?`Lines with 2+ stars: ${SES.good} of ${SES.parts}`:`First-try correct: ${SES.good} of ${SES.parts}`):'';};
   let ssPart=0;   // score tracking: one item per scored answer in this round
   const ui={ctx,plotBox,panel,left,
-    record(ok){SES.parts++; if(ok) SES.good++; upd();
+    record(ok){SES.parts++; if(ok) SES.good++; upd(); try{if(window.ArcadeSend)ArcadeSend.answer(!!ok)}catch(e){}
       try{ if(window.ScoreSend){ ssPart++; ScoreSend.record(`S${st.id}.R${SES.idx+1}.${ssPart}`,!!ok,{std:st.std,
         label:`Station ${st.id} ${st.name} · Round ${SES.idx+1} · answer ${ssPart}`}); } }catch(e){}
     },
@@ -513,6 +513,7 @@ function showEnd(){
   const st=SES.st; let stars, acc, extra='';
   if(st.id===3){ const avg=SES.fit.reduce((a,b)=>a+b,0)/SES.fit.length; stars=Math.round(avg); acc=Math.round(SES.fit.filter(s=>s>=2).length/SES.fit.length*100); extra=`Average fit: ${fmt(avg,1)} stars per line.`; }
   else { acc=SES.parts?Math.round(SES.good/SES.parts*100):0; stars=acc>=85?3:acc>=65?2:1; extra=`${SES.good} of ${SES.parts} answers right on the first try.`; }
+  try{if(window.ArcadeSend)ArcadeSend.round({level:`Station ${st.id} · ${st.name}`,score:acc,details:`${stars} star${stars===1?'':'s'}, ${acc}% · ${extra}`})}catch(e){}
   const prev=store.res[st.id]||{}; store.res[st.id]={done:true,best:Math.max(prev.best||0,stars),acc:Math.max(prev.acc||0,acc),last:acc,lastStars:stars}; saveStore();
   app.innerHTML=''; window.scrollTo(0,0);
   const msg=stars===3?'Excellent work. You have this skill down.':stars===2?'Nice work. One more try with new data will make it stick.':'Good effort. Every try gives you new data. Read the worked example again, then try once more.';

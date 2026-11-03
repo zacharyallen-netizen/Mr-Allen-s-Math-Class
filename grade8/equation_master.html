@@ -1083,6 +1083,7 @@ function handleChoice(btn, isCorrect, step) {
   allBtns.forEach(function(b){ b.classList.add('locked'); b.onclick = null; });
 
   totalSteps++;
+  try { if (window.ArcadeSend) ArcadeSend.answer(!!isCorrect); } catch (e) {}
 
   if (isCorrect) {
     btn.classList.add('correct');
@@ -1208,6 +1209,7 @@ function showResults() {
 
   var pct = totalSteps > 0 ? Math.round(correctFirst / totalSteps * 100) : 0;
   document.getElementById('final-score').textContent = score + ' pts';
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: levelNames[selectedLevel], score: score, details: pct + '% accuracy, best streak ' + bestStreak }); } catch (e) {}
 
   var grade = pct >= 90 ? '⭐ MASTER!' : pct >= 70 ? '👍 Great job!' : pct >= 50 ? '📈 Getting there!' : '💪 Keep practicing!';
 

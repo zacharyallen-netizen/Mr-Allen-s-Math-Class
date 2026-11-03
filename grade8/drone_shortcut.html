@@ -163,6 +163,7 @@ svg .mono{font-family:var(--mono)}
 </style>
 </head>
 <body>
+<script src="../tracker-config.js"></script>
 <script src="../arcade-send.js" data-game="Drone Shortcut" data-unit="5"></script>
 <script src="../site-bar.js"></script>
 <!-- SITE-BAR -->
@@ -1009,6 +1010,7 @@ function focusActive(){
 function record(st,ok){
   ssTrack(st,ok);
   if(st.tries===0){
+    try{if(window.ArcadeSend)ArcadeSend.answer(!!ok)}catch(e){}
     G.steps++;
     if(ok){G.first++;G.streak++;G.best=Math.max(G.best,G.streak);G.score+=Math.min(G.streak,5);}
     else G.streak=0;
@@ -1121,6 +1123,7 @@ function endLevel(reason){
   cancelAnimationFrame(animId);
   const L=G.L,acc=G.steps?Math.round(G.first/G.steps*100):0;
   saveBest(L.id,G.score);
+  try{if(window.ArcadeSend)ArcadeSend.round({level:'Level '+L.id+' · '+L.name,score:G.score,details:G.done+' of '+L.n+' done, '+acc+'% first try'+(reason==='battery'?', battery empty':'')})}catch(e){}
   const next=LEVELS.find(l=>l.id===L.id+1);
   let msg;
   if(acc>=90)msg='Sharp work. You found every shortcut with care.';

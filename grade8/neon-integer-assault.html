@@ -1020,6 +1020,8 @@
       });
     });
 
+    const __ok = !!(target && target.correct && state.equations[target.equationIndex] && !state.equations[target.equationIndex].solved);
+    try { if (window.ArcadeSend && target) ArcadeSend.answer(__ok); } catch (e) {}
     if (target && target.correct && state.equations[target.equationIndex] && !state.equations[target.equationIndex].solved) {
       correctHit(target, x, y);
     } else {
@@ -1123,6 +1125,7 @@
     spawnBurst(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 70, 2.2);
     state.score += 350 + state.level * 100;
     state.speedMultiplier += 0.12;
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Wave ' + state.level, score: state.score, details: 'Cleared wave ' + state.level + ', best combo streak ' + state.bestStreak }); } catch (e) {}
     if (state.level >= MAX_LEVEL) {
       endGame(true);
       return;
@@ -1312,6 +1315,7 @@
 
   function endGame(won) {
     state.running = false;
+    try { if (window.ArcadeSend) ArcadeSend.set({ level: 'Wave ' + state.level, score: state.score, details: (won ? 'Cleared all waves' : 'Game over on wave ' + state.level) + ', ' + state.correctShots + '/' + state.totalShots + ' shots hit' }); } catch (e) {}
     state.won = won;
     cancelAnimationFrame(rafId);
     updateHUD();

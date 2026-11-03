@@ -415,6 +415,7 @@
     var c=state.deck[state.idx];
     var correct=(saysRational===c.r);
     state.answered++;
+    try{if(window.ArcadeSend)ArcadeSend.answer(correct)}catch(e){}
     var v=$('verdict');
     if(correct){
       var win=payoutFor(state.streak);
@@ -449,6 +450,7 @@
 
   function showResults(){
     var acc=state.answered?Math.round(100*state.correct/state.answered):0;
+    try{if(window.ArcadeSend)ArcadeSend.round({level:'Full table ('+ROUNDS+' hands)',score:state.chips,details:state.correct+'/'+state.answered+' correct, best streak '+state.best+', '+state.chips+' chips'})}catch(e){}
     var rank, sub, sign;
     if(acc>=90){ rank='00-MATHEMATICIAN'; sub='Licensed to sort.';
       sign='“You read every card before it was dealt.” The Bureau will be in touch.';

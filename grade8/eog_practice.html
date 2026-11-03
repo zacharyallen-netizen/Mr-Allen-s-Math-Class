@@ -901,11 +901,13 @@ var KEY=/[?&]key=1\b/.test(location.search);
 var stats={},TOTAL=0;ORDER.forEach(function(p){TOTAL+=QS[p[0]].length;});
 function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].done)d++;if(stats[k].first)n++;});
   document.getElementById("scoreN").textContent=n;document.getElementById("doneN").textContent=d;
+  try{if(window.ArcadeSend)ArcadeSend.set({level:d+' of '+TOTAL+' done',score:n})}catch(e){}
   if(d===TOTAL)summary(n);}
 function summary(n){
   var miss=[];
   ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[2]+'">'+p[1]+"</a> ("+m+" missed on the first try)");});
   var el=document.getElementById("summary");el.classList.add("show");
+  try{if(window.ArcadeSend)ArcadeSend.round({level:'All '+TOTAL+' questions',score:n,details:n+' of '+TOTAL+' right on the first try'})}catch(e){}
   el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
    (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You got every one on the first try. You are ready for the EOG.</p>')+
    '<p class="small-note">Now send your work to Mr. Allen below.</p>';
@@ -959,7 +961,7 @@ function render(boxId){
       else{[].forEach.call(d.querySelectorAll(".opt"),function(o,j){o.classList.toggle("sel",!!q.opts[j].ok);o.classList.toggle("right",!!q.opts[j].ok);o.setAttribute("aria-pressed",!!q.opts[j].ok);});}
       fb.className="fb ok";fb.innerHTML="<b>Answer: "+ansText(q)+".</b> "+q.ok+explain(q)+whyAll(q);
       d.querySelector(".chk").disabled=true;
-      if(!st.done){st.done=true;if(window.ScoreSend)ScoreSend.revealed();if(!st.tries)rec(q,false);upd();}
+      if(!st.done){st.done=true;if(window.ScoreSend)ScoreSend.revealed();if(!st.tries){rec(q,false);try{if(window.ArcadeSend)ArcadeSend.answer(false)}catch(e){}}upd();}
     }
     d.querySelector(".reveal").addEventListener("click",showAll);
     d.querySelector(".chk").addEventListener("click",function(){
@@ -982,7 +984,7 @@ function render(boxId){
           good=!wrongSel.length&&got===need;
           if(!good)msg=wrongSel.length?q.opts[wrongSel[0]].why+(wrongSel.length>1?" Another choice is also wrong.":""):"Everything you picked is true. But there "+(need-got===1?"is 1 more right answer.":"are "+(need-got)+" more right answers.");}
       }
-      st.tries++;rec(q,good);
+      st.tries++;rec(q,good);if(st.tries===1){try{if(window.ArcadeSend)ArcadeSend.answer(good)}catch(e){}}
       if(good){st.done=true;st.first=(st.tries===1);fb.className="fb ok";fb.innerHTML="<b>Yes!</b> "+q.ok+explain(q);
         d.querySelector(".chk").disabled=true;
         if(choice)[].forEach.call(d.querySelectorAll(".opt.sel"),function(o){o.classList.add("right");});

@@ -329,6 +329,7 @@ function checkLine() {
   var distinct = (p1[0] !== p2[0] || p1[1] !== p2[1]);
 
   var bar = document.getElementById('statusBar');
+  try { if (window.ArcadeSend) ArcadeSend.answer(ok1 && ok2 && distinct); } catch (e) {}
   if (ok1 && ok2 && distinct) {
     graphedLines[activeLine] = { p1: p1, p2: p2 };
     graphedCount++;
@@ -357,6 +358,7 @@ function checkLine() {
 
 function unlockClues() {
   cluesUnlocked = true;
+  try { if (window.ArcadeSend) ArcadeSend.round({ level: 'All 8 lines graphed', details: 'Lines graphed; clues unlocked' }); } catch (e) {}
   document.getElementById('lockedMsg').style.display = 'none';
   document.getElementById('cluesList').style.display = 'block';
   document.getElementById('detectiveSection').scrollIntoView({ behavior: 'smooth' });
@@ -405,7 +407,9 @@ function checkClue(id) {
   if (correct) {
     fb.textContent='✓ Case solved!'; fb.className='feedback correct'; el.className='clue correct';
     solved[id]=true; score++; document.getElementById('score').textContent=score;
+    try { if (window.ArcadeSend) { ArcadeSend.answer(true); ArcadeSend.set({ score: score }); if (score === CLUES.length) ArcadeSend.round({ level: 'All cases solved', score: score, details: 'Solved all ' + CLUES.length + ' clues' }); } } catch (e) {}
   } else {
+    try { if (window.ArcadeSend) ArcadeSend.answer(false); } catch (e) {}
     fb.textContent='✗ Not quite — check your graph!'; fb.className='feedback incorrect'; el.className='clue incorrect';
   }
 }

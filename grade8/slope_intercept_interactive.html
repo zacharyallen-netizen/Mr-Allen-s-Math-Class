@@ -594,6 +594,7 @@ function checkAnswers(idx) {
     allCorrect = false;
     return 'wrong';
   });
+  if (allFilled && !s.arcadeJudged) { s.arcadeJudged = true; try{if(window.ArcadeSend)ArcadeSend.answer(allCorrect)}catch(e){} }
   s.showLine = true;
   s.cellResults = results;
   s.stepPrompt = null;
@@ -604,6 +605,7 @@ function checkAnswers(idx) {
     s.feedback = { type:'success', msg:'✓ All correct! Great job!' };
     s.complete = true;
     updateProgress();
+    try{if(window.ArcadeSend){const d=state.filter(q=>q.complete).length;ArcadeSend.round({level:`Equation ${idx+1} of 6`,score:d,details:`${d} of 6 equations complete`})}}catch(e){}
   } else {
     const wrongCount = results.filter(r=>r==='wrong').length;
     s.feedback = { type:'error', msg:`${wrongCount} value${wrongCount>1?'s':''} need${wrongCount===1?'s':''} fixing. Try again!` };

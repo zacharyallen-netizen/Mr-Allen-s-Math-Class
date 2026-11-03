@@ -1114,6 +1114,7 @@
       renderUserLines();
       renderGallery();
       showToast(`Added: ${formatEq(newLine.mRaw, newLine.bRaw)}`);
+      try{if(window.ArcadeSend)ArcadeSend.set({level:'Studio',details:`${state.lines.length} line${state.lines.length===1?'':'s'} in the artwork`})}catch(e){}
     }
 
     // ======================================================
@@ -1132,6 +1133,7 @@
     // PNG EXPORT
     // ======================================================
     function savePng() {
+      try{if(window.ArcadeSend)ArcadeSend.round({level:'Saved artwork',details:`Saved artwork with ${state.lines.length} line${state.lines.length===1?'':'s'}`})}catch(e){}
       const svg = document.getElementById('canvas');
       // Clone so we can ensure a white background for export
       const clone = svg.cloneNode(true);

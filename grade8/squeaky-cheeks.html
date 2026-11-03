@@ -651,6 +651,7 @@ function submit(){
   if(p.kind==='int'){const v=readInt('a0');if(v===null){refocus();return}ok=v===p.ans;given=sn(v)}
   else{const n=readInt('an'),d=readInt('ad');if(n===null){$('#an').focus();return}if(d===null){$('#ad').focus();return}
     if(d===0){flashFb('A denominator can’t be 0.','bad');return}ok=n*p.ans[1]===p.ans[0]*d&&n>=0;given=frH(n,d);Q.given=[n,d]}
+  try{if(window.ArcadeSend)ArcadeSend.answer(ok)}catch(e){}
   if(ok)right();else wrong();
 }
 function addBeans(k){save.beans+=k;G.beansHere+=k;persist();renderShop()}
@@ -752,6 +753,7 @@ function showWin(){
   $('#wonP').innerHTML=n===5?'Not one guest could stand it. The DJ left. The cake is all yours. You are the undisputed champion of <b>Squeaky Cheeks</b>.':
     `${G.out} people ran for the doors. ${first&&n<5?`<b>Room ${n+1}: ${ROOMS[n].name}</b> is now unlocked. The crowd there is tougher, so you may need a bigger toot from the fart menu.`:''}`;
   const tot=G.right+G.wrong;
+  try{if(window.ArcadeSend)ArcadeSend.round({level:'Room '+n+': '+G.T.name,score:save.beans,details:G.right+'/'+tot+' problems right, '+G.out+' people cleared, '+G.toots+' toots'})}catch(e){}
   $('#wonStats').innerHTML=`<div><b>${G.right}/${tot}</b>problems right</div><div><b>${G.toots}</b>toots</div><div><b>${G.out}</b>people cleared</div><div><b>+${G.beansHere}</b>beans earned</div>`;
   $('#bNextRoom').hidden=n>=5;$('#won').hidden=false;($('#bNextRoom').hidden?$('#bReplay'):$('#bNextRoom')).focus();
 }
