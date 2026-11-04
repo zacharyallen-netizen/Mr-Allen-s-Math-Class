@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debt Payoff Race — Math in Financial Literacy</title>
+<meta name="description" content="Choose a monthly payment and watch a credit card balance with interest. Find the smallest payment that pays it off in time.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap">
+<main class="gm" id="game">
+<a href="index.html" class="back-link">← Math in Financial Literacy</a>
+<header class="page-hdr"><span class="eyebrow">Game · Lesson 2</span><h1>Debt Payoff Race</h1>
+<p>Your budget is tight. Find the <b>smallest</b> monthly payment that still pays off the card before the deadline. Watch the interest pile up. All numbers are made up.</p>
+<p class="stds">NC.8.F.3 · NC.8.F.4 · NC.8.F.5 · FL.8.2</p></header>
+<div class="gm-bar"><span>Level <b id="lvl">1</b> / 5</span><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div>
+<section class="gm-panel">
+  <div class="gm-big" id="card"></div>
+  <p id="goal" style="margin:6px 0 0"></p>
+  <div id="graph" class="fl-fig"></div>
+  <div class="fl-row">
+    <button type="button" class="fl-btn fl-ghost" id="minus" aria-label="Lower payment by $5">− $5</button>
+    <label class="fl-namelab" for="pay">Monthly payment</label><span class="fl-pre">$</span><input class="fl-in" id="pay" inputmode="numeric" style="max-width:120px">
+    <button type="button" class="fl-btn fl-ghost" id="plus" aria-label="Raise payment by $5">+ $5</button>
+    <button type="button" class="fl-btn" id="run">Run it</button>
+  </div>
+  <div class="fl-readout" id="ticker" aria-live="polite">Pick a payment and tap Run it.</div>
+  <div class="gm-msg" id="msg" aria-live="polite"></div>
+  <div class="fl-row"><button type="button" class="fl-btn fl-ghost" id="next" hidden>Next level →</button></div>
+</section>
+<section class="gm-panel" id="end" hidden></section>
+<p class="fl-how">How it works: each month, interest = balance × (APR ÷ 12), rounded to the cent. Then your payment comes off. Payments are in $5 steps.</p>
+</main>
+</div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  var LEVELS = [{ bal: 1200, apr: 24, months: 12 }, { bal: 800, apr: 18, months: 8 }, { bal: 2000, apr: 21, months: 18 }, { bal: 1500, apr: 27, months: 10 }, { bal: 3000, apr: 15, months: 24 }];
+  // smallest payment (multiple of $5) that pays off within the deadline
+  function minPay(L) { for (var p = 5; p < 100000; p += 5) { var r = FL.payoff(L.bal * 100, L.apr, p * 100, 600); if (r.months <= L.months) return p; } }
+  LEVELS.forEach(function (L) { L.min = minPay(L); });
+  // self-test
+  FL.assertEq(FL.payoff(120000, 24, 10000).months, 14, 'DPR $100 takes 14 months');
+  LEVELS.forEach(function (L, i) {
+    FL.assert(FL.payoff(L.bal * 100, L.apr, L.min * 100).months <= L.months, 'DPR level ' + (i + 1) + ' min works');
+    FL.assert(FL.payoff(L.bal * 100, L.apr, (L.min - 5) * 100).months > L.months, 'DPR level ' + (i + 1) + ' min is smallest');
+  });
+  FL.assertEq(LEVELS[0].min, 115, 'DPR level 1 min $115');
+
+  var lv = 0, score = 0, tries = 0, timer = null, el = function (id) { return document.getElementById(id); };
+  el('best').textContent = FL.best('debt-payoff').best;
+
+  function graph(L, rows) {
+    var top = Math.ceil(L.bal / 500) * 500, xmax = Math.max(L.months + 2, Math.min(rows ? rows.length : 0, 40));
+    var g = new FL.Graph({ xmin: 0, xmax: xmax, ymin: 0, ymax: top, xstep: xmax > 24 ? 6 : xmax > 12 ? 3 : 2, ystep: top / 5, xlabel: 'Months', ylabel: 'Balance',
+      yfmt: function (v) { return '$' + FL.num(v); }, title: 'Balance over time' });
+    g.vline(L.months, { color: C.gold, dash: '6 4', width: 2.5 }); g.label(L.months, top, 'deadline', { dx: -6, dy: 14, anchor: 'end', color: '#8A6100' });
+    el('graph').innerHTML = ''; el('graph').appendChild(g.svg);
+    return g;
+  }
+  function start() {
+    var L = LEVELS[lv]; tries = 0;
+    el('lvl').textContent = lv + 1;
+    el('card').innerHTML = 'Card balance ' + $(L.bal * 100, 'auto') + ' at ' + L.apr + '% APR';
+    el('goal').innerHTML = 'Goal: pay it off in <b>' + L.months + ' months or less</b> with the smallest payment you can. (Monthly rate: ' + L.apr + '% ÷ 12 = ' + FL.num(L.apr / 12) + '%)';
+    el('pay').value = Math.round(L.bal / L.months / 5) * 5;
+    el('msg').textContent = ''; el('ticker').textContent = 'Pick a payment and tap Run it. Hint: start with balance ÷ months, then add a little for interest.';
+    el('next').hidden = true; el('run').disabled = false;
+    graph(L);
+  }
+  function step(d) { var v = (parseInt(el('pay').value, 10) || 0) + d; el('pay').value = Math.max(5, v - v % 5); }
+  el('minus').addEventListener('click', function () { step(-5); });
+  el('plus').addEventListener('click', function () { step(5); });
+  el('pay').addEventListener('keydown', function (e) { if (e.key === 'Enter') el('run').click(); });
+
+  el('run').addEventListener('click', function () {
+    var L = LEVELS[lv], v = FL.parse(el('pay').value);
+    if (!v || v.d !== 1 || v.n <= 0) { el('msg').className = 'gm-msg no'; el('msg').textContent = 'Type a whole number of dollars, like 120.'; return; }
+    var p = v.n;
+    if (p % 5) { p = p - p % 5 + 5; el('pay').value = p; }
+    var res = FL.payoff(L.bal * 100, L.apr, p * 100, 60);
+    var firstInterest = FL.payoff(L.bal * 100, L.apr, 0, 1).rows[0].interest;
+    tries++;
+    el('run').disabled = true; el('msg').textContent = '';
+    var g = graph(L, res.rows), layer = g.layer(true), pts = [[0, L.bal]], i = 0;
+    clearInterval(timer);
+    var speed = (window.FL_FAST ? 1 : Math.max(60, 1500 / res.rows.length));
+    timer = setInterval(function () {
+      if (i >= res.rows.length) { clearInterval(timer); finish(L, p, res, firstInterest); return; }
+      var r = res.rows[i++]; pts.push([r.m, r.bal / 100]);
+      layer.innerHTML = ''; g.path(pts, { color: C.red, width: 3 }, layer);
+      g.dot(r.m, r.bal / 100, { color: C.red }, layer);
+      el('ticker').innerHTML = 'Month ' + r.m + ': interest +' + $(r.interest) + ', payment −' + $(r.pay) + ' → balance <b>' + $(r.bal) + '</b>';
+    }, speed);
+  });
+  function finish(L, p, res, firstInterest) {
+    el('run').disabled = false;
+    var m = el('msg');
+    if (res.never || p * 100 <= firstInterest) { m.className = 'gm-msg no'; m.textContent = 'Uh oh. $' + p + ' is not more than the first month’s interest (' + $(firstInterest) + '). The balance never goes down. Pay more.'; return; }
+    if (res.months > L.months) {
+      m.className = 'gm-msg no';
+      m.textContent = (res.months === Infinity ? 'After 5 years it is still not paid off.' : 'Paid off in ' + res.months + ' months. That misses the ' + L.months + '-month deadline.') + ' Interest so far: ' + $(res.interest) + '. Try a bigger payment.';
+      return;
+    }
+    var extra = p - L.min, stars = extra === 0 ? 3 : extra <= 20 ? 2 : 1;
+    var pts = stars * 30 + Math.max(0, 10 - 2 * (tries - 1));
+    score += pts; el('score').textContent = score;
+    m.className = 'gm-msg ok';
+    m.innerHTML = '<span class="gm-stars">' + '★★★'.slice(0, stars) + '☆☆☆'.slice(stars) + '</span><br>Paid off in ' + res.months + ' months. Total interest: ' + $(res.interest) + '. ' +
+      (stars === 3 ? 'That is the smallest payment that works! ' : 'It works, but a payment as low as $' + L.min + ' would also make the deadline. ') + '+' + pts + ' points.';
+    el('run').disabled = true;
+    el('next').hidden = false; el('next').textContent = lv < LEVELS.length - 1 ? 'Next level →' : 'See my score →';
+  }
+  el('next').addEventListener('click', function () {
+    if (lv < LEVELS.length - 1) { lv++; start(); return; }
+    var b = FL.best('debt-payoff', score); el('best').textContent = b.best;
+    var end = el('end'); end.hidden = false;
+    end.innerHTML = '<h2 class="fl-h3">All 5 cards paid off!</h2><p class="gm-big">' + score + ' points</p><p>' + (b.isNew ? 'New best score!' : 'Your best: ' + b.best) + ' (most possible: 500)</p>' +
+      '<p>Remember: a bigger payment means less interest. A tiny payment can mean the balance barely moves.</p>' +
+      '<div class="fl-row"><button type="button" class="fl-btn" id="again">Play again</button><a class="fl-btn fl-ghost fl-link" href="lesson2.html">Lesson 2: The Cost of Credit</a></div>';
+    el('next').hidden = true;
+    el('again').addEventListener('click', function () { lv = 0; score = 0; el('score').textContent = 0; end.hidden = true; start(); });
+    end.scrollIntoView({ behavior: 'smooth' });
+  });
+  window.DPR = { levels: LEVELS };
+  start();
+  var r = FL.selfTestReport(); if (!r.fail) console.log('FL self-test: ' + r.pass + ' checks passed');
+})();
+</script>
+</body>
+</html>

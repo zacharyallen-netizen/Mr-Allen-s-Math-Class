@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple vs Compound Race — Math in Financial Literacy</title>
+<meta name="description" content="Pick which account grows more: simple or compound interest. The graph reveals the answer.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap">
+<main class="gm" id="game">
+<a href="index.html" class="back-link">← Math in Financial Literacy</a>
+<header class="page-hdr"><span class="eyebrow">Game · Lesson 3</span><h1>Simple vs Compound Race</h1>
+<p>Two accounts start with the same money. One earns simple interest. One earns compound interest. Which has more at the finish line? Pick, then watch the graph. All numbers are made up.</p>
+<p class="stds">NC.8.F.2 · NC.8.F.3 · NC.8.EE.1 · FL.8.3</p></header>
+<div class="gm-bar"><span>Round <b id="rnd">1</b> / 8</span><span>Score <b id="score">0</b></span><span>Streak <b id="streak">0</b></span><span>Best <b id="best">0</b></span></div>
+<section class="gm-panel">
+  <p id="setup" style="margin:0 0 10px;font-size:17px"></p>
+  <div class="gm-choices" id="choices"></div>
+  <div class="gm-msg" id="msg" aria-live="polite"></div>
+  <div id="graph" class="fl-fig"></div>
+  <div class="fl-row"><button type="button" class="fl-btn fl-ghost" id="next" hidden>Next round →</button></div>
+</section>
+<section class="gm-panel" id="end" hidden></section>
+<p class="fl-how">Think: simple interest adds the same amount every year (a line). Compound interest adds a little more each year (a curve). A higher rate helps early. Compounding helps more as time goes on.</p>
+</main>
+</div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  var PRINCIPALS = [500, 1000, 2000, 5000];
+  function S(r) { return FL.simple(r.p * 100, r.rs, r.n); }
+  function K(r) { return FL.compound(r.p * 100, r.rc, r.n); }
+  // make a round with a clear winner (difference at least 1% of the principal)
+  function makeRound(wantSimple) {
+    for (var k = 0; k < 500; k++) {
+      var r = { p: PRINCIPALS[Math.floor(Math.random() * 4)], rs: 3 + Math.floor(Math.random() * 6), rc: 2 + Math.floor(Math.random() * 5), n: 2 + Math.floor(Math.random() * 29) };
+      var s = S(r), c = K(r);
+      if (Math.abs(s - c) < r.p) continue;            // cents: 1% of principal
+      if (wantSimple !== undefined && (s > c) !== wantSimple) continue;
+      return r;
+    }
+    return { p: 1000, rs: 6, rc: 4, n: 5 };
+  }
+  // self-test
+  FL.assertEq(S({ p: 1000, rs: 5, n: 10 }), 150000, 'SVC simple $1,500');
+  FL.assertEq(K({ p: 1000, rc: 5, n: 10 }), 162889, 'SVC compound $1,628.89');
+  FL.assert(S({ p: 1000, rs: 6, n: 5 }) > K({ p: 1000, rc: 4, n: 5 }), 'SVC simple 6% beats compound 4% at 5 years');
+  FL.assert(K({ p: 1000, rc: 5, n: 30 }) > S({ p: 1000, rs: 6, n: 30 }), 'SVC compound 5% beats simple 6% at 30 years');
+  for (var t = 0; t < 30; t++) { var rr = makeRound(); FL.assert(Math.abs(S(rr) - K(rr)) >= rr.p, 'SVC round has clear winner'); }
+
+  var rounds, idx, score, streak, el = function (id) { return document.getElementById(id); };
+  el('best').textContent = FL.best('interest-race').best;
+  function newGame() {
+    // 4 rounds where simple wins and 4 where compound wins, shuffled
+    rounds = [true, true, true, true, false, false, false, false].sort(function () { return Math.random() - 0.5; }).map(makeRound);
+    idx = 0; score = 0; streak = 0; el('score').textContent = 0; el('streak').textContent = 0; el('end').hidden = true; show();
+  }
+  function show() {
+    var r = rounds[idx];
+    el('rnd').textContent = idx + 1;
+    el('setup').innerHTML = 'Both accounts start with <b>' + $(r.p * 100, 'auto') + '</b>. The race is <b>' + r.n + ' years</b>. Which has more at the end?';
+    el('choices').innerHTML = '';
+    [['simple', 'Account A', 'Simple interest at <b>' + r.rs + '%</b> a year', 'Earns ' + $(FL.pctOf(r.p * 100, r.rs), 'auto') + ' every year'], ['compound', 'Account B', 'Compound interest at <b>' + r.rc + '%</b> a year', 'Multiplies by ' + (1 + r.rc / 100).toFixed(2) + ' every year']].forEach(function (a) {
+      var b = FL.el('button', 'gm-acct', '<b>' + a[1] + '</b>' + a[2] + '<br><span class="fl-how">' + a[3] + '</span>');
+      b.type = 'button'; b.dataset.k = a[0];
+      b.addEventListener('click', function () { pick(a[0]); });
+      el('choices').appendChild(b);
+    });
+    el('msg').textContent = ''; el('graph').innerHTML = ''; el('next').hidden = true;
+  }
+  function pick(k) {
+    var r = rounds[idx], s = S(r), c = K(r), win = s > c ? 'simple' : 'compound', right = k === win;
+    document.querySelectorAll('.gm-acct').forEach(function (b) { b.disabled = true; if (b.dataset.k === win) b.classList.add('good'); else if (b.dataset.k === k) b.classList.add('bad'); });
+    if (right) { streak++; var pts = 100 + 20 * (streak - 1); score += pts; }
+    else streak = 0;
+    el('score').textContent = score; el('streak').textContent = streak;
+    var m = el('msg');
+    m.className = 'gm-msg ' + (right ? 'ok' : 'no');
+    m.innerHTML = (right ? 'Correct! +' + pts + ' points. ' : 'Not this time. ') + 'After ' + r.n + ' years: A (simple) = <b>' + $(s) + '</b>, B (compound) = <b>' + $(c) + '</b>. ' +
+      (win === 'simple' ? 'The higher simple rate stayed ahead. Compounding did not have enough time to catch up.' : (r.rc >= r.rs ? 'Compound interest with an equal or higher rate always pulls ahead.' : 'Over a long time, the compound curve bends up and passes the line.'));
+    // graph
+    var top = Math.max(s, c) / 100, step = Math.pow(10, Math.floor(Math.log10(top))) / 2;
+    while (top / step > 7) step *= 2;
+    var g = new FL.Graph({ xmin: 0, xmax: r.n, ymin: 0, ymax: Math.ceil(top / step) * step, xstep: r.n > 20 ? 5 : r.n > 10 ? 2 : 1, ystep: step, xlabel: 'Years', ylabel: 'Balance',
+      yfmt: function (v) { return '$' + FL.num(v); }, title: 'Race graph' });
+    g.fn(function (t) { return r.p + r.p * r.rs / 100 * t; }, { color: C.gold, dash: '9 5' });
+    g.fn(function (t) { return r.p * Math.pow(1 + r.rc / 100, t); }, { color: C.navy });
+    g.dot(r.n, s / 100, { color: C.gold, r: 6 }); g.dot(r.n, c / 100, { color: C.navy, r: 6 });
+    g.label(r.n, s / 100, 'A', { dx: -14, dy: s > c ? -8 : 18, color: '#8A6100' }); g.label(r.n, c / 100, 'B', { dx: -14, dy: c > s ? -8 : 18 });
+    el('graph').appendChild(g.svg);
+    el('graph').insertAdjacentHTML('beforeend', '<div class="fl-legend"><span><i class="dash" style="border-color:#C98F00"></i>A: simple (line)</span><span><i style="border-color:#1E2D4F"></i>B: compound (curve)</span></div>');
+    el('next').hidden = false; el('next').textContent = idx < 7 ? 'Next round →' : 'See my score →';
+  }
+  el('next').addEventListener('click', function () {
+    if (idx < 7) { idx++; show(); return; }
+    var b = FL.best('interest-race', score); el('best').textContent = b.best;
+    var end = el('end'); end.hidden = false;
+    end.innerHTML = '<h2 class="fl-h3">Race over!</h2><p class="gm-big">' + score + ' points</p><p>' + (b.isNew ? 'New best score!' : 'Your best: ' + b.best) + ' (most possible: 1,360)</p>' +
+      '<div class="fl-row"><button type="button" class="fl-btn" id="again">Play again</button><a class="fl-btn fl-ghost fl-link" href="lesson3.html">Lesson 3: Simple vs. Compound Interest</a></div>';
+    el('next').hidden = true;
+    el('again').addEventListener('click', newGame);
+    end.scrollIntoView({ behavior: 'smooth' });
+  });
+  window.SVC = { round: function () { var r = rounds[idx]; return S(r) > K(r) ? 'simple' : 'compound'; } };
+  newGame();
+  var rep = FL.selfTestReport(); if (!rep.fail) console.log('FL self-test: ' + rep.pass + ' checks passed');
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 7: Does Education Pay? — Math in Financial Literacy</title>
+<meta name="description" content="Use a line of best fit to describe how earnings change with more years of school, using U.S. Bureau of Labor Statistics data.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  // U.S. Bureau of Labor Statistics, median weekly earnings, full-time workers age 25+, 2025. Years of school = class estimate.
+  var DATA = [['Less than a high school diploma', 11, 770], ['High school diploma', 12, 966], ['Some college, no degree', 13, 1062],
+    ['Associate’s degree', 14, 1135], ['Bachelor’s degree', 16, 1578], ['Master’s degree', 18, 1876], ['Doctoral degree', 21, 2307]];
+  var PTS = DATA.map(function (d) { return [d[1], d[2] * 52]; });     // yearly = weekly × 52 (whole dollars)
+  // least-squares line, exact with integers
+  var n = PTS.length, sx = 0, sy = 0, sxx = 0, sxy = 0;
+  PTS.forEach(function (p) { sx += p[0]; sy += p[1]; sxx += p[0] * p[0]; sxy += p[0] * p[1]; });
+  var mNum = n * sxy - sx * sy, mDen = n * sxx - sx * sx;
+  var M = Math.round(mNum / mDen), Bc = Math.round((sy * mDen - mNum * sx) / (n * mDen));
+  function line(x) { return 8081 * x - 49206; }    // the line used in the lesson plan
+  function sse(m, b) { return PTS.reduce(function (s, p) { var r = p[1] - (m * p[0] + b); return s + r * r; }, 0); }
+  var BEST = sse(mNum / mDen, (sy - mNum / mDen * sx) / n);
+
+  function scatter(box) {
+    var g = new FL.Graph({ xmin: 10, xmax: 22, ymin: 0, ymax: 140000, xstep: 2, ystep: 20000, xlabel: 'Years of school (x)', ylabel: 'Yearly earnings (y)',
+      yfmt: function (v) { return '$' + v / 1000 + 'k'; }, title: 'Years of school and yearly earnings' });
+    PTS.forEach(function (p) { g.dot(p[0], p[1], { r: 6, color: C.navy }); });
+    box.appendChild(g.svg);
+    return g;
+  }
+
+  FL.lesson({
+    id: 'finlit-7', num: 7, title: 'Does Education Pay?',
+    question: 'Do people with more years of school earn more money? Let’s use real data and a line of best fit to find out.',
+    source: 'the earnings data, which come from the U.S. Bureau of Labor Statistics (2025)',
+    stds: 'NC.8.SP.1 · NC.8.SP.2 · NC.8.SP.3', fl: 'FL.8.5 (FL8 5.1)',
+    target: 'I can use a line of best fit to describe how earnings change with more years of school.',
+    vocab: ['median', 'weekly earnings', 'annual earnings', 'educational attainment', 'line of best fit', 'slope', 'trend', 'prediction'],
+    steps: [
+      {
+        title: 'Weekly to yearly',
+        html: '<p>The Bureau of Labor Statistics (BLS) reports <b>median weekly earnings</b> for full-time workers age 25 and older. A year has 52 weeks, so <b>yearly = weekly × 52</b>.</p>' +
+          '<div class="fl-scroll"><table class="fl-tbl"><tr><th>Education</th><th>Years (class estimate)</th><th>Weekly</th><th>Yearly (× 52)</th></tr>' +
+          DATA.map(function (d, i) { return '<tr' + (i === 1 ? ' class="hi"' : '') + '><td>' + d[0] + '</td><td>' + d[1] + '</td><td>$' + FL.num(d[2]) + '</td><td>' + (i === 1 ? '?' : '$' + FL.num(d[2] * 52)) + '</td></tr>'; }).join('') + '</table></div>' +
+          '<p class="fl-how">Source: U.S. Bureau of Labor Statistics, <a href="https://www.bls.gov/careeroutlook/2026/data-on-display/education-pays.htm" target="_blank" rel="noopener">Education pays, 2025</a>.</p>',
+        tries: [{ type: 'num', q: 'A high school graduate earns a median of <b>$966</b> a week. How much is that in a year?', pre: '$', ans: '50232',
+          hint: 'Multiply 966 × 52.', explain: '966 × 52 = $50,232 a year.',
+          wrong: [{ v: '11592', msg: 'You multiplied by 12. A year has 52 weeks, not 12.' }, { v: '1018', msg: 'Multiply by 52, do not add.' }] }]
+      },
+      {
+        title: 'Why the median?',
+        html: '<p>The <b>median</b> is the middle value when all the earnings are in order. Half of the people earn more and half earn less.</p>' +
+          '<p>A few people earn millions of dollars. Those huge values pull the <b>mean</b> (average) up, but they do not move the median much.</p>',
+        tries: [{ type: 'mc', q: 'Why does the BLS report the <b>median</b> instead of the mean?', choices: ['A few very high earners would pull the mean up.', 'The median is always bigger.', 'The mean is too hard to find.', 'The median counts only college graduates.'], ans: 0,
+          hint: 'Think about what a few millionaires would do to the average.', why: { 1: 'The median is not always bigger. With high earners, the mean is usually bigger.', 2: 'The mean is easy to find. The problem is that it can be pulled by extreme values.', 3: 'The median is found for every education group.' },
+          explain: 'The median shows a typical worker better when there are some very high values.' }]
+      },
+      {
+        title: 'Draw a line of best fit',
+        html: '<p>Each point is one education level. Drag the two gold handles (or use the sliders) so the line follows the pattern. A good line has about the same number of points above and below it.</p>',
+        fig: function (box) {
+          var g = scatter(box); g.svg.classList.add('drag');
+          var L = g.layer(), H = g.layer(true);
+          var ends = [{ x: 10, y: 40000 }, { x: 22, y: 100000 }];
+          var out = FL.el('div', 'fl-readout'); box.appendChild(out);
+          var sliders = [];
+          function m() { return (ends[1].y - ends[0].y) / (ends[1].x - ends[0].x); }
+          function b() { return ends[0].y - m() * ends[0].x; }
+          function draw() {
+            L.innerHTML = ''; H.innerHTML = '';
+            g.path([[ends[0].x, ends[0].y], [ends[1].x, ends[1].y]], { color: C.red, width: 3 }, L);
+            ends.forEach(function (e, i) { g.dot(e.x, e.y, { r: 11, color: C.gold, cls: 'handle' }, H); if (sliders[i]) sliders[i].value = e.y; });
+            out.innerHTML = 'Your line: y = ' + FL.num(Math.round(m())) + 'x ' + (b() < 0 ? '− ' : '+ ') + FL.num(Math.abs(Math.round(b())));
+          }
+          var drag = -1;
+          g.svg.addEventListener('pointerdown', function (e) { var d = g.toData(e); var i = Math.abs(d.x - 10) < Math.abs(d.x - 22) ? 0 : 1; drag = i; g.svg.setPointerCapture(e.pointerId); move(d); });
+          g.svg.addEventListener('pointermove', function (e) { if (drag >= 0) move(g.toData(e)); });
+          g.svg.addEventListener('pointerup', function () { drag = -1; });
+          function move(d) { ends[drag].y = Math.max(0, Math.min(140000, Math.round(d.y / 1000) * 1000)); draw(); }
+          sliders[0] = FL.slider(box, { label: 'Left end (x = 10)', min: 0, max: 140000, step: 1000, value: 40000, fmt: function (v) { return '$' + FL.num(v); }, onInput: function (v) { ends[0].y = v; draw(); } });
+          sliders[1] = FL.slider(box, { label: 'Right end (x = 22)', min: 0, max: 140000, step: 1000, value: 100000, fmt: function (v) { return '$' + FL.num(v); }, onInput: function (v) { ends[1].y = v; draw(); } });
+          draw();
+          var row = FL.el('div', 'fl-row', '<button type="button" class="fl-btn" id="fitcheck">Check my line</button><button type="button" class="fl-btn fl-ghost" id="fitshow">Show the Desmos line</button>');
+          box.appendChild(row);
+          var fb = FL.el('div', 'fl-fb'); box.appendChild(fb);
+          row.querySelector('#fitcheck').addEventListener('click', function () {
+            var ratio = sse(m(), b()) / BEST, above = PTS.filter(function (p) { return p[1] > m() * p[0] + b(); }).length;
+            if (ratio <= 1.6) { fb.className = 'fl-fb ok'; fb.innerHTML = 'Great fit! Your slope is about $' + FL.num(Math.round(m())) + ' per year of school. Desmos gets about $8,081.'; }
+            else if (above >= 5) { fb.className = 'fl-fb no'; fb.innerHTML = 'Most points (' + above + ' of 7) are <b>above</b> your line. Move it up.'; }
+            else if (above <= 2) { fb.className = 'fl-fb no'; fb.innerHTML = 'Most points (' + (7 - above) + ' of 7) are <b>below</b> your line. Move it down.'; }
+            else { fb.className = 'fl-fb no'; fb.innerHTML = 'Close, but the steepness is off. Points on one end are far from your line. Change the slope.'; }
+          });
+          row.querySelector('#fitshow').addEventListener('click', function () {
+            g.fn(line, { color: C.navy, dash: '8 5', width: 2.5 }, L);
+            fb.className = 'fl-fb show'; fb.innerHTML = 'Dashed navy line: Desmos regression <b>y = 8,081x − 49,206</b>.';
+          });
+        },
+        tries: [{ type: 'mc', q: 'The line of best fit is <b>y = 8,081x − 49,206</b>. What does the slope <b>8,081</b> mean?', choices: ['Each extra year of school goes with about $8,081 more in yearly earnings.', 'Everyone earns $8,081 a year.', 'You need 8,081 years of school.', 'Earnings go down $8,081 each year of school.'], ans: 0,
+          hint: 'Slope = change in y (dollars) for each 1 change in x (years of school).',
+          why: { 1: 'The slope is a rate of change, not anyone’s pay.', 2: 'x is years of school. 8,081 is in dollars.', 3: 'The slope is positive, so earnings go up.' },
+          explain: 'For each extra year of school, predicted yearly earnings go up about $8,081.' }]
+      },
+      {
+        title: 'Make a prediction',
+        html: '<p>To predict, put x into the equation. For <b>15</b> years of school:</p>' +
+          '<p><span class="fl-eq">y = 8,081(15) − 49,206</span></p>' +
+          '<p>Then compare with real values: an associate’s degree (14 years) earns $59,020, and a bachelor’s (16 years) earns $82,056. The line is a <b>trend</b>, not an exact rule.</p>',
+        tries: [{ type: 'num', q: 'Predict yearly earnings for <b>15 years</b> of school.', pre: '$', ans: '72009', range: ['71500', '72500'],
+          hint: 'Multiply 8,081 × 15 first. Then subtract 49,206.', explain: '8,081 × 15 = 121,215, and 121,215 − 49,206 = $72,009.',
+          wrong: [{ v: '121215', msg: 'You found 8,081 × 15. Now subtract 49,206.' }, { v: '170421', msg: 'Subtract 49,206. The y-intercept is negative.' }] }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'unit rate', q: 'Workers with an associate’s degree earn a median of <b>$1,135</b> a week. How much is that in a year (52 weeks)?', pre: '$', ans: '59020',
+        hint: 'Multiply 1,135 × 52.', explain: '1,135 × 52 = $59,020.',
+        wrong: [{ v: '13620', msg: 'You multiplied by 12. A year has 52 weeks.' }, { v: '1187', msg: 'Multiply by 52, do not add.' }] },
+      { type: 'mc', kind: 'interpret slope', q: 'The line of best fit is y = 8,081x − 49,206, where x is years of school and y is yearly earnings. What does <b>8,081</b> mean?',
+        choices: ['Predicted yearly earnings go up about $8,081 for each extra year of school.', 'A person with 0 years of school earns $8,081.', 'The median weekly earnings are $8,081.', 'There are 8,081 workers in the data.'], ans: 0,
+        hint: 'The slope is the rate of change.', why: { 1: 'That would be the y-intercept, which is −49,206.', 2: 'The data are yearly earnings, and 8,081 is a rate, not one person’s pay.', 3: 'The slope is not a count of people.' },
+        explain: 'Slope = about $8,081 more per year for each extra year of school.' },
+      { type: 'num', kind: 'predict', q: 'Use y = 8,081x − 49,206. Predict yearly earnings for <b>17 years</b> of school.', pre: '$', ans: '88171', range: ['88000', '88400'],
+        hint: '8,081 × 17 = ? Then subtract 49,206.', explain: '8,081 × 17 = 137,377, and 137,377 − 49,206 = $88,171 (about $88,170).',
+        wrong: [{ v: '137377', msg: 'You found 8,081 × 17. Now subtract 49,206.' }, { v: '186583', msg: 'Subtract 49,206, do not add.' }] },
+      { type: 'mc', kind: 'interpret intercept', q: 'In y = 8,081x − 49,206, the y-intercept is <b>−49,206</b>. What is the best way to think about it?',
+        choices: ['It does not make sense here. Nobody has 0 years of school and negative pay. The line only fits from about 11 to 21 years.', 'People with no school owe $49,206.', 'Everyone starts their job earning $49,206.', 'It is the median pay for a doctoral degree.'], ans: 0,
+        hint: 'Our data only go from 11 to 21 years of school. What happens at x = 0?',
+        why: { 1: 'The model does not say anyone owes money. x = 0 is far outside the data.', 2: 'The y-intercept is negative, and starting pay is not in this model.', 3: 'Doctoral pay is $119,964 a year.' },
+        explain: 'A line of best fit is only useful near the data. x = 0 is far outside it.' },
+      { type: 'sel', kind: 'select all', q: 'Use the data and the line y = 8,081x − 49,206. Select <b>all</b> true statements.',
+        fig: function (f) { var g = scatter(f); g.fn(line, { color: C.red, width: 2.5 }); },
+        choices: ['The data show a positive association.', 'The bachelor’s degree point (16, 82,056) is above the line.', 'The associate’s degree point (14, 59,020) is above the line.', 'Every person with a master’s degree earns exactly $97,552.', 'The line predicts more earnings for more years of school.'], ans: [0, 1, 4],
+        hint: 'For a point, compare its y-value with the line’s y-value at that x. Line at 16: 80,090. Line at 14: 63,928.',
+        why: { 2: 'The line predicts 63,928 at 14 years. 59,020 is less, so the point is below the line.', 3: 'That is the median. Half earn more and half earn less.' },
+        explain: 'Positive association; the bachelor point is above the line (82,056 > 80,090); the line rises.' },
+      { type: 'num', kind: 'word problem', q: 'How much more does a worker with a <b>bachelor’s degree</b> ($82,056 a year) earn each year than a worker with a <b>high school diploma</b> ($50,232 a year)?', pre: '$', ans: '31824',
+        hint: 'Subtract: 82,056 − 50,232.', explain: '82,056 − 50,232 = $31,824 more each year.',
+        wrong: [{ v: '132288', msg: 'Subtract to find "how much more," do not add.' }, { v: '612', msg: 'That is the weekly difference (1,578 − 966). The question asks per year.' }] },
+      { type: 'err', kind: 'find the error', q: 'Rosa predicted earnings for 15 years of school with y = 8,081x − 49,206. Find the <b>first</b> mistake.',
+        lines: ['y = 8,081(15) − 49,206', 'y = 121,215 − 49,206', 'y = 170,421'], ans: 2,
+        hint: 'Check the last step. Is it adding or subtracting?',
+        why: { 0: 'Line 1 is right. Rosa put 15 in for x.', 1: 'Line 2 is right: 8,081 × 15 = 121,215.' },
+        explain: 'Rosa added instead of subtracting. 121,215 − 49,206 = $72,009.' },
+      { type: 'mc', kind: 'median', q: 'Why is the <b>median</b> a good choice for earnings data?', choices: ['A few people with very high pay would pull the mean up.', 'The median is always the largest value.', 'The median is the most common value.', 'The mean cannot be found for money.'], ans: 0,
+        hint: 'Which measure is not pulled much by extreme values?', why: { 1: 'The median is the middle value, not the largest.', 2: 'The most common value is the mode.', 3: 'You can find a mean for money. It is just pulled by extreme values.' },
+        explain: 'The median is the middle value, so a few huge salaries do not change it much.' }
+    ],
+    desmos: '<ol><li>Click <b>+</b> then <b>table</b>. Type years in x₁ and yearly earnings in y₁.</li>' +
+      '<li>Click the zoom-fit button. Then type <code>y = mx + b</code> and add sliders for m and b. Move them to place a line by eye.</li>' +
+      '<li>Check with the regression: type <code>y₁ ~ mx₁ + b</code> (the tilde key ~). Desmos shows m, b and r.</li>' +
+      '<li>Predict earnings for 15 years of school. Compare with the real associate’s and bachelor’s values.</li></ol>',
+    ixl: [
+      ['Create scatter plots (NC.8.SP.1)', 'https://www.ixl.com/math/grade-8/create-scatter-plots'],
+      ['Identify lines of best fit (NC.8.SP.2)', 'https://www.ixl.com/math/grade-8/identify-lines-of-best-fit'],
+      ['Write equations for lines of best fit (NC.8.SP.2)', 'https://www.ixl.com/math/grade-8/write-equations-for-lines-of-best-fit'],
+      ['Interpret lines of best fit: word problems (NC.8.SP.3)', 'https://www.ixl.com/math/grade-8/interpret-lines-of-best-fit-word-problems'],
+      ['Unit prices (rates review)', 'https://www.ixl.com/math/grade-8/unit-prices']
+    ],
+    test: function () {
+      var yearly = [40040, 50232, 55224, 59020, 82056, 97552, 119964];
+      PTS.forEach(function (p, i) { FL.assertEq(p[1], yearly[i], 'L7 yearly ' + i); });
+      FL.assertEq(M, 8081, 'L7 regression slope'); FL.assertEq(Bc, -49206, 'L7 regression intercept');
+      FL.assertEq(line(15), 72009, 'L7 predict 15'); FL.assertEq(line(17), 88171, 'L7 predict 17');
+      FL.assertEq(line(16), 80090, 'L7 line at 16'); FL.assertEq(line(14), 63928, 'L7 line at 14');
+      FL.assertEq(82056 - 50232, 31824, 'L7 Q6'); FL.assertEq(8081 * 15, 121215, 'L7 err line');
+    }
+  });
+})();
+</script>
+</body>
+</html>

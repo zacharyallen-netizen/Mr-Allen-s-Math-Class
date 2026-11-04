@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1: Budgeting with Functions — Math in Financial Literacy</title>
+<meta name="description" content="Write a budget rule as a linear function and explain what the slope and y-intercept mean.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  // exact budget amounts in cents
+  function share(incomeDollars, pct) { return FL.pctOf(incomeDollars * 100, pct); }
+  function bill(kwh) { return 13 * kwh + 1200; }          // cents: $0.13 per kWh + $12 fee
+  function gym(m) { return 1500 * m + 4000; }             // cents: $15 a month + $40 sign-up
+
+  FL.lesson({
+    id: 'finlit-1', num: 1, title: 'Budgeting with Functions',
+    question: 'You get paid each month. How can a math rule help you split that money between needs, wants and savings?',
+    stds: 'NC.8.F.4 · NC.8.F.2 · review NC.7.RP.3', fl: 'FL.8.1 (FL8 1.3–1.4)',
+    target: 'I can write a budget rule as a linear function and explain what the slope and y-intercept mean.',
+    vocab: ['income', 'fixed expense', 'variable expense', 'budget', '50/30/20 rule', 'function', 'rate of change (slope)', 'initial value (y-intercept)'],
+    steps: [
+      {
+        title: 'The 50/30/20 rule',
+        html: '<p>A <b>budget</b> is a plan for your money. One simple plan is the <b>50/30/20 rule</b>:</p>' +
+          '<ul><li><b>50%</b> of your income goes to <b>needs</b> (rent, food, bills).</li><li><b>30%</b> goes to <b>wants</b> (fun things).</li><li><b>20%</b> goes to <b>savings</b>.</li></ul>' +
+          '<p>Example: Income is $2,400 a month. Needs = 0.5 × 2,400 = <b>$1,200</b>.</p>',
+        tries: [{ type: 'num', q: 'Income is $2,400. How much goes to <b>wants</b> (30%)?', pre: '$', ans: '720',
+          hint: '30% = 0.3. Multiply 0.3 × 2,400.', explain: '0.3 × 2,400 = $720.',
+          wrong: [{ v: '1200', msg: '$1,200 is 50% (needs). Wants is 30%.' }, { v: '480', msg: '$480 is 20% (savings). Wants is 30%.' }, { v: '72', msg: 'Check the decimal. 30% of 2,400 is more than $72.' }] },
+          { type: 'num', q: 'Now find <b>savings</b> (20%) of $2,400. Then check: do needs + wants + savings add to $2,400?', pre: '$', ans: '480',
+          hint: '20% = 0.2. Multiply 0.2 × 2,400.', explain: '0.2 × 2,400 = $480. And 1,200 + 720 + 480 = 2,400. It all adds up.',
+          wrong: [{ v: '720', msg: '$720 is 30% (wants). Savings is 20%.' }, { v: '48', msg: 'Check the decimal. 20% of 2,400 is more than $48.' }] }]
+      },
+      {
+        title: 'Three functions, three slopes',
+        html: '<p>Let <b>x</b> = monthly income. Each part of the budget is a function of x:</p>' +
+          '<p><span class="fl-eq">N = 0.5x</span> <span class="fl-eq">W = 0.3x</span> <span class="fl-eq">S = 0.2x</span></p>' +
+          '<p>The <b>slope</b> is the share of each dollar. N = 0.5x means 50 cents of every dollar goes to needs. Each line starts at (0, 0), so the <b>y-intercept is 0</b>. Move the slider.</p>',
+        fig: function (box) {
+          var g = new FL.Graph({ xmin: 0, xmax: 5000, ymin: 0, ymax: 2500, xstep: 1000, ystep: 500, xlabel: 'Monthly income (x)', ylabel: 'Dollars',
+            xfmt: function (v) { return '$' + FL.num(v); }, yfmt: function (v) { return '$' + FL.num(v); }, title: 'Graph of needs, wants and savings' });
+          g.fn(function (x) { return 0.5 * x; }, { color: C.navy });
+          g.fn(function (x) { return 0.3 * x; }, { color: C.gold, dash: '9 5' });
+          g.fn(function (x) { return 0.2 * x; }, { color: C.teal, dash: '3 4' });
+          g.label(4300, 0.5 * 4300, 'N', { dy: -10 }); g.label(4600, 0.3 * 4600, 'W', { dy: -10, color: C.gold }); g.label(4600, 0.2 * 4600, 'S', { dy: 22, color: C.teal });
+          var dyn = g.layer(true);
+          box.appendChild(g.svg);
+          box.insertAdjacentHTML('beforeend', '<div class="fl-legend"><span><i style="border-color:#1E2D4F"></i>Needs N = 0.5x</span><span><i class="dash" style="border-color:#C98F00"></i>Wants W = 0.3x</span><span><i class="dash" style="border-color:#0F766E"></i>Savings S = 0.2x</span></div>');
+          var out = FL.el('div', 'fl-readout');
+          FL.slider(box, { label: 'Income', min: 0, max: 5000, step: 100, value: 3000, fmt: function (v) { return '$' + FL.num(v); }, onInput: function (v) {
+            dyn.innerHTML = '';
+            g.vline(v, {}, dyn);
+            [[0.5, C.navy, 50], [0.3, C.gold, 30], [0.2, C.teal, 20]].forEach(function (r) { g.dot(v, r[0] * v, { color: r[1] }, dyn); });
+            out.innerHTML = 'Income ' + $(v * 100, 'auto') + ' → Needs ' + $(share(v, 50), 'auto') + ' · Wants ' + $(share(v, 30), 'auto') + ' · Savings ' + $(share(v, 20), 'auto');
+          } });
+          box.appendChild(out);
+        },
+        tries: [{ type: 'mc', q: 'Which line is the <b>steepest</b>?', choices: ['Needs, N = 0.5x', 'Wants, W = 0.3x', 'Savings, S = 0.2x', 'They are all the same'], ans: 0,
+          hint: 'The steepest line has the biggest slope. Compare 0.5, 0.3 and 0.2.',
+          why: { 1: '0.3 is not the biggest slope. Look for the biggest number in front of x.', 2: '0.2 is the smallest slope, so savings is the least steep.', 3: 'They all start at 0, but the slopes are different.' },
+          explain: '0.5 is the greatest rate of change, so the needs line rises fastest.' }]
+      },
+      {
+        title: 'Fixed and variable expenses',
+        html: '<p>Some bills have a <b>fixed</b> part that never changes and a <b>variable</b> part that depends on how much you use.</p>' +
+          '<p>An electric bill: <b>$12</b> fee each month plus <b>$0.13</b> per kWh (kilowatt-hour) of power.</p>' +
+          '<p><span class="fl-eq">C = 0.13k + 12</span></p>' +
+          '<p>The <b>y-intercept is 12</b>: the fixed fee, even if you use 0 kWh. The <b>slope is 0.13</b>: each kWh adds 13 cents.</p>',
+        fig: function (box) {
+          var g = new FL.Graph({ xmin: 0, xmax: 1200, ymin: 0, ymax: 180, xstep: 200, ystep: 30, xlabel: 'Power used, kWh (k)', ylabel: 'Bill (C)',
+            yfmt: function (v) { return '$' + v; }, title: 'Electric bill graph' });
+          g.fn(function (k) { return bill(k) / 100; }, { color: C.navy });
+          g.dot(0, 12, { color: C.gold, r: 6 }); g.label(0, 12, 'y-intercept: $12 fee', { dx: 10, dy: -10, color: C.gold });
+          var dyn = g.layer(true); box.appendChild(g.svg);
+          var out = FL.el('div', 'fl-readout');
+          FL.slider(box, { label: 'kWh used', min: 0, max: 1200, step: 50, value: 400, onInput: function (k) {
+            dyn.innerHTML = ''; g.vline(k, {}, dyn); g.dot(k, bill(k) / 100, { color: C.red }, dyn);
+            out.textContent = 'C = 0.13(' + k + ') + 12 = ' + $(13 * k) + ' + $12 = ' + $(bill(k));
+          } });
+          box.appendChild(out);
+        },
+        tries: [{ type: 'num', q: 'Find the bill for <b>900 kWh</b>.', pre: '$', ans: '129',
+          hint: 'Multiply first: 0.13 × 900. Then add the $12 fee.', explain: '0.13 × 900 = 117, and 117 + 12 = $129.',
+          wrong: [{ v: '117', msg: 'You found 0.13 × 900. Now add the $12 fixed fee.' }, { v: '118.56', msg: 'You added 12 to 900 first. Multiply 0.13 × 900 first, then add 12.' }, { v: '1182', msg: 'Check the multiplication. 0.13 × 900 is 117, not 1,170.' }] }]
+      },
+      {
+        title: 'Read slope and y-intercept in words',
+        html: '<p>To write any plan as a function, ask two questions:</p>' +
+          '<ul><li><b>What do I pay one time, at the start?</b> That is the y-intercept (b).</li><li><b>What do I pay for each month (or each unit)?</b> That is the slope (m).</li></ul>' +
+          '<p>Example: a gym costs $40 to sign up and $15 a month. <span class="fl-eq">C = 15m + 40</span></p>',
+        tries: [{ type: 'mc', q: 'In <b>S = 0.2x</b>, what does the slope 0.2 mean?', choices: ['20 cents of every dollar goes to savings', 'You save $0.20 each month in total', 'You start with $20 in savings', 'Savings is 2% of income'], ans: 0,
+          hint: 'The slope is the share of each dollar of income.',
+          why: { 1: 'The slope is not a total. It tells how much of <i>each dollar</i> is saved.', 2: 'The starting amount is the y-intercept, which is 0 here.', 3: '0.2 = 20%, not 2%. Move the decimal two places.' },
+          explain: 'For every $1 of income, $0.20 goes to savings.' }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'numeric entry', q: 'Monthly income is <b>$3,000</b>. Use the 50/30/20 rule. How much goes to <b>needs</b>?', pre: '$', ans: '1500',
+        hint: 'Needs is 50%. Find 0.5 × 3,000.', explain: '0.5 × 3,000 = $1,500.',
+        wrong: [{ v: '900', msg: '$900 is 30% of $3,000. That is wants. Needs is 50%.' }, { v: '600', msg: '$600 is 20% of $3,000. That is savings. Needs is 50%.' }, { v: '150', msg: 'Check the decimal. Half of 3,000 is more than 150.' }] },
+      { type: 'num', kind: 'numeric entry', q: 'Monthly income is <b>$3,000</b>. How much goes to <b>savings</b>?', pre: '$', ans: '600',
+        hint: 'Savings is 20%. Find 0.2 × 3,000.', explain: '0.2 × 3,000 = $600.',
+        wrong: [{ v: '900', msg: '$900 is 30%. That is wants. Savings is 20%.' }, { v: '1500', msg: '$1,500 is 50% (needs). Savings is 20%.' }, { v: '60', msg: 'Check the decimal. 20% of 3,000 is 600.' }] },
+      { type: 'mc', kind: 'multiple choice', q: 'N = 0.5x, W = 0.3x and S = 0.2x. Which function has the <b>greatest rate of change</b>?', choices: ['N = 0.5x', 'W = 0.3x', 'S = 0.2x', 'All three have the same rate of change'], ans: 0,
+        hint: 'The rate of change is the number in front of x.', why: { 1: '0.3 is less than 0.5.', 2: '0.2 is the smallest rate of change.', 3: 'They have the same y-intercept (0), but different slopes.' }, explain: '0.5 is the biggest slope.' },
+      { type: 'num', kind: 'word problem', q: 'A gym costs <b>$40</b> to sign up plus <b>$15 a month</b>: C = 15m + 40. What is the total cost for <b>12 months</b>?', pre: '$', ans: '220',
+        hint: 'Put 12 in for m. Multiply 15 × 12 first, then add 40.', explain: '15 × 12 = 180, and 180 + 40 = $220.',
+        wrong: [{ v: '180', msg: 'You found 15 × 12. Do not forget the $40 sign-up fee.' }, { v: '660', msg: 'You added 40 to 15 first. Multiply 15 × 12 first, then add 40.' }, { v: '520', msg: 'The 40 is paid once, not each month. C = 15(12) + 40.' }] },
+      { type: 'sel', kind: 'select all', q: 'An electric bill is <b>C = 0.13k + 12</b>, where k is kWh used. Select <b>all</b> true statements.',
+        choices: ['12 is the fixed monthly fee.', '0.13 is the price for each kWh.', 'The y-intercept is 0.13.', 'If you use 0 kWh, the bill is $12.', 'The bill is proportional to k.'], ans: [0, 1, 3],
+        hint: 'The y-intercept is the number added on. A proportional function has a y-intercept of 0.',
+        why: { 2: 'The y-intercept is 12, not 0.13. 0.13 is the slope.', 4: 'This line starts at $12, not at 0, so it is not proportional.' },
+        explain: '12 is the y-intercept (fixed fee) and 0.13 is the slope (price per kWh). When k = 0, C = 12.' },
+      { type: 'mc', kind: 'compare functions', q: 'Compare two phone plans.<div class="fl-scroll"><table class="fl-tbl"><tr><th>Plan A: months</th><th>1</th><th>2</th><th>3</th></tr><tr><td>Total cost ($)</td><td>35</td><td>50</td><td>65</td></tr></table></div>Plan B: <b>C = 12m + 40</b>. Which plan has the greater <b>rate of change</b>?',
+        choices: ['Plan A, $15 per month', 'Plan B, $12 per month', 'Plan B, $40 per month', 'They are the same'], ans: 0,
+        hint: 'For Plan A, find how much the cost goes up each month: 50 − 35.',
+        why: { 1: 'Plan B goes up $12 a month. Plan A goes up 50 − 35 = $15 a month.', 2: '40 is Plan B’s y-intercept (the start), not its rate of change.', 3: 'Find Plan A’s rate: 50 − 35 = 15. Plan B’s rate is 12.' },
+        explain: 'Plan A goes up $15 each month. Plan B goes up $12 each month. 15 > 12.' },
+      { type: 'err', kind: 'find the error', q: 'Jordan found the electric bill for 900 kWh using C = 0.13k + 12. Find the <b>first</b> mistake.',
+        lines: ['C = 0.13(900) + 12', 'C = 0.13(912)', 'C = 118.56'], ans: 1,
+        hint: 'Order of operations: multiply before you add.',
+        why: { 0: 'Line 1 is right. Jordan put 900 in for k.', 2: 'Line 3 follows from line 2, but line 2 already has a mistake.' },
+        explain: 'In line 2, Jordan added 900 + 12 first. Multiply first: 0.13 × 900 = 117, then 117 + 12 = $129.' },
+      { type: 'mc', kind: 'multiple choice', q: 'A streaming service costs $9 a month with no sign-up fee. Which function shows the total cost C after m months?',
+        choices: ['C = 9m', 'C = m + 9', 'C = 9m + 9', 'C = 9'], ans: 0,
+        hint: 'No sign-up fee means the y-intercept is 0.',
+        why: { 1: 'C = m + 9 adds only $1 a month. The slope should be 9.', 2: 'There is no sign-up fee, so there is nothing to add at the start.', 3: 'C = 9 is the same total every month. The cost should grow.' },
+        explain: '$9 for each month and $0 at the start: C = 9m.' }
+    ],
+    desmos: '<ol><li>Type <code>y = 0.5x</code>, <code>y = 0.3x</code> and <code>y = 0.2x</code> on three lines.</li>' +
+      '<li>Wrench icon: set x from 0 to 5,000 (and y from 0 to 2,500).</li>' +
+      '<li>Compare the slopes. Which line is steepest? Why?</li>' +
+      '<li>Add a point at a sample income, like <code>(3000, 1500)</code>, and read all three amounts from the graph.</li>' +
+      '<li>Bonus: graph the electric bill <code>y = 0.13x + 12</code> and click the y-intercept.</li></ol>',
+    ixl: [
+      ['Percents of numbers: word problems (NC.7.RP.3 review)', 'https://www.ixl.com/math/grade-8/percents-of-numbers-word-problems'],
+      ['Write linear functions: word problems (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/write-linear-functions-word-problems'],
+      ['Interpret the slope and y-intercept of a linear function (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/interpret-the-slope-and-y-intercept-of-a-linear-function'],
+      ['Compare linear functions: graphs and equations (NC.8.F.2)', 'https://www.ixl.com/math/grade-8/compare-linear-functions-graphs-and-equations']
+    ],
+    test: function () {
+      FL.assertEq(share(2400, 50), 120000, 'L1 needs of 2400');
+      FL.assertEq(share(2400, 30), 72000, 'L1 wants of 2400');
+      FL.assertEq(share(2400, 20), 48000, 'L1 savings of 2400');
+      FL.assertEq(share(2400, 50) + share(2400, 30) + share(2400, 20), 240000, 'L1 parts add');
+      FL.assertEq(share(3000, 50), 150000, 'L1 exit needs');
+      FL.assertEq(share(3000, 30), 90000, 'L1 exit wants');
+      FL.assertEq(share(3000, 20), 60000, 'L1 exit savings');
+      FL.assertEq(bill(900), 12900, 'L1 bill 900 kWh = $129');
+      FL.assertEq(13 * 912, 11856, 'L1 error line value');
+      FL.assertEq(gym(12), 22000, 'L1 gym 12 months');
+      FL.assertEq(5000 - 3500, 1500, 'L1 plan A rate');
+    }
+  });
+})();
+</script>
+</body>
+</html>

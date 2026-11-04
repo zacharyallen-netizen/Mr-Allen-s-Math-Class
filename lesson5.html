@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 5: Saving Toward a Goal — Math in Financial Literacy</title>
+<meta name="description" content="Write a savings plan as a linear function and use it to find when you will reach your goal.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  function S(w) { return 25 * w + 200; }   // dollars
+  function F(w) { return 40 * w; }
+  // first whole week where start + dep*w >= goal (integers)
+  function goalWeek(start, dep, goal) { return Math.ceil((goal - start) / dep); }
+
+  FL.lesson({
+    id: 'finlit-5', num: 5, title: 'Saving Toward a Goal',
+    question: 'You want a $1,500 laptop. You have $200 and can save $25 a week. When will you have enough?',
+    stds: 'NC.8.F.4 · NC.8.F.5 · NC.8.EE.8', fl: 'FL.8.4 (FL8 4.1–4.2)',
+    target: 'I can write a savings plan as a linear function and use it to find when I will reach my goal.',
+    vocab: ['savings goal', 'deposit', 'starting balance', 'rate of change', 'initial value', 'checking account', 'savings account', 'certificate of deposit (CD)'],
+    steps: [
+      {
+        title: 'Write the savings function',
+        html: '<p>Start with <b>$200</b>. Add <b>$25</b> each week. After w weeks:</p><p><span class="fl-eq">S = 25w + 200</span></p>' +
+          '<p>The <b>y-intercept</b>, 200, is the starting balance. The <b>slope</b>, 25, is the weekly deposit.</p>',
+        tries: [{ type: 'num', q: 'How much is saved after <b>4 weeks</b>?', pre: '$', ans: '300',
+          hint: 'S = 25(4) + 200.', explain: '25 × 4 = 100, and 100 + 200 = $300.',
+          wrong: [{ v: '100', msg: '$100 is what you added. Do not forget the $200 you started with.' }, { v: '900', msg: 'Multiply 25 × 4 first, then add 200.' }] }]
+      },
+      {
+        title: 'When do you reach the goal?',
+        html: '<p>The goal is $1,500, a horizontal line <b>y = 1500</b>. Solve:</p>' +
+          '<p><span class="fl-eq">25w + 200 = 1500</span><br><span class="fl-eq">25w = 1300</span> (subtract 200)<br><span class="fl-eq">w = ?</span> (divide by 25)</p>',
+        fig: function (box) {
+          var g = new FL.Graph({ xmin: 0, xmax: 60, ymin: 0, ymax: 1800, xstep: 10, ystep: 300, xlabel: 'Weeks (w)', ylabel: 'Savings',
+            yfmt: function (v) { return '$' + FL.num(v); }, title: 'Savings and goal' });
+          g.hline(1500, { color: C.gold, dash: '8 5', width: 2.5 }); g.label(1, 1500, 'Goal: $1,500', { dy: -8, color: '#8A6100' });
+          var dyn = g.layer(), top = g.layer(true); box.appendChild(g.svg);
+          var out = FL.el('div', 'fl-readout');
+          FL.slider(box, { label: 'Weekly deposit', min: 10, max: 100, step: 5, value: 25, fmt: function (v) { return '$' + v; }, onInput: function (d) {
+            dyn.innerHTML = ''; top.innerHTML = '';
+            g.fn(function (w) { return d * w + 200; }, { color: C.navy }, dyn);
+            var wk = goalWeek(200, d, 1500);
+            if (wk <= 60) { g.dot(wk, Math.min(d * wk + 200, 1800), { color: C.red, r: 6 }, top); }
+            out.innerHTML = 'S = ' + d + 'w + 200 → reaches $1,500 in week <b>' + wk + '</b>' + ((1300 % d) ? ' (1,300 ÷ ' + d + ' ≈ ' + FL.num(Math.round(1300 / d * 10) / 10) + ', so round up)' : '');
+          } });
+          box.appendChild(out);
+        },
+        tries: [{ type: 'num', q: 'Saving $25 a week, how many weeks to reach $1,500?', post: 'weeks', ans: '52',
+          hint: '1,300 ÷ 25 = ?', explain: '1,300 ÷ 25 = 52 weeks. That is one whole year!',
+          wrong: [{ v: '60', msg: 'You divided 1,500 by 25. Subtract the $200 you already have first.' }, { v: '68', msg: 'Subtract 200 from 1,500 (do not add). 1,500 − 200 = 1,300.' }, { v: '1300', msg: '1,300 is the amount you still need. Divide it by $25 a week.' }] }]
+      },
+      {
+        title: 'Compare two savers',
+        html: '<p>Your friend starts with <b>$0</b> but saves <b>$40</b> a week: <span class="fl-eq">F = 40w</span></p>' +
+          '<p>When does the friend catch up? <span class="fl-eq">25w + 200 = 40w</span> → <span class="fl-eq">200 = 15w</span> → <span class="fl-eq">w ≈ 13.3</span></p>' +
+          '<p>13.3 is not a whole week. At week 13 you still lead. At week 14 the friend is ahead.</p>',
+        fig: function (box) {
+          var g = new FL.Graph({ xmin: 0, xmax: 20, ymin: 0, ymax: 800, xstep: 2, ystep: 100, xlabel: 'Weeks (w)', ylabel: 'Savings',
+            yfmt: function (v) { return '$' + v; }, title: 'Two savers' });
+          g.fn(S, { color: C.navy }); g.fn(F, { color: C.red, dash: '9 5' });
+          g.label(18, S(18), 'You', { dy: 22 }); g.label(17, F(17), 'Friend', { dx: -8, dy: -8, anchor: 'end', color: C.red });
+          g.dot(40 / 3, 1600 / 3, { color: C.gold, r: 7 }); g.label(40 / 3, 1600 / 3, '(13.3, 533.33)', { dx: 10, dy: 20, color: '#8A6100' });
+          box.appendChild(g.svg);
+          box.insertAdjacentHTML('beforeend', '<div class="fl-scroll"><table class="fl-tbl"><tr><th>Week</th><th>12</th><th>13</th><th>14</th><th>15</th></tr><tr><td>You: 25w + 200</td><td>$' + S(12) + '</td><td>$' + S(13) + '</td><td>$' + S(14) + '</td><td>$' + S(15) + '</td></tr><tr><td>Friend: 40w</td><td>$' + F(12) + '</td><td>$' + F(13) + '</td><td>$' + F(14) + '</td><td>$' + F(15) + '</td></tr></table></div>');
+        },
+        tries: [{ type: 'num', q: 'Use the table. In which week does the friend <b>first</b> have more money?', post: 'week', ans: '14',
+          hint: 'Compare the two rows. Find the first week where the friend’s amount is bigger.', explain: 'Week 14: you have $550 and the friend has $560.',
+          wrong: [{ v: '13', msg: 'At week 13 you have $525 and the friend has $520. You are still ahead.' }, { v: '13.3', msg: '13.3 is where the lines cross. The question asks for the first whole week the friend is ahead.' }] }]
+      },
+      {
+        title: 'Plan your deposit',
+        html: '<p>Want the laptop faster? To reach <b>$1,500</b> in <b>26 weeks</b> (half a year), starting with $200:</p>' +
+          '<p><span class="fl-eq">26d + 200 = 1500</span> where d is the weekly deposit.</p>',
+        tries: [{ type: 'num', q: 'How much must you save each week?', pre: '$', ans: '50', post: 'per week',
+          hint: 'Subtract 200, then divide by 26: (1,500 − 200) ÷ 26.', explain: '1,300 ÷ 26 = $50 a week. Try $50 on the slider in Step 2.',
+          wrong: [{ v: '57.69', msg: 'Subtract the $200 you have first: 1,500 − 200 = 1,300.' }, { v: '65.38', msg: 'Subtract 200, do not add it.' }] }]
+      },
+      {
+        title: 'Graph stories',
+        html: '<p>A graph can tell a story without numbers (NC.8.F.5).</p><ul><li>Going <b>up</b> = saving.</li><li>A sudden <b>drop</b> = spending.</li><li><b>Steeper</b> = saving faster. <b>Flat</b> = no change.</li></ul>',
+        tries: [{ type: 'mc', grid: true, q: '“I saved for a while, then stopped saving and did not spend anything.” Which graph matches?',
+          choices: [FL.sketch([[0, 1], [5, 7], [10, 7]], { label: 'up then flat' }), FL.sketch([[0, 1], [5, 7], [10, 2]], { label: 'up then down' }), FL.sketch([[0, 7], [10, 1]], { label: 'down' }), FL.sketch([[0, 1], [10, 9]], { label: 'up the whole time' })], ans: 0,
+          hint: 'Stopped saving and did not spend means the amount stays the same.',
+          why: { 1: 'Going down means spending. The story says no spending.', 2: 'This graph only goes down. The story starts with saving.', 3: 'This graph never stops going up.' },
+          explain: 'Up (saving), then flat (no change).' }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'word problem', q: 'Maya has <b>$150</b> and saves <b>$30</b> a week: S = 30w + 150. How many weeks until she has <b>$600</b>?', post: 'weeks', ans: '15',
+        hint: 'Solve 30w + 150 = 600. Subtract 150 first.', explain: '600 − 150 = 450, and 450 ÷ 30 = 15 weeks.',
+        wrong: [{ v: '20', msg: 'You divided 600 by 30. Subtract the $150 Maya already has first.' }, { v: '25', msg: 'Subtract 150 from 600, do not add.' }, { v: '450', msg: '$450 is what she still needs. Divide by $30 a week.' }] },
+      { type: 'sel', kind: 'select all', q: 'Maya’s plan is <b>S = 30w + 150</b>. Select <b>all</b> true statements.',
+        choices: ['30 is the amount she saves each week.', '150 is her starting balance.', 'After 1 week she has $180.', 'Her graph starts at (0, 0).', 'She saves $150 each week.'], ans: [0, 1, 2],
+        hint: 'The slope is the weekly change. The y-intercept is the starting amount.',
+        why: { 3: 'She starts with $150, so the graph starts at (0, 150).', 4: '150 is the start. She saves $30 each week.' },
+        explain: '30 = slope (weekly deposit), 150 = y-intercept (start), and 30(1) + 150 = 180.' },
+      { type: 'mc', kind: 'write the function', q: 'Chris has <b>$80</b> and saves <b>$15</b> each week. Which function shows his savings S after w weeks?',
+        choices: ['S = 15w + 80', 'S = 80w + 15', 'S = 95w', 'S = 15w − 80'], ans: 0,
+        hint: 'The weekly amount goes with w. The starting amount is added on.',
+        why: { 1: 'This says he saves $80 a week. He saves $15 a week.', 2: 'He does not save $95 a week. The $80 is only at the start.', 3: 'He starts with $80, so add it.' },
+        explain: 'Slope 15 (each week) and y-intercept 80 (start).' },
+      { type: 'num', kind: 'numeric entry', q: 'Use Chris’s plan, S = 15w + 80. How much has he saved after <b>12 weeks</b>?', pre: '$', ans: '260',
+        hint: 'S = 15(12) + 80. Multiply first.', explain: '15 × 12 = 180, and 180 + 80 = $260.',
+        wrong: [{ v: '180', msg: 'You found 15 × 12. Add the $80 he started with.' }, { v: '1140', msg: 'Multiply 15 × 12 first, then add 80.' }] },
+      { type: 'mc', kind: 'graph story', grid: true, q: '“I saved steadily for 2 months, spent half on a phone, then saved again at a <b>slower</b> rate.” Which graph matches?',
+        choices: [FL.sketch([[0, 1], [4, 8], [4, 4], [10, 6]], { label: 'up, drop by half, slower up' }), FL.sketch([[0, 1], [4, 8], [4, 4], [10, 10]], { label: 'up, drop, faster up' }), FL.sketch([[0, 1], [4, 8], [10, 8]], { label: 'up then flat' }), FL.sketch([[0, 8], [4, 4], [10, 1]], { label: 'down the whole time' })], ans: 0,
+        hint: 'Look for: up, then a sudden drop to half, then up but less steep.',
+        why: { 1: 'After the drop, this line is steeper. The story says slower.', 2: 'There is no drop for the phone.', 3: 'The story starts with saving, so the graph should go up first.' },
+        explain: 'Up, a sudden drop to half, then a less steep line.' },
+      { type: 'num', kind: 'word problem', q: 'Ty has <b>$200</b>. He wants <b>$1,000</b> in <b>20 weeks</b>. How much must he save each week?', pre: '$', ans: '40', post: 'per week',
+        hint: 'Solve 20d + 200 = 1000. Subtract 200, then divide by 20.', explain: '1,000 − 200 = 800, and 800 ÷ 20 = $40.',
+        wrong: [{ v: '50', msg: 'You divided 1,000 by 20. Subtract the $200 he has first.' }, { v: '60', msg: 'Subtract 200, do not add it.' }] },
+      { type: 'err', kind: 'find the error', q: 'Ava solved <b>25w + 200 = 1500</b>. Find the <b>first</b> mistake.',
+        lines: ['25w = 1700', 'w = 68'], ans: 0,
+        hint: 'To undo + 200, what should you do to both sides?',
+        why: { 1: 'Line 2 divides 1,700 by 25 correctly, but line 1 already has a mistake.' },
+        explain: 'Ava added 200. She should subtract: 25w = 1,300, so w = 52 weeks.' },
+      { type: 'num', kind: 'system', q: 'Jay has <b>$120</b> and saves <b>$10</b> a week. Kim has <b>$0</b> and saves <b>$25</b> a week. After how many weeks do they have the <b>same</b> amount?', post: 'weeks', ans: '8',
+        hint: 'Solve 10w + 120 = 25w. Subtract 10w from both sides.', explain: '120 = 15w, so w = 8. Both have $200.',
+        wrong: [{ v: '200', msg: '$200 is the amount they both have. The question asks for weeks.' }, { v: '12', msg: 'Subtract 10w from 25w: 120 = 15w.' }, { v: '3.43', msg: 'Subtract 10w from both sides (not add): 120 = 15w.' }] }
+    ],
+    desmos: '<ol><li>Type <code>y = 25x + 200</code>, <code>y = 40x</code> and the goal line <code>y = 1500</code>.</li>' +
+      '<li>Wrench icon: set x from 0 to 60 and y from 0 to 1,800.</li>' +
+      '<li>Click where the lines cross each other and where they cross the goal line.</li>' +
+      '<li>Your turn: type <code>y = mx + b</code> with your own goal and starting amount. Add a slider for m. What deposit reaches your goal in 26 weeks?</li></ol>',
+    ixl: [
+      ['Write linear functions: word problems (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/write-linear-functions-word-problems'],
+      ['Interpret the slope and y-intercept of a linear function (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/interpret-the-slope-and-y-intercept-of-a-linear-function'],
+      ['Identify graphs: word problems (NC.8.F.5)', 'https://www.ixl.com/math/grade-8/identify-graphs-word-problems'],
+      ['Solve a system of equations by graphing: word problems (NC.8.EE.8)', 'https://www.ixl.com/math/grade-8/solve-a-system-of-equations-by-graphing-word-problems']
+    ],
+    test: function () {
+      FL.assertEq(S(4), 300, 'L5 4 weeks'); FL.assertEq(S(10), 450, 'L5 10 weeks');
+      FL.assertEq(goalWeek(200, 25, 1500), 52, 'L5 goal week 52'); FL.assertEq(S(52), 1500, 'L5 S(52)');
+      FL.assert(S(13) > F(13) && F(14) > S(14), 'L5 friend ahead in week 14');
+      FL.assertEq((1500 - 200) / 26, 50, 'L5 26-week deposit');
+      FL.assertEq((600 - 150) / 30, 15, 'L5 Maya 15 weeks');
+      FL.assertEq(15 * 12 + 80, 260, 'L5 Chris 12 weeks');
+      FL.assertEq((1000 - 200) / 20, 40, 'L5 Ty');
+      FL.assertEq(120 / 15, 8, 'L5 Jay and Kim'); FL.assertEq(10 * 8 + 120, 25 * 8, 'L5 Jay=Kim');
+    }
+  });
+})();
+</script>
+</body>
+</html>

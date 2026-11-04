@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 6: Risk and Return — Math in Financial Literacy</title>
+<meta name="description" content="Make a scatter plot of risk and return and describe the association between them.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS;
+  // practice data from the lesson plan (made up, not real returns): [name, risk %, return %]
+  var DATA = [['Savings account', 1, 1], ['Certificate of deposit (CD)', 2, 3], ['Government bond fund', 5, 4], ['Corporate bond fund', 8, 5],
+    ['Balanced fund', 11, 7], ['Large-company stock fund', 16, 9], ['Small-company stock fund', 22, 11], ['Single tech stock', 35, 6]];
+
+  function scatter(box, opts) {
+    opts = opts || {};
+    var g = new FL.Graph({ xmin: 0, xmax: 40, ymin: 0, ymax: 12, xstep: 5, ystep: 2, xlabel: 'Risk: typical yearly up-and-down (%)', ylabel: 'Average yearly return (%)', title: 'Risk and return scatter plot' });
+    var info = FL.el('div', 'fl-readout'); info.textContent = 'Tap a point to see which investment it is.';
+    DATA.forEach(function (d) {
+      var c = g.dot(d[1], d[2], { r: 8, color: C.navy, cls: 'pt' });
+      c.style.cursor = 'pointer';
+      c.addEventListener('click', function () {
+        g.top.querySelectorAll('.pt').forEach(function (p) { p.setAttribute('fill', C.navy); });
+        c.setAttribute('fill', C.gold);
+        info.innerHTML = '<b>' + d[0] + '</b>: risk ' + d[1] + '%, return ' + d[2] + '%';
+      });
+    });
+    box.appendChild(g.svg);
+    if (!opts.noInfo) box.appendChild(info);
+    return g;
+  }
+  function tableHTML() {
+    return '<div class="fl-scroll"><table class="fl-tbl"><tr><th>Investment</th><th>Risk (%)</th><th>Return (%)</th></tr>' +
+      DATA.map(function (d) { return '<tr><td>' + d[0] + '</td><td>' + d[1] + '</td><td>' + d[2] + '</td></tr>'; }).join('') + '</table></div>';
+  }
+
+  FL.lesson({
+    id: 'finlit-6', num: 6, title: 'Risk and Return',
+    question: 'Would you take a sure $50, or flip a coin for $0 or $120? Investments are like that. Some are safe and grow slowly. Some jump up and down. Let’s graph risk and return.',
+    stds: 'NC.8.SP.1', fl: 'FL.8.4 (FL8 4.3–4.4)',
+    target: 'I can make a scatter plot of risk and return and describe the association between them.',
+    vocab: ['stock', 'bond', 'mutual fund', 'risk', 'return', 'scatter plot', 'positive association', 'outlier', 'cluster'],
+    steps: [
+      {
+        title: 'Read the scatter plot',
+        html: '<p><b>Risk</b> means how much the value goes up and down in a typical year. <b>Return</b> means how much it grows on average each year. Each point is one investment.</p>',
+        fig: function (box) { scatter(box); box.insertAdjacentHTML('beforeend', tableHTML()); },
+        tries: [{ type: 'num', q: 'What is the average yearly return of the <b>large-company stock fund</b>?', post: '%', ans: '9',
+          hint: 'Find "Large-company stock fund" in the table, or tap the point at risk 16.', explain: 'Risk 16%, return 9%.',
+          wrong: [{ v: '16', msg: '16 is the risk (x-value). Return is the y-value.' }] }]
+      },
+      {
+        title: 'Describe the association',
+        html: '<p>Look at the overall pattern from left to right.</p><ul><li>If the points tend to go <b>up</b>, it is a <b>positive association</b>.</li><li>If they tend to go <b>down</b>, it is a <b>negative association</b>.</li><li>If there is no pattern, there is <b>no association</b>.</li></ul>',
+        tries: [{ type: 'mc', q: 'Ignore the point at the far right for now. What association do most points show?', choices: ['Positive: as risk goes up, return tends to go up', 'Negative: as risk goes up, return tends to go down', 'No association', 'The points are all the same'], ans: 0,
+          hint: 'Move from left to right. Do the points rise or fall?', why: { 1: 'Most points rise from left to right, not fall.', 2: 'There is a clear upward pattern.', 3: 'The points have different risk and return values.' },
+          explain: 'More risk tends to come with more return. That is a positive association.' }]
+      },
+      {
+        title: 'Find the outlier',
+        html: '<p>An <b>outlier</b> is a point far away from the pattern. Tap the points in Step 1 to check names.</p>' +
+          '<p>One investment has the <b>most</b> risk but <b>not</b> the most return. Putting all your money in one company is risky. A <b>fund</b> spreads money across many companies, so one bad company hurts less.</p>',
+        tries: [{ type: 'mc', q: 'Which investment is the <b>outlier</b>?', choices: ['Single tech stock', 'Savings account', 'Small-company stock fund', 'Balanced fund'], ans: 0,
+          hint: 'Look for the point far to the right that is lower than the pattern.',
+          why: { 1: 'The savings account is low risk and low return. It fits the pattern.', 2: 'This one is high risk and high return. It fits the pattern.', 3: 'The balanced fund is in the middle of the pattern.' },
+          explain: 'The single tech stock has risk 35% but return only 6%. It is far from the pattern.' }]
+      },
+      {
+        title: 'Predict a new point',
+        html: '<p>A <b>mid-size company stock fund</b> has risk <b>19%</b>. Where do you think it belongs? Drag the gold point up or down (or use the slider), then tap Check.</p>',
+        fig: function (box) {
+          var g = scatter(box, { noInfo: true });
+          g.vline(19, { color: C.gray });
+          var y = 3, h = g.dot(19, y, { r: 11, color: C.gold, cls: 'handle' }); g.svg.classList.add('drag');
+          var out = FL.el('div', 'fl-readout'); box.appendChild(out);
+          var inp;
+          function set(v) { y = Math.max(0, Math.min(12, Math.round(v * 2) / 2)); h.setAttribute('cy', g.Y(y)); if (inp) inp.value = y; out.innerHTML = 'Your prediction: risk 19%, return <b>' + y + '%</b>'; }
+          var drag = false;
+          g.svg.addEventListener('pointerdown', function (e) { var d = g.toData(e); if (Math.abs(d.x - 19) < 4) { drag = true; g.svg.setPointerCapture(e.pointerId); set(d.y); } });
+          g.svg.addEventListener('pointermove', function (e) { if (drag) set(g.toData(e).y); });
+          g.svg.addEventListener('pointerup', function () { drag = false; });
+          inp = FL.slider(box, { label: 'Return', min: 0, max: 12, step: 0.5, value: 3, fmt: function (v) { return v + '%'; }, onInput: function (v) { set(v); } });
+          set(3);
+          var row = FL.el('div', 'fl-row', '<button type="button" class="fl-btn" id="predict">Check</button>'); box.appendChild(row);
+          var fb = FL.el('div', 'fl-fb'); box.appendChild(fb);
+          row.querySelector('button').addEventListener('click', function () {
+            if (y >= 9 && y <= 11) { fb.className = 'fl-fb ok'; fb.innerHTML = 'Good prediction! Risk 19 is between 16 (return 9) and 22 (return 11), so a return near 9–11% fits the pattern.'; }
+            else if (y < 9) { fb.className = 'fl-fb no'; fb.innerHTML = 'That is lower than the pattern. Look at the funds at risk 16 and 22. What returns do they have?'; }
+            else { fb.className = 'fl-fb no'; fb.innerHTML = 'That is higher than any point on the plot. Look at risk 16 and 22 for a guide.'; }
+          });
+        },
+        tries: [{ type: 'mc', q: 'A 14-year-old is saving for college in <b>4 years</b>. Which statement uses the graph best?', choices: ['A CD has low risk, so the money is less likely to drop right before college.', 'The single tech stock is best because it has the most risk.', 'Risk and return are not related, so it does not matter.', 'The savings account has the highest return.'], ans: 0,
+          hint: 'With only 4 years, would you want your money to go up and down a lot?',
+          why: { 1: 'More risk is not always better. The tech stock has high risk and a lower return.', 2: 'The graph shows a positive association, so they are related.', 3: 'The savings account has the lowest return on the graph.' },
+          explain: 'Low risk means less up-and-down, which matters when you need the money soon.' }]
+      }
+    ],
+    assign: [
+      { type: 'mc', kind: 'scatter plot', q: 'Look at the risk and return scatter plot. Which describes the association?', fig: function (f) { scatter(f, { noInfo: true }); },
+        choices: ['Positive association', 'Negative association', 'No association', 'Perfect linear association'], ans: 0,
+        hint: 'As risk goes up (moving right), what happens to return?', why: { 1: 'The points mostly go up from left to right.', 2: 'There is a clear upward pattern.', 3: 'The points are not all on one line, and there is an outlier.' },
+        explain: 'Return tends to increase as risk increases.' },
+      { type: 'mc', kind: 'outlier', q: 'Which point is an <b>outlier</b>?', choices: ['(35, 6)', '(1, 1)', '(16, 9)', '(11, 7)'], ans: 0,
+        hint: 'An outlier is far from the pattern of the other points.', why: { 1: '(1, 1) is the savings account. It fits the pattern.', 2: '(16, 9) fits the upward pattern.', 3: '(11, 7) is right in the middle of the pattern.' },
+        explain: '(35, 6) is the single tech stock: very high risk but only a medium return.' },
+      { type: 'num', kind: 'read a point', q: 'Use the table in the tutorial. What is the average yearly return of the <b>certificate of deposit (CD)</b>?', post: '%', ans: '3',
+        hint: 'The CD has risk 2%. Find its return.', explain: 'The CD has risk 2% and return 3%.',
+        wrong: [{ v: '2', msg: '2 is the risk. The return is the second number.' }] },
+      { type: 'sel', kind: 'select all', q: 'Select <b>all</b> true statements about the risk and return data.',
+        choices: ['As risk increases, return tends to increase.', 'The savings account has the lowest risk.', 'The single tech stock has the highest return.', 'The data show a negative association.', 'The balanced fund has risk 11% and return 7%.'], ans: [0, 1, 4],
+        hint: 'Check each statement with the table.', why: { 2: 'The single tech stock has a return of 6%. The small-company fund has 11%.', 3: 'The pattern goes up, so it is positive.' },
+        explain: 'A, B and E are true.' },
+      { type: 'mc', kind: 'new scatter plot', q: 'This made-up scatter plot shows the <b>age of used cars</b> (x) and their <b>price</b> (y). What association does it show?',
+        fig: FL.sketch(null, { dots: [[1, 9], [2, 8.2], [3, 7.5], [4, 6.2], [5, 5.8], [6, 4.5], [7, 4], [8, 2.6], [9, 2]], x: 'age', y: 'price', label: 'scatter plot going down' }),
+        choices: ['Negative association', 'Positive association', 'No association', 'It has an outlier'], ans: 0,
+        hint: 'As the cars get older (moving right), does the price go up or down?', why: { 1: 'The points go down from left to right.', 2: 'There is a clear downward pattern.', 3: 'All the points follow the pattern.' },
+        explain: 'Older cars tend to cost less. That is a negative association.' },
+      { type: 'num', kind: 'word problem', q: 'How many percentage points <b>more</b> return does the small-company stock fund have than the single tech stock?', post: 'percentage points', ans: '5',
+        hint: 'Small-company fund return: 11. Single tech stock return: 6. Subtract.', explain: '11 − 6 = 5 percentage points.',
+        wrong: [{ v: '13', msg: '13 is the difference in risk (35 − 22). Use the returns.' }, { v: '17', msg: 'Subtract the returns, do not add them.' }] },
+      { type: 'err', kind: 'find the error', q: 'Leo wrote about the data. Find the line with the <b>first</b> mistake.',
+        lines: ['The single tech stock has risk 35%.', 'That is the most risk in the table.', 'So it must have the highest return.'], ans: 2,
+        hint: 'Check the return for the single tech stock in the table.', why: { 0: 'Line 1 is right: risk 35%.', 1: 'Line 2 is right: 35 is the greatest risk.' },
+        explain: 'Its return is only 6%. The small-company fund has the highest return, 11%. More risk does not promise more return.' },
+      { type: 'mc', kind: 'multiple choice', q: 'Why does the lesson say spreading money across many stocks (a fund) matters?', choices: ['If one company does badly, it hurts less.', 'Funds always earn the most money.', 'Funds have no risk at all.', 'One stock always earns more than a fund.'], ans: 0,
+        hint: 'Think about the outlier. What happens if all your money is in one company?',
+        why: { 1: 'No investment always earns the most. The stock funds earn more but have more risk.', 2: 'Stock funds still go up and down (risk 16% and 22%).', 3: 'The single tech stock earned less than both stock funds.' },
+        explain: 'A fund holds many companies, so one bad company hurts less.' }
+    ],
+    desmos: '<ol><li>Click <b>+</b> then <b>table</b>. Type risk in x₁ and return in y₁ (8 rows).</li>' +
+      '<li>Click the zoom-fit button so you see all the points.</li>' +
+      '<li>Describe the association: as risk increases, what does return tend to do?</li>' +
+      '<li>Find the outlier (high risk, lower return). Click it to see its coordinates.</li></ol>',
+    ixl: [
+      ['Create scatter plots (NC.8.SP.1)', 'https://www.ixl.com/math/grade-8/create-scatter-plots'],
+      ['Interpret scatter plots (NC.8.SP.1)', 'https://www.ixl.com/math/grade-8/interpret-scatter-plots'],
+      ['Outliers in scatter plots (NC.8.SP.1)', 'https://www.ixl.com/math/grade-8/outliers-in-scatter-plots'],
+      ['Describe associations between two variables using scatter plots (NC.8.SP.1)', 'https://www.ixl.com/math/grade-8/describe-associations-between-two-variables-using-scatter-plots']
+    ],
+    test: function () {
+      FL.assertEq(DATA.length, 8, 'L6 eight investments');
+      var maxRet = DATA.reduce(function (a, d) { return d[2] > a[2] ? d : a; });
+      FL.assertEq(maxRet[0], 'Small-company stock fund', 'L6 highest return');
+      var minRisk = DATA.reduce(function (a, d) { return d[1] < a[1] ? d : a; });
+      FL.assertEq(minRisk[0], 'Savings account', 'L6 lowest risk');
+      FL.assertEq(DATA[7][1], 35, 'L6 outlier risk'); FL.assertEq(DATA[7][2], 6, 'L6 outlier return');
+      FL.assertEq(DATA[6][2] - DATA[7][2], 5, 'L6 Q6');
+      FL.assertEq(DATA[1][2], 3, 'L6 CD return'); FL.assertEq(DATA[5][2], 9, 'L6 large-company return');
+      // without the outlier, every return is higher than the one before (positive pattern)
+      for (var i = 1; i < 7; i++) FL.assert(DATA[i][2] > DATA[i - 1][2] && DATA[i][1] > DATA[i - 1][1], 'L6 increasing ' + i);
+    }
+  });
+})();
+</script>
+</body>
+</html>

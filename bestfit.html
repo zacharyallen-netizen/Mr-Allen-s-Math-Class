@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best-Fit Lab · Math in Science</title>
+<meta name="description" content="Drag a line to fit science data and get a closeness score. NC.8.SP.1, SP.2, SP.3.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap ms" id="ms-app">
+<a href="index.html" class="back-link">← Math in Science</a>
+<header class="page-hdr"><div class="eyebrow">Math in Science · Lab</div><h1>Best-Fit Lab</h1>
+<p>Drag the line to fit real-looking science data. Lock it in to get a closeness score, then explain what the slope means.</p>
+<p class="stds">NC.8.SP.1 · NC.8.SP.2 · NC.8.SP.3 · Science PS.8.1.3, ESS.8.3.1, ESS.8.4.3</p></header>
+<section class="ms-game" id="game"></section>
+<div class="ms-tip"><h3>Tips for a good fit</h3><ul><li>Follow the direction of the dots (up or down).</li><li>Put about the same number of dots above and below the line.</li><li>Ignore one odd dot. Fit the overall trend.</li></ul></div>
+<p class="ms-cap">Closeness compares your line with the least-squares line Desmos finds (100 = just as good). Atomic masses are from the periodic table. The other data sets are made up for practice.</p>
+</main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, h = MS.h, KEY = 'msBestFitBest';
+var MASS = [1.008,4.003,6.94,9.012,10.81,12.011,14.007,15.999,18.998,20.180,22.990,24.305,26.982,28.085,30.974,32.06,35.45,39.948,39.098,40.078];
+var SETS = [
+  { name: 'Periodic table: atomic mass', sci: 'PS.8.1.3', pts: MASS.map(function (m, i) { return [i + 1, m]; }), x: [0, 21], y: [0, 45], xt: 2, yt: 5, xl: 'Atomic number', yl: 'Atomic mass (u)',
+    xfmt: function (v) { return v % 4 === 0 ? String(v) : ''; }, p1: [3, 25], p2: [18, 25],
+    slopeQ: { q: 'Desmos gives a slope of about 2.07. What does it mean?', choices: ['Each step up in atomic number adds about 2.07 mass units.', 'Each element has a mass of 2.07.', 'Atomic number goes up 2.07 for each mass unit.'], ans: 0,
+      why: { 1: 'The slope is a rate (per element), not one mass.', 2: 'This switches x and y.' }, hint: 'Slope = change in y per 1 step in x.', explain: 'Mass goes up about 2.07 units per element, because each new element adds a proton and usually a neutron.' } },
+  { name: 'Nitrate in wells', sci: 'ESS.8.3.1', pts: [[50,14],[100,12],[200,9],[300,7],[400,6],[500,4],[600,3],[800,2]], x: [0, 850], y: [0, 16], xt: 100, yt: 2, xl: 'Distance from field (m)', yl: 'Nitrate (mg/L)',
+    xfmt: function (v) { return v % 200 === 0 ? String(v) : ''; }, p1: [100, 8], p2: [700, 8],
+    slopeQ: { q: 'Desmos gives a slope of about −0.016. What does it mean?', choices: ['Nitrate drops about 0.016 mg/L for each meter farther from the field.', 'Wells get 0.016 m deeper each year.', 'There is −0.016 mg/L of nitrate at the field.'], ans: 0,
+      why: { 1: 'The x-axis is distance from the field, not depth or time.', 2: 'The amount at the field is the y-intercept (about 13).' }, hint: 'Use the units: mg/L per meter.', explain: 'For each meter farther away, nitrate goes down about 0.016 mg/L.' } },
+  { name: 'Global temperature, 1980–2025', sci: 'ESS.8.4.3', pts: [[1980,0.27],[1985,0.32],[1990,0.49],[1995,0.53],[2000,0.66],[2005,0.78],[2010,0.81],[2015,0.97],[2020,1.04],[2025,1.15]],
+    x: [1975, 2030], y: [0, 1.4], xt: 5, yt: 0.2, xl: 'Year', yl: 'Anomaly (°C)', xfmt: function (v) { return v % 10 === 0 ? String(v) : ''; }, yfmt: function (v) { return v.toFixed(1); }, p1: [1982, 0.7], p2: [2022, 0.7],
+    slopeQ: { q: 'Desmos gives a slope of about 0.02. What does it mean?', choices: ['The anomaly rises about 0.02 °C per year (0.2 °C per decade).', 'The temperature is 0.02 °C.', 'It gets 0.02 °C cooler each year.'], ans: 0,
+      why: { 1: 'The slope is a rate of change, not a temperature.', 2: 'The slope is positive, so it gets warmer.' }, hint: 'Slope = change in °C per 1 year.', explain: '0.02 °C per year × 10 = 0.2 °C per decade of warming.' } },
+  { name: 'Cricket chirps and temperature', sci: 'Bonus data set', pts: [[55,15],[60,21],[62,21],[66,27],[70,29],[73,34],[77,36],[80,41],[84,43],[88,49]], x: [50, 92], y: [0, 55], xt: 2, yt: 5, xl: 'Temperature (°F)', yl: 'Chirps in 14 seconds',
+    xfmt: function (v) { return v % 10 === 0 ? String(v) : ''; }, p1: [56, 30], p2: [86, 30],
+    slopeQ: { q: 'The slope is about 1. What does it mean?', choices: ['For each 1 °F warmer, a cricket chirps about 1 more time in 14 seconds.', 'Crickets chirp once per minute.', 'For each chirp, the temperature drops 1 °F.'], ans: 0,
+      why: { 1: 'The slope compares chirps with temperature, not time.', 2: 'The association is positive. Warmer means more chirps.' }, hint: 'Slope = change in chirps per 1 °F.', explain: 'About 1 more chirp (in 14 seconds) for each degree warmer.' } }
+];
+var G = document.getElementById('game'), S;
+
+function advice(set, m, b) {
+  var f = MS.fit(set.pts), xm = set.pts.reduce(function (s, p) { return s + p[0]; }, 0) / set.pts.length, yr = set.y[1] - set.y[0];
+  if (m * f.m < 0 || (Math.abs(m) < Math.abs(f.m) * 0.15)) return 'Your line goes the wrong way or is almost flat. The data goes ' + (f.m > 0 ? 'up' : 'down') + ' from left to right.';
+  if (Math.abs(m) > Math.abs(f.m) * 1.15) return 'Your line is a little too steep. Make it flatter.';
+  if (Math.abs(m) < Math.abs(f.m) * 0.85) return 'Your line is a little too flat. Make it steeper.';
+  var d = (m * xm + b) - (f.m * xm + f.b);
+  if (d > yr * 0.04) return 'Your line is a little too high. Slide it down so dots are above and below it.';
+  if (d < -yr * 0.04) return 'Your line is a little too low. Slide it up so dots are above and below it.';
+  return 'Your line follows the trend very well.';
+}
+function start() { S = { lv: 0, score: 0 }; level(); }
+function level() {
+  var set = SETS[S.lv], line = null;
+  G.innerHTML = '<div class="ms-hud"><span>Data set <b>' + (S.lv + 1) + '</b>/' + SETS.length + '</span><span>Score <b id="sc">' + S.score + '</b></span><span>Best <b>' + MS.best(KEY).best + '</b></span></div>' +
+    '<p class="ms-big">' + set.name + ' <span class="stds" style="font-size:13px">' + set.sci + '</span></p><div class="ms-fig" id="fig"></div><div class="ms-read" id="read"></div>' +
+    '<div class="ms-row"><button class="ms-btn gold" id="lock" type="button">Lock in my line</button></div><div class="ms-fb" id="fb" aria-live="polite"></div><div id="q"></div><div class="ms-row" id="nx"></div>';
+  var P = MS.plot(G.querySelector('#fig'), { x: set.x, y: set.y, xt: set.xt, yt: set.yt, xl: set.xl, yl: set.yl, xfmt: set.xfmt, yfmt: set.yfmt, label: set.name + ' scatter plot' });
+  set.pts.forEach(function (p) { P.dot(p[0], p[1], { r: 6 }); });
+  var cur = { m: 0, b: 0 };
+  line = MS.dragLine(P, { p1: set.p1.slice(), p2: set.p2.slice(), onchange: function (m, b) { cur = { m: m, b: b };
+    G.querySelector('#read').textContent = 'Your line: y = ' + fmtNum(m) + 'x ' + (b < 0 ? '− ' : '+ ') + fmtNum(Math.abs(b)); } });
+  window.BESTFIT = { set: set, line: line, cur: function () { return cur; } };
+  G.querySelector('#lock').addEventListener('click', function () {
+    this.disabled = true;
+    var c = MS.closeness(set.pts, cur.m, cur.b), f = MS.fit(set.pts), stars = c >= 90 ? 3 : c >= 75 ? 2 : c >= 50 ? 1 : 0;
+    S.score += c; G.querySelector('#sc').textContent = S.score;
+    P.fn(function (x) { return f.m * x + f.b; }, { stroke: '#1D4ED8', 'stroke-width': 2.5, 'stroke-dasharray': '8 6' });
+    var fb = G.querySelector('#fb'); fb.className = 'ms-fb ' + (c >= 75 ? 'ok' : 'no');
+    fb.innerHTML = 'Closeness: <span class="mono">' + c + ' / 100</span> ' + '★★★'.slice(0, stars) + '<br><span style="font-weight:500;color:#1B2333">' + advice(set, cur.m, cur.b) +
+      ' The dashed blue line is the Desmos line: y = ' + fmtNum(f.m) + 'x ' + (f.b < 0 ? '− ' : '+ ') + fmtNum(Math.abs(f.b)) + '.</span>';
+    var it = Object.assign({ type: 'mc' }, set.slopeQ);
+    G.querySelector('#q').appendChild(MS.question(it, 'assign', 'Bonus', function (rec) {
+      S.score += rec.points * 20; G.querySelector('#sc').textContent = S.score;
+      var last = S.lv === SETS.length - 1, b = h('button', { class: 'ms-btn gold', type: 'button', id: 'next' }, last ? 'See my score' : 'Next data set');
+      b.addEventListener('click', function () { if (last) return finish(); S.lv++; level(); });
+      G.querySelector('#nx').appendChild(b);
+    }));
+  });
+}
+function fmtNum(v) { var a = Math.abs(v); return a >= 100 ? v.toFixed(0) : a >= 1 ? v.toFixed(2) : a >= 0.1 ? v.toFixed(3) : v.toFixed(4); }
+function finish() {
+  var max = SETS.length * 120, r = MS.best(KEY, S.score);
+  G.innerHTML = '<p class="ms-big">Your score: <span class="mono">' + S.score + ' / ' + max + '</span></p><p>' +
+    (S.score >= max * 0.85 ? 'Outstanding! Your lines fit like Desmos.' : S.score >= max * 0.6 ? 'Nice work. Balance the dots above and below your line.' : 'Good effort. Read the tips below, then try again.') +
+    '</p><p class="ms-stars">' + (r.isNew ? 'New best score!' : 'Best score: ' + r.best) + '</p><div class="ms-row"><button class="ms-btn gold" id="again" type="button">Play again</button></div>';
+  G.querySelector('#again').addEventListener('click', start);
+}
+/* self-test: the fits match the lesson numbers; the best line scores 100 */
+var F = SETS.map(function (s) { return MS.fit(s.pts); });
+MS.assert(Math.abs(F[0].m - 2.07) < 0.005 && Math.abs(F[0].b + 0.10) < 0.01, 'bestfit: atomic mass line');
+MS.assert(Math.abs(F[1].m + 0.016) < 0.0005 && Math.abs(F[1].b - 13) < 0.05, 'bestfit: nitrate line');
+MS.assert(Math.abs(F[2].m - 0.02) < 0.0005, 'bestfit: warming slope');
+MS.assert(Math.abs(F[3].m - 1) < 0.1, 'bestfit: cricket slope');
+SETS.forEach(function (s, i) { MS.assert(MS.closeness(s.pts, F[i].m, F[i].b) === 100, 'bestfit: closeness of best line'); MS.assert(MS.closeness(s.pts, 0, s.y[1]) < 50, 'bestfit: bad line scores low'); });
+window.MS_SELFTEST = { ok: MS.fails.length === 0, fails: MS.fails.slice() };
+start();
+})();
+</script>
+</body>
+</html>

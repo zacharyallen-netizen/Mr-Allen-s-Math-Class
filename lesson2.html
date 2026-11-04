@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 2: The Cost of Credit — Math in Financial Literacy</title>
+<meta name="description" content="Use tables and graphs to show how interest makes debt take longer and cost more to pay off.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  var BASE = FL.payoff(120000, 24, 10000);       // $1,200 at 24% APR, $100 a month
+
+  function payoffGraph(box, withInterest, pay) {
+    var g = new FL.Graph({ xmin: 0, xmax: 16, ymin: 0, ymax: 1300, xstep: 2, ystep: 200, xlabel: 'Months (m)', ylabel: 'Balance',
+      yfmt: function (v) { return '$' + FL.num(v); }, title: 'Balance over time' });
+    g.fn(function (m) { return 1200 - 100 * m; }, { color: C.navy, from: 0, to: 12 });
+    g.label(9.3, 1200 - 100 * 9.3, 'no interest', { dx: -6, dy: -10, anchor: 'end' });
+    g.dot(12, 0, { color: C.navy }); g.label(12, 0, '12', { dy: -10, anchor: 'middle' });
+    var dyn = g.layer(true);
+    box.appendChild(g.svg);
+    function draw(payCents) {
+      dyn.innerHTML = '';
+      if (!withInterest) return null;
+      var p = FL.payoff(120000, 24, payCents, 40);
+      var pts = [[0, 1200]].concat(p.rows.map(function (r) { return [r.m, r.bal / 100]; }));
+      g.path(pts, { color: C.red, dash: '7 4' }, dyn);
+      pts.forEach(function (q) { g.dot(q[0], q[1], { color: C.red, r: 4 }, dyn); });
+      if (p.months !== Infinity && p.months <= 16) g.label(p.months, 0, String(p.months), { dy: -12, anchor: 'middle', color: C.red }, dyn);
+      return p;
+    }
+    return draw;
+  }
+
+  FL.lesson({
+    id: 'finlit-2', num: 2, title: 'The Cost of Credit',
+    question: 'You buy something for $1,200 on a credit card. How much longer does it take to pay off, and how much more does it cost, when the card charges interest?',
+    stds: 'NC.8.F.4 · NC.8.F.3 · NC.8.F.5', fl: 'FL.8.2 (FL8 2.5–2.6)',
+    target: 'I can use tables and graphs to show how interest makes debt take longer and cost more to pay off.',
+    vocab: ['credit', 'balance', 'APR (annual percentage rate)', 'monthly interest', 'minimum payment', 'principal', 'x-intercept'],
+    steps: [
+      {
+        title: 'Paying off with no interest',
+        html: '<p>You owe <b>$1,200</b> and pay <b>$100</b> each month. There is no interest.</p>' +
+          '<p><span class="fl-eq">B = 1200 − 100m</span></p><p>B is the balance (what you still owe) and m is months. The slope −100 means the balance goes <b>down</b> $100 each month.</p>' +
+          '<p>The debt is paid off when B = 0. On the graph, that is where the line crosses the x-axis: the <b>x-intercept</b>.</p>',
+        fig: function (box) { payoffGraph(box, false); },
+        tries: [{ type: 'num', q: 'Solve 0 = 1200 − 100m. After how many months is the debt paid off?', post: 'months', ans: '12',
+          hint: 'How many groups of $100 are in $1,200? Divide 1,200 ÷ 100.', explain: '1,200 ÷ 100 = 12 months.',
+          wrong: [{ v: '1200', msg: '1,200 is the starting balance. Divide it by the $100 payment.' }, { v: '120', msg: 'Check the division. 1,200 ÷ 100 = 12.' }] }]
+      },
+      {
+        title: 'What does 24% APR mean?',
+        html: '<p><b>APR</b> is the interest rate for a whole year. Cards add interest <b>each month</b>, so divide by 12:</p>' +
+          '<p><span class="fl-eq">24% ÷ 12 = 2% each month</span></p>' +
+          '<p>Each month: <b>balance + interest − payment = new balance</b>.</p>',
+        tries: [{ type: 'num', q: 'Month 1: the balance is $1,200. What is 2% of $1,200? That is the interest for month 1.', pre: '$', ans: '24',
+          hint: '2% = 0.02. Multiply 0.02 × 1,200.', explain: '0.02 × 1,200 = $24. So month 1 is 1,200 + 24 − 100 = $1,124.',
+          wrong: [{ v: '288', msg: 'You used 24%. The card charges 24% a <b>year</b>, which is 2% a month.' }, { v: '240', msg: 'Check the decimal. 2% = 0.02, not 0.2.' }] }]
+      },
+      {
+        title: 'Build the payoff table',
+        html: '<p>Month 2 starts at <b>$1,124</b>. The interest is 2% of the <i>new</i> balance:</p>' +
+          '<p><span class="fl-eq">0.02 × 1,124 = $22.48</span></p>',
+        tries: [{ type: 'num', q: 'Finish month 2: 1,124 + 22.48 − 100 = ?', pre: '$', ans: '1046.48',
+          hint: 'Add the interest first, then subtract the $100 payment.', explain: '1,124 + 22.48 = 1,146.48, and 1,146.48 − 100 = $1,046.48.',
+          wrong: [{ v: '1024', msg: 'You subtracted $100 but forgot to add the $22.48 interest.' }, { v: '1146.48', msg: 'You added the interest. Now subtract the $100 payment.' }, { v: '1001.52', msg: 'Interest is added to what you owe, not taken away.' }] }]
+      },
+      {
+        title: 'Compare the two graphs',
+        html: '<p>Keep going month by month and you get this table. The red points are the card <b>with</b> interest.</p>',
+        fig: function (box) {
+          var draw = payoffGraph(box, true);
+          var out = FL.el('div', 'fl-readout'), tbl = FL.el('div', 'fl-scroll');
+          FL.slider(box, { label: 'Monthly payment', min: 50, max: 300, step: 25, value: 100, fmt: function (v) { return '$' + v; }, onInput: function (v) {
+            var p = draw(v * 100);
+            out.innerHTML = p.never ? 'The payment is not bigger than the interest. The balance never goes down.' :
+              'Pay $' + v + ' a month: paid off in <b>' + p.months + ' months</b>. Total interest: <b>' + $(p.interest) + '</b>. Total paid: ' + $(120000 + p.interest) + '.';
+          } });
+          box.appendChild(out);
+          var rows = BASE.rows.map(function (r) { return '<tr><td>' + r.m + '</td><td>' + $(r.interest) + '</td><td>' + $(r.pay) + '</td><td>' + $(r.bal) + '</td></tr>'; }).join('');
+          tbl.innerHTML = '<table class="fl-tbl"><tr><th>Month</th><th>Interest</th><th>Payment</th><th>Balance</th></tr><tr><td>0</td><td></td><td></td><td>$1,200.00</td></tr>' + rows + '</table>';
+          box.appendChild(tbl);
+          box.insertAdjacentHTML('beforeend', '<p class="fl-how">Table: $1,200 at 24% APR, paying $100 a month. Money is rounded to the cent each month.</p>');
+        },
+        tries: [{ type: 'num', q: 'With interest and $100 a month, how many months does it take to pay off? (Use the table or the slider at $100.)', post: 'months', ans: '14',
+          hint: 'Find the month where the balance first reaches $0.00.', explain: 'It takes 14 months, not 12. The interest costs about $186 more.',
+          wrong: [{ v: '12', msg: '12 months is the plan with <b>no</b> interest. Look at the red points.' }, { v: '13', msg: 'Look at month 13 again. There is still a little left to pay.' }] }]
+      },
+      {
+        title: 'Linear or not?',
+        html: '<p>With no interest, the balance drops by the <b>same amount</b> ($100) each month. That is a <b>linear</b> function.</p>' +
+          '<p>With interest, the drops are $76.00, then $77.52, then $79.07… They <b>change</b> each month, so the table is <b>not exactly linear</b>.</p>',
+        tries: [{ type: 'mc', q: 'Why does the card with interest reach $0 <b>later</b>?', choices: ['Part of each $100 pays interest, so the balance drops by less than $100.', 'The payment gets smaller each month.', 'The starting balance is bigger.', 'Interest makes the balance drop faster.'], ans: 0,
+          hint: 'In month 1, $24 of the $100 goes to interest. How much is left to lower the balance?',
+          why: { 1: 'The payment stays at $100 until the last month.', 2: 'Both start at $1,200.', 3: 'Interest is added to what you owe, so the balance drops more slowly.' },
+          explain: 'In month 1, only $76 of the $100 lowers the balance. The rest pays interest.' }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'numeric entry', q: 'Sam owes <b>$900</b> with <b>no</b> interest and pays <b>$75</b> a month: B = 900 − 75m. After how many months is it paid off?', post: 'months', ans: '12',
+        hint: 'Set B = 0. Then 75m = 900.', explain: '900 ÷ 75 = 12 months.',
+        wrong: [{ v: '825', msg: '825 is the balance after 1 month. Find when the balance is 0.' }, { v: '975', msg: 'The balance goes down. Divide 900 by 75.' }] },
+      { type: 'num', kind: 'numeric entry', q: 'A card has an APR of <b>18%</b>. What is the interest rate for <b>one month</b>?', post: '%', ans: '1.5',
+        hint: 'APR is for a year. A year has 12 months. Divide 18 ÷ 12.', explain: '18% ÷ 12 = 1.5% each month.',
+        wrong: [{ v: '18', msg: '18% is for the whole year. Divide by 12 months.' }, { v: '0.015', msg: '0.015 is the decimal. The question asks for the percent: 1.5%.' }, { v: '216', msg: 'Divide by 12, do not multiply.' }] },
+      { type: 'num', kind: 'numeric entry', q: 'A balance is <b>$500</b>. The card charges <b>2%</b> each month. How much interest is added this month?', pre: '$', ans: '10',
+        hint: '2% = 0.02. Multiply 0.02 × 500.', explain: '0.02 × 500 = $10.',
+        wrong: [{ v: '100', msg: 'Check the decimal. 2% = 0.02, not 0.2.' }, { v: '510', msg: '$510 is the new balance. The question asks for just the interest.' }] },
+      { type: 'num', kind: 'word problem', q: 'Lena owes <b>$800</b>. Her card charges <b>1.5%</b> each month. She pays <b>$100</b> this month. What is her new balance?', pre: '$', ans: '712',
+        hint: 'Interest = 0.015 × 800. Then: balance + interest − payment.', explain: '0.015 × 800 = 12. Then 800 + 12 − 100 = $712.',
+        wrong: [{ v: '700', msg: 'You forgot the interest. Add 1.5% of $800 first.' }, { v: '688', msg: 'Interest is added to the balance, not subtracted.' }, { v: '812', msg: 'You added the interest. Now subtract the $100 payment.' }] },
+      { type: 'mc', kind: 'graph', q: 'Two graphs show paying off $1,200 at $100 a month. Graph P reaches $0 at month 12. Graph Q reaches $0 at month 14. Which graph is the card <b>with interest</b>?',
+        choices: ['Graph Q, because interest makes it take longer', 'Graph P, because it is a straight line', 'Graph P, because interest makes it end sooner', 'You cannot tell from the graphs'], ans: 0,
+        hint: 'Does interest make you owe more or less?', why: { 1: 'The straight line is the plan with no interest.', 2: 'Interest adds to what you owe, so it ends later, not sooner.', 3: 'The x-intercepts tell you: the one with interest takes longer.' },
+        explain: 'Interest adds to the balance, so it takes longer to reach $0.' },
+      { type: 'sel', kind: 'select all', q: 'B = 1200 − 100m shows a balance with no interest. Select <b>all</b> true statements.',
+        choices: ['The slope −100 means the balance drops $100 each month.', '1,200 is the starting balance.', 'The x-intercept, 12, means it is paid off after 12 months.', 'This function is nonlinear.', 'The balance goes up each month.'], ans: [0, 1, 2],
+        hint: 'Linear functions have a constant rate of change. A negative slope means going down.',
+        why: { 3: 'It changes by −100 every month, so it is linear.', 4: 'The slope is negative, so the balance goes down.' },
+        explain: 'Slope −100 (down $100 a month), y-intercept 1,200 (start), x-intercept 12 (paid off).' },
+      { type: 'mc', kind: 'linear or nonlinear', q: 'Which table shows a <b>linear</b> function?<div class="fl-scroll"><table class="fl-tbl"><tr><th>Month</th><th>0</th><th>1</th><th>2</th><th>3</th></tr><tr><td>Table A</td><td>1,200</td><td>1,124</td><td>1,046.48</td><td>967.41</td></tr><tr><td>Table B</td><td>1,200</td><td>1,100</td><td>1,000</td><td>900</td></tr></table></div>',
+        choices: ['Table B, because it goes down by the same amount each month', 'Table A, because it goes down each month', 'Both tables', 'Neither table'], ans: 0,
+        hint: 'Find the change from month to month in each table. Is it the same every time?',
+        why: { 1: 'Table A goes down by 76, then 77.52, then 79.07. The changes are not equal.', 2: 'Table A changes by different amounts, so it is not linear.', 3: 'Table B changes by −100 every month. That is linear.' },
+        explain: 'Table B always changes by −100. Table A changes by different amounts.' },
+      { type: 'err', kind: 'find the error', q: 'Owen owes $1,124 on a card with a <b>24% APR</b>. He pays $100. Find the <b>first</b> mistake.',
+        lines: ['Balance = $1,124', 'Interest = 1,124 × 0.24 = $269.76', 'New balance = 1,124 + 269.76 − 100 = $1,293.76'], ans: 1,
+        hint: 'APR is for a year. What is the rate for one month?',
+        why: { 0: 'Line 1 is right. The balance is $1,124.', 2: 'Line 3 uses the wrong interest from the line before it.' },
+        explain: 'Owen used the yearly rate. The monthly rate is 24% ÷ 12 = 2%, so interest = 0.02 × 1,124 = $22.48.' }
+    ],
+    desmos: '<ol><li>Type <code>y = 1200 − 100x</code>. Click where it crosses the x-axis: (12, 0).</li>' +
+      '<li>Click <b>+</b> then <b>table</b>. Type the months in x₁ and the balances in y₁ (from the payoff table).</li>' +
+      '<li>Wrench icon: set x from 0 to 16 and y from 0 to 1,300.</li>' +
+      '<li>Where is the gap between the line and the table points biggest? Read each payoff time from where it reaches 0.</li>' +
+      '<li>Does the table change by the same amount each month? (No, so it is not exactly linear.)</li></ol>',
+    ixl: [
+      ['Evaluate a linear function: word problems (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/evaluate-a-linear-function-word-problems'],
+      ['Interpret points on the graph of a linear function (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/interpret-points-on-the-graph-of-a-linear-function'],
+      ['Identify linear and nonlinear functions: tables (NC.8.F.3)', 'https://www.ixl.com/math/grade-8/identify-linear-and-nonlinear-functions-tables'],
+      ['Identify graphs: word problems (NC.8.F.5)', 'https://www.ixl.com/math/grade-8/identify-graphs-word-problems'],
+      ['Multi-step problems with percents (NC.7.RP.3 review)', 'https://www.ixl.com/math/grade-8/multi-step-problems-with-percents']
+    ],
+    test: function () {
+      FL.assertEq(BASE.months, 14, 'L2 payoff 14 months');
+      FL.assertEq(BASE.rows[0].interest, 2400, 'L2 month 1 interest $24');
+      FL.assertEq(BASE.rows[0].bal, 112400, 'L2 month 1 balance');
+      FL.assertEq(BASE.rows[1].interest, 2248, 'L2 month 2 interest $22.48');
+      FL.assertEq(BASE.rows[1].bal, 104648, 'L2 month 2 balance');
+      FL.assertEq(BASE.rows[2].bal, 96741, 'L2 month 3 balance 967.41');
+      FL.assertEq(Math.round(BASE.interest / 100), 186, 'L2 interest about $186');
+      FL.assertEq(120000 - BASE.rows[0].bal, 7600, 'L2 first drop 76');
+      FL.assertEq(BASE.rows[0].bal - BASE.rows[1].bal, 7752, 'L2 second drop 77.52');
+      FL.assertEq(BASE.rows[1].bal - BASE.rows[2].bal, 7907, 'L2 third drop 79.07');
+      FL.assertEq(FL.payoff(120000, 0, 10000).months, 12, 'L2 no interest 12');
+      FL.assertEq(90000 / 7500, 12, 'L2 Q1');
+      FL.assertEq(FL.pctOf(50000, 2), 1000, 'L2 Q3');
+      FL.assertEq(80000 + FL.pctOf(80000, 3, 2) - 10000, 71200, 'L2 Q4');
+      FL.assertEq(FL.pctOf(112400, 24), 26976, 'L2 error line');
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Deal — Math in Financial Literacy</title>
+<meta name="description" content="Two plans, one graph. Find the break-even point before time runs out, then pick the better deal.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap">
+<main class="gm" id="game">
+<a href="index.html" class="back-link">← Math in Financial Literacy</a>
+<header class="page-hdr"><span class="eyebrow">Game · Lessons 4, 5 and 8</span><h1>Best Deal</h1>
+<p>Two plans. One graph. Tap the graph where the plans cost the same (the break-even month) before time runs out. Then pick the better deal. All prices are made up.</p>
+<p class="stds">NC.8.EE.8 · NC.8.F.4 · FL.8.3</p></header>
+<div class="gm-bar"><span>Round <b id="rnd">1</b> / 6</span><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span><span>Time <b id="secs">30</b></span></div>
+<section class="gm-panel">
+  <p id="setup" style="margin:0;font-size:17px"></p>
+  <div class="gm-time"><i id="bar" style="width:100%"></i></div>
+  <div id="graph" class="fl-fig"></div>
+  <div class="fl-readout" id="read">Tap the graph to check a month.</div>
+  <div class="fl-row"><label class="fl-namelab" for="month">Or type the month</label><input class="fl-in" id="month" inputmode="numeric" style="max-width:110px"><button type="button" class="fl-btn" id="go">Check</button></div>
+  <div class="gm-msg" id="msg" aria-live="polite"></div>
+  <div id="follow" hidden style="margin-top:12px"></div>
+  <div class="fl-row"><button type="button" class="fl-btn fl-ghost" id="next" hidden>Next round →</button></div>
+</section>
+<section class="gm-panel" id="end" hidden></section>
+<p class="fl-how">To solve by algebra: set the two totals equal, then get the months on one side. Example: 50 + 60m = 140 + 45m → 15m = 90 → m = 6.</p>
+</main>
+</div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  var CONTEXTS = [
+    { what: 'phone plans', x: 'Plan X', y: 'Plan Y', fee: 'activation fee', unit: 'month' },
+    { what: 'gym memberships', x: 'FitNow', y: 'IronWorks', fee: 'sign-up fee', unit: 'month' },
+    { what: 'streaming bundles', x: 'Bundle X', y: 'Bundle Y', fee: 'start-up fee', unit: 'month' },
+    { what: 'music lessons', x: 'Studio X', y: 'Studio Y', fee: 'registration fee', unit: 'month' },
+    { what: 'bike rentals', x: 'RideNow', y: 'PedalCo', fee: 'deposit', unit: 'month' },
+    { what: 'game subscriptions', x: 'Pass X', y: 'Pass Y', fee: 'starter fee', unit: 'month' }
+  ];
+  function rnd(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function make(ctx) {
+    var r2 = rnd([20, 25, 30, 35, 40, 45, 50]), d = rnd([5, 10, 15, 20, 25]), m = 3 + Math.floor(Math.random() * 10), f1 = rnd([0, 25, 50, 100]);
+    return { ctx: ctx, f1: f1, r1: r2 + d, f2: f1 + d * m, r2: r2, m: m };
+  }
+  function X(R, m) { return R.f1 + R.r1 * m; }
+  function Y(R, m) { return R.f2 + R.r2 * m; }
+  // self-test
+  FL.assertEq(50 + 60 * 6, 140 + 45 * 6, 'BD example meets at 6');
+  for (var t = 0; t < 40; t++) {
+    var q = make(CONTEXTS[0]);
+    FL.assertEq(X(q, q.m), Y(q, q.m), 'BD plans equal at break-even');
+    FL.assert(X(q, q.m - 1) < Y(q, q.m - 1) && X(q, q.m + 1) > Y(q, q.m + 1), 'BD X cheaper before, Y after');
+    FL.assertEq((q.f2 - q.f1) / (q.r1 - q.r2), q.m, 'BD algebra gives m');
+  }
+
+  var rounds, idx, score, left, timer, done, g, dyn, el = function (id) { return document.getElementById(id); };
+  el('best').textContent = FL.best('best-deal').best;
+  function newGame() {
+    rounds = CONTEXTS.slice().sort(function () { return Math.random() - 0.5; }).map(make);
+    idx = 0; score = 0; el('score').textContent = 0; el('end').hidden = true; show();
+  }
+  function show() {
+    var R = rounds[idx], c = R.ctx;
+    el('rnd').textContent = idx + 1; done = false;
+    // randomly show the cheaper-start plan first or second
+    el('setup').innerHTML = 'Two ' + c.what + ': <b>' + c.x + '</b> costs ' + $(R.f1 * 100, 'auto') + ' ' + c.fee + ' + <b>' + $(R.r1 * 100, 'auto') + '</b> a month. <b>' + c.y + '</b> costs ' + $(R.f2 * 100, 'auto') + ' ' + c.fee + ' + <b>' + $(R.r2 * 100, 'auto') + '</b> a month.';
+    var xmax = R.m <= 8 ? 12 : 16, ymax = Math.max(X(R, xmax), Y(R, xmax)), step = ymax > 1200 ? 300 : ymax > 600 ? 200 : 100;
+    g = new FL.Graph({ xmin: 0, xmax: xmax, ymin: 0, ymax: Math.ceil(ymax / step) * step, xstep: 2, ystep: step, xlabel: 'Months', ylabel: 'Total cost',
+      yfmt: function (v) { return '$' + FL.num(v); }, title: 'Two plans' });
+    g.fn(function (m) { return X(R, m); }, { color: C.navy }); g.fn(function (m) { return Y(R, m); }, { color: C.red, dash: '9 5' });
+    g.label(xmax - 0.4, X(R, xmax - 0.4), c.x, { anchor: 'end', dy: -10 }); g.label(xmax - 0.4, Y(R, xmax - 0.4), c.y, { anchor: 'end', dy: 22, color: C.red });
+    dyn = g.layer(true);
+    el('graph').innerHTML = ''; el('graph').appendChild(g.svg);
+    g.svg.style.cursor = 'crosshair';
+    g.svg.addEventListener('click', function (e) { var d = g.toData(e); tryMonth(Math.round(d.x)); });
+    el('read').textContent = 'Tap the graph to check a month.';
+    el('msg').textContent = ''; el('follow').hidden = true; el('next').hidden = true; el('month').value = '';
+    left = 30; el('secs').textContent = left; el('bar').style.width = '100%';
+    clearInterval(timer);
+    timer = setInterval(function () {
+      left--; el('secs').textContent = left; el('bar').style.width = (left / 30 * 100) + '%';
+      if (left <= 0) { clearInterval(timer); timeUp(); }
+    }, 1000);
+  }
+  function mark(m) {
+    var R = rounds[idx];
+    dyn.innerHTML = '';
+    g.vline(m, { color: C.gray }, dyn); g.dot(m, X(R, m), { color: C.navy }, dyn); g.dot(m, Y(R, m), { color: C.red }, dyn);
+    el('read').innerHTML = 'Month ' + m + ': ' + R.ctx.x + ' = ' + $(X(R, m) * 100, 'auto') + ', ' + R.ctx.y + ' = ' + $(Y(R, m) * 100, 'auto');
+  }
+  function tryMonth(m) {
+    if (done) return;
+    var R = rounds[idx], x = rounds[idx].ctx.x, y = rounds[idx].ctx.y;
+    if (isNaN(m) || m < 0) return;
+    if (m > g.o.xmax) m = g.o.xmax;
+    mark(m);
+    var msg = el('msg');
+    if (m === R.m) {
+      done = true; clearInterval(timer);
+      var pts = 50 + 5 * left; score += pts; el('score').textContent = score;
+      g.dot(m, X(R, m), { color: C.gold, r: 8 }, dyn);
+      msg.className = 'gm-msg ok'; msg.textContent = 'Break-even! At month ' + m + ' both cost ' + $(X(R, m) * 100, 'auto') + '. +' + pts + ' points.';
+      follow();
+    } else {
+      msg.className = 'gm-msg no';
+      var xc = X(R, m) < Y(R, m);
+      msg.textContent = 'Not equal yet. At month ' + m + ', ' + (xc ? x : y) + ' is cheaper by ' + $(Math.abs(X(R, m) - Y(R, m)) * 100, 'auto') + '. ' + (xc ? 'Look farther right, where the lines get closer.' : 'The lines already crossed. Look to the left.');
+    }
+  }
+  el('go').addEventListener('click', function () { var v = FL.parse(el('month').value); if (v && v.d === 1) tryMonth(v.n); else { el('msg').className = 'gm-msg no'; el('msg').textContent = 'Type a whole number of months.'; } });
+  el('month').addEventListener('keydown', function (e) { if (e.key === 'Enter') el('go').click(); });
+  function timeUp() {
+    if (done) return; done = true;
+    var R = rounds[idx]; mark(R.m); g.dot(R.m, X(R, R.m), { color: C.gold, r: 8 }, dyn);
+    el('msg').className = 'gm-msg no';
+    el('msg').textContent = 'Time is up. The break-even is month ' + R.m + ': ' + R.f1 + ' + ' + R.r1 + 'm = ' + R.f2 + ' + ' + R.r2 + 'm gives ' + (R.r1 - R.r2) + 'm = ' + (R.f2 - R.f1) + ', so m = ' + R.m + '.';
+    follow();
+  }
+  function follow() {
+    var R = rounds[idx], k = Math.random() < 0.5 ? Math.max(1, R.m - 2 - Math.floor(Math.random() * 2)) : R.m + 2 + Math.floor(Math.random() * 3);
+    var cheaper = X(R, k) < Y(R, k) ? R.ctx.x : R.ctx.y, f = el('follow');
+    f.hidden = false;
+    f.innerHTML = '<p style="margin:0 0 8px"><b>Bonus:</b> You need it for <b>' + k + ' months</b>. Which is the better deal?</p><div class="gm-choices"></div>';
+    [R.ctx.x, R.ctx.y].forEach(function (name) {
+      var b = FL.el('button', 'gm-acct', '<b>' + name + '</b>'); b.type = 'button';
+      b.addEventListener('click', function () {
+        f.querySelectorAll('button').forEach(function (z) { z.disabled = true; });
+        var ok = name === cheaper; b.classList.add(ok ? 'good' : 'bad');
+        if (ok) { score += 25; el('score').textContent = score; }
+        f.insertAdjacentHTML('beforeend', '<div class="gm-msg ' + (ok ? 'ok' : 'no') + '">' + (ok ? 'Yes! +25. ' : 'Not this one. ') + 'At ' + k + ' months: ' + R.ctx.x + ' = ' + $(X(R, k) * 100, 'auto') + ', ' + R.ctx.y + ' = ' + $(Y(R, k) * 100, 'auto') + '. ' + (k < R.m ? 'Before the break-even, the plan with the smaller fee wins.' : 'After the break-even, the plan with the smaller monthly price wins.') + '</div>');
+        el('next').hidden = false; el('next').textContent = idx < rounds.length - 1 ? 'Next round →' : 'See my score →';
+      });
+      f.querySelector('.gm-choices').appendChild(b);
+    });
+  }
+  el('next').addEventListener('click', function () {
+    if (idx < rounds.length - 1) { idx++; show(); return; }
+    var b = FL.best('best-deal', score); el('best').textContent = b.best;
+    var end = el('end'); end.hidden = false;
+    end.innerHTML = '<h2 class="fl-h3">Deals done!</h2><p class="gm-big">' + score + ' points</p><p>' + (b.isNew ? 'New best score!' : 'Your best: ' + b.best) + '</p>' +
+      '<div class="fl-row"><button type="button" class="fl-btn" id="again">Play again</button><a class="fl-btn fl-ghost fl-link" href="lesson4.html">Lesson 4: Comparing Loan Offers</a></div>';
+    el('next').hidden = true;
+    el('again').addEventListener('click', newGame);
+    end.scrollIntoView({ behavior: 'smooth' });
+  });
+  window.BD = { round: function () { return rounds[idx]; } };
+  newGame();
+  var rep = FL.selfTestReport(); if (!rep.fail) console.log('FL self-test: ' + rep.pass + ' checks passed');
+})();
+</script>
+</body>
+</html>

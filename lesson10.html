@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 10: Warming Trend · Math in Science</title>
+<meta name="description" content="Use lines of best fit to describe how global temperature has changed and explain what the slope means. NC.8.SP.1–SP.3 with ESS.8.4.3.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+// Made-up practice data shaped like NOAA's yearly global temperature anomalies (°C), every 5 years.
+var EARLY = [[1880,-0.27],[1885,-0.32],[1890,-0.23],[1895,-0.26],[1900,-0.15],[1905,-0.19],[1910,-0.15],[1915,-0.18],[1920,-0.06],[1925,-0.06],[1930,-0.08],[1935,0.03],[1940,-0.01],[1945,0.05],[1950,0.03]];
+var RECENT = [[1980,0.27],[1985,0.32],[1990,0.49],[1995,0.53],[2000,0.66],[2005,0.78],[2010,0.81],[2015,0.97],[2020,1.04],[2025,1.15]];
+var FE = MS.fit(EARLY), FR = MS.fit(RECENT);              // ≈ 0.005 and ≈ 0.020 °C per year
+var LM = Q.dec('0.02'), LB = Q.dec('-39.35');             // assignment line y = 0.02x − 39.35
+function L(x) { return Q.add(Q.mul(LM, x), LB); }
+
+function tempFig(el, drag) {
+  var P = MS.plot(el, { x: [1870, 2030], y: [-0.5, 1.4], xt: 10, yt: 0.25, l: 60, xl: 'Year', yl: 'Anomaly (°C)', label: 'Scatter plot of yearly temperature anomaly',
+    xfmt: function (v) { return v % 40 === 0 ? String(v) : ''; }, yfmt: function (v) { return Math.abs(v * 4 % 2) < 1e-6 ? v.toFixed(1) : ''; } });
+  EARLY.forEach(function (p) { P.dot(p[0], p[1], { r: 5.5, fill: '#1D4ED8' }); });
+  RECENT.forEach(function (p) { P.dot(p[0], p[1], { r: 5.5, fill: '#B45309' }); });
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, '<span style="color:#1D4ED8">●</span> 1880–1950 &nbsp; <span style="color:#B45309">●</span> 1980–2025. Made-up practice data shaped like NOAA\'s record. 0 = the 20th-century average.'));
+  if (!drag) return;
+  var r1 = MS.h('div', { class: 'ms-read' }), r2 = MS.h('div', { class: 'ms-read' });
+  function show(r, name, pts, m, b) { r.innerHTML = name + ': slope ' + m.toFixed(4) + ' °C per year = <b>' + (m * 10).toFixed(2) + ' °C per decade</b> · closeness ' + MS.closeness(pts, m, b) + ' / 100'; }
+  MS.dragLine(P, { p1: [1885, -0.1], p2: [1945, -0.1], x0: 1880, x1: 1950, color: '#1D4ED8', onchange: function (m, b) { show(r1, '1880–1950 line', EARLY, m, b); } });
+  MS.dragLine(P, { p1: [1985, 0.6], p2: [2020, 0.6], x0: 1980, x1: 2025, color: '#B45309', onchange: function (m, b) { show(r2, '1980–2025 line', RECENT, m, b); } });
+  el.appendChild(r1); el.appendChild(r2);
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, 'Drag the circles on each line to fit its own set of dots.'));
+}
+
+MS.lesson({
+  num: 10, title: 'Warming Trend', sci: 'ESS.8.4.3', math: ['NC.8.SP.1', 'NC.8.SP.2', 'NC.8.SP.3'], minutes: 7,
+  question: 'Has Earth warmed faster in recent decades than it did 100 years ago?',
+  intro: 'Two lines of best fit and their slopes answer the question.',
+  target: 'I can use a line of best fit to describe how global temperature has changed and explain what the slope means.',
+  vocab: ['temperature anomaly', 'industrialization', 'greenhouse gas', 'trend', 'scatter plot', 'line of best fit', 'slope', 'rate of change'],
+  steps: [
+    { title: 'What is a temperature anomaly?',
+      body: '<p>A <b>temperature anomaly</b> is how far a year is from a long-term average. NOAA uses the 20th-century average.</p>' +
+        '<p>+0.5 °C means 0.5 °C <b>warmer</b> than average. −0.2 °C means 0.2 °C <b>cooler</b>. Scientists look at <b>long-term trends</b>, not one year.</p>',
+      tryit: { type: 'mc', q: 'One year has an anomaly of +0.8 °C. What does that mean?', choices: ['It was 0.8 °C warmer than the long-term average.', 'The temperature was 0.8 °C all year.', 'It was 0.8 °C cooler than the average.'], ans: 0,
+        why: { 1: 'An anomaly is a difference from an average, not the actual temperature.', 2: 'A positive anomaly means warmer than average.' },
+        hint: 'Anomaly = difference from the average.', explain: '+0.8 °C means 0.8 °C above the long-term average.' } },
+    { title: 'Look at the scatter plot',
+      body: '<p>Each dot is one year. Since industrialization, people burn more fossil fuels (coal, oil and natural gas). That adds <b>carbon dioxide</b>, a greenhouse gas, to the air. Greenhouse gases trap heat.</p>',
+      fig: function (el) { tempFig(el, false); },
+      tryit: { type: 'mc', q: 'Describe the association between year and temperature anomaly.', choices: ['Positive', 'Negative', 'No association'], ans: 0,
+        why: { 1: 'Negative means going down. These dots go up over time.', 2: 'There is a clear pattern: later years are warmer.' },
+        hint: 'Do the dots go up or down from left to right?', explain: 'Later years have higher anomalies. That is a positive association.' } },
+    { title: 'Slope is a rate of change',
+      body: '<p>Fit one line to each time period. Drag each line.</p>',
+      fig: function (el) { tempFig(el, true); },
+      after: '<div class="ms-ex"><span class="lbl">Desmos lines</span>1880–1950: slope ≈ <b class="num">0.005</b> °C per year.<br>1980–2025: slope ≈ <b class="num">0.02</b> °C per year.<br>To change "per year" to "per decade" (10 years), multiply by 10.</div>',
+      tryit: { type: 'num', unit: '°C per decade', q: 'A slope of 0.02 °C per year is how many °C per <b>decade</b>?', ans: Q.mul('0.02', 10), show: '0.2', accept: ['0.20', '.2'],
+        wrong: [['0.002', 'A decade is 10 years, so the change is bigger. Multiply by 10.'], ['2', '0.02 × 10 moves the decimal only 1 place.']],
+        hint: 'A decade is 10 years. Multiply by 10.', explain: '0.02 × 10 = 0.2 °C per decade.' } },
+    { title: 'Compare the slopes',
+      body: '<p>The steeper line warmed faster. Compare the slopes with division.</p><div class="ms-ex"><span class="lbl">Example</span>0.02 ÷ 0.005 = <b class="num">4</b>.</div>',
+      tryit: { type: 'mc', q: 'What does 0.02 ÷ 0.005 = 4 tell you?', choices: ['Recent decades warmed about 4 times as fast as 1880–1950.', 'It was 4 °C warmer in 2025.', 'Warming slowed down by 4 times.'], ans: 0,
+        why: { 1: 'The 4 compares two rates. It is not a temperature.', 2: 'The recent slope is bigger, so warming sped up.' },
+        hint: 'You divided two rates of change.', explain: 'The recent rate (0.02 °C per year) is 4 times the early rate (0.005 °C per year).',
+        check: function () { return Q.eq(Q.div('0.02', '0.005'), 4); } } }
+  ],
+  desmos: '<p>Put 1880–1950 in its own table (<code>x₂</code>, <code>y₂</code>) and 1980 to today in another (<code>x₃</code>, <code>y₃</code>). Run <code>y₂ ~ mx₂ + b</code> and <code>y₃ ~ nx₃ + c</code>. Compare m and n. Real data: NOAA Climate at a Glance, Global Time Series.</p>',
+  assignment: [
+    { type: 'mc', std: 'NC.8.SP.3', q: 'A line has slope 0.02. x is the year and y is the temperature anomaly in °C. What does the slope mean?',
+      choices: ['The anomaly goes up about 0.02 °C each year.', 'The anomaly goes up 0.02 °C every 100 years.', 'The temperature is 0.02 °C.', 'The year goes up 0.02 for each degree.'], ans: 0,
+      why: { 1: 'The slope is per 1 unit of x, and x is in years.', 2: 'The slope is a rate of change, not a temperature.', 3: 'This switches x and y.' },
+      hint: 'Slope = change in y per 1 unit of x.', explain: 'For each 1 year, the anomaly goes up about 0.02 °C.' },
+    { type: 'num', std: 'NC.8.SP.3', unit: '°C', q: 'A line of best fit for recent years is <span class="num">y = 0.02x − 39.35</span>. Predict the anomaly in <b>2030</b>.', ans: L(2030), show: '1.25 °C', accept: ['1.25'],
+      wrong: [['40.6', 'Do not forget to subtract 39.35.'], ['79.95', 'Subtract 39.35. Do not add it.']],
+      hint: '0.02 × 2030, then subtract 39.35.', explain: '0.02 × 2030 = 40.6, and 40.6 − 39.35 = 1.25 °C.' },
+    { type: 'num', std: 'NC.8.SP.3', unit: '°C per decade', q: 'A line for an older period has slope 0.008 °C per year. Write the slope in °C per <b>decade</b>.', ans: Q.mul('0.008', 10), show: '0.08', accept: ['.08'],
+      wrong: [['0.0008', 'A decade is longer than a year, so the change is bigger. Multiply by 10.'], ['0.8', 'Multiply by 10 moves the decimal 1 place, not 2.']],
+      hint: 'Multiply by 10.', explain: '0.008 × 10 = 0.08 °C per decade.' },
+    { type: 'sel', std: 'NC.8.SP.1', q: 'Select <b>all</b> true statements about the temperature data.',
+      choices: ['Year and anomaly have a positive association.', 'A steeper slope for recent years means warming is faster now.', 'One cold year proves there is no warming trend.', 'An anomaly of 0 means equal to the long-term average.', 'The line of best fit goes through every point.'], ans: [0, 1, 3],
+      why: { 2: 'Scientists use long-term trends. One year can be cooler and the trend can still go up.', 4: 'A line of best fit goes through the middle of the data. Most points are not on it.' },
+      hint: 'Think about trends vs. single years.', explain: 'Positive association, a steeper recent slope, and "0 = average" are all true.' },
+    { type: 'num', std: 'NC.8.SP.3', unit: 'times', q: 'The 1880–1950 slope is 0.005 °C per year. The 1980–2025 slope is 0.02 °C per year. How many times as fast is the recent warming?', ans: Q.div('0.02', '0.005'), show: '4',
+      wrong: [['0.25', 'You divided the small slope by the big one. Put the recent slope (0.02) on top.'], ['0.015', 'That is the difference. "How many times" means divide.']],
+      hint: '0.02 ÷ 0.005.', explain: '0.02 ÷ 0.005 = 4. Recent warming is about 4 times as fast.' },
+    { type: 'mc', std: 'ESS.8.4.3', q: 'Which human activity adds the most carbon dioxide to the air?', choices: ['Burning fossil fuels like coal, oil and natural gas', 'Planting trees', 'Using solar panels', 'Recycling paper'], ans: 0,
+      why: { 1: 'Trees take carbon dioxide out of the air.', 2: 'Solar panels make electricity without burning fuel.', 3: 'Recycling saves resources. It does not add much carbon dioxide.' },
+      hint: 'What gets burned to make energy?', explain: 'Burning fossil fuels releases carbon dioxide, a greenhouse gas that traps heat.' },
+    { type: 'err', std: 'NC.8.SP.3', q: 'Tyler changed a slope of 0.02 °C per year into °C per <b>century</b>. <b>Which step has the first mistake?</b>',
+      steps: ['A century is 100 years.', '0.02 × 100 = 0.2', 'So the rate is 0.2 °C per century.'], ans: 1,
+      why: { 0: 'A century is 100 years. That is right.', 2: 'This uses the number from Step 2. The mistake is earlier.' },
+      hint: 'Multiplying by 100 moves the decimal point 2 places right.', explain: 'Step 2 is wrong. 0.02 × 100 = 2. The rate is 2 °C per century.', check: function () { return Q.eq(Q.mul('0.02', 100), 2); } },
+    { type: 'num', std: 'NC.8.SP.3', q: 'Use <span class="num">y = 0.02x − 39.35</span>. In what year does the line reach an anomaly of <b>1.45 °C</b>?', ans: Q.div(Q.sub('1.45', LB), LM), show: '2040', accept: ['year 2040'],
+      wrong: [['1940', 'Check your subtraction: 1.45 + 39.35 = 40.8.'], ['0.8', 'You need the year. Solve 0.02x − 39.35 = 1.45 for x.'], ['40.8', 'Good: 0.02x = 40.8. Now divide by 0.02.']],
+      hint: 'Solve 0.02x − 39.35 = 1.45. Add 39.35, then divide by 0.02.', explain: '0.02x = 40.8, so x = 40.8 ÷ 0.02 = 2040.' }
+  ],
+  checks: [['early fit ≈ 0.005', Math.abs(FE.m - 0.005) < 0.0005], ['recent fit ≈ 0.02', Math.abs(FR.m - 0.02) < 0.0005],
+    ['line near data in 2025', Math.abs(Q.num(L(2025)) - (FR.m * 2025 + FR.b)) < 0.1], ['L(2030) = 1.25', Q.eq(L(2030), '1.25')]],
+  ixl: [['Math', 'Predictions and trends in scatter plots', 'NC.8.SP.1'], ['Math', 'Identify lines of best fit', 'NC.8.SP.2'], ['Math', 'Interpret lines of best fit: word problems', 'NC.8.SP.3'],
+        ['Science', 'The greenhouse effect', 'ESS.8.4.3'], ['Science', 'Use data to describe climates', 'ESS.8.4.3']],
+  note: 'The temperature data on this page are made up for practice, shaped like NOAA\'s record. For real data, use NOAA Climate at a Glance: Global Time Series.'
+});
+})();
+</script>
+</body>
+</html>

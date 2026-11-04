@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3: Simple vs. Compound Interest — Math in Financial Literacy</title>
+<meta name="description" content="Show that simple interest grows linearly and compound interest grows nonlinearly, using a table, a graph and an equation.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  function S(t, r) { return FL.simple(100000, r || 5, t); }     // cents
+  function K(t, r) { return FL.compound(100000, r || 5, t); }   // cents
+
+  FL.lesson({
+    id: 'finlit-3', num: 3, title: 'Simple vs. Compound Interest',
+    question: 'You put $1,000 in an account that pays 5% a year. Does it matter if the interest is simple or compound? Let’s use tables and graphs to see.',
+    stds: 'NC.8.F.3 · NC.8.F.2 · NC.8.EE.1', fl: 'FL.8.3 (FL8 3.1; also 4.2)',
+    target: 'I can show that simple interest grows linearly and compound interest grows nonlinearly, using a table, a graph and an equation.',
+    vocab: ['principal', 'interest rate', 'term', 'simple interest', 'compound interest', 'linear', 'nonlinear', 'constant rate of change'],
+    steps: [
+      {
+        title: 'Simple interest: the same amount each year',
+        html: '<p>The <b>principal</b> is the money you start with: $1,000. With <b>simple interest</b> at 5%, you earn 5% of $1,000 every year.</p>' +
+          '<p><span class="fl-eq">0.05 × 1,000 = $50 each year</span></p><p><span class="fl-eq">A = 1000 + 50t</span> where t is years.</p>' +
+          '<p>This is a <b>linear</b> function. The slope is 50: the same $50 every year.</p>',
+        tries: [{ type: 'num', q: 'With simple interest, how much is in the account after <b>10 years</b>?', pre: '$', ans: '1500',
+          hint: 'A = 1000 + 50(10). Multiply first.', explain: '50 × 10 = 500, and 1,000 + 500 = $1,500.',
+          wrong: [{ v: '500', msg: '$500 is just the interest. Add the $1,000 you started with.' }, { v: '10500', msg: 'Multiply 50 × 10 first, then add 1,000.' }, { v: '1050', msg: '$1,050 is after 1 year. Use t = 10.' }] }]
+      },
+      {
+        title: 'Compound interest: interest on interest',
+        html: '<p>With <b>compound interest</b>, you earn 5% of the <b>new</b> balance each year. So you multiply by 1.05 every year.</p>' +
+          '<ul><li>Year 1: 1,000 × 1.05 = <b>$1,050</b></li><li>Year 2: 1,050 × 1.05 = ?</li></ul>' +
+          '<p>In year 2 you earn interest on the $50 of interest too.</p>',
+        tries: [{ type: 'num', q: 'Compound interest: what is the balance after <b>year 2</b>? (1,050 × 1.05)', pre: '$', ans: '1102.50',
+          hint: '5% of 1,050 is 0.05 × 1,050 = 52.50. Add it to 1,050.', explain: '1,050 + 52.50 = $1,102.50. That is $2.50 more than simple interest ($1,100).',
+          wrong: [{ v: '1100', msg: '$1,100 is simple interest. With compound, find 5% of $1,050, not $1,000.' }, { v: '52.5', msg: '$52.50 is the interest. Add it to $1,050.' }] }]
+      },
+      {
+        title: 'The exponent counts the years',
+        html: '<p>Multiplying by 1.05 again and again is a job for an <b>exponent</b> (NC.8.EE.1):</p>' +
+          '<p><span class="fl-eq">1.05 × 1.05 × 1.05 = 1.05³</span></p>' +
+          '<p>So the compound balance is <span class="fl-eq">A = 1000(1.05)ᵗ</span>. You do not need to memorize this formula in 8th grade. Just notice: t is an <b>exponent</b>, so the function is <b>not linear</b>.</p>',
+        tries: [{ type: 'mc', q: 'Which expression gives the compound balance after <b>3 years</b>?', choices: ['1000(1.05)³', '1000 + 50 × 3', '1000(1.05 × 3)', '1000 × 3 × 0.05'], ans: 0,
+          hint: 'Compound means multiply by 1.05 once for each year.',
+          why: { 1: 'That is simple interest: $50 each year.', 2: '1.05 × 3 = 3.15. That would triple the money. You multiply by 1.05 three times instead.', 3: 'That is only the simple interest earned, $150.' },
+          explain: '1000 × 1.05 × 1.05 × 1.05 = 1000(1.05)³ ≈ $1,157.63.' }]
+      },
+      {
+        title: 'Table and graph',
+        html: '<p>Move the sliders. The dashed gold line is <b>simple</b> interest. The navy curve is <b>compound</b> interest.</p>',
+        fig: function (box) {
+          var holder = FL.el('div'); box.appendChild(holder);
+          box.insertAdjacentHTML('beforeend', '<div class="fl-legend"><span><i class="dash" style="border-color:#C98F00"></i>Simple: A = 1000 + 50t</span><span><i style="border-color:#1E2D4F"></i>Compound: A = 1000(1.05)ᵗ</span></div>');
+          var out = FL.el('div', 'fl-readout'), tbl = FL.el('div', 'fl-scroll');
+          var years = 10, rate = 5;
+          function draw() {
+            holder.innerHTML = '';
+            var top = K(years, rate) / 100, step = top > 10000 ? 2000 : top > 4000 ? 1000 : top > 2000 ? 500 : 200;
+            var ymax = Math.ceil(top / step) * step;
+            var g = new FL.Graph({ xmin: 0, xmax: years, ymin: 0, ymax: ymax, xstep: years > 20 ? 5 : years > 10 ? 2 : 1, ystep: step, xlabel: 'Years (t)', ylabel: 'Balance',
+              yfmt: function (v) { return '$' + FL.num(v); }, title: 'Simple and compound interest' });
+            g.fn(function (t) { return S(0, rate) / 100 + 1000 * rate / 100 * t; }, { color: C.gold, dash: '9 5' });
+            g.fn(function (t) { return 1000 * Math.pow(1 + rate / 100, t); }, { color: C.navy });
+            for (var t = 0; t <= years; t++) { g.dot(t, S(t, rate) / 100, { color: C.gold, r: years > 15 ? 2.5 : 4 }); g.dot(t, K(t, rate) / 100, { color: C.navy, r: years > 15 ? 2.5 : 4 }); }
+            holder.appendChild(g.svg);
+            out.innerHTML = 'After ' + years + ' years at ' + rate + '%: simple ' + $(S(years, rate)) + ' · compound <b>' + $(K(years, rate)) + '</b>';
+            var r = '';
+            for (var y = 0; y <= Math.min(years, 10); y++) r += '<tr' + (y === 10 ? ' class="hi"' : '') + '><td>' + y + '</td><td>' + $(S(y, rate)) + '</td><td>' + (y ? '+' + $(S(y, rate) - S(y - 1, rate)) : '') + '</td><td>' + $(K(y, rate)) + '</td><td>' + (y ? '+' + $(K(y, rate) - K(y - 1, rate)) : '') + '</td></tr>';
+            tbl.innerHTML = '<table class="fl-tbl"><tr><th>Year</th><th>Simple</th><th>Change</th><th>Compound</th><th>Change</th></tr>' + r + '</table>';
+          }
+          FL.slider(box, { label: 'Years', min: 1, max: 30, step: 1, value: 10, onInput: function (v) { years = v; draw(); } });
+          FL.slider(box, { label: 'Rate', min: 1, max: 10, step: 1, value: 5, fmt: function (v) { return v + '%'; }, onInput: function (v) { rate = v; draw(); } });
+          box.appendChild(out); box.appendChild(tbl);
+        },
+        tries: [{ type: 'num', q: 'Set Years = 10 and Rate = 5%. What is the <b>compound</b> balance after 10 years?', pre: '$', ans: '1628.89',
+          hint: 'Read the last row of the table, or the readout under the sliders.', explain: 'Compound: $1,628.89. Simple: $1,500. Try 30 years: $4,321.94 vs. $2,500!',
+          wrong: [{ v: '1500', msg: '$1,500 is the simple interest balance. Find the compound one.' }] }]
+      },
+      {
+        title: 'Linear vs. nonlinear',
+        html: '<p>Look at the <b>Change</b> columns in the table.</p><ul><li>Simple: +$50, +$50, +$50… The <b>same</b> change each year. <b>Linear</b>, a straight line.</li>' +
+          '<li>Compound: +$50, +$52.50, +$55.13… The change <b>grows</b> each year. <b>Nonlinear</b>, a curve.</li></ul>' +
+          '<p>For a <b>saver</b>, compound interest is better. For a <b>borrower</b>, compound interest makes a loan cost more.</p>',
+        tries: [{ type: 'mc', q: 'Which kind of interest has a <b>constant rate of change</b>?', choices: ['Simple interest', 'Compound interest', 'Both', 'Neither'], ans: 0,
+          hint: 'Which one adds the same dollar amount every year?', why: { 1: 'Compound interest adds more each year, so its rate of change is not constant.', 2: 'Only one of them adds the same amount every year.', 3: 'Look at the simple column: +$50 every year.' },
+          explain: 'Simple interest adds $50 every year, so it is linear.' }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'word problem', q: 'Nia puts <b>$2,000</b> in an account with <b>3% simple interest</b> per year. How much is in the account after <b>4 years</b>?', pre: '$', ans: '2240',
+        hint: 'Interest each year = 0.03 × 2,000. Multiply by 4 years. Then add the $2,000.', explain: '0.03 × 2,000 = 60 a year. 60 × 4 = 240. 2,000 + 240 = $2,240.',
+        wrong: [{ v: '240', msg: '$240 is the interest. Add the $2,000 Nia started with.' }, { v: '60', msg: '$60 is one year of interest. Find 4 years and add it to $2,000.' }, { v: '2060', msg: '$2,060 is after 1 year. Use 4 years.' }] },
+      { type: 'mc', kind: 'linear or nonlinear', q: 'Which table shows a <b>linear</b> function?<div class="fl-scroll"><table class="fl-tbl"><tr><th>Year</th><th>0</th><th>1</th><th>2</th><th>3</th></tr><tr><td>Account P</td><td>$500</td><td>$520</td><td>$540.80</td><td>$562.43</td></tr><tr><td>Account Q</td><td>$500</td><td>$520</td><td>$540</td><td>$560</td></tr></table></div>',
+        choices: ['Account Q', 'Account P', 'Both', 'Neither'], ans: 0,
+        hint: 'Find the change each year. Linear means the same change every time.',
+        why: { 1: 'P changes by 20, then 20.80, then 21.63. Not the same, so not linear.', 2: 'P’s changes grow, so P is not linear.', 3: 'Q goes up $20 every year. That is linear.' },
+        explain: 'Q goes up $20 each year (simple interest). P goes up more each year (compound).' },
+      { type: 'num', kind: 'numeric entry', q: '<b>$2,000</b> earns <b>10% compound</b> interest each year. Year 1: 2,000 × 1.10 = $2,200. What is the balance after <b>year 2</b>?', pre: '$', ans: '2420',
+        hint: 'Multiply the year 1 balance by 1.10: 2,200 × 1.10.', explain: '2,200 × 1.10 = $2,420. The interest in year 2 is $220, not $200.',
+        wrong: [{ v: '2400', msg: '$2,400 is simple interest. With compound, find 10% of $2,200.' }, { v: '220', msg: '$220 is the interest. Add it to $2,200.' }] },
+      { type: 'mc', kind: 'multiple choice', q: 'Which equation shows a <b>nonlinear</b> function?', choices: ['A = 1000(1.05)ᵗ', 'A = 1000 + 50t', 'A = 50t', 'A = 1050 + 52t'], ans: 0,
+        hint: 'Look for the variable in an exponent.', why: { 1: 'This is y = mx + b form. It is linear.', 2: 'A = 50t is a line through the origin.', 3: 'This is also y = mx + b form, so it is linear.' },
+        explain: 't is an exponent, so the graph curves. It is nonlinear.' },
+      { type: 'sel', kind: 'select all', q: 'Select <b>all</b> true statements about the graph of <b>simple</b> interest, A = 1000 + 50t.',
+        choices: ['It is a straight line.', 'It has a constant rate of change.', 'It goes up $50 every year.', 'It goes up by more each year.', 'It is a curve.'], ans: [0, 1, 2],
+        hint: 'Simple interest adds the same amount every year.',
+        why: { 3: 'That describes compound interest. Simple interest adds the same $50.', 4: 'Simple interest makes a straight line, not a curve.' },
+        explain: 'Simple interest is linear: a straight line that rises $50 each year.' },
+      { type: 'num', kind: 'word problem', q: '$1,000 earns 5% a year for <b>30 years</b>. Simple interest gives $2,500. Compound interest gives $4,321.94. How much <b>more</b> does compound interest give?', pre: '$', ans: '1821.94',
+        hint: 'Subtract: 4,321.94 − 2,500.', explain: '4,321.94 − 2,500 = $1,821.94 more.',
+        wrong: [{ v: '6821.94', msg: 'Subtract to find "how much more," do not add.' }, { v: '1821.9', msg: 'Close! Check the cents: 4,321.94 − 2,500.00.' }] },
+      { type: 'err', kind: 'find the error', q: 'Ana finds the <b>compound</b> balance for $1,000 at 5% after 2 years. Find the <b>first</b> mistake.',
+        lines: ['Year 1 interest: 0.05 × 1,000 = 50', 'Year 1 balance: 1,000 + 50 = 1,050', 'Year 2 interest: 0.05 × 1,000 = 50', 'Year 2 balance: 1,050 + 50 = 1,100'], ans: 2,
+        hint: 'With compound interest, which balance do you take 5% of in year 2?',
+        why: { 0: 'Line 1 is right: 5% of $1,000 is $50.', 1: 'Line 2 is right: 1,000 + 50 = 1,050.', 3: 'Line 4 adds correctly, but it uses the wrong interest from line 3.' },
+        explain: 'In year 2, compound interest uses the new balance: 0.05 × 1,050 = 52.50. The balance is $1,102.50.' },
+      { type: 'num', kind: 'exponents', q: 'Use NC.8.EE.1. Write <b>1.05²</b> as a decimal.', ans: '1.1025',
+        hint: '1.05² = 1.05 × 1.05.', explain: '1.05 × 1.05 = 1.1025. So 1000(1.05)² = $1,102.50.',
+        wrong: [{ v: '2.1', msg: '1.05² means 1.05 × 1.05, not 1.05 × 2.' }, { v: '1.1', msg: 'Close. Multiply all the digits: 1.05 × 1.05 = 1.1025.' }, { v: '1.0025', msg: 'Multiply carefully: 1.05 × 1.05. Use the area model: 1 + 0.05 + 0.05 + 0.0025.' }] }
+    ],
+    desmos: '<ol><li>Type <code>y = 1000 + 50x {x ≥ 0}</code> and <code>y = 1000(1.05)^x {x ≥ 0}</code>.</li>' +
+      '<li>Wrench icon: set x from 0 to 10 and y from 0 to 2,000. Which graph is a line? Which is a curve?</li>' +
+      '<li>Add a slider: type <code>y = 1000(1 + r)^x</code> and click "add slider" for r. Change r. What happens?</li>' +
+      '<li>Zoom out to 30 years. Compare $2,500 and $4,321.94.</li></ol>',
+    ixl: [
+      ['Simple interest', 'https://www.ixl.com/math/grade-8/simple-interest'],
+      ['Compound interest (enrichment)', 'https://www.ixl.com/math/grade-8/compound-interest'],
+      ['Identify linear and nonlinear functions: tables (NC.8.F.3)', 'https://www.ixl.com/math/grade-8/identify-linear-and-nonlinear-functions-tables'],
+      ['Identify linear and nonlinear functions: graphs and equations (NC.8.F.3)', 'https://www.ixl.com/math/grade-8/identify-linear-and-nonlinear-functions-graphs-and-equations'],
+      ['Compare linear functions: tables, graphs, and equations (NC.8.F.2)', 'https://www.ixl.com/math/grade-8/compare-linear-functions-tables-graphs-and-equations']
+    ],
+    test: function () {
+      FL.assertEq(S(10), 150000, 'L3 simple 10y $1,500');
+      FL.assertEq(K(10), 162889, 'L3 compound 10y $1,628.89');
+      FL.assertEq(S(30), 250000, 'L3 simple 30y');
+      FL.assertEq(K(30), 432194, 'L3 compound 30y $4,321.94');
+      FL.assertEq(K(2), 110250, 'L3 year 2 $1,102.50');
+      FL.assertEq(K(3), 115763, 'L3 year 3 $1,157.63');
+      FL.assertEq(K(3) - K(2), 5513, 'L3 change +55.13');
+      FL.assertEq(FL.simple(200000, 3, 4), 224000, 'L3 Q1 $2,240');
+      FL.assertEq(FL.compound(50000, 4, 2), 54080, 'L3 Q2 540.80');
+      FL.assertEq(FL.compound(50000, 4, 3), 56243, 'L3 Q2 562.43');
+      FL.assertEq(FL.compound(200000, 10, 2), 242000, 'L3 Q3 $2,420');
+      FL.assertEq(K(30) - S(30), 182194, 'L3 Q6 diff');
+      FL.assertEq(105 * 105, 11025, 'L3 1.05^2');
+    }
+  });
+})();
+</script>
+</body>
+</html>

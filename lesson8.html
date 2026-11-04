@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 8: Dream Life Break-Even — Math in Financial Literacy</title>
+<meta name="description" content="Use a system of equations to find when the cost of college or training pays off.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap"><main id="fl"></main></div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var C = FL.COLORS, $ = FL.money;
+  function A(t) { return 50000 * t; }
+  // Path B with yearly college cost c (dollars): spend c a year for 4 years, then earn 82,000 a year
+  function B(t, c) { c = c == null ? 10000 : c; return t <= 4 ? -c * t : 82000 * (t - 4) - 4 * c; }
+  // break-even year as an exact fraction: 50,000t = 82,000t − 328,000 − 4c  →  t = (328,000 + 4c) / 32,000
+  function breakEven(c) { return { n: 328000 + 4 * c, d: 32000 }; }
+  function fmtT(f) { var v = f.n / f.d; return FL.num(Math.round(v * 100) / 100); }
+
+  FL.lesson({
+    id: 'finlit-8', num: 8, title: 'Dream Life Break-Even',
+    question: 'Should you work right after high school, or go to college first? College costs money and time, but can lead to higher pay. When does it pay off?',
+    source: 'the yearly pay, which is rounded from the Lesson 7 BLS data',
+    stds: 'NC.8.EE.8 · NC.8.F.4', fl: 'FL.8.5 (FL8 5.2)',
+    target: 'I can use a system of equations to find when the cost of college or training pays off.',
+    vocab: ['return on investment (ROI)', 'break-even point', 'total earnings', 'tuition', 'net cost', 'student loan', 'domain'],
+    steps: [
+      {
+        title: 'Two paths',
+        html: '<p>t = years after high school. Total earnings so far:</p>' +
+          '<ul><li><b>Path A:</b> work right away at about <b>$50,000</b> a year. <span class="fl-eq">A = 50,000t</span></li>' +
+          '<li><b>Path B:</b> 4 years of college at a net cost of <b>$10,000</b> a year (made up), then about <b>$82,000</b> a year.</li></ul>' +
+          '<p>During college, Path B goes <b>down</b>: you are paying, not earning.</p>',
+        tries: [{ type: 'num', q: 'What is the total net cost of 4 years of college at $10,000 a year?', pre: '$', ans: '40000',
+          hint: '4 × 10,000.', explain: '4 × 10,000 = $40,000. At t = 4, Path B is at −$40,000.',
+          wrong: [{ v: '10000', msg: 'That is one year. College is 4 years.' }, { v: '14000', msg: 'Multiply 4 × 10,000, do not add.' }] }]
+      },
+      {
+        title: 'Write Path B as a line',
+        html: '<p>After college (t ≥ 4), Path B earns $82,000 for each year after year 4, minus the $40,000 college cost:</p>' +
+          '<p><span class="fl-eq">B = 82,000(t − 4) − 40,000</span></p><p>Distribute and combine:</p>' +
+          '<p><span class="fl-eq">B = 82,000t − 328,000 − 40,000</span></p>',
+        tries: [{ type: 'mc', q: 'Which is the simplified equation for Path B (t ≥ 4)?', choices: ['B = 82,000t − 368,000', 'B = 82,000t − 40,004', 'B = 82,000t − 288,000', 'B = 82,000t + 368,000'], ans: 0,
+          hint: 'Combine −328,000 and −40,000.',
+          why: { 1: 'Distribute: 82,000 × 4 = 328,000. Then subtract 40,000 too.', 2: 'Both numbers are subtracted, so add 328,000 + 40,000 = 368,000 and keep the minus sign.', 3: 'Both terms are negative, so the constant is −368,000.' },
+          explain: '−328,000 − 40,000 = −368,000. So B = 82,000t − 368,000.' }]
+      },
+      {
+        title: 'Find the break-even point',
+        html: '<p>The <b>break-even point</b> is where the two lines cross. Before it, Path A has more money in total. After it, Path B has more.</p>' +
+          '<p><span class="fl-eq">50,000t = 82,000t − 368,000</span><br><span class="fl-eq">368,000 = 32,000t</span> (add 368,000, subtract 50,000t)</p>',
+        fig: function (box) {
+          var holder = FL.el('div'); box.appendChild(holder);
+          box.insertAdjacentHTML('beforeend', '<div class="fl-legend"><span><i style="border-color:#1E2D4F"></i>Path A: work now</span><span><i class="dash" style="border-color:#B42318"></i>Path B: college first</span></div>');
+          var out = FL.el('div', 'fl-readout');
+          function draw(c) {
+            holder.innerHTML = '';
+            var g = new FL.Graph({ xmin: 0, xmax: 20, ymin: -200000, ymax: 1000000, xstep: 2, ystep: 200000, xlabel: 'Years after high school (t)', ylabel: 'Total earned',
+              yfmt: function (v) { return v === 1000000 ? '$1M' : (v < 0 ? '−$' : '$') + Math.abs(v / 1000) + 'k'; }, title: 'Break-even graph' });
+            g.fn(A, { color: C.navy });
+            g.path([[0, 0], [4, B(4, c)], [20, B(20, c)]], { color: C.red, dash: '9 5' });
+            var be = breakEven(c), t = be.n / be.d;
+            g.dot(t, A(t), { color: C.gold, r: 7 }); g.label(t, A(t), '(' + fmtT(be) + ', $' + FL.num(Math.round(A(t))) + ')', { dx: -10, dy: -14, anchor: 'end', color: '#8A6100' });
+            holder.appendChild(g.svg);
+            out.innerHTML = 'College cost $' + FL.num(c) + '/year → B = 82,000t − ' + FL.num(328000 + 4 * c) + ' → break-even at t = <b>' + fmtT(be) + '</b> years';
+          }
+          FL.slider(box, { label: 'Yearly college cost', min: 0, max: 30000, step: 2500, value: 10000, fmt: function (v) { return '$' + FL.num(v); }, onInput: draw });
+          box.appendChild(out);
+        },
+        tries: [{ type: 'num', q: 'Solve 368,000 = 32,000t. How many years after high school is the break-even point?', post: 'years', ans: '11.5',
+          hint: 'Divide 368,000 ÷ 32,000.', explain: '368,000 ÷ 32,000 = 11.5 years. Both paths have earned $575,000 then.',
+          wrong: [{ v: '11', msg: 'Close! Divide exactly: 368,000 ÷ 32,000 = 11.5.' }, { v: '12', msg: 'Do not round. 368,000 ÷ 32,000 = 11.5.' }, { v: '7.36', msg: 'Divide by 32,000 (82,000 − 50,000), not 50,000.' }] }]
+      },
+      {
+        title: 'What if college costs more?',
+        html: '<p>Move the <b>Yearly college cost</b> slider in Step 3. Watch the dashed line and the gold point.</p>' +
+          '<p>This model leaves out taxes, raises and loan interest. Each of those would move the lines too.</p>',
+        tries: [{ type: 'mc', q: 'If college cost <b>$20,000</b> a year instead of $10,000, the break-even point comes…', choices: ['later, because the Path B line shifts down', 'sooner, because college costs more', 'at the same time', 'never'], ans: 0,
+          hint: 'Set the slider to $20,000. Does the gold point move left or right?',
+          why: { 1: 'More cost means Path B starts further behind, so it takes longer to catch up.', 2: 'The cost changes Path B’s line, so the crossing point moves.', 3: 'Path B still earns more each year, so it still catches up, just later.' },
+          explain: 'B = 82,000t − 408,000. Then 32,000t = 408,000, so t = 12.75 years. Later.' }]
+      }
+    ],
+    assign: [
+      { type: 'num', kind: 'solve', q: 'Solve <b>50,000t = 82,000t − 368,000</b>.', pre: 't =', ans: '11.5',
+        hint: 'Subtract 50,000t from both sides. Then add 368,000.', explain: '368,000 = 32,000t, so t = 11.5.',
+        wrong: [{ v: '-11.5', msg: 'Check the sign. Both 368,000 and 32,000 are positive.' }, { v: '7.36', msg: 'Divide by 32,000 (82,000 − 50,000), not 50,000.' }, { v: '4.49', msg: 'Divide by 32,000, not 82,000.' }] },
+      { type: 'num', kind: 'evaluate', q: 'Path A: A = 50,000t. How much has Path A earned in total after <b>10 years</b>?', pre: '$', ans: '500000',
+        hint: '50,000 × 10.', explain: '50,000 × 10 = $500,000.',
+        wrong: [{ v: '50000', msg: 'That is one year. Multiply by 10 years.' }] },
+      { type: 'num', kind: 'evaluate', q: 'Path B: B = 82,000t − 368,000. How much has Path B earned in total after <b>10 years</b>?', pre: '$', ans: '452000',
+        hint: '82,000 × 10 = 820,000. Then subtract 368,000.', explain: '820,000 − 368,000 = $452,000.',
+        wrong: [{ v: '820000', msg: 'You found 82,000 × 10. Now subtract 368,000.' }, { v: '1188000', msg: 'Subtract 368,000, do not add.' }] },
+      { type: 'mc', kind: 'compare', q: 'After <b>15 years</b>, which path has earned more in total?', choices: ['Path B ($862,000 vs. $750,000)', 'Path A ($750,000 vs. $862,000)', 'They are equal', 'You cannot tell'], ans: 0,
+        hint: '15 is after the break-even point (11.5). Or find A(15) and B(15).',
+        why: { 1: 'A(15) = 750,000 and B(15) = 862,000. B is more.', 2: 'They are equal only at t = 11.5.', 3: 'Put t = 15 into both equations.' },
+        explain: 'After the break-even point, Path B is ahead.' },
+      { type: 'mc', kind: 'explain', q: 'If college cost <b>$20,000</b> a year instead, would the break-even point come sooner or later?', choices: ['Later: the Path B line shifts down', 'Sooner: the Path B line shifts up', 'Sooner: the Path B line gets steeper', 'No change'], ans: 0,
+        hint: 'More cost means Path B starts further below zero.',
+        why: { 1: 'More cost moves Path B down, not up.', 2: 'The slope (82,000) stays the same. Only the starting amount changes.', 3: 'The cost changes where Path B’s line is, so the crossing point moves.' },
+        explain: 'B = 82,000t − 408,000, so 32,000t = 408,000 and t = 12.75. Later.' },
+      { type: 'sel', kind: 'select all', q: 'A = 50,000t and B = 82,000t − 368,000 cross at (11.5, 575,000). Select <b>all</b> true statements.',
+        choices: ['50,000 is Path A’s pay per year.', 'The intersection is the break-even point.', 'Before 11.5 years, Path A has earned more in total.', 'Path B earns less per year after college.', 'Both paths have earned $575,000 at t = 11.5.'], ans: [0, 1, 2, 4],
+        hint: 'Compare the slopes, and read the point of intersection.',
+        why: { 3: 'Path B’s slope is 82,000, which is more than 50,000.' },
+        explain: 'Only D is false: Path B earns $82,000 a year, more than Path A.' },
+      { type: 'err', kind: 'find the error', q: 'Eli solved <b>60,000t = 75,000t − 300,000</b>. Find the <b>first</b> mistake.',
+        lines: ['300,000 + 60,000t = 75,000t', '300,000 = 135,000t', 't ≈ 2.2'], ans: 1,
+        hint: 'To move 60,000t, subtract it from both sides.',
+        why: { 0: 'Line 1 is right. Eli added 300,000 to both sides.', 2: 'Line 3 divides correctly, but line 2 already has a mistake.' },
+        explain: 'Eli added 60,000t. Subtract: 300,000 = 15,000t, so t = 20.' },
+      { type: 'num', kind: 'word problem', q: '<b>Trade school:</b> 2 years at a net cost of $8,000 a year, then $65,000 a year: T = 65,000t − 146,000. <b>Work now:</b> W = 45,000t. Solve T = W. When is the break-even point?', post: 'years', ans: '7.3',
+        hint: 'Solve 45,000t = 65,000t − 146,000. Then 146,000 = 20,000t.', explain: '146,000 ÷ 20,000 = 7.3 years.',
+        wrong: [{ v: '3.24', msg: 'Divide by 20,000 (65,000 − 45,000), not 45,000.' }, { v: '7', msg: 'Close! Divide exactly: 146,000 ÷ 20,000 = 7.3.' }, { v: '2.25', msg: 'Divide by 20,000 (65,000 − 45,000), not 65,000.' }] }
+    ],
+    desmos: '<ol><li>Type <code>y = 50000x {x ≥ 0}</code> and <code>y = 82000x − 368000 {x ≥ 4}</code>. The braces restrict the domain.</li>' +
+      '<li>Wrench icon: set x from 0 to 20 and y from −100,000 to 1,000,000.</li>' +
+      '<li>Click the intersection. It should say (11.5, 575000).</li>' +
+      '<li>Add a slider for the yearly college cost: type <code>y = 82000(x − 4) − 4c {x ≥ 4}</code> and add a slider for c. Watch the break-even point move.</li>' +
+      '<li>Your Dream Life: replace the numbers with your own career pay, school cost and years. Find your break-even year.</li></ol>',
+    ixl: [
+      ['Solve a system of equations by graphing: word problems (NC.8.EE.8)', 'https://www.ixl.com/math/grade-8/solve-a-system-of-equations-by-graphing-word-problems'],
+      ['Solve equations with variables on both sides: word problems (NC.8.EE.7)', 'https://www.ixl.com/math/grade-8/solve-equations-with-variables-on-both-sides-word-problems'],
+      ['Interpret the slope and y-intercept of a linear function (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/interpret-the-slope-and-y-intercept-of-a-linear-function'],
+      ['Write linear functions: word problems (NC.8.F.4)', 'https://www.ixl.com/math/grade-8/write-linear-functions-word-problems']
+    ],
+    test: function () {
+      var be = breakEven(10000); FL.assertEq(be.n * 2, be.d * 23, 'L8 break-even 11.5');
+      FL.assertEq(A(11.5), 575000, 'L8 A(11.5)'); FL.assertEq(B(11.5), 575000, 'L8 B(11.5)');
+      FL.assertEq(B(4), -40000, 'L8 B(4)'); FL.assertEq(82000 * 10 - 368000, B(10), 'L8 B form');
+      FL.assertEq(A(10), 500000, 'L8 A(10)'); FL.assertEq(B(10), 452000, 'L8 B(10)');
+      FL.assertEq(A(15), 750000, 'L8 A(15)'); FL.assertEq(B(15), 862000, 'L8 B(15)');
+      var b2 = breakEven(20000); FL.assertEq(b2.n * 4, b2.d * 51, 'L8 $20k break-even 12.75');
+      FL.assertEq(300000 / 15000, 20, 'L8 error answer');
+      FL.assertEq(65000 * 2 + 16000, 146000, 'L8 trade school constant');
+      FL.assertEq(146000 * 10, 20000 * 73, 'L8 trade school 7.3');
+    }
+  });
+})();
+</script>
+</body>
+</html>

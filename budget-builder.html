@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Builder — Math in Financial Literacy</title>
+<meta name="description" content="Find the 50/30/20 targets, then drag expenses into needs, wants and savings to build a balanced budget.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="fl.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<div class="page-wrap">
+<main class="gm" id="game">
+<a href="index.html" class="back-link">← Math in Financial Literacy</a>
+<header class="page-hdr"><span class="eyebrow">Game · Lesson 1</span><h1>Budget Builder</h1>
+<p>Find the 50/30/20 targets. Then drag each expense into Needs, Wants or Savings. Leave out wants that do not fit. All money is made up.</p>
+<p class="stds">NC.7.RP.3 · NC.8.F.4 · FL.8.1</p></header>
+<div class="gm-bar"><span>Level <b id="lvl">1</b> / 5</span><span>Score <b id="score">0</b></span><span>Best <b id="best">0</b></span></div>
+
+<section class="gm-panel" id="targets">
+  <div class="gm-big" id="income"></div>
+  <p class="fl-how" style="margin:6px 0 0">Step 1: Find each target. Needs = 50%, Wants = 30%, Savings = 20% of the monthly income.</p>
+  <div class="fl-row">
+    <label class="fl-namelab" for="t50">Needs (50%)</label><span class="fl-pre">$</span><input class="fl-in" id="t50" inputmode="decimal" style="max-width:150px">
+    <label class="fl-namelab" for="t30">Wants (30%)</label><span class="fl-pre">$</span><input class="fl-in" id="t30" inputmode="decimal" style="max-width:150px">
+    <label class="fl-namelab" for="t20">Savings (20%)</label><span class="fl-pre">$</span><input class="fl-in" id="t20" inputmode="decimal" style="max-width:150px">
+  </div>
+  <div class="fl-row"><button type="button" class="fl-btn" id="tcheck">Check targets</button></div>
+  <div class="gm-msg" id="tmsg" aria-live="polite"></div>
+</section>
+
+<section class="gm-panel" id="sorter" hidden>
+  <p class="fl-how" style="margin:0 0 8px">Step 2: Drag a card into a box, or tap a card and then tap a box.</p>
+  <h3 class="fl-h3" style="font-size:17px">Expenses this month <span class="fl-how">(cards left here are “not this month”)</span></h3>
+  <div class="gm-cards gm-bin" id="pool" data-bin="pool" style="min-height:70px;border-style:solid;background:#fff;flex-direction:row;flex-wrap:wrap;align-items:flex-start"></div>
+  <div class="gm-bins" style="margin-top:12px">
+    <div class="gm-bin" data-bin="need"><h3>Needs</h3><div class="gm-tot"></div><div class="gm-meter"><i></i></div><div class="gm-cards"></div></div>
+    <div class="gm-bin" data-bin="want"><h3>Wants</h3><div class="gm-tot"></div><div class="gm-meter"><i></i></div><div class="gm-cards"></div></div>
+    <div class="gm-bin" data-bin="save"><h3>Savings</h3><div class="gm-tot"></div><div class="gm-meter"><i></i></div><div class="gm-cards"></div></div>
+  </div>
+  <div class="fl-row"><button type="button" class="fl-btn" id="bcheck">Check my budget</button><button type="button" class="fl-btn fl-ghost" id="next" hidden>Next level →</button></div>
+  <div class="gm-msg" id="bmsg" aria-live="polite"></div>
+</section>
+<section class="gm-panel" id="end" hidden></section>
+<p class="fl-how">Tip: wants can be within 2% of the income of the 30% target, but not over that.</p>
+</main>
+</div>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Financial Literacy</div>
+<script src="fl.js"></script>
+<script>
+(function () {
+  var $ = FL.money;
+  // made-up budgets, whole dollars. k: need | want | save. "extra" wants do not fit the 30% target.
+  var LEVELS = [
+    { income: 2000, cards: [['Rent', 650, 'need'], ['Groceries', 250, 'need'], ['Phone bill', 100, 'need'], ['Eating out', 150, 'want'], ['Streaming', 30, 'want'], ['Concert tickets', 120, 'want'], ['Video game', 70, 'want'], ['Clothes for fun', 230, 'want'], ['Savings account', 400, 'save']] },
+    { income: 2400, cards: [['Rent', 800, 'need'], ['Groceries', 300, 'need'], ['Bus pass', 60, 'need'], ['Electric bill', 40, 'need'], ['Eating out', 200, 'want'], ['Streaming', 20, 'want'], ['New shoes', 150, 'want'], ['Movies', 50, 'want'], ['Hobby supplies', 300, 'want'], ['Savings account', 300, 'save'], ['Emergency fund', 180, 'save']] },
+    { income: 3000, cards: [['Rent', 950, 'need'], ['Groceries', 350, 'need'], ['Car insurance', 120, 'need'], ['Electric bill', 80, 'need'], ['Eating out', 250, 'want'], ['Streaming', 40, 'want'], ['Concert', 160, 'want'], ['Phone case', 30, 'want'], ['Weekend trip', 420, 'want'], ['Designer jacket', 280, 'want', 1], ['Savings account', 400, 'save'], ['Emergency fund', 200, 'save']] },
+    { income: 3600, cards: [['Rent', 1100, 'need'], ['Groceries', 420, 'need'], ['Car payment', 200, 'need'], ['Phone bill', 80, 'need'], ['Eating out', 300, 'want'], ['Streaming', 45, 'want'], ['Video games', 95, 'want'], ['Concert', 240, 'want'], ['Weekend trip', 400, 'want'], ['New TV', 500, 'want', 1], ['Designer shoes', 210, 'want', 1], ['Savings account', 500, 'save'], ['College fund', 220, 'save']] },
+    { income: 4200, cards: [['Rent', 1300, 'need'], ['Groceries', 480, 'need'], ['Car insurance', 140, 'need'], ['Utilities', 180, 'need'], ['Eating out', 320, 'want'], ['Streaming', 60, 'want'], ['Concert', 180, 'want'], ['Game console', 450, 'want'], ['Clothes for fun', 250, 'want'], ['Theme park trip', 600, 'want', 1], ['Smart watch', 350, 'want', 1], ['Savings account', 540, 'save'], ['Emergency fund', 300, 'save']] }
+  ];
+  var WHY = { need: ' is a need. You have to pay it to live and work.', want: ' is a want. It is nice to have, but you could live without it.', save: ' is savings. It is money you keep for later.' };
+  var NAMES = { need: 'Needs', want: 'Wants', save: 'Savings', pool: 'not this month' };
+  function sum(l, k, extra) { return l.cards.filter(function (c) { return c[2] === k && (extra === undefined || !!c[3] === extra); }).reduce(function (s, c) { return s + c[1]; }, 0); }
+
+  // self-test: every level balances exactly at 50/30/20
+  LEVELS.forEach(function (l, i) {
+    FL.assertEq(sum(l, 'need') * 100, FL.pctOf(l.income * 100, 50), 'BB level ' + (i + 1) + ' needs = 50%');
+    FL.assertEq(sum(l, 'want', false) * 100, FL.pctOf(l.income * 100, 30), 'BB level ' + (i + 1) + ' wants = 30%');
+    FL.assertEq(sum(l, 'save') * 100, FL.pctOf(l.income * 100, 20), 'BB level ' + (i + 1) + ' savings = 20%');
+    // the extra wants never fit inside the tolerance
+    l.cards.filter(function (c) { return c[3]; }).forEach(function (c) { FL.assert(c[1] > l.income * 0.02, 'BB extra ' + c[0] + ' too big to fit'); });
+  });
+
+  var lv = 0, score = 0, tTries = 0, bTries = 0, place = {}, picked = null;
+  var el = function (id) { return document.getElementById(id); };
+  el('best').textContent = FL.best('budget-builder').best;
+
+  function start() {
+    var L = LEVELS[lv];
+    el('lvl').textContent = lv + 1;
+    el('income').innerHTML = 'Monthly income: ' + $(L.income * 100, 'auto');
+    ['t50', 't30', 't20'].forEach(function (id) { el(id).value = ''; el(id).readOnly = false; });
+    el('tcheck').disabled = false;
+    el('tmsg').textContent = ''; el('tmsg').className = 'gm-msg';
+    el('targets').hidden = false; el('sorter').hidden = true; el('next').hidden = true; el('bcheck').disabled = false;
+    el('bmsg').textContent = '';
+    tTries = 0; bTries = 0; place = {};
+    // shuffle cards into the pool
+    var order = L.cards.map(function (c, i) { return i; }).sort(function () { return Math.random() - 0.5; });
+    el('pool').innerHTML = '';
+    document.querySelectorAll('.gm-bins .gm-cards').forEach(function (b) { b.innerHTML = ''; });
+    order.forEach(function (i) {
+      var c = L.cards[i], chip = FL.el('button', 'gm-chip', FL.esc(c[0]) + ' <b>$' + FL.num(c[1]) + '</b>');
+      chip.type = 'button'; chip.dataset.i = i; place[i] = 'pool';
+      el('pool').appendChild(chip); wire(chip);
+    });
+    totals();
+  }
+
+  el('tcheck').addEventListener('click', function () {
+    var L = LEVELS[lv], ok = true, msgs = [];
+    tTries++;
+    [['t50', 50, 'Needs'], ['t30', 30, 'Wants'], ['t20', 20, 'Savings']].forEach(function (t) {
+      var v = FL.parse(el(t[0]).value), want = FL.pctOf(L.income * 100, t[1]);
+      if (!v || !FL.eq(v, { n: want, d: 100 })) {
+        ok = false;
+        if (v && FL.eq(v, { n: L.income * t[1], d: 1 })) msgs.push(t[2] + ': you multiplied by ' + t[1] + '. Use ' + (t[1] / 100) + ' instead (' + t[1] + '% = ' + (t[1] / 100) + ').');
+        else msgs.push(t[2] + ': find ' + (t[1] / 100) + ' × ' + FL.num(L.income) + '.');
+      }
+    });
+    if (ok) {
+      var bonus = tTries === 1 ? 30 : tTries === 2 ? 15 : 0;
+      score += bonus; el('score').textContent = score;
+      el('tmsg').className = 'gm-msg ok'; el('tmsg').textContent = 'All three targets are right! +' + bonus + ' points. Now sort the expenses.';
+      ['t50', 't30', 't20'].forEach(function (id) { el(id).readOnly = true; });
+      el('tcheck').disabled = true;
+      el('sorter').hidden = false; totals();
+    } else { el('tmsg').className = 'gm-msg no'; el('tmsg').innerHTML = 'Not yet. ' + msgs.join(' '); }
+  });
+
+  function totals() {
+    var L = LEVELS[lv];
+    ['need', 'want', 'save'].forEach(function (k) {
+      var tot = 0;
+      for (var i in place) if (place[i] === k) tot += L.cards[i][1];
+      var pct = { need: 50, want: 30, save: 20 }[k], target = L.income * pct / 100, tol = L.income * 0.02;
+      var bin = document.querySelector('.gm-bin[data-bin="' + k + '"]');
+      bin.querySelector('.gm-tot').textContent = '$' + FL.num(tot) + ' of $' + FL.num(target);
+      var bar = bin.querySelector('.gm-meter i');
+      bar.style.width = Math.min(100, tot / target * 100) + '%';
+      bar.className = tot > target + tol ? 'over' : Math.abs(tot - target) <= tol ? 'ok' : '';
+    });
+  }
+  function move(chip, bin) {
+    place[chip.dataset.i] = bin;
+    var dest = bin === 'pool' ? el('pool') : document.querySelector('.gm-bin[data-bin="' + bin + '"] .gm-cards');
+    chip.classList.remove('wrong', 'picked'); dest.appendChild(chip); picked = null; totals();
+  }
+  // drag with pointer events; a tap picks the card, then a tap on a box moves it
+  function wire(chip) {
+    var sx, sy, dragging = false, ghost = null;
+    chip.addEventListener('pointerdown', function (e) { sx = e.clientX; sy = e.clientY; dragging = false; chip.setPointerCapture(e.pointerId); });
+    chip.addEventListener('pointermove', function (e) {
+      if (sx == null) return;
+      if (!dragging && Math.hypot(e.clientX - sx, e.clientY - sy) > 8) {
+        dragging = true; ghost = chip.cloneNode(true); ghost.classList.add('dragging'); document.body.appendChild(ghost);
+      }
+      if (dragging) {
+        ghost.style.left = (e.clientX - 40) + 'px'; ghost.style.top = (e.clientY - 22) + 'px';
+        if (e.clientY < 70) window.scrollBy({ top: -14, behavior: 'instant' }); else if (e.clientY > window.innerHeight - 70) window.scrollBy({ top: 14, behavior: 'instant' });   // auto-scroll near the edges
+        document.querySelectorAll('.gm-bin').forEach(function (b) { b.classList.remove('hot'); });
+        var t = document.elementFromPoint(e.clientX, e.clientY), b = t && t.closest('.gm-bin'); if (b) b.classList.add('hot');
+      }
+    });
+    chip.addEventListener('pointerup', function (e) {
+      if (sx == null) return; sx = null;
+      document.querySelectorAll('.gm-bin').forEach(function (b) { b.classList.remove('hot'); });
+      if (dragging) {
+        ghost.remove(); ghost = null; dragging = false;
+        var t = document.elementFromPoint(e.clientX, e.clientY), b = t && t.closest('.gm-bin');
+        if (b) move(chip, b.dataset.bin);
+        return;
+      }
+      if (picked === chip) { chip.classList.remove('picked'); picked = null; return; }
+      if (picked) picked.classList.remove('picked');
+      picked = chip; chip.classList.add('picked');
+    });
+    chip.addEventListener('keydown', function (e) {                     // keyboard: N, W, S, 0
+      var k = { n: 'need', w: 'want', s: 'save', '0': 'pool' }[e.key.toLowerCase()];
+      if (k) { e.preventDefault(); move(chip, k); chip.focus(); }
+    });
+  }
+  document.querySelectorAll('.gm-bin').forEach(function (b) {
+    b.addEventListener('click', function (e) { if (picked && !e.target.closest('.gm-chip')) move(picked, b.dataset.bin); });
+  });
+
+  el('bcheck').addEventListener('click', function () {
+    var L = LEVELS[lv], msg = '', bad = null;
+    document.querySelectorAll('.gm-chip').forEach(function (c) { c.classList.remove('wrong'); });
+    for (var i = 0; i < L.cards.length && !msg; i++) {
+      var c = L.cards[i], p = place[i];
+      if (p !== 'pool' && p !== c[2]) { msg = c[0] + WHY[c[2]] + ' Move it out of ' + NAMES[p] + '.'; bad = i; }
+      else if (p === 'pool' && c[2] !== 'want') { msg = c[0] + WHY[c[2]] + ' Put it in ' + NAMES[c[2]] + '.'; bad = i; }
+    }
+    var wants = 0; for (var j in place) if (place[j] === 'want') wants += L.cards[j][1];
+    var target = L.income * 0.3, tol = L.income * 0.02;
+    if (!msg && wants > target + tol) msg = 'Wants add up to $' + FL.num(wants) + '. The target is $' + FL.num(target) + '. That is $' + FL.num(wants - target) + ' over. Take a want out.';
+    if (!msg && wants < target - tol) msg = 'Wants add up to $' + FL.num(wants) + '. The target is $' + FL.num(target) + '. You have $' + FL.num(target - wants) + ' left. Add a want that fits.';
+    bTries++;
+    if (msg) {
+      el('bmsg').className = 'gm-msg no'; el('bmsg').textContent = 'Not yet. ' + msg;
+      if (bad !== null) document.querySelector('.gm-chip[data-i="' + bad + '"]').classList.add('wrong');
+      return;
+    }
+    var pts = Math.max(40, 100 - 15 * (bTries - 1));
+    score += pts; el('score').textContent = score;
+    el('bmsg').className = 'gm-msg ok';
+    el('bmsg').textContent = 'Balanced! Needs $' + FL.num(L.income / 2) + ', wants $' + FL.num(wants) + ', savings $' + FL.num(L.income / 5) + '. +' + pts + ' points.';
+    el('bcheck').disabled = true;
+    el('next').hidden = false; el('next').textContent = lv < LEVELS.length - 1 ? 'Next level →' : 'See my score →';
+  });
+  el('next').addEventListener('click', function () {
+    if (lv < LEVELS.length - 1) { lv++; start(); el('game').scrollIntoView({ behavior: 'smooth' }); return; }
+    var b = FL.best('budget-builder', score);
+    el('best').textContent = b.best;
+    el('targets').hidden = true; el('sorter').hidden = true;
+    var end = el('end'); end.hidden = false;
+    end.innerHTML = '<h2 class="fl-h3">You built 5 budgets!</h2><p class="gm-big">' + score + ' points</p><p>' + (b.isNew ? 'New best score!' : 'Your best: ' + b.best) + ' (most possible: 650)</p>' +
+      '<div class="fl-row"><button type="button" class="fl-btn" id="again">Play again</button><a class="fl-btn fl-ghost fl-link" href="lesson1.html">Lesson 1: Budgeting with Functions</a></div>';
+    el('again').addEventListener('click', function () { lv = 0; score = 0; el('score').textContent = 0; end.hidden = true; start(); });
+  });
+  window.BB = { levels: LEVELS, place: function () { return place; } };
+  start();
+  var r = FL.selfTestReport(); if (!r.fail) console.log('FL self-test: ' + r.pass + ' checks passed');
+})();
+</script>
+</body>
+</html>

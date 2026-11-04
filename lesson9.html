@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 9: Is It Safe to Drink? · Math in Science</title>
+<meta name="description" content="Use a scatter plot and line of best fit to predict where well water is safe to drink. NC.8.SP.1, SP.2, EE.3 with ESS.8.3.1.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+var DIST = [50, 100, 200, 300, 400, 500, 600, 800], NIT = [14, 12, 9, 7, 6, 4, 3, 2];
+var PTS = DIST.map(function (d, i) { return [d, NIT[i]]; });
+var FIT = MS.fit(PTS);                                         // ≈ −0.016x + 13
+var M = Q.dec('-0.016'), B = Q(13), LIMIT = Q(10);
+function line(x) { return Q.add(Q.mul(M, x), B); }
+var CROSS = Q.div(Q.sub(LIMIT, B), M);                         // 187.5 m
+
+var TABLE = '<div class="ms-scroll"><table class="ms-tbl" aria-label="Nitrate in wells"><thead><tr><th>Distance from field (m)</th><th>Nitrate (mg/L)</th></tr></thead><tbody>' +
+  DIST.map(function (d, i) { return '<tr><td>' + d + '</td><td>' + NIT[i] + '</td></tr>'; }).join('') + '</tbody></table></div>';
+
+function nitrateFig(el, drag) {
+  var P = MS.plot(el, { x: [0, 850], y: [0, 16], xt: 100, yt: 2, l: 52, xl: 'Distance from field (m)', yl: 'Nitrate (mg/L)', label: 'Scatter plot of nitrate versus distance with the 10 mg/L limit',
+    xfmt: function (v) { return v % 200 === 0 ? String(v) : ''; } });
+  sv('line', { x1: P.X(0), x2: P.X(850), y1: P.Y(10), y2: P.Y(10), stroke: '#B42318', 'stroke-width': 2.5, 'stroke-dasharray': '8 5' }, P.layer);
+  P.text(560, 10.5, 'safe limit: 10 mg/L', { fill: '#B42318', 'font-weight': 600 });
+  PTS.forEach(function (p) { P.dot(p[0], p[1], { r: 6, fill: p[1] > 10 ? '#B42318' : '#1E2D4F' }); });
+  if (!drag) return;
+  var read = MS.h('div', { class: 'ms-read' }), shown = null;
+  MS.dragLine(P, { p1: [100, 14], p2: [700, 6], onchange: function (m, b) {
+    var c = MS.closeness(PTS, m, b), cross = m < 0 ? (10 - b) / m : NaN;
+    read.innerHTML = 'Your line: y = ' + m.toFixed(3) + 'x + ' + b.toFixed(1) + ' · closeness ' + c + ' / 100' + (isFinite(cross) && cross > 0 ? ' · crosses the limit at about ' + Math.round(cross) + ' m' : '');
+  } });
+  el.appendChild(read);
+  var row = MS.h('div', { class: 'ms-row' }), btn = MS.h('button', { class: 'ms-btn ghost', type: 'button' }, 'Show the Desmos line');
+  btn.addEventListener('click', function () {
+    if (shown) { shown.remove(); shown = null; btn.textContent = 'Show the Desmos line'; return; }
+    shown = sv('g', {}, P.layer);
+    P.layer.appendChild(shown);
+    var path = P.fn(function (x) { return -0.016 * x + 13; }, { stroke: '#1D4ED8', 'stroke-width': 2.5, 'stroke-dasharray': '8 6' }); shown.appendChild(path);
+    var cx = Q.num(CROSS); sv('circle', { cx: P.X(cx), cy: P.Y(10), r: 7, fill: '#1D4ED8' }, shown);
+    sv('text', { x: P.X(cx) + 10, y: P.Y(10) - 12, 'font-size': 15, fill: '#1D4ED8', 'font-weight': 600 }, shown, '(187.5, 10)');
+    btn.textContent = 'Hide the Desmos line';
+  });
+  row.appendChild(btn); el.appendChild(row);
+}
+
+MS.lesson({
+  num: 9, title: 'Is It Safe to Drink?', sci: 'ESS.8.3.1', math: ['NC.8.SP.1', 'NC.8.SP.2', 'NC.8.EE.3'], minutes: 7,
+  question: 'Fertilizer from a farm field can soak into the ground. How far from the field is well water safe to drink?',
+  intro: 'A scatter plot and a line of best fit help predict where the nitrate level is below the safe limit.',
+  target: 'I can use a scatter plot and line of best fit to predict where well water is safe to drink.',
+  vocab: ['potable', 'contaminant', 'nitrate', 'concentration', 'mg/L', 'safe limit', 'negative association', 'line of best fit'],
+  steps: [
+    { title: 'Tiny amounts in water',
+      body: '<p><b>Nitrate</b> is a contaminant from fertilizer. It is measured in <b>mg/L</b> (milligrams per liter). The federal drinking water limit for nitrate is <b>10 mg/L</b>. Water below the limit is <b>potable</b> (safe to drink).</p>' +
+        '<div class="ms-ex"><span class="lbl">Example</span>1 g = 1,000 mg, so 10 mg = 10 ÷ 1,000 g = 0.01 g. The limit is <b class="num">1 × 10⁻² g/L</b>.</div>',
+      tryit: { type: 'num', sci: true, unit: 'g/L', q: 'A well has 14 mg/L of nitrate. How many <b>grams</b> per liter is that?', ans: Q.div(14, 1000), show: '0.014 g/L', accept: ['0.014', '1.4x10^-2', '1.4 × 10⁻²'],
+        wrong: [['14000', 'Grams are bigger than milligrams, so the number gets smaller. Divide by 1,000.'], ['0.14', 'Divide by 1,000, not 100.'], ['1.4', 'Divide by 1,000: move the decimal 3 places left.']],
+        hint: 'Divide by 1,000 (1 g = 1,000 mg).', explain: '14 ÷ 1,000 = 0.014 g/L = 1.4 × 10⁻² g/L.' } },
+    { title: 'Make a scatter plot',
+      body: '<p>Practice data (made up): nitrate in wells at different distances from a fertilized field.</p>' + TABLE,
+      fig: function (el) { nitrateFig(el, false); },
+      tryit: { type: 'mc', q: 'Describe the association between distance and nitrate.', choices: ['Positive: farther wells have more nitrate', 'Negative: farther wells have less nitrate', 'No association'], ans: 1,
+        why: { 0: 'The dots go down from left to right. Farther wells have less nitrate.', 2: 'There is a clear pattern. As distance goes up, nitrate goes down.' },
+        hint: 'Do the dots go up or down from left to right?', explain: 'As distance goes up, nitrate goes down. That is a negative association.' } },
+    { title: 'Fit a line and predict',
+      body: '<p>Drag the line to fit the dots. Desmos finds <b class="num">y = −0.016x + 13</b>.</p>',
+      fig: function (el) { nitrateFig(el, true); },
+      after: '<div class="ms-ex"><span class="lbl">What the numbers mean</span><b>Slope −0.016:</b> nitrate drops about 0.016 mg/L for each meter farther from the field (about 1.6 mg/L per 100 m).<br><b>y-intercept 13:</b> right at the field (0 m), the model predicts about 13 mg/L.</div>',
+      tryit: { type: 'num', unit: 'mg/L', q: 'Use <span class="num">y = −0.016x + 13</span> to predict the nitrate in a well 400 m from the field.', ans: line(400), show: '6.6 mg/L', accept: ['6.6'],
+        wrong: [['19.4', 'The slope is negative: −0.016 × 400 = −6.4. Then add 13.'], ['-6.4', 'Do not forget to add 13.'], ['6.4', 'That is how much it drops. Subtract it from 13.']],
+        hint: '−0.016 × 400, then add 13.', explain: '−0.016 × 400 = −6.4, and −6.4 + 13 = 6.6 mg/L.' } },
+    { title: 'Where is the water safe?',
+      body: '<p>Find where the line crosses the limit, y = 10.</p><div class="ms-ex"><span class="lbl">Worked example</span><ol><li>−0.016x + 13 = 10</li><li>Subtract 13: −0.016x = −3</li><li>Divide by −0.016: x = <b class="num">187.5</b>. Wells farther than about 190 m are predicted to be safe.</li></ol></div>',
+      tryit: { type: 'mc', q: 'A family wants a new well. Based on the line, where should it go?', choices: ['Closer than 100 m from the field', 'More than about 190 m from the field', 'Right next to the field'], ans: 1,
+        why: { 0: 'Wells this close are above the limit (12 to 14 mg/L).', 2: 'At the field the model predicts 13 mg/L, which is over the limit.' },
+        hint: 'Where is the line below y = 10?', explain: 'The line is below 10 mg/L when x is more than 187.5 m, so the well should be more than about 190 m away.' } }
+  ],
+  desmos: '<p>Type distance in <code>x₁</code> and nitrate in <code>y₁</code>. Type <code>y₁ ~ mx₁ + b</code> for the line and <code>y = 10</code> for the limit. Click where they cross (about 190 m).</p>',
+  assignment: [
+    { type: 'sel', std: 'NC.8.SP.1', q: TABLE + 'Select <b>all</b> wells that are <b>above</b> the 10 mg/L limit.', choices: ['50 m', '100 m', '200 m', '300 m', '800 m'], ans: [0, 1],
+      why: { 2: 'The 200 m well has 9 mg/L. That is below 10.', 3: 'The 300 m well has 7 mg/L. That is below 10.', 4: 'The 800 m well has 2 mg/L. That is below 10.' },
+      hint: 'Find the wells with more than 10 mg/L.', explain: '50 m (14 mg/L) and 100 m (12 mg/L) are above the limit.' },
+    { type: 'mc', std: 'NC.8.SP.2', q: 'The line is <span class="num">y = −0.016x + 13</span>. What does −0.016 mean?',
+      choices: ['Nitrate drops about 0.016 mg/L for each meter farther from the field.', 'Nitrate drops 0.016 m for each mg/L.', 'There is 0.016 mg/L of nitrate at the field.', 'Every well has −0.016 mg/L of nitrate.'], ans: 0,
+      why: { 1: 'The units are switched. Slope = change in y (mg/L) per 1 unit of x (meter).', 2: 'The amount at the field (x = 0) is the y-intercept, 13.', 3: 'A concentration cannot be negative. The slope is a rate of change.' },
+      hint: 'Slope = change in nitrate (mg/L) for each 1 meter.', explain: 'For each meter farther away, the nitrate drops about 0.016 mg/L.' },
+    { type: 'num', std: 'NC.8.SP.2', unit: 'mg/L', q: 'Using the slope −0.016, about how much does the nitrate drop for every <b>100 m</b> farther from the field?', ans: Q.mul('0.016', 100), show: '1.6 mg/L', accept: ['1.6'],
+      wrong: [['0.016', 'That is for 1 meter. Multiply by 100.'], ['16', 'Multiply 0.016 × 100: move the decimal 2 places right.'], ['0.16', 'Multiply 0.016 × 100: move the decimal 2 places right.']],
+      hint: '0.016 × 100.', explain: '0.016 × 100 = 1.6 mg/L per 100 m.' },
+    { type: 'num', std: 'NC.8.SP.2', unit: 'mg/L', q: 'Use <span class="num">y = −0.016x + 13</span> to predict the nitrate in a well <b>700 m</b> from the field.', ans: line(700), show: '1.8 mg/L', accept: ['1.8'],
+      wrong: [['24.2', 'The slope is negative: −0.016 × 700 = −11.2.'], ['11.2', 'That is how much it drops. Subtract it from 13.'], ['-11.2', 'Do not forget to add 13.']],
+      hint: '−0.016 × 700, then add 13.', explain: '−0.016 × 700 = −11.2, and −11.2 + 13 = 1.8 mg/L.' },
+    { type: 'num', sci: true, std: 'NC.8.EE.3', unit: 'g/L', q: 'A well has 5 mg/L of nitrate. Write this in <b>g/L</b> using scientific notation. (1 g = 1,000 mg)', ans: Q.div(5, 1000), show: '5 × 10⁻³ g/L', accept: ['5x10^-3', '0.005'],
+      wrong: [['5x10^3', 'Grams are bigger units, so the number gets smaller. The exponent is negative.'], ['5000', 'Grams are bigger units, so the number gets smaller. Divide by 1,000.']],
+      hint: '5 ÷ 1,000 = 0.005. Then write it in scientific notation.', explain: '5 mg = 0.005 g = 5 × 10⁻³ g, so 5 × 10⁻³ g/L.' },
+    { type: 'mc', std: 'NC.8.SP.2', q: 'In <span class="num">y = −0.016x + 13</span>, what does 13 mean?',
+      choices: ['The model predicts about 13 mg/L of nitrate right at the field (0 m).', 'Nitrate drops 13 mg/L per meter.', 'The safe limit is 13 mg/L.', 'There are 13 wells.'], ans: 0,
+      why: { 1: 'That would be the slope. The slope is −0.016.', 2: 'The limit is 10 mg/L.', 3: 'The table shows 8 wells. 13 is the y-intercept.' },
+      hint: 'The y-intercept is the value of y when x = 0.', explain: 'When x = 0 m, y = 13. The model predicts about 13 mg/L at the edge of the field.' },
+    { type: 'err', std: 'NC.8.SP.2', q: 'Kim found where the line meets the limit by solving <span class="num">−0.016x + 13 = 10</span>. <b>Which step has the first mistake?</b>',
+      steps: ['−0.016x = 23', 'x = 23 ÷ (−0.016)', 'x ≈ −1,437.5 m'], ans: 0,
+      why: { 1: 'Dividing by −0.016 is the right move, but the number from Step 1 is wrong.', 2: 'A negative distance is a clue that something went wrong earlier.' },
+      hint: 'To undo + 13, what do you do to both sides?', explain: 'Step 1 is wrong. Subtract 13 from both sides: 10 − 13 = −3. Then x = −3 ÷ (−0.016) = 187.5 m.',
+      check: function () { return Q.eq(CROSS, '187.5'); } },
+    { type: 'mc', std: 'ESS.8.3.1', q: 'What does <b>potable</b> water mean?', choices: ['Water that is safe to drink', 'Water that is salty', 'Water that is frozen', 'Water that has fertilizer in it'], ans: 0,
+      why: { 1: 'Salty water is not safe to drink in large amounts. Potable means safe to drink.', 2: 'Potable is about safety, not temperature.', 3: 'Water with too much fertilizer (nitrate) is not potable.' },
+      hint: 'This word is in the vocabulary list.', explain: 'Potable water is safe to drink. Scientists test water to make sure it is below safe limits.' }
+  ],
+  checks: [['Desmos slope ≈ −0.016', Math.abs(FIT.m + 0.016) < 0.0005], ['Desmos intercept ≈ 13', Math.abs(FIT.b - 13) < 0.05],
+    ['crossing 187.5 ≈ 190', Q.eq(CROSS, '187.5')], ['10 mg = 1e-2 g', Q.eq(Q.div(10, 1000), Q.sci(1, -2))]],
+  ixl: [['Math', 'Interpret scatter plots', 'NC.8.SP.1'], ['Math', 'Write equations for lines of best fit', 'NC.8.SP.2'], ['Math', 'Convert between standard and scientific notation', 'NC.8.EE.3'],
+        ['Science', 'Evaluate claims about natural resource use: groundwater', 'ESS.8.3'], ['Science', 'Compare concentrations of solutions', 'ESS.8.3.1']],
+  note: 'The well data are made up for practice. The 10 mg/L nitrate limit is the federal drinking water standard.'
+});
+})();
+</script>
+</body>
+</html>

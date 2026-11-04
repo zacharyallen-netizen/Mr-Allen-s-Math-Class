@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Payback Challenge · Math in Science</title>
+<meta name="description" content="Find the break-even month for solar panels before time runs out. NC.8.EE.8, NC.8.F.2.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap ms" id="ms-app">
+<a href="index.html" class="back-link">← Math in Science</a>
+<header class="page-hdr"><div class="eyebrow">Math in Science · Game</div><h1>Solar Payback Challenge</h1>
+<p>Six rounds, 60 seconds each. Find the month when solar pays for itself, or set the install cost to hit a target month. Faster answers earn bonus points.</p>
+<p class="stds">NC.8.EE.8 · NC.8.F.2 · Science ESS.8.4.4</p></header>
+<section class="ms-game" id="game"></section>
+<div class="ms-tip"><h3>The payback rule</h3><p>Solar: S = install + (solar bill)m. Grid: G = (grid bill)m. Set them equal and solve:</p>
+<p class="mono" style="margin:0">install = (grid bill − solar bill) × m &nbsp;→&nbsp; m = install ÷ (grid bill − solar bill)</p></div>
+<p class="ms-cap">All costs are made up for practice.</p>
+</main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv, h = MS.h, KEY = 'msSolarBest', SECONDS = 60, ROUNDS = 6;
+function payback(I, s, g) { return g > s ? Q.div(I, g - s) : null; }
+function pickOf(a, rnd) { return a[Math.floor(rnd() * a.length)]; }
+
+/* round makers: every answer is a whole number of months, checked exactly */
+function makeFind(rnd, hard) {
+  for (var t = 0; t < 500; t++) {
+    var g = pickOf(hard ? [135, 160, 175, 210] : [120, 150, 180, 200], rnd), s = pickOf(hard ? [15, 25, 35, 45] : [20, 30, 40, 50], rnd), m = pickOf([40, 50, 60, 75, 80, 90, 100, 120, 150], rnd);
+    var I = m * (g - s); if (I > 25000 || I < 3000 || I % 100) continue;
+    return { kind: 'find', I: I, s: s, g: g, m: m };
+  }
+}
+function makeSet(rnd) {
+  for (var t = 0; t < 500; t++) {
+    var g = pickOf([110, 125, 150, 175, 200], rnd), s = pickOf([25, 30, 50, 75], rnd), m = pickOf([40, 60, 80, 100, 120, 160], rnd);
+    var I = m * (g - s); if (I > 20000 || I < 2000 || I % 500) continue;
+    return { kind: 'set', I: I, s: s, g: g, m: m, start: I === 10000 ? 14000 : 10000 };
+  }
+}
+var G = document.getElementById('game'), S, timer = null;
+function start() {
+  var rnd = Math.random;
+  S = { r: 0, score: 0, rounds: [makeFind(rnd, false), makeSet(rnd), makeFind(rnd, false), makeSet(rnd), makeFind(rnd, true), makeSet(rnd)] };
+  round();
+}
+function graph(host, R, I, mark) {
+  host.innerHTML = '';
+  var xMax = Math.max(150, Math.ceil(R.m * 1.6 / 50) * 50), yMax = Math.ceil(R.g * xMax / 5000) * 5000;
+  var P = MS.plot(host, { x: [0, xMax], y: [0, yMax], xt: xMax / 6, yt: yMax / 5, l: 72, xl: 'Months', yl: 'Total cost ($)', label: 'Grid and solar total cost',
+    xfmt: function (v) { return String(Math.round(v)); }, yfmt: function (v) { return '$' + MS.fmt(Math.round(v / 1000)) + 'k'; } });
+  P.fn(function (m) { return R.g * m; }, { stroke: '#5B6475' });
+  P.fn(function (m) { return I + R.s * m; }, { stroke: '#E0A800', 'stroke-width': 3.5 });
+  if (mark) { var pb = payback(I, R.s, R.g); if (pb && Q.cmp(pb, xMax) <= 0) sv('circle', { cx: P.X(Q.num(pb)), cy: P.Y(R.g * Q.num(pb)), r: 8, fill: '#1E2D4F' }, P.layer); }
+  host.appendChild(h('p', { class: 'ms-cap' }, '<span style="color:#5B6475">━</span> Grid: G = ' + R.g + 'm &nbsp; <span style="color:#E0A800">━</span> Solar: S = ' + MS.fmt(I) + ' + ' + R.s + 'm'));
+}
+function round() {
+  clearInterval(timer);
+  var R = S.rounds[S.r], left = SECONDS, tries = 0, done = false, I = R.kind === 'set' ? R.start : R.I;
+  G.innerHTML = '<div class="ms-hud"><span>Round <b>' + (S.r + 1) + '</b>/' + ROUNDS + '</span><span>Score <b id="sc">' + S.score + '</b></span><span>Time <b id="tm">' + left + '</b>s</span><span>Best <b>' + MS.best(KEY).best + '</b></span></div>' +
+    '<div class="ms-timer" id="bar"><i></i></div><div id="prompt"></div><div class="ms-fig" id="fig"></div><div id="ctl"></div><div class="ms-fb" id="fb" aria-live="polite"></div><div class="ms-row" id="nx"></div>';
+  var fb = G.querySelector('#fb'), ctl = G.querySelector('#ctl');
+  if (R.kind === 'find') {
+    G.querySelector('#prompt').innerHTML = '<p class="ms-big">Find the payback month.</p><p>Solar costs <b>$' + MS.fmt(R.I) + '</b> to install, then <b>$' + R.s + '</b> a month. The grid costs <b>$' + R.g + '</b> a month. In what month have both cost the same total?</p>';
+    graph(G.querySelector('#fig'), R, R.I, false);
+    ctl.innerHTML = '<div class="ms-row"><input class="ms-in" id="ans" type="text" inputmode="decimal" autocomplete="off" aria-label="Payback month" placeholder="month"><span class="ms-unit">months</span><button class="ms-btn" id="go" type="button">Check</button><button class="ms-btn ghost" id="hb" type="button">Hint</button></div><div class="ms-hint" id="hint" hidden>Solve ' + R.g + 'm = ' + MS.fmt(R.I) + ' + ' + R.s + 'm. Subtract ' + R.s + 'm from both sides first.</div>';
+    var inp = ctl.querySelector('#ans');
+    ctl.querySelector('#hb').addEventListener('click', function () { ctl.querySelector('#hint').hidden = false; });
+    var check = function () {
+      if (done) return;
+      var it = { type: 'num', ans: Q(R.m), wrong: [
+        [Q.str(Q.div(R.I, R.g)), 'You divided by the grid bill only. Divide by the money saved each month: ' + R.g + ' − ' + R.s + ' = ' + (R.g - R.s) + '.'],
+        [Q.str(Q.div(R.I, R.g + R.s)), 'You added the monthly costs. Subtract them: ' + R.g + ' − ' + R.s + '.'],
+        [Q.str(Q.div(R.I, R.s)), 'Divide by the money saved each month (' + R.g + ' − ' + R.s + '), not by the solar bill.']], wtol: '0.05' };
+      var r = MS.grade(it, inp.value);
+      if (r.state === 'unread') { fb.className = 'ms-fb no'; fb.textContent = 'Type a number of months, like 80.'; return; }
+      tries++;
+      if (r.state === 'ok') return win(tries === 1 ? 100 + 2 * left : 50 + left, 'Yes! Month ' + R.m + '. ' + MS.fmt(R.I) + ' ÷ ' + (R.g - R.s) + ' = ' + R.m + '.');
+      if (tries === 1) { fb.className = 'ms-fb no'; fb.innerHTML = r.msg + ' One more try.'; ctl.querySelector('#hint').hidden = false; return; }
+      lose(r.msg + ' The payback month is <b>' + R.m + '</b>: ' + MS.fmt(R.I) + ' ÷ (' + R.g + ' − ' + R.s + ') = ' + R.m + '.');
+    };
+    ctl.querySelector('#go').addEventListener('click', check);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') check(); });
+  } else {
+    G.querySelector('#prompt').innerHTML = '<p class="ms-big">Hit the target: payback in month ' + R.m + '.</p><p>Solar costs <b>$' + R.s + '</b> a month. The grid costs <b>$' + R.g + '</b> a month. Move the slider to set the installation cost so solar pays for itself in <b>month ' + R.m + '</b>.</p>';
+    var read = h('div', { class: 'ms-read' }), sl;
+    ctl.appendChild(h('div', { class: 'ms-ctrl', id: 'sl' }));
+    sl = MS.slider(ctl.querySelector('#sl'), 'Installation cost', 0, 20000, 500, I, function (v) { return '$' + MS.fmt(v); }, function (v) {
+      I = v; graph(G.querySelector('#fig'), R, I, true);
+      var pb = payback(I, R.s, R.g); read.innerHTML = 'Payback month with $' + MS.fmt(I) + ': <b>' + (pb.d === 1n ? Q.str(pb) : Q.num(pb).toFixed(1)) + '</b>';
+    });
+    sl.id = 'slider';
+    ctl.appendChild(read);
+    var row = h('div', { class: 'ms-row' }, '<button class="ms-btn" id="go" type="button">Lock it in</button><button class="ms-btn ghost" id="hb" type="button">Hint</button>');
+    ctl.appendChild(row); ctl.appendChild(h('div', { class: 'ms-hint', id: 'hint', hidden: '' }, 'Install cost = (' + R.g + ' − ' + R.s + ') × ' + R.m + '.'));
+    row.querySelector('#hb').addEventListener('click', function () { ctl.querySelector('#hint').hidden = false; });
+    row.querySelector('#go').addEventListener('click', function () {
+      if (done) return; tries++;
+      var pb = payback(I, R.s, R.g);
+      if (Q.eq(pb, R.m)) return win(tries === 1 ? 100 + 2 * left : 50 + left, 'Yes! $' + MS.fmt(I) + ' ÷ ' + (R.g - R.s) + ' = ' + R.m + ' months.');
+      var msg = 'Payback is month ' + Q.num(pb).toFixed(1).replace(/\.0$/, '') + ', not ' + R.m + '. ' + (Q.cmp(pb, R.m) > 0 ? 'That is too late. Lower the installation cost.' : 'That is too soon. Raise the installation cost.');
+      if (tries === 1) { fb.className = 'ms-fb no'; fb.innerHTML = msg + ' One more try.'; ctl.querySelector('#hint').hidden = false; return; }
+      lose(msg + ' The right cost is <b>$' + MS.fmt(R.I) + '</b> = ' + (R.g - R.s) + ' × ' + R.m + '.');
+    });
+  }
+  var bar = G.querySelector('#bar');
+  timer = setInterval(function () {
+    if (done) return clearInterval(timer);
+    left = Math.max(0, left - 1); G.querySelector('#tm').textContent = left;
+    bar.querySelector('i').style.width = (100 * left / SECONDS) + '%'; bar.classList.toggle('low', left <= 10);
+    if (left === 0) { clearInterval(timer); lose('Time is up. ' + (R.kind === 'find' ? 'The payback month was <b>' + R.m + '</b>: ' + MS.fmt(R.I) + ' ÷ (' + R.g + ' − ' + R.s + ').' : 'The right cost was <b>$' + MS.fmt(R.I) + '</b> = ' + (R.g - R.s) + ' × ' + R.m + '.')); }
+  }, 1000);
+  function lock() { done = true; clearInterval(timer); G.querySelectorAll('#ctl input, #ctl button').forEach(function (e) { e.disabled = true; }); }
+  function win(pts, msg) { lock(); S.score += pts; G.querySelector('#sc').textContent = S.score; fb.className = 'ms-fb ok'; fb.innerHTML = msg + ' +' + pts + ' points'; if (R.kind === 'find') graph(G.querySelector('#fig'), R, R.I, true); next(); }
+  function lose(msg) { lock(); fb.className = 'ms-fb no'; fb.innerHTML = msg + ' <span style="font-weight:500;color:#1B2333">You will get the next one.</span>'; graph(G.querySelector('#fig'), R, R.I, true); next(); }
+  function next() {
+    var last = S.r === ROUNDS - 1, b = h('button', { class: 'ms-btn gold', type: 'button', id: 'next' }, last ? 'See my score' : 'Next round');
+    b.addEventListener('click', function () { if (last) return finish(); S.r++; round(); });
+    G.querySelector('#nx').appendChild(b);
+  }
+}
+function finish() {
+  clearInterval(timer);
+  var r = MS.best(KEY, S.score);
+  G.innerHTML = '<p class="ms-big">Your score: <span class="mono">' + S.score + '</span> <span style="font-size:15px;color:#5B6475">(up to 1,320)</span></p><p>' +
+    (S.score >= 900 ? 'Outstanding! You solve systems fast.' : S.score >= 500 ? 'Nice work. Remember: divide the install cost by the money saved each month.' : 'Good effort. Read the payback rule below, then play again.') +
+    '</p><p class="ms-stars">' + (r.isNew ? 'New best score!' : 'Best score: ' + r.best) + '</p><div class="ms-row"><button class="ms-btn gold" id="again" type="button">Play again</button></div>';
+  G.querySelector('#again').addEventListener('click', start);
+}
+/* self-test */
+(function () {
+  var seed = 11; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  MS.assert(Q.eq(payback(12000, 30, 150), 100) && Q.eq(payback(8000, 50, 150), 80), 'solar: lesson paybacks');
+  for (var i = 0; i < 100; i++) {
+    var a = makeFind(rnd, i % 2 === 0), b = makeSet(rnd);
+    MS.assert(a && Q.eq(payback(a.I, a.s, a.g), a.m), 'solar: find round');
+    MS.assert(b && Q.eq(payback(b.I, b.s, b.g), b.m) && b.I % 500 === 0 && b.I <= 20000 && b.start !== b.I, 'solar: set round');
+  }
+  window.MS_SELFTEST = { ok: MS.fails.length === 0, fails: MS.fails.slice() };
+})();
+window.SOLAR = { S: function () { return S; } };
+start();
+})();
+</script>
+</body>
+</html>

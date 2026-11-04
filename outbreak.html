@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outbreak Simulator · Math in Science</title>
+<meta name="description" content="Change the spread rule for two towns, watch linear and doubling graphs, and predict. NC.8.F.3, NC.8.F.5.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap ms" id="ms-app">
+<a href="index.html" class="back-link">← Math in Science</a>
+<header class="page-hdr"><div class="eyebrow">Math in Science · Lab</div><h1>Outbreak Simulator</h1>
+<p>Town A adds the same number of cases each day. Town B multiplies. Change the rules, watch the graphs, then take the prediction challenge.</p>
+<p class="stds">NC.8.F.3 · NC.8.F.5 · Science LS.8.1.2</p></header>
+<div class="section-label">Explore</div>
+<section class="ms-game" id="explore"></section>
+<div class="section-label">Prediction challenge <span>· 3 levels, 4 questions each</span></div>
+<section class="ms-game" id="game"></section>
+</main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv, h = MS.h, KEY = 'msOutbreakBest';
+function lin(s, k) { return function (d) { return s + k * d; }; }
+function geo(s, r) { return function (d) { var v = s; for (var i = 0; i < d; i++) v *= r; return v; }; }   // exact whole numbers
+function niceMax(v) { var p = Math.pow(10, Math.floor(Math.log10(Math.max(v, 1)))); var m = [1, 2, 5, 10].find(function (x) { return x * p >= v; }); return m * p; }
+function firstPass(A, B, maxD) { for (var d = 1; d <= maxD; d++) if (B(d) > A(d)) return d; return -1; }
+
+/* one graph of two towns, days 0..D */
+function townGraph(host, A, B, D, labels) {
+  host.innerHTML = '';
+  var top = niceMax(Math.max(A(D), B(D)) * 1.05);
+  var P = MS.plot(host, { x: [0, D], y: [0, top], xt: 1, yt: top / 5, l: 76, xl: 'Day', yl: 'Cases', label: 'Cases in two towns by day', yfmt: function (v) { return MS.fmt(Math.round(v)); } });
+  P.fn(function (x) { return A(Math.round(x)) + (A(1) - A(0)) * (x - Math.round(x)); }, { stroke: '#1D4ED8' });
+  var pts = ''; for (var d = 0; d <= D; d++) { P.dot(d, A(d), { r: 4.5, fill: '#1D4ED8' }); P.dot(d, B(d), { r: 4.5, fill: '#E0A800', stroke: '#1E2D4F' }); }
+  var path = ''; for (var x = 0; x <= D * 20; x++) { var t = x / 20, yb = B(0) * Math.pow(B(1) / B(0), t); path += (x ? 'L' : 'M') + P.X(t).toFixed(1) + ' ' + Math.max(P.T, P.Y(yb)).toFixed(1); }
+  sv('path', { d: path, fill: 'none', stroke: '#E0A800', 'stroke-width': 3 }, P.layer);
+  host.appendChild(h('p', { class: 'ms-cap' }, '<span style="color:#1D4ED8">●</span> ' + labels[0] + ' &nbsp; <span style="color:#E0A800">●</span> ' + labels[1]));
+}
+
+/* ---------- explore ---------- */
+(function explore() {
+  var E = document.getElementById('explore'), st = { sa: 10, k: 10, sb: 1, r: 2 };
+  E.innerHTML = '<div class="ms-ctrl" id="ctl"></div><div class="ms-chips" id="mult" role="group" aria-label="Town B multiplies by"></div><div id="g"></div><div class="ms-read" id="read"></div><div class="ms-scroll" id="tbl"></div>';
+  var ctl = E.querySelector('#ctl');
+  MS.slider(ctl, 'Town A starts with', 0, 50, 5, 10, null, function (v) { st.sa = v; draw(); });
+  MS.slider(ctl, 'Town A adds per day', 1, 50, 1, 10, null, function (v) { st.k = v; draw(); });
+  MS.slider(ctl, 'Town B starts with', 1, 10, 1, 1, null, function (v) { st.sb = v; draw(); });
+  [2, 3].forEach(function (r) {
+    var b = h('button', { class: 'ms-chip', type: 'button', 'aria-pressed': r === 2 ? 'true' : 'false' }, 'Town B: × ' + r + ' each day');
+    b.addEventListener('click', function () { st.r = r; E.querySelectorAll('#mult button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); draw(); });
+    E.querySelector('#mult').appendChild(b);
+  });
+  function draw() {
+    var A = lin(st.sa, st.k), B = geo(st.sb, st.r), D = 10;
+    townGraph(E.querySelector('#g'), A, B, D, ['Town A: y = ' + st.k + 'x + ' + st.sa + ' (linear)', 'Town B: y = ' + st.sb + '(' + st.r + ')ˣ (nonlinear)']);
+    var p = firstPass(A, B, D);
+    E.querySelector('#read').innerHTML = 'Day 10: Town A has <b>' + MS.fmt(A(10)) + '</b>, Town B has <b>' + MS.fmt(B(10)) + '</b>. ' +
+      (B(0) > A(0) ? 'Town B starts ahead.' : p > 0 ? 'Town B first passes Town A on <b>day ' + p + '</b>.' : 'Town B does not pass Town A by day 10.');
+    var rows = '<table class="ms-tbl"><thead><tr><th class="l">Day</th>' + [0,1,2,3,4,5,6,7,8,9,10].map(function (d) { return '<th>' + d + '</th>'; }).join('') + '</tr></thead><tbody>' +
+      '<tr><th class="l" scope="row" style="background:#1D4ED8">A</th>' + [0,1,2,3,4,5,6,7,8,9,10].map(function (d) { return '<td>' + MS.fmt(A(d)) + '</td>'; }).join('') + '</tr>' +
+      '<tr><th class="l" scope="row" style="background:#8A6100">B</th>' + [0,1,2,3,4,5,6,7,8,9,10].map(function (d) { return '<td>' + MS.fmt(B(d)) + '</td>'; }).join('') + '</tr></tbody></table>';
+    E.querySelector('#tbl').innerHTML = rows;
+  }
+  setTimeout(draw, 0);
+})();
+
+/* ---------- challenge ---------- */
+function ri(a, b, rnd) { return a + Math.floor((rnd || Math.random)() * (b - a + 1)); }
+function pickOf(arr, rnd) { return arr[Math.floor((rnd || Math.random)() * arr.length)]; }
+var GEN = {
+  linValue: function (rnd) {
+    var s = pickOf([5, 10, 15, 20], rnd), k = pickOf([3, 5, 8, 10, 12], rnd), n = ri(3, 9, rnd), A = lin(s, k);
+    return { type: 'num', unit: 'cases', q: 'Town A has ' + s + ' cases on day 0. It adds ' + k + ' new cases each day. How many cases on day ' + n + '?',
+      ans: Q(A(n)), show: String(A(n)), wrong: [[String(k * n), 'Do not forget the ' + s + ' cases from day 0.'], [String(s + k * (n - 1)), 'That is day ' + (n - 1) + '. Add ' + k + ' once more.'], [String(s * Math.pow(2, n)), 'Town A adds the same amount each day. It does not double.']],
+      hint: 'Cases = ' + s + ' + ' + k + ' × ' + n + '.', explain: s + ' + ' + k + '(' + n + ') = ' + A(n) + ' cases.', graph: [A, geo(1, 2)], labels: ['Town A', 'a doubling town for comparison'] };
+  },
+  table: function (rnd) {
+    var linear = rnd() < 0.5, s = ri(2, 6, rnd), k = ri(2, 9, rnd), r = pickOf([2, 3], rnd);
+    var f = linear ? lin(s, k) : geo(s, r), ys = [0, 1, 2, 3, 4].map(f);
+    var ch = ys.slice(1).map(function (y, i) { return '+' + (y - ys[i]); }).join(', ');
+    return { type: 'mc', q: 'Cases on days 0 to 4: <span class="num">' + ys.join(', ') + '</span>. Is this spread linear or nonlinear?',
+      choices: ['Linear', 'Nonlinear'], ans: linear ? 0 : 1,
+      why: linear ? { 1: 'Check the changes: ' + ch + '. They are all the same, so it is linear.' } : { 0: 'Check the changes: ' + ch + '. They are not the same, so it is nonlinear.' },
+      hint: 'Find the change from each day to the next.', explain: 'The changes are ' + ch + '. ' + (linear ? 'Same change each day → linear.' : 'The changes keep growing (× ' + r + ' each day) → nonlinear.') };
+  },
+  geoValue: function (rnd) {
+    var s = pickOf([1, 2, 3, 5], rnd), n = ri(3, 7, rnd), B = geo(s, 2);
+    return { type: 'num', unit: 'cases', q: 'Town B has ' + s + ' case' + (s > 1 ? 's' : '') + ' on day 0. The cases double each day. How many cases on day ' + n + '?',
+      ans: Q(B(n)), show: String(B(n)), wrong: [[String(s * 2 * n), 'You multiplied by 2 × ' + n + '. Doubling means × 2 again every day.'], [String(s + 2 * n), 'Doubling means multiply by 2 each day, not add 2.'], [String(B(n - 1)), 'That is day ' + (n - 1) + '. Double once more.']],
+      hint: 'Start at ' + s + ' and double ' + n + ' times.', explain: s + ' × 2' + MS.sup(n) + ' = ' + B(n) + ' cases.', graph: [lin(s, 2), B], labels: ['adding 2 a day for comparison', 'Town B (doubling)'] };
+  },
+  ahead: function (rnd) {
+    for (var t = 0; t < 200; t++) {
+      var sa = pickOf([10, 20, 30, 50], rnd), k = pickOf([10, 15, 20, 25], rnd), sb = pickOf([1, 2, 3], rnd), n = ri(3, 9, rnd);
+      var A = lin(sa, k), B = geo(sb, 2); if (A(n) === B(n)) continue;
+      var a = B(n) > A(n) ? 1 : 0;
+      return { type: 'mc', q: 'Town A: ' + sa + ' cases, then +' + k + ' a day. Town B: ' + sb + ' case' + (sb > 1 ? 's' : '') + ', doubling each day. Which town has more cases on day ' + n + '?',
+        choices: ['Town A', 'Town B', 'They are tied'], ans: a,
+        why: a ? { 0: 'Work it out: A = ' + sa + ' + ' + k + '(' + n + ') = ' + A(n) + ', B = ' + sb + ' × 2' + MS.sup(n) + ' = ' + B(n) + '.', 2: 'A has ' + A(n) + ' and B has ' + B(n) + '.' }
+                 : { 1: 'Work it out: A = ' + sa + ' + ' + k + '(' + n + ') = ' + A(n) + ', B = ' + sb + ' × 2' + MS.sup(n) + ' = ' + B(n) + '.', 2: 'A has ' + A(n) + ' and B has ' + B(n) + '.' },
+        hint: 'Find each town\'s cases on day ' + n + '.', explain: 'Town A: ' + A(n) + '. Town B: ' + B(n) + '. ' + (a ? 'Doubling has passed adding.' : 'Doubling has not caught up yet.'), graph: [A, B], labels: ['Town A', 'Town B'] };
+    }
+  },
+  firstDay: function (rnd) {
+    for (var t = 0; t < 500; t++) {
+      var sa = pickOf([10, 20, 30, 40], rnd), k = pickOf([5, 10, 20, 30], rnd), sb = pickOf([1, 2, 4], rnd), r = pickOf([2, 3], rnd);
+      var A = lin(sa, k), B = geo(sb, r), d = firstPass(A, B, 12);
+      if (d < 3 || d > 10) continue;
+      return { type: 'num', q: 'Town A: y = ' + k + 'x + ' + sa + '. Town B: y = ' + sb + '(' + r + ')ˣ, where x is the day. On which day does Town B <b>first</b> have more cases than Town A?',
+        ans: Q(d), show: String(d), wrong: [[String(d - 1), 'On day ' + (d - 1) + ', A has ' + A(d - 1) + ' and B has ' + B(d - 1) + '. B is not ahead yet.'], [String(d + 1), 'Check day ' + d + ': A has ' + A(d) + ' and B has ' + B(d) + '.']],
+        hint: 'Make a table. Compare A and B day by day.', explain: 'Day ' + (d - 1) + ': A = ' + A(d - 1) + ', B = ' + B(d - 1) + '. Day ' + d + ': A = ' + A(d) + ', B = ' + B(d) + '. So day ' + d + '.',
+        graph: [A, B], labels: ['Town A', 'Town B'], _d: d, _A: A, _B: B };
+    }
+  },
+  whichLinear: function (rnd) {
+    var lins = ['y = 4x + 7', 'y = 12x + 3', 'y = 25 + 6x', 'y = 9x'], non = ['y = 3ˣ', 'y = x²', 'y = 5(2)ˣ', 'y = 2ˣ + 10', 'y = 100(0.5)ˣ'];
+    var L = pickOf(lins, rnd), N = MS.shuffle(non, rnd).slice(0, 3), all = MS.shuffle([L].concat(N), rnd);
+    var why = {}; all.forEach(function (e, i) { if (e !== L) why[i] = e + ' is nonlinear: x is ' + (e.indexOf('²') >= 0 ? 'squared.' : 'an exponent, so it multiplies each step.'); });
+    return { type: 'mc', q: 'Which equation models <b>linear</b> spread?', choices: all, ans: all.indexOf(L), why: why,
+      hint: 'Linear equations look like y = mx + b. The x has no exponent.', explain: L + ' adds the same amount each day. It is linear.' };
+  }
+};
+var LEVELS = [['linValue', 'table', 'linValue', 'table'], ['geoValue', 'ahead', 'geoValue', 'ahead'], ['firstDay', 'whichLinear', 'firstDay', 'ahead']];
+var G = document.getElementById('game'), S;
+function start() { S = { lv: 0, qi: 0, score: 0 }; ask(); }
+function ask() {
+  var it = GEN[LEVELS[S.lv][S.qi]](Math.random);
+  G.innerHTML = '<div class="ms-hud"><span>Level <b>' + (S.lv + 1) + '</b>/3</span><span>Question <b>' + (S.qi + 1) + '</b>/4</span><span>Score <b>' + S.score + '</b></span><span>Best <b>' + MS.best(KEY).best + '</b></span></div><div id="qh"></div><div id="gh"></div><div class="ms-row" id="nx"></div>';
+  var card = MS.question(it, 'assign', S.lv * 4 + S.qi + 1, function (rec) {
+    var pts = rec.points * 10; S.score += pts;
+    G.querySelector('.ms-hud b:nth-of-type(1)');
+    G.querySelectorAll('.ms-hud b')[2].textContent = S.score;
+    if (it.graph) { var gh = G.querySelector('#gh'); gh.appendChild(h('p', { class: 'ms-cap' }, 'See it on a graph:')); var gg = h('div', { class: 'ms-fig' }); gh.appendChild(gg); townGraph(gg, it.graph[0], it.graph[1], 10, it.labels); }
+    var last = S.lv === 2 && S.qi === 3, b = h('button', { class: 'ms-btn gold', type: 'button', id: 'nextq' }, last ? 'See my score' : 'Next question');
+    b.addEventListener('click', function () { if (last) return finish(); S.qi++; if (S.qi > 3) { S.qi = 0; S.lv++; } ask(); });
+    G.querySelector('#nx').appendChild(b);
+  });
+  G.querySelector('#qh').appendChild(card);
+  window.OUTBREAK_ITEM = it;
+}
+function finish() {
+  var r = MS.best(KEY, S.score), max = 120;
+  G.innerHTML = '<p class="ms-big">Your score: <span class="mono">' + S.score + ' / ' + max + '</span></p><p>' +
+    (S.score >= 108 ? 'Outstanding! You can spot linear and doubling spread.' : S.score >= 72 ? 'Nice work. Keep checking the change from day to day.' : 'Good effort. Use the Explore graph above, then play again.') +
+    '</p><p class="ms-stars">' + (r.isNew ? 'New best score!' : 'Best score: ' + r.best) + '</p><div class="ms-row"><button class="ms-btn gold" id="again" type="button">Play again</button></div>';
+  G.querySelector('#again').addEventListener('click', start);
+}
+
+/* self-test: generators agree with brute force, many random seeds */
+(function () {
+  var seed = 7; function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  MS.assert(lin(10, 10)(10) === 110 && geo(1, 2)(10) === 1024, 'outbreak: lesson values');
+  MS.assert(firstPass(lin(10, 10), geo(1, 2), 12) === 7, 'outbreak: crossing day 7');
+  for (var i = 0; i < 60; i++) {
+    Object.keys(GEN).forEach(function (k) {
+      var it = GEN[k](rnd);
+      if (it.type === 'num') { MS.assert(MS.grade(it, it.show).state === 'ok', 'outbreak ' + k + ': answer'); (it.wrong || []).forEach(function (w) { MS.assert(MS.grade(it, w[0]).state !== 'ok' || w[0] === it.show, 'outbreak ' + k + ': wrong = right'); }); }
+      else MS.assert(it.ans >= 0 && it.ans < it.choices.length, 'outbreak ' + k + ': key');
+      if (k === 'firstDay') MS.assert(it._B(it._d) > it._A(it._d) && it._B(it._d - 1) <= it._A(it._d - 1), 'outbreak: first day');
+    });
+  }
+  window.MS_SELFTEST = { ok: MS.fails.length === 0, fails: MS.fails.slice() };
+})();
+start();
+})();
+</script>
+</body>
+</html>

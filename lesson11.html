@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 11: Solar Payback · Math in Science</title>
+<meta name="description" content="Use a system of equations to find when renewable energy pays for itself. NC.8.EE.8, NC.8.F.2 with ESS.8.4.4.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+/* payback month: install + s·m = g·m  →  m = install ÷ (g − s), exact; null if never */
+function payback(install, s, g) { return g > s ? Q.div(install, g - s) : null; }
+
+function systemFig(el) {
+  var P = MS.plot(el, { x: [0, 300], y: [0, 50000], xt: 25, yt: 10000, l: 72, xl: 'Months', yl: 'Total cost ($)', label: 'Grid cost and solar cost over time',
+    xfmt: function (v) { return v % 50 === 0 ? String(v) : ''; }, yfmt: function (v) { return '$' + MS.fmt(v / 1000) + 'k'; } });
+  var gl = null, sl = null, dot = sv('g', {}, P.layer);
+  var ctl = MS.h('div', { class: 'ms-ctrl' }), read = MS.h('div', { class: 'ms-read' });
+  el.appendChild(ctl); el.appendChild(read);
+  var st = { I: 12000, s: 30, g: 150 };
+  function draw() {
+    if (gl) gl.remove(); if (sl) sl.remove(); dot.innerHTML = '';
+    gl = P.fn(function (m) { return st.g * m; }, { stroke: '#5B6475', 'stroke-width': 3 });
+    sl = P.fn(function (m) { return st.I + st.s * m; }, { stroke: '#E0A800', 'stroke-width': 3.5 });
+    P.layer.appendChild(dot);
+    var pb = payback(st.I, st.s, st.g), txt = 'Grid: G = ' + st.g + 'm &nbsp;·&nbsp; Solar: S = ' + MS.fmt(st.I) + ' + ' + st.s + 'm<br>';
+    if (pb && Q.cmp(pb, 300) <= 0) {
+      var x = Q.num(pb), y = st.g * x;
+      sv('circle', { cx: P.X(x), cy: P.Y(y), r: 8, fill: '#1E2D4F' }, dot);
+      txt += 'Payback point: month <b>' + (pb.d === 1n ? Q.str(pb) : '≈ ' + x.toFixed(1)) + '</b> (about ' + (x / 12).toFixed(1) + ' years), total cost <b>$' + MS.fmt(Math.round(y)) + '</b>';
+    } else if (pb) txt += 'Payback point: month ' + Q.num(pb).toFixed(1) + ' (off this graph, after 25 years).';
+    else txt += 'The lines never cross. Solar never pays for itself with these numbers.';
+    txt += '<br>At 300 months (25 years): grid $' + MS.fmt(st.g * 300) + ', solar $' + MS.fmt(st.I + st.s * 300);
+    read.innerHTML = txt;
+  }
+  MS.slider(ctl, 'Installation cost', 0, 20000, 500, 12000, function (v) { return '$' + MS.fmt(v); }, function (v) { st.I = v; draw(); });
+  MS.slider(ctl, 'Solar monthly cost', 0, 100, 5, 30, function (v) { return '$' + v; }, function (v) { st.s = v; draw(); });
+  MS.slider(ctl, 'Grid monthly bill', 50, 250, 5, 150, function (v) { return '$' + v; }, function (v) { st.g = v; draw(); });
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, '<span style="color:#5B6475">━</span> Grid only &nbsp; <span style="color:#E0A800">━</span> Solar. Made-up costs. Try a tax credit: lower the installation cost.'));
+}
+
+MS.lesson({
+  num: 11, title: 'Solar Payback', sci: 'ESS.8.4.4', math: ['NC.8.EE.8', 'NC.8.F.2'], minutes: 7,
+  question: 'Solar panels cost a lot up front but make the monthly bill smaller. When do they pay for themselves?',
+  intro: 'A system of two equations finds the payback point.',
+  target: 'I can use a system of equations to find when renewable energy pays for itself and weigh cost against environmental impact.',
+  vocab: ['renewable', 'nonrenewable', 'solar panel', 'installation cost', 'monthly cost', 'payback point', 'system of equations', 'intersection'],
+  steps: [
+    { title: 'Write an equation for each choice',
+      body: '<p><b>Renewable</b> sources (solar, wind, hydroelectric) are replaced by nature. <b>Nonrenewable</b> sources (coal, natural gas, petroleum) run out and release carbon dioxide when burned.</p>' +
+        '<div class="ms-ex"><span class="lbl">Two homes (made-up costs), m = months</span>Grid only: $150 a month → <b class="num">G = 150m</b><br>Solar: $12,000 to install, then $30 a month → <b class="num">S = 12000 + 30m</b></div>',
+      tryit: { type: 'mc', q: 'A wind turbine costs $8,000 to install, then $50 a month. Which equation gives the total cost W after m months?', choices: ['W = 8000 + 50m', 'W = 50 + 8000m', 'W = 8050m', 'W = 8000m + 50m'], ans: 0,
+        why: { 1: 'The $8,000 is paid once, so it is the starting value. The $50 is paid every month, so it goes with m.', 2: 'The $8,000 is only paid once. Do not multiply it by m.', 3: 'The $8,000 is paid once, not every month.' },
+        hint: 'One-time cost + (monthly cost × m).', explain: 'Start at $8,000, then add $50 each month: W = 8000 + 50m.' } },
+    { title: 'Graph the system',
+      body: '<p>Graph both equations. Where the lines <b>cross</b>, both homes have paid the same total. That is the <b>payback point</b>. Move the sliders.</p>',
+      fig: systemFig,
+      tryit: { type: 'mc', q: 'What does the point where the two lines cross mean?', choices: ['Both homes have paid the same total amount.', 'The solar panels stop working.', 'The grid bill becomes $0.', 'Both homes pay the same each month.'], ans: 0,
+        why: { 1: 'The graph shows cost, not whether panels work.', 2: 'The grid line keeps going up $150 each month.', 3: 'The monthly costs ($150 and $30) stay different. The totals are equal.' },
+        hint: 'Each line shows the total cost so far.', explain: 'At the intersection, the total cost is the same for both. After that, solar costs less in total.' } },
+    { title: 'Solve the system with algebra',
+      body: '<div class="ms-ex"><span class="lbl">Worked example</span><ol><li>Set the totals equal: 150m = 12000 + 30m</li><li>Subtract 30m from both sides: 120m = 12000</li><li>Divide by 120: <b class="num">m = 100</b> months (about 8.3 years)</li></ol></div>',
+      tryit: { type: 'num', unit: 'dollars', q: 'At month 100, how much has each home paid in total?', ans: Q(150 * 100), show: '$15,000', accept: ['15000', '15,000'],
+        wrong: [['12000', 'That is only the installation cost. Use G = 150m with m = 100.'], ['3000', 'That is only the solar monthly part (30 × 100). Add the $12,000 too.']],
+        hint: 'Put m = 100 into G = 150m.', explain: '150 × 100 = $15,000. Check: 12,000 + 30 × 100 = $15,000.', check: function () { return 12000 + 30 * 100 === 15000; } } },
+    { title: 'Compare over the long run',
+      body: '<p>Solar panels often last 25 years (300 months). Compare the totals then.</p><div class="ms-ex"><span class="lbl">At 300 months</span>Grid: 150(300) = <b class="num">$45,000</b>. Solar: 12000 + 30(300) = <b class="num">$21,000</b>.</div>',
+      tryit: { type: 'num', unit: 'dollars', q: 'How much does the solar home save over 300 months?', ans: Q(150 * 300 - (12000 + 30 * 300)), show: '$24,000', accept: ['24000'],
+        wrong: [['66000', 'You added. Savings = grid total − solar total.'], ['-24000', 'Subtract the smaller total from the bigger one.']],
+        hint: '$45,000 − $21,000.', explain: '45,000 − 21,000 = $24,000 saved. Solar also releases far less carbon dioxide.' } }
+  ],
+  desmos: '<p>Type <code>y = 150x {x ≥ 0}</code> and <code>y = 12000 + 30x {x ≥ 0}</code>. Click the gray point where they cross: (100, 15000). For sliders, type <code>y = a + bx</code> and click "add slider" for a and b.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.EE.8', unit: 'months', q: 'Wind option: $8,000 to install and $50 a month. Grid: $150 a month. Solve <span class="num">8000 + 50m = 150m</span>. When does the wind option pay for itself?',
+      ans: payback(8000, 50, 150), show: '80 months', accept: ['80', 'm = 80'],
+      wrong: [['40', 'You added 50m and 150m. Subtract 50m from both sides: 8000 = 100m.'], ['53.33', 'Use 150 − 50 = 100, not 150.'], ['160', 'Divide 8,000 by 100, not by 50.']], wtol: '0.01',
+      hint: 'Subtract 50m from both sides: 8000 = 100m.', explain: '8000 = 150m − 50m = 100m, so m = 8000 ÷ 100 = 80 months.' },
+    { type: 'num', std: 'NC.8.EE.8', unit: 'dollars', q: 'For the wind option above, what is the total cost at the payback point (month 80)?', ans: Q(150 * 80), show: '$12,000', accept: ['12000'],
+      wrong: [['8000', 'That is only the installation cost. Add 50 × 80 too.'], ['4000', 'That is only the monthly part. Add the $8,000 installation.']],
+      hint: 'Use either equation: 150 × 80, or 8000 + 50 × 80.', explain: '150 × 80 = $12,000. Check: 8,000 + 4,000 = $12,000.', check: function () { return 8000 + 50 * 80 === 150 * 80; } },
+    { type: 'mc', std: 'NC.8.EE.8', q: 'A tax credit lowers the solar installation cost to $9,000. Solar still costs $30 a month and the grid costs $150 a month. When is the new payback point?',
+      choices: ['60 months', '75 months', '100 months', '300 months'], ans: 1,
+      why: { 0: 'Check: 9000 ÷ 120 is not 60.', 2: 'That was the payback with the $12,000 cost. A lower cost pays back sooner.', 3: 'Solve 150m = 9000 + 30m.' },
+      hint: '150m = 9000 + 30m → 120m = 9000.', explain: '120m = 9000, so m = 75 months. A lower installation cost makes the payback come sooner.',
+      check: function () { return Q.eq(payback(9000, 30, 150), 75); } },
+    { type: 'sel', std: 'ESS.8.4.1', q: 'Select <b>all</b> renewable energy sources.', choices: ['Solar', 'Coal', 'Wind', 'Natural gas', 'Hydroelectric', 'Petroleum'], ans: [0, 2, 4],
+      why: { 1: 'Coal is a fossil fuel. It took millions of years to form and will run out.', 3: 'Natural gas is a fossil fuel. It is nonrenewable.', 5: 'Petroleum (oil) is a fossil fuel. It is nonrenewable.' },
+      hint: 'Renewable sources are replaced by nature (sun, wind, moving water).', explain: 'Solar, wind and hydroelectric are renewable. Coal, natural gas and petroleum are fossil fuels.' },
+    { type: 'mc', std: 'NC.8.EE.8', q: 'Plan A: <span class="num">y = 150x</span>. Plan B: <span class="num">y = 150x + 2000</span>. How many solutions does this system have?',
+      choices: ['No solution', 'Exactly one solution', 'Infinitely many solutions', 'Two solutions'], ans: 0,
+      why: { 1: 'The lines have the same slope (150) but different y-intercepts, so they never cross.', 2: 'That would need the exact same line. The y-intercepts are different (0 and 2,000).', 3: 'Two lines can cross at most once.' },
+      hint: 'Compare the slopes and the y-intercepts.', explain: 'Same slope, different y-intercepts → parallel lines → no solution. Plan B never pays for itself.' },
+    { type: 'num', std: 'NC.8.F.2', unit: 'dollars per month', q: 'Plan C is shown in a table. Months: 0, 10, 20. Total cost: $6,000, $7,000, $8,000. What is the rate of change (cost per month)?',
+      ans: Q.div(7000 - 6000, 10), show: '$100 per month', accept: ['100'],
+      wrong: [['1000', 'That is the change for 10 months. Divide by 10.'], ['6000', 'That is the starting cost. Find the change per month.']],
+      hint: 'Change in cost ÷ change in months.', explain: '($7,000 − $6,000) ÷ (10 − 0) = $100 per month.' },
+    { type: 'err', std: 'NC.8.EE.8', q: 'Rosa solved <span class="num">150m = 12000 + 30m</span>. <b>Which step has the first mistake?</b>',
+      steps: ['180m = 12000', 'm = 12000 ÷ 180', 'm ≈ 66.7 months'], ans: 0,
+      why: { 1: 'Dividing is the right move, but the 180 came from a mistake before.', 2: 'This uses the numbers from the earlier steps.' },
+      hint: 'To move 30m to the left side, what do you do?', explain: 'Step 1 is wrong. Subtract 30m from both sides: 150m − 30m = 120m. So 120m = 12000 and m = 100 months.' },
+    { type: 'mc', std: 'NC.8.F.2', q: 'Which plan has the <b>greater</b> rate of change? Solar: <span class="num">S = 12000 + 30m</span>. Plan C: $100 per month (from the table above).',
+      choices: ['Plan C, $100 per month', 'Solar, $12,000', 'Solar, $30 per month', 'They are the same'], ans: 0,
+      why: { 1: '$12,000 is the starting value (y-intercept), not the rate of change.', 2: '$30 per month is less than $100 per month.', 3: 'The rates are $30 and $100 per month.' },
+      hint: 'The rate of change is the cost per month (the slope).', explain: 'Plan C goes up $100 each month. Solar goes up $30 each month. 100 > 30.' }
+  ],
+  checks: [['payback 100', Q.eq(payback(12000, 30, 150), 100)], ['totals at 100 = 15000', 150 * 100 === 12000 + 30 * 100], ['300 mo: 45000 vs 21000', 150 * 300 === 45000 && 12000 + 30 * 300 === 21000], ['wind 80', Q.eq(payback(8000, 50, 150), 80)]],
+  ixl: [['Math', 'Solve a system of equations by graphing: word problems', 'NC.8.EE.8'], ['Math', 'Compare linear functions: tables, graphs, and equations', 'NC.8.F.2'],
+        ['Science', 'Renewable and nonrenewable energy resources', 'ESS.8.4.1'], ['Science', 'Evaluate claims about natural resource use: fossil fuels', 'ESS.8.4.2']],
+  note: 'Costs on this page are made up for practice.'
+});
+})();
+</script>
+</body>
+</html>

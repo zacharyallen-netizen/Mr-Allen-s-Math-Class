@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Powers of Ten Zoom · Math in Science</title>
+<meta name="description" content="Order objects from an atom to a galaxy by their sizes in scientific notation. NC.8.EE.3.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap ms" id="ms-app">
+<a href="index.html" class="back-link">← Math in Science</a>
+<header class="page-hdr"><div class="eyebrow">Math in Science · Game</div><h1>Powers of Ten Zoom</h1>
+<p>Put objects in order from smallest to largest, from the nucleus of an atom to the Milky Way. Compare the exponents first.</p>
+<p class="stds">NC.8.EE.3 · Science PS.8.1.2, ESS.8.1.1</p></header>
+<section class="ms-game" id="game"></section>
+<div class="ms-tip"><h3>How to compare</h3><ul><li>Bigger exponent → bigger number. 10⁵ is more than 10³.</li><li>Negative exponents are small. 10⁻¹⁰ is smaller than 10⁻⁷.</li>
+<li>Same exponent? Compare the first numbers: 8 × 10⁻⁶ is more than 2 × 10⁻⁶.</li></ul></div>
+<p class="ms-cap">Sizes are approximate (width, length or height in meters).</p>
+</main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv, h = MS.h, KEY = 'msZoomBest';
+// [name, coefficient, exponent] — meters, approximate
+var BANK = [
+  ['Nucleus of an atom', '1', -15], ['Atom', '1', -10], ['DNA strand (width)', '2', -9], ['Virus', '1', -7], ['Bacterium', '2', -6],
+  ['Red blood cell', '8', -6], ['Human hair (width)', '1', -4], ['Grain of salt', '3', -4], ['Ant', '3', -3], ['Marble', '1.6', -2],
+  ['Basketball', '2.4', -1], ['8th grader (height)', '1.6', 0], ['Blue whale', '2.5', 1], ['Football field', '1.1', 2],
+  ['Mount Mitchell, NC (height)', '2', 3], ['Mount Everest (height)', '8.8', 3], ['North Carolina (east to west)', '9', 5],
+  ['Earth (width)', '1.3', 7], ['Earth to the Moon', '3.8', 8], ['Sun (width)', '1.4', 9], ['Earth to the Sun', '1.5', 11], ['Milky Way galaxy', '1', 21]
+].map(function (b) { return { name: b[0], c: b[1], k: b[2], v: Q.sci(b[1], b[2]) }; });
+var LEVELS = [{ n: 4, std: 0, sameExp: false }, { n: 5, std: 0, sameExp: true }, { n: 6, std: 2, sameExp: true }];
+var ROUNDS = 3;
+
+function sciLabel(o) { return o.c + ' × 10' + MS.sup(o.k) + ' m'; }
+function stdLabel(o) { return MS.fmt(Q.str(o.v)) + ' m'; }
+function sorted(list) { return list.slice().sort(function (a, b) { return Q.cmp(a.v, b.v); }); }
+
+/* pick a round: n distinct objects; with sameExp, include a pair that shares an exponent */
+function pick(L, rnd) {
+  rnd = rnd || Math.random;
+  for (var tries = 0; tries < 500; tries++) {
+    var set = MS.shuffle(BANK, rnd).slice(0, L.n);
+    var exps = set.map(function (o) { return o.k; });
+    var distinct = exps.filter(function (e, i) { return exps.indexOf(e) === i; }).length === exps.length;
+    if (!L.sameExp && !distinct) continue;
+    if (L.sameExp && distinct) continue;
+    return set.map(function (o, i) { return { o: o, label: i < L.std ? stdLabel(o) : sciLabel(o) }; });
+  }
+  throw new Error('no round');
+}
+
+var S = { level: 0, round: 0, score: 0, tries: 0, cards: [], order: [] };
+var G = document.getElementById('game');
+
+function hud() {
+  var b = MS.best(KEY).best;
+  return '<div class="ms-hud"><span>Level <b>' + (S.level + 1) + '</b>/3</span><span>Round <b>' + (S.round + 1) + '</b>/' + ROUNDS + '</span><span>Score <b id="score">' + S.score + '</b></span><span>Best <b>' + b + '</b></span></div>';
+}
+function start() { S = { level: 0, round: 0, score: 0, tries: 0 }; newRound(); }
+function newRound() {
+  S.cards = pick(LEVELS[S.level]); S.order = []; S.tries = 0;
+  G.innerHTML = hud() + '<p class="ms-big">Tap the objects from <b>smallest</b> to <b>largest</b>.</p>' +
+    (LEVELS[S.level].std ? '<p class="ms-cap" style="margin-top:-6px">Some sizes are in standard form. Change them to scientific notation in your head.</p>' : '') +
+    '<div class="ms-cards" id="cards"></div><div class="ms-slots" id="slots"></div>' +
+    '<div class="ms-row"><button class="ms-btn" id="check" type="button" disabled>Check order</button><button class="ms-btn ghost" id="clear" type="button">Clear</button><button class="ms-btn ghost" id="hintb" type="button">Hint</button></div>' +
+    '<div class="ms-hint" id="hint" hidden>Sort by exponent first. The most negative exponent is the smallest. If two exponents match, compare the first numbers.</div>' +
+    '<div class="ms-fb" id="fb" aria-live="polite"></div><div id="zoom"></div><div class="ms-row" id="next"></div>';
+  G.querySelector('#check').addEventListener('click', check);
+  G.querySelector('#clear').addEventListener('click', function () { S.order = []; draw(); });
+  G.querySelector('#hintb').addEventListener('click', function () { G.querySelector('#hint').hidden = false; });
+  draw();
+}
+function draw() {
+  var cards = G.querySelector('#cards'), slots = G.querySelector('#slots');
+  cards.innerHTML = ''; slots.innerHTML = '';
+  S.cards.forEach(function (c, i) {
+    var used = S.order.indexOf(i) >= 0;
+    var b = h('button', { class: 'ms-card' + (used ? ' used' : ''), type: 'button', 'aria-label': c.o.name + ', ' + c.label + (used ? ', placed' : '') }, '<span class="t">' + c.o.name + '</span><span class="v">' + c.label + '</span>');
+    if (used) b.disabled = true;
+    b.addEventListener('click', function () { if (S.done) return; S.order.push(i); G.querySelector('#fb').textContent = ''; draw(); });
+    cards.appendChild(b);
+  });
+  for (var s = 0; s < S.cards.length; s++) {
+    var idx = S.order[s], d = h('div', { class: 'ms-slot' + (idx != null ? ' full' : ''), role: idx != null ? 'button' : null, tabindex: idx != null ? 0 : null });
+    if (idx != null) {
+      d.innerHTML = '<span><b>' + S.cards[idx].o.name + '</b> <span class="mono">' + S.cards[idx].label + '</span></span>';
+      (function (pos) {
+        var back = function () { if (S.done) return; S.order.splice(pos, 1); draw(); };
+        d.addEventListener('click', back); d.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); back(); } });
+      })(s);
+      d.title = 'Tap to send it back';
+    } else d.innerHTML = '<span style="color:#687082">' + (s === 0 ? 'smallest' : s === S.cards.length - 1 ? 'largest' : '') + '</span>';
+    slots.appendChild(d);
+  }
+  G.querySelector('#check').disabled = S.order.length !== S.cards.length || S.done;
+}
+function check() {
+  var fb = G.querySelector('#fb'), chosen = S.order.map(function (i) { return S.cards[i]; });
+  S.tries++;
+  var wrongAt = -1;
+  for (var i = 0; i + 1 < chosen.length; i++) if (Q.cmp(chosen[i].o.v, chosen[i + 1].o.v) > 0) { wrongAt = i; break; }
+  var right = sorted(chosen.map(function (c) { return c.o; }));
+  var slotEls = G.querySelectorAll('.ms-slot');
+  chosen.forEach(function (c, i) { slotEls[i].classList.add(c.o === right[i] ? 'ok' : 'no'); });
+  if (wrongAt < 0) {
+    var pts = S.tries === 1 ? 10 : S.tries === 2 ? 5 : 2;
+    S.score += pts; S.done = true;
+    fb.className = 'ms-fb ok'; fb.innerHTML = (S.tries === 1 ? 'Perfect order! +10' : 'You got it! +' + pts) + ' &nbsp;Here is the zoom from smallest to largest:';
+    G.querySelector('#score').textContent = S.score;
+    zoomStrip(right);
+    var last = S.level === LEVELS.length - 1 && S.round === ROUNDS - 1;
+    var nb = h('button', { class: 'ms-btn gold', type: 'button', id: 'nextbtn' }, last ? 'See my score' : 'Next round');
+    nb.addEventListener('click', function () { S.done = false; if (last) return finish(); S.round++; if (S.round >= ROUNDS) { S.round = 0; S.level++; } newRound(); });
+    G.querySelector('#next').appendChild(nb);
+    G.querySelector('#check').disabled = true;
+    return;
+  }
+  var a = chosen[wrongAt].o, b = chosen[wrongAt + 1].o, why;
+  if (a.k !== b.k) why = 'Compare the exponents: 10' + MS.sup(a.k) + ' is ' + (a.k > b.k ? 'bigger' : 'smaller') + ' than 10' + MS.sup(b.k) + '.';
+  else why = 'They have the same exponent, so compare the first numbers: ' + a.c + ' is bigger than ' + b.c + '.';
+  fb.className = 'ms-fb no';
+  fb.innerHTML = 'Almost. <b>' + a.name + '</b> (' + sciLabel(a) + ') is bigger than <b>' + b.name + '</b> (' + sciLabel(b) + '). ' + why + ' Tap a card in the list to move it, then check again.';
+  setTimeout(function () { G.querySelectorAll('.ms-slot').forEach(function (s) { s.classList.remove('ok', 'no'); }); }, 2200);
+}
+function zoomStrip(list) {
+  var host = G.querySelector('#zoom'); host.innerHTML = '';
+  var lo = list[0].k - 1, hi = list[list.length - 1].k + 1, W = 560, H = 120 + list.length * 0, L = 20, R = 20;
+  var X = function (e) { return L + (e - lo) / (hi - lo) * (W - L - R); };
+  var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + (60 + list.length * 26), class: 'ms-svg', role: 'img', 'aria-label': 'Objects on a powers of ten line' });
+  var base = 40;
+  sv('line', { x1: L, x2: W - R, y1: base, y2: base, stroke: '#1E2D4F', 'stroke-width': 2 }, svg);
+  var step = Math.max(1, Math.ceil((hi - lo) / 8));
+  for (var e = lo; e <= hi; e++) {
+    sv('line', { x1: X(e), x2: X(e), y1: base - 4, y2: base + 4, stroke: '#1E2D4F' }, svg);
+    if ((e - lo) % step === 0) sv('text', { x: X(e), y: base - 12, 'text-anchor': 'middle', 'font-size': 14, class: 'mono' }, svg, '10' + MS.sup(e));
+  }
+  list.forEach(function (o, i) {
+    var x = X(o.k + Math.log10(parseFloat(o.c))), y = base + 26 + i * 26;
+    sv('line', { x1: x, x2: x, y1: base, y2: y - 6, stroke: '#B8C0CF' }, svg);
+    sv('circle', { cx: x, cy: base, r: 6, fill: '#E0A800', stroke: '#1E2D4F' }, svg);
+    var anchor = x > W * 0.6 ? 'end' : 'start';
+    sv('text', { x: anchor === 'end' ? x - 4 : x + 4, y: y + 4, 'text-anchor': anchor, 'font-size': 15, 'font-weight': 600 }, svg, o.name);
+  });
+  host.appendChild(svg);
+}
+function finish() {
+  var max = ROUNDS * LEVELS.length * 10, r = MS.best(KEY, S.score);
+  var msg = S.score >= max * 0.9 ? 'Outstanding! You really know how to compare powers of 10.' : S.score >= max * 0.6 ? 'Nice work. Compare exponents first, every time.' : 'Good effort. Read the tips below, then play again.';
+  G.innerHTML = '<p class="ms-big">Your score: <span class="mono">' + S.score + ' / ' + max + '</span></p><p>' + msg + '</p>' +
+    '<p class="ms-stars">' + (r.isNew ? 'New best score!' : 'Best score: ' + r.best) + '</p><div class="ms-row"><button class="ms-btn gold" id="again" type="button">Play again</button></div>';
+  G.querySelector('#again').addEventListener('click', start);
+}
+
+/* self-test: bank values exact and all different; every level can be built; sorting works */
+var vals = BANK.map(function (o) { return Q.str(o.v); });
+MS.assert(vals.filter(function (v, i) { return vals.indexOf(v) === i; }).length === BANK.length, 'zoom: duplicate sizes');
+MS.assert(Q.eq(BANK[0].v, Q.dec('0.000000000000001')), 'zoom: nucleus value');
+MS.assert(stdLabel(BANK[15]) === '8,800 m' && stdLabel(BANK[6]) === '0.0001 m', 'zoom: standard form labels');
+LEVELS.forEach(function (L, i) { var r = pick(L); MS.assert(r.length === L.n, 'zoom: level ' + (i + 1) + ' size'); var s = sorted(r.map(function (c) { return c.o; }));
+  for (var j = 0; j + 1 < s.length; j++) MS.assert(Q.cmp(s[j].v, s[j + 1].v) < 0, 'zoom: sort'); });
+window.MS_SELFTEST = { ok: MS.fails.length === 0, fails: MS.fails.slice() };
+window.ZOOM = { S: function () { return S; }, sorted: sorted };
+start();
+})();
+</script>
+</body>
+</html>
