@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 8: Fault Lines · Math in Science</title>
+<meta name="description" content="Model a fault as a translation and use the Pythagorean Theorem to find how far rocks slipped. NC.8.G.3, NC.8.G.7 with ESS.8.1.2.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+function isqrt(n) { var r = Math.round(Math.sqrt(n)); return r * r === n ? r : null; }   // exact whole-number root or null
+function hyp(a, b) { return a * a + b * b; }                                          // c² (exact)
+
+function faultFig(el) {
+  var P = MS.plot(el, { x: [-2, 10], y: [-7, 5], xt: 1, yt: 1, w: 520, h: 520, l: 40, b: 40, fs: 14, label: 'Coordinate grid with a rock block and its translated copy',
+    xfmt: function (v) { return v % 2 === 0 ? String(v) : ''; }, yfmt: function (v) { return v % 2 === 0 ? String(v) : ''; } });
+  var cols = ['#C8A26B', '#E3C48E', '#B07F4F'];
+  function block(dx, dy, ghost) {
+    var g = sv('g', { opacity: ghost ? 0.35 : 1 }, P.layer);
+    for (var i = 0; i < 3; i++) {
+      var y0 = i * 2 / 3;
+      sv('rect', { x: P.X(dx), y: P.Y(dy + y0 + 2 / 3), width: P.X(4) - P.X(0), height: P.Y(0) - P.Y(2 / 3), fill: cols[i], stroke: '#1E2D4F', 'stroke-width': ghost ? 1 : 1.5, 'stroke-dasharray': ghost ? '5 4' : '' }, g);
+    }
+    return g;
+  }
+  block(0, 0, true);
+  var moved = null, tri = sv('g', {}, P.layer), dx = 3, dy = -4;
+  var read = MS.h('div', { class: 'ms-read' }), ctl = MS.h('div', { class: 'ms-row' });
+  [['← left', -1, 0], ['right →', 1, 0], ['↑ up', 0, 1], ['↓ down', 0, -1]].forEach(function (b) {
+    var bt = MS.h('button', { class: 'ms-btn ghost', type: 'button' }, b[0]);
+    bt.addEventListener('click', function () { dx = Math.max(-2, Math.min(6, dx + b[1])); dy = Math.max(-5, Math.min(3, dy + b[2])); draw(); });
+    ctl.appendChild(bt);
+  });
+  var rs = MS.h('button', { class: 'ms-btn ghost', type: 'button' }, 'Reset to (x + 3, y − 4)');
+  rs.addEventListener('click', function () { dx = 3; dy = -4; draw(); }); ctl.appendChild(rs);
+  el.appendChild(ctl); el.appendChild(read);
+  function draw() {
+    if (moved) moved.remove(); moved = block(dx, dy, false); tri.innerHTML = '';
+    P.layer.appendChild(tri);
+    if (dx || dy) {
+      sv('line', { x1: P.X(0), y1: P.Y(0), x2: P.X(dx), y2: P.Y(0), stroke: '#1D4ED8', 'stroke-width': 3 }, tri);
+      sv('line', { x1: P.X(dx), y1: P.Y(0), x2: P.X(dx), y2: P.Y(dy), stroke: '#1D4ED8', 'stroke-width': 3 }, tri);
+      sv('line', { x1: P.X(0), y1: P.Y(0), x2: P.X(dx), y2: P.Y(dy), stroke: '#B45309', 'stroke-width': 4 }, tri);
+      sv('circle', { cx: P.X(0), cy: P.Y(0), r: 6, fill: '#1E2D4F' }, tri); sv('circle', { cx: P.X(dx), cy: P.Y(dy), r: 6, fill: '#B45309' }, tri);
+    }
+    var c2 = hyp(dx, dy), r = isqrt(c2);
+    var rule = '(x, y) → (x ' + (dx < 0 ? '− ' + (-dx) : '+ ' + dx) + ', y ' + (dy < 0 ? '− ' + (-dy) : '+ ' + dy) + ')';
+    read.innerHTML = 'Rule: <b>' + rule + '</b><br>Corner (0, 0) → (' + dx + ', ' + dy + ')<br>Slip: ' + Math.abs(dx) + '² + ' + Math.abs(dy) + '² = ' + c2 +
+      ', so slip = ' + (r !== null ? '<b>' + r + ' units</b>' : '√' + c2 + ' ≈ <b>' + Math.sqrt(c2).toFixed(1) + ' units</b>');
+  }
+  draw();
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, 'Dashed block = before. Solid block = after the fault slipped. Orange line = slip along the fault.'));
+}
+
+MS.lesson({
+  num: 8, title: 'Fault Lines', sci: 'ESS.8.1.2', math: ['NC.8.G.3', 'NC.8.G.7'], minutes: 7,
+  question: 'An earthquake breaks rock layers along a fault. One block slides past the other. How far did it slip?',
+  intro: 'A translation describes the slide. The Pythagorean Theorem finds the slip distance.',
+  target: 'I can model a fault as a translation and use the Pythagorean Theorem to find how far the rocks slipped.',
+  vocab: ['fault', 'rock layer', 'sedimentary rock', 'law of superposition', 'translation', 'coordinates', 'hypotenuse', 'Pythagorean Theorem'],
+  steps: [
+    { title: 'A fault slide is a translation',
+      body: '<p>A <b>translation</b> slides every point the same distance in the same direction. The block keeps its size, shape and direction.</p>' +
+        '<p><b>Right</b> adds to x. <b>Left</b> subtracts from x. <b>Up</b> adds to y. <b>Down</b> subtracts from y. Use the buttons to slide the block.</p>',
+      fig: faultFig,
+      tryit: { type: 'pt', q: 'Translate the point (2, 5) right 3 and down 4. Where does it land?', ans: [5, 1], show: '(5, 1)', accept: ['5, 1', '(5,1)'],
+        wrong: [['(5, 9)', 'Down means subtract from y: 5 − 4.'], ['(-1, 1)', 'Right means add to x: 2 + 3.'], ['(-1, 9)', 'Right adds to x and down subtracts from y.'], ['(6, 2)', 'Right 3 and down 4 means x + 3 and y − 4.']],
+        hint: 'x: 2 + 3. y: 5 − 4.', explain: '(2 + 3, 5 − 4) = (5, 1).' } },
+    { title: 'Write the rule',
+      body: '<div class="ms-ex"><span class="lbl">Example</span>A block moves 3 right and 4 down. Rule: <b class="num">(x, y) → (x + 3, y − 4)</b>. The corner (4, 2) moves to (7, −2).</div>',
+      tryit: { type: 'mc', q: 'A block moves 5 units left and 2 units up. Which rule describes it?', choices: ['(x, y) → (x − 5, y + 2)', '(x, y) → (x + 5, y − 2)', '(x, y) → (x + 2, y − 5)', '(x, y) → (x − 2, y + 5)'], ans: 0,
+        why: { 1: 'This is 5 right and 2 down. Left subtracts from x.', 2: 'The x change and the y change are switched, and the signs are wrong.', 3: 'The x change and the y change are switched.' },
+        hint: 'Left changes x. Up changes y.', explain: 'Left 5 → x − 5. Up 2 → y + 2.' } },
+    { title: 'Find the slip distance',
+      body: '<p>The slip goes along the fault, at a slant. The across move and the down move are the <b>legs</b> of a right triangle. The slip is the <b>hypotenuse</b>.</p>' +
+        '<div class="ms-ex"><span class="lbl">Worked example</span><ol><li>a² + b² = c²</li><li>3² + 4² = 9 + 16 = 25</li><li>c = √25 = <b class="num">5 units</b></li></ol></div>',
+      tryit: { type: 'num', unit: 'units', q: 'A block slips 5 units across and 12 units down. How far did it slip along the fault?', ans: Q(isqrt(hyp(5, 12))), show: '13',
+        wrong: [['17', 'You added the legs. Square them, add, then take the square root.'], ['169', 'Almost! 169 is c². Take the square root.'], ['34', 'Square each leg: 5² = 25 and 12² = 144.']],
+        hint: '5² + 12² = c².', explain: '25 + 144 = 169, and √169 = 13 units.', check: function () { return hyp(5, 12) === 169; } } },
+    { title: 'Read the story in the rocks',
+      body: '<p>Rock layers form first, with the oldest on the bottom (<b>superposition</b>). A fault that cuts through layers must be <b>younger</b> than the layers it cuts (<b>cross-cutting</b>).</p>',
+      tryit: { type: 'mc', q: 'A fault cuts through three rock layers. Which happened first?', choices: ['The rock layers formed.', 'The fault formed.', 'They happened at the same time.'], ans: 0,
+        why: { 1: 'A fault can only break layers that are already there.', 2: 'The layers had to exist before they could be broken.' },
+        hint: 'Can you break something that does not exist yet?', explain: 'The layers formed first. Then the fault broke them, so the fault is younger.' } }
+  ],
+  desmos: '<p>Draw a layer: <code>polygon((0,0),(4,0),(4,2),(0,2))</code>. Draw the moved block by adding 3 to each x and subtracting 4 from each y. Find the slip with <code>distance((0,0),(3,-4))</code>. Desmos shows 5.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.G.7', unit: 'm', q: 'A rock block moved <b>6 m across</b> and <b>8 m down</b> along a fault. Find the slip distance.', ans: Q(isqrt(hyp(6, 8))), show: '10 m', accept: ['10'],
+      wrong: [['14', 'You added the legs. Square them, add, then take the square root.'], ['100', '100 is c². Take the square root.'], ['28', '6² is 36, not 12. Square means multiply a number by itself.']],
+      hint: '6² + 8² = c².', explain: '36 + 64 = 100, and √100 = 10 m.' },
+    { type: 'mc', std: 'NC.8.G.3', q: 'The same block moved 6 m right and 8 m down. Which rule describes the move?',
+      choices: ['(x, y) → (x + 6, y − 8)', '(x, y) → (x − 6, y + 8)', '(x, y) → (x + 8, y − 6)', '(x, y) → (x + 6, y + 8)'], ans: 0,
+      why: { 1: 'This moves left and up. Right adds to x, and down subtracts from y.', 2: 'The 6 and 8 are switched. The x change is the across move.', 3: 'Down subtracts from y.' },
+      hint: 'Right → add to x. Down → subtract from y.', explain: 'Right 6 → x + 6. Down 8 → y − 8.' },
+    { type: 'pt', std: 'NC.8.G.3', q: 'A corner of a rock layer is at (4, 2). The rule is (x, y) → (x + 3, y − 4). Where does the corner move?', ans: [7, -2], show: '(7, −2)', accept: ['(7,-2)', '7, -2'],
+      wrong: [['(7, 6)', 'The rule says y − 4: 2 − 4 = −2.'], ['(1, -2)', 'The rule says x + 3: 4 + 3 = 7.'], ['(1, 6)', 'Use the rule: x + 3 and y − 4.']],
+      hint: 'x: 4 + 3. y: 2 − 4.', explain: '(4 + 3, 2 − 4) = (7, −2).' },
+    { type: 'sel', std: 'NC.8.G.3', q: 'A block of rock is translated along a fault. Select <b>all</b> true statements about the block after the translation.',
+      choices: ['It is the same size.', 'It is the same shape.', 'It faces the same direction.', 'It gets bigger.', 'It is flipped upside down.'], ans: [0, 1, 2],
+      why: { 3: 'A translation only slides. It does not change size.', 4: 'A translation does not flip. A reflection flips.' },
+      hint: 'A translation is a slide.', explain: 'A translation slides a figure. Its size, shape and direction stay the same.' },
+    { type: 'num', std: 'NC.8.G.7', unit: 'm', q: 'A block slipped 15 m along a fault. It moved 9 m across. How far down did it move?', ans: Q(isqrt(15 * 15 - 9 * 9)), show: '12 m', accept: ['12'],
+      wrong: [['6', 'You subtracted 15 − 9. Use a² + b² = c²: 9² + b² = 15².'], ['144', '144 is b². Take the square root.'], ['17.49', 'The slip (15) is the hypotenuse. Subtract: 15² − 9².']], wtol: '0.01',
+      hint: 'The slip is the hypotenuse: 9² + b² = 15².', explain: '15² − 9² = 225 − 81 = 144, and √144 = 12 m.' },
+    { type: 'num', std: 'NC.8.G.7', unit: 'units', tol: '0.06', q: 'A block moved 2 units across and 3 units down. Find the slip distance. Round to the nearest tenth.', ans: Q.dec('3.6'), show: '3.6', accept: ['√13', '3.61', 'sqrt(13)'],
+      wrong: [['5', 'You added the legs. Square them first: 2² + 3².'], ['13', '13 is c². Take the square root.']], wtol: '0.001',
+      hint: '2² + 3² = 13. Then find √13.', explain: '4 + 9 = 13, and √13 ≈ 3.6 units.', check: function () { return Math.abs(Math.sqrt(hyp(2, 3)) - 3.6) < 0.05; } },
+    { type: 'err', std: 'NC.8.G.7', q: 'Ben found the slip distance when a block moved 6 m across and 8 m down. <b>Which step has the first mistake?</b>',
+      steps: ['6² + 8² = c²', '12 + 16 = c²', '28 = c², so c ≈ 5.3 m'], ans: 1,
+      why: { 0: 'This is the Pythagorean Theorem set up correctly.', 2: 'This step uses the sum from Step 2. The mistake is earlier.' },
+      hint: 'What does 6² mean?', explain: 'Step 2 is wrong. 6² = 6 × 6 = 36, not 12. So 36 + 64 = 100 and c = 10 m.' },
+    { type: 'mc', std: 'ESS.8.1.2', q: 'Layers A (bottom), B (middle) and C (top) formed in order. Then a fault cut through all three. Which is the <b>youngest</b>?',
+      choices: ['The fault', 'Layer A', 'Layer C', 'Layer B'], ans: 0,
+      why: { 1: 'Layer A is on the bottom, so it is the oldest layer.', 2: 'Layer C is the youngest layer, but the fault cut through it, so the fault came later.', 3: 'Layer B is in the middle.' },
+      hint: 'Something that cuts through layers must come after them.', explain: 'Cross-cutting: the fault cuts all three layers, so it is younger than all of them.' }
+  ],
+  checks: [['3-4-5', isqrt(hyp(3, 4)) === 5], ['6-8-10', isqrt(hyp(6, 8)) === 10], ['9-12-15', hyp(9, 12) === 225], ['(2,5)+(3,-4) = (5,1)', 2 + 3 === 5 && 5 - 4 === 1]],
+  ixl: [['Math', 'Translations: write the rule', 'NC.8.G.3'], ['Math', 'Translations: find the coordinates', 'NC.8.G.3'], ['Math', 'Pythagorean theorem: word problems', 'NC.8.G.7'],
+        ['Science', 'Plate tectonics', 'ESS.8.1.2'], ['Science', 'Classify rocks as igneous, sedimentary, or metamorphic', 'ESS.8.1.2']]
+});
+})();
+</script>
+</body>
+</html>

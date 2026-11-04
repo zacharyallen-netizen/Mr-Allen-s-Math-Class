@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 1: How Big Is an Atom? · Math in Science</title>
+<meta name="description" content="Compare the sizes and masses of atomic parts using scientific notation. NC.8.EE.3, NC.8.EE.4 with PS.8.1.2.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+
+/* powers-of-10 number line (meters) */
+function scaleFig(el) {
+  var objs = [
+    ['Nucleus', -15, '1 × 10⁻¹⁵ m', 'The nucleus holds protons (+) and neutrons (no charge).'],
+    ['Atom', -10, '1 × 10⁻¹⁰ m', 'Electrons (−) move in a cloud around the nucleus. The cloud sets the width of the atom.'],
+    ['Virus', -7, 'about 1 × 10⁻⁷ m', 'A virus is about 1,000 atoms wide.'],
+    ['Bacterium', -6, 'about 1 × 10⁻⁶ m', 'Ten times wider than a virus.'],
+    ['Hair', -4, 'about 1 × 10⁻⁴ m', 'The width of one human hair.'],
+    ['Ant', -3, 'about 1 × 10⁻³ m', 'A small ant is about 1 millimeter long.'],
+    ['You', 0, 'about 1.6 × 10⁰ m', 'A student is about 1.6 meters tall. 10⁰ = 1.']
+  ];
+  var W = 480, H = 190, x0 = -16, x1 = 1, L = 24, R = 24, base = 120;
+  var X = function (e) { return L + (e - x0) / (x1 - x0) * (W - L - R); };
+  var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ms-svg', role: 'img', 'aria-label': 'Powers of 10 number line from 10 to the minus 16 to 10 to the 1 meters' });
+  sv('line', { x1: L, x2: W - R, y1: base, y2: base, stroke: '#1E2D4F', 'stroke-width': 2.5 }, svg);
+  for (var e = x0; e <= x1; e++) {
+    sv('line', { x1: X(e), x2: X(e), y1: base - 6, y2: base + 6, stroke: '#1E2D4F', 'stroke-width': e % 5 === 0 ? 2.5 : 1.2 }, svg);
+    if (e % 5 === 0) sv('text', { x: X(e), y: base + 30, 'text-anchor': 'middle', 'font-size': 17, class: 'mono' }, svg, '10' + MS.sup(e));
+  }
+  sv('text', { x: W - R, y: H - 8, 'text-anchor': 'end', 'font-size': 14, fill: '#5B6475' }, svg, 'meters → bigger');
+  sv('text', { x: L, y: H - 8, 'font-size': 14, fill: '#5B6475' }, svg, '← smaller');
+  var marks = objs.map(function (o, i) {
+    var g = sv('g', {}, svg), up = i % 2 === 0, ly = up ? 34 : 70;
+    sv('line', { x1: X(o[1]), x2: X(o[1]), y1: ly + 6, y2: base - 8, stroke: '#B8C0CF' }, g);
+    var c = sv('circle', { cx: X(o[1]), cy: base, r: 8, fill: '#E0A800', stroke: '#1E2D4F', 'stroke-width': 1.5 }, g);
+    var t = sv('text', { x: X(o[1]), y: ly, 'text-anchor': i === 0 ? 'start' : (i === objs.length - 1 ? 'end' : 'middle'), 'font-size': 16, 'font-weight': 600 }, g, o[0]);
+    if (i === 0) t.setAttribute('x', X(o[1]) - 10);
+    if (i === objs.length - 1) t.setAttribute('x', X(o[1]) + 10);
+    return c;
+  });
+  el.appendChild(svg);
+  var chips = MS.h('div', { class: 'ms-chips', role: 'group', 'aria-label': 'Pick an object' }), read = MS.h('div', { class: 'ms-read' }, 'Tap an object to see its size.');
+  objs.forEach(function (o, i) {
+    var b = MS.h('button', { class: 'ms-chip', type: 'button', 'aria-pressed': 'false' }, o[0]);
+    b.addEventListener('click', function () {
+      chips.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true');
+      marks.forEach(function (m, j) { m.setAttribute('r', j === i ? 13 : 8); m.setAttribute('fill', j === i ? '#1E2D4F' : '#E0A800'); });
+      read.innerHTML = o[0] + ': ' + o[2] + '. ' + o[3];
+    });
+    chips.appendChild(b);
+  });
+  el.appendChild(chips); el.appendChild(read);
+}
+
+var ratio = Q.div(Q.sci('1.67', -27), Q.sci('9.11', -31));   // proton ÷ electron mass
+
+MS.lesson({
+  num: 1, title: 'How Big Is an Atom?', sci: 'PS.8.1.2', math: ['NC.8.EE.3', 'NC.8.EE.4'], minutes: 7,
+  question: 'An atom is tiny. Its nucleus is even tinier. How many times wider is an atom than its nucleus?',
+  intro: 'Scientists use scientific notation to write and compare numbers this small.',
+  target: 'I can compare the sizes and masses of atomic parts using scientific notation.',
+  vocab: ['atom', 'nucleus', 'proton', 'neutron', 'electron', 'scientific notation', 'power of 10', 'scale model'],
+  steps: [
+    { title: 'Write small numbers in scientific notation',
+      body: '<p>Scientific notation looks like <b class="num">a × 10ⁿ</b>. The first number <span class="num">a</span> is at least 1 and less than 10.</p>' +
+        '<p>A <b>negative exponent</b> means a small number (less than 1). Each step left on the line below is 10 times smaller.</p>' +
+        '<div class="ms-ex"><span class="lbl">Example</span>0.0000001 → move the decimal 7 places right to get 1. So 0.0000001 = <b class="num">1 × 10⁻⁷</b>.</div>',
+      fig: scaleFig, wide: true,
+      tryit: { type: 'num', sci: true, form: 'sci', q: 'Write <span class="num">0.00045</span> in scientific notation.',
+        ans: Q.sci('4.5', -4), show: '4.5 × 10⁻⁴', accept: ['4.5x10^-4', '4.5*10^(-4)', '4.5 × 10⁻⁴'], reject: ['4.5x10^4', '45x10^-5'],
+        wrong: [['4.5x10^4', 'The number is less than 1, so the exponent must be negative.'], ['4.5x10^-5', 'Count again. The decimal moves 4 places to get from 0.00045 to 4.5.'], ['4.5x10^-3', 'Count again. The decimal moves 4 places to get from 0.00045 to 4.5.']],
+        hint: 'Move the decimal point right until you get 4.5. Count the moves. The exponent is that count, and it is negative.',
+        explain: '0.00045 → 4.5 takes 4 moves to the right, so the exponent is −4: 4.5 × 10⁻⁴.' } },
+    { title: 'Compare powers of 10',
+      body: '<p>With negative exponents, the number with the <b>more negative</b> exponent is <b>smaller</b>. 10⁻¹⁵ (nucleus) is smaller than 10⁻¹⁰ (atom).</p>' +
+        '<div class="ms-ex"><span class="lbl">Example</span>10⁻² = 0.01 and 10⁻³ = 0.001. 0.001 is smaller, so 10⁻³ &lt; 10⁻².</div>',
+      tryit: { type: 'mc', q: 'Which is smaller?', choices: ['10⁻⁹', '10⁻¹²', 'They are equal'], ans: 1,
+        why: { 0: '10⁻⁹ is bigger. 10⁻¹² has a more negative exponent, so it is 1,000 times smaller.', 2: 'The exponents are different, so the numbers are different.' },
+        hint: 'Which exponent is more negative?', explain: '−12 is less than −9, so 10⁻¹² is smaller. It is 1,000 times smaller than 10⁻⁹.' } },
+    { title: 'Divide to compare: how many times wider?',
+      body: '<p>To find "how many times," divide. When you divide powers of 10, <b>subtract the exponents</b>.</p>' +
+        '<div class="ms-ex"><span class="lbl">Worked example</span><ol><li>Atom ÷ nucleus = 10⁻¹⁰ ÷ 10⁻¹⁵</li><li>Subtract: −10 − (−15) = −10 + 15 = 5</li><li>10⁵ = <b class="num">100,000</b>. An atom is about 100,000 times wider than its nucleus.</li></ol></div>' +
+        '<p><b>Scale model:</b> if the nucleus were a 1 cm marble, the atom would be 10⁵ cm wide. That is 1,000 m, or <b>1 km</b>! Almost all of an atom is empty space.</p>',
+      tryit: { type: 'num', sci: true, q: 'Find <span class="num">10⁻⁸ ÷ 10⁻¹²</span>.', ans: Q.pow10(4), show: '10⁴ (10,000)', accept: ['10^4', '10000', '1x10^4'],
+        wrong: [['10^-20', 'You added the exponents. When you divide, subtract them: −8 − (−12).'], ['10^-4', 'Check the sign. −8 − (−12) = −8 + 12 = 4.']],
+        hint: 'Subtract the exponents: −8 − (−12). Subtracting a negative is the same as adding.', explain: '−8 − (−12) = −8 + 12 = 4, so the answer is 10⁴ = 10,000.' } },
+    { title: 'Divide with scientific notation',
+      body: '<p>When there are numbers in front, divide them, then subtract the exponents.</p>' +
+        '<div class="ms-ex"><span class="lbl">Worked example: proton vs. electron</span><ol><li>Proton mass ÷ electron mass = (1.67 × 10⁻²⁷) ÷ (9.11 × 10⁻³¹)</li>' +
+        '<li>1.67 ÷ 9.11 ≈ 0.183</li><li>10⁻²⁷ ÷ 10⁻³¹ = 10⁴</li><li>0.183 × 10⁴ ≈ <b class="num">1,830</b>. A proton is about 1,830 times heavier than an electron.</li></ol></div>',
+      tryit: { type: 'num', sci: true, q: 'Find <span class="num">(6 × 10⁸) ÷ (2 × 10³)</span>.', ans: Q.div(Q.sci(6, 8), Q.sci(2, 3)), show: '3 × 10⁵ (300,000)',
+        accept: ['3x10^5', '300000', '3*10^5'], wrong: [['3x10^11', 'You added the exponents. When you divide, subtract: 8 − 3.'], ['12x10^5', 'Divide the front numbers: 6 ÷ 2 = 3 (not 6 × 2).'], ['4x10^5', 'Divide the front numbers: 6 ÷ 2 = 3 (not 6 − 2).']],
+        hint: 'Two parts: 6 ÷ 2, then 10⁸ ÷ 10³ (subtract the exponents).', explain: '6 ÷ 2 = 3 and 10⁸ ÷ 10³ = 10⁵, so the answer is 3 × 10⁵.' } }
+  ],
+  desmos: '<p>Type a division like <code>1.67×10^(-27)/(9.11×10^(-31))</code> (or use <code>*</code> for ×) to check your work. Put the bottom number in parentheses.</p>',
+  assignment: [
+    { type: 'num', sci: true, std: 'NC.8.EE.4', unit: 'm',
+      q: 'An atom is about 10⁵ times wider than its nucleus. If the nucleus were <b>1 m</b> wide, how wide would the atom be? Write your answer in scientific notation.',
+      ans: Q.mul(1, Q.pow10(5)), show: '1 × 10⁵ m (100,000 m, or 100 km)', accept: ['1x10^5', '10^5', '100000', '1 × 10⁵ m'],
+      wrong: [['10^-5', 'The atom is bigger than the nucleus, so the answer must be bigger than 1 m. Multiply by 10⁵.']],
+      hint: 'The atom is 10⁵ times wider. Multiply 1 m by 10⁵.', explain: '1 m × 10⁵ = 1 × 10⁵ m = 100,000 m = 100 km.' },
+    { type: 'mc', std: 'NC.8.EE.3', q: 'Which has less mass?',
+      choices: ['A proton, 1.67 × 10⁻²⁷ kg', 'An electron, 9.11 × 10⁻³¹ kg', 'They have the same mass', 'You cannot tell from scientific notation'], ans: 1,
+      why: { 0: '9.11 is bigger than 1.67, but look at the exponents first. −31 is more negative than −27, so the electron is smaller.', 2: 'The exponents are different (−27 and −31), so the masses are different.', 3: 'You can tell! Compare the exponents first.' },
+      hint: 'Compare the exponents first. The more negative exponent is the smaller number.', explain: '−31 < −27, so 9.11 × 10⁻³¹ is smaller. Electrons have much less mass than protons.' },
+    { type: 'sel', std: 'NC.8.EE.3', q: 'Select <b>all</b> numbers that are written correctly in scientific notation.',
+      choices: ['1.67 × 10⁻²⁷', '16.7 × 10⁻²⁸', '9.11 × 10⁻³¹', '0.5 × 10⁻⁹', '1 × 10⁻¹⁵'], ans: [0, 2, 4],
+      why: { 1: '16.7 is not less than 10. The first number must be at least 1 and less than 10.', 3: '0.5 is less than 1. The first number must be at least 1 and less than 10.' },
+      hint: 'Check the first number: is it at least 1 and less than 10?', explain: '1.67, 9.11 and 1 are each at least 1 and less than 10. 16.7 is too big and 0.5 is too small.' },
+    { type: 'num', sci: true, std: 'NC.8.EE.4', tol: '10', wtol: '0.0001',
+      q: 'A proton has a mass of 1.67 × 10⁻²⁷ kg. An electron has a mass of 9.11 × 10⁻³¹ kg. About how many times heavier is the proton? Round to the nearest ten.',
+      ans: Q(1830), show: '1,830', accept: ['1830', '1,830', '1.83x10^3', '1833'], reject: ['1800', '0.000546'],
+      wrong: [[function (p) { return p.exact && Q.cmp(p.v, 1) < 0; }, 'You divided the small mass by the big mass. Put the proton (the bigger mass) on top.'], ['1800', 'Close! Round to the nearest ten, not the nearest hundred.']],
+      hint: '(1.67 × 10⁻²⁷) ÷ (9.11 × 10⁻³¹): divide 1.67 ÷ 9.11, then subtract the exponents.', explain: '1.67 ÷ 9.11 ≈ 0.1833 and 10⁻²⁷ ÷ 10⁻³¹ = 10⁴. So 0.1833 × 10⁴ ≈ 1,833 → about 1,830.',
+      check: function () { return Q.cmp(Q.abs(Q.sub(ratio, 1830)), 5) < 0 || 'ratio ' + Q.num(ratio); } },
+    { type: 'num', sci: true, std: 'NC.8.EE.4', q: 'A human hair is about 1 × 10⁻⁴ m wide. An atom is about 1 × 10⁻¹⁰ m wide. About how many atoms could fit side by side across the hair?',
+      ans: Q.div(Q.sci(1, -4), Q.sci(1, -10)), show: '1 × 10⁶ (1,000,000)', accept: ['10^6', '1000000', '1x10^6'],
+      wrong: [['10^-6', 'The answer is a count of atoms, so it must be bigger than 1. Put the hair width on top: 10⁻⁴ ÷ 10⁻¹⁰.'], ['10^-14', 'You added the exponents. When you divide, subtract: −4 − (−10).']],
+      hint: 'Divide the hair width by the atom width. Subtract the exponents: −4 − (−10).', explain: '10⁻⁴ ÷ 10⁻¹⁰ = 10⁻⁴⁺¹⁰ = 10⁶ = one million atoms.' },
+    { type: 'mc', std: 'NC.8.EE.3', q: 'Which list is in order from <b>smallest to largest</b>?',
+      choices: ['nucleus (10⁻¹⁵ m), atom (10⁻¹⁰ m), virus (10⁻⁷ m), hair (10⁻⁴ m)', 'hair (10⁻⁴ m), virus (10⁻⁷ m), atom (10⁻¹⁰ m), nucleus (10⁻¹⁵ m)', 'atom (10⁻¹⁰ m), nucleus (10⁻¹⁵ m), hair (10⁻⁴ m), virus (10⁻⁷ m)', 'virus (10⁻⁷ m), hair (10⁻⁴ m), nucleus (10⁻¹⁵ m), atom (10⁻¹⁰ m)'], ans: 0,
+      why: { 1: 'This list goes from largest to smallest. Flip it.', 2: 'The nucleus (10⁻¹⁵) is smaller than the atom (10⁻¹⁰). The most negative exponent comes first.', 3: 'Put the most negative exponent first. −15 is the most negative.' },
+      hint: 'Smallest first means the most negative exponent first.', explain: '−15 < −10 < −7 < −4, so nucleus, atom, virus, hair.' },
+    { type: 'err', std: 'NC.8.EE.4', q: 'Sam found how many times wider an atom is than its nucleus. <b>Which step has the first mistake?</b>',
+      steps: ['10⁻¹⁰ ÷ 10⁻¹⁵ → subtract the exponents: −10 − (−15)', '−10 − (−15) = −25', 'So the atom is 10⁻²⁵ times wider.'], ans: 1,
+      why: { 0: 'Step 1 is right. When you divide powers of 10, you subtract the exponents.', 2: 'Step 3 just uses the answer from Step 2. Look for where the number first went wrong.' },
+      hint: 'Subtracting a negative number is the same as adding.', explain: 'Step 2 is wrong: −10 − (−15) = −10 + 15 = 5. The atom is 10⁵ = 100,000 times wider.' },
+    { type: 'num', sci: true, std: 'NC.8.EE.4', q: 'Find <span class="num">(4.8 × 10⁻⁹) ÷ (1.6 × 10⁻¹²)</span>. Write your answer in scientific notation or standard form.',
+      ans: Q.div(Q.sci('4.8', -9), Q.sci('1.6', -12)), show: '3 × 10³ (3,000)', accept: ['3x10^3', '3000', '3*10^3'],
+      wrong: [['3x10^-21', 'You added the exponents. When you divide, subtract: −9 − (−12).'], ['3x10^-3', 'Check the sign: −9 − (−12) = −9 + 12 = 3.'], ['7.68x10^-21', 'This is a division problem, not multiplication.']],
+      hint: 'Divide 4.8 ÷ 1.6. Then subtract the exponents: −9 − (−12).', explain: '4.8 ÷ 1.6 = 3 and −9 − (−12) = 3, so the answer is 3 × 10³ = 3,000.' }
+  ],
+  checks: [
+    ['atom ÷ nucleus = 10^5', Q.eq(Q.div(Q.sci(1, -10), Q.sci(1, -15)), Q.pow10(5))],
+    ['1 cm × 10^5 = 1 km', Q.eq(Q.div(Q.mul(1, Q.pow10(5)), 100000), 1)],
+    ['0.0000001 = 1e-7', Q.eq(Q.dec('0.0000001'), Q.sci(1, -7))],
+    ['0.00045 = 4.5e-4', Q.eq(Q.dec('0.00045'), Q.sci('4.5', -4))],
+    ['1.67/9.11 rounds to 0.183', Q.eq(Q.round(Q.div('1.67', '9.11'), 3), Q.dec('0.183'))]
+  ],
+  ixl: [['Math', 'Convert between standard and scientific notation', 'NC.8.EE.3'], ['Math', 'Compare numbers written in scientific notation', 'NC.8.EE.3'],
+        ['Math', 'Divide numbers written in scientific notation', 'NC.8.EE.4'], ['Science', 'What are atoms and chemical elements?', 'PS.8.1.2']]
+});
+})();
+</script>
+</body>
+</html>

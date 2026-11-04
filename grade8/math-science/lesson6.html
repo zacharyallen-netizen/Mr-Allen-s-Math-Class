@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 6: Survival Tables · Math in Science</title>
+<meta name="description" content="Use a two-way table and relative frequencies to decide whether a trait is linked to survival. NC.8.SP.4 with LS.8.3.2.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+var T = { green: [30, 10], red: [12, 28] };          // [survived, eaten]
+var B = { large: [36, 12], small: [14, 26] };        // drought: [survived, died]
+function pct(a, b) { return Q.div(Q.mul(a, 100), b); }
+
+function tableHTML(rows, cols, data, title) {
+  var tot = [0, 0];
+  var body = rows.map(function (r) { var d = data[r[0]], s = d[0] + d[1]; tot[0] += d[0]; tot[1] += d[1];
+    return '<tr><th class="l" scope="row">' + r[1] + '</th><td>' + d[0] + '</td><td>' + d[1] + '</td><td><b>' + s + '</b></td></tr>'; }).join('');
+  return '<div class="ms-scroll"><table class="ms-tbl" aria-label="' + title + '"><thead><tr><th class="l"></th><th>' + cols[0] + '</th><th>' + cols[1] + '</th><th>Total</th></tr></thead><tbody>' + body +
+    '<tr><th class="l" scope="row">Total</th><td><b>' + tot[0] + '</b></td><td><b>' + tot[1] + '</b></td><td><b>' + (tot[0] + tot[1]) + '</b></td></tr></tbody></table></div>';
+}
+function beadFig(el) {
+  el.innerHTML = tableHTML([['green', 'Green beads'], ['red', 'Red beads']], ['Survived', 'Eaten'], T, 'Bead survival two-way table');
+  var chips = MS.h('div', { class: 'ms-chips' }), host = MS.h('div'), read = MS.h('div', { class: 'ms-read' });
+  el.appendChild(chips); el.appendChild(host); el.appendChild(read);
+  function draw(mode) {
+    host.innerHTML = '';
+    var W = 560, H = 170, svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ms-svg', role: 'img', 'aria-label': 'Segmented bars of survived and eaten for each bead color' });
+    var L = 110, R = 20, full = W - L - R;
+    [['green', 'Green', 40], ['red', 'Red', 100]].forEach(function (r) {
+      var d = T[r[0]], tot = d[0] + d[1], y = r[2];
+      var w0 = mode === 'pct' ? full * d[0] / tot : full * d[0] / 40, w1 = mode === 'pct' ? full * d[1] / tot : full * d[1] / 40;
+      sv('text', { x: L - 10, y: y + 25, 'text-anchor': 'end', 'font-size': 17, 'font-weight': 600 }, svg, r[1]);
+      sv('rect', { x: L, y: y, width: w0, height: 40, fill: r[0] === 'green' ? '#3F9E5A' : '#C2410C' }, svg);
+      sv('rect', { x: L + w0, y: y, width: w1, height: 40, fill: '#E3E5EA' }, svg);
+      sv('text', { x: L + 8, y: y + 26, 'font-size': 16, fill: '#fff', 'font-weight': 600 }, svg, 'survived ' + (mode === 'pct' ? Q.str(pct(d[0], tot)) + '%' : d[0]));
+      sv('text', { x: L + w0 + 8, y: y + 26, 'font-size': 16, 'font-weight': 600 }, svg, 'eaten ' + (mode === 'pct' ? Q.str(pct(d[1], tot)) + '%' : d[1]));
+    });
+    host.appendChild(svg);
+    read.innerHTML = mode === 'pct' ? 'Row percents: green 30 ÷ 40 = <b>75%</b> survived. Red 12 ÷ 40 = <b>30%</b> survived.' : 'Counts: 40 green beads and 40 red beads.';
+  }
+  [['count', 'Counts'], ['pct', 'Row percents']].forEach(function (m, i) {
+    var b = MS.h('button', { class: 'ms-chip', type: 'button', 'aria-pressed': i ? 'false' : 'true' }, m[1]);
+    b.addEventListener('click', function () { chips.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); draw(m[0]); });
+    chips.appendChild(b);
+  });
+  draw('count');
+}
+var BEAK = tableHTML([['large', 'Large beak'], ['small', 'Small beak']], ['Survived', 'Died'], B, 'Beak size and survival in a drought');
+
+MS.lesson({
+  num: 6, title: 'Survival Tables', sci: 'LS.8.3.2', math: ['NC.8.SP.4'], minutes: 6,
+  question: 'Predators hunt beads on a green background. Do green beads survive better than red beads?',
+  intro: 'A two-way table and percents show whether a trait is linked to survival.',
+  target: 'I can use a two-way table and relative frequencies to decide whether a trait is linked to survival.',
+  vocab: ['variation', 'adaptation', 'natural selection', 'predator', 'prey', 'two-way table', 'relative frequency', 'association'],
+  steps: [
+    { title: 'Read a two-way table',
+      body: '<p>A class spread 40 green and 40 red beads on green cloth. "Predators" picked up beads for 30 seconds. A <b>two-way table</b> sorts each bead two ways: by color and by what happened.</p>',
+      fig: beadFig,
+      tryit: { type: 'num', unit: 'beads', q: 'How many beads survived in all?', ans: Q(T.green[0] + T.red[0]), show: '42',
+        wrong: [['30', 'That is only the green beads. Add the red beads that survived too.'], ['80', 'That is all the beads. Count only the ones that survived.'], ['38', 'That is the beads that were eaten.']],
+        hint: 'Add down the "Survived" column.', explain: '30 + 12 = 42 beads survived.' } },
+    { title: 'Find relative frequencies by row',
+      body: '<p>A <b>relative frequency</b> is a part divided by a total. To compare colors, divide by each <b>row</b> total.</p>' +
+        '<div class="ms-ex"><span class="lbl">Worked example</span>Green survived: 30 ÷ 40 = 0.75 = <b class="num">75%</b>. Red survived: 12 ÷ 40 = 0.30 = <b class="num">30%</b>.</div>',
+      tryit: { type: 'num', unit: '%', q: 'What percent of the <b>red</b> beads were eaten?', ans: pct(28, 40), show: '70%', accept: ['70', '70 percent'],
+        wrong: [['0.7', 'That is the decimal. Multiply by 100 to get a percent.'], ['28', 'That is the count. Divide 28 by the red total, 40.'], [function (p) { return Math.abs((p.exact ? Q.num(p.v) : p.f) - 2800 / 38) < 0.5; }, 'You divided by the "Eaten" column total (38). Divide by the red row total (40).']],
+        hint: 'Red eaten ÷ red total = 28 ÷ 40.', explain: '28 ÷ 40 = 0.70 = 70%.' } },
+    { title: 'Is there an association?',
+      body: '<p>If the row percents are <b>very different</b>, the trait and survival are <b>associated</b>. 75% vs. 30% is a big difference.</p>' +
+        '<p>If the percents were close (like 52% vs. 48%), there would be little or no association.</p>',
+      tryit: { type: 'mc', q: 'Is bead color associated with survival?', choices: ['Yes. 75% of green beads survived but only 30% of red beads did.', 'No. The same number of each color (40) was used.', 'No. 42 beads survived and 38 were eaten, which is about half.'], ans: 0,
+        why: { 1: 'Starting with the same number is fair. The question is what happened to each color.', 2: 'This mixes the colors together. Compare the row percents for each color.' },
+        hint: 'Compare the row percents for green and red.', explain: '75% is much bigger than 30%. Color is associated with survival.' } },
+    { title: 'Natural selection',
+      body: '<p>Green beads blend in, so predators miss them. The survivors "reproduce." Each new generation has a <b>higher percent</b> of green beads. This is how natural selection works: a helpful variation becomes more common.</p>',
+      tryit: { type: 'mc', q: 'Survivors double each generation. What happens to the percent of green beads over time?', choices: ['It goes up.', 'It goes down.', 'It stays at 50%.'], ans: 0,
+        why: { 1: 'Green beads survive more, so more green beads reproduce.', 2: 'Survival is not equal, so the mix changes.' },
+        hint: 'Which color has more survivors to reproduce?', explain: 'After round 1: 30 green and 12 red survive. Doubled: 60 green and 24 red. Green is now 60 ÷ 84 ≈ 71%, up from 50%.',
+        check: function () { return Q.eq(Q.round(pct(60, 84), 0), 71); } } }
+  ],
+  desmos: '<p>Make a table with generation in <code>x₁</code> and percent green in <code>y₁</code>. Plot the points and describe the trend.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.SP.4', unit: '%', q: BEAK + 'In a drought, only hard seeds were left. What percent of the <b>large-beak</b> birds survived?',
+      ans: pct(36, 48), show: '75%', accept: ['75', '75 %'],
+      wrong: [['0.75', 'That is the decimal. Multiply by 100 to get the percent.'], ['72', 'You divided by the survived column total (50). Divide by the large-beak row total (48).'], ['36', 'That is the count. Divide by the row total, 48.']],
+      hint: 'Large beak survived ÷ large beak total = 36 ÷ 48.', explain: '36 ÷ 48 = 0.75 = 75%.' },
+    { type: 'num', std: 'NC.8.SP.4', unit: '%', q: BEAK + 'What percent of the <b>small-beak</b> birds survived?',
+      ans: pct(14, 40), show: '35%', accept: ['35'],
+      wrong: [['0.35', 'That is the decimal. Multiply by 100 to get the percent.'], ['28', 'You divided by the survived column total (50). Divide by the small-beak row total (40).'], ['65', 'That is the percent that died. Use the Survived column.'], ['14', 'That is the count. Divide by the row total, 40.']],
+      hint: '14 ÷ 40.', explain: '14 ÷ 40 = 0.35 = 35%.' },
+    { type: 'mc', std: 'NC.8.SP.4', q: BEAK + 'Is beak size associated with survival in the drought?',
+      choices: ['Yes. 75% of large-beak birds survived but only 35% of small-beak birds did.', 'No. About the same number of birds were in each group.', 'Yes. 36 is bigger than 14, so that proves it.', 'No. Half of all birds survived.'], ans: 0,
+      why: { 1: 'Group size does not decide association. Compare the row percents.', 2: 'Compare percents, not counts. The groups have different totals (48 and 40).', 3: 'Look at each beak size separately.' },
+      hint: 'Compare the row percents from the last two questions.', explain: '75% vs. 35% is a big difference, so beak size is associated with survival.' },
+    { type: 'num', std: 'NC.8.SP.4', unit: 'birds', q: BEAK + 'How many birds are in the study in all?', ans: Q(36 + 12 + 14 + 26), show: '88',
+      wrong: [['50', 'That is only the birds that survived.'], ['48', 'That is only the large-beak birds.']],
+      hint: 'Add the two row totals: 48 + 40.', explain: '48 + 40 = 88 birds.' },
+    { type: 'sel', std: 'NC.8.SP.4', q: BEAK + 'Select <b>all</b> true statements.',
+      choices: ['36 of the 48 large-beak birds survived.', 'More than half of the small-beak birds died.', 'The same percent of each group survived.', '50 birds survived in all.', 'Small-beak birds survived better.'], ans: [0, 1, 3],
+      why: { 2: '75% of large-beak birds survived, but only 35% of small-beak birds did.', 4: 'Only 35% of small-beak birds survived, compared with 75% of large-beak birds.' },
+      hint: 'Check each statement against the table.', explain: '36 of 48 survived (true). 26 of 40 small-beak birds died, which is 65% (true). 36 + 14 = 50 survived (true).' },
+    { type: 'num', std: 'NC.8.SP.4', unit: '%', q: 'In another trial, 14 of 56 red beads survived. What percent of the red beads survived?', ans: pct(14, 56), show: '25%', accept: ['25', '25 percent'],
+      wrong: [['0.25', 'That is the decimal. Multiply by 100 to get the percent.'], ['14', 'That is the count. Divide by 56.'], ['75', 'That is the percent eaten.']],
+      hint: '14 ÷ 56.', explain: '14 ÷ 56 = 0.25 = 25%.' },
+    { type: 'err', std: 'NC.8.SP.4', q: 'Jo found the percent of <b>green</b> beads that survived (green: 30 survived, 10 eaten; red: 12 survived, 28 eaten). <b>Which step has the first mistake?</b>',
+      steps: ['Green beads that survived: 30', 'Divide by the total that survived: 30 ÷ 42 ≈ 0.71', 'So about 71% of green beads survived.'], ans: 1,
+      why: { 0: 'Yes, 30 green beads survived.', 2: 'This step uses the number from Step 2. The mistake is earlier.' },
+      hint: 'To find a percent of the green beads, what total do you divide by?', explain: 'Step 2 is wrong. Divide by the green row total (40): 30 ÷ 40 = 75%.' },
+    { type: 'mc', std: 'LS.8.3.2', q: 'Which statement best describes natural selection?',
+      choices: ['Living things with helpful traits survive and reproduce more, so the trait becomes more common.', 'Living things change their traits on purpose to survive.', 'All living things survive equally.', 'Traits never change in a population.'], ans: 0,
+      why: { 1: 'Individuals cannot choose their traits. The population changes because some survive and reproduce more.', 2: 'Survival is not equal. The tables show that.', 3: 'The percent of a trait in a population can change over generations.' },
+      hint: 'Think about the green beads over many generations.', explain: 'Helpful variations (like green color on green cloth) lead to more survival and reproduction, so they become more common.' }
+  ],
+  checks: [['green 75%', Q.eq(pct(30, 40), 75)], ['red 30%', Q.eq(pct(12, 40), 30)], ['large 75%', Q.eq(pct(36, 48), 75)], ['small 35%', Q.eq(pct(14, 40), 35)], ['30 of 40 pizza = 75%', Q.eq(pct(30, 40), 75)]],
+  ixl: [['Math', 'Find what percent one number is of another: word problems', 'IXL lists no grade 8 skill for NC.8.SP.4'],
+        ['Science', 'Introduction to natural selection', 'LS.8.3.2'], ['Science', 'Construct explanations of natural selection', 'LS.8.3.2'], ['Science', 'Calculate the percentages of traits in a population', 'LS.8.3.2']],
+  note: 'The bead and bird data are made up for practice.'
+});
+})();
+</script>
+</body>
+</html>

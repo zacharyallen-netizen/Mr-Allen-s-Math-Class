@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 3: Patterns in the Periodic Table · Math in Science</title>
+<meta name="description" content="Use a scatter plot and line of best fit to describe atomic mass, and decide linear or nonlinear. NC.8.SP.1, SP.2, F.3 with PS.8.1.3.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+// atomic masses (u) of elements 1–20, rounded from the periodic table
+var SYM = ['H','He','Li','Be','B','C','N','O','F','Ne','Na','Mg','Al','Si','P','S','Cl','Ar','K','Ca'];
+var MASS = [1.008,4.003,6.94,9.012,10.81,12.011,14.007,15.999,18.998,20.180,22.990,24.305,26.982,28.085,30.974,32.06,35.45,39.948,39.098,40.078];
+var PTS = MASS.map(function (m, i) { return [i + 1, m]; });
+var FIT = MS.fit(PTS);                          // ≈ 2.07x − 0.10
+var LINE = function (x) { return Q.sub(Q.mul('2.07', x), '0.10'); };   // the rounded Desmos line, exact
+var RAD = [['Li', 152], ['Be', 112], ['B', 85], ['C', 77], ['N', 75], ['O', 73], ['F', 72]];   // approximate atomic radius, pm
+
+function scatter(el, withLine) {
+  var P = MS.plot(el, { x: [0, 21], y: [0, 45], xt: 2, yt: 5, xl: 'Atomic number', yl: 'Atomic mass (u)', label: 'Scatter plot of atomic mass versus atomic number for elements 1 to 20',
+    xfmt: function (v) { return v % 4 === 0 ? String(v) : ''; } });
+  PTS.forEach(function (p, i) { var d = P.dot(p[0], p[1], { r: 5.5 }); var t = sv('title', {}, d, SYM[i] + ': ' + p[1]); });
+  if (!withLine) return;
+  var read = MS.h('div', { class: 'ms-read' }), desmos = null;
+  var L = MS.dragLine(P, { p1: [2, 12], p2: [19, 22], onchange: function (m, b) {
+    var c = MS.closeness(PTS, m, b);
+    read.innerHTML = 'Your line: y = ' + m.toFixed(2) + 'x ' + (b < 0 ? '− ' : '+ ') + Math.abs(b).toFixed(2) + ' &nbsp;·&nbsp; closeness ' + c + ' / 100' + (c >= 90 ? ' &nbsp;Great fit!' : '');
+  } });
+  el.appendChild(read);
+  var row = MS.h('div', { class: 'ms-row' }), btn = MS.h('button', { class: 'ms-btn ghost', type: 'button' }, 'Show the Desmos line');
+  btn.addEventListener('click', function () {
+    if (!desmos) { desmos = P.fn(function (x) { return 2.07 * x - 0.10; }, { stroke: '#1D4ED8', 'stroke-width': 2.5, 'stroke-dasharray': '8 6' }); btn.textContent = 'Hide the Desmos line'; }
+    else { desmos.remove(); desmos = null; btn.textContent = 'Show the Desmos line'; }
+  });
+  row.appendChild(btn); el.appendChild(row);
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, 'Drag the two gold circles (or tab to one and use the arrow keys). Try to get close to the middle of the dots.'));
+}
+function radiusFig(el) {
+  var P = MS.plot(el, { x: [2, 10], y: [60, 160], xt: 1, yt: 20, xl: 'Atomic number (period 2)', yl: 'Atomic radius (pm)', label: 'Atomic radius across period 2 drops fast, then slowly' });
+  var d = '';
+  RAD.forEach(function (r, i) { var x = i + 3; d += (i ? 'L' : 'M') + P.X(x) + ' ' + P.Y(r[1]); });
+  sv('path', { d: d, fill: 'none', stroke: '#E0A800', 'stroke-width': 3 }, P.layer);
+  RAD.forEach(function (r, i) { P.dot(i + 3, r[1], { r: 6 }); P.text(i + 3, r[1] + 7, r[0], { 'text-anchor': 'middle', 'font-weight': 600 }); });
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, 'Approximate atomic radius in picometers (pm). 1 pm = 1 × 10⁻¹² m.'));
+}
+
+MS.lesson({
+  num: 3, title: 'Patterns in the Periodic Table', sci: 'PS.8.1.3', math: ['NC.8.SP.1', 'NC.8.SP.2', 'NC.8.F.3'], minutes: 7,
+  question: 'As the atomic number goes up, what happens to the atomic mass? Is the pattern linear?',
+  intro: 'Mendeleev arranged elements by their properties. A scatter plot shows one of those patterns.',
+  target: 'I can use a scatter plot to describe a pattern in the elements and decide whether it is linear.',
+  vocab: ['atomic number', 'atomic mass', 'period', 'group', 'scatter plot', 'line of best fit', 'linear', 'nonlinear'],
+  steps: [
+    { title: 'Make a scatter plot',
+      body: '<p>Each dot is one element. <b>x</b> = atomic number (the number of protons). <b>y</b> = atomic mass. The dots go up from left to right in an almost straight line.</p>',
+      fig: function (el) { scatter(el, false); },
+      tryit: { type: 'mc', q: 'How would you describe the association?', choices: ['Positive and linear', 'Negative and linear', 'Positive and nonlinear (curved)', 'No association'], ans: 0,
+        why: { 1: 'Negative means the dots go down. These dots go up from left to right.', 2: 'The dots follow a straight path, not a curve.', 3: 'There is a clear pattern: as x goes up, y goes up.' },
+        hint: 'Do the dots go up or down? Do they follow a straight path or a curve?', explain: 'As atomic number goes up, mass goes up at a steady rate. That is a positive, linear association.' } },
+    { title: 'Fit a line',
+      body: '<p>A <b>line of best fit</b> goes through the middle of the dots. Some dots are above it and some are below. Drag the line to fit the data.</p>',
+      fig: function (el) { scatter(el, true); },
+      after: '<div class="ms-ex"><span class="lbl">Desmos line</span>Desmos finds <b class="num">y = 2.07x − 0.10</b>. The slope is about 2.07. Each step up in atomic number adds about 2 mass units. Why? Each new element adds 1 proton, and usually about 1 neutron too. Each has a mass of about 1 unit.</div>',
+      tryit: { type: 'mc', q: 'What does the slope, 2.07, mean?', choices: ['Each element has a mass of 2.07 units.', 'For each 1 step up in atomic number, the mass goes up about 2.07 units.', 'For each 1 unit of mass, the atomic number goes up 2.07.', 'The first element has a mass of 2.07 units.'], ans: 1,
+        why: { 0: 'The slope is a rate of change, not the mass of one element.', 2: 'This switches x and y. The slope is change in y (mass) per 1 step in x (atomic number).', 3: 'The starting value is the y-intercept, not the slope.' },
+        hint: 'Slope = change in y for each 1 step in x.', explain: 'Slope = change in mass ÷ change in atomic number ≈ 2.07 mass units per element.' } },
+    { title: 'Predict with the line',
+      body: '<div class="ms-ex"><span class="lbl">Worked example: element 25</span><ol><li>Put x = 25 into y = 2.07x − 0.10</li><li>y = 2.07(25) − 0.10 = 51.75 − 0.10 = <b class="num">51.65</b></li><li>The periodic table says manganese (element 25) has a mass of 54.94. The line is close, but not exact.</li></ol></div>',
+      tryit: { type: 'num', q: 'Use <span class="num">y = 2.07x − 0.10</span> to predict the atomic mass of element 30.', ans: LINE(30), show: '62.0', accept: ['62', '62.00'],
+        wrong: [['62.1', 'Almost! Do not forget to subtract 0.10.'], ['61.9', 'Multiply first: 2.07 × 30 = 62.1. Then subtract 0.10.']],
+        hint: 'Multiply 2.07 × 30. Then subtract 0.10.', explain: '2.07 × 30 = 62.1, and 62.1 − 0.10 = 62.0.' } },
+    { title: 'Linear or nonlinear?',
+      body: '<p>Not every pattern is a line. Atomic radius (the size of an atom) across period 2 drops fast, then slowly. The drops are 40, 27, 8, 2, 2, 1. They are not the same, so the graph is <b>nonlinear</b>.</p>',
+      fig: radiusFig,
+      after: '<p>A <b>linear</b> function changes by the <b>same amount</b> each step. Check the differences in a table.</p>',
+      tryit: { type: 'mc', q: 'Which table shows a <b>linear</b> function? (x = 1, 2, 3, 4)', choices: ['y = 5, 8, 11, 14', 'y = 2, 4, 8, 16', 'y = 1, 4, 9, 16'], ans: 0,
+        why: { 1: 'The changes are +2, +4, +8. Not the same, so it is nonlinear. It doubles each time.', 2: 'The changes are +3, +5, +7. Not the same, so it is nonlinear.' },
+        hint: 'Find the change from each y to the next one.', explain: '5, 8, 11, 14 goes up by 3 every time. A constant change means linear.' } }
+  ],
+  desmos: '<p>Type atomic number in <code>x₁</code> and atomic mass in <code>y₁</code>. Then type <code>y₁ ~ mx₁ + b</code> (the ~ key is next to 1 on most keyboards). Desmos shows m, b and r.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.SP.2', unit: 'u', q: 'Use the line <span class="num">y = 2.07x − 0.10</span> to predict the atomic mass of element 20 (calcium).',
+      ans: LINE(20), show: '41.3', accept: ['41.30', '41.3 u'],
+      wrong: [['41.4', 'Almost! Remember to subtract 0.10.'], ['40.078', 'That is the real mass from the periodic table. The question asks what the line predicts.'], ['40.08', 'That is the real mass from the periodic table. The question asks what the line predicts.']],
+      hint: 'Put x = 20 into the equation.', explain: '2.07 × 20 = 41.4, then 41.4 − 0.10 = 41.3. The real mass is 40.08, so the line is close.' },
+    { type: 'mc', std: 'NC.8.SP.2', q: 'In <span class="num">y = 2.07x − 0.10</span>, x is the atomic number and y is the atomic mass. What does 2.07 tell you?',
+      choices: ['Each element is 2.07 units heavier than the one before it, on average.', 'Every element has a mass of 2.07 units.', 'The atomic number goes up 2.07 for each mass unit.', 'Hydrogen has a mass of 2.07 units.'], ans: 0,
+      why: { 1: 'The slope is a rate (per element), not one mass.', 2: 'This switches x and y.', 3: 'Hydrogen has a mass of about 1.008. The slope is not a starting value.' },
+      hint: 'Slope = change in y ÷ change in x.', explain: 'The slope 2.07 is the average change in mass for each 1 step in atomic number.' },
+    { type: 'sel', std: 'NC.8.F.3', q: 'Select <b>all</b> tables that show a <b>linear</b> function.',
+      choices: ['x: 1, 2, 3, 4 &nbsp; y: 3, 5, 7, 9', 'x: 1, 2, 3, 4 &nbsp; y: 2, 4, 8, 16', 'x: 0, 2, 4, 6 &nbsp; y: 10, 7, 4, 1', 'x: 1, 2, 3, 4 &nbsp; y: 1, 4, 9, 16'], ans: [0, 2],
+      why: { 1: 'The changes are +2, +4, +8. They are not equal (it doubles), so it is nonlinear.', 3: 'The changes are +3, +5, +7. They are not equal, so it is nonlinear.' },
+      missHint: 'A table can go down and still be linear. Check the x: 0, 2, 4, 6 table again.',
+      hint: 'Linear means y changes by the same amount each time x changes by the same amount.', explain: '3, 5, 7, 9 adds 2 each time. 10, 7, 4, 1 subtracts 3 each time. Both are linear.' },
+    { type: 'mc', std: 'NC.8.SP.2', q: 'Which equation is the best line of best fit for the atomic mass data (elements 1–20)?',
+      fig: function (el) { scatter(el, false); },
+      choices: ['y = 0.5x + 2', 'y = −2x + 40', 'y = 2.07x − 0.10', 'y = 2.07x + 15'], ans: 2,
+      why: { 0: 'This line is too flat. At x = 20 it gives 12, but the real mass is about 40.', 1: 'This line goes down. The data goes up.', 3: 'The slope is right, but this line is too high. At x = 1 it gives about 17, but hydrogen is about 1.' },
+      hint: 'Check two points: x = 1 should give about 1, and x = 20 should give about 40.', explain: 'y = 2.07x − 0.10 gives about 2 at x = 1 and about 41 at x = 20. It goes through the middle of the dots.' },
+    { type: 'num', std: 'NC.8.SP.2', unit: 'u', tol: '0.05', q: 'Use the slope 2.07. About how much does the atomic mass go up from element 10 to element 15?',
+      ans: Q.mul('2.07', 5), show: '10.35', accept: ['10.4', '10.35 u'],
+      wrong: [['2.07', 'That is the change for 1 step. From element 10 to 15 is 5 steps.'], ['31.05', 'Find the change, not the mass. 15 − 10 = 5 steps.']], wtol: '0.01',
+      hint: 'From 10 to 15 is 5 steps. Each step adds about 2.07.', explain: '5 steps × 2.07 = 10.35 mass units.' },
+    { type: 'mc', std: 'NC.8.F.3', q: 'Atomic radius across period 2: Li 152, Be 112, B 85, C 77 (pm). Is this pattern linear?',
+      choices: ['Yes, because the radius always goes down.', 'No, because the drops are 40, 27, then 8. They are not the same.', 'Yes, because it drops 40 every time.', 'No, because the radius goes up.'], ans: 1,
+      why: { 0: 'Going down is not enough. A linear pattern goes down by the same amount each time.', 2: 'Check again: 112 − 85 = 27, not 40.', 3: 'The radius goes down: 152, 112, 85, 77.' },
+      hint: 'Subtract each number from the one before it.', explain: '152 − 112 = 40, 112 − 85 = 27, 85 − 77 = 8. The changes are different, so it is nonlinear.' },
+    { type: 'err', std: 'NC.8.F.3', q: 'Ken checked whether the atomic radius pattern is linear. <b>Which step has the first mistake?</b>',
+      steps: ['Li to Be: 152 − 112 = 40', 'Be to B: 112 − 85 = 27', 'The radius drops each time, so the pattern is linear.'], ans: 2,
+      why: { 0: '152 − 112 = 40 is correct.', 1: '112 − 85 = 27 is correct.' },
+      hint: 'Is "it drops each time" enough to be linear?', explain: 'Step 3 is wrong. Linear means the same change each time. 40 and 27 are different, so the pattern is nonlinear.' },
+    { type: 'num', std: 'NC.8.SP.2', unit: 'u', q: 'The line predicts a mass of 51.65 for element 25. The real mass of manganese is 54.94. How far off is the prediction?',
+      ans: Q.sub('54.94', LINE(25)), show: '3.29', accept: ['3.29 u'],
+      wrong: [['-3.29', 'How far off is a distance, so it is positive. Subtract the smaller number from the bigger one.'], ['106.59', 'You added. To find how far apart two numbers are, subtract.']],
+      hint: 'Subtract: 54.94 − 51.65.', explain: '54.94 − 51.65 = 3.29. The line is about 3.3 mass units too low here.' }
+  ],
+  checks: [['Desmos slope ≈ 2.07', Math.abs(FIT.m - 2.07) < 0.005], ['Desmos intercept ≈ −0.10', Math.abs(FIT.b + 0.10) < 0.01],
+    ['element 25 prediction = 51.65', Q.eq(LINE(25), '51.65')], ['radius drops 40, 27, 8', RAD[0][1] - RAD[1][1] === 40 && RAD[1][1] - RAD[2][1] === 27 && RAD[2][1] - RAD[3][1] === 8]],
+  ixl: [['Math', 'Create scatter plots', 'NC.8.SP.1'], ['Math', 'Write equations for lines of best fit', 'NC.8.SP.2'],
+        ['Math', 'Identify linear and nonlinear functions: graphs and equations', 'NC.8.F.3'], ['Science', 'The periodic table: metals, nonmetals, and metalloids', 'PS.8.1.3']],
+  note: 'Atomic masses are rounded from the periodic table. Atomic radius values are approximate.'
+});
+})();
+</script>
+</body>
+</html>

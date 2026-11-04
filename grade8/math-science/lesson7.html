@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 7: Deep Time · Math in Science</title>
+<meta name="description" content="Use scientific notation to compare times in Earth's history and build a timeline to scale. NC.8.EE.3, NC.8.EE.4 with ESS.8.1.1.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+var EV = [['Earth forms', Q.sci('4.6', 9), '4.6 × 10⁹'], ['Earliest life', Q.sci('3.5', 9), '3.5 × 10⁹'], ['Dinosaurs go extinct', Q.sci('6.6', 7), '6.6 × 10⁷'], ['Modern humans appear', Q.sci(3, 5), '3 × 10⁵']];
+var PER_M = Q.pow10(9);                                     // 1 m of tape = 1 billion years
+function tapeM(years) { return Q.div(years, PER_M); }      // exact meters
+
+function timelineFig(el) {
+  var views = [['Whole tape (5 m)', 5, 'm'], ['Last 100 million years (10 cm)', 0.1, 'cm'], ['Last 1 million years (1 mm)', 0.001, 'mm']];
+  var chips = MS.h('div', { class: 'ms-chips' }), host = MS.h('div'), read = MS.h('div', { class: 'ms-read' });
+  el.appendChild(chips); el.appendChild(host); el.appendChild(read);
+  function draw(v) {
+    host.innerHTML = '';
+    var W = 560, H = 230, L = 30, R = 30, span = v[1], X = function (m) { return L + m / span * (W - L - R); };
+    var svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ms-svg', role: 'img', 'aria-label': 'Timeline tape: ' + v[0] });
+    sv('rect', { x: L, y: 120, width: W - L - R, height: 26, fill: '#FFF8E1', stroke: '#E0A800' }, svg);
+    var unit = v[2], mult = unit === 'm' ? 1 : unit === 'cm' ? 100 : 1000;
+    for (var i = 0; i <= 5; i++) {
+      var m = span * i / 5; sv('line', { x1: X(m), x2: X(m), y1: 146, y2: 156, stroke: '#1E2D4F' }, svg);
+      sv('text', { x: X(m), y: 176, 'text-anchor': 'middle', 'font-size': 15, class: 'mono' }, svg, +(m * mult).toFixed(3) + ' ' + unit);
+    }
+    sv('text', { x: L, y: 205, 'font-size': 15, fill: '#5B6475' }, svg, 'Today');
+    sv('text', { x: W - R, y: 205, 'text-anchor': 'end', 'font-size': 15, fill: '#5B6475' }, svg, 'farther back in time →');
+    var shown = [], row = 0;
+    EV.forEach(function (e) {
+      var m = Q.num(tapeM(e[1])); if (m > span * 1.0001) return;
+      var x = X(m), y = 100 - (row % 3) * 30; row++;
+      sv('line', { x1: x, x2: x, y1: y + 4, y2: 133, stroke: '#1E2D4F', 'stroke-width': 1.5 }, svg);
+      sv('circle', { cx: x, cy: 133, r: 6, fill: '#1E2D4F' }, svg);
+      sv('text', { x: Math.min(Math.max(x, L + 60), W - R - 60), y: y, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600 }, svg, e[0]);
+      shown.push(e[0] + ' at ' + (m * mult >= 0.01 ? +(m * mult).toFixed(3) : (m * mult)) + ' ' + unit);
+    });
+    host.appendChild(svg);
+    read.innerHTML = 'Scale: 1 m = 1 billion (10⁹) years. ' + shown.join('; ') + '.';
+  }
+  views.forEach(function (v, i) {
+    var b = MS.h('button', { class: 'ms-chip', type: 'button', 'aria-pressed': i ? 'false' : 'true' }, v[0]);
+    b.addEventListener('click', function () { chips.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); draw(v); });
+    chips.appendChild(b);
+  });
+  draw(views[0]);
+}
+
+var CARDS = '<div class="ms-scroll"><table class="ms-tbl"><thead><tr><th class="l">Event</th><th>Years ago</th></tr></thead><tbody>' +
+  EV.map(function (e) { return '<tr><td class="l">' + e[0] + '</td><td>' + (e[0] === 'Earth forms' || e[0] === 'Dinosaurs go extinct' ? '' : 'about ') + e[2] + '</td></tr>'; }).join('') + '</tbody></table></div>';
+
+MS.lesson({
+  num: 7, title: 'Deep Time', sci: 'ESS.8.1.1', math: ['NC.8.EE.3', 'NC.8.EE.4'], minutes: 6,
+  question: 'Earth is about 4.6 billion years old. How long ago did the dinosaurs live compared with that?',
+  intro: 'Scientific notation helps us compare huge spans of time and build a timeline to scale.',
+  target: 'I can use scientific notation to compare times in Earth\'s history and build a timeline to scale.',
+  vocab: ['geologic time', 'era', 'fossil', 'index fossil', 'relative age', 'scientific notation', 'scale'],
+  steps: [
+    { title: 'Big numbers in scientific notation',
+      body: '<p>For big numbers, the exponent is <b>positive</b>. Count how many places the decimal moves left.</p>' + CARDS +
+        '<div class="ms-ex"><span class="lbl">Example</span>4,600,000,000 → 4.6 (the decimal moves 9 places) → <b class="num">4.6 × 10⁹</b></div>',
+      tryit: { type: 'num', sci: true, form: 'sci', q: 'Write 66,000,000 in scientific notation.', ans: Q(66000000), show: '6.6 × 10⁷', accept: ['6.6x10^7', '6.6*10^7'],
+        wrong: [['6.6x10^6', 'Count again. From 66,000,000 to 6.6 the decimal moves 7 places.'], ['6.6x10^-7', 'Big numbers get a positive exponent.']],
+        hint: 'Move the decimal left until you get 6.6. Count the moves.', explain: '66,000,000 → 6.6 takes 7 moves, so 6.6 × 10⁷.' } },
+    { title: 'Compare: which is longer ago?',
+      body: '<p>Compare the <b>exponents first</b>. The bigger exponent is the bigger number. If the exponents match, compare the first numbers.</p>' +
+        '<div class="ms-ex"><span class="lbl">Example</span>4.6 × 10⁹ &gt; 3.5 × 10⁹ (same exponent, 4.6 &gt; 3.5). Earth formed before the earliest life.</div>' +
+        '<p>Geologists also use <b>relative age</b>: in undisturbed rock layers, the bottom layer is the oldest (the law of superposition). <b>Index fossils</b> help match layers of the same age in different places.</p>',
+      tryit: { type: 'mc', q: 'Which is greater?', choices: ['3 × 10⁵', '6.6 × 10⁷', 'They are equal'], ans: 1,
+        why: { 0: 'Compare the exponents first: 7 is bigger than 5.', 2: 'The exponents are different, so the numbers are different.' },
+        hint: 'Look at the exponents.', explain: '10⁷ is bigger than 10⁵, so 6.6 × 10⁷ (66 million) is greater than 3 × 10⁵ (300 thousand).' } },
+    { title: 'How many times longer ago?',
+      body: '<div class="ms-ex"><span class="lbl">Worked example</span><ol><li>(4.6 × 10⁹) ÷ (6.6 × 10⁷)</li><li>4.6 ÷ 6.6 ≈ 0.70 and 10⁹ ÷ 10⁷ = 10²</li><li>0.70 × 10² ≈ <b class="num">70</b>. Earth formed about 70 times longer ago than the dinosaurs went extinct.</li></ol></div>',
+      tryit: { type: 'num', sci: true, q: 'Find <span class="num">(6 × 10⁸) ÷ (3 × 10⁵)</span>.', ans: Q.div(Q.sci(6, 8), Q.sci(3, 5)), show: '2 × 10³ (2,000)', accept: ['2x10^3', '2000'],
+        wrong: [['2x10^13', 'You added the exponents. When you divide, subtract: 8 − 5.'], ['18x10^3', 'Divide the front numbers: 6 ÷ 3 = 2.']],
+        hint: '6 ÷ 3, then 10⁸ ÷ 10⁵ (subtract the exponents).', explain: '6 ÷ 3 = 2 and 8 − 5 = 3, so 2 × 10³ = 2,000.' } },
+    { title: 'Build a timeline to scale',
+      body: '<p>On adding-machine tape, let <b>1 m = 1 billion years</b> (10⁹). To place an event, divide its age by 10⁹.</p>' +
+        '<div class="ms-ex"><span class="lbl">Worked example</span>Dinosaurs: 6.6 × 10⁷ ÷ 10⁹ = 6.6 × 10⁻² m = <b class="num">6.6 cm</b> from "today." Modern humans: 3 × 10⁵ ÷ 10⁹ = 3 × 10⁻⁴ m = <b class="num">0.3 mm</b>!</div>',
+      fig: timelineFig,
+      tryit: { type: 'num', unit: 'm', q: 'The earliest life appeared about 3.5 × 10⁹ years ago. How many meters from "today" does it go on the tape?', ans: tapeM(Q.sci('3.5', 9)), show: '3.5 m', accept: ['3.5'],
+        wrong: [['3.5x10^9', 'That is the number of years. Divide by 10⁹ to get meters.'], ['0.35', 'Check: 3.5 × 10⁹ ÷ 10⁹ = 3.5.']],
+        hint: 'Divide by 10⁹ (1 billion years per meter).', explain: '3.5 × 10⁹ ÷ 10⁹ = 3.5 m.' } }
+  ],
+  desmos: '<p>Plot each event as a point <code>(4.6, 0)</code>, <code>(3.5, 0)</code>, <code>(0.066, 0)</code>, <code>(0.0003, 0)</code> (x = billions of years ago). Zoom in near 0 to see the recent events separate. Check divisions like <code>4.6×10^9/(6.6×10^7)</code>.</p>',
+  assignment: [
+    { type: 'mc', std: 'NC.8.EE.3', q: 'Order these from <b>oldest to youngest</b> (years ago): 2.5 × 10⁸, 4 × 10⁶, 5.4 × 10⁸',
+      choices: ['5.4 × 10⁸, 2.5 × 10⁸, 4 × 10⁶', '4 × 10⁶, 2.5 × 10⁸, 5.4 × 10⁸', '2.5 × 10⁸, 5.4 × 10⁸, 4 × 10⁶', '5.4 × 10⁸, 4 × 10⁶, 2.5 × 10⁸'], ans: 0,
+      why: { 1: 'This is youngest to oldest. Oldest means the most years ago (the biggest number).', 2: '5.4 × 10⁸ is more than 2.5 × 10⁸ (same exponent, 5.4 > 2.5).', 3: '4 × 10⁶ has the smallest exponent, so it is the youngest. It goes last.' },
+      hint: 'Oldest = biggest number of years ago. Compare exponents first.', explain: '10⁸ > 10⁶, and 5.4 > 2.5. So 5.4 × 10⁸, then 2.5 × 10⁸, then 4 × 10⁶.' },
+    { type: 'num', sci: true, std: 'NC.8.EE.4', unit: 'times', q: 'How many times older is 5.4 × 10⁸ years than 4 × 10⁶ years?', ans: Q.div(Q.sci('5.4', 8), Q.sci(4, 6)), show: '135', accept: ['1.35x10^2'],
+      wrong: [['1.35', 'Do not forget the powers of 10: 10⁸ ÷ 10⁶ = 10².'], ['13.5', 'Check the powers of 10: 10⁸ ÷ 10⁶ = 10² = 100.'], ['21.6x10^14', 'This is a "how many times" question, so divide.']],
+      hint: '5.4 ÷ 4, then 10⁸ ÷ 10⁶.', explain: '5.4 ÷ 4 = 1.35 and 10⁸ ÷ 10⁶ = 10². So 1.35 × 10² = 135 times.' },
+    { type: 'num', sci: true, std: 'NC.8.EE.4', unit: 'years', q: 'Earth formed about 4.6 × 10⁹ years ago. The earliest life appeared about 3.5 × 10⁹ years ago. About how many years passed in between?',
+      ans: Q.sub(Q.sci('4.6', 9), Q.sci('3.5', 9)), show: '1.1 × 10⁹ (1,100,000,000)', accept: ['1.1x10^9', '1100000000', '1.1 billion'],
+      wrong: [['8.1x10^9', 'You added. "How many years in between" means subtract.'], ['1.1x10^0', 'When the exponents match, keep the 10⁹. Only subtract the front numbers.'], ['1.1', 'When the exponents match, keep the 10⁹. Only subtract the front numbers.']],
+      hint: 'Same exponent: subtract 4.6 − 3.5 and keep × 10⁹.', explain: '4.6 − 3.5 = 1.1, so about 1.1 × 10⁹ years (1.1 billion).' },
+    { type: 'sel', std: 'NC.8.EE.3', q: 'Select <b>all</b> numbers greater than <b>1 × 10⁸</b>.', choices: ['4.6 × 10⁹', '6.6 × 10⁷', '3 × 10⁵', '2.5 × 10⁸', '540,000,000'], ans: [0, 3, 4],
+      why: { 1: '6.6 × 10⁷ = 66,000,000. That is less than 100,000,000.', 2: '3 × 10⁵ = 300,000. That is much less than 10⁸.' },
+      missHint: 'Write 540,000,000 in scientific notation to compare it.', hint: '1 × 10⁸ = 100,000,000. Compare exponents first.', explain: '4.6 × 10⁹, 2.5 × 10⁸ and 540,000,000 (5.4 × 10⁸) are all more than 1 × 10⁸.' },
+    { type: 'num', std: 'NC.8.EE.4', unit: 'mm', q: 'On the tape, 1 m = 1 billion years. Modern humans appeared about 3 × 10⁵ years ago. How many <b>millimeters</b> from "today" do they go? (1 m = 1,000 mm)',
+      ans: Q.mul(tapeM(Q.sci(3, 5)), 1000), show: '0.3 mm', accept: ['0.3', '3x10^-1', '3/10'],
+      wrong: [['0.0003', 'That is in meters. Multiply by 1,000 to get millimeters.'], ['3x10^-4', 'That is in meters. Multiply by 1,000 to get millimeters.'], ['0.03', 'That is in centimeters. Millimeters are 10 times smaller units.']],
+      hint: 'Meters: 3 × 10⁵ ÷ 10⁹ = 3 × 10⁻⁴ m. Then × 1,000 for mm.', explain: '3 × 10⁻⁴ m × 10³ = 3 × 10⁻¹ mm = 0.3 mm. Humans are a tiny sliver at the end of the tape!' },
+    { type: 'num', sci: true, form: 'sci', std: 'NC.8.EE.3', unit: 'years', q: 'Write <b>4.6 billion</b> in scientific notation. (1 billion = 1,000,000,000)', ans: Q.sci('4.6', 9), show: '4.6 × 10⁹', accept: ['4.6x10^9', '4.6*10^9'],
+      wrong: [['4.6x10^8', 'One billion has 9 zeros, so it is 10⁹.'], ['4.6x10^6', 'That is 4.6 million. A billion is 10⁹.']],
+      hint: '1 billion = 10⁹.', explain: '4.6 billion = 4.6 × 1,000,000,000 = 4.6 × 10⁹.' },
+    { type: 'err', std: 'NC.8.EE.4', q: 'Ana compared the age of Earth with the dinosaur extinction: (4.6 × 10⁹) ÷ (6.6 × 10⁷). <b>Which step has the first mistake?</b>',
+      steps: ['4.6 ÷ 6.6 ≈ 0.70', '10⁹ ÷ 10⁷ = 10¹⁶', 'So Earth is about 0.70 × 10¹⁶ times older.'], ans: 1,
+      why: { 0: '4.6 ÷ 6.6 ≈ 0.70 is right.', 2: 'This step uses the wrong power from Step 2. Find where it started.' },
+      hint: 'When you divide powers of 10, do you add or subtract the exponents?', explain: 'Step 2 is wrong. Subtract: 9 − 7 = 2, so 10⁹ ÷ 10⁷ = 10². The answer is about 0.70 × 10² = 70 times.' },
+    { type: 'mc', std: 'ESS.8.1.1', q: 'Rock layers have not been disturbed. Which layer is the <b>oldest</b>?',
+      choices: ['The bottom layer', 'The top layer', 'The thickest layer', 'The layer with the most fossils'], ans: 0,
+      why: { 1: 'The top layer formed last, so it is the youngest.', 2: 'Thickness tells how much sediment piled up, not the order.', 3: 'Fossil count does not tell the order. Position does.' },
+      hint: 'Think about how layers pile up over time.', explain: 'By the law of superposition, layers pile up over time, so the bottom layer is the oldest.' }
+  ],
+  checks: [['4.6e9 ÷ 6.6e7 ≈ 70', Math.abs(Q.num(Q.div(Q.sci('4.6', 9), Q.sci('6.6', 7))) - 70) < 0.5],
+    ['dinosaurs at 6.6 cm', Q.eq(Q.mul(tapeM(Q.sci('6.6', 7)), 100), '6.6')], ['humans at 0.3 mm', Q.eq(Q.mul(tapeM(Q.sci(3, 5)), 1000), '0.3')],
+    ['Earth at 4.6 m', Q.eq(tapeM(Q.sci('4.6', 9)), '4.6')], ['5.4e8 ÷ 4e6 = 135', Q.eq(Q.div(Q.sci('5.4', 8), Q.sci(4, 6)), 135)]],
+  ixl: [['Math', 'Compare numbers written in scientific notation', 'NC.8.EE.3'], ['Math', 'Divide numbers written in scientific notation', 'NC.8.EE.4'],
+        ['Math', 'Add, subtract, multiply, and divide numbers written in scientific notation: word problems', 'NC.8.EE.4'],
+        ['Science', 'Compare ages of fossils in a rock sequence', 'ESS.8.1.1'], ['Science', 'Compare fossils to modern organisms', 'LS.8.3.1']],
+  note: 'Ages are approximate.'
+});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 4: Outbreak: Linear or Not? · Math in Science</title>
+<meta name="description" content="Tell whether disease spread is linear or nonlinear and describe a graph. NC.8.F.3, NC.8.F.5 with LS.8.1.2.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+function A(x) { return 10 * x + 10; }             // Town A: 10 cases, +10 a day
+function B(x) { return Math.pow(2, x); }          // Town B: 1 case, doubling (exact for whole days)
+function firstDayBAhead() { for (var d = 0; d <= 20; d++) if (B(d) > A(d) && d > 0) return d; return -1; }
+
+function townsFig(el) {
+  var P = MS.plot(el, { x: [0, 10], y: [0, 1100], xt: 1, yt: 200, xl: 'Day', yl: 'Cases', l: 70, label: 'Town A grows by 10 a day; Town B doubles each day' });
+  P.fn(A, { stroke: '#1D4ED8', 'stroke-width': 3 });
+  P.fn(B, { stroke: '#E0A800', 'stroke-width': 3 });
+  for (var d = 0; d <= 10; d++) { P.dot(d, A(d), { r: 4.5, fill: '#1D4ED8' }); P.dot(d, B(d), { r: 4.5, fill: '#E0A800', stroke: '#1E2D4F' }); }
+  P.text(8.2, A(10) + 70, 'Town A', { fill: '#1D4ED8', 'font-weight': 600 });
+  P.text(7.6, 560, 'Town B', { fill: '#8A6100', 'font-weight': 600 });
+  var cur = sv('line', { stroke: '#1E2D4F', 'stroke-dasharray': '4 4' }, P.layer);
+  var ctl = MS.h('div', { class: 'ms-ctrl' }), read = MS.h('div', { class: 'ms-read' });
+  el.appendChild(ctl); el.appendChild(read);
+  MS.slider(ctl, 'Day', 0, 10, 1, 0, null, function (d) {
+    cur.setAttribute('x1', P.X(d)); cur.setAttribute('x2', P.X(d)); cur.setAttribute('y1', P.Y(0)); cur.setAttribute('y2', P.Y(1100));
+    read.innerHTML = 'Day ' + d + ': Town A = 10(' + d + ') + 10 = <b>' + MS.fmt(A(d)) + '</b> &nbsp;·&nbsp; Town B = 2<sup>' + d + '</sup> = <b>' + MS.fmt(B(d)) + '</b>' +
+      (B(d) > A(d) ? ' &nbsp;(B is ahead)' : '');
+  });
+}
+function sketches(el) {
+  var W = 600, H = 190, svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ms-svg', role: 'img', 'aria-label': 'Three sketch graphs labeled A, B and C' });
+  var paths = [
+    'M10 150 C 60 148, 70 140, 90 110 S 120 30, 170 28',   // A: slow, fast, level off
+    'M10 150 L 170 30',                                      // B: straight line
+    'M10 150 C 30 60, 80 35, 170 30'                         // C: fast first, then slow
+  ];
+  ['A', 'B', 'C'].forEach(function (k, i) {
+    var g = sv('g', { transform: 'translate(' + (i * 200 + 10) + ' 10)' }, svg);
+    sv('line', { x1: 10, y1: 150, x2: 180, y2: 150, stroke: '#5B6475', 'stroke-width': 1.5 }, g);
+    sv('line', { x1: 10, y1: 150, x2: 10, y2: 10, stroke: '#5B6475', 'stroke-width': 1.5 }, g);
+    sv('path', { d: paths[i], fill: 'none', stroke: '#1D4ED8', 'stroke-width': 4 }, g);
+    sv('text', { x: 95, y: 175, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 700 }, g, 'Graph ' + k);
+    sv('text', { x: 178, y: 145, 'text-anchor': 'end', 'font-size': 12, fill: '#5B6475' }, g, 'time');
+    sv('text', { x: 16, y: 22, 'font-size': 12, fill: '#5B6475' }, g, 'cases');
+  });
+  el.appendChild(svg);
+}
+
+MS.lesson({
+  num: 4, title: 'Outbreak: Linear or Not?', sci: 'LS.8.1.2', math: ['NC.8.F.3', 'NC.8.F.5'], minutes: 7,
+  question: 'Two towns have an outbreak. One adds the same number of cases each day. The other doubles each day. Which one is worse?',
+  intro: 'Tables and graphs show if the spread is linear or nonlinear.',
+  target: 'I can tell whether disease spread is linear or nonlinear and describe how fast it grows from a graph.',
+  vocab: ['outbreak', 'epidemic', 'pandemic', 'transmission', 'linear', 'nonlinear', 'rate of change', 'doubling'],
+  steps: [
+    { title: 'Two towns, two rules',
+      body: '<p><b>Town A:</b> 10 cases, then 10 new cases a day: <span class="num">y = 10x + 10</span>.<br><b>Town B:</b> 1 case, doubling each day: <span class="num">y = 2ˣ</span>.</p>' +
+        '<p>Move the slider to see each day.</p>',
+      fig: townsFig,
+      tryit: { type: 'num', unit: 'cases', q: 'How many cases does Town B have on day 5?', ans: Q(32), show: '32', accept: ['2^5', '32 cases'],
+        wrong: [['10', 'You multiplied 2 × 5. Doubling means multiply by 2 again each day: 1, 2, 4, 8, …'], ['25', '2⁵ means 2 × 2 × 2 × 2 × 2, not 5 × 5.'], ['16', 'That is day 4. Double once more.']],
+        hint: 'Start at 1 and double 5 times: 1 → 2 → 4 → …', explain: '1, 2, 4, 8, 16, 32. On day 5, Town B has 2⁵ = 32 cases.' } },
+    { title: 'Linear or nonlinear?',
+      body: '<p><b>Linear:</b> add the same amount each step (Town A: +10, +10, +10). The graph is a straight line.</p>' +
+        '<p><b>Nonlinear:</b> the change is not the same. Town B multiplies by 2, so the changes are +1, +2, +4, +8 … The graph curves up.</p>',
+      tryit: { type: 'mc', q: 'Cases by day: 3, 6, 12, 24. Is this linear or nonlinear?', choices: ['Linear, because it goes up each day', 'Nonlinear, because the change is +3, +6, +12', 'Linear, because it adds 3 each day'], ans: 1,
+        why: { 0: 'Going up is not enough. Linear means going up by the same amount.', 2: 'Check again: 6 to 12 is +6, not +3.' },
+        hint: 'Find the change from each number to the next.', explain: 'The changes are +3, +6, +12. They are not equal (the cases double), so it is nonlinear.' } },
+    { title: 'When does doubling win?',
+      body: '<p>Town B starts much smaller. But doubling grows faster and faster. On day 6, A has 70 and B has 64. On day 7, A has 80 and B has 128. The graphs cross <b>between day 6 and day 7</b>.</p>' +
+        '<div class="ms-ex"><span class="lbl">Day 10</span>Town A: 10(10) + 10 = <b class="num">110</b> cases. Town B: 2¹⁰ = <b class="num">1,024</b> cases.</div>',
+      tryit: { type: 'num', q: 'On which day does Town B <b>first</b> have more cases than Town A?', ans: Q(7), show: '7', accept: ['day 7'],
+        wrong: [['6', 'On day 6, A has 70 and B has 64. B is still behind.'], ['10', 'B passes A before day 10. Check days 6 and 7.']],
+        hint: 'Use the slider. Compare A and B on days 6 and 7.', explain: 'Day 6: A = 70, B = 64. Day 7: A = 80, B = 128. Day 7 is the first day B is ahead.',
+        check: function () { return firstDayBAhead() === 7; } } },
+    { title: 'Describe a graph from a story',
+      body: '<p>A graph tells a story. Steep = changing fast. Flat = not changing. In an <b>epidemic</b>, a disease spreads quickly in one region. In a <b>pandemic</b>, it spreads across many countries.</p>',
+      fig: sketches,
+      tryit: { type: 'mc', q: 'Story: cases grow slowly, then very fast, then level off after a vaccine. Which graph matches?', choices: ['Graph A', 'Graph B', 'Graph C'], ans: 0,
+        why: { 1: 'Graph B grows at the same rate the whole time. It never levels off.', 2: 'Graph C grows fast at the start. The story says slowly at the start.' },
+        hint: 'Look for a graph that starts flat, gets steep, then goes flat again.', explain: 'Graph A starts flat (slow), gets steep in the middle (very fast), then flattens out (levels off). The rate of change is greatest where it is steepest.' } }
+  ],
+  desmos: '<p>Type <code>y = 10x + 10 {x ≥ 0}</code> and <code>y = 2^x {x ≥ 0}</code>. Click the gray point where they cross. It is between x = 6 and x = 7.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.F.3', unit: 'cases', q: 'Town A: <span class="num">y = 10x + 10</span>. How many cases does Town A have on day 10?', ans: Q(A(10)), show: '110',
+      wrong: [['100', 'Do not forget the 10 starting cases: 10(10) + 10.'], ['200', 'Multiply first: 10 × 10 = 100. Then add 10.']],
+      hint: 'Replace x with 10: 10(10) + 10.', explain: '10(10) + 10 = 100 + 10 = 110 cases.' },
+    { type: 'num', std: 'NC.8.F.3', unit: 'cases', q: 'Town B: <span class="num">y = 2ˣ</span>. How many cases does Town B have on day 10?', ans: Q(1024), show: '1,024', accept: ['1024', '2^10'],
+      wrong: [['20', 'You multiplied 2 × 10. 2¹⁰ means ten 2s multiplied together.'], ['100', '2¹⁰ is not 10². Multiply 2 by itself 10 times.'], ['512', 'That is day 9. Double once more.']],
+      hint: 'Keep doubling: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, …', explain: '2¹⁰ = 1,024 cases. Doubling grows much faster than adding 10.',
+      check: function () { return B(10) === 1024 && A(10) === 110; } },
+    { type: 'sel', std: 'NC.8.F.3', q: 'Select <b>all</b> that are <b>nonlinear</b>.', choices: ['y = 2ˣ', 'y = 10x + 10', 'Cases: 1, 3, 9, 27', 'y = x²', 'y = 5 − 3x'], ans: [0, 2, 3],
+      why: { 1: 'y = 10x + 10 adds 10 each day. That is linear (y = mx + b).', 4: 'y = 5 − 3x subtracts 3 each step. It is in y = mx + b form, so it is linear.' },
+      missHint: 'Look for an x in an exponent, a squared x, or a table that multiplies.', hint: 'Linear equations look like y = mx + b. Anything else here is nonlinear.',
+      explain: 'y = 2ˣ (x is an exponent), 1, 3, 9, 27 (times 3 each step) and y = x² (squared) are nonlinear.' },
+    { type: 'mc', std: 'NC.8.F.5', q: 'Look at the graph of <span class="num">y = 2ˣ</span> from day 0 to day 10. Where is it increasing <b>fastest</b>?',
+      choices: ['Near day 10', 'Near day 0', 'It increases at the same speed everywhere', 'It is decreasing'], ans: 0,
+      why: { 1: 'Near day 0 the graph is almost flat. It only goes from 1 to 2.', 2: 'That would be a straight line. 2ˣ curves up.', 3: 'The cases go up every day.' },
+      hint: 'Where is the graph steepest?', explain: 'From day 9 to day 10 the cases jump from 512 to 1,024. The graph is steepest near day 10.' },
+    { type: 'num', std: 'NC.8.F.3', unit: 'cases', q: 'Town C starts with 4 cases. The cases double each day. How many cases on day 3?', ans: Q(4 * 8), show: '32',
+      wrong: [['10', 'You added 2 each day. Doubling means multiply by 2.'], ['24', 'You did 4 × 2 × 3. Double three times: 4 → 8 → 16 → 32.'], ['16', 'That is day 2. Double once more.'], ['12', 'Doubling means multiply by 2 each day, not add 4.']],
+      hint: 'Day 0: 4. Day 1: 8. Keep doubling.', explain: '4 → 8 → 16 → 32. That is 4 × 2³ = 32 cases.' },
+    { type: 'mc', std: 'NC.8.F.5', q: 'Story: "The number of cases stayed the same for a week. Then it went down." Which graph matches?',
+      choices: ['A flat part, then a part that goes down', 'A part that goes down, then a flat part', 'A line that goes up the whole time', 'A flat line the whole time'], ans: 0,
+      why: { 1: 'This is in the wrong order. The cases stayed the same first.', 2: 'The story never says the cases go up.', 3: 'The cases go down after the first week.' },
+      hint: 'Read the story in order. What happens first? What happens next?', explain: 'First "stayed the same" = flat. Then "went down" = a part that goes down.' },
+    { type: 'err', std: 'NC.8.F.3', q: 'Lee decided whether <span class="num">y = 10x + 10</span> is linear. <b>Which step has the first mistake?</b>',
+      steps: ['Day 1 → 20, day 2 → 30, day 3 → 40', 'Each day adds 10 cases.', 'The cases keep growing, so it is nonlinear.'], ans: 2,
+      why: { 0: '10(1) + 10 = 20, 10(2) + 10 = 30, 10(3) + 10 = 40. These are right.', 1: '20 → 30 → 40 does add 10 each day.' },
+      hint: 'Does "growing" mean nonlinear?', explain: 'Step 3 is wrong. Adding the same amount each day (+10) makes it linear, even though it grows.' },
+    { type: 'mc', std: 'LS.8.1.2', q: 'What is the difference between an epidemic and a pandemic?',
+      choices: ['An epidemic spreads fast in one region. A pandemic spreads across many countries or continents.', 'An epidemic is caused by bacteria. A pandemic is caused by viruses.', 'They mean the same thing.', 'A pandemic only affects one town.'], ans: 0,
+      why: { 1: 'Both can be caused by bacteria or viruses. The difference is how far the disease spreads.', 2: 'They are different. The difference is how far the disease spreads.', 3: 'A pandemic spreads very widely, across many countries.' },
+      hint: 'Think about how far the disease spreads.', explain: 'An epidemic is a big increase in one area. A pandemic spreads across many countries or continents.' }
+  ],
+  checks: [['day 6: A 70, B 64', A(6) === 70 && B(6) === 64], ['day 7: A 80, B 128', A(7) === 80 && B(7) === 128]],
+  ixl: [['Math', 'Identify linear and nonlinear functions: tables', 'NC.8.F.3'], ['Math', 'Identify linear and nonlinear functions: graphs and equations', 'NC.8.F.3'],
+        ['Math', 'Identify graphs: word problems', 'NC.8.F.5'], ['Science', 'Characteristics of living things: are bacteria and viruses alive?', 'LS.8.1.1']]
+});
+})();
+</script>
+</body>
+</html>

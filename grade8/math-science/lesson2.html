@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 2: Mass In, Mass Out · Math in Science</title>
+<meta name="description" content="Use an equation to find a missing mass and explain conservation of mass. NC.8.EE.7 with PS.8.1.5.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../site.css">
+<link rel="stylesheet" href="ms.css">
+<script src="../../brand.js"></script>
+</head>
+<body>
+<script src="../../site-bar.js"></script>
+<main class="page-wrap" id="ms-app"></main>
+<div class="site-footer">© Mr. Allen's Math Class · Math in Science</div>
+<script src="ms.js"></script>
+<script>
+(function () {
+var Q = MS.Q, sv = MS.sv;
+var BEFORE = Q.dec('65.0'), AFTER_OPEN = Q.dec('63.2'), GAS = Q.sub(BEFORE, AFTER_OPEN);   // 1.8 g
+
+/* closed bag vs open cup, before and after */
+function labFig(el) {
+  var chips = MS.h('div', { class: 'ms-chips', role: 'group', 'aria-label': 'Pick a system' });
+  var host = MS.h('div'), read = MS.h('div', { class: 'ms-read' });
+  var modes = [['closed', 'Sealed bag (closed system)'], ['open', 'Open cup (open system)']];
+  function draw(mode) {
+    host.innerHTML = '';
+    var W = 520, H = 250, svg = sv('svg', { viewBox: '0 0 ' + W + ' ' + H, class: 'ms-svg', role: 'img', 'aria-label': mode + ' system before and after' });
+    [['Before', 65.0, 130], ['After', mode === 'closed' ? 65.0 : 63.2, 390]].forEach(function (p, i) {
+      var cx = p[2];
+      sv('text', { x: cx, y: 28, 'text-anchor': 'middle', 'font-size': 18, 'font-weight': 600 }, svg, p[0]);
+      if (mode === 'closed') {
+        sv('path', { d: 'M' + (cx - 60) + ' 70 L' + (cx + 60) + ' 70 L' + (cx + 70) + ' 175 L' + (cx - 70) + ' 175 Z', fill: i ? '#E8F0FB' : '#F2F3F6', stroke: '#1E2D4F', 'stroke-width': 2 }, svg);
+        sv('line', { x1: cx - 62, x2: cx + 62, y1: 74, y2: 74, stroke: '#1E2D4F', 'stroke-width': 4 }, svg);
+        if (i) for (var k = 0; k < 6; k++) sv('circle', { cx: cx - 40 + k * 16, cy: 120 + (k % 2) * 18, r: 6, fill: '#fff', stroke: '#1D4ED8', 'stroke-width': 2 }, svg);
+      } else {
+        sv('path', { d: 'M' + (cx - 50) + ' 90 L' + (cx + 50) + ' 90 L' + (cx + 40) + ' 175 L' + (cx - 40) + ' 175 Z', fill: i ? '#E8F0FB' : '#F2F3F6', stroke: '#1E2D4F', 'stroke-width': 2 }, svg);
+        if (i) {
+          for (var j = 0; j < 4; j++) sv('circle', { cx: cx - 30 + j * 20, cy: 70 - (j % 2) * 18, r: 6, fill: '#fff', stroke: '#1D4ED8', 'stroke-width': 2 }, svg);
+          sv('text', { x: cx + 62, y: 60, 'font-size': 15, fill: '#1D4ED8' }, svg, 'gas escapes');
+        }
+      }
+      sv('rect', { x: cx - 90, y: 180, width: 180, height: 50, rx: 8, fill: '#1E2D4F' }, svg);
+      sv('text', { x: cx, y: 214, 'text-anchor': 'middle', 'font-size': 24, fill: '#FFC107', class: 'mono' }, svg, p[1].toFixed(1) + ' g');
+    });
+    sv('text', { x: 260, y: 130, 'text-anchor': 'middle', 'font-size': 28, fill: '#5B6475' }, svg, '→');
+    host.appendChild(svg);
+    read.innerHTML = mode === 'closed'
+      ? 'Closed system: nothing gets in or out. The atoms rearrange into new substances, but the mass stays <b>65.0 g</b>.'
+      : 'Open system: the reaction makes carbon dioxide gas. The gas floats away, so the scale shows less: <b>63.2 g</b>. The mass was not destroyed. It left the cup.';
+  }
+  modes.forEach(function (m, i) {
+    var b = MS.h('button', { class: 'ms-chip', type: 'button', 'aria-pressed': i ? 'false' : 'true' }, m[1]);
+    b.addEventListener('click', function () { chips.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); draw(m[0]); });
+    chips.appendChild(b);
+  });
+  el.appendChild(chips); el.appendChild(host); el.appendChild(read); draw('closed');
+}
+
+/* class data: mass before (x) vs after (y) with y = x */
+var CLOSED = [[40.0, 40.0], [48.2, 48.2], [55.5, 55.5], [65.0, 65.0]], OPEN = [[42.5, 39.8], [50.0, 47.6], [58.0, 55.9], [65.0, 63.2]];
+function graphFig(el) {
+  var P = MS.plot(el, { x: [35, 70], y: [35, 70], xt: 5, yt: 5, xl: 'Mass before (g)', yl: 'Mass after (g)', label: 'Mass before versus mass after, with the line y = x' });
+  P.fn(function (x) { return x; }, { stroke: '#5B6475', 'stroke-dasharray': '6 5', 'stroke-width': 2 });
+  P.text(58, 66.5, 'y = x', { fill: '#5B6475' });
+  CLOSED.forEach(function (p) { P.dot(p[0], p[1], { fill: '#1D4ED8' }); });
+  OPEN.forEach(function (p) { P.dot(p[0], p[1], { fill: '#E0A800', stroke: '#1E2D4F', 'stroke-width': 1.5 }); });
+  el.appendChild(MS.h('p', { class: 'ms-cap' }, '<span style="color:#1D4ED8">●</span> Closed system (sealed bag) &nbsp; <span style="color:#E0A800">●</span> Open system (open cup). Made-up class data.'));
+}
+
+MS.lesson({
+  num: 2, title: 'Mass In, Mass Out', sci: 'PS.8.1.5', math: ['NC.8.EE.7'], minutes: 6,
+  question: 'Baking soda and vinegar react in an open cup. Afterward, the cup weighs less. Where did the mass go?',
+  intro: 'An equation can find the missing mass.',
+  target: 'I can use an equation to find a missing mass and explain why mass is conserved in a closed system.',
+  vocab: ['reactant', 'product', 'chemical reaction', 'conservation of mass', 'open system', 'closed system', 'equation', 'variable'],
+  steps: [
+    { title: 'Mass is conserved',
+      body: '<p>In a chemical reaction, atoms <b>rearrange</b>. They are not created or destroyed. So the total mass stays the same.</p>' +
+        '<p>Example: 60.0 g vinegar + 5.0 g baking soda = <b class="num">65.0 g</b> before. Tap each system to compare.</p>',
+      fig: labFig,
+      tryit: { type: 'mc', q: 'A sealed bag holds 65.0 g of reactants. The reaction happens inside the bag. What does the scale show after?',
+        choices: ['Less than 65.0 g', 'Exactly 65.0 g', 'More than 65.0 g'], ans: 1,
+        why: { 0: 'The bag is sealed (closed), so the gas cannot escape. Nothing leaves.', 2: 'Atoms are not created in a reaction, so mass cannot go up.' },
+        hint: 'In a closed system, nothing gets in or out.', explain: 'Closed system: the atoms just rearrange, so the mass stays 65.0 g.' } },
+    { title: 'Write an equation',
+      body: '<p>In the open cup, some mass escaped as gas. Let <b>x</b> = the mass of the gas.</p>' +
+        '<div class="ms-ex"><span class="lbl">Model</span><b class="num">mass before = mass after + gas</b><br><span class="num">65.0 = 63.2 + x</span></div>',
+      tryit: { type: 'mc', q: 'A reaction starts with 80.0 g. Afterward, the open cup shows 77.5 g. Which equation finds the gas, x?',
+        choices: ['80.0 = 77.5 + x', '77.5 = 80.0 + x', 'x = 80.0 + 77.5', '80.0x = 77.5'], ans: 0,
+        why: { 1: 'This says the after mass is bigger. The before mass is the total, so it goes alone on one side.', 2: 'Adding gives 147.4 g, which is more than you started with.', 3: 'Nothing is being multiplied here. The gas is added to the after mass.' },
+        hint: 'Before = after + gas.', explain: 'Before (80.0) = after (77.5) + gas (x).' } },
+    { title: 'Solve for the missing mass',
+      body: '<div class="ms-ex"><span class="lbl">Worked example</span><ol><li><span class="num">65.0 = 63.2 + x</span></li><li>Subtract 63.2 from both sides: <span class="num">65.0 − 63.2 = x</span></li><li><span class="num">x = 1.8</span>. So <b>1.8 g</b> of gas escaped.</li></ol></div>',
+      tryit: { type: 'num', unit: 'g', q: 'Solve <span class="num">50.0 = 47.6 + x</span>. How many grams of gas escaped?', ans: Q.sub('50.0', '47.6'), show: '2.4 g', accept: ['2.4', 'x = 2.4', '2.40 g'],
+        wrong: [['97.6', 'You added. To undo + 47.6, subtract 47.6 from both sides.'], ['-2.4', 'Check the sign: 50.0 − 47.6 is positive.']],
+        hint: 'Subtract 47.6 from both sides.', explain: '50.0 − 47.6 = 2.4, so x = 2.4 g.' } },
+    { title: 'See it on a graph',
+      body: '<p>In Desmos, the class graphs <b>mass before (x)</b> and <b>mass after (y)</b>, plus the line <span class="num">y = x</span>. On that line, after = before.</p>',
+      fig: graphFig,
+      tryit: { type: 'mc', q: 'The point (65.0, 63.2) is <b>below</b> the line y = x. Which system is it from?',
+        choices: ['Closed system: the mass stayed the same', 'Open system: some mass escaped as gas', 'It is a mistake: mass can never change on a scale'], ans: 1,
+        why: { 0: 'If the mass stayed the same, the point would be on the line, like (65.0, 65.0).', 2: 'The scale can show less when gas leaves an open container. The atoms still exist.' },
+        hint: 'Below the line means the after mass is less than the before mass.', explain: 'After (63.2) is less than before (65.0), so gas escaped. That only happens in an open system.' } }
+  ],
+  desmos: '<p>Make a table: click <b>+</b>, then <b>table</b>. Type mass before in <code>x₁</code> and mass after in <code>y₁</code>. Then type <code>y = x</code>. Closed-system points land on the line. Open-system points fall below it.</p>',
+  assignment: [
+    { type: 'num', std: 'NC.8.EE.7', unit: 'g', q: 'A reaction starts with <b>42.5 g</b> of reactants in an open container. Afterward, <b>39.8 g</b> remain. Write and solve an equation for the mass of gas released.',
+      ans: Q.sub('42.5', '39.8'), show: '2.7 g', accept: ['2.7', 'x = 2.7', '2.70'],
+      wrong: [['82.3', 'You added the masses. The gas is the mass that went missing, so subtract.'], ['-2.7', 'Mass of gas cannot be negative. Subtract the after mass from the before mass.']],
+      hint: '42.5 = 39.8 + x. Subtract 39.8 from both sides.', explain: '42.5 = 39.8 + x → x = 42.5 − 39.8 = 2.7 g.' },
+    { type: 'mc', std: 'PS.8.1.5', q: 'A student seals 30.0 g of vinegar and 4.5 g of baking soda in a zip-top bag. They react. What is the mass of the bag\'s contents after the reaction?',
+      choices: ['25.5 g', '30.0 g', '34.5 g', 'Less than 34.5 g, because gas forms'], ans: 2,
+      why: { 0: 'You subtracted. Before the reaction the total is 30.0 + 4.5.', 1: 'This is only the vinegar. Add the baking soda too.', 3: 'Gas forms, but the bag is sealed, so the gas stays and its mass still counts.' },
+      hint: 'Closed system: the total mass after equals the total mass before.', explain: '30.0 + 4.5 = 34.5 g before. In a closed system, the mass after is also 34.5 g.',
+      check: function () { return Q.eq(Q.add('30.0', '4.5'), '34.5'); } },
+    { type: 'sel', std: 'PS.8.1.5', q: 'Select <b>all</b> true statements about chemical reactions.',
+      choices: ['Atoms are rearranged into new substances.', 'New atoms are created during the reaction.', 'In a closed system, mass before = mass after.', 'In an open system, the scale may show less because gas escapes.', 'Gas has no mass.'], ans: [0, 2, 3],
+      why: { 1: 'Atoms are never created or destroyed in a chemical reaction.', 4: 'Gas does have mass. That is why the scale drops when gas leaves.' },
+      hint: 'Two of the statements break the law of conservation of mass.', explain: 'Atoms rearrange, so mass is conserved. In an open system the gas leaves, so the scale shows less, but the gas still has mass.' },
+    { type: 'num', std: 'NC.8.EE.7', unit: 'g', q: 'Two cups hold the <b>same</b> mass of vinegar, m grams each. A student adds 6.0 g of baking soda. The total mass of the reactants is 106.0 g. Solve <span class="num">2m + 6.0 = 106.0</span> for m.',
+      ans: Q.div(Q.sub('106.0', '6.0'), 2), show: '50 g', accept: ['50', '50.0', 'm = 50'],
+      wrong: [['53', 'You divided before subtracting. Undo the + 6.0 first, then divide by 2.'], ['100', 'Good start: 2m = 100. Now divide both sides by 2.'], ['56', 'Subtract 6.0 from both sides (do not add).']],
+      hint: 'Subtract 6.0 from both sides. Then divide both sides by 2.', explain: '2m + 6.0 = 106.0 → 2m = 100.0 → m = 50.0 g.' },
+    { type: 'num', std: 'NC.8.EE.7', unit: 'g', q: 'In an open cup, 4.4 g of gas escaped. Afterward the cup showed 81.6 g. What was the mass <b>before</b> the reaction?',
+      ans: Q.add('81.6', '4.4'), show: '86 g', accept: ['86', '86.0'],
+      wrong: [['77.2', 'You subtracted. The before mass is the after mass plus the gas that escaped.']],
+      hint: 'before = after + gas.', explain: 'before = 81.6 + 4.4 = 86.0 g.' },
+    { type: 'mc', std: 'NC.8.EE.7', q: 'Which equation models this? <i>Before: 75.0 g. After (open cup): 72.4 g. Gas released: x grams.</i>',
+      choices: ['72.4 = 75.0 + x', '75.0 = 72.4 + x', 'x = 75.0 + 72.4', '75.0 = 72.4x'], ans: 1,
+      why: { 0: 'This says the after mass is the total. The before mass is the total.', 2: 'Adding the masses gives more than you started with.', 3: 'Nothing is multiplied. The gas is added to the after mass.' },
+      hint: 'mass before = mass after + gas.', explain: '75.0 = 72.4 + x. Then x = 2.6 g.', check: function () { return Q.eq(Q.sub('75.0', '72.4'), '2.6'); } },
+    { type: 'err', std: 'NC.8.EE.7', q: 'Maya solved <span class="num">65.0 = 63.2 + x</span>. <b>Which step has the first mistake?</b>',
+      steps: ['65.0 + 63.2 = x', 'x = 128.2', 'So 128.2 g of gas escaped.'], ans: 0,
+      why: { 1: '65.0 + 63.2 does equal 128.2. The mistake happened before this.', 2: 'This step only repeats Step 2. Find where the mistake started.' },
+      hint: 'To undo + 63.2, what should you do to both sides?', explain: 'Step 1 is wrong. To undo + 63.2, subtract 63.2 from both sides: 65.0 − 63.2 = x, so x = 1.8 g.' },
+    { type: 'num', std: 'NC.8.EE.7', unit: 'g', q: 'An open cup started with 3 equal scoops of baking soda, s grams each, plus 50.0 g of vinegar. After the reaction, the cup showed 58.6 g and 2.4 g of gas had escaped. Solve <span class="num">3s + 50.0 = 58.6 + 2.4</span> for s.',
+      ans: Q.div(Q.sub(Q.add('58.6', '2.4'), '50.0'), 3), show: '11/3 ≈ 3.67 g', tol: '0.01', accept: ['11/3', '3.67', '3 2/3'],
+      wrong: [['11', 'Good: 3s = 11. Now divide both sides by 3.'], ['2.8667', 'Add 58.6 + 2.4 first. That is the total mass before.']], wtol: '0.01',
+      hint: 'Right side first: 58.6 + 2.4 = 61.0. Then subtract 50.0, then divide by 3.', explain: '3s + 50.0 = 61.0 → 3s = 11.0 → s = 11/3 ≈ 3.67 g.' }
+  ],
+  checks: [['65.0 − 63.2 = 1.8', Q.eq(GAS, '1.8')], ['60.0 + 5.0 = 65.0', Q.eq(Q.add('60.0', '5.0'), BEFORE)],
+    ['open points below y=x', OPEN.every(function (p) { return p[1] < p[0]; })], ['closed points on y=x', CLOSED.every(function (p) { return p[1] === p[0]; })]],
+  ixl: [['Math', 'Solve equations involving like terms', 'NC.8.EE.7'], ['Math', 'Solve multi-step equations', 'NC.8.EE.7'],
+        ['Science', 'Understand the law of conservation of matter using models', 'PS.8.1.5'], ['Science', 'Count atoms and molecules in chemical reactions', 'PS.8.1.5'],
+        ['Science', 'Calculate amounts of reactants or products in chemical reactions', 'PS.8.1.5']]
+});
+})();
+</script>
+</body>
+</html>
