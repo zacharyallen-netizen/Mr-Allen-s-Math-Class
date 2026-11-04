@@ -23,6 +23,7 @@ python3 _build/materials/combine.py ALL.pdf "Title A=a.pdf" "Title B=b.pdf"
 | `transform.py` | Exact transformation rules `tr, RX, RY, R90, R180, R270, dil(k)` and `fig()` for pre-image/image grids. |
 | `new_handout_template.py` | Copy this to start any new handout + bell ringer. |
 | `combine.py` | Merge PDFs into one with bookmarks. |
+| `anchor_v2.py` | Version 2 anchor charts (Units 1, 2, 3, 4–5, 6, 7, 8): color-coded KNOW IT / STEPS / EXAMPLE / WATCH OUT sections, colored step numbers, one sheet front + back each. `python3 anchor_v2.py [1 2 3 4-5 6 7 8]`. |
 
 ## Rules that keep it fast and right
 - Compute every answer in Python (`Fraction`) and `assert` it before rendering.
