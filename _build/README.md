@@ -14,6 +14,8 @@ Python 3, Node 18+ and Playwright with Chromium are needed.
 | Math 1 pre-tests (Units 1–8) | `cd m1pre && python3 build_m1.py` then `node render_m1.js` | Items in `units_a.py`, `units_b.py`; diagrams `m1svg.py`. |
 | Math 1 notes + practice | Units 1–2 `node m1/u12/tools/build.js` · Units 3–4 `python3 m1/u34/build.py` · Units 5–6 `python3 m1/u56/build.py` · Units 7–8 `node m1/u78/build/u7n.js` (u7p, u8n, u8p) | The page HTML is generated: a hand edit to the page is lost on the next rebuild, so change the source here. |
 | Math 1 study guide | `node m1/guide/build.js` | |
+| Units 3–4 Pre-Test (online) + Test (paper) | `python3 u34_pretest.py` then `node u34_render.js` | Pre-test page + print PDF go to grade8; the test and every key go to OUT_DIR only. |
+| Units 3–4 Tutorial Review | `python3 u34_tutorial.py` | grade8/units3_4_review_tutorial.html (Score Tracker unit "3-4"). |
 | Materials Index | `python3 build_matidx.py` | Reads every grade8 unit page, so new materials appear automatically. |
 | Hub look / shared top bar | `makeover.py`, `rollout.py` | Already applied; kept for reference. The bar itself is `/site-bar.js`, the hub style `/site.css`. |
 
