@@ -185,4 +185,15 @@ if __name__ == '__main__':
     for v in 'AB':
         c = cfg_for(v)
         assert len(c['qs']) == 18 and [q['id'] for q in c['qs']] == list(range(1, 19))
-        print('built', build(c))
+        out = build(c)
+        if v == 'A':   # step-by-step help on the multi-step equations (online pre-test only; hidden in print)
+            from u34_steps import EQS
+            import json
+            data = {k[1:]: e for k, e in EQS.items() if k.startswith('p')}
+            assert set(data) == {'1', '7', '8', '14'}
+            for k in data: assert c['qs'][int(k) - 1]['expr'] == data[k]['start'], k
+            h = open(out).read()
+            tag = ('<script src="eq-stepper.js"></script><script>EqStepper.attach(' + json.dumps(data, ensure_ascii=False) + ');</script>\n')
+            i = h.rindex('</body>'); h = h[:i] + tag + h[i:]
+            open(out, 'w').write(h)
+        print('built', out)

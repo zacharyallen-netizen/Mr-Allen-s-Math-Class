@@ -9,6 +9,7 @@ sys.path.insert(0, '/home/claude/mr-allen-s-math-class/_build')
 sys.path.insert(0, '/home/claude/mr-allen-s-math-class/_build/materials')
 from fractions import Fraction as F
 import u4viz as V4
+from u34_steps import EQS
 from u34_figs import para, numline, tri as TRI, X as XI
 
 OUT = '/home/claude/mr-allen-s-math-class/grade8/units3_4_review_tutorial.html'
@@ -55,7 +56,7 @@ for text, L, R, mist, hint, steps in [
      'Distribute on both sides. Then combine 5x + 3x.', ['5x − 10 + 3x = 2x + 14', '8x − 10 = 2x + 14', '6x = 24', 'x = 4']),
 ]:
     r = lin(L, R); assert isinstance(r, F) and r.denominator == 1
-    add(part=1, type='num', std=EE, prompt='Solve. <span class="eq">' + m(text) + '</span>', lab='x =', ans=float(r),
+    add(part=1, type='num', std=EE, stepper='t%d' % (len(Q) + 1), prompt='Solve. <span class="eq">' + m(text) + '</span>', lab='x =', ans=float(r),
         mist={str(float(k)): v for k, v in mist.items()}, hint=hint, steps=steps)
 
 # ───── Part 2: number of solutions ─────
@@ -241,6 +242,7 @@ def q_html(q):
         h += f'<div class="{cls}">' + ''.join(f'<button onclick="pick({q["id"]},{i},this)" aria-label="Choice {i+1}">{o}</button>' for i, o in enumerate(q['opts'])) + '</div>'
         h += f'<div class="row"><button class="b2" onclick="hint({q["id"]})">Hint</button></div>'
     h += f'<div class="fb" id="fb{q["id"]}" aria-live="polite"></div>'
+    if q.get('stepper'): h += f'<div class="stepmount" data-eq="{q["stepper"]}"></div>'
     h += '<div class="sol" id="sol' + str(q['id']) + '">' + '<br>'.join(q['steps']) + '</div></div>'
     return h
 
@@ -263,7 +265,9 @@ page = ('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="
         '<title>Units 3–4 Tutorial Review — Equations, Inequalities &amp; Angles</title>'
         '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">'
         f'<style>{CSS}</style><script src="../brand.js"></script></head><body>{body}'
-        '<script src="../tracker-config.js"></script><script src="../score-send.js"></script>'
+        '<script src="../tracker-config.js"></script><script src="../score-send.js"></script><script src="eq-stepper.js"></script>'
+        '<script>var ES=' + json.dumps({k: v for k, v in EQS.items() if k.startswith('t')}, ensure_ascii=False) + ';'
+        'document.querySelectorAll(".stepmount").forEach(function(e){EqStepper.mount(e,ES[e.dataset.eq]);});</script>'
         f'<script>{JS.replace("__Q__", json.dumps(Q, ensure_ascii=False))}'
         "if(window.ScoreSend)ScoreSend.setup({kind:'practice',unit:'3-4',page:'Units 3–4 Tutorial Review · Equations, Inequalities & Angles',mount:'#send',std:'NC.8.EE.7',band:4});"
         '</script></body></html>')
