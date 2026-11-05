@@ -13,7 +13,7 @@ import kit
 from fractions import Fraction as F
 from bell import CSS_BR
 from bell2 import side
-kit.CSS += CSS_BR + ".cq:not(.txt){white-space:nowrap}.c{display:flex;flex-direction:column;min-height:2.05in}.c>div:last-child{margin-top:auto!important}.fg{display:flex;justify-content:center;margin:2px 0 0}"
+kit.CSS += CSS_BR + ".cq:not(.txt){white-space:nowrap}.c{display:flex;flex-direction:column;min-height:2.75in}.c>div:last-child{margin-top:auto!important}.fg{display:flex;justify-content:center;margin:2px 0 0}"
 render = kit.render
 M = "−"
 
