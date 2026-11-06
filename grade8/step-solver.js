@@ -249,7 +249,14 @@
       }
     };
     paint();
-    return { reveal: function () { st = { v: spec.v, closed: spec.closed, dir: spec.dir }; paint('#15803D'); fb.className = 'ss-nlfb ok'; fb.innerHTML = spec.why || ''; } };
+    function lock(on) { [lft, rgt, bo, bc, bl, br, chk].forEach(function (b) { b.disabled = on; }); }
+    return {
+      reveal: function () { st = { v: spec.v, closed: spec.closed, dir: spec.dir }; done = true; lock(true); box.classList.add('ok'); paint('#15803D'); fb.className = 'ss-nlfb ok'; fb.innerHTML = spec.why || ''; },
+      /* touched: the student chose a circle and a direction; ok: the graph matches */
+      state: function () { return { touched: st.closed != null && st.dir != null, ok: st.v === spec.v && st.closed === spec.closed && st.dir === spec.dir }; },
+      mark: function (ok) { fb.className = 'ss-nlfb ' + (ok ? 'ok' : 'no'); fb.innerHTML = ok ? '✓ Graph correct.' : '✗ Graph answer: ' + (spec.why || ''); },
+      reset: function () { st = { v: 0, closed: null, dir: null }; done = false; tries = 0; lock(false); box.classList.remove('ok'); fb.className = 'ss-nlfb'; fb.innerHTML = ''; paint(); }
+    };
   }
 
   /* ---------- reference diagrams ---------- */

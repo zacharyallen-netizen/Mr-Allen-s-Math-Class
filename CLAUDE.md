@@ -41,6 +41,8 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 | `grade8/durable-skills.html` | Durable Skills (Perseverance, Peer Collaboration, Self-Regulation rubrics + local self-check). |
 | `grade8/museum-of-angles.html` | Unit 4/8 treasure-hunt game (generated art; `?all=1` unlocks rooms for demos). |
 | `arcade-send.js` | Arcade play logging → `kind:'arcade'` on the Student Work script → "2627 Arcade Results" Sheet (`_build/student_work/ArcadeLog.gs`). Every arcade game includes it; Zero Pair Run, UFO Blaster and Museum of Angles also report answers/rounds. |
+| `grade8/anchor_charts.html` | Anchor Charts page: 7 recolored letter-size charts (`grade8/anchor-charts/`, previews `images/anchor/`). Recolor new ones with `_build/anchor/recolor.py IN OUT`; never post the 24x36 posters. |
+| `grade8/nitro-numbers.html` | Arcade fact racer (times tables A 1–10, B −10–10, C −20–20; squares/cubes + roots with a few no-estimate irrational items). Logs answers + rounds via `arcade-send.js`; `window.NITRO` exposes generators for tests. |
 | `grade8/checkin_benchmark_review.html`, `…_v2.html`, `q1_benchmark_review.html` | Interactive benchmark reviews. |
 | `_build/checkin_benchmark/` | Builders + checks for the Check-In pages (`build_page.py`, `build_v2.py`, `check_page.py`, `check_v2.py`, `check_timing.py`). |
 | `_build/benchmark/BenchmarkTracker.gs` | Google Apps Script for benchmark results (tests: `node _build/benchmark/test_benchmark_tracker.js`). |

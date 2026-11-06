@@ -205,7 +205,7 @@ if __name__ == '__main__':
                 g = data['graph'][str(i)]
                 g['why'] = ('%s circle at %s, shaded %s.' % ('CLOSED' if g['closed'] else 'OPEN', ('−%d' % -g['v']) if g['v'] < 0 else g['v'], g['dir'].upper()))
             js = r"""
-(function(){var D=__D__;
+(function(){var D=__D__;var G={};
 var css=document.createElement('style');css.textContent='.pt-extra{margin-top:8px}.pt-sol{display:none}.pt-sol.on{display:block}'+
  '.pt-tog{font:600 14.5px Inter,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;cursor:pointer;margin-top:8px}'+
  '@media print{.pt-extra{display:none!important}}';document.head.appendChild(css);
@@ -216,12 +216,23 @@ Object.keys(D.seq).forEach(function(id){var card=document.getElementById('q'+id)
   b.onclick=function(){r.hidden=!r.hidden;b.setAttribute('aria-expanded',String(!r.hidden));b.textContent=r.hidden?'Show reference diagram':'Hide reference diagram';
    if(!r.hidden&&!r.firstChild)StepSolver.ref(r,D.ref[id],D.tpl[D.ref[id]]);};}
  var m=document.createElement('div');box.appendChild(m);StepSolver.mount(m,D.seq[id]);
- if(D.graph[id]){var g=document.createElement('div');box.appendChild(g);StepSolver.graph(g,D.graph[id],{title:'Graph your answer'});}
+ if(D.graph[id]){var g=document.createElement('div');box.appendChild(g);G[id]=StepSolver.graph(g,D.graph[id],{title:'Graph your answer (this counts as 1 point)'});}
  var s=document.createElement('div');s.className='pt-sol';s.id='ptsol'+id;s.innerHTML=D.sol[id];box.appendChild(s);});
+/* the graphs count: one point each, in the same level as their question (checked with Check answers) */
+function scoreGraphs(){var lv=document.getElementById('lvls'),sb=document.getElementById('scorebox');if(!lv||!sb)return;
+ var m=[0];lv.textContent.replace(/(\d+)\/(\d+)/g,function(_,a,b){m.push(+a,+b);});if(m.length<7)m=null;var t=sb.firstChild.textContent.match(/(\d+)\s*\/\s*(\d+)/);if(!m||!t)return;
+ var L={basic:[+m[1],+m[2]],target:[+m[3],+m[4]],advanced:[+m[5],+m[6]]},tot=+t[1],den=+t[2];
+ Object.keys(G).forEach(function(id){var q=QS[+id-1],s=G[id].state();L[q.lvl][1]++;den++;
+  if(!s.touched)return;if(s.ok){L[q.lvl][0]++;tot++;}G[id].mark(s.ok);
+  if(window.ScoreSend){try{ScoreSend.record('q'+id+'g',s.ok,{std:PT_STD[q.id],band:PT_BAND[q.lvl],label:'Q'+id+' graph'});}catch(e){}}});
+ sb.firstChild.textContent=tot+' / '+den+' correct ';
+ lv.textContent='3.0 Basic '+L.basic[0]+'/'+L.basic[1]+'  ·  4.0 Target '+L.target[0]+'/'+L.target[1]+'  ·  5.0 Advanced '+L.advanced[0]+'/'+L.advanced[1];}
 function showSols(){Object.keys(D.sol).forEach(function(id){var c=document.getElementById('q'+id),s=document.getElementById('ptsol'+id);
  if(c&&s)s.classList.toggle('on',c.classList.contains('correct'));});}
-['check','reveal'].forEach(function(b){var e=document.getElementById(b);if(e)e.addEventListener('click',function(){setTimeout(showSols,0);});});
-var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',function(){setTimeout(function(){document.querySelectorAll('.pt-sol').forEach(function(s){s.classList.remove('on');});},0);});
+var ck=document.getElementById('check');if(ck)ck.addEventListener('click',function(){setTimeout(function(){scoreGraphs();showSols();},0);});
+var rv=document.getElementById('reveal');if(rv)rv.addEventListener('click',function(){setTimeout(function(){Object.keys(G).forEach(function(id){G[id].reveal();});showSols();},0);});
+document.querySelectorAll('.ans input').forEach(function(i){i.addEventListener('keydown',function(e){if(e.key==='Enter')setTimeout(function(){scoreGraphs();showSols();},0);});});
+var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',function(){setTimeout(function(){document.querySelectorAll('.pt-sol').forEach(function(s){s.classList.remove('on');});Object.keys(G).forEach(function(id){G[id].reset();});},0);});
 })();
 """
             h = open(out).read()
