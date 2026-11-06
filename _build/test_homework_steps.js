@@ -32,6 +32,7 @@ const SETUP = {
   '5.2': { 4: ['15^2 + 20^2 = c^2', 'c'], 5: ['6^2 + a^2 = 10^2', 'a'], 8: ['18^2 + 24^2 = d^2', 'd'], 10: ['6^2 + 8^2 = c^2', 'c'] },
   '5.3': { 1: ['5^2 + 8^2 = c^2', 'c'], 2: ['7^2 + b^2 = 12^2', 'b'], 3: ['12^2 + h^2 = 20^2', 'h'], 6: ['(√11)^2 + 5^2 = c^2', 'c'], 8: ['9^2 + 12^2 = d^2', 'd'], 9: ['3^2 + 6^2 = c^2', 'c'], 10: ['10^2 + 24^2 = d^2', 'd'] },
   '5.4': { 2: ['3^2 + 4^2 = d^2', 'd'], 3: ['5^2 + 12^2 = d^2', 'd'], 5: ['6^2 + 9^2 = c^2', 'c'], 6: ['8^2 + 5^2 = d^2', 'd'], 8: ['5^2 + 12^2 = d^2', 'd'], 9: ['6^2 + 3^2 = d^2', 'd'], 10: ['6^2 + 8^2 = d^2', 'd'] },
+  '6.6': { 10: ['9 = 3(2) + b', 'b'] }, '6.8': { 9: ['1 = 2(2) + b', 'b'] },
   '9.2': { 6: ['98π = π 7^2 h', 'h'] }, '9.3': { 7: ['50π = 1/3 π 5^2 h', 'h'] }, '9.4': { 6: ['245π = π r^2 5', 'r'] },
   '5.5': { 1: ['20^2 + 21^2 = c^2', 'c'], 2: ['10^2 + b^2 = 26^2', 'b'], 4: ['3^2 + 4^2 = d^2', 'd'], 5: ['3^2 + 8^2 = c^2', 'c'], 6: ['30^2 + h^2 = 50^2', 'h'], 8: ['5^2 + b^2 = (√50)^2', 'b'], 10: ['(√13)^2 + 6^2 = d^2', 'd'] }
 };
@@ -39,6 +40,9 @@ const SETUP = {
 const EXPR = { '2.2': { 1: '5^7', 2: '18a^7', 3: '5y^4', 4: 'x^3', 9: '8x^4y^5' }, '2.3': { 1: '5^6', 2: 'y^20', 3: '1/16', 4: '1', 5: 'x^7', 7: '4/x^6', 8: '14a^7' },
   '2.4': { 1: '9x^8y^4', 2: '12a^3', 3: '5/m^2', 4: '3x^7', 6: 'b^2/9a^4', 8: '48x^5y^5', 9: '2x^5' }, '2.5': { 1: '64', 2: 'x^10', 3: '32y^15', 4: '1/36', 5: '6ab^5', 6: '10m^4/n^3', 9: 'x^7/y^6' },
   '2.6': { 8: '4x^2' }, '2.7': { 1: '8*10^9', 2: '3*10^6', 3: '2*10^9', 4: '3*10^4', 8: '1.2*10^2' }, '2.8': { 2: '2.8*10^4', 3: '3*10^9' }, '2.9': { 1: '-10a^7', 4: '3*10^5', 6: 'x^7/y^4' } };
+// Unit 6: slope-intercept answers; for point-slope setups, an equation a student could write (from the points in the PDF)
+const LINE = { '6.10': { 2: 'y = -2x + 9', 3: 'y = 4x - 7', 6: 'y = -3x + 8', 9: 'y = 2x + 4' }, '6.11': { 2: 'y = -3/4x + 2', 6: 'y = 3x - 5', 9: 'y = 20x + 50' }, '6.13': { 6: 'y = 2x - 11' } };
+const PSEQ = { '6.10': { 6: 'y - 5 = -3(x - 1)', 9: 'y - 10 = 2(x - 3)' }, '6.11': { 6: 'y + 2 = 3(x - 1)', 9: 'y - 130 = 20(x - 4)' } };
 const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['100', '80'], 8: ['54'], 10: ['144'] }, '4.2': { 6: ['70', '75'], 8: ['60'], 10: ['72', '108', '144'] },
   '4.3': { 6: ['106'] }, '4.4': { 6: ['64'], 10: ['55', '125'] }, '4.5': { 6: ['80', '50', '50'] }, '4.6': { 6: ['52'], 7: ['58'] } };
 
@@ -47,13 +51,21 @@ const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['1
   await pg.goto(BASE + 'grade8/units3-4.html');
   await pg.addScriptTag({ url: BASE + 'grade8/homework-steps.js' });
   await pg.addScriptTag({ url: BASE + 'grade8/step-work.js' });
-  const bad = await pg.evaluate(([WANT, SETUP, THEN, EXPR]) => {
+  const bad = await pg.evaluate(([WANT, SETUP, THEN, EXPR, LINE, PSEQ]) => {
     const T = StepWork._t, M = window.HW_STEPS, out = []; let n = 0;
     const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind === 'sq' ? 'sq' + Math.sqrt(r.k.n / r.k.d) : r.kind; };
     Object.keys(M).forEach(id => Object.keys(M[id]).forEach(p => {
       const c = M[id][p], v = c.any ? ((SETUP[id] || {})[p] || [0, 'x'])[1] || 'x' : (c.v || 'x'); n++;
       try {
         let x;
+        if (c.line || c.ps) {
+          const w = (LINE[id] || {})[p], tgt = T.parseEq(w);
+          if (c.line) { const d = T.withX(T.Q(0), () => T.lineDone(tgt)); if (!T.lineSame(T.parseEq(c.line), tgt)) out.push(`${id} #${p} ${c.line} is not ${w}`); if (!d || !d.simple) out.push(`${id} #${p}: ${w} not seen as solved`);
+            if (T.lineTxt(d.m, d.b) !== w) out.push(`${id} #${p}: answer text ${T.lineTxt(d.m, d.b)} vs ${w}`); }
+          if (c.ps) { const e = T.parseEq(`y = (${c.ps[0]})*x + (${c.ps[1]})`); if (!T.lineSame(e, tgt)) out.push(`${id} #${p} data ${c.ps} vs ${w}`);
+            const pe = (PSEQ[id] || {})[p]; if (!pe || !T.lineSame(T.parseEq(pe), tgt)) out.push(`${id} #${p}: point-slope ${pe} is not ${w}`); }
+          return;
+        }
         if (c.expr) {
           const w = (EXPR[id] || {})[p], A = T.mono(T.parseTerm(c.expr)), Bm = T.mono(T.parseTerm(w));
           if (!T.sameMono(A, Bm)) out.push(`${id} #${p} ${c.expr} is not equal to ${w}`);
@@ -81,7 +93,7 @@ const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['1
     }));
     out.unshift(`checked ${n} homework problems`);
     return out;
-  }, [WANT, SETUP, THEN, EXPR]);
+  }, [WANT, SETUP, THEN, EXPR, LINE, PSEQ]);
   console.log(bad.join('\n'));
   await br.close();
   process.exit(bad.length > 1 ? 1 : 0);

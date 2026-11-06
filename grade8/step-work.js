@@ -155,7 +155,7 @@
     switch (n.t) {
       case 'num': return pconst(n.v);
       case 'pi': return pconst(PI);
-      case 'var': if (n.v !== v) throw err('letter', n.v); return P(ZERO, ONE);
+      case 'var': if (n.v !== v) { if (PARAM && n.v === PARAM.l) return pconst(PARAM.q); throw err('letter', n.v); } return P(ZERO, ONE);
       case 'par': return poly(n.a, v, opt);
       case 'neg': return wrongDist(qneg(ONE), n.a, v, opt) || pscale(poly(n.a, v, opt), qneg(ONE));
       case 'add': return n.terms.reduce(function (acc, t) { var p = poly(t.n, v, opt); return t.s > 0 ? padd(acc, p) : psub(acc, p); }, P());
@@ -218,6 +218,59 @@
     if (a.kind === 'ineq') return qeq(a.x, b.x) && a.rel === b.rel;
     if (a.kind === 'sq') return qeq(a.k, b.k);
     return true;
+  }
+
+  /* ---- solving for y (Unit 6). x is held as a stand-in number while y is solved for; two lines are the same
+     line when they agree at three different x values (any equation linear in x and y is a line). ---- */
+  var PARAM = null, LX = [Q(1013, 7), Q(-389, 11), Q(2027, 13)];
+  function withX(q, f) { var old = PARAM; PARAM = { l: 'x', q: q }; try { return f(); } finally { PARAM = old; } }
+  function lineSame(a, b) { return LX.every(function (q) { return withX(q, function () { return sameSet(solve(a, 'y'), solve(b, 'y')); }); }); }
+  function linOf(n) { var a = withX(ZERO, function () { return poly(n, 'y'); }), b = withX(ONE, function () { return poly(n, 'y'); }); return { y: a[1], x: qsub(b[0], a[0]), c: a[0] }; }
+  function linNeg(l) { return { y: qneg(l.y), x: qneg(l.x), c: qneg(l.c) }; }
+  function linLead(l) { return l.y.n ? l.y : l.x.n ? l.x : l.c; }
+  function linHtml(l) {
+    var parts = [];
+    if (l.y.n) parts.push([qsign(l.y), coefHtml(l.y) + '<i>y</i>']);
+    if (l.x.n) parts.push([qsign(l.x), coefHtml(l.x) + '<i>x</i>']);
+    if (l.c.n || !parts.length) parts.push([qsign(l.c), fmtQ(l.c)]);
+    return parts.map(function (z, i) { return (i === 0 ? (z[0] < 0 ? '−' : '') : (z[0] < 0 ? ' − ' : ' + ')) + z[1]; }).join('');
+  }
+  function hasLetter(n, L) { var f = false; walk(n, function (m) { if (m.t === 'var' && m.v === L) f = true; }); return f; }
+  function mbOf(side) { var b = withX(ZERO, function () { return poly(side, 'y')[0]; }), mb = withX(ONE, function () { return poly(side, 'y')[0]; }); return { m: qsub(mb, b), b: b }; }
+  function lineDone(e) {      // y alone on one side; simple = the other side looks like mx + b
+    var side = e.L.t === 'var' && e.L.v === 'y' && !hasLetter(e.R, 'y') ? e.R : e.R.t === 'var' && e.R.v === 'y' && !hasLetter(e.L, 'y') ? e.L : null;
+    if (!side || e.rel !== '=') return null;
+    var xs = 0, ns = 0, simple = true;
+    terms(side).forEach(function (t) {
+      var sum = false; walk(t.n, function (m) { if (m.t === 'add' || m.t === 'pow') sum = true; if (m.t === 'div' && hasLetter(m.b, 'x')) sum = true; });
+      if (sum) simple = false; if (hasLetter(t.n, 'x')) xs++; else ns++;
+    });
+    if (xs > 1 || ns > 1) simple = false;
+    var r = mbOf(side); r.side = side; r.simple = simple; r.xFirst = !(terms(side).length === 2 && !hasLetter(terms(side)[0].n, 'x'));
+    return r;
+  }
+  function lineTxt(m, b) {
+    var mx = !m.n ? '' : qeq(m, ONE) ? 'x' : qeq(m, qneg(ONE)) ? '-x' : qtxt(m) + 'x';
+    if (!mx) return 'y = ' + qtxt(b);
+    return 'y = ' + mx + (!b.n ? '' : b.n < 0 ? ' - ' + qtxt(qneg(b)) : ' + ' + qtxt(b));
+  }
+  function lineDiag(prev, next) {   // y is alone but the line is wrong: say which part (x-term or number) to check
+    var d = lineDone(next), w; if (!d || !d.simple) return null;
+    try { var b0 = withX(ZERO, function () { return solve(prev, 'y'); }), b1 = withX(ONE, function () { return solve(prev, 'y'); }); if (b0.kind !== 'one' || b1.kind !== 'one') return null; w = { m: qsub(b1.x, b0.x), b: b0.x }; } catch (x) { return null; }
+    var s = qadd(w.m, w.b);
+    if (w.m.n && w.b.n && ((qeq(d.m, s) && !d.b.n) || (qeq(d.b, s) && !d.m.n))) return 'An <i>x</i>-term and a number are <b>not</b> like terms, so they can\'t be combined. Keep them as two separate terms.';
+    if (qeq(d.m, qneg(w.m)) && qeq(d.b, qneg(w.b))) return 'Both signs are flipped. Check your signs.';
+    if (w.m.n && qeq(d.m, qneg(w.m)) && qeq(d.b, w.b)) return 'The number is right. Check the <b>sign</b> of the <i>x</i>-term.';
+    if (w.b.n && qeq(d.b, qneg(w.b)) && qeq(d.m, w.m)) return 'The <i>x</i>-term is right. Check the <b>sign</b> of the number.';
+    if (qeq(d.b, w.b)) return 'The number is right. Check the <i>x</i>-term. If you divided, divide <b>every</b> term, including the <i>x</i>-term.';
+    if (qeq(d.m, w.m)) return 'The <i>x</i>-term is right. Check the number. If you divided, divide <b>every</b> term, including the number.';
+    return null;
+  }
+  function lineLabel(prev, next, d, v) {
+    if (d.type !== 'add') return moveLabel(d, v);
+    var k = function (q) { return withX(q, function () { return psub(poly(next.L, 'y'), poly(prev.L, 'y')); }); }, k0 = k(ZERO), k1 = k(ONE);
+    var kl = { y: k0[1], x: qsub(k1[0], k0[0]), c: k0[0] };
+    return (qsign(linLead(kl)) < 0 ? 'subtracted ' + linHtml(linNeg(kl)) : 'added ' + linHtml(kl)) + ' on both sides';
   }
 
   /* ---- numbers that may be irrational (square roots), for the last line of a square-root problem ---- */
@@ -297,6 +350,7 @@
       }).join('');
       case 'mul': {
         var A = html(n.a, sub), B = html(n.b, sub);
+        if (sub == null && n.b.t === 'par' && isNumLike(n.b.a) && n.a.t !== 'pi') return A + '(' + html(n.b.a) + ')';   // 3(2), not 32
         if (isNumLike(n.a) && n.b.t === 'pi') return A + B;
         if (sub == null && n.b.t === 'pow' && n.b.a.t === 'num') return A + ' × ' + B;
         if (sub == null && isNumLike(n.a) && (n.b.t === 'var' || n.b.t === 'pow' || n.b.t === 'par' || n.b.t === 'mul')) return A + B;
@@ -337,13 +391,14 @@
   function kindOf(t, v) {
     var hasSum = false; walk(t.n, function (m) { if (m.t === 'par' && sumInside(m)) hasSum = true; });
     if (hasSum) return 'paren';
+    if (PARAM && hasLetter(t.n, PARAM.l) && !hasLetter(t.n, v)) return 'pterm';
     try { var p = poly(t.n, v); return p[2].n ? 'sq' : p[1].n ? 'xterm' : 'num'; } catch (e) { return 'num'; }
   }
   /* draw one side with colors: x-terms blue, numbers purple, parentheses gold; optional strike set */
   function sideHtml(n, v, mark) {
     return terms(n).map(function (t, i) {
       var h = html(t.n), k = kindOf(t, v), neg = t.s < 0;
-      var cls = mark && mark.colors ? (k === 'xterm' ? 't-v' : k === 'num' ? 't-k' : k === 'paren' ? 't-p' : '') : '';
+      var cls = mark && mark.colors ? (k === 'xterm' ? 't-v' : k === 'num' ? 't-k' : k === 'paren' ? 't-p' : k === 'pterm' ? 't-x' : '') : '';
       if (mark && mark.strike && mark.strike.indexOf(i) >= 0) cls += ' t-c';
       var sign = i === 0 ? (neg ? '−' : '') : (neg ? ' − ' : ' + ');
       return sign + (cls ? '<span class="' + cls.trim() + '">' + h + '</span>' : h);
@@ -479,6 +534,7 @@
     '.sw-fr>span:first-child{border-bottom:1.6px solid currentColor;padding:0 3px}.sw-fr>span:last-child{padding:0 3px}' +
     '.sw .t-v{color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px}' +
     '.sw .t-k{color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px}' +
+    '.sw .t-x{color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px}' +
     '.sw .t-p{color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px}' +
     '.sw .t-c{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px;opacity:.75}' +
     '.sw-rel{color:#1E2D4F}' +
@@ -495,16 +551,23 @@
   var uid = 0;
   function mount(host, cfg) {
     css(); uid++;
-    var v = cfg.v || 'x', original = null;
+    var v = cfg.v || 'x', original = null, line = !!cfg.line; if (line) v = 'y';
     if (cfg.start) { try { original = parseEq(cfg.start); if (original.vars.length === 1) v = cfg.v || original.vars[0]; } catch (e) { return null; } }
     var open = btn(cfg.label || 'Work it out step by step', 'sw-open'); open.setAttribute('aria-expanded', 'false');
     var box = el('div', 'sw'); box.hidden = true; box.id = 'sw' + uid; open.setAttribute('aria-controls', box.id);
     host.appendChild(open); host.appendChild(box);
+    if (line) {   // while this workspace handles an event, x stands for a number
+      var depth = 0, saved = null;
+      ['click', 'keydown', 'input'].forEach(function (t) {
+        box.addEventListener(t, function () { if (!depth++) { saved = PARAM; PARAM = { l: 'x', q: LX[0] }; } }, true);
+        box.addEventListener(t, function () { if (!--depth) PARAM = saved; });
+      });
+    }
     var built = false;
     open.addEventListener('click', function () {
       box.hidden = !box.hidden; open.setAttribute('aria-expanded', String(!box.hidden));
       open.textContent = box.hidden ? (cfg.label || 'Work it out step by step') : 'Hide step-by-step work';
-      if (!built) { built = true; cfg.setup ? setupStage() : solveStage(original); }
+      if (!built) { built = true; var go0 = function () { cfg.setup ? setupStage() : solveStage(original); }; line ? withX(LX[0], go0) : go0(); }
     });
 
     /* keypad + "I read this as" preview for any input */
@@ -512,7 +575,8 @@
       var k = el('div', 'sw-keys'); k.setAttribute('aria-label', 'Math keys');
       var keys = [[v, v], ['(', '('], [')', ')'], ['−', '-'], ['/', '/']];
       if (opts && opts.letters) keys = opts.letters.map(function (L) { return [L, L]; }).concat(keys.slice(1));
-      if (opts && opts.amountOnly) keys = [[v, v], ['−', '-'], ['/', '/']];
+      if (line) keys = [['x', 'x'], ['y', 'y']].concat(keys.slice(1));
+      if (opts && opts.amountOnly) keys = (line ? [['x', 'x'], ['y', 'y']] : [[v, v]]).concat([['−', '-'], ['/', '/']]);
       else keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
       if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (!cfg.positive) keys.push(['±', '±']); }
@@ -552,6 +616,7 @@
       box.appendChild(w);
       var tries = 0;
       function check() {
+        if (S.line) return checkLine0();
         var e; try { e = parseEq(inp.value); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
         if (S.any && e.vars.length === 1) v = e.vars[0];
         try { sides(e, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
@@ -566,6 +631,18 @@
         fb.innerHTML = (sol.kind === 'all' ? 'That is true for every number, so it can\'t find one answer. ' : sol.kind === 'none' ? 'That equation has no solution. ' : 'That equation does not match the problem yet. ') +
           (tries >= 1 && S.hint ? '<br>💡 ' + S.hint : '');
       }
+      function checkLine0() {
+        var e; try { e = parseEq(inp.value); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+        if (e.vars.some(function (z) { return z !== 'x' && z !== 'y'; }) || e.vars.indexOf('y') < 0) { fb.className = 'sw-fb no'; fb.innerHTML = 'Use <i>x</i> and <i>y</i> in your equation.'; return; }
+        try { sides(e, 'y'); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, 'y'); return; }
+        var target = parseEq('y = (' + qtxt(toQ(S.line[0])) + ')*x + (' + qtxt(toQ(S.line[1])) + ')'), same = false;
+        try { same = lineSame(e, target); } catch (x) { }
+        if (!same) { tries++; fb.className = 'sw-fb no'; fb.innerHTML = 'That equation is not this line yet. Check the slope and the point.' + (S.hint ? '<br>💡 ' + S.hint : ''); return; }
+        var ld = lineDone(e);
+        if (S.ps && ld && ld.simple) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the right line, already in slope-intercept form. The problem asks for <b>point-slope form</b> first: <i>y</i> − <i>y</i><sub>1</sub> = <i>m</i>(<i>x</i> − <i>x</i><sub>1</sub>).'; return; }
+        fb.className = 'sw-fb ok'; fb.innerHTML = '✓ Good equation. Now solve it for <i>y</i>.'; inp.readOnly = true; go.disabled = true;
+        setTimeout(function () { withX(LX[0], function () { solveStage(e, true); }); }, 300);
+      }
       go.addEventListener('click', check);
       inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
     }
@@ -577,7 +654,7 @@
       var lines = [{ e: start, mv: null }], move = null, amount = null;
       box.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 2 · ' : '') + 'Solve it one step at a time'));
       var trail = el('ol', 'sw-trail'); box.appendChild(trail);
-      var legend = el('p', 'sw-legend', '<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; <span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> &nbsp; <span style="text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2px">crossed out</span> = cancels');
+      var legend = el('p', 'sw-legend', '<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; ' + (line ? '<span style="color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px">x-terms</span> &nbsp; ' : '') + '<span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> &nbsp; <span style="text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2px">crossed out</span> = cancels');
       box.appendChild(legend);
       var work = el('div'); box.appendChild(work);
       drawTrail(); step();
@@ -597,7 +674,8 @@
 
       function step() {
         work.innerHTML = '';
-        var e = cur(), done = isSolved(e, v);
+        var e = cur(), done = line ? null : isSolved(e, v);
+        if (line) { var ld0 = lineDone(e); if (ld0 && ld0.simple) return lineFinish(e, ld0); }
         if (done || noVar(e)) return finish(e, done);
         work.appendChild(el('p', 'sw-ask', 'What will you do next?'));
         var mv = el('div', 'sw-moves'); mv.setAttribute('role', 'group'); mv.setAttribute('aria-label', 'Choose a move');
@@ -650,11 +728,11 @@
               notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
             showWrite();
           } else if (m === 'comb') {
-            var info = [e.L, e.R].map(function (side) { var ts = terms(side), xs = 0, ns = 0, ps = 0; ts.forEach(function (t) { var k = kindOf(t, v); if (k === 'xterm') xs++; else if (k === 'num') ns++; else ps++; }); return { xs: xs, ns: ns, ps: ps }; });
-            var can = info.some(function (s) { return s.xs > 1 || s.ns > 1; });
+            var info = [e.L, e.R].map(function (side) { var ts = terms(side), xs = 0, ns = 0, ps = 0, px = 0; ts.forEach(function (t) { var k = kindOf(t, v); if (k === 'xterm') xs++; else if (k === 'num') ns++; else if (k === 'pterm') px++; else ps++; }); return { xs: xs, ns: ns, ps: ps, px: px }; });
+            var can = info.some(function (s) { return s.xs > 1 || s.ns > 1 || s.px > 1; });
             if (!can) { fb.className = 'sw-fb tip'; fb.innerHTML = info.some(function (s) { return s.ps; }) ? 'Like terms can\'t combine through parentheses. Distribute first.' : 'There are no like terms on the <b>same side</b> to combine. (Terms on opposite sides of the sign don\'t combine. Move one first.)'; return; }
             vis.hidden = false;
-            vis.innerHTML = '<div class="sw-ln">' + colorLine(e) + '</div><p class="sw-note">Like terms have the same color. Combine the <span class="t-v">' + v + '-terms</span> with each other and the <span class="t-k">numbers</span> with each other, <b>on each side separately</b>.</p>';
+            vis.innerHTML = '<div class="sw-ln">' + colorLine(e) + '</div><p class="sw-note">Like terms have the same color. Combine the <span class="t-v">' + v + '-terms</span> with each other' + (line ? ', the <span class="t-x">x-terms</span> with each other,' : '') + ' and the <span class="t-k">numbers</span> with each other' + (line ? ' (an x-term and a number are <b>not</b> alike)' : '') + ', <b>on each side separately</b>.</p>';
             showWrite();
           } else {
             amtRow.hidden = false;
@@ -672,18 +750,21 @@
           fb.className = 'sw-fb'; fb.innerHTML = '';
           var k;
           try { var n = parseExpr(lex(clean(raw))); k = poly(n, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = raw.trim() ? readErr(x, v) : 'Type the amount first.'; return; }
+          if (line && (m === 'mul' || m === 'div') && hasVar(n)) { fb.className = 'sw-fb no'; fb.innerHTML = 'Multiply or divide by a number, not by a letter.'; return; }
+          var kl = line ? linOf(n) : null, lh = function (tp, t) { return line ? (t.s < 0 ? linHtml(linNeg(linOf(t.n))) : linHtml(linOf(t.n))) : polyHtml(tp, v); };
           if ((m === 'mul' || m === 'div') && pdeg(k) > 0) { fb.className = 'sw-fb no'; fb.innerHTML = 'Multiply or divide by a number, not by ' + v + '.'; return; }
           if ((m === 'mul' || m === 'div') && !k[0].n) { fb.className = 'sw-fb no'; fb.innerHTML = m === 'div' ? 'You can\'t divide by 0.' : 'Multiplying by 0 makes both sides 0, and you lose the equation.'; return; }
           if (pzero(k)) { fb.className = 'sw-fb no'; fb.innerHTML = 'Adding or subtracting 0 doesn\'t change anything. Pick an amount.'; return; }
           amount = { m: m, k: k, raw: raw };
           var opH = (m === 'add' ? '+ ' : m === 'sub' ? '− ' : m === 'mul' ? '× ' : '÷ ') + polyHtml(m === 'sub' || m === 'add' ? k : k, v).replace(/^−/, m === 'add' || m === 'sub' ? '' : '−');
           if ((m === 'add' || m === 'sub') && qsign(k[pdeg(k)]) < 0) opH = (m === 'add' ? '+ (' : '− (') + polyHtml(k, v) + ')';
+          if (line && (m === 'add' || m === 'sub')) opH = (m === 'add' ? '+ ' : '− ') + (qsign(linLead(kl)) < 0 ? '(' + linHtml(kl) + ')' : linHtml(kl));
           var change = m === 'add' ? k : m === 'sub' ? pscale(k, qneg(ONE)) : null;
           var strikeL = [], strikeR = [], notes = [];
           if (change) {
             [[e.L, strikeL, 'left'], [e.R, strikeR, 'right']].forEach(function (z) {
               terms(z[0]).forEach(function (t, i) {
-                try { var tp = poly(t.n, v); if (t.s < 0) tp = pscale(tp, qneg(ONE)); if (peq(padd(tp, change), P())) { z[1].push(i); notes.push('On the ' + z[2] + ' side, ' + polyHtml(tp, v) + ' and ' + polyHtml(change, v) + ' make <b>0</b>. They cancel.'); } } catch (x) { }
+                try { var tp = poly(t.n, v); if (t.s < 0) tp = pscale(tp, qneg(ONE)); if (peq(padd(tp, change), P())) { z[1].push(i); notes.push('On the ' + z[2] + ' side, ' + lh(tp, t) + ' and ' + (line ? linHtml(m === 'sub' ? linNeg(kl) : kl) : polyHtml(change, v)) + ' make <b>0</b>. They cancel.'); } } catch (x) { }
               });
             });
             if (!notes.length) notes.push('Nothing cancels with this amount. Look for a term you want to get rid of, and use its <b>opposite</b>.');
@@ -725,16 +806,16 @@
         function checkLine(raw) {
           var n, exact = true;
           try { n = parseEq(raw); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-          if (n.vars.some(function (z) { return z !== v; })) { fb.className = 'sw-fb no'; fb.innerHTML = readErr({ code: 'letter' }, v); return; }
+          if (n.vars.some(function (z) { return z !== v && !(line && z === 'x'); })) { fb.className = 'sw-fb no'; fb.innerHTML = readErr({ code: 'letter' }, v); return; }
           try { sides(n, v); } catch (x) {
             if ((x.code === 'irr' || x.code === 'pm') && aloneSide(n, v)) exact = false;
             else { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x.code === 'irr' || x.code === 'pm' ? { code: 'irrmid' } : x, v); return; }
           }
           var prev = cur(), cmp;
-          try { cmp = compareLines(prev, n, v, cfg); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-          if (!cmp.ok) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + (cmp.msg || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')); return; }
+          try { cmp = line ? { ok: lineSame(prev, n) } : compareLines(prev, n, v, cfg); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+          if (!cmp.ok) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + (cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')); return; }
           var rooted = false; try { rooted = valsOf(prev, v).kind === 'sq' && !!isSolved(n, v); } catch (x) { }
-          var d = exact && !rooted ? describe(prev, n, v) : { type: 'root' }, label = d.type === 'root' ? 'square root of both sides' : moveLabel(d, v), note = cmp.note || '';
+          var d = exact && !rooted ? describe(prev, n, v) : { type: 'root' }, label = d.type === 'root' ? 'square root of both sides' : line ? lineLabel(prev, n, d, v) : moveLabel(d, v), note = cmp.note || '';
           if (d.type === 'rewrite' && sameText(prev, n)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Make a change first.'; return; }
           if (exact && amount && (d.type === 'add' || d.type === 'scale')) {
             var meant = amount.m === 'add' ? amount.k : amount.m === 'sub' ? pscale(amount.k, qneg(ONE)) : null;
@@ -747,7 +828,8 @@
           drawTrail();
           step();
           var nfb = work.querySelector('.sw-fb');
-          if (nfb && !isSolved(n, v) && !noVar(n)) { nfb.className = 'sw-fb ok'; nfb.innerHTML = '✓ Correct line.' + note; }
+          if (line) { var ld1 = lineDone(n); if (ld1 && !ld1.simple) note += '<br><i>y</i> is alone. Now simplify the other side so it looks like <i>y</i> = <i>mx</i> + <i>b</i>.'; }
+          if (nfb && (line || !isSolved(n, v)) && !noVar(n)) { nfb.className = 'sw-fb ok'; nfb.innerHTML = '✓ Correct line.' + note; }
         }
       }
       function finish(e, done) {
@@ -786,6 +868,18 @@
         if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
         if (cfg.then && info.kind === 'one' && info.x) thenStage(info.x);
         else useBtn(info);
+      }
+      function lineFinish(e, ld) {
+        work.innerHTML = '';
+        var box2 = el('div', 'sw-done'); box2.setAttribute('role', 'status');
+        var shown = linHtml({ y: ZERO, x: ld.m, c: ld.b }), y1 = withX(ONE, function () { return solve(original, 'y').x; });
+        box2.innerHTML = '<b>Solved for <i>y</i>:</b> <span class="sw-ln"><i>y</i> = ' + shown + '</span>' +
+          (ld.xFirst ? '' : '<br>In <i>y</i> = <i>mx</i> + <i>b</i> form, the <i>x</i>-term comes first.') +
+          '<br>Slope <i>m</i> = ' + qHtml(ld.m) + ', <i>y</i>-intercept <i>b</i> = ' + qHtml(ld.b) + '.' +
+          '<br>Check with <i>x</i> = 1: the first line gives <i>y</i> = ' + qHtml(y1) + ', and ' + qHtml(ld.m) + ' · 1 + ' + (ld.b.n < 0 ? '(' + qHtml(ld.b) + ')' : qHtml(ld.b)) + ' = ' + qHtml(qadd(ld.m, ld.b)) + ' ✓';
+        work.appendChild(box2);
+        if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
+        useBtn({ kind: 'line', text: lineTxt(ld.m, ld.b), m: ld.m, b: ld.b });
       }
       function useBtn(info) {
         if (!cfg.onAnswer) { work.appendChild(el('p', 'sw-note', 'Now type your answer in the answer box.')); return; }
@@ -838,6 +932,7 @@
     return 'more than one step';
   }
   function answerText(info, v) {
+    if (info.kind === 'line') return info.text;
     if (info.kind === 'pm') return v + ' = ' + info.text;
     if (info.numText) return v + (info.approx ? ' ≈ ' : ' = ') + info.numText;
     if (info.kind === 'all') return 'infinitely many solutions';
@@ -1104,6 +1199,7 @@
     return /round|nearest/i.test(text || '') ? 0.5 : 1e-6;
   }
   function angleHint(t) { for (var i = 0; i < ANGLE_HINTS.length; i++) if (ANGLE_HINTS[i][0].test(t)) return ANGLE_HINTS[i][1]; return 'Name the angle relationship first. Are the angles equal, or do they add to 90°, 180° or 360°?'; }
+  var B_HINT = 'Put the slope and a point into <i>y</i> = <i>mx</i> + <i>b</i>: use the point\'s <i>x</i> and <i>y</i>, and leave <i>b</i> as the unknown.';
   function findEq(text) {      // pull "3(x − 1) + 2x = 22" out of "Solve: 3(x − 1) + 2x = 22 — how many solutions?"
     var s = String(text).replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '(($1)/($2))').replace(/<[^>]+>/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     s = s.replace(/\(careful!?\)/ig, '').replace(/[—–]\s*how many.*$/i, '').replace(/^\s*(solve( and graph)?( the inequality)?|how many solutions( does)?|simplify)\s*[:.]?\s*/i, '').replace(/\s*have\?\s*$/i, '').replace(/[?.]\s*$/, '').trim();
@@ -1139,6 +1235,10 @@
             onAnswer: function (t, info) { fillBox(inp, info.numText || (info.x ? qtxt(info.x) : t)); } });
           return;
         }
+        if (unit === '6' && /solve the system/i.test(p.q) && ans != null) {
+          mount(host, { setup: { answer: ans, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' ? qtxt(info.x) : t); } });
+          return;
+        }
         var angle = unit === '4' && /find x/i.test(p.q) && ans != null;
         var word = unit === '3' && /word/i.test(sec.title) && ans != null;
         if (angle || word) mount(host, {
@@ -1170,6 +1270,9 @@
         w = mount(host, { setup: { answer: chk[1], tol: Math.max(chk[2] || 0, 1e-6), any: true, hint: pythHint(q.expr), figure: !!q.svg }, positive: true, onAnswer: fill });
       }
       else if (start) w = mount(host, { start: start, onAnswer: fill });
+      else if ((chk[0] === 'num' || chk[0] === 'val') && /y-intercept/i.test((q.op || '') + ' ' + q.expr) && /slope\s+-?−?\d+.*through\s*\(\s*-?−?[1-9]/i.test(q.expr)) {
+        w = mount(host, { setup: { answer: chk[1], any: true, hint: B_HINT, prompt: 'Use <i>b</i> for the y-intercept. Write an equation that matches the problem.' }, onAnswer: fill });
+      }
       else if (chk[0] === 'num' && /°|angle|triangle/i.test(String(q.svg || '') + q.expr + ' ' + (q.op || '')) &&
                (/<text[^>]*>[^<]*\d?x\b/.test(String(q.svg || '')) || /(^|[^a-z])x([^a-z]|$)/i.test(String(q.expr).replace(/<[^>]+>/g, ' ')))) {   // angle problems with an x
         var a = chk[1]; w = mount(host, { setup: { answer: a, hint: angleHint(q.expr + ' ' + (q.op || '')), figure: !!q.svg }, onAnswer: fill });
@@ -1194,8 +1297,10 @@
         if (bx && ob) ob.addEventListener('click', function () { lab.classList.toggle('sw-wide', !bx.hidden); });
         return;
       }
+      if (c.line) { cfg.start = c.line; cfg.line = true; }
+      if (c.ps) { cfg.setup = { line: c.ps, ps: true, hint: c.hint, prompt: 'Use <i>x</i> and <i>y</i>. Write the equation of the line in point-slope form.' }; cfg.line = true; }
       if (c.start) cfg.start = c.start;
-      if (c.setup != null) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
+      if (c.setup != null && !c.ps) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
       if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;
       if (c.then) cfg.then = c.then;
       if (c.v) cfg.v = c.v;
@@ -1205,6 +1310,6 @@
   }
   function auto() { try { autoPractice(); } catch (e) { if (window.console) console.error(e); } try { autoPretest(); } catch (e) { if (window.console) console.error(e); } try { autoHomework(); } catch (e) { if (window.console) console.error(e); } }
 
-  window.StepWork = { mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
+  window.StepWork = { mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();

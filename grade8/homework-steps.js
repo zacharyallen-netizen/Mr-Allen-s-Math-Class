@@ -89,6 +89,11 @@
              4: { expr: '(1.2 × 10^-4) / (4 × 10^-9)', sci: 1 }, 8: { expr: '(7.5 × 10^-6)(4 × 10^3) / (2.5 × 10^-4)', sci: 1 } },
     '2.8': { 2: { expr: '(4 × 10^5)(7 × 10^-2)', sci: 1 }, 3: { expr: '(3.6 × 10^7) / (1.2 × 10^-2)', sci: 1 } },
     '2.9': { 1: { expr: '(5a^3)(-2a^4)' }, 4: { expr: '(6 × 10^8) / (2 × 10^3)', sci: 1 }, 6: { expr: '(x^5y^-2)^2 · x^-3' } },
+    '6.6': { 10: { setup: 3, any: 1, hint: 'Put the slope and one point into y = mx + b: use the point\'s x and y, and leave b as the unknown.', prompt: 'Use <i>b</i> for the y-intercept. Write an equation that matches the table.' } },
+    '6.8': { 9: { setup: -3, any: 1, hint: 'Put the slope and one point into y = mx + b: use the point\'s x and y, and leave b as the unknown.', prompt: 'Use <i>b</i> for the y-intercept. Write an equation that matches the table.' } },
+    '6.10': { 2: { line: '2x + y = 9' }, 3: { line: 'y − 1 = 4(x − 2)' }, 6: { ps: [-3, 8], hint: 'Point-slope form is y − y₁ = m(x − x₁). Find the slope m first, then use one point (x₁, y₁).' }, 9: { ps: [2, 4], hint: 'Point-slope form is y − y₁ = m(x − x₁). Find the slope m first, then use one point (x₁, y₁).' } },
+    '6.11': { 2: { line: '3x + 4y = 8' }, 6: { ps: [3, -5], hint: 'Point-slope form is y − y₁ = m(x − x₁). Find the slope m first, then use one point (x₁, y₁).' }, 9: { ps: [20, 50], hint: 'Point-slope form is y − y₁ = m(x − x₁). Find the slope m first, then use one point (x₁, y₁).' } },
+    '6.13': { 6: { line: 'y + 3 = 2(x − 4)' } },
     '9.2': { 6: vol(2) }, '9.3': { 7: vol(6) }, '9.4': { 6: vol(7) }
   };
 })();
