@@ -50,7 +50,7 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 | `_build/materials/` | **Printable toolkit** — handouts, practice, bell ringers, keys, combine. Start from `new_handout_template.py`; read its README. |
 | `grade8/angles_pythagorean_tutorial.html` | Units 4–5 tutorial (sends to Score Tracker as unit "4-5"). |
 | `grade8/guided_notes_units_6_7.html` | Hidden (no links) since Nov 2026: its content lives in the Unit 6 notes (tabs 6.4–6.6) and Unit 7 notes. Keep the file. |
-| `grade8/ineq-keys.js` | Tap buttons (x < > ≤ ≥ − Erase) under every inequality answer box (placeholder "e.g. x > 4" or `data-ineq`); Chromebooks can't type ≤/≥. Loaded by the Units 3–4 tutorial and pre-test builders. Add it to any new page with typed inequalities. |
+| `grade8/ineq-keys.js` | Tap buttons (x < > ≤ ≥ − Erase) under every inequality answer box (placeholder "e.g. x > 4" or `data-ineq`); Chromebooks can't type ≤/≥. Loaded by the Units 3–4 tutorial + pre-test builders, the Unit 3 Guided Notes, `homework_turn_in.html` (one shared bar per answer page for HW 3.7–3.10 via `data-ineq-bar`), and `practice/practice-engine.js` (auto-loads when an answer contains < > ≤ ≥). Also detects notes `data-ans`/`chkVal` inequality boxes. Add it to any new page with typed inequalities. |
 | `brand.js`, `brand.css` | Site-wide fonts/background (see Standing preferences). |
 | `HOW_TO_UPDATE.txt` | Zach's plain-language guide (keep it updated when workflows change). |
 

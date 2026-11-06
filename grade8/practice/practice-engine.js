@@ -8,6 +8,7 @@
    Page needs:  window.PRACTICE = { unit, page, sets:{title,sub,secs:[{title,std,hint,probs:[{n,q,ans,fig?,size?}]}]} }
    ─────────────────────────────────────────────────────────────── */
 (function () {
+  var ENGINE_SRC = document.currentScript && document.currentScript.src;
   var D = window.PRACTICE; if (!D) return;
   var data = D.data, root = document.getElementById('practice');
 
@@ -121,14 +122,14 @@
         '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + '</div><div class="pr-q">' + p.q + '</div>' +
         (p.fig ? '<img class="pr-fig" src="' + p.fig + '" alt="Figure for problem ' + p.n + '" loading="lazy"' +
           (p.size ? ' width="' + Math.round(p.size[0] / 2) + '" height="' + Math.round(p.size[1] / 2) + '"' : '') + '>' : '') +
-        '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +
+        '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"' + (/[<>≤≥]/.test(stripHtml(p.ans).replace(/&lt;/g, '<').replace(/&gt;/g, '>')) ? ' data-ineq' : '') + ' aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +
         '<button class="pr-btn pr-check" type="button">Check</button>' +
         '<button class="pr-btn pr-ghost pr-hint" type="button">Hint</button>' +
         '<button class="pr-btn pr-ghost pr-show" type="button" hidden>Show answer</button></div>' +
         '<div class="pr-fb" role="status" aria-live="polite"></div><div class="pr-hintbox" hidden>💡 ' + sec.hint + '</div></div>');
     });
   });
-  html.push('<div class="pr-tips"><b>Typing tips:</b> exponents with ^ (x^7, 3.2 × 10^4 or 3.2x10^4), fractions with / (1/9), square roots as sqrt10 or √10, ≤ as &lt;=, ≥ as &gt;=.</div>');
+  html.push('<div class="pr-tips"><b>Typing tips:</b> exponents with ^ (x^7, 3.2 × 10^4 or 3.2x10^4), fractions with / (1/9), square roots as sqrt10 or √10, ≤ as &lt;=, ≥ as &gt;= (inequality problems also have ≤ ≥ buttons).</div>');
   html.push('<div id="ss-mount"></div>');
   root.innerHTML = html.join('');
   document.getElementById('prTotal').textContent = total;
@@ -165,4 +166,8 @@
   root.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && e.target.classList.contains('pr-in')) e.target.closest('.pr-card').querySelector('.pr-check').click();
   });
+  // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
+  if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
+    var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);
+  }
 })();

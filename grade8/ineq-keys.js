@@ -20,7 +20,11 @@
   document.head.appendChild(css);
 
   function isIneq(inp) {
-    return inp.hasAttribute('data-ineq') || /x\s*[<>]/.test(inp.getAttribute('placeholder') || '');
+    if (inp.hasAttribute('data-ineq') || /x\s*[<>]/.test(inp.getAttribute('placeholder') || '')) return true;
+    var q = inp.closest('[data-ans]');                                   // notes practice (notes-practice.js)
+    if (q && /[<>≤≥]/.test(q.getAttribute('data-ans'))) return true;
+    var host = inp.parentNode, b = host && host.querySelector('button[onclick]');   // notes check boxes: chkVal('id',["x>3"])
+    return !!(b && /chkVal\([^)]*["'][^"']*(x\s*[<>≤≥]|[<>≤≥]\s*x)/.test(b.getAttribute('onclick')));
   }
   function put(inp, text) {
     var s = inp.selectionStart, e = inp.selectionEnd, v = inp.value;
@@ -52,10 +56,32 @@
     bs.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
     bs.addEventListener('click', function () { put(inp, null); });
     row.appendChild(bs);
-    var host = inp.closest('.row, .ans') || inp;
+    var host = inp.closest('.row, .ans, .val-chk, .np-row, .pr-row') || inp;
     host.parentNode.insertBefore(row, host.nextSibling);
   }
-  function scan() { document.querySelectorAll('input').forEach(attach); }
+  // One shared bar for a group of answer boxes: <div data-ineq-bar> … inputs … </div>.
+  // The buttons type into the box the student tapped last (or the first box).
+  function attachBar(el) {
+    if (el.__ikb) return; el.__ikb = true;
+    el.addEventListener('focusin', function (ev) { if (ev.target.tagName === 'INPUT') el.__last = ev.target; });
+    var row = document.createElement('div'); row.className = 'ik-row';
+    row.innerHTML = '<span class="ik-l">Tap a box, then tap to type:</span>';
+    function target() { return el.__last || el.querySelector('input'); }
+    KEYS.concat([['⌫ Erase', null]]).forEach(function (k) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = k[0];
+      if (k[1] === null) b.className = 'ik-bs';
+      b.addEventListener('mousedown', function (ev) { ev.preventDefault(); });
+      b.addEventListener('click', function () { var t = target(); if (t) put(t, k[1]); });
+      row.appendChild(b);
+    });
+    var h = el.querySelector('h3, h4');
+    if (h) h.parentNode.insertBefore(row, h.nextSibling); else el.insertBefore(row, el.firstChild);
+    el.querySelectorAll('input').forEach(function (i) { i.__ik = true; });
+  }
+  function scan() {
+    document.querySelectorAll('[data-ineq-bar]').forEach(attachBar);
+    document.querySelectorAll('input').forEach(attach);
+  }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
   new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
 })();

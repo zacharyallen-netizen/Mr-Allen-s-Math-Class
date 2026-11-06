@@ -109,7 +109,7 @@
     out += '<section class="pg"><div class="pgnum">Page ' + pnum + ' of ' + h.pages + '</div>' +
       '<img src="' + base + pnum + '.jpg" alt="Homework ' + h.id + ', page ' + pnum + '" width="1020" height="1320"' + (pnum > 1 ? ' loading="lazy"' : '') + '>';
     if (probs.length) {
-      out += '<div class="ans"><h3>Answers for page ' + pnum + '</h3>';
+      out += '<div class="ans"' + (/^3\.(7|8|9|10)$/.test(h.id) ? ' data-ineq-bar' : '') + '><h3>Answers for page ' + pnum + '</h3>';
       probs.forEach(function(p){
         out += '<label>Problem ' + p[0] + ' <small>Score ' + p[2] + '</small><input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label>';
       });
@@ -166,5 +166,6 @@
   $('again').addEventListener('click', function(){ $('done').style.display = 'none'; $('send').style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); });
 })();
 </script>
+<script src="ineq-keys.js"></script>
 </body>
 </html>
