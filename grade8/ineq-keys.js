@@ -13,8 +13,8 @@
   css.textContent =
     '.ik-row{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 2px;align-items:center}' +
     '.ik-row .ik-l{font:600 12px/1.2 Inter,system-ui,sans-serif;color:#5B6475;margin-right:2px}' +
-    '.ik-row button{min-width:44px;height:38px;padding:0 10px;border:1.5px solid #1E2D4F;border-radius:8px;background:#fff;color:#1E2D4F;' +
-    'font:700 19px/1 "Source Serif 4",Georgia,serif;cursor:pointer}' +
+    '.ik-row button{min-width:44px;height:44px;padding:0 10px;border:1.5px solid #1E2D4F;border-radius:8px;background:#fff;color:#1E2D4F;' +
+    'font:600 17px/1 "JetBrains Mono",ui-monospace,monospace;cursor:pointer}' +
     '.ik-row button:hover{background:#FFF6D6}.ik-row button:active{transform:translateY(1px)}' +
     '.ik-row button.ik-bs{font:600 13px/1 Inter,system-ui,sans-serif}';
   document.head.appendChild(css);

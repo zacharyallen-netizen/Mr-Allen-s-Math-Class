@@ -501,13 +501,13 @@
     '.sw-open:focus-visible,.sw button:focus-visible,.sw input:focus-visible{outline:3px solid #1D4ED8;outline-offset:2px}' +
     '.sw{margin-top:8px;border:1px solid #E3E5EA;border-left:4px solid #FFC107;border-radius:10px;background:#fff;padding:12px 14px;text-align:left;color:#1E2D4F;font:400 15px/1.45 Inter,system-ui,sans-serif}' +
     '.sw[hidden]{display:none}' +
-    '.sw-h{font:700 12.5px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#7A5300;margin:0 0 6px}' +
+    '.sw-h{font:700 12.5px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A6100;margin:0 0 6px}' +
     '.sw-trail{list-style:none;margin:0 0 6px;padding:0}' +
     '.sw-trail>li{display:flex;gap:10px;align-items:baseline;padding:4px 0;border-bottom:1px solid #EEF0F3;flex-wrap:wrap}' +
     '.sw-trail>li:last-child{border-bottom:0}' +
     '.sw-n{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:50%;background:#1E2D4F;color:#FFC107;font:700 12px Inter,sans-serif}' +
-    '.sw-ln{font:600 20px/1.8 "Source Serif 4",Georgia,serif}' +
-    '.sw-mv{font:600 13px Inter,sans-serif;color:#7A5300;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
+    '.sw-ln{font:500 20px/1.8 Inter,system-ui,sans-serif}' +
+    '.sw-mv{font:600 13px Inter,sans-serif;color:#8A6100;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
     '.sw-ask{font:600 15px Inter,sans-serif;margin:10px 0 6px}' +
     '.sw-moves{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}' +
     '.sw button{font:600 14.5px Inter,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;cursor:pointer}' +
@@ -518,8 +518,8 @@
     '.sw input{font:500 18px "JetBrains Mono",ui-monospace,monospace;min-height:44px;padding:6px 10px;border:2px solid #cdd5e0;border-radius:8px;color:#1E2D4F;background:#fff;max-width:100%}' +
     '.sw input.amt{width:110px}.sw input.line{width:100%;box-sizing:border-box}' +
     '.sw-vis{margin-top:10px;background:#FBFBF9;border:1px solid #EEF0F3;border-radius:8px;padding:8px 10px;overflow-x:auto}' +
-    '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:600 20px/1.7 "Source Serif 4",Georgia,serif;align-items:center}' +
-    '.sw-grid .r{text-align:center}.sw-grid .op{color:#B45309;font-weight:700}.sw-grid .lft{text-align:right}' +
+    '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:500 20px/1.7 Inter,system-ui,sans-serif;align-items:center}' +
+    '.sw-grid .sw-r{text-align:center}.sw-grid .sw-op{color:#B45309;font-weight:700}.sw-grid .sw-lft{text-align:right}' +
     '.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
     '.sw-write{margin-top:10px}.sw-write label{display:block;font:600 14.5px Inter,sans-serif;margin-bottom:4px}' +
     '.sw-keys{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.sw-keys button{min-width:44px;font:600 16px "JetBrains Mono",monospace;padding:4px 8px}' +
@@ -528,8 +528,8 @@
     '.sw-fb{margin-top:8px;font-size:15px;min-height:1px;border-radius:8px}.sw-fb.no{color:#7A1A12;background:#FBEAEA;padding:8px 10px}.sw-fb.ok{color:#14532D;background:#E7F5EC;padding:8px 10px}.sw-fb.tip{color:#5A3D00;background:#FFF6D6;padding:8px 10px}' +
     '.sw-done{margin-top:10px;background:#E7F5EC;border-radius:8px;padding:10px 12px;color:#14532D}' +
     '.sw-done .sw-ln{color:#14532D}' +
-    '.sw-then{margin-top:10px}.sw-then .sw-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;font:600 16px "Source Serif 4",Georgia,serif}.sw-row .sw-fb{margin-top:0}' +
-    '.sw-h i{text-transform:none;font-family:"Source Serif 4",Georgia,serif;font-size:1.1em}' +
+    '.sw-then{margin-top:10px}.sw-then .sw-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;font:500 16px Inter,system-ui,sans-serif}.sw-row .sw-fb{margin-top:0}' +
+    '.sw-h i{text-transform:none;font-size:1.05em}' +
     '.sw-fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;font-size:.85em}' +
     '.sw-fr>span:first-child{border-bottom:1.6px solid currentColor;padding:0 3px}.sw-fr>span:last-child{padding:0 3px}' +
     '.sw .t-v{color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px}' +
@@ -724,7 +724,7 @@
             else notes.push(qHtml(k) + ' is not a perfect square. Write √' + qtxt(k) + ', or use a calculator and round (use ≈).');
             notes.push(cfg.positive ? 'A length is positive, so use the <b>positive</b> square root.' : 'A positive and a negative number both work. Write ± in front of the root.');
             vis.hidden = false;
-            vis.innerHTML = '<div class="sw-grid"><div class="lft">√( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="r">' + relHtml(e.rel) + '</div><div>√( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +
+            vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">√( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>√( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +
               notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
             showWrite();
           } else if (m === 'comb') {
@@ -788,8 +788,8 @@
             if (e.rel !== '=' && qsign(f) < 0) notes.push('You are ' + (m === 'mul' ? 'multiplying' : 'dividing') + ' by a <b>negative</b> number. Think about what that does to the inequality sign.');
           }
           vis.hidden = false;
-          vis.innerHTML = '<div class="sw-grid"><div class="lft">' + sideHtml(e.L, v, { colors: true, strike: strikeL }) + '</div><div class="r">' + relHtml(e.rel) + '</div><div>' + sideHtml(e.R, v, { colors: true, strike: strikeR }) + '</div>' +
-            '<div class="lft op' + (strikeL.length ? ' t-c' : '') + '">' + opH + '</div><div></div><div class="op' + (strikeR.length ? ' t-c' : '') + '">' + opH + '</div></div>' +
+          vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">' + sideHtml(e.L, v, { colors: true, strike: strikeL }) + '</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>' + sideHtml(e.R, v, { colors: true, strike: strikeR }) + '</div>' +
+            '<div class="sw-lft sw-op' + (strikeL.length ? ' t-c' : '') + '">' + opH + '</div><div></div><div class="sw-op' + (strikeR.length ? ' t-c' : '') + '">' + opH + '</div></div>' +
             notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
           showWrite();
         }
@@ -1215,7 +1215,7 @@
     D.data.secs.forEach(function (sec, si) {
       sec.probs.forEach(function (p) {
         var card = document.getElementById('s' + si + 'p' + p.n); if (!card || card.querySelector('.sw-open')) return;
-        var inp = card.querySelector('.pr-in'), host = el('div'); card.appendChild(host);
+        var inp = card.querySelector('.pr-in'), host = el('div', 'sw-host'); card.appendChild(host);
         var ex = String(D.unit) === '2' && /^\s*(simplify|multiply|divide)\s*:/i.test(String(p.q).replace(/<[^>]+>/g, ''));
         if (ex) {
           var q2 = String(p.q).replace(/^\s*(simplify|multiply|divide)\s*:\s*/i, '').replace(/[—–]\s*[a-z][^<]*$/i, '').trim();
