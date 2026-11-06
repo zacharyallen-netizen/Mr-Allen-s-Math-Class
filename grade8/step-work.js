@@ -215,7 +215,7 @@
   function html(n, sub) {
     switch (n.t) {
       case 'num': return fmtQ(n.v, n.src);
-      case 'var': return sub != null ? '(' + sub + ')' : '<i>' + n.v + '</i>';
+      case 'var': return sub != null ? (/^\d+$/.test(sub) ? sub : '(' + sub + ')') : '<i>' + n.v + '</i>';
       case 'par': return (n.a.t === 'num' || n.a.t === 'var' || n.a.t === 'div' || n.a.t === 'par') && sub == null ? html(n.a, sub) : '(' + html(n.a, sub) + ')';
       case 'neg': return '−' + (n.a.t === 'add' ? '(' + html(n.a, sub) + ')' : html(n.a, sub));
       case 'add': return n.terms.map(function (t, i) {
@@ -370,7 +370,7 @@
     '.sw-ln{font:600 20px/1.8 "Source Serif 4",Georgia,serif}' +
     '.sw-mv{font:600 13px Inter,sans-serif;color:#7A5300;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
     '.sw-ask{font:600 15px Inter,sans-serif;margin:10px 0 6px}' +
-    '.sw-moves{display:flex;flex-wrap:wrap;gap:6px}' +
+    '.sw-moves{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}' +
     '.sw button{font:600 14.5px Inter,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;cursor:pointer}' +
     '.sw button[aria-pressed=true]{background:#1E2D4F;color:#fff}' +
     '.sw button.go{background:#1E2D4F;color:#fff}.sw button.ghost{border-style:dashed}' +
@@ -389,7 +389,8 @@
     '.sw-fb{margin-top:8px;font-size:15px;min-height:1px;border-radius:8px}.sw-fb.no{color:#7A1A12;background:#FBEAEA;padding:8px 10px}.sw-fb.ok{color:#14532D;background:#E7F5EC;padding:8px 10px}.sw-fb.tip{color:#5A3D00;background:#FFF6D6;padding:8px 10px}' +
     '.sw-done{margin-top:10px;background:#E7F5EC;border-radius:8px;padding:10px 12px;color:#14532D}' +
     '.sw-done .sw-ln{color:#14532D}' +
-    '.sw-then{margin-top:10px}.sw-then label{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;font:600 16px "Source Serif 4",Georgia,serif}' +
+    '.sw-then{margin-top:10px}.sw-then .sw-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;font:600 16px "Source Serif 4",Georgia,serif}.sw-row .sw-fb{margin-top:0}' +
+    '.sw-h i{text-transform:none;font-family:"Source Serif 4",Georgia,serif;font-size:1.1em}' +
     '.sw-fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;font-size:.85em}' +
     '.sw-fr>span:first-child{border-bottom:1.6px solid currentColor;padding:0 3px}.sw-fr>span:last-child{padding:0 3px}' +
     '.sw .t-v{color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px}' +
@@ -398,6 +399,7 @@
     '.sw .t-c{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px;opacity:.75}' +
     '.sw-rel{color:#1E2D4F}' +
     '.sw-legend{font:500 13px Inter,sans-serif;color:#5B6475;margin-top:4px}' +
+    '.sw-wide{grid-column:1/-1}.sw-host .sw-open{width:100%}' +
     '@media (max-width:480px){.sw-ln,.sw-grid{font-size:18px}.sw{padding:10px}}' +
     '@media print{.sw,.sw-open{display:none!important}}';
   function css() { if (document.getElementById('sw-css')) return; var s = document.createElement('style'); s.id = 'sw-css'; s.textContent = CSS; document.head.appendChild(s); }
@@ -424,7 +426,8 @@
     function keypad(inp, opts) {
       var k = el('div', 'sw-keys'); k.setAttribute('aria-label', 'Math keys');
       var keys = [[v, v], ['(', '('], [')', ')'], ['−', '-'], ['/', '/']];
-      if (!opts || !opts.amountOnly) keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
+      if (opts && opts.amountOnly) keys = [[v, v], ['−', '-'], ['/', '/']];
+      else keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
       keys.push(['⌫', 'BS']);
       keys.forEach(function (kk) {
@@ -483,9 +486,9 @@
       var lines = [{ e: start, mv: null }], move = null, amount = null;
       box.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 2 · ' : '') + 'Solve it one step at a time'));
       var trail = el('ol', 'sw-trail'); box.appendChild(trail);
-      var work = el('div'); box.appendChild(work);
       var legend = el('p', 'sw-legend', '<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; <span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> &nbsp; <span style="text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2px">crossed out</span> = cancels');
       box.appendChild(legend);
+      var work = el('div'); box.appendChild(work);
       drawTrail(); step();
 
       function cur() { return lines[lines.length - 1].e; }
@@ -541,7 +544,7 @@
           } else {
             amtRow.hidden = false;
             var verb = { add: 'Add', sub: 'Subtract', mul: 'Multiply both sides by', div: 'Divide both sides by' }[m];
-            amtRow.appendChild(el('span', '', '<b>' + verb + '</b>' + (m === 'add' || m === 'sub' ? ' this to both sides:' : ':')));
+            amtRow.appendChild(el('span', '', '<b>' + verb + '</b>' + (m === 'add' ? ' this to both sides:' : m === 'sub' ? ' this from both sides:' : ':')));
             var a = el('input', 'amt'); a.type = 'text'; a.autocomplete = 'off'; a.spellcheck = false; a.setAttribute('aria-label', 'Amount'); a.placeholder = m === 'mul' ? 'e.g. 4/3' : m === 'div' ? 'e.g. 3' : 'e.g. 7 or 2' + v;
             amtRow.appendChild(a); var show = btn('Show it', 'go'); amtRow.appendChild(show);
             amtRow.appendChild(keypad(a, { amountOnly: true }));
@@ -662,10 +665,10 @@
       }
       function thenStage(x) {
         var t = el('div', 'sw-then');
-        t.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 3 · ' : 'Next · ') + 'Use ' + v + ' = ' + qtxt(x) + ' to finish'));
+        t.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 3 · ' : 'Next · ') + 'Use <i>' + v + '</i> = ' + qtxt(x) + ' to finish'));
         var left = cfg.then.length, vals = [];
         cfg.then.forEach(function (it, i) {
-          var lab = el('label', '', it.label + ' = '), inp = el('input', 'amt'); inp.type = 'text'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', it.label);
+          var lab = el('div', 'sw-row', '<span>' + it.label + ' =</span>'), inp = el('input', 'amt'); inp.type = 'text'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', it.label);
           var go = btn('Check'), fb = el('span', 'sw-fb'); fb.setAttribute('aria-live', 'polite');
           lab.appendChild(inp); lab.appendChild(document.createTextNode(it.unit || '')); lab.appendChild(go); lab.appendChild(fb); t.appendChild(lab);
           var want = pat(poly(parseExpr(lex(clean(it.expr))), v), x);
@@ -769,7 +772,8 @@
       };
       var w = null;
       if (start) w = mount(host, { start: start, onAnswer: fill });
-      else if (chk[0] === 'num' && /x/.test(String(q.svg || '') + q.expr + (q.lab || ''))) {
+      else if (chk[0] === 'num' && /°|angle|triangle/i.test(String(q.svg || '') + q.expr + ' ' + (q.op || '')) &&
+               (/<text[^>]*>[^<]*\d?x\b/.test(String(q.svg || '')) || /(^|[^a-z])x([^a-z]|$)/i.test(String(q.expr).replace(/<[^>]+>/g, ' ')))) {   // angle problems with an x
         var a = chk[1]; w = mount(host, { setup: { answer: a, hint: angleHint(q.expr + ' ' + (q.op || '')), figure: !!q.svg }, onAnswer: fill });
       }
       if (w) {   // the older "pick the next step" helper on this card is replaced by the workspace
@@ -782,13 +786,14 @@
     if (!map || !id || !map[id]) return;
     Object.keys(map[id]).forEach(function (num) {
       var inp = document.getElementById('a' + num); if (!inp) return;
-      var lab = inp.closest('label'), host = el('div', 'sw-host'); lab.parentNode.insertBefore(host, lab.nextSibling);
+      var lab = inp.closest('label'), host = el('div', 'sw-host'); lab.appendChild(host);
       var c = map[id][num], cfg = { onAnswer: function (t) { fillBox(inp, t); } };
       if (c.start) cfg.start = c.start;
       if (c.setup != null) cfg.setup = { answer: c.setup, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt };
       if (c.then) cfg.then = c.then;
       if (c.v) cfg.v = c.v;
-      mount(host, cfg);
+      var box = mount(host, cfg), open = host.querySelector('.sw-open');
+      if (box && open) open.addEventListener('click', function () { lab.classList.toggle('sw-wide', !box.hidden); });
     });
   }
   function auto() { try { autoPractice(); } catch (e) { if (window.console) console.error(e); } try { autoPretest(); } catch (e) { if (window.console) console.error(e); } try { autoHomework(); } catch (e) { if (window.console) console.error(e); } }

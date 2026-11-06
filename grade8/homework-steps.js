@@ -1,0 +1,71 @@
+/* Step-by-step workspace data for homework_turn_in.html (read by step-work.js).
+   Problems are copied from the homework PDFs (grade8/homework/HW_*.pdf). No new problems.
+   start: the equation to solve        setup: the value of x; the student writes the equation first
+   then:  values to find after solving (angles, side lengths)          v: the letter used in the problem
+   Every answer is checked in _build/test_homework_steps.js. */
+(function () {
+  var H = {
+    straight: 'The angles make a straight line, so they add to <b>180°</b>.',
+    right: 'The angles make a right angle, so they add to <b>90°</b>.',
+    comp: 'Complementary angles add to <b>90°</b>.',
+    point: 'Angles all the way around a point add to <b>360°</b>.',
+    vertical: '<b>Vertical angles</b> (across from each other) are <b>equal</b>.',
+    neighbors: 'Neighbor angles where two lines cross make a straight line. They add to <b>180°</b>.',
+    parallel: 'Use the parallel lines. Corresponding and alternate angles are <b>equal</b>. Same-side interior angles add to <b>180°</b>. Angles on a straight line add to <b>180°</b>.',
+    triangle: 'The three angles of a triangle add to <b>180°</b>.',
+    exterior: 'An exterior angle equals the <b>sum of the two remote interior angles</b>.'
+  };
+  window.HW_STEPS = {
+    '3.1': { 1: { start: 'x − 6 = 11' }, 2: { start: '5x = 45' }, 3: { start: '2x − 7 = 9' }, 5: { start: 'x/4 + 5 = 8' },
+             7: { start: 'x/2 − 3 = 5' }, 9: { start: '2m + 3 = 17', v: 'm' }, 10: { start: '4x + 8 = 20' } },
+    '3.2': { 1: { start: '−6x = −42' }, 2: { start: '3/5x = 12' }, 3: { start: '4x + 9 = 1' },
+             5: { setup: 7, v: 'n', hint: '"Three times a number" is 3<i>n</i>. "Five less than" means subtract 5 from it. "Is" means =.', prompt: 'Use <i>n</i> for the number. Write an equation for “Five less than three times a number is 16.”' },
+             7: { start: '−x/4 + 6 = 2' }, 9: { start: '30h + 45 = 150', v: 'h' }, 10: { start: '3/5x = 9' } },
+    '3.3': { 1: { start: '4(x − 2) = 20' }, 2: { start: '6x + 5 = 3x + 20' }, 5: { start: '8x − 1 = 5x + 17' },
+             7: { start: '3(2x − 1) = 2x + 13' }, 9: { start: '50 + 15w = 90 + 5w', v: 'w' } },
+    '3.4': { 1: { start: '3(x − 1) + 2x = 22' }, 2: { start: '7x − 4 = 3(x + 4)' }, 5: { start: '−x/3 + 2 = 6' },
+             7: { start: '6x + 2 = 3(x + 8)' },
+             9: { start: 'x + (x + 2) + (2x − 1) = 25', then: [{ label: 'side x + 2', expr: 'x + 2' }, { label: 'side 2x − 1', expr: '2x − 1' }] },
+             10: { start: '4(x − 1) = 2x + 5' } },
+    '3.5': { 1: { start: '1/3x + 2 = 7' }, 2: { start: 'x/5 − 3/5 = 2' }, 5: { start: '9x − 4 = 5x + 16' }, 7: { start: '2/5x + 1 = 1/5x + 3' },
+             8: { start: '(x − 4)/3 = x/5' }, 9: { start: '1/2m + 1/5m + 12 = m', v: 'm' }, 10: { start: '2/3(x + 6) = 10' } },
+    '3.6': { 1: { start: '0.5x + 2.5 = 4' }, 2: { start: '−3(x + 2) = x − 14' }, 3: { start: 'x/2 + 1/3 = 2' }, 5: { start: '2(x + 3) − 4 = x + 8' },
+             7: { start: '1/4(x + 8) = 1/2x − 1' }, 9: { start: '25 + 10m = 5 + 14m', v: 'm' } },
+    '3.7': { 2: { start: 'x/4 + 3 = 5' }, 4: { start: 'x − 5 < 2' }, 5: { start: '5(x − 1) = 2x + 13' }, 6: { start: '−4x ≥ 12' },
+             7: { start: '5x − 2 = 5x + 3' }, 10: { start: '10 + 8t ≤ 50', v: 't' } },
+    '3.8': { 1: { start: '4x + 9 = 4x + 9' }, 2: { start: '2(x + 1) = 2x + 5' }, 4: { start: 'x + 3 ≥ 1' }, 5: { start: '−2(x + 1) = x − 11' },
+             6: { start: '−4x − 3 > 9' }, 7: { start: '7x − 3(x + 2) = 4x − 6' }, 10: { start: '28 + 9h ≥ 100', v: 'h' } },
+    '3.9': { 2: { setup: 4, v: 't', hint: 'Cost of <i>t</i> tickets + cost of the popcorn = the total she spent.', prompt: 'Use <i>t</i> for the number of tickets. Write an equation.' },
+             3: { start: '3x + 2 = 3x + 5' },
+             4: { setup: 7, v: 'n', hint: '"Five times a number" is 5<i>n</i>. "Four less than" means subtract 4. "Is" means =.', prompt: 'Use <i>n</i> for the number. Write an equation.' },
+             5: { start: '2/3x + 4 = 10' },
+             6: { setup: 300, v: 'm', hint: 'Write the cost of Plan A and the cost of Plan B for <i>m</i> minutes. Set them equal.', prompt: 'Use <i>m</i> for the minutes. Write an equation.' },
+             8: { setup: 7, v: 'q', ineq: true, hint: '"At least" means ≥. Points he has + points from <i>q</i> quizzes ≥ points he needs.', prompt: 'Use <i>q</i> for the number of quizzes. Write an inequality.' },
+             9: { start: '2(2w + 1) + 2w = 50', v: 'w', then: [{ label: 'length 2w + 1', expr: '2w + 1' }] } },
+    '3.10': { 1: { start: '3(x + 2) − 2x = 4(x − 3)' }, 2: { start: '2/3x − 4 = 1/3x + 1' }, 3: { start: '3x − 7 = 3x + 2' }, 4: { start: '9 − 2x = 1' },
+              5: { start: '6 − 2x ≤ 10' },
+              7: { setup: 9, v: 'w', ineq: true, hint: '"At least" means ≥. Money she has + money she saves in <i>w</i> weeks ≥ money she needs.', prompt: 'Use <i>w</i> for the weeks. Write an inequality.' },
+              8: { start: '4(x + 1) − x = 3x + 4' }, 10: { start: '20 − 2h = 14 − h', v: 'h' } },
+    '4.1': { 1: { setup: 107, fig: 1, hint: H.straight }, 2: { setup: 49, fig: 1, hint: H.right },
+             6: { setup: 25, fig: 1, hint: H.straight, then: [{ label: '4x', expr: '4x', unit: '°' }, { label: '2x + 30', expr: '2x + 30', unit: '°' }] },
+             8: { setup: 36, hint: H.comp, prompt: 'Use <i>x</i> for the smaller angle. Then the larger one is <i>x</i> + 18. Write an equation.', then: [{ label: 'larger angle x + 18', expr: 'x + 18', unit: '°' }] },
+             10: { setup: 36, fig: 1, hint: H.neighbors, then: [{ label: '4x', expr: '4x', unit: '°' }] } },
+    '4.2': { 1: { setup: 75, fig: 1, hint: H.point }, 2: { setup: 85, fig: 1, hint: H.straight },
+             6: { setup: 35, fig: 1, hint: H.straight, then: [{ label: '2x', expr: '2x', unit: '°' }, { label: 'x + 40', expr: 'x + 40', unit: '°' }] },
+             8: { setup: 20, hint: H.comp, then: [{ label: '∠1 = 3x', expr: '3x', unit: '°' }] },
+             10: { setup: 36, fig: 1, hint: H.point, then: [{ label: '2x', expr: '2x', unit: '°' }, { label: '3x', expr: '3x', unit: '°' }, { label: '4x', expr: '4x', unit: '°' }] } },
+    '4.3': { 3: { setup: 52, fig: 1, hint: H.parallel }, 4: { setup: 117, fig: 1, hint: H.parallel },
+             6: { setup: 28, fig: 1, hint: H.parallel, then: [{ label: '4x − 6', expr: '4x − 6', unit: '°' }] },
+             8: { setup: 40, hint: H.straight } },
+    '4.4': { 3: { setup: 79, fig: 1, hint: H.parallel }, 4: { setup: 51, fig: 1, hint: H.straight },
+             6: { setup: 13, fig: 1, hint: H.parallel, then: [{ label: '6x − 14', expr: '6x − 14', unit: '°' }] },
+             8: { setup: 25, fig: 1, hint: H.parallel },
+             10: { setup: 40, fig: 1, hint: H.parallel, then: [{ label: 'x + 15', expr: 'x + 15', unit: '°' }, { label: '3x + 5', expr: '3x + 5', unit: '°' }] } },
+    '4.5': { 1: { setup: 72, fig: 1, hint: H.triangle }, 2: { setup: 125, fig: 1, hint: H.exterior }, 3: { setup: 75, fig: 1, hint: H.exterior },
+             6: { setup: 25, fig: 1, hint: H.triangle, then: [{ label: '3x + 5', expr: '3x + 5', unit: '°' }, { label: '2x', expr: '2x', unit: '°' }, { label: 'x + 25', expr: 'x + 25', unit: '°' }] },
+             8: { setup: 17, hint: H.comp } },
+    '4.6': { 1: { setup: 114, fig: 1, hint: H.straight }, 3: { setup: 62, fig: 1, hint: H.triangle + ' The small square marks a 90° angle.' },
+             6: { setup: 10, fig: 1, hint: H.vertical, then: [{ label: '4x + 12', expr: '4x + 12', unit: '°' }] },
+             7: { setup: 12, fig: 1, hint: H.parallel, then: [{ label: '4x + 10', expr: '4x + 10', unit: '°' }] } }
+  };
+})();
