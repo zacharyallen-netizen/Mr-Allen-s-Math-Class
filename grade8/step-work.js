@@ -58,7 +58,7 @@
       .replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '(($1)/($2))')
       .replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<[^>]+>/g, '')
       .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
-      .replace(/[−–—]/g, '-').replace(/[×·∙⋅]/g, '*').replace(/÷/g, '/').replace(/°/g, '')
+      .replace(/[−–—]/g, '-').replace(/sqrt/gi, '√').replace(/\+\/-|\+-(?=[\d√(])/g, '±').replace(/~/g, '≈').replace(/[×·∙⋅]/g, '*').replace(/÷/g, '/').replace(/°/g, '')
       .replace(/<=|=</g, '≤').replace(/>=|=>/g, '≥')
       .replace(/[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, function (c) { return VULGAR[c]; })
       .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, function (m) { return '^(' + m.split('').map(function (c) { return SUP[c]; }).join('') + ')'; })
@@ -72,8 +72,8 @@
       var c = s[i];
       if ((m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i)))) { t.push({ k: 'num', v: m[1] }); i += m[1].length; continue; }
       if (/[a-z]/.test(c)) { t.push({ k: 'var', v: c }); i++; continue; }
-      if ('+-*/^()'.indexOf(c) >= 0) { t.push({ k: c }); i++; continue; }
-      if ('=<>≤≥'.indexOf(c) >= 0) { t.push({ k: 'rel', v: c }); i++; continue; }
+      if ('+-*/^()√±'.indexOf(c) >= 0) { t.push({ k: c }); i++; continue; }
+      if ('=<>≤≥≈'.indexOf(c) >= 0) { t.push({ k: 'rel', v: c }); i++; continue; }
       if (c === '[' || c === '{') { t.push({ k: '(' }); i++; continue; }
       if (c === ']' || c === '}') { t.push({ k: ')' }); i++; continue; }
       throw err('char', c);
@@ -92,6 +92,7 @@
     function unary() {
       var x = peek(); if (!x) throw err('missing');
       if (x.k === '-') { i++; return { t: 'neg', a: unary() }; }
+      if (x.k === '±') { i++; return { t: 'pm', a: unary() }; }
       if (x.k === '+') { i++; return unary(); }
       return product();
     }
@@ -100,7 +101,7 @@
       for (;;) {
         var x = peek(); if (!x) break;
         if (x.k === '*' || x.k === '/') { i++; var b = x.k === '*' ? unaryInProduct() : unaryInProduct(); a = { t: x.k === '*' ? 'mul' : 'div', a: a, b: b }; continue; }
-        if (x.k === 'num' || x.k === 'var' || x.k === '(') { a = { t: 'mul', a: a, b: power(), imp: true }; continue; }
+        if (x.k === 'num' || x.k === 'var' || x.k === '(' || x.k === '√') { a = { t: 'mul', a: a, b: power(), imp: true }; continue; }
         break;
       }
       return a;
@@ -122,6 +123,7 @@
       var x = peek(); if (!x) throw err('missing');
       if (x.k === 'num') { i++; return { t: 'num', v: qdec(x.v), src: x.v }; }
       if (x.k === 'var') { i++; return { t: 'var', v: x.v }; }
+      if (x.k === '√') { i++; return { t: 'sqrt', a: power() }; }
       if (x.k === '(') { i++; var e = sum(); eat(')'); return { t: 'par', a: e }; }
       if (x.k === ')') throw err('paren');
       throw err('missing');
@@ -162,7 +164,14 @@
         return pmul(poly(n.a, v, opt), poly(n.b, v, opt));
       }
       case 'div': { var d = poly(n.b, v, opt); if (pdeg(d) > 0) throw err('divx'); if (!d[0].n) throw err('zero'); return pscale(poly(n.a, v, opt), qdiv(ONE, d[0])); }
+      case 'sqrt': {
+        var rr = poly(n.a, v, opt); if (pdeg(rr) > 0) throw err('sqrtx'); var qq = rr[0]; if (qq.n < 0) throw err('negroot');
+        var sa = Math.round(Math.sqrt(qq.n)), sb = Math.round(Math.sqrt(qq.d)); if (sa * sa === qq.n && sb * sb === qq.d) return pconst(Q(sa, sb)); throw err('irr');
+      }
+      case 'pm': throw err('pm');
       case 'pow': {
+        var sb0 = n.a.t === 'par' ? n.a.a : n.a; if (sb0.t === 'sqrt' && n.e % 2 === 0) { var inner = poly(sb0.a, v, opt), rr0 = P(ONE); for (var j0 = 0; j0 < n.e / 2; j0++) rr0 = pmul(rr0, inner); return rr0; }
+        if (opt && opt.powMul) { var pb = poly(n.a, v); if (pdeg(pb) === 0) return pconst(qmul(pb[0], Q(n.e))); }
         if (n.e < 0) { var b0 = poly(n.a, v, opt); if (pdeg(b0) > 0) throw err('negexp'); var r0 = ONE; for (var j = 0; j < -n.e; j++) r0 = qmul(r0, b0[0]); return pconst(qdiv(ONE, r0)); }
         var r = P(ONE), b = poly(n.a, v, opt); for (var k = 0; k < n.e; k++) r = pmul(r, b); return r;
       }
@@ -185,10 +194,11 @@
   function sides(e, v, opt) { return { L: poly(e.L, v, opt), R: poly(e.R, v, opt) }; }
 
   /* ---- solution set of L rel R (linear) ---- */
-  var FLIP = { '<': '>', '>': '<', '≤': '≥', '≥': '≤', '=': '=' };
+  var FLIP = { '<': '>', '>': '<', '≤': '≥', '≥': '≤', '=': '=', '≈': '≈' };
   function solve(e, v) {
+    if (e.rel === '≈') e = { L: e.L, R: e.R, rel: '=', vars: e.vars };
     var s = sides(e, v), D = psub(s.L, s.R);
-    if (D[2].n) return { kind: 'quad' };
+    if (D[2].n) { if (D[1].n || e.rel !== '=') return { kind: 'quad' }; return { kind: 'sq', k: qdiv(qneg(D[0]), D[2]) }; }
     var a = D[1], b = D[0];
     if (!a.n) {
       var t = e.rel === '=' ? !b.n : e.rel === '<' ? qsign(b) < 0 : e.rel === '>' ? qsign(b) > 0 : e.rel === '≤' ? qsign(b) <= 0 : qsign(b) >= 0;
@@ -202,7 +212,59 @@
     if (a.kind !== b.kind) return false;
     if (a.kind === 'one') return qeq(a.x, b.x);
     if (a.kind === 'ineq') return qeq(a.x, b.x) && a.rel === b.rel;
+    if (a.kind === 'sq') return qeq(a.k, b.k);
     return true;
+  }
+
+  /* ---- numbers that may be irrational (square roots), for the last line of a square-root problem ---- */
+  function numv(n, v, xv) {
+    switch (n.t) {
+      case 'num': return qnum(n.v); case 'var': return xv; case 'par': return numv(n.a, v, xv); case 'neg': return -numv(n.a, v, xv);
+      case 'add': return n.terms.reduce(function (a, t) { return a + t.s * numv(t.n, v, xv); }, 0);
+      case 'mul': return numv(n.a, v, xv) * numv(n.b, v, xv); case 'div': return numv(n.a, v, xv) / numv(n.b, v, xv);
+      case 'pow': return Math.pow(numv(n.a, v, xv), n.e); case 'sqrt': return Math.sqrt(numv(n.a, v, xv));
+      case 'pm': throw err('pm');
+    }
+    return NaN;
+  }
+  function hasVar(n) { var f = false; walk(n, function (m) { if (m.t === 'var') f = true; }); return f; }
+  function aloneSide(e, v) {   // the number side when the letter is alone: x = …  or  … = x
+    if (e.L.t === 'var' && e.L.v === v && !hasVar(e.R)) return e.R;
+    if (e.R.t === 'var' && e.R.v === v && !hasVar(e.L)) return e.L;
+    return null;
+  }
+  function sideVals(n, v) { return n.t === 'pm' ? [-numv(n.a, v), numv(n.a, v)].sort(function (a, b) { return a - b; }) : [numv(n, v)]; }
+  function isApprox(n, e) { var d = false; walk(n, function (m) { if (m.t === 'num' && /\.\d/.test(m.src || '')) d = true; }); return d || e.rel === '≈'; }
+  /* every value of the letter that makes the line true (null for inequalities and "all"/"none") */
+  function valsOf(e, v) {
+    var s;
+    try { s = solve(e, v); }
+    catch (x) {
+      if (x.code !== 'irr' && x.code !== 'pm') throw x;
+      var side = aloneSide(e, v); if (!side) throw err('irrmid');
+      return { kind: 'num', list: sideVals(side, v), approx: isApprox(side, e) };
+    }
+    if (s.kind === 'one') { var side2 = aloneSide(e, v); return { kind: 'one', list: [qnum(s.x)], approx: side2 ? isApprox(side2, e) : false, s: s }; }
+    if (s.kind === 'sq') { var k = qnum(s.k); return { kind: 'sq', list: k < 0 ? [] : k === 0 ? [0] : [-Math.sqrt(k), Math.sqrt(k)], s: s }; }
+    return { kind: s.kind, s: s };
+  }
+  /* is the new line still true for the same numbers? ctx.positive: only lengths (positive values) count */
+  function compareLines(prev, next, v, ctx) {
+    var A = valsOf(prev, v), B = valsOf(next, v);
+    if (!A.list || !B.list) return { ok: !!(A.s && B.s && sameSet(A.s, B.s)) };
+    var a = A.list.slice(), b = B.list.slice(), note = '';
+    if (ctx && ctx.positive) {
+      if (b.length && b.every(function (z) { return z < 0; })) return { ok: false, msg: 'A length can\'t be negative. Use the <b>positive</b> square root.' };
+      if (B.kind !== 'sq' && b.some(function (z) { return z < 0; })) note = ' A length can\'t be negative, so only the positive answer counts.';
+      a = a.filter(function (z) { return z > 0; }); b = b.filter(function (z) { return z > 0; });
+    }
+    var tol = B.approx ? 0.05 : 1e-9;
+    var same = a.length === b.length && a.every(function (z, i) { return Math.abs(z - b[i]) <= tol; });
+    if (same) return { ok: true, note: (B.approx && Math.abs(a[0] - b[0]) > 1e-9 ? ' (rounded)' : '') + note };
+    if (!(ctx && ctx.positive) && A.kind === 'sq' && b.length === 1 && a.length === 2 && a.some(function (z) { return Math.abs(z - b[0]) <= tol; }))
+      return { ok: false, msg: 'Almost! ' + v + '<sup>2</sup> has <b>two</b> square roots, one positive and one negative. Write ' + v + ' = ±… .' };
+    if (A.kind === 'sq' && B.kind !== 'sq' && b.length) return { ok: false, msg: 'Check your square root. What number times itself makes the other side?' };
+    return { ok: false };
   }
 
   /* ===================== drawing math ===================== */
@@ -231,10 +293,12 @@
       }
       case 'div': return '<span class="sw-fr"><span>' + html(n.a, sub) + '</span><span>' + html(n.b, sub) + '</span></span>';
       case 'pow': return html(n.a, sub) + '<sup>' + (n.e < 0 ? '−' + -n.e : n.e) + '</sup>';
+      case 'sqrt': return '<span class="sw-sqrt">√<span>' + html(n.a.t === 'par' ? n.a.a : n.a, sub) + '</span></span>';
+      case 'pm': return '±' + html(n.a, sub);
     }
     return '';
   }
-  function relHtml(r) { return { '=': '=', '<': '&lt;', '>': '&gt;', '≤': '≤', '≥': '≥' }[r]; }
+  function relHtml(r) { return { '=': '=', '<': '&lt;', '>': '&gt;', '≤': '≤', '≥': '≥', '≈': '≈' }[r]; }
   function eqHtml(e, sub) { return html(e.L, sub) + ' <span class="sw-rel">' + relHtml(e.rel) + '</span> ' + html(e.R, sub); }
   function polyHtml(p, v) {
     var parts = [];
@@ -313,6 +377,11 @@
             (!peq(w.L, a.L) && peq(w.L, b.L) && !peq(w.R, a.R) && peq(w.R, b.R))) return mist[i][1];
       } catch (e) { }
     }
+    // 6² worked out as 6 · 2
+    try { var pm2 = sides(prev, v, { powMul: true }); if ((!peq(pm2.L, a.L) || !peq(pm2.R, a.R)) && sameSet(solve({ L: next.L, R: next.R, rel: next.rel }, v), solve({ L: { t: 'num', v: ZERO }, R: { t: 'num', v: ZERO }, rel: '=' }, v)) === false) {
+      var bL = peq(pm2.L, b.L) || peq(pm2.L, a.L), bR = peq(pm2.R, b.R) || peq(pm2.R, a.R);
+      if (bL && bR) return 'Check your squares. A square means a number times <b>itself</b>. For example, 6<sup>2</sup> = 6 · 6 = 36, not 6 · 2.';
+    } } catch (e) { }
     // changed only one side
     if (peq(a.R, b.R) && !peq(a.L, b.L)) side = 'left'; else if (peq(a.L, b.L) && !peq(a.R, b.R)) side = 'right';
     if (side) return 'Only the ' + side + ' side changed, and it is not equal to what it was. Whatever you do to one side, do to the <b>other side</b> too.';
@@ -337,11 +406,12 @@
     return 'This line is not equal to the line before it. Check your arithmetic, one term at a time.';
   }
   function isSolved(e, v) {
-    var s = sides(e, v), xL = peq(s.L, P(ZERO, ONE)) && e.L.t === 'var', xR = peq(s.R, P(ZERO, ONE)) && e.R.t === 'var';
-    if (xL && pdeg(s.R) === 0) return { x: s.R[0], rel: e.rel };
-    if (xR && pdeg(s.L) === 0) return { x: s.L[0], rel: FLIP[e.rel] };
-    return null;
+    var side = aloneSide(e, v); if (!side) return null;
+    var rel = side === e.R ? e.rel : FLIP[e.rel]; if (rel === '≈') rel = '=';
+    try { var p = poly(side, v); return { x: p[0], rel: rel, approx: isApprox(side, e), text: plainNum(side) }; }
+    catch (x) { if (x.code !== 'irr' && x.code !== 'pm') throw x; return { vals: sideVals(side, v), rel: '=', side: side, approx: isApprox(side, e), text: plainNum(side) }; }
   }
+  function plainNum(n) { var d = document.createElement('div'); d.innerHTML = html(n); return d.textContent.replace(/\s+/g, ''); }
   function noVar(e) { return e.vars.length === 0; }
 
   /* ===================== messages ===================== */
@@ -352,7 +422,7 @@
       side: 'Something is missing on one side of the sign.', paren: 'Check your parentheses. Each ( needs a ).', missing: 'Something is missing. Check for a sign with nothing after it.',
       syntax: 'I can\'t read that yet. Check the signs and numbers.', letter: 'Use the letter <i>' + v + '</i> in this problem.', divx: 'This tool can\'t divide by ' + v + '. Try another move.',
       degree: v + ' got multiplied by itself. Check your multiplying.', zero: 'You can\'t divide by 0.', char: 'I can\'t read the symbol "' + (e && e.extra) + '". Use the keys below.',
-      exp: 'Exponents here must be whole numbers.', negexp: 'I can\'t use a negative exponent on ' + v + ' here.'
+      exp: 'Exponents here must be whole numbers.', sqrtx: 'Take the square root of a number, not of ' + v + '.', negroot: 'A negative number has no square root here.', irrmid: 'Keep the square root for the last step, when ' + v + ' is alone on one side.', pm: 'Use ± only in the last line, like ' + v + ' = ±7.', negexp: 'I can\'t use a negative exponent on ' + v + ' here.'
     }[c] || 'I can\'t read that yet. Check the signs and numbers.';
   }
 
@@ -398,6 +468,7 @@
     '.sw .t-p{color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px}' +
     '.sw .t-c{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px;opacity:.75}' +
     '.sw-rel{color:#1E2D4F}' +
+    '.sw-sqrt>span{border-top:1.6px solid currentColor;padding:0 2px;margin-left:1px}' +
     '.sw-legend{font:500 13px Inter,sans-serif;color:#5B6475;margin-top:4px}' +
     '.sw-wide{grid-column:1/-1}.sw-host .sw-open{width:100%}' +
     '@media (max-width:480px){.sw-ln,.sw-grid{font-size:18px}.sw{padding:10px}}' +
@@ -426,9 +497,11 @@
     function keypad(inp, opts) {
       var k = el('div', 'sw-keys'); k.setAttribute('aria-label', 'Math keys');
       var keys = [[v, v], ['(', '('], [')', ')'], ['−', '-'], ['/', '/']];
+      if (opts && opts.letters) keys = opts.letters.map(function (L) { return [L, L]; }).concat(keys.slice(1));
       if (opts && opts.amountOnly) keys = [[v, v], ['−', '-'], ['/', '/']];
       else keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
+      if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (!cfg.positive) keys.push(['±', '±']); }
       keys.push(['⌫', 'BS']);
       keys.forEach(function (kk) {
         var b = btn(kk[0]); b.setAttribute('aria-label', kk[1] === 'BS' ? 'Erase' : 'Type ' + kk[0]);
@@ -446,8 +519,8 @@
     function preview(inp, out) {
       inp.addEventListener('input', function () {
         if (!inp.value.trim()) { out.innerHTML = ''; return; }
-        try { var e = parseEq(inp.value); sides(e, v); out.innerHTML = 'I read this as: <span class="sw-ln">' + eqHtml(e) + '</span>'; }
-        catch (x) { out.innerHTML = '<span style="color:#9A3412">' + readErr(x, v) + '</span>'; }
+        try { var e = parseEq(inp.value), vv = cfg.setup && cfg.setup.any && !inp.readOnly && e.vars.length === 1 ? e.vars[0] : v; sides(e, vv); out.innerHTML = 'I read this as: <span class="sw-ln">' + eqHtml(e) + '</span>'; }
+        catch (x) { out.innerHTML = '<span style="color:#9A3412">' + readErr(x, cfg.setup && cfg.setup.any ? 'the same letter' : v) + '</span>'; }
       });
     }
 
@@ -456,19 +529,22 @@
       var S = cfg.setup;
       box.innerHTML = '';
       box.appendChild(el('p', 'sw-h', 'Step 1 · Write an equation' + (S.ineq ? ' or inequality' : '')));
-      box.appendChild(el('p', 'sw-note', S.prompt || ('Use <i>' + v + '</i> for the unknown. Write an equation that matches the problem' + (S.figure ? ' and the picture' : '') + '.')));
+      box.appendChild(el('p', 'sw-note', S.prompt || (S.any ? 'Use a letter for the unknown (like <i>c</i>). Write an equation that matches the problem' + (S.figure ? ' and the picture' : '') + '.' : 'Use <i>' + v + '</i> for the unknown. Write an equation that matches the problem' + (S.figure ? ' and the picture' : '') + '.')));
       var w = el('div', 'sw-write'), inp = el('input', 'line'); inp.type = 'text'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', 'Your equation');
-      w.appendChild(inp); w.appendChild(keypad(inp)); var pv = el('div', 'sw-prev'); w.appendChild(pv); preview(inp, pv);
+      w.appendChild(inp); w.appendChild(keypad(inp, S.any ? { letters: ['a', 'b', 'c', 'd'] } : null)); var pv = el('div', 'sw-prev'); w.appendChild(pv); preview(inp, pv);
       var acts = el('div', 'sw-acts'), go = btn('Check my equation', 'go'); acts.appendChild(go); w.appendChild(acts);
       var fb = el('div', 'sw-fb'); fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); w.appendChild(fb);
       box.appendChild(w);
       var tries = 0;
       function check() {
-        var e; try { e = parseEq(inp.value); sides(e, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-        if (e.vars.length !== 1 || e.vars[0] !== v) { fb.className = 'sw-fb no'; fb.innerHTML = 'Your equation needs the unknown <i>' + v + '</i> in it.'; return; }
-        var sol = solve(e, v), want = Q(S.answer.n != null ? S.answer.n : Math.round(S.answer * 1e6), S.answer.n != null ? S.answer.d : 1e6);
-        var ok = (sol.kind === 'one' && qeq(sol.x, want)) || (S.ineq && sol.kind === 'ineq' && qeq(sol.x, want));
-        if (sol.kind === 'one' && !ok && isSolved(e, v)) { fb.className = 'sw-fb no'; fb.innerHTML = 'Write the equation first, before you solve it. Start from the facts in the problem.'; tries++; return; }
+        var e; try { e = parseEq(inp.value); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+        if (S.any && e.vars.length === 1) v = e.vars[0];
+        try { sides(e, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+        if (e.vars.length !== 1 || e.vars[0] !== v) { fb.className = 'sw-fb no'; fb.innerHTML = S.any ? 'Your equation needs one letter for the unknown.' : 'Your equation needs the unknown <i>' + v + '</i> in it.'; return; }
+        var sol = solve(e, v), want = S.answer.n != null ? S.answer.n / S.answer.d : Number(S.answer), tol = S.tol || 1e-9;
+        var val = sol.kind === 'one' || sol.kind === 'ineq' ? qnum(sol.x) : sol.kind === 'sq' && qnum(sol.k) > 0 ? Math.sqrt(qnum(sol.k)) : null;
+        var ok = val != null && Math.abs(val - want) <= tol && (sol.kind !== 'ineq' || !!S.ineq);
+        var only = aloneSide(e, v); if (sol.kind === 'one' && !ok && only && (only.t === 'num' || (only.t === 'neg' && only.a.t === 'num'))) { fb.className = 'sw-fb no'; fb.innerHTML = 'Write the equation first, before you solve it. Start from the facts in the problem.'; tries++; return; }
         if (ok) { fb.className = 'sw-fb ok'; fb.innerHTML = '✓ Good equation. Now solve it.'; inp.readOnly = true; go.disabled = true; setTimeout(function () { solveStage(e, true); }, 300); return; }
         tries++;
         fb.className = 'sw-fb no';
@@ -511,6 +587,11 @@
         work.appendChild(el('p', 'sw-ask', 'What will you do next?'));
         var mv = el('div', 'sw-moves'); mv.setAttribute('role', 'group'); mv.setAttribute('aria-label', 'Choose a move');
         var MOVES = [['dist', 'Distribute'], ['comb', 'Combine like terms'], ['add', 'Add to both sides'], ['sub', 'Subtract from both sides'], ['mul', 'Multiply both sides'], ['div', 'Divide both sides']];
+        var hasSq = false, hasPow = false;
+        try { var sp0 = sides(e, v); hasSq = !!(sp0.L[2].n || sp0.R[2].n); } catch (x) { }
+        [e.L, e.R].forEach(function (sd) { walk(sd, function (z) { if (z.t === 'pow' && !hasVar(z.a)) hasPow = true; }); });
+        if (hasPow) MOVES.unshift(['squares', 'Find the squares']);
+        if (hasSq) MOVES.push(['sqrt', 'Square root both sides']);
         var mbtns = {};
         MOVES.forEach(function (m) { var b = btn(m[1]); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { pick(m[0]); }); mv.appendChild(b); mbtns[m[0]] = b; });
         work.appendChild(mv);
@@ -533,6 +614,25 @@
             vis.innerHTML = '<div class="sw-ln">' + colorLine(e) + '</div>' + found.map(function (f) {
               return '<p class="sw-note">Multiply <b>' + f[1].c + '</b> by <b>every</b> term inside the parentheses: ' + f[1].pairs.join(', ') + '.</p>';
             }).join('');
+            showWrite();
+          } else if (m === 'squares') {
+            var pows = []; [e.L, e.R].forEach(function (sd) { walk(sd, function (z) { if (z.t === 'pow' && !hasVar(z.a) && z.e > 1) pows.push(z); }); });
+            vis.hidden = false;
+            vis.innerHTML = '<div class="sw-ln">' + colorLine(e) + '</div>' + pows.map(function (z) { var f = []; for (var j = 0; j < z.e; j++) f.push(html(z.a)); return '<p class="sw-note">' + html(z) + ' means ' + f.join(' · ') + '. (Not ' + html(z.a) + ' · ' + z.e + '!)</p>'; }).join('');
+            showWrite();
+          } else if (m === 'sqrt') {
+            var spr = sides(e, v), bare = function (n) { return n.t === 'pow' && n.e === 2 && n.a.t === 'var'; };
+            var vsd = bare(e.L) ? 'L' : bare(e.R) ? 'R' : null, other = vsd === 'L' ? spr.R : vsd === 'R' ? spr.L : null;
+            if (!vsd || pdeg(other) > 0) { fb.className = 'sw-fb tip'; fb.innerHTML = 'First get <i>' + v + '</i><sup>2</sup> <b>alone</b> on one side, with no other terms next to it. Then take the square root.'; return; }
+            var k = other[0], kn = qnum(k), rt = Math.round(Math.sqrt(kn)), perfect = k.d === 1 && rt * rt === k.n;
+            var notes = ['The square root <b>undoes</b> the square: √(<i>' + v + '</i><sup>2</sup>) = <i>' + v + '</i>.'];
+            if (kn < 0) notes.push('No number times itself makes a negative, so this has no solution.');
+            else if (perfect) notes.push('√' + qHtml(k) + ' = ' + rt + ', because ' + rt + ' · ' + rt + ' = ' + qHtml(k) + '.');
+            else notes.push(qHtml(k) + ' is not a perfect square. Write √' + qtxt(k) + ', or use a calculator and round (use ≈).');
+            notes.push(cfg.positive ? 'A length is positive, so use the <b>positive</b> square root.' : 'A positive and a negative number both work. Write ± in front of the root.');
+            vis.hidden = false;
+            vis.innerHTML = '<div class="sw-grid"><div class="lft">√( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="r">' + relHtml(e.rel) + '</div><div>√( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +
+              notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
             showWrite();
           } else if (m === 'comb') {
             var info = [e.L, e.R].map(function (side) { var ts = terms(side), xs = 0, ns = 0, ps = 0; ts.forEach(function (t) { var k = kindOf(t, v); if (k === 'xterm') xs++; else if (k === 'num') ns++; else ps++; }); return { xs: xs, ns: ns, ps: ps }; });
@@ -608,20 +708,25 @@
           inp.focus();
         }
         function checkLine(raw) {
-          var n;
-          try { n = parseEq(raw); sides(n, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+          var n, exact = true;
+          try { n = parseEq(raw); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
           if (n.vars.some(function (z) { return z !== v; })) { fb.className = 'sw-fb no'; fb.innerHTML = readErr({ code: 'letter' }, v); return; }
-          var prev = cur(), ok;
-          try { ok = sameSet(solve(prev, v), solve(n, v)); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-          if (!ok) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + diagnose(prev, n, v); return; }
-          var d = describe(prev, n, v), label = moveLabel(d, v), note = '';
+          try { sides(n, v); } catch (x) {
+            if ((x.code === 'irr' || x.code === 'pm') && aloneSide(n, v)) exact = false;
+            else { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x.code === 'irr' || x.code === 'pm' ? { code: 'irrmid' } : x, v); return; }
+          }
+          var prev = cur(), cmp;
+          try { cmp = compareLines(prev, n, v, cfg); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+          if (!cmp.ok) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + (cmp.msg || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')); return; }
+          var rooted = false; try { rooted = valsOf(prev, v).kind === 'sq' && !!isSolved(n, v); } catch (x) { }
+          var d = exact && !rooted ? describe(prev, n, v) : { type: 'root' }, label = d.type === 'root' ? 'square root of both sides' : moveLabel(d, v), note = cmp.note || '';
           if (d.type === 'rewrite' && sameText(prev, n)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Make a change first.'; return; }
-          if (amount && (d.type === 'add' || d.type === 'scale')) {
+          if (exact && amount && (d.type === 'add' || d.type === 'scale')) {
             var meant = amount.m === 'add' ? amount.k : amount.m === 'sub' ? pscale(amount.k, qneg(ONE)) : null;
             if ((meant && (d.type !== 'add' || !peq(d.k, meant))) || (!meant && (d.type !== 'scale' || !qeq(d.c, amount.m === 'mul' ? amount.k[0] : qdiv(ONE, amount.k[0])))))
               note = ' (That is true, but it is not the move you picked. That\'s OK.)';
           }
-          var before = countTerms(prev), after = countTerms(n);
+          var before = exact ? countTerms(prev) : 0, after = exact ? countTerms(n) : 0;
           if (d.type === 'add' && after > before) note += '<br>💡 That move is allowed, but now there are <b>more</b> terms. Did it get <i>' + v + '</i> closer to being alone? You can undo it.';
           lines.push({ e: n, mv: label });
           drawTrail();
@@ -639,6 +744,16 @@
           box2.innerHTML = '<b>' + (truth ? 'Infinitely many solutions.' : 'No solution.') + '</b> The ' + v + '\'s cancelled and you got <span class="sw-ln">' + eqHtml(e) + '</span>, which is ' +
             (truth ? '<b>always true</b>. Every number works.' : '<b>never true</b>. No number works.');
           info = { kind: truth ? 'all' : 'none' };
+        } else if (done.vals || done.approx || (done.side && done.side.t === 'pm')) {
+          var list = done.vals || [qnum(done.x)];
+          if (cfg.positive) list = list.filter(function (z) { return z > 0; });
+          var val = list[list.length - 1], irr = !done.approx && done.vals && Math.abs(val - Math.round(val * 1e6) / 1e6) > 0 && !Number.isInteger(Math.round(val * 1e9) / 1e9);
+          var shownSide = done.side && done.side.t === 'pm' && cfg.positive ? done.side.a : done.side;
+          var shown = shownSide ? html(shownSide) : qHtml(done.x), r2 = function (z) { return Math.round(z * 100) / 100; };
+          var lv = numv(o.L, v, val), rv = numv(o.R, v, val), pm = done.side && done.side.t === 'pm' && !cfg.positive;
+          box2.innerHTML = '<b>Solved:</b> <span class="sw-ln"><i>' + v + '</i> ' + (done.approx ? '≈' : '=') + ' ' + shown + '</span>' + (irr ? ' ≈ ' + r2(val) : '') +
+            '<br>Check it in the first line with ' + v + ' ≈ ' + r2(val) + ': ' + r2(lv) + ' ≈ ' + r2(rv) + ' ✓' + (done.approx ? '<br>(Rounded answers check as "about equal".)' : '');
+          info = pm ? { kind: 'pm', text: plainNum(done.side) } : { kind: 'one', num: val, numText: done.approx ? done.text : String(r2(val)), approx: done.approx || irr };
         } else {
           var x = done.x, rel = done.rel;
           if (rel === '=') {
@@ -654,7 +769,7 @@
         }
         work.appendChild(box2);
         if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
-        if (cfg.then && info.kind === 'one') thenStage(info.x);
+        if (cfg.then && info.kind === 'one' && info.x) thenStage(info.x);
         else useBtn(info);
       }
       function useBtn(info) {
@@ -671,11 +786,11 @@
           var lab = el('div', 'sw-row', '<span>' + it.label + ' =</span>'), inp = el('input', 'amt'); inp.type = 'text'; inp.autocomplete = 'off'; inp.setAttribute('aria-label', it.label);
           var go = btn('Check'), fb = el('span', 'sw-fb'); fb.setAttribute('aria-live', 'polite');
           lab.appendChild(inp); lab.appendChild(document.createTextNode(it.unit || '')); lab.appendChild(go); lab.appendChild(fb); t.appendChild(lab);
-          var want = pat(poly(parseExpr(lex(clean(it.expr))), v), x);
+          var ex = clean(it.expr).replace(/[a-z]/g, v), want = pat(poly(parseExpr(lex(ex)), v), x);
           var chk = function () {
             var got; try { got = pat(poly(parseExpr(lex(clean(inp.value.replace(/°/g, '')))), v), x); } catch (e) { fb.className = 'sw-fb no'; fb.textContent = 'Type a number.'; return; }
             if (qeq(got, want)) { fb.className = 'sw-fb ok'; fb.innerHTML = '✓'; inp.readOnly = true; go.disabled = true; vals[i] = qtxt(want) + (it.unit || ''); if (--left === 0) after(); }
-            else { fb.className = 'sw-fb no'; fb.innerHTML = 'Put ' + v + ' = ' + qtxt(x) + ' into ' + html(parseExpr(lex(clean(it.expr)))) + ' and simplify.'; }
+            else { fb.className = 'sw-fb no'; fb.innerHTML = 'Put ' + v + ' = ' + qtxt(x) + ' into ' + html(parseExpr(lex(ex))) + ' and simplify.'; }
           };
           go.addEventListener('click', chk); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); chk(); } });
         });
@@ -708,6 +823,8 @@
     return 'more than one step';
   }
   function answerText(info, v) {
+    if (info.kind === 'pm') return v + ' = ' + info.text;
+    if (info.numText) return v + (info.approx ? ' ≈ ' : ' = ') + info.numText;
     if (info.kind === 'all') return 'infinitely many solutions';
     if (info.kind === 'none') return 'no solution';
     return info.kind === 'one' ? v + ' = ' + qtxt(info.x).replace(/^-/, '-') : v + ' ' + ({ '≤': '≤', '≥': '≥', '<': '<', '>': '>' }[info.rel]) + ' ' + qtxt(info.x);
@@ -725,6 +842,17 @@
     [/around a point|all the way around/i, 'Angles all the way around a point add to <b>360°</b>.'],
     [/triangle|isosceles/i, 'The three angles of a triangle add to <b>180°</b>.']
   ];
+  var PYTH_RE = /hypotenuse|missing leg|other leg|find a leg|legs? \d|distance|diagonal|ladder|how high|how far|horizontal length|longest side|wire|straight line from/i;
+  function pythHint(t) {
+    return /distance|point|\(\s*-?\d/i.test(t)
+      ? 'Make a right triangle. The horizontal distance and the vertical distance between the points are the legs. Then use <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup>.'
+      : 'Use the Pythagorean Theorem: <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup>. The legs are <i>a</i> and <i>b</i>. The hypotenuse <i>c</i> is the longest side, across from the right angle.';
+  }
+  function tolFor(a, text) {        // how close a rounded answer must be
+    var m = String(a).match(/\.(\d+)/);
+    if (m) return m[1].length === 1 ? 0.05 : 0.006;
+    return /round|nearest/i.test(text || '') ? 0.5 : 1e-6;
+  }
   function angleHint(t) { for (var i = 0; i < ANGLE_HINTS.length; i++) if (ANGLE_HINTS[i][0].test(t)) return ANGLE_HINTS[i][1]; return 'Name the angle relationship first. Are the angles equal, or do they add to 90°, 180° or 360°?'; }
   function findEq(text) {      // pull "3(x − 1) + 2x = 22" out of "Solve: 3(x − 1) + 2x = 22 — how many solutions?"
     var s = String(text).replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '(($1)/($2))').replace(/<[^>]+>/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
@@ -745,17 +873,22 @@
         var start = findEq(p.q);
         var fmt = function (t, info) {
           var a = String(p.ans).replace(/<[^>]+>/g, '');
-          if (info.kind === 'one' && !/[a-z]\s*=/i.test(a)) return qtxt(info.x);
+          if (info.kind === 'one' && !/[a-z]\s*=/i.test(a)) return info.numText || qtxt(info.x);
           return t;
         };
         if (start) { mount(host, { start: start, onAnswer: function (t, info) { fillBox(inp, fmt(t, info)); } }); return; }
         var unit = String(D.unit), ans = numAns(p.ans);
+        if (unit === '5' && ans != null && PYTH_RE.test(p.q + ' ' + sec.title) && !/right triangle\?/i.test(p.q)) {
+          mount(host, { setup: { answer: ans, tol: tolFor(p.ans, p.q), any: true, hint: pythHint(p.q + ' ' + sec.title), figure: !!p.fig }, positive: true,
+            onAnswer: function (t, info) { fillBox(inp, info.numText || (info.x ? qtxt(info.x) : t)); } });
+          return;
+        }
         var angle = unit === '4' && /find x/i.test(p.q) && ans != null;
         var word = unit === '3' && /word/i.test(sec.title) && ans != null;
         if (angle || word) mount(host, {
           setup: { answer: ans, hint: angle ? angleHint(p.q + ' ' + sec.title) : 'Start amount + (rate × number of times) = total. "At most" means ≤.', ineq: word, figure: angle },
           v: angle ? 'x' : 'x',
-          onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' || info.kind === 'ineq' ? qtxt(info.x) : t); }
+          onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' || info.kind === 'ineq' ? (info.numText || qtxt(info.x)) : t); }
         });
       });
     });
@@ -767,14 +900,20 @@
       var host = el('div', 'sw-host'), ans = card.querySelector('.ans'); (ans && ans.nextSibling ? card.insertBefore(host, ans.nextSibling) : card.appendChild(host));
       var start = findEq(q.expr), chk = q.chk || [];
       var fill = function (t, info) {
-        if (chk[0] === 'val' || chk[0] === 'num') return fillBox(inp, info.kind === 'one' ? qtxt(info.x) : t);
+        if (chk[0] === 'val' || chk[0] === 'num') return fillBox(inp, info.kind === 'one' ? (info.numText || qtxt(info.x)) : t);
         fillBox(inp, t);
       };
       var w = null;
-      if (start) w = mount(host, { start: start, onAnswer: fill });
+      if (!start && chk[0] === 'num' && PYTH_RE.test(q.expr + ' ' + (q.op || ''))) {
+        w = mount(host, { setup: { answer: chk[1], tol: Math.max(chk[2] || 0, 1e-6), any: true, hint: pythHint(q.expr), figure: !!q.svg }, positive: true, onAnswer: fill });
+      }
+      else if (start) w = mount(host, { start: start, onAnswer: fill });
       else if (chk[0] === 'num' && /°|angle|triangle/i.test(String(q.svg || '') + q.expr + ' ' + (q.op || '')) &&
                (/<text[^>]*>[^<]*\d?x\b/.test(String(q.svg || '')) || /(^|[^a-z])x([^a-z]|$)/i.test(String(q.expr).replace(/<[^>]+>/g, ' ')))) {   // angle problems with an x
         var a = chk[1]; w = mount(host, { setup: { answer: a, hint: angleHint(q.expr + ' ' + (q.op || '')), figure: !!q.svg }, onAnswer: fill });
+      }
+      if (w) {
+        var ob = host.querySelector('.sw-open'); if (ob) ob.addEventListener('click', function () { card.classList.toggle('sw-wide', !w.hidden); });
       }
       if (w) {   // the older "pick the next step" helper on this card is replaced by the workspace
         var old = card.querySelectorAll('.ss-open,.ss-panel'); for (var i = 0; i < old.length; i++) old[i].hidden = true, old[i].style.display = 'none';
@@ -789,7 +928,8 @@
       var lab = inp.closest('label'), host = el('div', 'sw-host'); lab.appendChild(host);
       var c = map[id][num], cfg = { onAnswer: function (t) { fillBox(inp, t); } };
       if (c.start) cfg.start = c.start;
-      if (c.setup != null) cfg.setup = { answer: c.setup, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt };
+      if (c.setup != null) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
+      if (c.positive) cfg.positive = true;
       if (c.then) cfg.then = c.then;
       if (c.v) cfg.v = c.v;
       var box = mount(host, cfg), open = host.querySelector('.sw-open');

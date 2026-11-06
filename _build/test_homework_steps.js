@@ -27,9 +27,14 @@ const SETUP = {
   '4.3': { 3: ['x + 128 = 180'], 4: ['x + 63 = 180'], 6: ['4x − 6 + 74 = 180'], 8: ['x + 2x + 60 = 180'] },
   '4.4': { 3: ['x + 101 = 180'], 4: ['129 + x = 180'], 6: ['6x − 14 = 4x + 12'], 8: ['5x − 15 = 110'], 10: ['x + 15 + 3x + 5 = 180'] },
   '4.5': { 1: ['x + 67 + 41 = 180'], 2: ['x = 48 + 77'], 3: ['65 + x = 140'], 6: ['3x + 5 + 2x + x + 25 = 180'], 8: ['4x + 2 + x + 3 = 90'] },
-  '4.6': { 1: ['66 + x = 180'], 3: ['x + 28 + 90 = 180'], 6: ['4x + 12 = 6x − 8'], 7: ['4x + 10 = 2x + 34'] }
+  '4.6': { 1: ['66 + x = 180'], 3: ['x + 28 + 90 = 180'], 6: ['4x + 12 = 6x − 8'], 7: ['4x + 10 = 2x + 34'] },
+  '5.1': { 1: ['8^2 + 15^2 = c^2', 'c'], 3: ['9 + 16 = c^2', 'c'], 6: ['6^2 + h^2 = 10^2', 'h'], 10: ['24^2 + w^2 = 25^2', 'w'] },
+  '5.2': { 4: ['15^2 + 20^2 = c^2', 'c'], 5: ['6^2 + a^2 = 10^2', 'a'], 8: ['18^2 + 24^2 = d^2', 'd'], 10: ['6^2 + 8^2 = c^2', 'c'] },
+  '5.3': { 1: ['5^2 + 8^2 = c^2', 'c'], 2: ['7^2 + b^2 = 12^2', 'b'], 3: ['12^2 + h^2 = 20^2', 'h'], 6: ['(√11)^2 + 5^2 = c^2', 'c'], 8: ['9^2 + 12^2 = d^2', 'd'], 9: ['3^2 + 6^2 = c^2', 'c'], 10: ['10^2 + 24^2 = d^2', 'd'] },
+  '5.4': { 2: ['3^2 + 4^2 = d^2', 'd'], 3: ['5^2 + 12^2 = d^2', 'd'], 5: ['6^2 + 9^2 = c^2', 'c'], 6: ['8^2 + 5^2 = d^2', 'd'], 8: ['5^2 + 12^2 = d^2', 'd'], 9: ['6^2 + 3^2 = d^2', 'd'], 10: ['6^2 + 8^2 = d^2', 'd'] },
+  '5.5': { 1: ['20^2 + 21^2 = c^2', 'c'], 2: ['10^2 + b^2 = 26^2', 'b'], 4: ['3^2 + 4^2 = d^2', 'd'], 5: ['3^2 + 8^2 = c^2', 'c'], 6: ['30^2 + h^2 = 50^2', 'h'], 8: ['5^2 + b^2 = (√50)^2', 'b'], 10: ['(√13)^2 + 6^2 = d^2', 'd'] }
 };
-const THEN = { '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['100', '80'], 8: ['54'], 10: ['144'] }, '4.2': { 6: ['70', '75'], 8: ['60'], 10: ['72', '108', '144'] },
+const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['100', '80'], 8: ['54'], 10: ['144'] }, '4.2': { 6: ['70', '75'], 8: ['60'], 10: ['72', '108', '144'] },
   '4.3': { 6: ['106'] }, '4.4': { 6: ['64'], 10: ['55', '125'] }, '4.5': { 6: ['80', '50', '50'] }, '4.6': { 6: ['52'], 7: ['58'] } };
 
 (async () => {
@@ -39,23 +44,25 @@ const THEN = { '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['10
   await pg.addScriptTag({ url: BASE + 'grade8/step-work.js' });
   const bad = await pg.evaluate(([WANT, SETUP, THEN]) => {
     const T = StepWork._t, M = window.HW_STEPS, out = []; let n = 0;
-    const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind; };
+    const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind === 'sq' ? 'sq' + Math.sqrt(r.k.n / r.k.d) : r.kind; };
     Object.keys(M).forEach(id => Object.keys(M[id]).forEach(p => {
-      const c = M[id][p], v = c.v || 'x'; n++;
+      const c = M[id][p], v = c.any ? ((SETUP[id] || {})[p] || [0, 'x'])[1] || 'x' : (c.v || 'x'); n++;
       try {
         let x;
         if (c.start) { const g = res(c.start, v); const w = (WANT[id] || {})[p]; if (g !== w) out.push(`${id} #${p} start ${c.start}: got ${g}, want ${w}`); x = g; }
         if (c.setup != null) {
           const s = (SETUP[id] || {})[p]; if (!s) { out.push(`${id} #${p}: no setup equation in test`); return; }
-          const g = res(s[0], s[1] || 'x'), want = (c.ineq ? '' : '') + String(c.setup);
-          const val = g.replace(/^[<>≤≥]/, '');
-          if (val !== want) out.push(`${id} #${p} setup ${s[0]}: solves to ${g}, data says ${c.setup}`);
-          if ((s[1] || 'x') !== v) out.push(`${id} #${p}: letter ${s[1]} vs ${v}`);
+          const g = res(s[0], s[1] || 'x'), want = c.setup.root ? Math.sqrt(c.setup.root) : Number(c.setup);
+          let val = g.replace(/^[<>≤≥]/, '').replace(/^sq/, '');
+          const num = val.includes('/') ? val.split('/')[0] / val.split('/')[1] : Number(val);
+          if (Math.abs(num - want) > 1e-9) out.push(`${id} #${p} setup ${s[0]}: solves to ${g}, data says ${JSON.stringify(c.setup)}`);
+          if (c.any && Number.isInteger(num)) val = String(num);
+          if (!c.any && (s[1] || 'x') !== v) out.push(`${id} #${p}: letter ${s[1]} vs ${v}`);
           x = val;
         }
         if (c.then) {
           const xs = T.Q(...(x.includes('/') ? x.split('/').map(Number) : [Number(x), 1]));
-          const got = c.then.map(t => T.qtxt(T.solve(T.parseEq(`${v} = 0`), v) && (function () { const P = T.poly(T.parseEq(t.expr + ' = 0').L, v); return { n: P[0].n * xs.d * P[1].d + P[1].n * xs.n * P[0].d, d: P[0].d * P[1].d * xs.d }; })()));
+          const got = c.then.map(t => T.qtxt(T.solve(T.parseEq(`${v} = 0`), v) && (function () { const P = T.poly(T.parseEq(t.expr.replace(/[a-z]/g, v) + ' = 0').L, v); return { n: P[0].n * xs.d * P[1].d + P[1].n * xs.n * P[0].d, d: P[0].d * P[1].d * xs.d }; })()));
           const wantT = (THEN[id] || {})[p] || [];
           got.forEach((g, i) => { const [a, b] = g.split('/').map(Number); const gv = b ? a / b : a; if (Math.abs(gv - Number(wantT[i])) > 1e-9) out.push(`${id} #${p} then ${c.then[i].label}: got ${g}, want ${wantT[i]}`); });
         }
