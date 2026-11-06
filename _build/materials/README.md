@@ -18,6 +18,7 @@ python3 _build/materials/combine.py ALL.pdf "Title A=a.pdf" "Title B=b.pdf"
 | `handouts.py` | The two-sided handout format: `item`, `mc` (multiple choice), `sa` (select all), `entry` (numeric entry), `work`, `sample` (blank in-class example; worked in green on the key), `front_head`, `back_head`. Holds the Equations, Functions A/B, Transformations A/B handouts (Oct 2026). |
 | `bell2.py` | Two-sided bell ringers. `side(letter, title, std, remember, parts, key, label)`; parts are `(directions, kind, cols, items)`. Holds Bell Ringer A (NS.1) and B (EE.1). |
 | `bell5.py` | Bell Ringer E: multi-step equations + vertical angles &amp; linear pairs (same format as D, new numbers). |
+| `bell6.py` | Bell Ringer F (Nov 2026): 4 multi-step equations (#3 needs a reciprocal) + 1 vertical-angles and 1 linear-pair problem with algebra. |
 | `bell.py` | Bell ringer cell styles + helpers: `rep("27")` repeating decimal with bar, `nines("27")` 9's rule value, `RULES` (exponent rules box). |
 | `equations.py` | `flowchart()` for solving equations/inequalities. |
 | `functions.py` | `curve`, `circle`, `dots`, `is_function` for function graphs. |
