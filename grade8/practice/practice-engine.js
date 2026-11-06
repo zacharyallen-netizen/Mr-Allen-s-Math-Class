@@ -166,6 +166,11 @@
   root.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && e.target.classList.contains('pr-in')) e.target.closest('.pr-card').querySelector('.pr-check').click();
   });
+  // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
+  // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
+  if (!window.StepWork) {
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js'); document.body.appendChild(sw);
+  } else window.StepWork.auto();
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);
