@@ -288,7 +288,7 @@
       case 'num': return fmtQ(n.v, n.src);
       case 'pi': return 'π';
       case 'var': return sub != null ? (/^\d+$/.test(sub) ? sub : '(' + sub + ')') : '<i>' + n.v + '</i>';
-      case 'par': return (n.a.t === 'num' || n.a.t === 'var' || n.a.t === 'div' || n.a.t === 'par') && sub == null ? html(n.a, sub) : '(' + html(n.a, sub) + ')';
+      case 'par': return (n.a.t === 'num' || n.a.t === 'var' || n.a.t === 'div' || n.a.t === 'par' || n.a.t === 'pow') && sub == null ? html(n.a, sub) : '(' + html(n.a, sub) + ')';
       case 'neg': return '−' + (n.a.t === 'add' ? '(' + html(n.a, sub) + ')' : html(n.a, sub));
       case 'add': return n.terms.map(function (t, i) {
         var h = html(t.n, sub), neg = t.s < 0;
@@ -298,12 +298,15 @@
       case 'mul': {
         var A = html(n.a, sub), B = html(n.b, sub);
         if (isNumLike(n.a) && n.b.t === 'pi') return A + B;
+        if (sub == null && n.b.t === 'pow' && n.b.a.t === 'num') return A + ' × ' + B;
         if (sub == null && isNumLike(n.a) && (n.b.t === 'var' || n.b.t === 'pow' || n.b.t === 'par' || n.b.t === 'mul')) return A + B;
         if (sub == null && n.a.t === 'num' && n.b.t === 'mul') return A + B;
+        if (sub == null && (n.b.t === 'var' || (n.b.t === 'pow' && n.b.a.t === 'var')) && n.a.t !== 'div') return A + B;
+        if (sub == null && n.a.t === 'par' && n.b.t === 'par') return A + B;
         return A + ' · ' + B;
       }
       case 'div': return '<span class="sw-fr"><span>' + html(n.a, sub) + '</span><span>' + html(n.b, sub) + '</span></span>';
-      case 'pow': return html(n.a, sub) + '<sup>' + (n.e < 0 ? '−' + -n.e : n.e) + '</sup>';
+      case 'pow': return (n.a.t === 'par' ? '(' + html(n.a.a, sub) + ')' : n.a.t === 'neg' || n.a.t === 'mul' || n.a.t === 'div' ? '(' + html(n.a, sub) + ')' : html(n.a, sub)) + '<sup>' + (n.e < 0 ? '−' + -n.e : n.e) + '</sup>';
       case 'sqrt': return '<span class="sw-sqrt">√<span>' + html(n.a.t === 'par' ? n.a.a : n.a, sub) + '</span></span>';
       case 'pm': return '±' + html(n.a, sub);
     }
@@ -842,6 +845,240 @@
     return info.kind === 'one' ? v + ' = ' + qtxt(info.x).replace(/^-/, '-') : v + ' ' + ({ '≤': '≤', '≥': '≥', '<': '<', '>': '>' }[info.rel]) + ' ' + qtxt(info.x);
   }
 
+  /* ===================== EXPRESSION MODE (Unit 2: exponent rules, scientific notation) =====================
+     The student simplifies one term step by step. Each line is checked by exact value and exponents;
+     feedback names the rule that was misused. Numeric bases (4³, 10⁵) stay as powers. */
+  function bgcd(a, b) { a = a < 0n ? -a : a; b = b < 0n ? -b : b; while (b) { var t = a % b; a = b; b = t; } return a || 1n; }
+  function B(n, d) { d = d == null ? 1n : d; if (d < 0n) { n = -n; d = -d; } var g = bgcd(n, d); return { n: n / g, d: d / g }; }
+  function bmul(a, b) { return B(a.n * b.n, a.d * b.d); }
+  function bdiv(a, b) { if (b.n === 0n) throw err('zero'); return B(a.n * b.d, a.d * b.n); }
+  function bpow(a, e) { if (e === 0) return B(1n); var r = B(1n), k = Math.abs(e); for (var i = 0; i < k; i++) r = bmul(r, a); return e < 0 ? bdiv(B(1n), r) : r; }
+  function beq(a, b) { return a.n === b.n && a.d === b.d; }
+  function bdec(s) { var p = s.split('.'), f = (p[1] || '').length; return B(BigInt((p[0] || '0') + (p[1] || '')), 10n ** BigInt(f)); }
+  function exClean(s) { return clean(String(s).replace(/<span class="frac"><span class="num">(.*?)<\/span><span class="den">(.*?)<\/span><\/span>/g, '(($1)/($2))')).replace(/^=/, ''); }
+  /* parse one term; a "/" at the top level divides everything on the left by everything on the right */
+  function parseTerm(text) {
+    var s = exClean(text); if (!s) throw err('empty');
+    if (/[=<>≤≥]/.test(s)) throw err('erel');
+    var depth = 0, cut = -1;
+    for (var i = 0; i < s.length; i++) { var ch = s[i]; if (ch === '(') depth++; else if (ch === ')') depth--; else if (ch === '/' && depth === 0) { if (cut >= 0) throw err('twoslash'); cut = i; } }
+    if (cut < 0) { var one = parseExpr(lex(s)); while (one.t === 'par' && one.a.t !== 'add') one = one.a; return one; }
+    var top = s.slice(0, cut), bot = s.slice(cut + 1); if (!top || !bot) throw err('missing');
+    return { t: 'div', a: parseExpr(lex(top)), b: parseExpr(lex(bot)), top: true };
+  }
+  /* AST → {c: exact number, b: {x: 3, '#10': 5}}; f = mistake to imitate (for feedback) */
+  function mono(n, f) {
+    switch (n.t) {
+      case 'num': return { c: bdec(n.src || qtxt(n.v)), b: {} };
+      case 'var': var o = {}; o[n.v] = 1; return { c: B(1n), b: o };
+      case 'par': return mono(n.a, f);
+      case 'neg': var m0 = mono(n.a, f); return { c: B(-m0.c.n, m0.c.d), b: m0.b };
+      case 'add': throw err('sum');
+      case 'mul': case 'div': {
+        var A = mono(n.a, f), C = mono(n.b, f), out = { c: n.t === 'mul' ? bmul(A.c, C.c) : bdiv(A.c, C.c), b: {} }, k;
+        for (k in A.b) out.b[k] = A.b[k];
+        for (k in C.b) {
+          if (n.t === 'mul') out.b[k] = out.b[k] != null && f === 'mulExp' ? out.b[k] * C.b[k] : (out.b[k] || 0) + C.b[k];
+          else out.b[k] = out.b[k] != null && f === 'subRev' ? C.b[k] - out.b[k] : (out.b[k] || 0) - C.b[k];
+        }
+        if (f === 'baseMul' && n.t === 'mul') { var ks = Object.keys(A.b).filter(function (z) { return z[0] === '#' && C.b[z] != null; }); ks.forEach(function (z) { var nb = '#' + (BigInt(z.slice(1)) ** 2n); var e = out.b[z]; delete out.b[z]; out.b[nb] = e; }); }
+        return out;
+      }
+      case 'sqrt': throw err('erootx');
+      case 'pi': throw err('erootx');
+      case 'pow': {
+        var e = n.e, base = n.a.t === 'par' ? n.a.a : n.a;
+        if (e === 0) return { c: B(f === 'zeroIsZero' ? 0n : 1n), b: {} };
+        if (base.t === 'num') { var bb = {}; bb['#' + (base.src || qtxt(base.v))] = (f === 'negSign' && e < 0) ? -e : e; return { c: B(f === 'negSign' && e < 0 ? -1n : 1n), b: bb }; }
+        var m = mono(n.a, f), r = { c: m.c, b: {} }, isPP = base.t === 'pow';
+        for (var key in m.b) r.b[key] = isPP && f === 'addPow' ? m.b[key] + e : m.b[key] * e;
+        if (base.t === 'var' && f === 'negSign' && e < 0) { r.b[base.v] = -e; r.c = B(-1n); return r; }
+        var prod = base.t !== 'var' && base.t !== 'pow';
+        r.c = prod && f === 'coefNoPow' ? m.c : prod && f === 'coefTimes' ? bmul(m.c, B(BigInt(e))) : bpow(m.c, e);
+        return r;
+      }
+    }
+    throw err('syntax');
+  }
+  function letters(m) { var o = {}; for (var k in m.b) if (k[0] !== '#' && m.b[k]) o[k] = m.b[k]; return o; }
+  function valueOf(m) { var v = m.c; for (var k in m.b) if (k[0] === '#' && m.b[k]) v = bmul(v, bpow(B(BigInt(k.slice(1).replace('.', '')), 10n ** BigInt((k.split('.')[1] || '').length)), m.b[k])); return v; }
+  function sameMono(a, b) {
+    var la = letters(a), lb = letters(b), ka = Object.keys(la).sort(), kb = Object.keys(lb).sort();
+    if (ka.join() !== kb.join() || ka.some(function (k) { return la[k] !== lb[k]; })) return false;
+    return beq(valueOf(a), valueOf(b));
+  }
+  var EX_MISTAKES = [
+    ['mulExp', 'When you <b>multiply</b> powers with the same base, <b>add</b> the exponents and keep the base. (Multiply the exponents only for a power of a power.)'],
+    ['addPow', 'For a <b>power of a power</b>, <b>multiply</b> the exponents: (x<sup>3</sup>)<sup>4</sup> = x<sup>3·4</sup>.'],
+    ['coefNoPow', 'The outside exponent goes on <b>every</b> factor inside the parentheses, the number too. For example, (2x<sup>3</sup>)<sup>4</sup> = 2<sup>4</sup> · x<sup>12</sup>.'],
+    ['coefTimes', 'Raise the number to the power. 2<sup>4</sup> means 2 · 2 · 2 · 2 = 16, not 2 · 4.'],
+    ['subRev', 'When you divide, subtract the <b>bottom</b> exponent from the <b>top</b> exponent.'],
+    ['negSign', 'A negative exponent does not make the number negative. It means <b>flip it</b>: x<sup>−2</sup> = 1/x<sup>2</sup>.'],
+    ['zeroIsZero', 'Anything (except 0) to the <b>zero</b> power is <b>1</b>, not 0.'],
+    ['baseMul', 'Keep the base the same. For example, 4<sup>3</sup> · 4<sup>2</sup> = 4<sup>5</sup>, not 16<sup>5</sup>.']
+  ];
+  function exDiagnose(prevAst, mNew) {
+    for (var i = 0; i < EX_MISTAKES.length; i++) { try { var w = mono(prevAst, EX_MISTAKES[i][0]); if (sameMono(w, mNew)) return EX_MISTAKES[i][1]; } catch (x) { } }
+    var mp = mono(prevAst), lp = letters(mp), ln = letters(mNew), off = [];
+    Object.keys(lp).concat(Object.keys(ln)).forEach(function (k) { if (lp[k] !== ln[k] && off.indexOf(k) < 0) off.push(k); });
+    if (off.length) return 'Check the exponent on <i>' + off[0] + '</i>. Which rule fits: add, subtract or multiply the exponents?';
+    return 'The letters are right. Check the <b>numbers</b>: the coefficient or a numeric power.';
+  }
+  /* is this line written in simplest form (positive exponents, each base once, one number on top and bottom)? */
+  function exFactors(n, out, sign) {
+    if (n.t === 'mul') { exFactors(n.a, out, sign); exFactors(n.b, out, sign); return; }
+    if (n.t === 'par' && n.a.t !== 'add') { exFactors(n.a, out, sign); return; }
+    if (n.t === 'neg') { out.neg = !out.neg; exFactors(n.a, out, sign); return; }
+    if (n.t === 'num') { out.nums.push(n); return; }
+    if (n.t === 'var') { out.f.push({ base: n.v, e: 1 }); return; }
+    if (n.t === 'pow' && (n.a.t === 'var' || n.a.t === 'num')) { out.f.push({ base: n.a.t === 'var' ? n.a.v : '#' + (n.a.src || qtxt(n.a.v)), e: n.e }); return; }
+    out.bad = true;
+  }
+  function exSimplest(ast, sci) {
+    var top = ast.t === 'div' ? ast.a : ast, bot = ast.t === 'div' ? ast.b : null, T = { f: [], nums: [] }, D = { f: [], nums: [] };
+    exFactors(top, T); if (bot) exFactors(bot, D);
+    if (T.bad || D.bad || D.neg) return { ok: false };
+    var all = T.f.concat(D.f), seen = {};
+    for (var i = 0; i < all.length; i++) { if (seen[all[i].base]) return { ok: false, why: 'The base ' + all[i].base.replace('#', '') + ' shows up more than once. Combine it.' }; seen[all[i].base] = 1; if (all[i].e <= 0) return { ok: false, why: all[i].e === 0 ? 'There is still a zero exponent.' : 'Write it with <b>positive</b> exponents.' }; }
+    if (T.nums.length > 1 || D.nums.length > 1) return { ok: false, why: 'Multiply the numbers together.' };
+    if (T.nums.length && D.nums.length) { var a = bdec(T.nums[0].src || '1'), b = bdec(D.nums[0].src || '1'); if (bgcd(a.n, b.n) !== 1n || b.n === 1n) return { ok: false, why: 'The numbers on top and bottom can still be divided.' }; }
+    if (bot && !D.f.length && !D.nums.length) return { ok: false };
+    if (sci) {
+      var tens = all.filter(function (z) { return z.base === '#10'; }), others = all.filter(function (z) { return z.base !== '#10'; });
+      var c = T.nums.length ? Math.abs(Number(T.nums[0].src)) : 1;
+      if (bot || others.length || tens.length !== 1 || !(c >= 1 && c < 10)) return { ok: false, why: 'Scientific notation is (a number from 1 up to, but not including, 10) × 10<sup>n</sup>. Adjust the first number and the exponent.' };
+    }
+    return { ok: true };
+  }
+  function exMoves(ast) {   // what the current line offers, with a picture of each rule (the student still does the math)
+    var top = ast.t === 'div' ? ast.a : ast, bot = ast.t === 'div' ? ast.b : null, T = { f: [], nums: [] }, D = { f: [], nums: [] };
+    exFactors(top, T); if (bot) exFactors(bot, D);
+    var notes = {}, groups = {};
+    T.f.forEach(function (z) { (groups[z.base] = groups[z.base] || []).push(z.e); });
+    var bn = function (b) { return b[0] === '#' ? b.slice(1) : '<i>' + b + '</i>'; }, en = function (e) { return e < 0 ? '(−' + -e + ')' : String(e); };
+    var add = Object.keys(groups).filter(function (b) { return groups[b].length > 1; });
+    if (add.length) notes.add = add.map(function (b) { return groups[b].map(function (e) { return bn(b) + '<sup>' + e + '</sup>'; }).join(' · ') + ' → ' + bn(b) + '<sup>' + groups[b].map(en).join(' + ') + '</sup>'; }).join('<br>');
+    var sub = D.f.filter(function (z) { return groups[z.base]; });
+    if (sub.length) notes.sub = sub.map(function (z) { return bn(z.base) + '<sup>' + groups[z.base][0] + '</sup> ÷ ' + bn(z.base) + '<sup>' + z.e + '</sup> → ' + bn(z.base) + '<sup>' + en(groups[z.base][0]) + ' − ' + en(z.e) + '</sup>'; }).join('<br>');
+    var pp = [], pprod = [], zero = [], neg = [];
+    walk(ast, function (m) {
+      if (m.t !== 'pow') return; var base = m.a.t === 'par' ? m.a.a : m.a;
+      if (m.e === 0) zero.push(html(m) + ' = 1');
+      if (m.e < 0) neg.push(html(m) + ' = 1 / ' + html({ t: 'pow', a: m.a, e: -m.e }) + ' (move it across the fraction bar; the exponent becomes positive)');
+      if (base.t === 'pow') pp.push(html(m) + ' → ' + html(base.a) + '<sup>' + en(base.e) + ' · ' + en(m.e) + '</sup>');
+      else if (base.t === 'mul') { var fs = { f: [], nums: [] }; exFactors(base, fs); pprod.push(html(m) + ' → ' + fs.nums.map(function (q) { return html(q) + '<sup>' + m.e + '</sup>'; }).concat(fs.f.map(function (z) { return '(' + bn(z.base) + (z.e !== 1 ? '<sup>' + z.e + '</sup>' : '') + ')<sup>' + m.e + '</sup>'; })).join(' · ')); }
+    });
+    if (pp.length) notes.pp = pp.join('<br>'); if (pprod.length) notes.pprod = pprod.join('<br>'); if (zero.length) notes.zero = zero.join('<br>'); if (neg.length) notes.neg = neg.join('<br>');
+    if (T.nums.length > 1 || (T.nums.length && D.nums.length)) notes.coef = (T.nums.length > 1 ? 'Multiply the numbers: ' + T.nums.map(html).join(' · ') : '') + (T.nums.length && D.nums.length ? (T.nums.length > 1 ? '<br>' : '') + 'Divide the numbers: ' + html(T.nums[0]) + ' ÷ ' + html(D.nums[0]) : '');
+    var tens = T.f.filter(function (z) { return z.base === '#10'; });
+    if (tens.length && T.nums.length === 1) {
+      var cv = Math.abs(Number(T.nums[0].src || 1));
+      if (cv >= 10 || (cv > 0 && cv < 1)) {
+        var sh = 0, cc = cv; while (cc >= 10) { cc /= 10; sh++; } while (cc < 1) { cc *= 10; sh--; }
+        notes.adjust = 'The first number must be at least 1 and less than 10. ' + html(T.nums[0]) + ' = ' + (+cc.toFixed(10)) + ' × 10<sup>' + sh + '</sup>. Then combine the powers of 10: add the exponents.';
+      }
+    }
+    return notes;
+  }
+  function mountExpr(host, cfg) {
+    css(); uid++;
+    var start; try { start = parseTerm(cfg.start); mono(start); } catch (e) { return null; }
+    var open = btn('Work it out step by step', 'sw-open'); open.setAttribute('aria-expanded', 'false');
+    var box = el('div', 'sw'); box.hidden = true; box.id = 'sw' + uid; open.setAttribute('aria-controls', box.id);
+    host.appendChild(open); host.appendChild(box);
+    var built = false, lines = [{ a: start, mv: null }];
+    open.addEventListener('click', function () {
+      box.hidden = !box.hidden; open.setAttribute('aria-expanded', String(!box.hidden));
+      open.textContent = box.hidden ? 'Work it out step by step' : 'Hide step-by-step work';
+      if (!built) { built = true; build(); }
+    });
+    var trail, work;
+    function build() {
+      box.appendChild(el('p', 'sw-h', 'Simplify it one rule at a time'));
+      trail = el('ol', 'sw-trail'); box.appendChild(trail);
+      work = el('div'); box.appendChild(work);
+      draw(); step();
+    }
+    function draw() { trail.innerHTML = ''; lines.forEach(function (l, i) { var li = el('li'); li.appendChild(el('span', 'sw-n', String(i + 1))); li.appendChild(el('span', 'sw-ln', html(l.a))); if (l.mv) li.appendChild(el('span', 'sw-mv', l.mv)); trail.appendChild(li); }); }
+    function step() {
+      work.innerHTML = '';
+      var a = lines[lines.length - 1].a, simp = exSimplest(a, cfg.sci);
+      if (lines.length > 1 && simp.ok) return finish(a);
+      var notes = exMoves(a);
+      work.appendChild(el('p', 'sw-ask', 'Which rule will you use next?'));
+      var mv = el('div', 'sw-moves'), vis = el('div', 'sw-vis'); vis.hidden = true;
+      var M = cfg.sci ? [['coef', 'Multiply or divide the numbers'], ['add', 'Same base, multiplying: add exponents'], ['sub', 'Same base, dividing: subtract exponents'], ['adjust', 'Fix the first number (1 to 10)']]
+        : [['coef', 'Multiply or divide the numbers'], ['add', 'Same base, multiplying: add exponents'], ['sub', 'Same base, dividing: subtract exponents'], ['pp', 'Power of a power: multiply exponents'], ['pprod', 'Power of a product: power on every factor'], ['zero', 'Zero exponent'], ['neg', 'Negative exponent']];
+      var write = el('div', 'sw-write'); write.hidden = true;
+      var fb = el('div', 'sw-fb'); fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite');
+      M.forEach(function (m) {
+        var b = btn(m[1]); b.setAttribute('aria-pressed', 'false'); mv.appendChild(b);
+        b.addEventListener('click', function () {
+          [].forEach.call(mv.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+          fb.className = 'sw-fb'; fb.innerHTML = '';
+          if (!notes[m[0]]) { vis.hidden = true; write.hidden = true; fb.className = 'sw-fb tip'; fb.innerHTML = 'That rule doesn\'t fit this line. Look at it again: what is being multiplied, divided or raised to a power?'; return; }
+          vis.hidden = false; vis.innerHTML = '<div class="sw-ln">' + html(a) + '</div><p class="sw-note">' + notes[m[0]] + '</p>';
+          showWrite();
+        });
+      });
+      work.appendChild(mv); work.appendChild(vis); work.appendChild(write); work.appendChild(fb);
+      if (cfg.sci) work.appendChild(el('p', 'sw-note', 'Type × as * or x, and powers with ^, like 6 * 10^8.'));
+      if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'), ur = el('div', 'sw-acts'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u); work.appendChild(ur); }
+      if (lines.length === 1 && simp.ok) { fb.className = 'sw-fb tip'; fb.innerHTML = 'This is already simplified. Type it in the answer box.'; }
+      function showWrite() {
+        write.hidden = false; write.innerHTML = '';
+        var lab = el('label', '', 'Write the new line:'), inp = el('input', 'line'); inp.type = 'text'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('aria-label', 'Your new line');
+        lab.appendChild(inp); write.appendChild(lab);
+        var k = el('div', 'sw-keys'); [['xⁿ', '^'], ['(', '('], [')', ')'], ['/', '/'], ['×', '*'], ['−', '-'], ['⌫', 'BS']].forEach(function (kk) {
+          var b2 = btn(kk[0]); b2.setAttribute('aria-label', kk[1] === 'BS' ? 'Erase' : 'Type ' + kk[0]); b2.addEventListener('mousedown', function (e) { e.preventDefault(); });
+          b2.addEventListener('click', function () { var s = inp.selectionStart, t = inp.selectionEnd; if (kk[1] === 'BS') { if (s === t && s > 0) s--; inp.value = inp.value.slice(0, s) + inp.value.slice(t); inp.setSelectionRange(s, s); } else { inp.value = inp.value.slice(0, s) + kk[1] + inp.value.slice(t); inp.setSelectionRange(s + kk[1].length, s + kk[1].length); } inp.focus(); inp.dispatchEvent(new Event('input', { bubbles: true })); });
+          k.appendChild(b2);
+        }); write.appendChild(k);
+        var pv = el('div', 'sw-prev'); write.appendChild(pv);
+        inp.addEventListener('input', function () { if (!inp.value.trim()) { pv.innerHTML = ''; return; } try { var t = parseTerm(cfg.sci ? inp.value.replace(/(\d)\s*[x×]\s*10/gi, '$1*10') : inp.value); mono(t); pv.innerHTML = 'I read this as: <span class="sw-ln">' + html(t) + '</span>'; } catch (x) { pv.innerHTML = '<span style="color:#9A3412">' + exErr(x) + '</span>'; } });
+        var acts = el('div', 'sw-acts'), go = btn('Check this line', 'go'); acts.appendChild(go); write.appendChild(acts);
+        var check = function () {
+          var t, mNew;
+          try { t = parseTerm(cfg.sci ? inp.value.replace(/(\d)\s*[x×]\s*10/gi, '$1*10') : inp.value); mNew = mono(t); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = exErr(x); return; }
+          var mOld = mono(a);
+          if (!sameMono(mOld, mNew)) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + exDiagnose(a, mNew); return; }
+          if (html(t) === html(a)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Use a rule to change it.'; return; }
+          lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
+          var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = '✓ Correct line.' + (w ? ' Keep going: ' + w : ''); }
+        };
+        go.addEventListener('click', check); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
+        inp.focus();
+      }
+    }
+    function finish(a) {
+      work.innerHTML = '';
+      var d = el('div', 'sw-done'); d.setAttribute('role', 'status');
+      d.innerHTML = '<b>Simplified:</b> <span class="sw-ln">' + html(a) + '</span><br>Every base shows up once, and all exponents are positive.' + (cfg.sci ? ' It is in scientific notation.' : '');
+      work.appendChild(d);
+      var ur = el('div', 'sw-acts'), u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u);
+      if (cfg.onAnswer) { var b = btn('Put this answer in the answer box', 'go'); b.addEventListener('click', function () { cfg.onAnswer(plainTerm(a)); b.textContent = '✓ Answer filled in'; b.disabled = true; }); ur.appendChild(b); }
+      work.appendChild(ur);
+    }
+    return box;
+  }
+  function plainTerm(a) {
+    function p(n) {
+      switch (n.t) {
+        case 'num': return n.src || qtxt(n.v); case 'var': return n.v; case 'par': return '(' + p(n.a) + ')'; case 'neg': return '-' + p(n.a);
+        case 'mul': return p(n.a) + (n.b.t === 'pow' && n.b.a.t === 'num' ? ' × ' : '') + p(n.b);
+        case 'div': return p(n.a) + '/' + (n.b.t === 'mul' ? '(' + p(n.b) + ')' : p(n.b));
+        case 'pow': return p(n.a) + '^' + n.e;
+      }
+      return '';
+    }
+    return p(a);
+  }
+  function exErr(x) {
+    var c = x && x.code;
+    return { sum: 'This is for one term. There should be no + or − between parts.', erel: 'Type just the expression, with no = sign.', twoslash: 'Use one fraction bar (/). Put the whole top on its left and the whole bottom on its right.',
+      erootx: 'Square roots and π don\'t belong in this problem.', empty: 'Type the new line first.' }[c] || readErr(x, 'x');
+  }
+
   /* ===================== automatic attaching ===================== */
   var ANGLE_HINTS = [
     [/complement/i, 'Complementary angles add to <b>90°</b>.'],
@@ -883,6 +1120,12 @@
       sec.probs.forEach(function (p) {
         var card = document.getElementById('s' + si + 'p' + p.n); if (!card || card.querySelector('.sw-open')) return;
         var inp = card.querySelector('.pr-in'), host = el('div'); card.appendChild(host);
+        var ex = String(D.unit) === '2' && /^\s*(simplify|multiply|divide)\s*:/i.test(String(p.q).replace(/<[^>]+>/g, ''));
+        if (ex) {
+          var q2 = String(p.q).replace(/^\s*(simplify|multiply|divide)\s*:\s*/i, '').replace(/[—–]\s*[a-z][^<]*$/i, '').trim();
+          var w2 = mountExpr(host, { start: q2, sci: /10\s*(<sup>|\^|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻])/.test(q2) && /×/.test(q2), onAnswer: function (t) { fillBox(inp, t); } });
+          if (w2) return;
+        }
         var start = findEq(p.q);
         var fmt = function (t, info) {
           var a = String(p.ans).replace(/<[^>]+>/g, '');
@@ -917,7 +1160,10 @@
         fillBox(inp, t);
       };
       var w = null;
-      if (!start && (chk[0] === 'val' || chk[0] === 'num') && /find the (radius|height)/i.test((q.op || '') + ' ' + q.expr)) {
+      if (!start && /^(simplify|multiply|divide)$/i.test(q.op || '')) {
+        w = mountExpr(host, { start: q.expr, sci: /10\s*<sup>/.test(q.expr) && /×/.test(q.expr), onAnswer: function (t) { fillBox(inp, t); } });
+      }
+      else if (!start && (chk[0] === 'val' || chk[0] === 'num') && /find the (radius|height)/i.test((q.op || '') + ' ' + q.expr)) {
         w = mount(host, { setup: { answer: chk[1], tol: 1e-6, any: true, hint: VOL_HINT, figure: !!q.svg }, positive: true, roots: true, pi: true, onAnswer: fill });
       }
       else if (!start && chk[0] === 'num' && PYTH_RE.test(q.expr + ' ' + (q.op || ''))) {
@@ -943,6 +1189,11 @@
       var inp = document.getElementById('a' + num); if (!inp) return;
       var lab = inp.closest('label'), host = el('div', 'sw-host'); lab.appendChild(host);
       var c = map[id][num], cfg = { onAnswer: function (t) { fillBox(inp, t); } };
+      if (c.expr) {
+        var bx = mountExpr(host, { start: c.expr, sci: !!c.sci, onAnswer: function (t) { fillBox(inp, t); } }), ob = host.querySelector('.sw-open');
+        if (bx && ob) ob.addEventListener('click', function () { lab.classList.toggle('sw-wide', !bx.hidden); });
+        return;
+      }
       if (c.start) cfg.start = c.start;
       if (c.setup != null) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
       if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;
@@ -954,6 +1205,6 @@
   }
   function auto() { try { autoPractice(); } catch (e) { if (window.console) console.error(e); } try { autoPretest(); } catch (e) { if (window.console) console.error(e); } try { autoHomework(); } catch (e) { if (window.console) console.error(e); } }
 
-  window.StepWork = { mount: mount, auto: auto, _t: { parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
+  window.StepWork = { mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();

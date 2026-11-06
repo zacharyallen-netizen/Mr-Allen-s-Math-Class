@@ -35,6 +35,10 @@ const SETUP = {
   '9.2': { 6: ['98π = π 7^2 h', 'h'] }, '9.3': { 7: ['50π = 1/3 π 5^2 h', 'h'] }, '9.4': { 6: ['245π = π r^2 5', 'r'] },
   '5.5': { 1: ['20^2 + 21^2 = c^2', 'c'], 2: ['10^2 + b^2 = 26^2', 'b'], 4: ['3^2 + 4^2 = d^2', 'd'], 5: ['3^2 + 8^2 = c^2', 'c'], 6: ['30^2 + h^2 = 50^2', 'h'], 8: ['5^2 + b^2 = (√50)^2', 'b'], 10: ['(√13)^2 + 6^2 = d^2', 'd'] }
 };
+// Unit 2: the simplified answer for each expression (worked by hand from the PDFs)
+const EXPR = { '2.2': { 1: '5^7', 2: '18a^7', 3: '5y^4', 4: 'x^3', 9: '8x^4y^5' }, '2.3': { 1: '5^6', 2: 'y^20', 3: '1/16', 4: '1', 5: 'x^7', 7: '4/x^6', 8: '14a^7' },
+  '2.4': { 1: '9x^8y^4', 2: '12a^3', 3: '5/m^2', 4: '3x^7', 6: 'b^2/9a^4', 8: '48x^5y^5', 9: '2x^5' }, '2.5': { 1: '64', 2: 'x^10', 3: '32y^15', 4: '1/36', 5: '6ab^5', 6: '10m^4/n^3', 9: 'x^7/y^6' },
+  '2.6': { 8: '4x^2' }, '2.7': { 1: '8*10^9', 2: '3*10^6', 3: '2*10^9', 4: '3*10^4', 8: '1.2*10^2' }, '2.8': { 2: '2.8*10^4', 3: '3*10^9' }, '2.9': { 1: '-10a^7', 4: '3*10^5', 6: 'x^7/y^4' } };
 const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['100', '80'], 8: ['54'], 10: ['144'] }, '4.2': { 6: ['70', '75'], 8: ['60'], 10: ['72', '108', '144'] },
   '4.3': { 6: ['106'] }, '4.4': { 6: ['64'], 10: ['55', '125'] }, '4.5': { 6: ['80', '50', '50'] }, '4.6': { 6: ['52'], 7: ['58'] } };
 
@@ -43,13 +47,19 @@ const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['1
   await pg.goto(BASE + 'grade8/units3-4.html');
   await pg.addScriptTag({ url: BASE + 'grade8/homework-steps.js' });
   await pg.addScriptTag({ url: BASE + 'grade8/step-work.js' });
-  const bad = await pg.evaluate(([WANT, SETUP, THEN]) => {
+  const bad = await pg.evaluate(([WANT, SETUP, THEN, EXPR]) => {
     const T = StepWork._t, M = window.HW_STEPS, out = []; let n = 0;
     const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind === 'sq' ? 'sq' + Math.sqrt(r.k.n / r.k.d) : r.kind; };
     Object.keys(M).forEach(id => Object.keys(M[id]).forEach(p => {
       const c = M[id][p], v = c.any ? ((SETUP[id] || {})[p] || [0, 'x'])[1] || 'x' : (c.v || 'x'); n++;
       try {
         let x;
+        if (c.expr) {
+          const w = (EXPR[id] || {})[p], A = T.mono(T.parseTerm(c.expr)), Bm = T.mono(T.parseTerm(w));
+          if (!T.sameMono(A, Bm)) out.push(`${id} #${p} ${c.expr} is not equal to ${w}`);
+          if (!T.exSimplest(T.parseTerm(w), !!c.sci).ok) out.push(`${id} #${p}: ${w} is not accepted as simplest`);
+          return;
+        }
         if (c.start) { const g = res(c.start, v); const w = (WANT[id] || {})[p]; if (g !== w) out.push(`${id} #${p} start ${c.start}: got ${g}, want ${w}`); x = g; }
         if (c.setup != null) {
           const s = (SETUP[id] || {})[p]; if (!s) { out.push(`${id} #${p}: no setup equation in test`); return; }
@@ -71,7 +81,7 @@ const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['1
     }));
     out.unshift(`checked ${n} homework problems`);
     return out;
-  }, [WANT, SETUP, THEN]);
+  }, [WANT, SETUP, THEN, EXPR]);
   console.log(bad.join('\n'));
   await br.close();
   process.exit(bad.length > 1 ? 1 : 0);
