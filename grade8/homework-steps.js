@@ -18,6 +18,8 @@
   var PY = 'Use the Pythagorean Theorem: <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup>. The legs are <i>a</i> and <i>b</i>. The hypotenuse <i>c</i> is the longest side, across from the right angle.';
   var DI = 'Make a right triangle. The horizontal distance and the vertical distance between the points are the legs. Then use <i>a</i><sup>2</sup> + <i>b</i><sup>2</sup> = <i>c</i><sup>2</sup>.';
   var BOX = 'First find the diagonal across the bottom of the box (use the length and width). Then use that diagonal and the height as the legs of a second right triangle.';
+  var VOL = 'Start with the volume formula. Cylinder: <i>V</i> = π<i>r</i><sup>2</sup><i>h</i>. Cone: <i>V</i> = ⅓π<i>r</i><sup>2</sup><i>h</i>. Put in the numbers you know, and use a letter for the one you don\'t.';
+  function vol(ans) { return { setup: ans, any: 1, positive: 1, pi: 1, roots: 1, hint: VOL }; }
   function py(ans, hint, more) { var o = { setup: ans, any: 1, positive: 1, fig: 1, hint: hint || PY }; for (var k in more || {}) o[k] = more[k]; return o; }
   window.HW_STEPS = {
     '3.1': { 1: { start: 'x − 6 = 11' }, 2: { start: '5x = 45' }, 3: { start: '2x − 7 = 9' }, 5: { start: 'x/4 + 5 = 8' },
@@ -76,6 +78,7 @@
     '5.2': { 4: py(25), 5: py(8), 8: py(30), 10: py(10, PY, { prompt: 'Use <i>c</i> for how long the longest side would need to be. Write the equation for a right triangle with legs 6 and 8.' }) },
     '5.3': { 1: py({ root: 89 }), 2: py({ root: 95 }), 3: py(16), 6: py(6), 8: py(15), 9: py({ root: 45 }), 10: py(26, BOX) },
     '5.4': { 2: py(5, DI), 3: py(13, DI), 5: py({ root: 117 }), 6: py({ root: 89 }, DI), 8: py(13, DI), 9: py({ root: 45 }, DI), 10: py(10, DI) },
-    '5.5': { 1: py(29), 2: py(24), 4: py(5, DI), 5: py({ root: 73 }), 6: py(40), 8: py(5), 10: py(7, BOX) }
+    '5.5': { 1: py(29), 2: py(24), 4: py(5, DI), 5: py({ root: 73 }), 6: py(40), 8: py(5), 10: py(7, BOX) },
+    '9.2': { 6: vol(2) }, '9.3': { 7: vol(6) }, '9.4': { 6: vol(7) }
   };
 })();

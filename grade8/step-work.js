@@ -30,7 +30,7 @@
   function qsign(a) { return a.n > 0 ? 1 : a.n < 0 ? -1 : 0; }
   function qnum(a) { return a.n / a.d; }
   function qdec(s) { var p = s.split('.'), f = (p[1] || '').length; return Q(parseInt(p[0] || '0', 10) * Math.pow(10, f) + (f ? parseInt(p[1], 10) : 0), Math.pow(10, f)); }
-  function qtxt(a) { return a.d === 1 ? String(a.n) : a.n + '/' + a.d; }
+  function qtxt(a) { if (a.d % 113 === 0) { var r = Q(a.n * 113, a.d * 355); if (r.d <= 1000) return (r.n === 1 && r.d === 1 ? '' : r.n === -1 && r.d === 1 ? '-' : qtxt(r)) + 'π'; } return a.d === 1 ? String(a.n) : a.n + '/' + a.d; }
   function err(code, extra) { var e = new Error(code); e.code = code; e.extra = extra; return e; }
 
   /* ===================== polynomials in one variable (degree ≤ 2) ===================== */
@@ -58,10 +58,11 @@
       .replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '(($1)/($2))')
       .replace(/<sup>(.*?)<\/sup>/g, '^($1)').replace(/<[^>]+>/g, '')
       .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
-      .replace(/[−–—]/g, '-').replace(/sqrt/gi, '√').replace(/\+\/-|\+-(?=[\d√(])/g, '±').replace(/~/g, '≈').replace(/[×·∙⋅]/g, '*').replace(/÷/g, '/').replace(/°/g, '')
+      .replace(/[−–—]/g, '-').replace(/sqrt/gi, '√').replace(/pi/gi, 'π').replace(/\+\/-|\+-(?=[\d√(])/g, '±').replace(/~/g, '≈').replace(/[×·∙⋅]/g, '*').replace(/÷/g, '/').replace(/°/g, '')
       .replace(/<=|=</g, '≤').replace(/>=|=>/g, '≥')
       .replace(/[½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]/g, function (c) { return VULGAR[c]; })
       .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+/g, function (m) { return '^(' + m.split('').map(function (c) { return SUP[c]; }).join('') + ')'; })
+      .replace(/\^\s*(\d+)\s+(?=[\d(√π])/g, '^$1*')                 // r^2 5 means r² · 5, not r^25
       .replace(/(\d+)\s+(\d+)\s*\/\s*(\d+)/g, '($1+$2/$3)')        // mixed number 2 1/3
       .replace(/[A-Z]/g, function (c) { return c.toLowerCase(); });
     return s.replace(/\s+/g, '');
@@ -73,6 +74,7 @@
       if ((m = /^(\d+\.?\d*|\.\d+)/.exec(s.slice(i)))) { t.push({ k: 'num', v: m[1] }); i += m[1].length; continue; }
       if (/[a-z]/.test(c)) { t.push({ k: 'var', v: c }); i++; continue; }
       if ('+-*/^()√±'.indexOf(c) >= 0) { t.push({ k: c }); i++; continue; }
+      if (c === 'π') { t.push({ k: 'pi' }); i++; continue; }
       if ('=<>≤≥≈'.indexOf(c) >= 0) { t.push({ k: 'rel', v: c }); i++; continue; }
       if (c === '[' || c === '{') { t.push({ k: '(' }); i++; continue; }
       if (c === ']' || c === '}') { t.push({ k: ')' }); i++; continue; }
@@ -101,7 +103,7 @@
       for (;;) {
         var x = peek(); if (!x) break;
         if (x.k === '*' || x.k === '/') { i++; var b = x.k === '*' ? unaryInProduct() : unaryInProduct(); a = { t: x.k === '*' ? 'mul' : 'div', a: a, b: b }; continue; }
-        if (x.k === 'num' || x.k === 'var' || x.k === '(' || x.k === '√') { a = { t: 'mul', a: a, b: power(), imp: true }; continue; }
+        if (x.k === 'num' || x.k === 'var' || x.k === '(' || x.k === '√' || x.k === 'pi') { a = { t: 'mul', a: a, b: power(), imp: true }; continue; }
         break;
       }
       return a;
@@ -124,6 +126,7 @@
       if (x.k === 'num') { i++; return { t: 'num', v: qdec(x.v), src: x.v }; }
       if (x.k === 'var') { i++; return { t: 'var', v: x.v }; }
       if (x.k === '√') { i++; return { t: 'sqrt', a: power() }; }
+      if (x.k === 'pi') { i++; return { t: 'pi' }; }
       if (x.k === '(') { i++; var e = sum(); eat(')'); return { t: 'par', a: e }; }
       if (x.k === ')') throw err('paren');
       throw err('missing');
@@ -151,6 +154,7 @@
   function poly(n, v, opt) {
     switch (n.t) {
       case 'num': return pconst(n.v);
+      case 'pi': return pconst(PI);
       case 'var': if (n.v !== v) throw err('letter', n.v); return P(ZERO, ONE);
       case 'par': return poly(n.a, v, opt);
       case 'neg': return wrongDist(qneg(ONE), n.a, v, opt) || pscale(poly(n.a, v, opt), qneg(ONE));
@@ -219,7 +223,7 @@
   /* ---- numbers that may be irrational (square roots), for the last line of a square-root problem ---- */
   function numv(n, v, xv) {
     switch (n.t) {
-      case 'num': return qnum(n.v); case 'var': return xv; case 'par': return numv(n.a, v, xv); case 'neg': return -numv(n.a, v, xv);
+      case 'num': return qnum(n.v); case 'pi': return Math.PI; case 'var': return xv; case 'par': return numv(n.a, v, xv); case 'neg': return -numv(n.a, v, xv);
       case 'add': return n.terms.reduce(function (a, t) { return a + t.s * numv(t.n, v, xv); }, 0);
       case 'mul': return numv(n.a, v, xv) * numv(n.b, v, xv); case 'div': return numv(n.a, v, xv) / numv(n.b, v, xv);
       case 'pow': return Math.pow(numv(n.a, v, xv), n.e); case 'sqrt': return Math.sqrt(numv(n.a, v, xv));
@@ -268,15 +272,21 @@
   }
 
   /* ===================== drawing math ===================== */
+  // π is kept exact by a stand-in fraction (355/113): it cancels exactly, and any number that is a
+  // simple multiple of it is shown with π (12π, ⅓π). Grade-8 numbers never have 113 in a denominator.
+  var PI = Q(355, 113);
+  function piPart(q) { if (q.d % 113 !== 0) return null; var r = qmul(q, Q(113, 355)); return r.d <= 1000 ? r : null; }
   function fmtQ(q, src) {
     if (src && /\./.test(src)) return src;
+    var pp = piPart(q); if (pp) return (Math.abs(pp.n) === 1 && pp.d === 1 ? '' : fmtQ(pp)) + 'π';
     if (q.d === 1) return String(Math.abs(q.n));
     return '<span class="sw-fr"><span>' + Math.abs(q.n) + '</span><span>' + q.d + '</span></span>';
   }
-  function isNumLike(n) { return n.t === 'num' || (n.t === 'div' && n.a.t === 'num' && n.b.t === 'num') || (n.t === 'par' && isNumLike(n.a)); }
+  function isNumLike(n) { return n.t === 'num' || n.t === 'pi' || (n.t === 'div' && n.a.t === 'num' && n.b.t === 'num') || (n.t === 'par' && isNumLike(n.a)); }
   function html(n, sub) {
     switch (n.t) {
       case 'num': return fmtQ(n.v, n.src);
+      case 'pi': return 'π';
       case 'var': return sub != null ? (/^\d+$/.test(sub) ? sub : '(' + sub + ')') : '<i>' + n.v + '</i>';
       case 'par': return (n.a.t === 'num' || n.a.t === 'var' || n.a.t === 'div' || n.a.t === 'par') && sub == null ? html(n.a, sub) : '(' + html(n.a, sub) + ')';
       case 'neg': return '−' + (n.a.t === 'add' ? '(' + html(n.a, sub) + ')' : html(n.a, sub));
@@ -287,7 +297,8 @@
       }).join('');
       case 'mul': {
         var A = html(n.a, sub), B = html(n.b, sub);
-        if (sub == null && isNumLike(n.a) && (n.b.t === 'var' || n.b.t === 'pow' || n.b.t === 'par')) return A + B;
+        if (isNumLike(n.a) && n.b.t === 'pi') return A + B;
+        if (sub == null && isNumLike(n.a) && (n.b.t === 'var' || n.b.t === 'pow' || n.b.t === 'par' || n.b.t === 'mul')) return A + B;
         if (sub == null && n.a.t === 'num' && n.b.t === 'mul') return A + B;
         return A + ' · ' + B;
       }
@@ -502,6 +513,7 @@
       else keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
       if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (!cfg.positive) keys.push(['±', '±']); }
+      if (cfg.pi) keys.push(['π', 'π']);
       keys.push(['⌫', 'BS']);
       keys.forEach(function (kk) {
         var b = btn(kk[0]); b.setAttribute('aria-label', kk[1] === 'BS' ? 'Erase' : 'Type ' + kk[0]);
@@ -682,7 +694,7 @@
                   var tp = poly(t.n, v); if (t.s < 0) tp = pscale(tp, qneg(ONE));
                   if (pdeg(tp) === 1 && !tp[0].n && qeq(qmul(tp[1], f), ONE)) {
                     var c = tp[1];
-                    notes.push(c.d !== 1 || m === 'mul'
+                    notes.push((m === 'mul' || c.d !== 1) && !(m === 'div' && qeq(c, k[0]))
                       ? (m === 'mul' ? qHtml(k[0]) : '1 over ' + qHtml(k[0])) + ' is the <b>reciprocal</b> of ' + qHtml(c) + '. &nbsp;' + qHtml(c) + ' · ' + qHtml(f) + ' = <b>1</b>, so ' + qHtml(c) + '<i>' + v + '</i> becomes 1<i>' + v + '</i> = <i>' + v + '</i>.'
                       : qHtml(c) + '<i>' + v + '</i> ÷ ' + qHtml(k[0]) + ' = 1<i>' + v + '</i>, because ' + qHtml(c) + ' ÷ ' + qHtml(k[0]) + ' = <b>1</b>. The ' + qHtml(c) + ' cancels.');
                   }
@@ -842,6 +854,7 @@
     [/around a point|all the way around/i, 'Angles all the way around a point add to <b>360°</b>.'],
     [/triangle|isosceles/i, 'The three angles of a triangle add to <b>180°</b>.']
   ];
+  var VOL_HINT = 'Start with the volume formula. Cylinder: <i>V</i> = π<i>r</i><sup>2</sup><i>h</i>. Cone: <i>V</i> = ⅓π<i>r</i><sup>2</sup><i>h</i>. Put in the numbers you know, and use a letter for the one you don\'t.';
   var PYTH_RE = /hypotenuse|missing leg|other leg|find a leg|legs? \d|distance|diagonal|ladder|how high|how far|horizontal length|longest side|wire|straight line from/i;
   function pythHint(t) {
     return /distance|point|\(\s*-?\d/i.test(t)
@@ -904,7 +917,10 @@
         fillBox(inp, t);
       };
       var w = null;
-      if (!start && chk[0] === 'num' && PYTH_RE.test(q.expr + ' ' + (q.op || ''))) {
+      if (!start && (chk[0] === 'val' || chk[0] === 'num') && /find the (radius|height)/i.test((q.op || '') + ' ' + q.expr)) {
+        w = mount(host, { setup: { answer: chk[1], tol: 1e-6, any: true, hint: VOL_HINT, figure: !!q.svg }, positive: true, roots: true, pi: true, onAnswer: fill });
+      }
+      else if (!start && chk[0] === 'num' && PYTH_RE.test(q.expr + ' ' + (q.op || ''))) {
         w = mount(host, { setup: { answer: chk[1], tol: Math.max(chk[2] || 0, 1e-6), any: true, hint: pythHint(q.expr), figure: !!q.svg }, positive: true, onAnswer: fill });
       }
       else if (start) w = mount(host, { start: start, onAnswer: fill });
@@ -929,7 +945,7 @@
       var c = map[id][num], cfg = { onAnswer: function (t) { fillBox(inp, t); } };
       if (c.start) cfg.start = c.start;
       if (c.setup != null) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
-      if (c.positive) cfg.positive = true;
+      if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;
       if (c.then) cfg.then = c.then;
       if (c.v) cfg.v = c.v;
       var box = mount(host, cfg), open = host.querySelector('.sw-open');
