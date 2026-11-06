@@ -1,7 +1,7 @@
 const {chromium}=require('/home/claude/.npm-global/lib/node_modules/playwright');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:390,height:844}});let sent=[];
 await p.route('**/script.google.com/**',async r=>{sent.push(JSON.parse(r.request().postData()));await r.fulfill({status:200,contentType:'application/json',body:'{"ok":true,"name":"Test Student","n":1,"right":1}'})});
-await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/Unit3_PreTest.html');await p.waitForTimeout(300);
+await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/unit3-pretest.html');await p.waitForTimeout(300);
 const st=async l=>console.log(l.padEnd(22),'|',await p.textContent('#ssbtn'),'|',await p.textContent('#ssmsg'));
 // simulate grading via the API exactly as the page does
 await p.evaluate(()=>{ScoreSend.record('Q1',true,{std:'NC.8.EE.7',band:3});ScoreSend.record('Q2',false,{std:'NC.8.EE.7',band:3});});await st('after check');

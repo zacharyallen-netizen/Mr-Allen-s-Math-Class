@@ -2,7 +2,7 @@
 // (duplicate "Guided Notes (Print PDF)" copies were removed 2026-10-30; don't recreate them).
 // The notes page must load /paper.js; it turns itself into paper when opened with ?paper=1 (&key=1 for the key).
 //   node _build/notes_pdf.js <page.html> <Blank.pdf> <AnswerKey.pdf> [PrintCopy.pdf] ["Footer label"]
-//   e.g. node _build/notes_pdf.js Unit_4_Geometry_Guided_Notes.html Unit4_Geometry_Notes_Blank.pdf \
+//   e.g. node _build/notes_pdf.js unit4-notes.html Unit4_Geometry_Notes_Blank.pdf \
 //        Unit4_Geometry_Notes_AnswerKey.pdf - "Unit 4 Guided Notes"
 // All paths are inside grade8/.
 const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');

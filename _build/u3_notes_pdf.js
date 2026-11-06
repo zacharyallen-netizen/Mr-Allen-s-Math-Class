@@ -4,7 +4,7 @@
 const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');
 const fs = require('fs');
 const SITE = '/home/claude/mr-allen-s-math-class/grade8/';
-const SRC = 'file://' + SITE + 'Unit_3_Equations_Guided_Notes.html';
+const SRC = 'file://' + SITE + 'unit3-notes.html';
 const PDF = { format: 'Letter', printBackground: true, scale: 0.9,
   margin: { top: '0.45in', bottom: '0.5in', left: '0.45in', right: '0.45in' },
   displayHeaderFooter: true, headerTemplate: '<span></span>',

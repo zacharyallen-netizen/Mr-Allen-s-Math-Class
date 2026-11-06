@@ -8,7 +8,7 @@ async function render(page, src, out, reveal){
 }
 (async()=>{
   const b=await chromium.launch();
-  const p1=await b.newPage(); await render(p1,G+'Unit9_PreTest.html',G+'Unit9_PreTest.pdf',false); await p1.close();
-  const p2=await b.newPage(); await render(p2,G+'Unit9_PreTest.html',G+'Unit9_PreTest_AnswerKey.pdf',true); await p2.close();
+  const p1=await b.newPage(); await render(p1,G+'unit9-pretest.html',G+'Unit9_PreTest.pdf',false); await p1.close();
+  const p2=await b.newPage(); await render(p2,G+'unit9-pretest.html',G+'Unit9_PreTest_AnswerKey.pdf',true); await p2.close();
   console.log('done'); await b.close();
 })();

@@ -35,22 +35,108 @@
   </div>
 </div>
 <script>
-// Lightweight class gate. NOTE: this is a mild deterrent, not real security —
-// the pages are still public. Change the password by editing PW below.
-var PW = "soar2027";
-function checkPw(){
-  var v = document.getElementById('pw').value.trim();
-  if(v.toLowerCase() === PW.toLowerCase()){
-    try{ sessionStorage.setItem('m1ok','1'); }catch(e){}
-    var dest = sessionStorage.getItem('m1dest') || 'index.html';
-    sessionStorage.removeItem('m1dest');
-    window.location.replace(dest);
-  } else {
-    document.getElementById('err').textContent = "Incorrect password — please try again.";
-    document.getElementById('pw').value = "";
-    document.getElementById('pw').focus();
-  }
+// Class gate. A mild deterrent, not real security: the pages are still public.
+// Only a SHA-256 fingerprint of the password is stored here, never the password itself.
+// To change the password, see "THE MATH 1 PASSWORD" in HOW_TO_UPDATE.txt.
+var PW_HASH = "3fe871d2793097033e0d033fce63d7ec701e5bfc0d4aadb94439ec90a55b48d1";
+var STRIKES = 3;                       // wrong tries before the alarm
+function sha256(t){
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)).then(function(b){
+    return Array.prototype.map.call(new Uint8Array(b), function(x){ return ('0' + x.toString(16)).slice(-2); }).join('');
+  });
 }
+function fails(n){ try{ if(n != null) localStorage.setItem('m1fails', String(n)); return Number(localStorage.getItem('m1fails') || 0); }catch(e){ return n || 0; } }
+function checkPw(){
+  var box = document.getElementById('pw'), v = box.value.trim().toLowerCase();
+  if(!v){ box.focus(); return; }
+  sha256(v).then(function(h){
+    if(h === PW_HASH){
+      fails(0);
+      try{ sessionStorage.setItem('m1ok','1'); }catch(e){}
+      var dest = sessionStorage.getItem('m1dest') || 'index.html';
+      sessionStorage.removeItem('m1dest');
+      window.location.replace(dest);
+      return;
+    }
+    var n = fails(fails() + 1);
+    box.value = "";
+    if(n >= STRIKES){ fails(0); MathAlarm.go(); return; }
+    document.getElementById('err').textContent = "Incorrect password — " + (STRIKES - n) + (STRIKES - n === 1 ? " try left." : " tries left.");
+    box.focus();
+  });
+}
+
+/* ---- The Math Alarm: silly, loud, and impossible to skip for 12 seconds ---- */
+var MathAlarm = (function(){
+  var ac, nodes = [], timer;
+  var LINES = [
+    "Unauthorized number cruncher detected.",
+    "Your calculator has been reported to the Bureau of Unsolved Equations.",
+    "A team of angry protractors is on the way.",
+    "Please remain seated and recite the multiplication table of 7.",
+    "Your pencil's eraser has been placed on probation.",
+    "The variable x has been notified. It is not happy.",
+    "Mr. Allen has been alerted. He is making a disappointed face."
+  ];
+  function siren(){
+    try{
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      if(ac.state === 'suspended') ac.resume();
+      var g = ac.createGain(); g.gain.value = 0.18; g.connect(ac.destination);
+      var o = ac.createOscillator(); o.type = 'square'; o.frequency.value = 650; o.connect(g);
+      var lfo = ac.createOscillator(); lfo.type = 'triangle'; lfo.frequency.value = 1.6;   // wee-woo sweep
+      var depth = ac.createGain(); depth.gain.value = 260; lfo.connect(depth); depth.connect(o.frequency);
+      var o2 = ac.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 330; var g2 = ac.createGain(); g2.gain.value = 0.06; o2.connect(g2); g2.connect(ac.destination);
+      var honk = ac.createOscillator(); honk.type = 'square'; honk.frequency.value = 3; var hg = ac.createGain(); hg.gain.value = 0.05; honk.connect(hg); hg.connect(g2.gain);
+      [o, lfo, o2, honk].forEach(function(n){ n.start(); });
+      nodes = [o, lfo, o2, honk];
+    }catch(e){}
+  }
+  function hush(){ nodes.forEach(function(n){ try{ n.stop(); }catch(e){} }); nodes = []; }
+  function go(){
+    var ov = document.getElementById('alarm');
+    if(!ov){
+      ov = document.createElement('div'); ov.id = 'alarm'; ov.setAttribute('role','alertdialog'); ov.setAttribute('aria-modal','true'); ov.setAttribute('aria-labelledby','al-h');
+      ov.innerHTML = '<div class="al-box"><div class="al-light" aria-hidden="true"></div><h2 id="al-h">MATH ALERT</h2>' +
+        '<p class="al-big">Three wrong passwords!</p><p class="al-line" id="al-line" aria-live="assertive"></p>' +
+        '<p class="al-count">Dispatching protractors in <b id="al-n">12</b></p>' +
+        '<button type="button" id="al-ok" disabled>I promise to ask Mr. Allen for the password</button></div>';
+      document.body.appendChild(ov);
+      document.getElementById('al-ok').addEventListener('click', function(){ hush(); clearInterval(timer); ov.hidden = true; document.getElementById('err').textContent = "Ask Mr. Allen for the class password."; document.getElementById('pw').focus(); });
+    }
+    ov.hidden = false;
+    var ok = document.getElementById('al-ok'); ok.disabled = true;
+    var left = 12, i = 0, lineEl = document.getElementById('al-line'), nEl = document.getElementById('al-n');
+    lineEl.textContent = LINES[0]; nEl.textContent = left;
+    siren();
+    clearInterval(timer);
+    timer = setInterval(function(){
+      left--; i++;
+      nEl.textContent = Math.max(left, 0);
+      if(i % 2 === 0) lineEl.textContent = LINES[(i / 2) % LINES.length];
+      if(left <= 0){ ok.disabled = false; ok.focus(); document.querySelector('.al-count').textContent = 'Just kidding. Nobody is coming. But the siren keeps going until you click the button.'; clearInterval(timer); }
+    }, 1000);
+  }
+  return { go: go, stop: hush };
+})();
 </script>
+<style>
+#alarm{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:#7F1D1D;animation:alPulse 1.4s ease-in-out infinite}
+#alarm[hidden]{display:none}
+@keyframes alPulse{0%,100%{background:#7F1D1D}50%{background:#DC2626}}
+.al-box{max-width:520px;width:100%;background:#fff;border-radius:14px;padding:22px 20px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4);animation:alShake .5s ease-in-out infinite}
+@keyframes alShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.2deg)}75%{transform:rotate(1.2deg)}}
+.al-light{width:64px;height:64px;margin:0 auto 6px;border-radius:50% 50% 8px 8px;background:radial-gradient(circle at 40% 35%,#FCA5A5,#DC2626 60%);box-shadow:0 0 30px 10px rgba(220,38,38,.6);animation:alSpin 0.8s linear infinite}
+@keyframes alSpin{0%,100%{box-shadow:-20px 0 30px 6px rgba(220,38,38,.7)}50%{box-shadow:20px 0 30px 6px rgba(37,99,235,.7)}}
+#al-h{font:800 2.1rem/1.1 Inter,sans-serif;color:#B91C1C;letter-spacing:.08em;margin:4px 0}
+.al-big{font:700 1.15rem Inter,sans-serif;color:#1E2D4F;margin:4px 0 8px}
+.al-line{font:600 1.05rem/1.4 Inter,sans-serif;color:#7F1D1D;min-height:2.8em;margin:0 0 8px}
+.al-count{font:500 .98rem Inter,sans-serif;color:#1E2D4F;margin:0 0 14px}
+.al-count b{font:700 1.4rem "JetBrains Mono",monospace;color:#B91C1C}
+#al-ok{width:100%;min-height:48px;border:0;border-radius:8px;background:#1E2D4F;color:#fff;font:700 1rem Inter,sans-serif;cursor:pointer}
+#al-ok:disabled{background:#9CA3AF;cursor:not-allowed}
+#al-ok:focus-visible{outline:3px solid #FFC107;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#alarm,.al-box,.al-light{animation:none}}
+</style>
 </body>
 </html>

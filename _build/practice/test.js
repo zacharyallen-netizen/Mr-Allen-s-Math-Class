@@ -17,7 +17,7 @@ for(const [k,[fn]] of Object.entries(pages)){
 }
 console.log('checked',n);console.log(bad.join('\n')||'all ok');
 // variants
-await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/Unit3_Practice1_Interactive.html');
+await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/unit3-practice-1.html');
 const V=[['x = 6','6',1],['x>5','x > 5',1],['5<x','x > 5',1],['x<5','x > 5',0],['infinite','infinitely many solutions',1],['none','no solution',1],
 ['3.2x10^4','3.2 × 10⁴',1],['3.2*10^4','3.2 × 10⁴',1],['32000','3.2 × 10⁴',0],['5600000','5,600,000',1],['1/9','<span class="fr"><span>1</span><span>9</span></span>',1],
 ['0.111','<span class="fr"><span>1</span><span>9</span></span>',0],['2/18','<span class="fr"><span>1</span><span>9</span></span>',0],['45/100','<span class="fr"><span>9</span><span>20</span></span>',0],['9/20','<span class="fr"><span>9</span><span>20</span></span>',1],['x^7','x⁷',1],['x7','x⁷',1],['1/x^4','<span class="fr"><span>1</span><span>x⁴</span></span>',1],
@@ -27,7 +27,7 @@ const V=[['x = 6','6',1],['x>5','x > 5',1],['5<x','x > 5',1],['x<5','x > 5',0],[
 const vr=await p.evaluate(V=>V.map(([i,a,e])=>[i,a,e,PracticeCheck(i,a)?1:0]),V);
 console.log(vr.filter(r=>r[2]!==r[3]).map(r=>JSON.stringify(r)).join('\n')||'variants ok');
 await p.screenshot({path:__dirname+'/u3shot.png',fullPage:false});
-await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/Unit4_Practice1_Interactive.html');
+await p.goto('file:///home/claude/mr-allen-s-math-class/grade8/unit4-practice-1.html');
 await p.fill('#s0p1 .pr-in','40');await p.click('#s0p1 .pr-check');await p.fill('#s0p1 .pr-in','45');await p.click('#s0p1 .pr-check');await p.click('#s0p1 .pr-hint');
 await p.fill('#s0p2 .pr-in','75');await p.click('#s0p2 .pr-check');
 await p.screenshot({path:__dirname+'/u4shot.png',fullPage:false});

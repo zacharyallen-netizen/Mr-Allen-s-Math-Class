@@ -15,7 +15,7 @@ Python 3, Node 18+ and Playwright with Chromium are needed.
 | Math 1 notes + practice | Units 1–2 `node m1/u12/tools/build.js` · Units 3–4 `python3 m1/u34/build.py` · Units 5–6 `python3 m1/u56/build.py` · Units 7–8 `node m1/u78/build/u7n.js` (u7p, u8n, u8p) | The page HTML is generated: a hand edit to the page is lost on the next rebuild, so change the source here. |
 | Math 1 study guide | `node m1/guide/build.js` | |
 | Units 3–4 Pre-Test (online) + Test (paper) | `python3 u34_pretest.py` then `node u34_render.js` | Pre-test page + print PDF go to grade8; the test and every key go to OUT_DIR only. |
-| Units 3–4 Tutorial Review | `python3 u34_tutorial.py` | grade8/units3_4_review_tutorial.html (Score Tracker unit "3-4"). Step choosers + colored line-by-line solutions come from `u34_tut_steps.py` (every line checked), reference diagrams from `u34_refsvg.py`, page component `grade8/step-solver.js`. |
+| Units 3–4 Tutorial Review | `python3 u34_tutorial.py` | grade8/units3-4-review-tutorial.html (Score Tracker unit "3-4"). Step choosers + colored line-by-line solutions come from `u34_tut_steps.py` (every line checked), reference diagrams from `u34_refsvg.py`, page component `grade8/step-solver.js`. |
 | Materials Index | `python3 build_matidx.py` | Reads every grade8 unit page, so new materials appear automatically. |
 | Hub look / shared top bar | `makeover.py`, `rollout.py` | Already applied; kept for reference. The bar itself is `/site-bar.js`, the hub style `/site.css`. |
 
@@ -55,4 +55,4 @@ Check: `python3 checkin_benchmark/check_page.py` (server on 8765), then `node be
 ## Briefs
 `BUILD_BRIEF.md`, `final/*.md`, `m1/M1_BRIEF.md`, `tracker/WIRE_BRIEF.md` record the house rules
 (language level, notation, visuals drawn from each problem's own numbers, verification) used for every build.
-- `node u9_pdfs.js` rebuilds the Unit 9 worksheet and answer key PDFs from volume_practice.html (pictures come from grade8/u9shapes.js).
+- `node u9_pdfs.js` rebuilds the Unit 9 worksheet and answer key PDFs from unit9-practice.html (pictures come from grade8/u9shapes.js).

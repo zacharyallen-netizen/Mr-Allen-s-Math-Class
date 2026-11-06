@@ -24,19 +24,19 @@ function ssRec(qid, ok){{
 </body>'''
 
 PAGES={
- 'Unit_1_Real_Numbers_Guided_Notes.html':('1','Unit 1 · Real Numbers Guided Notes quick checks','#ss-mount',
+ 'unit1-notes.html':('1','Unit 1 · Real Numbers Guided Notes quick checks','#ss-mount',
    "return ({chk1a:'NC.8.NS.1',chk5a:'NC.8.NS.1',chk4a:'NC.8.NS.2'})[id]||'NC.8.EE.2';",'NC.8.EE.2'),
- 'Unit_2_Exponent_Rules_Guided_Notes.html':('2','Unit 2 · Exponent Rules Guided Notes practice','#practice',
+ 'unit2-notes-exponents.html':('2','Unit 2 · Exponent Rules Guided Notes practice','#practice',
    "return 'NC.8.EE.1';",'NC.8.EE.1'),
- 'Unit_2_Scientific_Notation_Guided_Notes.html':('2','Unit 2 · Scientific Notation Guided Notes practice','#practice',
+ 'unit2-notes-sci-notation.html':('2','Unit 2 · Scientific Notation Guided Notes practice','#practice',
    "return /^u2pC/.test(id)?'NC.8.EE.4':'NC.8.EE.3';",'NC.8.EE.3'),
  'Unit_2_Exponents_Guided_Notes.html':('2','Unit 2 · Exponents Guided Notes practice','#practice',
    "return /^u2pB/.test(id)?'NC.8.EE.3':/^u2pC/.test(id)?'NC.8.EE.4':'NC.8.EE.1';",'NC.8.EE.1'),
- 'Unit_3_Equations_Guided_Notes.html':('3','Unit 3 · Equations Guided Notes practice','#practice',
+ 'unit3-notes.html':('3','Unit 3 · Equations Guided Notes practice','#practice',
    "return 'NC.8.EE.7';",'NC.8.EE.7'),
- 'Unit_4_Geometry_Guided_Notes.html':('4','Unit 4 · Geometry Guided Notes practice','#practice',
+ 'unit4-notes.html':('4','Unit 4 · Geometry Guided Notes practice','#practice',
    "return 'NC.8.G.5';",'NC.8.G.5'),
- 'Unit_5_Pythagorean_Guided_Notes.html':('5','Unit 5 · Pythagorean Guided Notes practice','#practice',
+ 'unit5-notes.html':('5','Unit 5 · Pythagorean Guided Notes practice','#practice',
    "return /^chk54|^u5pE/.test(id)?'NC.8.G.6':/^u5pD/.test(id)?'NC.8.G.8':'NC.8.G.7';",'NC.8.G.7'),
 }
 for f,(unit,page,mount,stdjs,default) in PAGES.items():

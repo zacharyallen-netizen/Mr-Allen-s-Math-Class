@@ -3,7 +3,7 @@
 # and inject one into each .chk block. Preserves all existing text.
 import re, math
 
-F='/home/claude/mr-allen-s-math-class/grade8/Unit_4_Geometry_Guided_Notes.html'
+F='/home/claude/mr-allen-s-math-class/grade8/unit4-notes.html'
 NAVY='#1E2D4F'; GOLD='#b08800'; GREEN='#1a7000'; BLUE='#0056B3'; GIVEN='#0056B3'; XCOL='#b08800'
 LINE='#1E2D4F'
 

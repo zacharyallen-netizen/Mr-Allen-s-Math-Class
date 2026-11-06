@@ -15,7 +15,7 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
   "how many solutions", word problems, and a "find the error" item.
 - **Handouts** are two-sided: front = short notes + sample problems left blank for class (worked on the key);
   back = Check-In style practice (~10). Bell ringers are two-sided too (front and back), landscape.
-- **Answer keys** are always separate files, sent only to Zach — never posted in `grade8/` (the site is public).
+- **Answer keys** are separate files. Zach's choice (Nov 2026): **all answer keys stay public** on the site (notes, practice, pre-test keys). Do not remove them.
 - **Combine** a batch of materials into one PDF (plus one combined key), with bookmarks.
 - **Easier versions** for some students are labeled only "Version 2" — never "EC", "modified", etc.
 - **Classes:** A1, A2, A4, B5, B6 (8th grade benchmarks). Math 1 is password-gated (see HOW_TO_UPDATE.txt).
@@ -48,8 +48,12 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 | `_build/benchmark/BenchmarkTracker.gs` | Google Apps Script for benchmark results (tests: `node _build/benchmark/test_benchmark_tracker.js`). |
 | `benchmark-config.js` | Benchmark Tracker web-app URL + code. `tracker-config.js` = separate Score Tracker (Fluency Lab, pre-tests). |
 | `_build/materials/` | **Printable toolkit** — handouts, practice, bell ringers, keys, combine. Start from `new_handout_template.py`; read its README. |
-| `grade8/angles_pythagorean_tutorial.html` | Units 4–5 tutorial (sends to Score Tracker as unit "4-5"). |
-| `grade8/guided_notes_units_6_7.html` | Hidden (no links) since Nov 2026: its content lives in the Unit 6 notes (tabs 6.4–6.6) and Unit 7 notes. Keep the file. |
+| `grade8/units4-5-tutorial.html` | Units 4–5 tutorial (sends to Score Tracker as unit "4-5"). |
+| `grade8/archive/` | Old pages nobody links to (old arcades, old notes, old I Can pages, `guided_notes_units_6_7.html`, `eog_strategies.html`). Kept for future revision, never deleted. Move more with `python3 _build/archive_pages.py grade8/page.html` (fixes its links). |
+| Page names | Unit pages use `unitN-pretest`, `unitN-practice-1`, `unitN-notes`, `units3-4-…` (renamed Nov 2026 by `_build/rename_pages.py`, which holds the old→new map). Every old name is a tiny forwarding page (`_build/forward_stub.py`) so Classroom links keep working; never delete those. PDF names were not changed. |
+| `grade8/units3-4.html` | Combined Units 3–4 page (2026-27). Built from the Unit 3 and Unit 4 pages by `python3 _build/build_units34.py`; rerun after editing either unit page. |
+| `grade8/8th_grade_eog_hub.html` | The one EOG Prep entry point (review → practice → study guide → strategies). |
+| `math1/gate.html` | Math 1 password gate: stores only a SHA-256 hash; 3 wrong tries set off a joke alarm (12 s, siren). Change the password per HOW_TO_UPDATE.txt. |
 | `grade8/ineq-keys.js` | Tap buttons (x < > ≤ ≥ − Erase) under every inequality answer box (placeholder "e.g. x > 4" or `data-ineq`); Chromebooks can't type ≤/≥. Loaded by the Units 3–4 tutorial + pre-test builders, the Unit 3 Guided Notes, `homework_turn_in.html` (one shared bar per answer page for HW 3.7–3.10 via `data-ineq-bar`), and `practice/practice-engine.js` (auto-loads when an answer contains < > ≤ ≥). Also detects notes `data-ans`/`chkVal` inequality boxes. Add it to any new page with typed inequalities. |
 | `brand.js`, `brand.css` | Site-wide fonts/background (see Standing preferences). |
 | `HOW_TO_UPDATE.txt` | Zach's plain-language guide (keep it updated when workflows change). |

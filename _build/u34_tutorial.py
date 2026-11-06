@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Units 3-4 Tutorial Review (interactive) -> grade8/units3_4_review_tutorial.html
+"""Units 3-4 Tutorial Review (interactive) -> grade8/units3-4-review-tutorial.html
 Five parts: multi-step equations, number of solutions, inequalities, parallel lines & transversals, triangle theorems.
 
 Every equation, inequality and angle problem has a step chooser ("Solve it step by step"): the student picks the
@@ -19,7 +19,7 @@ from u34_figs import tri as TRI, X as XI
 from u34_tut_steps import SEQ, to_js, trail_html, render, expect_set
 from u34_refsvg import para_ref, tri_ref
 
-OUT = '/home/claude/mr-allen-s-math-class/grade8/units3_4_review_tutorial.html'
+OUT = '/home/claude/mr-allen-s-math-class/grade8/units3-4-review-tutorial.html'
 EE, G5 = 'NC.8.EE.7', 'NC.8.G.5'
 
 def sw(svg, pairs):

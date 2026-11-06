@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Units 3-4 Pre-Test (interactive page + print PDF) and Units 3-4 Test (paper, parallel version).
 Same engine and look as the other pre-tests (build_pretest.py). Score 3.0 / 4.0 / 5.0, both standards at every level.
-    python3 _build/u34_pretest.py            -> grade8/Unit3_4_PreTest.html  and  $OUT_DIR/Unit3_4_Test.html
+    python3 _build/u34_pretest.py            -> grade8/units3-4-pretest.html  and  $OUT_DIR/Unit3_4_Test.html
     node _build/u34_render.js                -> PDFs (pre-test print PDF in grade8; every answer key + the test stay OUT of the repo)
 Every answer is re-derived below with Fraction arithmetic and asserted before the page is written.
 """
@@ -174,7 +174,7 @@ def version(v):
 def cfg_for(v):
     A = v == 'A'
     name = 'Pre-Test' if A else 'Test'
-    return dict(file='Unit3_4_PreTest.html' if A else 'Unit3_4_Test.html', unit='unit4', unitlabel='Unit 4',
+    return dict(file='units3-4-pretest.html' if A else 'Unit3_4_Test.html', unit='unit4', unitlabel='Unit 4',
                 track_unit='3-4', track_page=f'Units 3–4 {name} — Equations, Inequalities & Angles',
                 title=f'Units 3–4 {name} — Equations, Inequalities & Angles', h1=f'UNITS 3–4 {name.upper()}',
                 sub='Equations, Inequalities &amp; Angle Relationships', std='Standards assessed: NC.8.EE.7 · NC.8.G.5',

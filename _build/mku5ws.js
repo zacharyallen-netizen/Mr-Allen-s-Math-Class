@@ -1,5 +1,5 @@
 const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');
-const SRC='file:///home/claude/mr-allen-s-math-class/grade8/Unit_5_Pythagorean_Guided_Notes.html';
+const SRC='file:///home/claude/mr-allen-s-math-class/grade8/unit5-notes.html';
 const OUT='/home/claude/mr-allen-s-math-class/grade8/';
 const PDF={format:'A4',printBackground:true,scale:0.82,
   margin:{top:'0.4in',bottom:'0.4in',left:'0.35in',right:'0.35in'}};

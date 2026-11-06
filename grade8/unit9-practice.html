@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit 9 Practice: Volume — Mr. Allen's 8th Grade Math</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1E2D4F;--gold:#FFC107;--white:#fff;--lgray:#F4F4F4;--royal:#0056B3;--green:#22AC00;--dkgreen:#1a7000;--red:#cc2222;--mid:#e8edf5}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--lgray);color:#1a1a24;font-size:17px;line-height:1.6}
+nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-index:1000;border-bottom:3px solid var(--gold)}
+.nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav-title{font-family:'Arvo',serif;font-size:0.9em;margin-right:auto;font-weight:700;color:var(--gold)}.nav-title span{color:#fff}
+.nb{font-family:'Inter',sans-serif;font-size:0.75em;font-weight:bold;padding:7px 12px;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.3);border-radius:4px;color:#fff;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s}
+.nb:hover{border-color:var(--gold);color:var(--gold);background:rgba(255,193,7,0.15)}.nb.active{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+.wrap{max-width:100%;margin:0 auto;padding:16px 14px 80px}
+.page-hdr{background:linear-gradient(135deg,var(--navy),#0d1f3f);border-radius:12px;padding:18px 22px;margin-bottom:18px;border:3px solid var(--gold)}
+.page-hdr h1{font-family:'Arvo',serif;color:var(--gold);font-size:1.2em;margin-bottom:4px}.page-hdr p{color:#b8c8e8;font-size:0.88em}
+.score-box{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:9px 13px;background:var(--navy);border-radius:8px;color:var(--white)}
+.score-box span{font-family:'Arvo',serif;font-size:0.88em}.sv{color:var(--gold);font-weight:bold;font-size:1.1em}
+.tip{background:#e8f5e2;border-left:4px solid var(--green);padding:9px 13px;border-radius:0 8px 8px 0;margin:10px 0;font-size:0.9em}.tip strong{color:var(--dkgreen)}
+.sec-header{font-family:'Arvo',serif;font-size:1.05em;color:var(--navy);padding:10px 14px;background:linear-gradient(135deg,#e8edf5,#d8e5f5);border-left:5px solid var(--gold);border-radius:0 8px 8px 0;margin:18px 0 12px}
+.q-card{background:var(--lgray);border:2px solid #cdd5e0;border-radius:10px;padding:14px;margin-bottom:12px}.q-card.answered{border-color:#aab5cc}
+.q-num{font-family:'Arvo',serif;font-size:0.8em;color:var(--royal);margin-bottom:5px;font-weight:700}
+.q-text{font-size:0.95em;margin-bottom:8px;line-height:1.5}
+.dia{text-align:center;margin:8px 0;overflow-x:auto}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px}
+.opt-btn{font-family:'Inter',sans-serif;font-size:0.9em;padding:10px 8px;background:var(--white);border:2px solid #cdd5e0;border-radius:6px;cursor:pointer;text-align:center;transition:all .2s;color:#1a1a24}
+.opt-btn:hover:not(:disabled){border-color:var(--navy);background:#e8edf5}
+.opt-btn.correct{background:#d4f0d0;border-color:var(--green);color:var(--dkgreen);font-weight:bold}
+.opt-btn.wrong{background:#ffe0e0;border-color:var(--red);color:var(--red)}.opt-btn.reveal{background:#d4f0d0;border-color:var(--green);color:var(--dkgreen)}
+.opt-btn:disabled{cursor:default}
+.feedback{display:none;margin-top:9px;padding:9px 13px;border-radius:6px;font-size:0.88em;line-height:1.5}
+.feedback.show{display:block}.feedback.c{background:#d4f0d0;border:1px solid var(--green);color:var(--dkgreen)}.feedback.w{background:#ffe0e0;border:1px solid var(--red);color:var(--red)}
+.formula-ref{background:var(--navy);color:var(--white);border-radius:10px;padding:14px 18px;margin:12px 0;text-align:center}
+.formula-ref .f{font-family:'Courier New',monospace;font-size:1.15em;color:var(--gold);font-weight:bold}
+.formula-ref p{font-size:0.82em;color:#b8c8e8;margin-top:4px}
+.back-link{display:inline-block;margin-top:20px;padding:10px 22px;background:var(--navy);color:var(--gold);font-family:'Arvo',serif;font-weight:bold;border-radius:8px;text-decoration:none;font-size:0.9em;border:2px solid var(--gold)}.back-link:hover{background:#2a3d6b}
+
+/* each formula stays whole; on phones they stack one per line */
+.formula-ref .fx{display:inline-block;white-space:nowrap;margin:0 .7em}
+@media (max-width:520px){.formula-ref .fx{display:block;margin:2px 0}}
+/* ---- Paper version (Print, or ?print=worksheet / ?print=key): a clean worksheet with every picture ---- */
+.paperhead{display:none}
+@media print{
+  body{background:#fff;font-size:12.5px}
+  .wrap{padding:0}
+  .score-box,#ss-mount,.back-link{display:none!important}
+  .page-hdr{background:#fff!important;border:2px solid #1E2D4F;padding:10px 14px}
+  .page-hdr h1{color:#1E2D4F}.page-hdr p{color:#444}
+  .paperhead{display:flex;gap:18px;margin:6px 0 2px;font-size:13px;color:#1a1a24}
+  .paperhead span{flex:1;border-bottom:1px solid #555;padding-bottom:2px}
+  .formula-ref{background:#fff!important;border:2px solid #1E2D4F}.formula-ref .f{color:#1E2D4F}.formula-ref p{color:#444}
+  .q-card{break-inside:avoid;background:#fff;grid-template-columns:1fr 190px;padding:10px 12px;margin-bottom:8px}
+  .q-card>.u9fig svg{max-height:165px}
+  .q-card>.u9fig{grid-column:2;grid-row:1/span 4}
+  .opts{grid-template-columns:1fr 1fr}
+  .opt-btn{border:none;background:none;text-align:left;padding:3px 0}
+  .opt-btn::before{content:'○  ';font-size:1.1em}
+  .feedback{display:none!important}
+  .sec-header{break-after:avoid}
+  div[style*="border:2px solid #cc2222"],div[style*="border:2px solid #0056B3"]{break-inside:avoid}
+  html.key .opt-btn.keyok{font-weight:700}
+  html.key .opt-btn.keyok::before{content:'✓  ';color:#1a7000}
+  html.key .feedback.keysol{display:block!important;background:#eef7ec;border:1px solid #22AC00;color:#1a7000}
+}
+/* every problem has a picture drawn from its own numbers (u9shapes.js): beside the question on wide screens, under it on phones */
+.q-card{display:grid;grid-template-columns:1fr minmax(170px,250px);column-gap:18px}
+.q-card>*{grid-column:1}
+.q-card>.u9fig{grid-column:2;grid-row:1/span 4;align-self:center}
+@media (max-width:640px){.q-card{grid-template-columns:1fr}.q-card>.u9fig{grid-column:1;grid-row:auto;margin:4px auto 6px;width:100%;max-width:260px}}
+.u9fig{margin:8px auto}
+</style>
+<script src="../brand.js"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<nav class="sb-local" aria-label="On this page"><a href="unit1.html">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html">U6</a> <a href="unit7.html">U7</a> <a href="unit8.html">U8</a> <a href="volume.html" aria-current="page">U9</a> <a href="Fluency-Lab-Package/fluency-lab/index.html">Fluency</a></nav>
+<div class="wrap">
+<div class="page-hdr"><h1>📦 Unit 9: Volume Practice<span class="keytag"></span></h1><p>Cylinders · Cones · Spheres · Composite Solids · NC.8.G.9</p>
+<div class="paperhead"><span>Name:</span><span style="flex:.6">Date:</span><span style="flex:.4">Period:</span></div></div>
+<div class="score-box"><span>Score: <span class="sv" id="score">0</span></span><span>|</span><span>Answered: <span class="sv" id="answered">0</span> / 12</span></div>
+<div class="formula-ref"><div class="f"><span class="fx">Cylinder: V = πr²h</span> <span class="fx">Cone: V = ⅓πr²h</span> <span class="fx">Sphere: V = ⁴⁄₃πr³</span></div><p>π ≈ 3.14 · Always use cubic units · Remember: radius = diameter ÷ 2</p></div>
+<div class="tip"><strong>💡 Tip:</strong> A cone is exactly ⅓ of a cylinder with the same dimensions. When you see "diameter," divide by 2 to get radius first!</div>
+
+<div class="sec-header">🥫 Cylinder Problems</div>
+<div class="q-card" id="v1">
+  <div class="q-num">Problem V1</div>
+  <div class="q-text">A cylinder has radius 3 cm and height 10 cm. What is the volume? (Use π ≈ 3.14)</div>
+  <div class="u9fig" data-u9='{"shape": "cyl", "r": 3, "h": 10, "unit": "cm", "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v1','282.6 cm³')">282.6 cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v1','282.6 cm³')">94.2 cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v1','282.6 cm³')">188.4 cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v1','282.6 cm³')">1130.4 cm³</button>
+  </div>
+  <div class="feedback">V = π(3)²(10) = π(9)(10) = 90π ≈ 282.6 cm³</div>
+</div>
+<div class="q-card" id="v4">
+  <div class="q-num">Problem V4</div>
+  <div class="q-text">A cylinder has diameter 8 m and height 5 m. What is the volume?</div>
+  <div class="u9fig" data-u9='{"shape": "cyl", "r": 4, "h": 5, "unit": "m", "dia": true, "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v4','80π m³')">80π m³</button>
+    <button class="opt-btn" onclick="mc(this,'v4','80π m³')">160π m³</button>
+    <button class="opt-btn" onclick="mc(this,'v4','80π m³')">320π m³</button>
+    <button class="opt-btn" onclick="mc(this,'v4','80π m³')">40π m³</button>
+  </div>
+  <div class="feedback">Diameter = 8, so r = 4. V = π(4)²(5) = π(16)(5) = 80π ≈ 251.2 m³</div>
+</div>
+<div class="q-card" id="v10">
+  <div class="q-num">Problem V10</div>
+  <div class="q-text">A cylindrical water tank (r = 2 ft, h = 6 ft) is half full. How much water is inside?</div>
+  <div class="u9fig" data-u9='{"shape": "cyl", "r": 2, "h": 6, "unit": "ft", "water": 0.5, "ask": "water = ?", "cap": "half full"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v10','12π ft³')">12π ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v10','12π ft³')">24π ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v10','12π ft³')">6π ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v10','12π ft³')">8π ft³</button>
+  </div>
+  <div class="feedback">Full: V = π(2)²(6) = 24π. Half full: 24π ÷ 2 = 12π ft³</div>
+</div>
+
+<div class="sec-header">🍦 Cone Problems</div>
+<div class="q-card" id="v2">
+  <div class="q-num">Problem V2</div>
+  <div class="q-text">A cone has radius 4 in and height 9 in. What is the volume?</div>
+  <div class="u9fig" data-u9='{"shape": "cone", "r": 4, "h": 9, "unit": "in", "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v2','48π in³')">64π in³</button>
+    <button class="opt-btn" onclick="mc(this,'v2','48π in³')">48π in³</button>
+    <button class="opt-btn" onclick="mc(this,'v2','48π in³')">452.16 in³</button>
+    <button class="opt-btn" onclick="mc(this,'v2','48π in³')">36π in³</button>
+  </div>
+  <div class="feedback">V = ⅓π(4)²(9) = ⅓π(16)(9) = ⅓(144π) = 48π ≈ 150.72 in³</div>
+</div>
+<div class="q-card" id="v5">
+  <div class="q-num">Problem V5</div>
+  <div class="q-text">A cone and cylinder have the same radius and height. The cylinder's volume is 120π cm³. What is the cone's volume?</div>
+  <div class="u9fig" data-u9='{"shape": "conecyl", "r": 3, "h": 6, "noThirds": true, "same": true, "cylLabel": "V = 120π cm³", "coneLabel": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v5','40π cm³')">40π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v5','40π cm³')">60π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v5','40π cm³')">360π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v5','40π cm³')">80π cm³</button>
+  </div>
+  <div class="feedback">A cone is ⅓ of a cylinder! 120π ÷ 3 = 40π cm³</div>
+</div>
+<div class="q-card" id="v7">
+  <div class="q-num">Problem V7</div>
+  <div class="q-text">A cone has radius 6 cm and height 12 cm. What is the volume? (Use π ≈ 3.14)</div>
+  <div class="u9fig" data-u9='{"shape": "cone", "r": 6, "h": 12, "unit": "cm", "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v7','452.16 cm³')">432π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v7','452.16 cm³')">452.16 cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v7','452.16 cm³')">1356.48 cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v7','452.16 cm³')">226.08 cm³</button>
+  </div>
+  <div class="feedback">V = ⅓π(6)²(12) = ⅓π(36)(12) = ⅓(432π) = 144π ≈ 452.16 cm³</div>
+</div>
+
+<div class="sec-header">🏀 Sphere Problems</div>
+<div class="q-card" id="v3">
+  <div class="q-num">Problem V3</div>
+  <div class="q-text">A sphere has radius 3 ft. What is the volume?</div>
+  <div class="u9fig" data-u9='{"shape": "sphere", "r": 3, "unit": "ft", "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v3','36π ft³')">36π ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v3','36π ft³')">27π ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v3','36π ft³')">84.78 ft³</button>
+    <button class="opt-btn" onclick="mc(this,'v3','36π ft³')">108π ft³</button>
+  </div>
+  <div class="feedback">V = ⁴⁄₃π(3)³ = ⁴⁄₃π(27) = 36π ≈ 113.0 ft³</div>
+</div>
+<div class="q-card" id="v6">
+  <div class="q-num">Problem V6</div>
+  <div class="q-text">A sphere has diameter 6 in. What is the volume?</div>
+  <div class="u9fig" data-u9='{"shape": "sphere", "r": 3, "unit": "in", "dia": true, "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v6','36π in³')">36π in³</button>
+    <button class="opt-btn" onclick="mc(this,'v6','36π in³')">288π in³</button>
+    <button class="opt-btn" onclick="mc(this,'v6','36π in³')">12π in³</button>
+    <button class="opt-btn" onclick="mc(this,'v6','36π in³')">27π in³</button>
+  </div>
+  <div class="feedback">Diameter = 6, so r = 3. V = ⁴⁄₃π(3)³ = ⁴⁄₃π(27) = 36π ≈ 113.0 in³</div>
+</div>
+<div class="q-card" id="v8">
+  <div class="q-num">Problem V8</div>
+  <div class="q-text">A basketball has radius 5 in. Approximately what is its volume? (Use π ≈ 3.14)</div>
+  <div class="u9fig" data-u9='{"shape": "sphere", "r": 5, "unit": "in", "ask": "V ≈ ?", "cap": "a basketball"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v8','523.3 in³')">523.3 in³</button>
+    <button class="opt-btn" onclick="mc(this,'v8','523.3 in³')">104.7 in³</button>
+    <button class="opt-btn" onclick="mc(this,'v8','523.3 in³')">392.5 in³</button>
+    <button class="opt-btn" onclick="mc(this,'v8','523.3 in³')">314.0 in³</button>
+  </div>
+  <div class="feedback">V = ⁴⁄₃π(5)³ = ⁴⁄₃(3.14)(125). 4 × 3.14 × 125 ÷ 3 ≈ 523.3 in³</div>
+</div>
+
+<div class="sec-header">📦 Mixed &amp; Composite</div>
+<div class="q-card" id="v9">
+  <div class="q-num">Problem V9</div>
+  <div class="q-text">Two identical cones are placed base-to-base. Each cone has r = 3 cm and h = 5 cm. What is the total volume?</div>
+  <div class="u9fig" data-u9='{"shape": "twocones", "r": 3, "h": 5, "unit": "cm", "ask": "total V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v9','30π cm³')">30π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v9','30π cm³')">60π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v9','30π cm³')">15π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v9','30π cm³')">90π cm³</button>
+  </div>
+  <div class="feedback">One cone: V = ⅓π(3)²(5) = 15π. Two cones: 2(15π) = 30π cm³</div>
+</div>
+<div class="q-card" id="v11">
+  <div class="q-num">Problem V11</div>
+  <div class="q-text">Which shape has the greatest volume? r = 5, h = 10 for all.</div>
+  <div class="u9fig" data-u9='{"shape": "compare", "r": 5, "h": 10, "ask": "Which holds the most?", "askX": 96}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v11','Cylinder')">Cylinder</button>
+    <button class="opt-btn" onclick="mc(this,'v11','Cylinder')">Cone</button>
+    <button class="opt-btn" onclick="mc(this,'v11','Cylinder')">Sphere</button>
+    <button class="opt-btn" onclick="mc(this,'v11','Cylinder')">They're all equal</button>
+  </div>
+  <div class="feedback">Cylinder: π(25)(10) = 250π. Cone: ⅓(250π) ≈ 83.3π. Sphere: ⁴⁄₃π(125) ≈ 166.7π. Cylinder wins!</div>
+</div>
+<div class="q-card" id="v12">
+  <div class="q-num">Problem V12</div>
+  <div class="q-text">A hemisphere (half sphere) has radius 6 cm. What is its volume?</div>
+  <div class="u9fig" data-u9='{"shape": "hemi", "r": 6, "unit": "cm", "ask": "V = ?"}'></div>
+  <div class="opts">
+    <button class="opt-btn" onclick="mc(this,'v12','144π cm³')">144π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v12','144π cm³')">288π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v12','144π cm³')">72π cm³</button>
+    <button class="opt-btn" onclick="mc(this,'v12','144π cm³')">216π cm³</button>
+  </div>
+  <div class="feedback">Full sphere: ⁴⁄₃π(6)³ = ⁴⁄₃π(216) = 288π. Hemisphere = half: 288π ÷ 2 = 144π cm³</div>
+</div>
+
+<div id="ss-mount"></div>
+</div>
+<script>
+var ts=0,ta=0;
+var SS_STD={};
+function ssStd(id){return SS_STD[id]||'NC.8.G.9';}
+function ssLabel(card){var n=card.querySelector('.qnum,.q-num'),t=card.querySelector('.qt,.q-text');return ((n?n.textContent.trim().replace(/\s+/g,' '):card.id)+(t?': '+t.textContent.trim().replace(/\s+/g,' '):'')).slice(0,80);}
+function mc(btn,qid,correct){
+  var card=document.getElementById(qid);
+  if(card.classList.contains('answered'))return;
+  card.classList.add('answered');
+  try{if(window.ScoreSend)ScoreSend.record(qid,btn.textContent.trim()===correct.trim(),{std:ssStd(qid),label:ssLabel(card)});}catch(e){}
+  var btns=card.querySelectorAll('.opt-btn');
+  var fb=card.querySelector('.feedback');
+  btns.forEach(function(b){b.disabled=true});
+  ta++;
+  if(btn.textContent.trim()===correct.trim()){
+    btn.classList.add('correct');
+    fb.className='feedback show c';
+    fb.textContent='✓ Correct! '+fb.textContent;
+    ts++;
+  }else{
+    btn.classList.add('wrong');
+    btns.forEach(function(b){if(b.textContent.trim()===correct.trim())b.classList.add('reveal')});
+    fb.className='feedback show w';
+    fb.textContent='✗ The answer is '+correct+'. '+fb.textContent;
+  }
+  document.getElementById('score').textContent=ts;
+  document.getElementById('answered').textContent=ta;
+}
+</script>
+
+
+<div style="background:#fff;border:3px solid #FFC107;border-radius:12px;padding:20px;margin-top:24px">
+<h2 style="font-family:Arvo,serif;color:#FFC107;font-size:1.1em;margin-bottom:6px">📝 Worked Examples</h2>
+<p style="color:#4a4a5a;font-size:0.9em;margin-bottom:14px">Study these step-by-step solutions before attempting the problems above.</p>
+
+<div style="background:#f8f9fc;border:2px solid #0056B3;border-radius:8px;padding:14px;margin-bottom:12px">
+<div style="font-family:Arvo,serif;font-size:1em;color:#1E2D4F;margin-bottom:8px;font-weight:bold">Volume of a cone: diameter = 14 cm, height = 9 cm</div><div class="u9fig" data-u9='{"shape": "cone", "r": 7, "h": 9, "unit": "cm", "dia": true, "ask": "V = ?", "cap": "diameter 14 → radius 7", "maxW": 260}'></div>
+<div style="background:rgba(0,86,179,0.08);padding:8px 12px;border-radius:5px;margin:4px 0;border-left:4px solid #0056B3"><div style="font-weight:bold;color:#0056B3;font-size:0.85em">Step 1: Identify r — diameter = 14, so r = 7</div><div style="font-family:Courier New,monospace;background:#e8edf5;padding:6px 10px;border-radius:4px;margin:4px 0">r = 7, h = 9</div></div>
+<div style="background:rgba(0,86,179,0.08);padding:8px 12px;border-radius:5px;margin:4px 0;border-left:4px solid #0056B3"><div style="font-weight:bold;color:#0056B3;font-size:0.85em">Step 2: Write the formula</div><div style="font-family:Courier New,monospace;background:#e8edf5;padding:6px 10px;border-radius:4px;margin:4px 0">V = ⅓πr²h</div></div>
+<div style="background:rgba(0,86,179,0.08);padding:8px 12px;border-radius:5px;margin:4px 0;border-left:4px solid #0056B3"><div style="font-weight:bold;color:#0056B3;font-size:0.85em">Step 3: Substitute</div><div style="font-family:Courier New,monospace;background:#e8edf5;padding:6px 10px;border-radius:4px;margin:4px 0">V = ⅓π(7²)(9) = ⅓π(49)(9)</div></div>
+<div style="background:rgba(0,86,179,0.08);padding:8px 12px;border-radius:5px;margin:4px 0;border-left:4px solid #0056B3"><div style="font-weight:bold;color:#0056B3;font-size:0.85em">Step 4: Multiply inside</div><div style="font-family:Courier New,monospace;background:#e8edf5;padding:6px 10px;border-radius:4px;margin:4px 0">V = ⅓(441π)</div></div>
+<div style="background:rgba(34,172,0,0.08);padding:8px 12px;border-radius:5px;margin:4px 0;border-left:4px solid #22AC00"><div style="font-weight:bold;color:#22AC00;font-size:0.85em">Step 5: Divide by 3</div><div style="font-family:Courier New,monospace;background:#d4f0d0;padding:6px 10px;border-radius:4px;margin:4px 0;font-weight:bold">V = 147π ≈ 461.6 cm³ ✓</div></div>
+</div>
+
+<h2 style="font-family:Arvo,serif;color:#cc2222;font-size:1.05em;margin-top:18px;margin-bottom:8px">🔍 Common Mistakes — Can You Spot the Error?</h2>
+<p style="color:#4a4a5a;font-size:0.9em;margin-bottom:12px">Each problem has a mistake. Identify what went wrong.</p>
+
+<div style="background:#fff;border:2px solid #cc2222;border-radius:8px;padding:14px;margin-bottom:12px">
+<div style="font-weight:bold;color:#1E2D4F;margin-bottom:6px">Cylinder: r = 5, h = 10</div><div class="u9fig" data-u9='{"shape": "cyl", "r": 5, "h": 10, "maxW": 210}'></div>
+<div style="background:#ffe0e0;padding:8px 10px;border-radius:4px;margin:6px 0;font-family:Courier New,monospace;border-left:4px solid #cc2222"><strong style="color:#cc2222">✗ Student:</strong> V = π(5)(10) = 50π</div>
+<div style="background:#d4f0d0;padding:8px 10px;border-radius:4px;margin:6px 0;border-left:4px solid #22AC00"><strong style="color:#1a7000">✓ Fix:</strong> Forgot to SQUARE the radius! V = π(5²)(10) = π(25)(10) = 250π</div>
+<div style="font-size:0.85em;color:#0056B3;font-style:italic">💡 The formula is πr²h — that ² is critical!</div>
+</div>
+
+<div style="background:#fff;border:2px solid #cc2222;border-radius:8px;padding:14px;margin-bottom:12px">
+<div style="font-weight:bold;color:#1E2D4F;margin-bottom:6px">Cone: r = 6, h = 10</div><div class="u9fig" data-u9='{"shape": "cone", "r": 6, "h": 10, "maxW": 210}'></div>
+<div style="background:#ffe0e0;padding:8px 10px;border-radius:4px;margin:6px 0;font-family:Courier New,monospace;border-left:4px solid #cc2222"><strong style="color:#cc2222">✗ Student:</strong> V = π(6²)(10) = 360π</div>
+<div style="background:#d4f0d0;padding:8px 10px;border-radius:4px;margin:6px 0;border-left:4px solid #22AC00"><strong style="color:#1a7000">✓ Fix:</strong> That's the CYLINDER formula! Cones need ⅓. V = ⅓π(36)(10) = 120π</div>
+<div style="font-size:0.85em;color:#0056B3;font-style:italic">💡 A cone is always ⅓ of the matching cylinder.</div>
+</div>
+
+<div style="background:#fff;border:2px solid #cc2222;border-radius:8px;padding:14px;margin-bottom:12px">
+<div style="font-weight:bold;color:#1E2D4F;margin-bottom:6px">Sphere: diameter = 12</div><div class="u9fig" data-u9='{"shape": "sphere", "r": 6, "dia": true, "maxW": 220, "cap": "the 12 goes all the way across"}'></div>
+<div style="background:#ffe0e0;padding:8px 10px;border-radius:4px;margin:6px 0;font-family:Courier New,monospace;border-left:4px solid #cc2222"><strong style="color:#cc2222">✗ Student:</strong> V = ⁴⁄₃π(12)³ = ⁴⁄₃π(1728) = 2304π</div>
+<div style="background:#d4f0d0;padding:8px 10px;border-radius:4px;margin:6px 0;border-left:4px solid #22AC00"><strong style="color:#1a7000">✓ Fix:</strong> Used DIAMETER instead of radius! r = 6, not 12. V = ⁴⁄₃π(6)³ = ⁴⁄₃π(216) = 288π</div>
+<div style="font-size:0.85em;color:#0056B3;font-style:italic">💡 Always check: did the problem give diameter or radius? Diameter ÷ 2 = radius.</div>
+</div>
+
+</div>
+
+
+
+<script src="u9shapes.js"></script>
+<script>
+/* answer-key paper: ?print=key marks the right choice and shows the worked solution (screen use is unchanged) */
+(function(){
+  var m=/print=(worksheet|key)/.exec(location.search); if(!m) return;
+  if(m[1]==='key'){ document.documentElement.classList.add('key');
+    var t=document.querySelector('.keytag'); if(t) t.textContent=' — ANSWER KEY';
+    document.querySelectorAll('.q-card').forEach(function(card){
+      var right=null; card.querySelectorAll('.opt-btn').forEach(function(b){
+        var mm=/mc\(this,'[^']+','([^']+)'\)/.exec(b.getAttribute('onclick')||''); if(mm) right=mm[1];
+        if(mm && b.textContent.trim()===mm[1].trim()) b.classList.add('keyok'); });
+      var fb=card.querySelector('.feedback'); if(fb){ fb.classList.add('keysol'); fb.textContent='Solution: '+fb.textContent; }
+    }); }
+})();
+</script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script> ScoreSend.setup({ kind:'practice', unit:'9', page:'Unit 9 · Volume Practice', mount:'#ss-mount', std:'NC.8.G.9', band:4 }); </script>
+</body>
+</html>

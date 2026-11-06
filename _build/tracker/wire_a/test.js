@@ -8,7 +8,7 @@ async function mc(p, id, text) { const bs = await p.$$('#' + id + ' .chk-btn'); 
 async function fbHas(p, sel, cls) { return p.$eval(sel, (e, c) => e.classList.contains(c), cls); }
 
 const PAGES = {
-  'Unit_1_Real_Numbers_Guided_Notes.html': async p => {
+  'unit1-notes.html': async p => {
     await mc(p, 'chk1a', '√49');                  // wrong first try (MC locks)
     await mc(p, 'chk2a', '144');
     await val(p, 'chk2b', '12'); await val(p, 'chk2b', '13');
@@ -16,7 +16,7 @@ const PAGES = {
     await val(p, 'chk4a', '5.5');
     await val(p, 'chk3a', '');                     // empty: must not record
   },
-  'Unit_1_Estimating_Roots.html': async p => {
+  'unit1-estimating-roots.html': async p => {
     await p.fill('#tryInput', '1.0'); await p.click('#tryCheck');
     const t = await p.evaluate(() => document.getElementById('tryPrompt').textContent);
     // compute the right answer from the prompt
@@ -38,12 +38,12 @@ const PAGES = {
     await p.click('#p3-1 .check-btn');
     await p.click('#p1-3 .check-btn');                 // empty: must not record
   },
-  'Unit_2_Exponent_Rules_Guided_Notes.html': async p => {
+  'unit2-notes-exponents.html': async p => {
     await mc(p, 'chk21a', 'x⁸ (Product Rule)');
     await val(p, 'u2pA1', 'x^15'); await val(p, 'u2pA1', 'x^8');
     await val(p, 'u2pA5', '27m^6');
   },
-  'Unit_2_Scientific_Notation_Guided_Notes.html': async p => {
+  'unit2-notes-sci-notation.html': async p => {
     await val(p, 'u2pB1', '45x10^6'); await val(p, 'u2pB1', '4.5x10^7');
     await val(p, 'u2pB4', '0.000091');
     await val(p, 'u2pC2', '2x10^4');
@@ -54,20 +54,20 @@ const PAGES = {
     await val(p, 'u2pB3', '602000000');
     await val(p, 'u2pC4', '3x10^2'); await val(p, 'u2pC4', '3x10^3');
   },
-  'Unit_3_Equations_Guided_Notes.html': async p => {
+  'unit3-notes.html': async p => {
     await mc(p, 'chk36a', 'Infinitely many solutions');
     await val(p, 'pA1', '4'); await val(p, 'pA1', 'x=5');
     await val(p, 'pB2', 'no solution');
     await val(p, 'pC3', 'x>-3'); await val(p, 'pC3', '-3>x');
     if (!await fbHas(p, '#fb-pC3', 'c')) throw 'pC3 broken';
   },
-  'Unit_4_Geometry_Guided_Notes.html': async p => {
+  'unit4-notes.html': async p => {
     await mc(p, 'chk41a', '75°');
     await val(p, 'u4pA1', '55');
     await val(p, 'u4pC5', '100'); await val(p, 'u4pC5', '120');
     await val(p, 'u4pD4', '12');
   },
-  'Unit_5_Pythagorean_Guided_Notes.html': async p => {
+  'unit5-notes.html': async p => {
     await val(p, 'u5h1', '5');
     await mc(p, 'chk54b', 'No');
     await val(p, 'u5pB1', '4'); await val(p, 'u5pB1', '3');

@@ -7,7 +7,10 @@ for key,s in SETS.items():
     topic=key.split('_')[1:-1]; tag=key.split('_')[-1]
     name=f"Unit {s['unit']} · "+(' '.join(topic)+' ' if topic else '')+LABEL[tag]
     if key=='Unit5_Practice_Problems': name='Unit 5 · Practice Problems 5.1–5.4'
-    fn=key+'_Interactive.html'
+    # page names follow _build/rename_pages.py (Nov 2026): unitN-practice-1, unit2-practice-exponents-1, ...
+    import sys, os; sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from rename_pages import MAP as RENAMED
+    fn=RENAMED.get(key+'_Interactive', key+'_Interactive')+'.html'
     d={'unit':s['unit'],'pdf':s['pdf'],'data':s['data']}
     stds=sorted({x['std'] for x in s['data']['secs']})
     page=f'''<!DOCTYPE html>

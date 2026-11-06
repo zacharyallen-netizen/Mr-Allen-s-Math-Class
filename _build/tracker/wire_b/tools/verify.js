@@ -19,21 +19,21 @@ async function mcClick(page, list, sel) {
 }
 
 const PAGES = {
-  'unit7_practice.html': async p => mcClick(p, [['7a', true], ['7b', false], ['7c', true], ['7h', false], ['7l', true]], '.opt-btn'),
-  'unit8_practice.html': async p => mcClick(p, [['8a', true], ['8b', false], ['8g', true], ['8i', false], ['8j', true]], '.opt-btn'),
-  'volume_practice.html': async p => mcClick(p, [['v1', true], ['v4', false], ['v2', true], ['v12', false]], '.opt-btn'),
-  'unit7_practice1.html': async p => mcClick(p, [['u7c1_1', true], ['u7c1_10', false], ['u7c2_1', true], ['u7c3_2', false]], '.ob'),
-  'unit7_practice2.html': async p => mcClick(p, [['u7h1_1', false], ['u7h2_2', true], ['u7h3_1', true], ['u7h4_4', false]], '.ob'),
-  'unit8_practice1.html': async p => mcClick(p, [['u8c1_1', true], ['u8c1_7', false], ['u8c4_6', true], ['u8c5_3', false]], '.ob'),
-  'unit8_practice2.html': async p => mcClick(p, [['u8h1_2', true], ['u8h2_6', false], ['u8h4_4', true], ['u8h5_7', false]], '.ob'),
-  'transformations-guided-notes.html': async p => {
+  'unit7-practice.html': async p => mcClick(p, [['7a', true], ['7b', false], ['7c', true], ['7h', false], ['7l', true]], '.opt-btn'),
+  'unit8-practice.html': async p => mcClick(p, [['8a', true], ['8b', false], ['8g', true], ['8i', false], ['8j', true]], '.opt-btn'),
+  'unit9-practice.html': async p => mcClick(p, [['v1', true], ['v4', false], ['v2', true], ['v12', false]], '.opt-btn'),
+  'unit7-practice-1.html': async p => mcClick(p, [['u7c1_1', true], ['u7c1_10', false], ['u7c2_1', true], ['u7c3_2', false]], '.ob'),
+  'unit7-practice-2.html': async p => mcClick(p, [['u7h1_1', false], ['u7h2_2', true], ['u7h3_1', true], ['u7h4_4', false]], '.ob'),
+  'unit8-practice-1.html': async p => mcClick(p, [['u8c1_1', true], ['u8c1_7', false], ['u8c4_6', true], ['u8c5_3', false]], '.ob'),
+  'unit8-practice-2.html': async p => mcClick(p, [['u8h1_2', true], ['u8h2_6', false], ['u8h4_4', true], ['u8h5_7', false]], '.ob'),
+  'unit8-notes.html': async p => {
     await mcClick(p, [['chk1a', true], ['chk1b', false], ['p-trans-1', true], ['chk6b', false]], '.chk-btn');
     await p.fill('#p-trans-2-x', '1'); await p.fill('#p-trans-2-y', '1');
     await p.click('#p-trans-2 button[onclick^="chkInput"]');
     await p.fill('#p-trans-2-x', '2'); await p.fill('#p-trans-2-y', '-1');
     await p.click('#p-trans-2 button[onclick^="chkInput"]');
   },
-  'slope_intercept_practice.html': async p => {
+  'unit6-practice-slope-intercept.html': async p => {
     // card 0: y = 2x, all right; card 1: y = 2x+1, one wrong then right
     const fill = async (idx, vals) => { const ins = await p.$$(`#card-${idx} .y-input`); for (let i = 0; i < ins.length; i++) await ins[i].fill(String(vals[i])); };
     await fill(0, [-6, -4, -2, 0, 2, 4, 6]);
@@ -43,7 +43,7 @@ const PAGES = {
     await fill(1, [-5, -3, -1, 1, 3, 5, 7]);
     await p.click('#card-1 button[onclick^="checkAnswers"]');
   },
-  'tables_linear_functions.html': async p => {
+  'unit6-practice-tables.html': async p => {
     await p.selectOption('#p3-sel', 'nonlinear'); await p.click('#p3 button[onclick="checkP3()"]');
     await p.selectOption('#p3-sel', 'linear'); await p.fill('#p3-slope', '2'); await p.click('#p3 button[onclick="checkP3()"]');
     await p.selectOption('#p4-sel', 'nonlinear'); await p.click('#p4 button[onclick="checkP4()"]');
@@ -60,21 +60,21 @@ const PAGES = {
     await p.click('button[onclick="checkSystem()"]');
     await p.click('.tab-btn:nth-child(1)');
   },
-  'slope_guided_notes.html': async p => {
+  'unit6-notes-slope.html': async p => {
     await p.evaluate(() => goSection(4));
     await p.fill('#ans-0', '3'); await p.click('#prob-0 .btn-primary');
     await p.fill('#ans-0', '2'); await p.click('#prob-0 .btn-primary');
     await p.fill('#ans-2', '1/2'); await p.click('#prob-2 .btn-primary');
     await p.fill('#ans-4', 'undefined'); await p.click('#prob-4 .btn-primary');
   },
-  'tables-and-systems-guided-notes.html': async p => {
+  'unit6-notes-tables-systems.html': async p => {
     await p.fill('#p1m', '3'); await p.fill('#p1b', '2'); await p.click('button[onclick^="checkEq(\'p1\'"]');
     await p.fill('#p1b', '-2'); await p.click('button[onclick^="checkEq(\'p1\'"]');
     await p.click('button[onclick="testPoint(\'tp1\', true)"]');
     await p.fill('#pg1x', '2'); await p.fill('#pg1y', '4'); await p.click('button[onclick^="checkPoint(\'pg1\'"]');
     await p.fill('#s1x', '1'); await p.fill('#s1y', '1'); await p.click('button[onclick^="checkPoint(\'s1\'"]');
   },
-  'Unit_6_Functions_Guided_Notes.html': async p => {
+  'unit6-notes.html': async p => {
     const blur = async (qid, v) => { await p.evaluate(({ qid, v }) => { const i = document.querySelector(`input.fill[data-qid="${qid}"]`); i.value = v; i.dispatchEvent(new Event('input')); i.dispatchEvent(new Event('blur')); }, { qid, v }); };
     await blur('6-1-1', 'something');      // note blank: must NOT be recorded
     await blur('6-1-6', 'no'); await blur('6-1-6', 'yes'); await blur('6-1-6', 'yes'); // practice: wrong then right; repeat ignored

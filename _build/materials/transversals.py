@@ -7,7 +7,7 @@ BACK: 10 leveled Check-In style items (Approaching (3) ×3 / Proficient (4) ×4 
 
 Every figure is drawn from its own numbers: the transversal is tilted so the drawn angles ARE the answers.
 Every pair name, every congruent/supplementary call and every answer is asserted before rendering.
-Vocabulary follows grade8/angles_pythagorean_tutorial.html Part 2 ("same-side interior").
+Vocabulary follows grade8/units4-5-tutorial.html Part 2 ("same-side interior").
 """
 import sys, os, math, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

@@ -99,7 +99,7 @@ EXTRA_CSS = """
 """
 
 cfg = {
- 'file':'Unit2_PreTest_ScientificNotation.html',
+ 'file':'unit2-pretest-sci-notation.html',
  'unit':'unit2','unitlabel':'Unit 2',
  'title':'Unit 2 Pre-Test — Scientific Notation',
  'h1':'Unit 2 Pre-Test','sub':'Scientific Notation','std':'Standards assessed: NC.8.EE.3, NC.8.EE.4',

@@ -3,7 +3,7 @@ const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwrig
 const G = '/home/claude/mr-allen-s-math-class/grade8/';
 const OUT = process.env.OUT_DIR || '/home/claude/outputs/u34/';
 const jobs = [
-  [G + 'Unit3_4_PreTest.html', G + 'Unit3_4_PreTest.pdf', OUT + 'Unit3_4_PreTest_AnswerKey.pdf'],
+  [G + 'units3-4-pretest.html', G + 'Unit3_4_PreTest.pdf', OUT + 'Unit3_4_PreTest_AnswerKey.pdf'],
   [G + '__u34_test_tmp.html', OUT + 'Unit3_4_Test.pdf', OUT + 'Unit3_4_Test_AnswerKey.pdf'],
 ];
 async function render(page, src, out, reveal) {

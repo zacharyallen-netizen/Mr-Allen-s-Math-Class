@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Add a 6.1 Functions tab to Unit_6_Functions_Guided_Notes.html (and point the 6.1 card at it)."""
+"""Add a 6.1 Functions tab to unit6-notes.html (and point the 6.1 card at it)."""
 import io, math
 
-F = '/home/claude/mr-allen-s-math-class/grade8/Unit_6_Functions_Guided_Notes.html'
+F = '/home/claude/mr-allen-s-math-class/grade8/unit6-notes.html'
 NAVY, BLUE, GOLD, GREEN, RED, GREY = '#1E2D4F', '#0056B3', '#b08800', '#1F7A4D', '#cc2222', '#8a93a6'
 
 

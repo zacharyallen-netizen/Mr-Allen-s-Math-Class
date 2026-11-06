@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import re, math
-F='/home/claude/mr-allen-s-math-class/grade8/Unit_5_Pythagorean_Guided_Notes.html'
+F='/home/claude/mr-allen-s-math-class/grade8/unit5-notes.html'
 NAVY='#1E2D4F'; GOLD='#b08800'; BLUE='#0056B3'; GREEN='#1a7000'; FILL='#eef4ff'; GRID='#d7def0'
 def svg(w,h,b): return f'<svg width="{w:.0f}" height="{h:.0f}" viewBox="0 0 {w:.0f} {h:.0f}" xmlns="http://www.w3.org/2000/svg">{b}</svg>'
 def T(x,y,s,col,anchor='middle',size=12.5,weight='bold'):

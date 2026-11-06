@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Reusable builder for Mr. Allen's standards-based pre-tests.
-Matches the Unit_2_Pretest.html worksheet style exactly (shared style block),
+Matches the unit2-pretest-exponents.html worksheet style exactly (shared style block),
 driven by a per-unit config. Data-driven answer checker via chk arrays."""
 import json, os, html, re
 

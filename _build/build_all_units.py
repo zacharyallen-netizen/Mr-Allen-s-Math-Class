@@ -59,7 +59,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Solve','expr':'2x + 4 = 2x − 1','disp':'no solution','chk':['text',['no solution','no solutions','none','no soln','empty','empty set']],'lab':'Answer:'},
  {'id':18,'lvl':'advanced','op':'Solve','expr':'5(x + 2) − 3 = 2(x + 5)','disp':'x = 1','chk':['val',1],'lab':'x ='},
 ]
-CFGS.append(dict(file='Unit3_PreTest.html',unit='unit3',unitlabel='Unit 3',
+CFGS.append(dict(file='unit3-pretest.html',unit='unit3',unitlabel='Unit 3',
   title='Unit 3 Pre-Test — Linear Equations',h1='Unit 3 Pre-Test',sub='Solving Linear Equations',
   std='Standard assessed: NC.8.EE.7',vocab_key=key,
   bands=[
@@ -111,7 +111,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Solve','expr':'A triangle has angles x, 2x, and 3x. Find x.','disp':'x = 30','chk':['num',30,0.5],'lab':'x ='},
  {'id':18,'lvl':'advanced','op':'Isosceles','expr':'An isosceles triangle has a vertex angle of 40'+D+'. Find one base angle.','disp':'70'+D,'chk':['num',70,0.5],'lab':'x ='},
 ]
-CFGS.append(dict(file='Unit4_PreTest.html',unit='unit4',unitlabel='Unit 4',
+CFGS.append(dict(file='unit4-pretest.html',unit='unit4',unitlabel='Unit 4',
   title='Unit 4 Pre-Test — Angles & Geometry',h1='Unit 4 Pre-Test',sub='Angle Relationships & Triangles',
   std='Standard assessed: NC.8.G.5',vocab_key=key,
   bands=[
@@ -162,7 +162,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Distance','expr':'Find the distance between (−2, −1) and (3, 11).','disp':'13','chk':['num',13,0.05],'lab':'d ='},
  {'id':18,'lvl':'advanced','op':'Apply','expr':'A park is a right triangle with legs 20 m and 21 m. Find the longest side.','disp':'29 m','chk':['num',29,0.05],'lab':'longest side ='},
 ]
-CFGS.append(dict(file='Unit5_PreTest.html',unit='unit5',unitlabel='Unit 5',
+CFGS.append(dict(file='unit5-pretest.html',unit='unit5',unitlabel='Unit 5',
   title='Unit 5 Pre-Test — Pythagorean Theorem',h1='Unit 5 Pre-Test',sub='The Pythagorean Theorem',
   std='Standards assessed: NC.8.G.6, NC.8.G.7, NC.8.G.8',vocab_key=key,
   bands=[
@@ -214,7 +214,7 @@ qs=[
  {'id':18,'lvl':'advanced','op':'y-intercept','expr':'A line has slope 2 and passes through (3, 11). Find the y-intercept.','disp':'5','chk':['val',5],'lab':'b ='}, {'id':19,'lvl':'advanced','op':'System','expr':'Lines A and B are graphed. Write the solution of the system as an ordered pair.','disp':'(2, 2)','chk':['coord',2,2],'lab':'solution ='},
  {'id':20,'lvl':'advanced','op':'System','expr':'Lines A and B are graphed. How many solutions does this system have?','disp':'none','chk':['text',['none','no solution','0','zero','no solutions']],'lab':'Answer:'},
 ]
-CFGS.append(dict(file='Unit6_PreTest.html',unit='unit6',unitlabel='Unit 6',
+CFGS.append(dict(file='unit6-pretest.html',unit='unit6',unitlabel='Unit 6',
   title='Unit 6 Pre-Test — Functions & Slope',h1='Unit 6 Pre-Test',sub='Functions & Linear Relationships',
   std='Standards assessed: NC.8.F.1–F.5 · NC.8.EE.8',vocab_key=key,
   bands=[
@@ -268,7 +268,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Interpret','expr':'Value vs. age: y = −4x + 50, where y is the value in $1,000s. How much does the value drop each year?','disp':'4 thousand dollars ($4,000)','chk':['text',['4','4 thousand','4 thousands','4 thousand dollars','four','four thousand','4000','4,000','$4000','$4,000','4000 dollars','4,000 dollars','$ 4,000','$4,000.00','4000.00']],'lab':'Answer:'},
  {'id':18,'lvl':'advanced','op':'Predict','expr':'Line of best fit y = 1.5x + 10. Predict y when x = 8.','disp':'22','chk':['val',22],'lab':'y ='},
 ]
-CFGS.append(dict(file='Unit7_PreTest.html',unit='unit7',unitlabel='Unit 7',
+CFGS.append(dict(file='unit7-pretest.html',unit='unit7',unitlabel='Unit 7',
   title='Unit 7 Pre-Test — Data Analysis',h1='Unit 7 Pre-Test',sub='Scatterplots & Two-Way Tables',
   std='Standards assessed: NC.8.SP.1–SP.4',vocab_key=key,
   bands=[
@@ -322,7 +322,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Similarity','expr':'After a dilation with scale factor ≠ 1, the image is ___ to the original.','disp':'similar','chk':['text',['similar']],'lab':'Answer:'},
  {'id':18,'lvl':'advanced','op':'Rotate','expr':'Rotate (1, 2) 90° clockwise about the origin.','disp':'(2, −1)','chk':['coord',2,-1],'lab':'='},
 ]
-CFGS.append(dict(file='Unit8_PreTest.html',unit='unit8',unitlabel='Unit 8',
+CFGS.append(dict(file='unit8-pretest.html',unit='unit8',unitlabel='Unit 8',
   title='Unit 8 Pre-Test — Transformations',h1='Unit 8 Pre-Test',sub='Transformations on the Coordinate Plane',
   std='Standards assessed: NC.8.G.2–G.4',vocab_key=key,
   bands=[
@@ -374,7 +374,7 @@ qs=[
  {'id':17,'lvl':'advanced','op':'Compare','expr':'A cone and a cylinder have the same radius and height. The cone’s volume is what fraction of the cylinder’s?','disp':'⅓','chk':['frac',1,3],'lab':'Answer:'},
  {'id':18,'lvl':'advanced','op':'Compare','expr':'A sphere has r = 3. A cylinder has r = 3, h = 6. Which has the greater volume?','disp':'the cylinder','chk':['text',['cylinder','the cylinder','cyl']],'lab':'Answer:'},
 ]
-CFGS.append(dict(file='Unit9_PreTest.html',unit='unit9',unitlabel='Unit 9',
+CFGS.append(dict(file='unit9-pretest.html',unit='unit9',unitlabel='Unit 9',
   title='Unit 9 Pre-Test — Volume',h1='Unit 9 Pre-Test',sub='Volume of Cylinders, Cones & Spheres',
   std='Standard assessed: NC.8.G.9',vocab_key=key,
   bands=[
@@ -420,7 +420,7 @@ def isosceles_n(vertex):
     return V4.svg(230,160,s,'Diagram: isosceles triangle, vertex angle %d°' % vertex)
 # ---- attach geometry diagrams (one per question) ----
 DIAS = {
- 'Unit4_PreTest.html': {
+ 'unit4-pretest.html': {
    1:V4.supp(125,'Diagram: supplementary angles, given 125°'),2:V4.comp(35,'Diagram: complementary angles, given 35°'),
    3:V4.vertical(70,'Diagram: vertical angles, given 70°'),4:V4.supp(140,'Diagram: linear pair, given 140°'),
    5:V4.comp(62,'Diagram: complementary angles, given 62°'),6:V4.supp(95,'Diagram: linear pair, given 95°'),
@@ -435,7 +435,7 @@ DIAS = {
    16:V4.exterior(0,45,120,'remote','Diagram: exterior angle 120°, remote interior 45°'),
    17:tri_xyz(),18:isosceles_n(40),
  },
- 'Unit5_PreTest.html': {
+ 'unit5-pretest.html': {
    1:rtri(3,4,'3','4','c = ?'),2:rtri(6,8,'6','8','c = ?'),3:rtri(5,12,'5','12','c = ?'),
    4:rtri(8,15,'8','15','c = ?'),5:rtri(9,12,'9','12','c = ?'),6:rtri(7,24,'7','24','c = ?'),
    7:rtri(6,8,'6','?','10'),8:rtri(5,12,'5','?','13'),9:rtri(9,12,'9','?','15'),
@@ -443,7 +443,7 @@ DIAS = {
    13:coord_dist(0,0,6,8),14:coord_dist(1,2,4,6),15:ladder('13 ft','?','12 ft',5,12),
    16:rect_diag(9,12,'9','12','d = ?'),17:coord_dist(-2,-1,3,11),18:rtri(20,21,'20','21','c = ?'),
  },
- 'Unit8_PreTest.html': {
+ 'unit8-pretest.html': {
    1:concept_slide(),2:concept_flip(),3:concept_turn(),
    4:coord_point(2,3),5:coord_point(1,5),6:coord_point(-2,1),
    7:coord_point(4,2,axis='x'),8:coord_point(3,5,axis='y'),9:coord_point(-2,4,axis='x'),
@@ -451,7 +451,7 @@ DIAS = {
    13:coord_point(2,4,center=True),14:coord_point(10,5,center=True),15:concept_similar(),
    16:concept_congruent(),17:concept_similar(),18:coord_point(1,2,center=True),
  },
- 'Unit9_PreTest.html': {
+ 'unit9-pretest.html': {
    1:cylinder_n(3,5,'r = 3','h = 5'),2:cylinder_n(2,10,'r = 2','h = 10'),3:cylinder_n(5,4,'r = 5','h = 4'),
    4:cone_n(3,4,'r = 3','h = 4'),5:cone_n(6,5,'r = 6','h = 5'),6:cone_n(3,10,'r = 3','h = 10'),
    7:cylinder_n(5,4,'r = ?','h = 4'),8:cylinder_n(4,3,'r = 4','h = ?'),9:cylinder_n(10,2,'r = 10','h = ?'),
@@ -459,7 +459,7 @@ DIAS = {
    13:sphere('r = 3',R=32),14:sphere('r = 6',R=52),15:sphere('d = 6',is_diam=True,R=32),
    16:cylinder_n(3,10,'r = 3 cm','h = 10 cm'),17:cone_vs_cyl(),18:sphere_vs_cyl(),
  },
- 'Unit6_PreTest.html': {
+ 'unit6-pretest.html': {
    1:points_plot([(1,2),(2,4),(3,6)]),2:points_plot([(1,2),(1,3),(2,5)]),
    3:line_graph(3,5),4:line_graph(3,5),5:line_graph(-2,7),6:line_graph(0.5,-4),
    7:line_graph(2,1,[(0,1),(2,5)]),8:line_graph(3,0,[(1,3),(4,12)]),9:line_graph(-2,11,[(2,7),(5,1)]),
@@ -468,7 +468,7 @@ DIAS = {
    16:line_graph(0.5,10),17:line_graph(3,2,[(1,5),(3,11)]),18:line_graph(2,5,[(3,11)]),
    19:line_graph2_read(0.5,1,-0.5,3),20:line_graph2(0.5,2,0.5,-2),
  },
- 'Unit7_PreTest.html': {
+ 'unit7-pretest.html': {
    1:scatter_eq(6,40,10,100,1,'hours studied','test score',fit=False),
    2:scatter_eq(-2.5,22,8,24,2,'age (years)','value ($1000s)',fit=False,noise=2),
    3:scatter_eq(1,1,10,12,3,'x','y',fit=False,outlier=(3,10.5),noise=1),
@@ -492,9 +492,9 @@ for cfg in CFGS:
 
 # ---- standards for bands that list two (the tracker records one per question) ----
 QSTD = {
- 'Unit6_PreTest.html': {13:'NC.8.F.2',14:'NC.8.F.2',15:'NC.8.F.2',16:'NC.8.F.2',17:'NC.8.F.2',18:'NC.8.F.2',
+ 'unit6-pretest.html': {13:'NC.8.F.2',14:'NC.8.F.2',15:'NC.8.F.2',16:'NC.8.F.2',17:'NC.8.F.2',18:'NC.8.F.2',
                         19:'NC.8.EE.8',20:'NC.8.EE.8'},          # band: NC.8.F.2 · NC.8.EE.8 (19–20 are systems)
- 'Unit7_PreTest.html': {7:'NC.8.SP.3',8:'NC.8.SP.3',9:'NC.8.SP.3',
+ 'unit7-pretest.html': {7:'NC.8.SP.3',8:'NC.8.SP.3',9:'NC.8.SP.3',
                         10:'NC.8.SP.4',11:'NC.8.SP.4',12:'NC.8.SP.4'}, # band: NC.8.SP.3, NC.8.SP.4 (10–12 two-way table)
 }
 for cfg in CFGS:

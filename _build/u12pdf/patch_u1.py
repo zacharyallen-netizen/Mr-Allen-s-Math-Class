@@ -3,8 +3,8 @@ Question text/numbers are untouched; only answer data (ans) and print-only piece
 import re, sys
 G = '/home/claude/mr-allen-s-math-class/grade8/'
 ANS = {
-  'Unit1_PreTest.html':       {1:'0.375',2:'1/4',3:'R',4:'2/3',5:'2.833…',6:'IR',7:'R',8:'R',11:'R',12:'IR',14:('15 ft','60 ft')},
-  'Unit1_PreTest_FormB.html': {1:'0.625',2:'3/4',3:'R',4:'1/3',5:'2.333…',6:'IR',7:'R',8:'R',11:'R',12:'IR',14:('14 ft','56 ft')},
+  'unit1-pretest.html':       {1:'0.375',2:'1/4',3:'R',4:'2/3',5:'2.833…',6:'IR',7:'R',8:'R',11:'R',12:'IR',14:('15 ft','60 ft')},
+  'unit1-pretest-form-b.html': {1:'0.625',2:'3/4',3:'R',4:'1/3',5:'2.333…',6:'IR',7:'R',8:'R',11:'R',12:'IR',14:('14 ft','56 ft')},
 }
 PRINT_CSS = r'''
   /* ---- Answer key flag + paper-only pieces (hidden on screen) ---- */
