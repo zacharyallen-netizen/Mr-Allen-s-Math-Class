@@ -66,6 +66,15 @@ function checkPw(){
   });
 }
 
+/* ---- Teacher tool: open gate.html#new-password to get the fingerprint for a new password ---- */
+if (location.hash === '#new-password') {
+  var card = document.querySelector('.gate-card');
+  card.innerHTML = '<h1>New Math 1 password</h1><p>Type the new password. Copy the long code it makes, and paste it into math1/gate.html after PW_HASH (or send it to Claude).</p>' +
+    '<input id="np" type="text" placeholder="New password" autocomplete="off"><button class="gate-btn" id="mk">Make the code</button>' +
+    '<p id="out" style="word-break:break-all;font-family:monospace;margin-top:14px;color:#1E2D4F"></p>';
+  document.getElementById('mk').onclick = function(){ var t = document.getElementById('np').value.trim().toLowerCase(); if(t) sha256(t).then(function(h){ document.getElementById('out').textContent = h; }); };
+}
+
 /* ---- The Math Alarm: silly, loud, and impossible to skip for 12 seconds ---- */
 var MathAlarm = (function(){
   var ac, nodes = [], timer;
