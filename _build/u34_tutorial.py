@@ -308,7 +308,7 @@ RJS = {'para': para_ref('__P__'), 'tri': tri_ref('__P__')}
 page = ('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         '<title>Units 3–4 Tutorial Review — Equations, Inequalities &amp; Angles</title>'
         '<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500&family=Source+Serif+4:wght@500;600&display=swap" rel="stylesheet">'
-        f'<style>{CSS}</style><script src="step-solver.js"></script><script src="../brand.js"></script></head><body>{body}'
+        f'<style>{CSS}</style><script src="step-solver.js"></script><script src="ineq-keys.js"></script><script src="../brand.js"></script></head><body>{body}'
         '<script src="../tracker-config.js"></script><script src="../score-send.js"></script>'
         '<script>' + JS.replace('__Q__', json.dumps(QJS, ensure_ascii=False)).replace('__S__', json.dumps(SJS, ensure_ascii=False)).replace('__R__', json.dumps(RJS))
         + "if(window.ScoreSend)ScoreSend.setup({kind:'practice',unit:'3-4',page:'Units 3–4 Tutorial Review · Equations, Inequalities & Angles',mount:'#send',std:'NC.8.EE.7',band:4});"
