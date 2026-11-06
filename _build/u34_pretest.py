@@ -186,14 +186,46 @@ if __name__ == '__main__':
         c = cfg_for(v)
         assert len(c['qs']) == 18 and [q['id'] for q in c['qs']] == list(range(1, 19))
         out = build(c)
-        if v == 'A':   # step-by-step help on the multi-step equations (online pre-test only; hidden in print)
-            from u34_steps import EQS
+        if v == 'A':   # online pre-test only: step choosers, colored solutions, number lines, reference diagrams (all hidden in print)
             import json
-            data = {k[1:]: e for k, e in EQS.items() if k.startswith('p')}
-            assert set(data) == {'1', '7', '8', '14'}
-            for k in data: assert c['qs'][int(k) - 1]['expr'] == data[k]['start'], k
+            from u34_pt_steps import PT
+            from u34_tut_steps import to_js, trail_html, plain
+            from u34_refsvg import para_ref, tri_ref
+            for q in c['qs']:   # each step sequence ends on the answer the page checks
+                seq = PT['pt%d' % q['id']]
+                last = seq['steps'][-1]
+                end = plain(last['res'] or last['concl']).replace('−', '-')
+                assert q['disp'].replace('−', '-').split(' ')[-1].lower() in end.lower() or q['disp'] in DISP.values(), (q['id'], end, q['disp'])
+            REF = {4: 'para', 5: 'para', 10: 'para', 11: 'para', 16: 'para', 6: 'tri', 12: 'tri', 17: 'tri', 18: 'tri'}
+            data = dict(seq={str(q['id']): to_js(PT['pt%d' % q['id']]) for q in c['qs']},
+                        sol={str(q['id']): trail_html(PT['pt%d' % q['id']]) for q in c['qs']},
+                        graph={str(i): dict(PT['pt%d' % i]['graph'], lo=-8, hi=8) for i in (2, 9, 15)},
+                        ref={str(k): v for k, v in REF.items()}, tpl={'para': para_ref('__P__'), 'tri': tri_ref('__P__')})
+            for i in (2, 9, 15):
+                g = data['graph'][str(i)]
+                g['why'] = ('%s circle at %s, shaded %s.' % ('CLOSED' if g['closed'] else 'OPEN', ('−%d' % -g['v']) if g['v'] < 0 else g['v'], g['dir'].upper()))
+            js = r"""
+(function(){var D=__D__;
+var css=document.createElement('style');css.textContent='.pt-extra{margin-top:8px}.pt-sol{display:none}.pt-sol.on{display:block}'+
+ '.pt-tog{font:600 14.5px Inter,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;cursor:pointer;margin-top:8px}'+
+ '@media print{.pt-extra{display:none!important}}';document.head.appendChild(css);
+Object.keys(D.seq).forEach(function(id){var card=document.getElementById('q'+id);if(!card)return;
+ var box=document.createElement('div');box.className='pt-extra';card.appendChild(box);
+ if(D.ref[id]){var b=document.createElement('button');b.type='button';b.className='pt-tog';b.textContent='Show reference diagram';b.setAttribute('aria-expanded','false');
+  var r=document.createElement('div');r.hidden=true;box.appendChild(b);box.appendChild(r);
+  b.onclick=function(){r.hidden=!r.hidden;b.setAttribute('aria-expanded',String(!r.hidden));b.textContent=r.hidden?'Show reference diagram':'Hide reference diagram';
+   if(!r.hidden&&!r.firstChild)StepSolver.ref(r,D.ref[id],D.tpl[D.ref[id]]);};}
+ var m=document.createElement('div');box.appendChild(m);StepSolver.mount(m,D.seq[id]);
+ if(D.graph[id]){var g=document.createElement('div');box.appendChild(g);StepSolver.graph(g,D.graph[id],{title:'Graph your answer'});}
+ var s=document.createElement('div');s.className='pt-sol';s.id='ptsol'+id;s.innerHTML=D.sol[id];box.appendChild(s);});
+function showSols(){Object.keys(D.sol).forEach(function(id){var c=document.getElementById('q'+id),s=document.getElementById('ptsol'+id);
+ if(c&&s)s.classList.toggle('on',c.classList.contains('correct'));});}
+['check','reveal'].forEach(function(b){var e=document.getElementById(b);if(e)e.addEventListener('click',function(){setTimeout(showSols,0);});});
+var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',function(){setTimeout(function(){document.querySelectorAll('.pt-sol').forEach(function(s){s.classList.remove('on');});},0);});
+})();
+"""
             h = open(out).read()
-            tag = ('<script src="eq-stepper.js"></script><script>EqStepper.attach(' + json.dumps(data, ensure_ascii=False) + ');</script>\n')
+            tag = '<script src="step-solver.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n'
             i = h.rindex('</body>'); h = h[:i] + tag + h[i:]
             open(out, 'w').write(h)
         print('built', out)

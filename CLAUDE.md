@@ -37,7 +37,7 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 |---|---|
 | `index.html`, `grade8/index.html`, `class-information.html` | Hub pages (cards). |
 | `grade8/benchmarks.html` | **NC Check-Ins / Benchmarks** page (all benchmark reviews + PDFs). |
-| `grade8/grading.html` | **Grading & Standards** hub (nav label): SBG, 1–5 scale, decaying average calculator, view-only tracker samples (`images/trackers/`), links to I Can Targets. |
+| `grade8/grading.html` | **Grading & Standards** hub (nav label; linked on the 8th grade home page below the Units): SBG, 1–5 scale, decaying average calculator, the ONE student tracker (the tabbed I Can Tracker; the old Standards Tracker was merged into it in Nov 2026) with view-only samples (`images/trackers/ican-*`), I Can Targets and Durable Skills sections. |
 | `grade8/durable-skills.html` | Durable Skills (Perseverance, Peer Collaboration, Self-Regulation rubrics + local self-check). |
 | `grade8/museum-of-angles.html` | Unit 4/8 treasure-hunt game (generated art; `?all=1` unlocks rooms for demos). |
 | `arcade-send.js` | Arcade play logging → `kind:'arcade'` on the Student Work script → "2627 Arcade Results" Sheet (`_build/student_work/ArcadeLog.gs`). Every arcade game includes it; Zero Pair Run, UFO Blaster and Museum of Angles also report answers/rounds. |
@@ -47,6 +47,7 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 | `benchmark-config.js` | Benchmark Tracker web-app URL + code. `tracker-config.js` = separate Score Tracker (Fluency Lab, pre-tests). |
 | `_build/materials/` | **Printable toolkit** — handouts, practice, bell ringers, keys, combine. Start from `new_handout_template.py`; read its README. |
 | `grade8/angles_pythagorean_tutorial.html` | Units 4–5 tutorial (sends to Score Tracker as unit "4-5"). |
+| `grade8/guided_notes_units_6_7.html` | Hidden (no links) since Nov 2026: its content lives in the Unit 6 notes (tabs 6.4–6.6) and Unit 7 notes. Keep the file. |
 | `brand.js`, `brand.css` | Site-wide fonts/background (see Standing preferences). |
 | `HOW_TO_UPDATE.txt` | Zach's plain-language guide (keep it updated when workflows change). |
 

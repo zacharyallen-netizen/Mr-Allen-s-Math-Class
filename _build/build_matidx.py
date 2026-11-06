@@ -133,6 +133,13 @@ PAGE = """<!DOCTYPE html>
   <p>Every note, worksheet, project, and answer key, organized by unit.</p>
   <p class="stds">Pre-Tests · Notes · Practice · Games · Projects · Answer Keys</p>
 </div>
+<div class="section-label" id="quick">Fluency Lab &amp; Math Connections</div>
+<div class="feature-cards mat-quick" style="margin-bottom:18px">
+<a href="Fluency-Lab-Package/fluency-lab/index.html" class="feature-card"><div class="fi">🧠</div><div><div class="ft">Fluency Lab</div><div class="fd">Build core math skills until they are automatic.</div></div></a>
+<a href="math-science/index.html" class="feature-card"><div class="fi">🔬</div><div><div class="ft">Math Connections: Math in Science</div><div class="fd">Short tutorials and assignments where 8th grade math explains science.</div></div></a>
+<a href="math-finlit/index.html" class="feature-card"><div class="fi">💵</div><div><div class="ft">Math Connections: Math in Financial Literacy</div><div class="fd">Short tutorials and assignments on budgets, credit, interest and loans.</div></div></a>
+</div>
+
 <div class="intro"><p><strong>Tip:</strong> Use the buttons to show one kind of material, like only Notes or only Practice. Use the unit links to jump to a unit. <em>Interactive</em> items open a page you can work through. <em>PDF</em> items open a printable document.</p></div>
 
 <div class="mat-tools">

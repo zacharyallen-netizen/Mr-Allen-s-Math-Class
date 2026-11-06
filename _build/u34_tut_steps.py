@@ -106,6 +106,12 @@ def verify(seq):
 # ───────────────────────── data ─────────────────────────
 SEQ = {}
 def add(key, expect, steps, start=None, given=None, check=None, final=None, graph=None, after='type'):
+    si = len(SEQ)
+    for i, st in enumerate(steps):   # where the right answer sits: vary it, never always first
+        ok = [c for c in st['choices'] if c[1]][0]
+        rest = [c for c in st['choices'] if not c[1]]
+        rest.insert((si + 2 * i + 1) % 3, ok)
+        st['choices'] = rest
     SEQ[key] = verify(dict(key=key, expect=expect, steps=steps, start=start, given=given, check=check,
                            final=final, graph=graph, after=after))
 
@@ -418,14 +424,6 @@ add('t22', ('one', 25), given='The angles of a triangle are (x + 5)°, (2x + 10)
     divide(6, 150, 25),
 ], check='The angles are 30°, 60° and 90°. 30 + 60 + 90 = 180 ✓')
 SEQ['t22']['steps'][2]['note'] += ' 180 − 30 = 150.'
-
-# ───────── where the right answer sits (vary it; never always first) ─────────
-for si, (key, seq) in enumerate(SEQ.items()):
-    for i, st in enumerate(seq['steps']):
-        ok = [c for c in st['choices'] if c[1]][0]
-        rest = [c for c in st['choices'] if not c[1]]
-        rest.insert((si + 2 * i + 1) % 3, ok)
-        st['choices'] = rest
 
 def to_js(seq):
     """Render a sequence for the page: all strings become HTML."""

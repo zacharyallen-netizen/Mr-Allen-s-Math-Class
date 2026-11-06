@@ -303,7 +303,7 @@ for n, t, std, learn, extra in PARTS:
 body += '<div class="done"><h3>Finished?</h3><p id="final"></p><p>When you are done, send your work to Mr. Allen.</p><div id="send"></div></div></div>'
 
 QJS = [{k: v for k, v in q.items() if k not in ('svg', 'sol')} | {'sol': bool(q.get('sol'))} for q in Q]
-SJS = {k: to_js(v) for k, v in SEQ.items()}
+SJS = {k: to_js(v) for k, v in SEQ.items() if not k.startswith('pt')}
 RJS = {'para': para_ref('__P__'), 'tri': tri_ref('__P__')}
 page = ('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">'
         '<title>Units 3–4 Tutorial Review — Equations, Inequalities &amp; Angles</title>'
