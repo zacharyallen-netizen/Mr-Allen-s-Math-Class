@@ -453,7 +453,7 @@
     } } catch (e) { }
     // changed only one side
     if (peq(a.R, b.R) && !peq(a.L, b.L)) side = 'left'; else if (peq(a.L, b.L) && !peq(a.R, b.R)) side = 'right';
-    if (side) return 'Only the ' + side + ' side changed, and it is not equal to what it was. Whatever you do to one side, do to the <b>other side</b> too.';
+    if (side) return 'You changed only the ' + side + ' side. Do the same thing to <b>both sides</b>.';
     // added on one side, subtracted on the other
     var dL = psub(b.L, a.L), dR = psub(b.R, a.R);
     if (!pzero(dL) && peq(dL, pscale(dR, qneg(ONE)))) return 'It looks like you added on one side and subtracted on the other. Do the <b>same</b> thing to both sides.';
@@ -472,7 +472,7 @@
       return 'Check the ' + wrongSide + ' side. If you multiply or divide one side by a number, do it to <b>every term</b> on the other side too.';
     }
     if (!pzero(dL) && pdeg(dL) === 0 && !pzero(dR) && pdeg(dR) === 0) return 'You added or subtracted different amounts on the two sides. Use the <b>same</b> number on both sides.';
-    return 'This line is not equal to the line before it. Check your arithmetic, one term at a time.';
+    return 'This line doesn\'t match the line before it. Check the math one term at a time.';
   }
   function isSolved(e, v) {
     var side = aloneSide(e, v); if (!side) return null;
@@ -510,6 +510,7 @@
     '.sw-mv{font:600 13px Inter,sans-serif;color:#8A6100;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
     '.sw-ask{font:600 15px Inter,sans-serif;margin:10px 0 6px}' +
     '.sw-moves{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}' +
+    '@media (max-width:560px){.sw-moves{grid-template-columns:1fr 1fr}.sw-moves button{font-size:14px;padding:6px 8px}}' +
     '.sw button{font:600 14.5px Inter,sans-serif;min-height:44px;padding:6px 12px;border-radius:8px;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;cursor:pointer}' +
     '.sw button[aria-pressed=true]{background:#1E2D4F;color:#fff}' +
     '.sw button.go{background:#1E2D4F;color:#fff}.sw button.ghost{border-style:dashed}' +
@@ -549,6 +550,9 @@
 
   /* ===================== the workspace ===================== */
   var uid = 0;
+  var PRAISE = ['✓ Yes! That line is right.', '✓ Correct. Keep going.', '✓ Nice move.', '✓ Right. One step closer.'], pn = 0;
+  function praise() { return PRAISE[pn++ % PRAISE.length]; }
+  function calm(n) { return '<br>Take a breath. Mistakes are part of learning. Try a different move' + (n > 1 ? ', or press <b>Undo my last line</b> to go back' : '') + '.'; }
   function mount(host, cfg) {
     css(); uid++;
     var v = cfg.v || 'x', original = null, line = !!cfg.line; if (line) v = 'y';
@@ -573,15 +577,19 @@
     /* keypad + "I read this as" preview for any input */
     function keypad(inp, opts) {
       var k = el('div', 'sw-keys'); k.setAttribute('aria-label', 'Math keys');
-      var keys = [[v, v], ['(', '('], [')', ')'], ['−', '-'], ['/', '/']];
-      if (opts && opts.letters) keys = opts.letters.map(function (L) { return [L, L]; }).concat(keys.slice(1));
-      if (line) keys = [['x', 'x'], ['y', 'y']].concat(keys.slice(1));
-      if (opts && opts.amountOnly) keys = (line ? [['x', 'x'], ['y', 'y']] : [[v, v]]).concat([['−', '-'], ['/', '/']]);
-      else keys = keys.concat([['=', '='], ['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]);
+      // On a Chromebook, show only the keys students can't type. On a touch screen, show the basic keys too.
+      var touch = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches);
+      var ineq = (original && original.rel !== '=') || (cfg.setup && cfg.setup.ineq);
+      var keys = touch ? [[v, v], ['(', '('], [')', ')'], ['−', '-'], ['/', '/']] : [];
+      if (touch && opts && opts.letters) keys = opts.letters.map(function (L) { return [L, L]; }).concat(keys.slice(1));
+      if (touch && line) keys = [['x', 'x'], ['y', 'y']].concat(keys.slice(1));
+      if (opts && opts.amountOnly) keys = touch ? (line ? [['x', 'x'], ['y', 'y']] : [[v, v]]).concat([['−', '-'], ['/', '/']]) : [];
+      else { if (touch) keys.push(['=', '=']); if (ineq) keys = keys.concat([['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]); }
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
       if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (!cfg.positive) keys.push(['±', '±']); }
       if (cfg.pi) keys.push(['π', 'π']);
-      keys.push(['⌫', 'BS']);
+      if (!keys.length) { k.hidden = true; return k; }
+      if (touch) keys.push(['⌫', 'BS']);
       keys.forEach(function (kk) {
         var b = btn(kk[0]); b.setAttribute('aria-label', kk[1] === 'BS' ? 'Erase' : 'Type ' + kk[0]);
         b.addEventListener('mousedown', function (e) { e.preventDefault(); });
@@ -654,7 +662,7 @@
       var lines = [{ e: start, mv: null }], move = null, amount = null;
       box.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 2 · ' : '') + 'Solve it one step at a time'));
       var trail = el('ol', 'sw-trail'); box.appendChild(trail);
-      var legend = el('p', 'sw-legend', '<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; ' + (line ? '<span style="color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px">x-terms</span> &nbsp; ' : '') + '<span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> &nbsp; <span style="text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2px">crossed out</span> = cancels');
+      var legend = el('p', 'sw-legend'); legend.dataset.all = ('<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; ' + (line ? '<span style="color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px">x-terms</span> &nbsp; ' : '') + '<span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> ');
       box.appendChild(legend);
       var work = el('div'); box.appendChild(work);
       drawTrail(); step();
@@ -670,11 +678,21 @@
           trail.appendChild(li);
         });
       }
+      function drawLegend(e) {   // a small color key with only the kinds of terms on this line
+        var has = {}; [e.L, e.R].forEach(function (sd) { terms(sd).forEach(function (t) { has[kindOf(t, v)] = 1; }); });
+        var chip = function (cls, c, bg, t) { return '<span style="color:' + c + ';background:' + bg + ';border-radius:4px;padding:0 4px">' + t + '</span>'; }, out = [];
+        if (has.xterm) out.push(chip('t-v', '#1D4ED8', '#E6EDFD', v + '-terms'));
+        if (has.pterm) out.push(chip('t-x', '#166534', '#E3F4E8', 'x-terms'));
+        if (has.num) out.push(chip('t-k', '#7E22A8', '#F4E8FA', 'numbers'));
+        if (has.paren) out.push(chip('t-p', '#7A5300', '#FFE58A', 'parentheses'));
+        legend.innerHTML = out.length > 1 ? 'Colors: ' + out.join(' &nbsp;') : '';
+      }
       function colorLine(e) { return sideHtml(e.L, v, { colors: true }) + ' <span class="sw-rel">' + relHtml(e.rel) + '</span> ' + sideHtml(e.R, v, { colors: true }); }
 
       function step() {
-        work.innerHTML = '';
+        work.innerHTML = ''; var tried = 0;
         var e = cur(), done = line ? null : isSolved(e, v);
+        drawLegend(e);
         if (line) { var ld0 = lineDone(e); if (ld0 && ld0.simple) return lineFinish(e, ld0); }
         if (done || noVar(e)) return finish(e, done);
         work.appendChild(el('p', 'sw-ask', 'What will you do next?'));
@@ -730,7 +748,7 @@
           } else if (m === 'comb') {
             var info = [e.L, e.R].map(function (side) { var ts = terms(side), xs = 0, ns = 0, ps = 0, px = 0; ts.forEach(function (t) { var k = kindOf(t, v); if (k === 'xterm') xs++; else if (k === 'num') ns++; else if (k === 'pterm') px++; else ps++; }); return { xs: xs, ns: ns, ps: ps, px: px }; });
             var can = info.some(function (s) { return s.xs > 1 || s.ns > 1 || s.px > 1; });
-            if (!can) { fb.className = 'sw-fb tip'; fb.innerHTML = info.some(function (s) { return s.ps; }) ? 'Like terms can\'t combine through parentheses. Distribute first.' : 'There are no like terms on the <b>same side</b> to combine. (Terms on opposite sides of the sign don\'t combine. Move one first.)'; return; }
+            if (!can) { fb.className = 'sw-fb tip'; fb.innerHTML = info.some(function (s) { return s.ps; }) ? 'Like terms can\'t combine through parentheses. Distribute first.' : 'Nothing on the <b>same side</b> can combine. Terms on different sides of the = sign don\'t combine.'; return; }
             vis.hidden = false;
             vis.innerHTML = '<div class="sw-ln">' + colorLine(e) + '</div><p class="sw-note">Like terms have the same color. Combine the <span class="t-v">' + v + '-terms</span> with each other' + (line ? ', the <span class="t-x">x-terms</span> with each other,' : '') + ' and the <span class="t-k">numbers</span> with each other' + (line ? ' (an x-term and a number are <b>not</b> alike)' : '') + ', <b>on each side separately</b>.</p>';
             showWrite();
@@ -813,7 +831,7 @@
           }
           var prev = cur(), cmp;
           try { cmp = line ? { ok: lineSame(prev, n) } : compareLines(prev, n, v, cfg); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-          if (!cmp.ok) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + (cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')); return; }
+          if (!cmp.ok) { fb.className = 'sw-fb no'; tried++; fb.innerHTML = 'Not quite. ' + (cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')) + (tried >= 3 ? calm(lines.length) : ''); return; }
           var rooted = false; try { rooted = valsOf(prev, v).kind === 'sq' && !!isSolved(n, v); } catch (x) { }
           var d = exact && !rooted ? describe(prev, n, v) : { type: 'root' }, label = d.type === 'root' ? 'square root of both sides' : line ? lineLabel(prev, n, d, v) : moveLabel(d, v), note = cmp.note || '';
           if (d.type === 'rewrite' && sameText(prev, n)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Make a change first.'; return; }
@@ -829,7 +847,7 @@
           step();
           var nfb = work.querySelector('.sw-fb');
           if (line) { var ld1 = lineDone(n); if (ld1 && !ld1.simple) note += '<br><i>y</i> is alone. Now simplify the other side so it looks like <i>y</i> = <i>mx</i> + <i>b</i>.'; }
-          if (nfb && (line || !isSolved(n, v)) && !noVar(n)) { nfb.className = 'sw-fb ok'; nfb.innerHTML = '✓ Correct line.' + note; }
+          if (nfb && (line || !isSolved(n, v)) && !noVar(n)) { nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + note; }
         }
       }
       function finish(e, done) {
@@ -1017,7 +1035,7 @@
     var mp = mono(prevAst), lp = letters(mp), ln = letters(mNew), off = [];
     Object.keys(lp).concat(Object.keys(ln)).forEach(function (k) { if (lp[k] !== ln[k] && off.indexOf(k) < 0) off.push(k); });
     if (off.length) return 'Check the exponent on <i>' + off[0] + '</i>. Which rule fits: add, subtract or multiply the exponents?';
-    return 'The letters are right. Check the <b>numbers</b>: the coefficient or a numeric power.';
+    return 'The letters are right. Check the <b>numbers</b>: the number in front, and any number with an exponent.';
   }
   /* is this line written in simplest form (positive exponents, each base once, one number on top and bottom)? */
   function exFactors(n, out, sign) {
@@ -1096,7 +1114,7 @@
     }
     function draw() { trail.innerHTML = ''; lines.forEach(function (l, i) { var li = el('li'); li.appendChild(el('span', 'sw-n', String(i + 1))); li.appendChild(el('span', 'sw-ln', html(l.a))); if (l.mv) li.appendChild(el('span', 'sw-mv', l.mv)); trail.appendChild(li); }); }
     function step() {
-      work.innerHTML = '';
+      work.innerHTML = ''; var tried = 0;
       var a = lines[lines.length - 1].a, simp = exSimplest(a, cfg.sci);
       if (lines.length > 1 && simp.ok) return finish(a);
       var notes = exMoves(a);
@@ -1117,7 +1135,7 @@
         });
       });
       work.appendChild(mv); work.appendChild(vis); work.appendChild(write); work.appendChild(fb);
-      if (cfg.sci) work.appendChild(el('p', 'sw-note', 'Type × as * or x, and powers with ^, like 6 * 10^8.'));
+      if (cfg.sci) work.appendChild(el('p', 'sw-note', 'To type ×, use * or x. To type an exponent, use ^. Example: 6*10^8 means 6 × 10<sup>8</sup>.'));
       if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'), ur = el('div', 'sw-acts'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u); work.appendChild(ur); }
       if (lines.length === 1 && simp.ok) { fb.className = 'sw-fb tip'; fb.innerHTML = 'This is already simplified. Type it in the answer box.'; }
       function showWrite() {
@@ -1136,10 +1154,10 @@
           var t, mNew;
           try { t = parseTerm(cfg.sci ? inp.value.replace(/(\d)\s*[x×]\s*10/gi, '$1*10') : inp.value); mNew = mono(t); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = exErr(x); return; }
           var mOld = mono(a);
-          if (!sameMono(mOld, mNew)) { fb.className = 'sw-fb no'; fb.innerHTML = '✗ ' + exDiagnose(a, mNew); return; }
+          if (!sameMono(mOld, mNew)) { fb.className = 'sw-fb no'; fb.innerHTML = 'Not quite. ' + exDiagnose(a, mNew) + (++tried >= 3 ? calm(lines.length) : ''); return; }
           if (html(t) === html(a)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Use a rule to change it.'; return; }
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
-          var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = '✓ Correct line.' + (w ? ' Keep going: ' + w : ''); }
+          var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); }
         };
         go.addEventListener('click', check); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
         inp.focus();
