@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ripples — Reset Room — Mr. Allen's Math Class</title>
+<meta name="description" content="Ripples: tap the water to make soft notes that ripple, repeat and fade. A 3-minute reset with a breathing guide and a before/after check-in.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Ripples: one calm column. Check-in card, the timer, the water (canvas), quiet controls,
+   and a closed "Change colors, sounds and speed" panel. Its own night-water look, like the Arcade games. */
+:root{
+  --night:#101B33; --panel:#1A2847; --line:#2C3D63; --ink:#F7F7F4; --muted:#B4BED1;
+  --gold:#FFC107; --gold-2:#E0A800; --calm:#9CC3F5; --navy:#1E2D4F;
+  --serif:"Source Serif 4",Georgia,serif; --sans:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--night);color:var(--ink)}
+body{font:400 16px/1.55 var(--sans)}
+.wrap{max-width:760px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:16px}
+.back{color:var(--muted);text-decoration:none;font-weight:500;font-size:15px}
+.back:hover{color:var(--ink)}
+.eyebrow{font:600 12.5px var(--sans);letter-spacing:.09em;text-transform:uppercase;color:var(--gold);margin:0}
+h1{font:600 clamp(2rem,6vw,2.6rem)/1.1 var(--serif);margin:4px 0 6px}
+h2{font:600 1.3rem/1.2 var(--serif);margin:0 0 10px}
+.lede{margin:0;color:var(--muted);max-width:62ch}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.q{margin:0 0 14px}
+.q>p,.grp>p{margin:0 0 8px;font-weight:600}
+.feel{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.feel button,.seg button{font:600 15px var(--sans);min-height:46px;border-radius:10px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;padding:6px 8px}
+.feel button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 2px}
+.feel button b{font:500 18px var(--mono)}
+.feel button span{font:500 11.5px var(--sans);color:var(--muted)}
+.feel button[aria-pressed=true],.seg button[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+.feel button[aria-pressed=true] span{color:var(--navy)}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 84px}
+.go{font:700 16px var(--sans);min-height:50px;border:0;border-radius:10px;background:var(--gold);color:var(--navy);padding:10px 22px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+.go:hover{background:var(--gold-2)}
+.ghost{font:600 15px var(--sans);min-height:44px;border:1.5px solid var(--line);border-radius:10px;background:transparent;color:var(--ink);padding:8px 14px;cursor:pointer}
+.ghost:hover{border-color:var(--muted)}
+.ghost:disabled{opacity:.45;cursor:default}
+button:focus-visible,a:focus-visible,canvas:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--calm);outline-offset:3px}
+.small{font-size:13.5px;color:var(--muted);margin:10px 0 0}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.timebar{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.time{font:500 clamp(1.8rem,7vw,2.3rem)/1 var(--mono);font-variant-numeric:tabular-nums}
+.time small{font:500 14px var(--sans);color:var(--muted);margin-left:6px}
+.pond{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#08101F}
+canvas{display:block;width:100%;height:clamp(300px,52vh,500px);touch-action:manipulation;cursor:pointer}
+.pond:fullscreen{border-radius:0;border:0}
+.pond:fullscreen canvas{height:100vh}
+.breath{position:absolute;left:0;right:0;bottom:14px;text-align:center;font:500 16px var(--sans);color:#DCE6F5;pointer-events:none;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+.hint{position:absolute;left:0;right:0;top:14px;text-align:center;font:500 14px var(--sans);color:#DCE6F5;pointer-events:none;transition:opacity 1.5s;text-shadow:0 1px 6px rgba(0,0,0,.6);padding:0 12px}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+details.set{background:var(--panel);border:1px solid var(--line);border-radius:14px}
+details.set summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.set summary::-webkit-details-marker{display:none}
+details.set summary::after{content:"+";font:500 22px var(--mono);color:var(--gold)}
+details.set[open] summary::after{content:"−"}
+.setbody{padding:4px 18px 18px;display:grid;gap:16px}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:6px}
+.swatches button{min-height:54px;border-radius:10px;border:2px solid var(--line);cursor:pointer;color:#fff;font:600 13.5px var(--sans);display:flex;flex-direction:column;justify-content:flex-end;padding:6px 8px;text-align:left;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.swatches button[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.slider{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.slider input{flex:1 1 160px;accent-color:var(--gold);min-height:32px}
+.slider output{font:500 15px var(--mono);min-width:5ch;color:var(--ink)}
+.result{font-size:17px;margin:12px 0 0;max-width:60ch}
+.result b{font-family:var(--mono);font-weight:500}
+@media (max-width:440px){.feel button span{font-size:10.5px}.card{padding:14px}.setbody{padding:4px 14px 14px}}
+@media (prefers-reduced-motion:reduce){.hint{transition:none}}
+</style>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<main class="wrap">
+  <a class="back" href="reset-room.html">← Reset Room</a>
+  <header>
+    <p class="eyebrow">Reset Room</p>
+    <h1>Ripples</h1>
+    <p class="lede">Tap the water to drop a note. Each note ripples, repeats and fades away. Higher on the water makes a higher note. There is no score and no wrong way to play.</p>
+  </header>
+
+  <section class="card" id="startCard" aria-labelledby="startH">
+    <h2 id="startH">Before you start</h2>
+    <div class="q"><p id="f1L">1. How do you feel right now?</p><div class="feel" role="group" aria-labelledby="f1L" id="feel1"></div></div>
+    <div class="q"><p id="lenL">2. How long?</p>
+      <div class="seg" role="group" aria-labelledby="lenL" id="len">
+        <button type="button" data-v="1" aria-pressed="false">1 min</button>
+        <button type="button" data-v="2" aria-pressed="false">2 min</button>
+        <button type="button" data-v="3" aria-pressed="true">3 min</button>
+      </div></div>
+    <div class="q"><p id="brL">3. Breathing guide</p>
+      <div class="seg" role="group" aria-labelledby="brL" id="br1">
+        <button type="button" data-v="1" aria-pressed="true">On</button>
+        <button type="button" data-v="0" aria-pressed="false">Off</button>
+      </div></div>
+    <div class="row"><button type="button" class="go" id="startBtn">Start</button><span class="small" style="margin:0">Put on headphones first.</span></div>
+  </section>
+
+  <section class="card" id="endCard" aria-labelledby="endH" hidden>
+    <h2 id="endH" tabindex="-1">Time's up</h2>
+    <div class="q"><p id="f2L">How do you feel now?</p><div class="feel" role="group" aria-labelledby="f2L" id="feel2"></div></div>
+    <p class="result" id="result" aria-live="polite"></p>
+    <div class="row" style="margin-top:14px">
+      <a class="go" href="reset-room.html">Back to the Reset Room</a>
+      <button type="button" class="ghost" id="againBtn">Start again</button>
+    </div>
+  </section>
+
+  <div class="timebar"><span class="time" id="time" role="timer" aria-label="Time left">3:00<small>left</small></span>
+    <button type="button" class="ghost" id="doneBtn" disabled>I'm done</button></div>
+
+  <section aria-label="The water" class="pond" id="pondBox">
+    <canvas id="pond" tabindex="0" aria-label="The water. Tap or click to drop a note. Press Enter or Space to drop a note."></canvas>
+    <p class="hint" id="hint">Press Start, then tap anywhere on the water.</p>
+    <p class="breath" id="breath"></p>
+  </section>
+
+  <div class="controls">
+    <button type="button" class="ghost" id="dropBtn">Drop a note</button>
+    <button type="button" class="ghost" id="clearBtn">Clear the water</button>
+    <button type="button" class="ghost" id="fullBtn">Full screen</button>
+  </div>
+
+  <details class="set" id="setBox">
+    <summary>Change colors, sounds and speed</summary>
+    <div class="setbody">
+      <div class="grp"><p id="colL">Colors</p><div class="swatches" role="group" aria-labelledby="colL" id="colors"></div></div>
+      <div class="grp"><p id="spL">Speed</p><div class="seg" role="group" aria-labelledby="spL" id="speed">
+        <button type="button" data-v="slow">Slow</button><button type="button" data-v="medium">Medium</button><button type="button" data-v="fast">Fast</button></div></div>
+      <div class="grp"><p id="snL">Sound</p><div class="seg" role="group" aria-labelledby="snL" id="sound">
+        <button type="button" data-v="bells">Bells</button><button type="button" data-v="glass">Glass</button><button type="button" data-v="marimba">Marimba</button><button type="button" data-v="pad">Soft pad</button></div></div>
+      <div class="grp"><p id="mdL">Mood</p><div class="seg" role="group" aria-labelledby="mdL" id="mood">
+        <button type="button" data-v="happy">Bright</button><button type="button" data-v="dreamy">Dreamy</button><button type="button" data-v="mystery">Mysterious</button></div></div>
+      <div class="grp"><p id="bgL">Background</p><div class="seg" role="group" aria-labelledby="bgL" id="bg">
+        <button type="button" data-v="off">Off</button><button type="button" data-v="heart">Heartbeat</button><button type="button" data-v="drums">Soft beat</button><button type="button" data-v="rain">Rain</button><button type="button" data-v="hum">Low hum</button></div></div>
+      <div class="grp"><p><label for="echo">How many times a note repeats</label></p><div class="slider"><input type="range" id="echo" min="1" max="6" step="1"><output id="echoOut" for="echo"></output></div></div>
+      <div class="grp"><p><label for="vol">Notes volume</label></p><div class="slider"><input type="range" id="vol" min="0" max="100"><output id="volOut" for="vol"></output></div></div>
+      <div class="grp"><p><label for="bgVol">Background volume</label></p><div class="slider"><input type="range" id="bgVol" min="0" max="100"><output id="bgVolOut" for="bgVol"></output></div></div>
+      <div class="grp"><p id="brL2">Breathing guide</p><div class="seg" role="group" aria-labelledby="brL2" id="br2">
+        <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button></div></div>
+      <div class="grp"><p id="auL">The water plays notes by itself when you rest</p><div class="seg" role="group" aria-labelledby="auL" id="auto">
+        <button type="button" data-v="1">On</button><button type="button" data-v="0">Off</button></div></div>
+      <div class="row"><button type="button" class="ghost" id="resetSet">Back to the first settings</button></div>
+      <p class="small" style="margin:0">Your settings stay on this device. Your check-in answers are not saved or sent.</p>
+    </div>
+  </details>
+</main>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- settings (remembered on this device only) ---------- */
+  var DEFAULTS = { color: 'night', speed: 'medium', sound: 'bells', mood: 'happy', bg: 'off', echo: 4, vol: 60, bgVol: 40, breath: 1, auto: 1, minutes: 3 };
+  var S = Object.assign({}, DEFAULTS);
+  try { Object.assign(S, JSON.parse(localStorage.getItem('ripples-settings') || '{}')); } catch (e) {}
+  S.minutes = Math.min(3, Math.max(1, Number(S.minutes) || 3));
+  function save() { try { localStorage.setItem('ripples-settings', JSON.stringify(S)); } catch (e) {} }
+
+  var COLORS = {
+    night:   { name: 'Night',   top: '#0E1A33', bot: '#08101F', a: '#FFC107', b: '#9CC3F5' },
+    sunset:  { name: 'Sunset',  top: '#3A1C3F', bot: '#160B1E', a: '#FFB37A', b: '#FF8FB3' },
+    forest:  { name: 'Forest',  top: '#12302A', bot: '#06140F', a: '#8FE6B8', b: '#D9EC7A' },
+    ocean:   { name: 'Ocean',   top: '#073652', bot: '#021623', a: '#6FE7EC', b: '#E8F7FF' },
+    galaxy:  { name: 'Galaxy',  top: '#1E1446', bot: '#080618', a: '#C1A8FF', b: '#FFE38A' },
+    rainbow: { name: 'Rainbow', top: '#151821', bot: '#07080C', rainbow: true }
+  };
+  var SPEED = { slow: { life: 6200, loop: 9000, bpm: 56 }, medium: { life: 4200, loop: 7000, bpm: 68 }, fast: { life: 2800, loop: 5000, bpm: 84 } };
+  var MOODS = {
+    happy:   [196.00, 220.00, 246.94, 293.66, 329.63, 392.00, 440.00, 493.88, 587.33, 659.25, 783.99],
+    dreamy:  [261.63, 293.66, 329.63, 369.99, 392.00, 493.88, 523.25, 587.33, 659.25, 739.99, 783.99],
+    mystery: [220.00, 261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25, 783.99, 880.00]
+  };
+  function hexRgb(h) { var n = parseInt(h.slice(1), 16); return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255); }
+
+  /* ---------- buttons ---------- */
+  function seg(box, key, onSet, num) {
+    var bs = box.querySelectorAll('button');
+    function mark() { bs.forEach(function (b) { b.setAttribute('aria-pressed', String(String(S[key]) === b.dataset.v)); }); }
+    bs.forEach(function (b) { b.addEventListener('click', function () { S[key] = num ? Number(b.dataset.v) : b.dataset.v; mark(); save(); if (onSet) onSet(); syncAll(); }); });
+    mark(); return mark;
+  }
+  var marks = [];
+  marks.push(seg($('#len'), 'minutes', function () { if (!running) showTime(S.minutes * 60); }, true));
+  marks.push(seg($('#br1'), 'breath', breathChanged, true));
+  marks.push(seg($('#br2'), 'breath', breathChanged, true));
+  marks.push(seg($('#speed'), 'speed'));
+  marks.push(seg($('#sound'), 'sound'));
+  marks.push(seg($('#mood'), 'mood', function () { if (bgNow === 'hum') { stopBg(); startBg(); } }));
+  marks.push(seg($('#bg'), 'bg', function () { if (running) { stopBg(); startBg(); } }));
+  marks.push(seg($('#auto'), 'auto', null, true));
+  function syncAll() { marks.forEach(function (m) { m(); }); paintSwatches(); }
+  function breathChanged() { if (!S.breath) $('#breath').textContent = ''; }
+
+  var sw = $('#colors');
+  Object.keys(COLORS).forEach(function (k) {
+    var c = COLORS[k], b = document.createElement('button'); b.type = 'button'; b.dataset.v = k; b.textContent = c.name;
+    b.style.background = c.rainbow ? 'linear-gradient(135deg,#ff6b6b,#ffd166,#06d6a0,#4cc9f0,#b388ff)' : 'radial-gradient(circle at 30% 35%,' + c.a + ' 0 12%,transparent 13%),radial-gradient(circle at 70% 60%,' + c.b + ' 0 9%,transparent 10%),linear-gradient(' + c.top + ',' + c.bot + ')';
+    b.addEventListener('click', function () { S.color = k; save(); paintSwatches(); });
+    sw.appendChild(b);
+  });
+  function paintSwatches() { sw.querySelectorAll('button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.v === S.color)); }); }
+
+  function slider(id, key, fmt, onSet) {
+    var el = $('#' + id), out = $('#' + id + 'Out');
+    el.value = S[key]; out.textContent = fmt(S[key]);
+    el.addEventListener('input', function () { S[key] = Number(el.value); out.textContent = fmt(S[key]); save(); if (onSet) onSet(); });
+    return function () { el.value = S[key]; out.textContent = fmt(S[key]); };
+  }
+  var sl = [
+    slider('echo', 'echo', function (v) { return v === 1 ? 'once' : v + ' times'; }),
+    slider('vol', 'vol', function (v) { return v + '%'; }, function () { if (notesGain) notesGain.gain.setTargetAtTime(S.vol / 100 * 0.9, ac.currentTime, 0.1); }),
+    slider('bgVol', 'bgVol', function (v) { return v + '%'; }, function () { if (bgGain) bgGain.gain.setTargetAtTime(S.bgVol / 100 * 0.6, ac.currentTime, 0.1); })
+  ];
+  $('#resetSet').addEventListener('click', function () {
+    var m = S.minutes; S = Object.assign({}, DEFAULTS, { minutes: m }); save(); syncAll(); sl.forEach(function (f) { f(); });
+    if (notesGain) { notesGain.gain.setTargetAtTime(S.vol / 100 * 0.9, ac.currentTime, 0.1); bgGain.gain.setTargetAtTime(S.bgVol / 100 * 0.6, ac.currentTime, 0.1); }
+    if (running) { stopBg(); startBg(); }
+  });
+  paintSwatches();
+
+  /* ---------- check-in (1–5, like the class grading scale) ---------- */
+  var LABELS = ['Upset', 'Stressed', 'Okay', 'Calm', 'Ready'], feel1 = null, feel2 = null;
+  function makeFeel(box, onPick) {
+    LABELS.forEach(function (t, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-pressed', 'false');
+      b.innerHTML = '<b>' + (i + 1) + '</b><span>' + t + '</span>'; b.setAttribute('aria-label', (i + 1) + ', ' + t);
+      b.addEventListener('click', function () { box.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); onPick(i + 1); });
+      box.appendChild(b);
+    });
+  }
+  makeFeel($('#feel1'), function (n) { feel1 = n; });
+  makeFeel($('#feel2'), function (n) { feel2 = n; showResult(); });
+  function showResult() {
+    var r = $('#result');
+    if (feel1 == null) r.innerHTML = 'Thanks for checking in. Noticing how you feel is a big part of self-regulation.';
+    else if (feel2 > feel1) r.innerHTML = 'You went from <b>' + feel1 + '</b> to <b>' + feel2 + '</b>. You noticed how you felt and did something about it. That is self-regulation.';
+    else if (feel2 === feel1) r.innerHTML = 'You stayed at <b>' + feel2 + '</b>. That\'s okay. Noticing how you feel is the first step. If you need more time or a different strategy, let Mr. Allen know.';
+    else r.innerHTML = 'Thanks for being honest. You went from <b>' + feel1 + '</b> to <b>' + feel2 + '</b>. Let Mr. Allen know how you are doing. He can help.';
+  }
+
+  /* ---------- sound ---------- */
+  var ac = null, master, notesGain, bgGain, bus, noiseBuf;
+  function audioInit() {
+    if (ac) { if (ac.state === 'suspended') ac.resume(); return; }
+    try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+    master = ac.createGain(); master.gain.value = 1; master.connect(ac.destination);
+    var comp = ac.createDynamicsCompressor(); comp.threshold.value = -18; comp.connect(master);
+    notesGain = ac.createGain(); notesGain.gain.value = S.vol / 100 * 0.9; notesGain.connect(comp);
+    bgGain = ac.createGain(); bgGain.gain.value = S.bgVol / 100 * 0.6; bgGain.connect(comp);
+    var dry = ac.createGain(); dry.gain.value = 0.75; dry.connect(notesGain);
+    var conv = ac.createConvolver(); conv.buffer = impulse(3.2); var rv = ac.createGain(); rv.gain.value = 0.5; conv.connect(rv); rv.connect(notesGain);
+    var dl = ac.createDelay(2); dl.delayTime.value = 0.66; var fb = ac.createGain(); fb.gain.value = 0.28;
+    var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1600;
+    dl.connect(lp); lp.connect(fb); fb.connect(dl); var dw = ac.createGain(); dw.gain.value = 0.25; lp.connect(dw); dw.connect(notesGain);
+    bus = ac.createGain(); bus.connect(dry); bus.connect(conv); bus.connect(dl);
+    noiseBuf = ac.createBuffer(1, ac.sampleRate * 2, ac.sampleRate); var nd = noiseBuf.getChannelData(0); for (var i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+  }
+  function impulse(sec) {
+    var len = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(2, len, ac.sampleRate);
+    for (var c = 0; c < 2; c++) { var d = b.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8); }
+    return b;
+  }
+  function osc(type, f, t, end, dest, amp) { var o = ac.createOscillator(), g = ac.createGain(); o.type = type; o.frequency.value = f; g.gain.value = amp; o.connect(g); g.connect(dest); o.start(t); o.stop(end); return g; }
+  function env(t, a, atk, dec) { var g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + atk); g.gain.exponentialRampToValueAtTime(0.0004, t + atk + dec); return g; }
+  function play(freq, pan, amp) {
+    if (!ac || !bus) return;
+    var t = ac.currentTime, out = ac.createStereoPanner ? ac.createStereoPanner() : ac.createGain(); if (out.pan) out.pan.value = pan; out.connect(bus);
+    var s = S.sound, g;
+    if (s === 'glass') { g = env(t, amp, 0.005, 4.2); g.connect(out); osc('sine', freq, t, t + 4.4, g, 1); osc('sine', freq * 3, t, t + 4.4, g, 0.16); osc('sine', freq * 5.04, t, t + 1.5, g, 0.05); }
+    else if (s === 'marimba') { g = env(t, amp * 1.1, 0.004, 1.1); g.connect(out); osc('sine', freq, t, t + 1.3, g, 1); var hg = env(t, 0.3, 0.003, 0.12); hg.connect(g); osc('sine', freq * 4, t, t + 0.2, hg, 1); }
+    else if (s === 'pad') { g = env(t, amp * 0.8, 0.5, 4.2); var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1300; g.connect(lp); lp.connect(out); osc('triangle', freq, t, t + 4.9, g, 1); osc('sine', freq * 1.005, t, t + 4.9, g, 0.6); }
+    else { g = env(t, amp, 0.02, 3.4); g.connect(out); osc('sine', freq, t, t + 3.6, g, 1); osc('triangle', freq * 2, t, t + 3.6, g, 0.1); }
+  }
+
+  /* background: heartbeat, soft beat, rain, low hum (tempo follows Speed) */
+  var bgNow = 'off', bgNodes = [], stepTimer = null, nextT = 0, stepN = 0;
+  function kick(t, a) { var o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(105, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0003, t + 0.38); o.connect(g); g.connect(bgGain); o.start(t); o.stop(t + 0.4); }
+  function noiseHit(t, a, type, f, dur) { var n = ac.createBufferSource(); n.buffer = noiseBuf; var fl = ac.createBiquadFilter(); fl.type = type; fl.frequency.value = f; var g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0003, t + dur); n.connect(fl); fl.connect(g); g.connect(bgGain); n.start(t, Math.random()); n.stop(t + dur + 0.02); }
+  function stepAt(i, t) {
+    if (S.bg === 'heart' && i % 2 === 0) { kick(t, 0.9); kick(t + 0.17, 0.55); }
+    if (S.bg === 'drums') {
+      if (i === 0 || i === 4 || i === 5) kick(t, i === 5 ? 0.45 : 0.8);
+      if (i === 2 || i === 6) noiseHit(t, 0.12, 'bandpass', 1800, 0.12);
+      noiseHit(t, i % 2 ? 0.05 : 0.08, 'highpass', 6500, 0.05);
+    }
+  }
+  function startBg() {
+    if (!ac || S.bg === 'off') { bgNow = S.bg; return; }
+    bgNow = S.bg;
+    if (S.bg === 'heart' || S.bg === 'drums') {
+      nextT = ac.currentTime + 0.1; stepN = 0;
+      stepTimer = setInterval(function () { var spb = 60 / SPEED[S.speed].bpm / 2; while (nextT < ac.currentTime + 0.15) { stepAt(stepN, nextT); nextT += spb; stepN = (stepN + 1) % 8; } }, 30);
+    } else if (S.bg === 'rain') {
+      var n = ac.createBufferSource(); n.buffer = noiseBuf; n.loop = true;
+      var hp = ac.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 400; var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 2600;
+      var g = ac.createGain(); g.gain.value = 0.0001; g.gain.setTargetAtTime(0.35, ac.currentTime, 0.8);
+      var lfo = ac.createOscillator(); lfo.frequency.value = 0.13; var lg = ac.createGain(); lg.gain.value = 0.08; lfo.connect(lg); lg.connect(g.gain);
+      n.connect(hp); hp.connect(lp); lp.connect(g); g.connect(bgGain); n.start(); lfo.start(); bgNodes = [n, lfo];
+    } else if (S.bg === 'hum') {
+      var root = MOODS[S.mood][0] / 2, hg = ac.createGain(); hg.gain.value = 0.0001; hg.gain.setTargetAtTime(0.22, ac.currentTime, 1);
+      var f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500; f.connect(hg); hg.connect(bgGain);
+      var o1 = ac.createOscillator(); o1.type = 'sawtooth'; o1.frequency.value = root; var o2 = ac.createOscillator(); o2.type = 'sine'; o2.frequency.value = root * 1.5;
+      var o3 = ac.createOscillator(); o3.type = 'sine'; o3.frequency.value = root * 2.003; var g3 = ac.createGain(); g3.gain.value = 0.5;
+      var lfo2 = ac.createOscillator(); lfo2.frequency.value = 0.08; var lg2 = ac.createGain(); lg2.gain.value = 0.06; lfo2.connect(lg2); lg2.connect(hg.gain);
+      o1.connect(f); o2.connect(f); o3.connect(g3); g3.connect(f); [o1, o2, o3, lfo2].forEach(function (o) { o.start(); }); bgNodes = [o1, o2, o3, lfo2];
+    }
+  }
+  function stopBg() { clearInterval(stepTimer); stepTimer = null; bgNodes.forEach(function (n) { try { n.stop(); } catch (e) {} }); bgNodes = []; bgNow = 'off'; }
+
+  /* ---------- the water ---------- */
+  var cv = $('#pond'), cx = cv.getContext('2d'), W = 0, H = 0;
+  function size() { var dpr = Math.min(window.devicePixelRatio || 1, 2), r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+  size(); window.addEventListener('resize', size); document.addEventListener('fullscreenchange', function () { setTimeout(size, 60); });
+
+  var AMP0 = 0.24, blooms = [], rings = [], running = false, startAt = 0, endAt = 0, lastDrop = 0;
+  function drop(fx, fy, auto) {
+    var idx = Math.max(0, Math.min(10, Math.round((1 - fy) * 10)));
+    var b = { fx: fx, fy: fy, idx: idx, pan: fx * 1.4 - 0.7, n: 0, total: S.echo, next: 0, alt: Math.random() < 0.4, k: auto ? 0.6 : 1 };
+    blooms.push(b); if (blooms.length > 10) blooms.shift();
+    sound(b, performance.now());
+    if (!auto) { lastDrop = performance.now(); $('#hint').style.opacity = '0'; }
+  }
+  function sound(b, now) {
+    var a = AMP0 * Math.pow(0.62, b.n) * b.k;
+    if (running) play(MOODS[S.mood][b.idx], b.pan, a);
+    rings.push({ x: b.fx, y: b.fy, t0: now, s: a / AMP0, alt: b.alt, idx: b.idx, life: SPEED[S.speed].life });
+    b.n++; b.next = now + SPEED[S.speed].loop;
+  }
+  function randomDrop(auto) { drop(0.12 + Math.random() * 0.76, 0.15 + Math.random() * 0.7, auto); }
+  cv.addEventListener('pointerdown', function (ev) { if (!running) return; var r = cv.getBoundingClientRect(); drop((ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height); });
+  cv.addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && running) { e.preventDefault(); randomDrop(); } });
+  $('#dropBtn').addEventListener('click', function () { if (running) randomDrop(); else startSession(); });
+  $('#clearBtn').addEventListener('click', function () { blooms = []; rings = []; });
+  var fullBtn = $('#fullBtn');
+  if (!document.fullscreenEnabled) fullBtn.hidden = true;
+  fullBtn.addEventListener('click', function () {
+    if (document.fullscreenElement) { document.exitFullscreen().catch(function () {}); return; }
+    var p = $('#pondBox').requestFullscreen && $('#pondBox').requestFullscreen(); if (p && p.catch) p.catch(function () { fullBtn.hidden = true; });
+  });
+  document.addEventListener('fullscreenchange', function () { fullBtn.textContent = document.fullscreenElement ? 'Exit full screen' : 'Full screen'; });
+
+  function ringColor(r, alpha) {
+    var c = COLORS[S.color];
+    if (c.rainbow) return 'hsla(' + Math.round(r.idx * 30) + ',90%,68%,' + alpha + ')';
+    return 'rgba(' + hexRgb(r.alt ? c.b : c.a) + ',' + alpha + ')';
+  }
+  function frame(now) {
+    var c = COLORS[S.color], g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, c.top); g.addColorStop(1, c.bot);
+    cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    if (S.breath) {   // 4 seconds in, 4 seconds out
+      var ph = ((now - startAt) % 8000) / 8000, inn = ph < 0.5, e = inn ? ph * 2 : 2 - ph * 2, ease = 0.5 - Math.cos(e * Math.PI) / 2;
+      var R = Math.min(W, H), r0 = R * 0.12, r1 = R * 0.3, rad = reduce ? (r0 + r1) / 2 : r0 + (r1 - r0) * ease;
+      cx.beginPath(); cx.arc(W / 2, H / 2, rad, 0, Math.PI * 2);
+      cx.fillStyle = 'rgba(255,255,255,' + (reduce ? 0.03 + 0.07 * ease : 0.05) + ')'; cx.fill();
+      cx.lineWidth = 1.5; cx.strokeStyle = 'rgba(255,255,255,' + (0.14 + 0.12 * ease) + ')'; cx.stroke();
+      var txt = running ? (inn ? 'Breathe in…' : 'Breathe out…') : '';
+      if ($('#breath').textContent !== txt) $('#breath').textContent = txt;
+    }
+    if (running) {
+      blooms.forEach(function (b) { if (b.n < b.total && now >= b.next) sound(b, now); });
+      blooms = blooms.filter(function (b) { return b.n < b.total || now < b.next - SPEED[S.speed].loop + 3500; });
+      if (S.auto && now - lastDrop > 12000 && !blooms.length) { randomDrop(true); lastDrop = now; }
+    }
+    rings = rings.filter(function (r) { return now - r.t0 < r.life; });
+    var base = Math.min(W, H);
+    rings.forEach(function (r) {
+      var age = (now - r.t0) / r.life, x = r.x * W, y = r.y * H;
+      if (reduce) { cx.beginPath(); cx.arc(x, y, base * 0.05, 0, Math.PI * 2); cx.fillStyle = ringColor(r, 0.5 * (1 - age) * r.s); cx.fill(); return; }
+      for (var k = 0; k < 3; k++) {
+        var a = age - k * 0.12; if (a <= 0) continue;
+        cx.beginPath(); cx.arc(x, y, base * (0.02 + a * 0.32), 0, Math.PI * 2);
+        cx.lineWidth = 2.2 - k * 0.5; cx.strokeStyle = ringColor(r, Math.max(0, (1 - a) * 0.8 * r.s)); cx.stroke();
+      }
+      if (age < 0.25) { cx.beginPath(); cx.arc(x, y, 4, 0, Math.PI * 2); cx.fillStyle = ringColor(r, 1 - age * 4); cx.fill(); }
+    });
+    if (running) { var left = Math.max(0, endAt - now); showTime(Math.ceil(left / 1000)); if (left <= 0) finish(); }
+    requestAnimationFrame(frame);
+  }
+  var shownT = '';
+  function showTime(s) { var t = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); if (t !== shownT) { shownT = t; $('#time').innerHTML = t + '<small>left</small>'; } }
+  showTime(S.minutes * 60);
+
+  /* resting picture before Start, so the water is never empty */
+  (function seed() { if (running) return; var n = performance.now(); [[0.3, 0.38, 0, 7], [0.68, 0.6, 1, 4], [0.5, 0.25, 0, 9]].forEach(function (d, i) { rings.push({ x: d[0], y: d[1], t0: n - 900 - i * 700, s: 0.8, alt: !!d[2], idx: d[3], life: 4200 }); }); setTimeout(seed, 4500); })();
+
+  function startSession() {
+    audioInit();
+    if (master) { master.gain.cancelScheduledValues(ac.currentTime); master.gain.setValueAtTime(1, ac.currentTime); }
+    running = true; startAt = performance.now(); endAt = startAt + Math.min(3, S.minutes) * 60000; lastDrop = startAt;
+    blooms = []; $('#startCard').hidden = true; $('#endCard').hidden = true; $('#doneBtn').disabled = false;
+    $('#hint').textContent = 'Tap anywhere. Higher on the water makes a higher note.'; $('#hint').style.opacity = '1';
+    stopBg(); startBg();
+    cv.focus({ preventScroll: true }); $('#time').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    setTimeout(function () { if (running) randomDrop(true); }, 700);
+  }
+  function finish() {
+    if (!running) return;
+    running = false; $('#doneBtn').disabled = true; $('#breath').textContent = ''; showTime(0);
+    if (master) master.gain.setTargetAtTime(0.0001, ac.currentTime, 1.2);
+    setTimeout(function () { if (!running) stopBg(); }, 5000);
+    if (document.fullscreenElement) document.exitFullscreen().catch(function () {});
+    feel2 = null; $('#feel2').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', 'false'); }); $('#result').innerHTML = '';
+    $('#endCard').hidden = false; $('#endCard').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' }); $('#endH').focus({ preventScroll: true });
+  }
+  $('#startBtn').addEventListener('click', startSession);
+  $('#doneBtn').addEventListener('click', function () { $('#endH').textContent = 'Nice reset'; finish(); });
+  $('#againBtn').addEventListener('click', function () {
+    $('#endH').textContent = "Time's up"; feel1 = feel2; $('#endCard').hidden = true; $('#startCard').hidden = false; showTime(S.minutes * 60);
+    $('#feel1').querySelectorAll('button').forEach(function (x, i) { x.setAttribute('aria-pressed', String(i + 1 === feel1)); });
+    $('#hint').textContent = 'Press Start, then tap anywhere on the water.'; $('#hint').style.opacity = '1';
+    $('#startCard').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  });
+  document.addEventListener('visibilitychange', function () { if (ac) { if (document.hidden) ac.suspend(); else if (running) ac.resume(); } });
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
