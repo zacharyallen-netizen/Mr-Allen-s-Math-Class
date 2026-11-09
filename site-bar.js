@@ -13,6 +13,9 @@
     { label: "Arcade",         href: "grade8/arcade.html" },
     { label: "Reset Room",     href: "grade8/reset-room.html", section: "grade8/ripples" },
     { label: "Chill Math Music", href: "grade8/drift.html" },
+    { label: "Calculators", menu: [
+        { label: "Desmos Scientific Calculator", href: "https://www.desmos.com/scientific" },
+        { label: "Desmos Graphing Calculator",   href: "https://www.desmos.com/calculator" } ] },
     { label: "NC Check-Ins / Benchmarks", href: "grade8/benchmarks.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
     { label: "Class Info",     href: "class-information.html" }
@@ -67,7 +70,7 @@
     ":host{all:initial;display:block;position:relative;z-index:1000}" +
     "*{box-sizing:border-box}" +
     ".bar{background:#1E2D4F;color:#fff;font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}" +
-    ".in{max-width:1120px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:28px}" +
+    ".in{max-width:1320px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:28px}" +
     ".mark{color:#fff;text-decoration:none;display:flex;align-items:baseline;gap:8px;white-space:nowrap;margin-right:auto}" +
     ".mark b{font-family:'Source Serif 4',Georgia,serif;font-weight:600;font-size:19px;letter-spacing:.005em}" +
     ".mark span{font-size:13px;color:#AEB7C8;letter-spacing:.04em}" +
@@ -76,22 +79,36 @@
     "nav a:hover{color:#fff}" +
     "nav a[aria-current]{color:#fff;border-bottom-color:#FFC107}" +
     "a:focus-visible,button:focus-visible{outline:2px solid #FFC107;outline-offset:3px;border-radius:2px}" +
-    "button{display:none;background:none;border:1px solid rgba(255,255,255,.28);color:#fff;font:500 14px Inter,system-ui,sans-serif;border-radius:6px;height:36px;padding:0 14px;cursor:pointer}" +
-    "@media (max-width:1460px){nav{gap:14px}nav a{font-size:14px}.in{gap:18px}}" +
-    "@media (max-width:1200px){nav{gap:11px}nav a{font-size:13.5px}.in{gap:14px;padding:0 16px}.mark span{display:none}}" +
-    "@media (max-width:1060px){" +
-      ".in{gap:12px}" +
-      "button{display:inline-flex;align-items:center;gap:8px}" +
-      "nav{display:none;position:absolute;left:0;right:0;top:56px;background:#1E2D4F;flex-direction:column;align-items:stretch;gap:0;padding:4px 20px 12px;box-shadow:0 10px 24px rgba(15,23,42,.25)}" +
-      ".open nav{display:flex}" +
-      "nav a{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px}" +
-      "nav a:last-child{border-bottom:0}" +
-      "nav a[aria-current]{border-bottom-color:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFC107;padding-left:12px}" +
-    "}" +
+    ".menu{display:none;background:none;border:1px solid rgba(255,255,255,.28);color:#fff;font:500 14px Inter,system-ui,sans-serif;border-radius:6px;height:36px;padding:0 14px;cursor:pointer}" +
+    ".dd{position:relative;display:flex;align-items:center}" +
+    ".ddb{background:none;border:0;border-bottom:2px solid transparent;color:#D9DEE8;font:500 14.5px Inter,system-ui,sans-serif;padding:18px 0 16px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}" +
+    ".ddb:hover,.ddb[aria-expanded=true]{color:#fff}.ddb svg{width:10px;height:10px;transition:transform .15s}.ddb[aria-expanded=true] svg{transform:rotate(180deg)}" +
+    ".ddm{position:absolute;right:0;top:calc(100% - 4px);background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(15,23,42,.25);padding:6px;min-width:250px;z-index:5}" +
+    ".ddm[hidden]{display:none}" +
+    "nav .ddm a{display:flex;justify-content:space-between;gap:12px;color:#1E2D4F;font-size:15px;font-weight:600;padding:11px 12px;border:0;border-radius:7px;white-space:nowrap}" +
+    "nav .ddm a:hover{background:#FFF6D6;color:#1E2D4F}.ddm small{color:#5B6576;font-weight:500}" +
+    // Sizes are chosen by measuring (see fitNav below): t1 = tighter, t2 = tightest, mob = Menu button.
+    ".t1 nav,.t2 nav{gap:14px}.t1 nav a,.t1 .ddb{font-size:14px}.t1 .in{gap:18px}" +
+    ".t2 nav{gap:11px}.t2 nav a,.t2 .ddb{font-size:13.5px}.t2 .in{gap:14px;padding:0 16px}.t2 .mark span{display:none}" +
+    ".mob .in{gap:12px}" +
+    ".mob .menu{display:inline-flex;align-items:center;gap:8px}" +
+    ".mob nav{display:none;position:absolute;left:0;right:0;top:56px;background:#1E2D4F;flex-direction:column;align-items:stretch;gap:0;padding:4px 20px 12px;box-shadow:0 10px 24px rgba(15,23,42,.25)}" +
+    ".mob.open nav{display:flex}" +
+    ".mob nav a{padding:13px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:16px}" +
+    ".mob nav a:last-child{border-bottom:0}" +
+    ".mob .dd{display:block}.mob .ddb{width:100%;padding:13px 0;font-size:16px;border-bottom:1px solid rgba(255,255,255,.1);justify-content:space-between}" +
+    ".mob .ddm{position:static;box-shadow:none;background:rgba(255,255,255,.06);margin:6px 0 8px;min-width:0}" +
+    ".mob nav .ddm a{color:#fff;font-size:15.5px;border-bottom:0}.mob nav .ddm a:hover{background:rgba(255,255,255,.1);color:#fff}.mob .ddm small{color:#AEB7C8}" +
+    ".mob nav a[aria-current]{border-bottom-color:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFC107;padding-left:12px}" +
     "@media (max-width:380px){.mark span{display:none}}" +
     "@media print{.bar{display:none}}";
 
   var nav = LINKS.map(function (l, i) {
+    if (l.menu) return '<div class="dd"><button type="button" class="ddb" aria-expanded="false" aria-controls="sb-dd' + i + '">' + l.label +
+      '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>' +
+      '<div class="ddm" id="sb-dd' + i + '" hidden>' + l.menu.map(function (m) {
+        return '<a href="' + m.href + '" target="_blank" rel="noopener">' + m.label + ' <small>opens in a new tab ↗</small></a>';
+      }).join("") + "</div></div>";
     return '<a href="' + root + l.href + '"' + (i === current ? ' aria-current="page"' : "") + ">" + l.label + "</a>";
   }).join("");
 
@@ -99,11 +116,11 @@
     "<style>" + css + "</style>" +
     '<div class="bar"><div class="in">' +
       '<a class="mark" href="' + root + 'index.html"><b>Mr. Allen</b><span>Mathematics</span></a>' +
-      '<button type="button" aria-expanded="false" aria-controls="sb-nav">Menu</button>' +
+      '<button type="button" class="menu" aria-expanded="false" aria-controls="sb-nav">Menu</button>' +
       '<nav id="sb-nav" aria-label="Site">' + nav + "</nav>" +
     "</div></div>";
 
-  var bar = sr.querySelector(".bar"), btn = sr.querySelector("button");
+  var bar = sr.querySelector(".bar"), btn = sr.querySelector(".menu");
   btn.addEventListener("click", function () {
     var open = bar.classList.toggle("open");
     btn.setAttribute("aria-expanded", open ? "true" : "false");
@@ -111,6 +128,33 @@
   });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && bar.classList.contains("open")) btn.click();
+  });
+
+  // Fit the links: try full size, then tighter, then tightest; if they still do not fit, use the Menu button.
+  var inEl = sr.querySelector(".in");
+  function fitNav() {
+    var steps = ["", "t1", "t2", "mob"];
+    for (var k = 0; k < steps.length; k++) {
+      bar.classList.remove("t1", "t2", "mob");
+      if (steps[k]) bar.classList.add(steps[k]);
+      if (steps[k] === "mob") break;
+      if (window.innerWidth >= 700 && inEl.scrollWidth <= inEl.clientWidth + 1) break;
+    }
+    if (!bar.classList.contains("mob") && bar.classList.contains("open")) { bar.classList.remove("open"); btn.setAttribute("aria-expanded", "false"); btn.textContent = "Menu"; }
+  }
+  fitNav();
+  window.addEventListener("resize", fitNav);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
+  window.addEventListener("load", fitNav);
+
+  // Calculators list: open and close it; close when clicking elsewhere or pressing Escape
+  [].forEach.call(sr.querySelectorAll(".ddb"), function (b) {
+    var m = sr.getElementById ? sr.getElementById(b.getAttribute("aria-controls")) : sr.querySelector("#" + b.getAttribute("aria-controls"));
+    function set(open) { b.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }
+    b.addEventListener("click", function (e) { e.stopPropagation(); set(m.hidden); });
+    m.addEventListener("click", function (e) { e.stopPropagation(); if (e.target.closest("a")) setTimeout(function () { set(false); }, 0); });
+    document.addEventListener("click", function () { set(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) { set(false); b.focus(); } });
   });
 
   // Some pages pad, center or flex their <body>. Stretch the bar (and the slim
