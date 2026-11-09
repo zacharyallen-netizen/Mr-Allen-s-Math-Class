@@ -31,7 +31,7 @@ for key,s in SETS.items():
 </div>
 <div class="site-footer">© Mr. Allen's Math Class</div>
 <script>window.PRACTICE = {json.dumps(d,ensure_ascii=False)};</script>
-<script src="practice/practice-engine.js"></script>
+<script src="practice/practice-engine.js?v=20261109"></script>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
 <script> ScoreSend.setup({{ kind:'practice', unit:'{s['unit']}', page:'{name}', mount:'#ss-mount', std:'{stds[0]}', band:3 }}); </script>
