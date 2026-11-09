@@ -22,7 +22,9 @@
 
    On paper (?paper=1, see paper.js) each question gets room to work and "Answer: ____";
    the key (&key=1) fills the answer in green and shows the worked steps.
-   Results go to Mr. Allen's Sheet through ScoreSend when the page has set it up. */
+   Results go to Mr. Allen's Sheet through ScoreSend when the page has set it up.
+   Similar problems (Nov 2026): if notes-flow.js and grade8/twins/<page>.js give this question a twin, a wrong answer
+   shows the answer and steps, then ONE similar problem (see notes-flow.js). Without a twin: hint, then the answer. */
 (function () {
   var LV = { 1: '★ Try it', 2: '★★ On level', 3: '★★★ Challenge' };
   var css = document.createElement('style');
@@ -116,6 +118,16 @@
         done = true; q.classList.add('solved'); fb.className = 'np-fb ok'; fb.textContent = msg;
       }
       function miss(el) {
+        var tw = window.NotesTwin && NotesTwin.get(id);
+        if (tw && !tries) {                       // wrong → show the answer, then one similar problem (notes-flow.js)
+          tries++; rec(false); done = true;
+          fb.className = 'np-fb no'; fb.textContent = 'Not quite. The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');
+          if (sol) sol.classList.add('show');
+          row.querySelectorAll('input,button').forEach(function (e) { e.disabled = true; });
+          if (el) { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
+          NotesTwin.np(q, id, tw, same, show);
+          return;
+        }
         tries++; rec(false);
         if (el) { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
         fb.className = 'np-fb no';
