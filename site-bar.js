@@ -11,7 +11,7 @@
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
     { label: "Grading & Standards", href: "grade8/grading.html", section: "grade8/targets/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
-    { label: "Reset Room",     href: "grade8/reset-room.html", section: "grade8/ripples" },
+    { label: "Reset Room",     href: "grade8/reset-room.html", section: ["grade8/ripples", "grade8/drift"] },
     { label: "NC Check-Ins / Benchmarks", href: "grade8/benchmarks.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
     { label: "Class Info",     href: "class-information.html" }
@@ -27,8 +27,9 @@
   // Current page: an exact link match wins; otherwise the course section.
   var current = -1;
   LINKS.forEach(function (l, i) { if (rel === l.href) current = i; });
-  if (current < 0) LINKS.forEach(function (l, i) {   // longest matching section wins
-    if (l.section && rel.indexOf(l.section) === 0 && (current < 0 || l.section.length > LINKS[current].section.length)) current = i;
+  var best = 0;
+  if (current < 0) LINKS.forEach(function (l, i) {   // longest matching section wins (a section can be a list)
+    [].concat(l.section || []).forEach(function (sec) { if (rel.indexOf(sec) === 0 && sec.length > best) { best = sec.length; current = i; } });
   });
 
   // Fonts (shared with the page; harmless if already loaded or blocked)
