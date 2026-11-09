@@ -11,7 +11,8 @@
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
     { label: "Grading & Standards", href: "grade8/grading.html", section: "grade8/targets/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
-    { label: "Reset Room",     href: "grade8/reset-room.html", section: ["grade8/ripples", "grade8/drift"] },
+    { label: "Reset Room",     href: "grade8/reset-room.html", section: "grade8/ripples" },
+    { label: "Chill Math Music", href: "grade8/drift.html" },
     { label: "NC Check-Ins / Benchmarks", href: "grade8/benchmarks.html" },
     { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
     { label: "Class Info",     href: "class-information.html" }
@@ -76,7 +77,8 @@
     "nav a[aria-current]{color:#fff;border-bottom-color:#FFC107}" +
     "a:focus-visible,button:focus-visible{outline:2px solid #FFC107;outline-offset:3px;border-radius:2px}" +
     "button{display:none;background:none;border:1px solid rgba(255,255,255,.28);color:#fff;font:500 14px Inter,system-ui,sans-serif;border-radius:6px;height:36px;padding:0 14px;cursor:pointer}" +
-    "@media (max-width:1240px){nav{gap:14px}nav a{font-size:14px}.in{gap:18px}}" +
+    "@media (max-width:1460px){nav{gap:14px}nav a{font-size:14px}.in{gap:18px}}" +
+    "@media (max-width:1200px){nav{gap:11px}nav a{font-size:13.5px}.in{gap:14px;padding:0 16px}.mark span{display:none}}" +
     "@media (max-width:1060px){" +
       ".in{gap:12px}" +
       "button{display:inline-flex;align-items:center;gap:8px}" +
