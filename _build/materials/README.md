@@ -26,6 +26,7 @@ python3 _build/materials/combine.py ALL.pdf "Title A=a.pdf" "Title B=b.pdf"
 | `new_handout_template.py` | Copy this to start any new handout + bell ringer. |
 | `combine.py` | Merge PDFs into one with bookmarks. |
 | `u34_sets.py`, `u34_quizzes.py` | Units 3–4 (Nov 2026): Sets 1–3 handouts (transversals; solutions &amp; inequalities; triangle theorems + review) and Quiz A/B. Shared look `u34.css`, helpers `u34_common.py` (student + key from one HTML), figures `u34_figs.py`. `OUT_DIR=... python3 u34_sets.py set1 set2 set3`. |
+| `u34_notes.py` | Units 3–4 Notes Packet (Nov 2026): 4 two-sided sheets. Notes 1 label the 5 angle pairs + missing angles; Notes 2 none/one/infinite + inequalities (with an error-analysis item); Notes 3 Triangle Sum + Exterior Angle theorems; Notes 4 word problems (word bank, 7 steps, tips). Every answer and angle size is asserted (angles match the drawing: acute vs obtuse). `OUT_DIR=... python3 u34_notes.py` → each sheet + `Units3-4_Notes_Packet.pdf` and `_AnswerKey.pdf` (bookmarked). |
 | `anchor_v2.py` | Version 2 anchor charts (Units 1, 2, 3, 4–5, 6, 7, 8): color-coded KNOW IT / STEPS / EXAMPLE / WATCH OUT sections, colored step numbers, one sheet front + back each. `python3 anchor_v2.py [1 2 3 4-5 6 7 8]`. |
 
 ## Rules that keep it fast and right
