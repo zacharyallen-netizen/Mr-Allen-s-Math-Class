@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Drift — Reset Room — Mr. Allen's Math Class</title>
-<meta name="description" content="Drift: soft focus music with a slow, steady pulse. Press Play, then go back to your work. Made fresh on your Chromebook: no ads, no account.">
+<meta name="description" content="Drift: soft focus music with a slow, steady pulse. Press Play, then switch to your work tab. Made fresh on your Chromebook: no ads, no account.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
 /* Drift: one calm column. Big Play and Mute, a slow glowing light that breathes with the beat,
@@ -64,7 +64,7 @@ details.set[open] summary::after{content:"−"}
   <header>
     <p class="eyebrow">Reset Room</p>
     <h1>Drift</h1>
-    <p class="lede">Soft music with a slow, steady beat to help you focus. Press Play, then go back to your work. The music keeps playing.</p>
+    <p class="lede">Soft music with a slow, steady beat to help you focus. Press Play, then switch back to your work tab. <b style="color:#F7F7F4">Keep this tab open.</b> Closing it or leaving this page stops the music.</p>
   </header>
 
   <section class="stage" aria-label="A slow light that glows with the beat">
@@ -79,7 +79,7 @@ details.set[open] summary::after{content:"−"}
   </div>
   <p class="timer" id="timer" aria-live="polite"></p>
 
-  <p class="tip"><b>Tip:</b> put on headphones and keep the volume low. You should still be able to think about your work. Press <b>M</b> to mute or unmute.</p>
+  <p class="tip"><b>Tip:</b> while the music plays, links on this page open in a new tab, so the music keeps going. Put on headphones and keep the volume low. You should still be able to think about your work. Press <b>M</b> to mute or unmute.</p>
 
   <details class="set" id="setBox">
     <summary>Change the music</summary>
@@ -245,6 +245,14 @@ details.set[open] summary::after{content:"−"}
     playBtn.textContent = '▶ Play'; label(); stopTimer();
   }
   playBtn.addEventListener('click', function () { playing ? pause() : play(); });
+  // While music plays, any link on this page (top bar included) opens in a new tab so the music keeps going.
+  document.addEventListener('click', function (e) {
+    if (!playing || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    var path = e.composedPath ? e.composedPath() : [e.target], a = null;
+    for (var i = 0; i < path.length; i++) if (path[i].tagName === 'A' && path[i].getAttribute('href')) { a = path[i]; break; }
+    if (!a || a.target === '_blank' || /^#|^javascript:/i.test(a.getAttribute('href'))) return;
+    e.preventDefault(); window.open(a.href, '_blank', 'noopener');
+  }, true);
   function toggleMute() { muted = !muted; muteBtn.setAttribute('aria-pressed', String(muted)); muteBtn.textContent = muted ? 'Unmute' : 'Mute'; applyVol(); }
   muteBtn.addEventListener('click', toggleMute);
   document.addEventListener('keydown', function (e) { if ((e.key === 'm' || e.key === 'M') && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) toggleMute(); });

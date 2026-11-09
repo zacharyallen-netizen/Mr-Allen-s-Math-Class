@@ -12,7 +12,7 @@
     { label: "Grading & Standards", href: "grade8/grading.html", section: "grade8/targets/" },
     { label: "Arcade",         href: "grade8/arcade.html" },
     { label: "Reset Room",     href: "grade8/reset-room.html", section: "grade8/ripples" },
-    { label: "Chill Math Music", href: "grade8/drift.html" },
+    { label: "Chill Math Music", href: "grade8/drift.html", newtab: true },
     { label: "Calculators", menu: [
         { label: "Desmos Scientific Calculator", href: "https://www.desmos.com/scientific" },
         { label: "Desmos Graphing Calculator",   href: "https://www.desmos.com/calculator" } ] },
@@ -109,7 +109,7 @@
       '<div class="ddm" id="sb-dd' + i + '" hidden>' + l.menu.map(function (m) {
         return '<a href="' + m.href + '" target="_blank" rel="noopener">' + m.label + ' <small>opens in a new tab ↗</small></a>';
       }).join("") + "</div></div>";
-    return '<a href="' + root + l.href + '"' + (i === current ? ' aria-current="page"' : "") + ">" + l.label + "</a>";
+    return '<a href="' + root + l.href + '"' + (l.newtab ? ' target="_blank" rel="noopener"' : "") + (i === current ? ' aria-current="page"' : "") + ">" + l.label + "</a>";
   }).join("");
 
   sr.innerHTML =
