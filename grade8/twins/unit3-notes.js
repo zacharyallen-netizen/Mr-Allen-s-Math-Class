@@ -188,77 +188,6 @@ window.NOTE_TWINS = {
 "show": "8",
 "sol": "Let x = tickets. “Has $30” means the cost is at most 30.<br>5 + 3x ≤ 30<br>Subtract 5: 3x ≤ 25<br>Divide by 3: x ≤ 8 1/3<br>You can't buy part of a ticket, so the greatest number is 8."
 },
-"np9-1": {
-"p": "Section 1 · Solve: x − 5 = −1",
-"a": "4",
-"show": "4",
-"sol": "Add 5: x = 4"
-},
-"np9-2": {
-"p": "Section 2 · Solve: 4x − 3 = 25",
-"a": "7",
-"show": "7",
-"sol": "Add 3: 4x = 28<br>Divide by 4: x = 7"
-},
-"np9-3": {
-"p": "Section 7 · Which inequality means “x is at least 8”?",
-"choices": [
-"x ≥ 8",
-"x > 8",
-"x ≤ 8",
-"x < 8"
-],
-"a": "x ≥ 8",
-"sol": "At least 8 → 8 is allowed, and anything more → x ≥ 8."
-},
-"np9-4": {
-"p": "Section 3 · Solve: −2(x + 5) = 4",
-"a": "-7",
-"show": "−7",
-"sol": "Distribute and combine like terms: −2x − 10 = 4<br>Add 10: −2x = 14<br>Divide by −2: x = −7"
-},
-"np9-5": {
-"p": "Section 4 · Solve: 7x − 4 = 3x + 20",
-"a": "6",
-"show": "6",
-"sol": "Subtract 3x from both sides: 4x − 4 = 20<br>Add 4: 4x = 24<br>Divide by 4: x = 6"
-},
-"np9-6": {
-"p": "Section 6 · How many solutions does 2(3x + 1) = 6x − 2 have?",
-"choices": [
-"One solution",
-"No solution",
-"Infinitely many solutions"
-],
-"a": "No solution",
-"sol": "Distribute and combine like terms: 6x + 2 = 6x − 2<br>Subtract 6x from both sides: 2 = −2<br>The x's cancel: 2 = −2 is FALSE → no solution."
-},
-"np9-7": {
-"p": "Section 7 · Solve: 10 − 2x ≥ 16. <span class=\"np-type\">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>",
-"a": "x<=-3|-3>=x|x≤-3|-3≥x|x=<-3",
-"show": "x ≤ −3",
-"ineq": true,
-"ph": "like x<=4",
-"sol": "Simplify each side: −2x + 10 ≥ 16<br>Subtract 10: −2x ≥ 6<br>Divide by −2 and FLIP the sign: x ≤ −3"
-},
-"np9-8": {
-"p": "Section 5 · Solve: 3(2x − 2) + 5 = 2(x + 3) + 1",
-"a": "2",
-"show": "2",
-"sol": "Distribute and combine like terms: 6x − 1 = 2x + 7<br>Subtract 2x from both sides: 4x − 1 = 7<br>Add 1: 4x = 8<br>Divide by 4: x = 2"
-},
-"np9-9": {
-"p": "Section 8 · The sum of four times a number and 6 is −18. What is the number?",
-"a": "-6",
-"show": "−6",
-"sol": "4x + 6 = −18<br>Subtract 6: 4x = −24<br>Divide by 4: x = −6"
-},
-"np9-10": {
-"p": "Section 8 · Mia has 12 shells and finds 5 more each day. Tom has 60 shells and gives away 3 each day. After how many days do they have the same number? Type just the number.",
-"a": "6",
-"show": "6",
-"sol": "Let x = days.<br>12 + 5x = 60 − 3x<br>Add 3x: 12 + 8x = 60<br>Subtract 12: 8x = 48<br>Divide by 8: x = 6 days (both have 42 shells)"
-},
 "chk36a": {
 "p": "<span class=\"badge\">MC</span> Solving an equation gives 4 = −4. The equation has…",
 "choices": [
@@ -270,23 +199,15 @@ window.NOTE_TWINS = {
 "why": "The variables cancelled and a FALSE statement remains → no solution."
 },
 "pA1": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 4x + 5 = 29",
+"p": "<span class=\"np-lv l1\">Score 3</span> 4x + 5 = 29",
 "a": [
 "6",
 "x=6"
 ],
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"4x + 5 = 29\"}'></div>"
 },
-"pA2": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 3(x − 2) = 15",
-"a": [
-"7",
-"x=7"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"3(x − 2) = 15\"}'></div>"
-},
 "pA3": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 6x − 5 = 2x + 15",
+"p": "<span class=\"np-lv l2\">Score 4</span> 6x − 5 = 2x + 15",
 "a": [
 "5",
 "x=5"
@@ -294,63 +215,23 @@ window.NOTE_TWINS = {
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"6x − 5 = 2x + 15\"}'></div>"
 },
 "pA4": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> −3(x + 1) = 9",
+"p": "<span class=\"np-lv l2\">Score 4</span> −3(x + 1) = 9",
 "a": [
 "-4",
 "x=-4"
 ],
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"−3(x + 1) = 9\"}'></div>"
 },
-"pA5": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 5x + 6 = 2x − 9",
-"a": [
-"-5",
-"x=-5"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"5x + 6 = 2x − 9\"}'></div>"
-},
 "pA6": {
-"p": "<span class=\"np-lv l3\">★★★ Challenge</span> 2(3x + 2) = 4x + 10",
+"p": "<span class=\"np-lv l3\">Score 5</span> 2(3x + 2) = 4x + 10",
 "a": [
 "3",
 "x=3"
 ],
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"2(3x + 2) = 4x + 10\"}'></div>"
 },
-"pA7": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> <span class=\"sf\"><span>x</span><span class=\"sfx\">/</span><span>3</span></span> + 4 = 9",
-"a": [
-"15",
-"x=15"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"x/3 + 4 = 9\"}'></div>"
-},
-"pA8": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 9 − 3x = 2x + 24",
-"a": [
-"-3",
-"x=-3"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"9 − 3x = 2x + 24\"}'></div>"
-},
-"pA9": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 0.5x + 4 = 10",
-"a": [
-"12",
-"x=12"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"0.5x + 4 = 10\"}'></div>"
-},
-"pA10": {
-"p": "<span class=\"np-lv l3\">★★★ Challenge</span> −(x − 8) = 3x − 4",
-"a": [
-"3",
-"x=3"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"−(x − 8) = 3x − 4\"}'></div>"
-},
 "pB1": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 5x + 4 = 5x − 4",
+"p": "<span class=\"np-lv l1\">Score 3</span> 5x + 4 = 5x − 4",
 "a": [
 "no solution",
 "no solutions",
@@ -360,7 +241,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"5x + 4 = 5x − 4\"}'></div>"
 },
 "pB2": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 3x − 6 = 3x − 6",
+"p": "<span class=\"np-lv l1\">Score 3</span> 3x − 6 = 3x − 6",
 "a": [
 "infinitely many solutions",
 "infinite",
@@ -369,18 +250,8 @@ window.NOTE_TWINS = {
 ],
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"3x − 6 = 3x − 6\"}'></div>"
 },
-"pB3": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 4(x + 1) = 4x + 1",
-"a": [
-"no solution",
-"no solutions",
-"none",
-"0 solutions"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"4(x + 1) = 4x + 1\"}'></div>"
-},
 "pB4": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 2x + 6 = 2(x + 3)",
+"p": "<span class=\"np-lv l2\">Score 4</span> 2x + 6 = 2(x + 3)",
 "a": [
 "infinitely many solutions",
 "infinite",
@@ -389,70 +260,24 @@ window.NOTE_TWINS = {
 ],
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"2x + 6 = 2(x + 3)\"}'></div>"
 },
-"pB5": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 6x − 1 = 6x + 1",
-"a": [
-"no solution",
-"no solutions",
-"none",
-"0 solutions"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"6x − 1 = 6x + 1\"}'></div>"
-},
-"pB6": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> x + 9 = 9 + x",
-"a": [
-"infinitely many solutions",
-"infinite",
-"infinite solutions",
-"infinitely many"
-],
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"x + 9 = 9 + x\"}'></div>"
-},
 "pC1": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 4x + 1 > 17",
+"p": "<span class=\"np-lv l1\">Score 3</span> 4x + 1 > 17",
 "a": [
 "x>4"
 ],
 "ineq": true,
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"4x + 1 > 17\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 1, \"max\": 7, \"at\": 4, \"open\": true, \"dir\": \"R\", \"c\": \"red\", \"label\": \"x > 4\", \"alt\": \"number line for x > 4\"}'></div></div>"
 },
-"pC2": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 3x − 4 ≤ 11",
-"a": [
-"x<=5",
-"x≤5"
-],
-"ineq": true,
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"3x − 4 ≤ 11\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 2, \"max\": 8, \"at\": 5, \"open\": false, \"dir\": \"L\", \"c\": \"red\", \"label\": \"x ≤ 5\", \"alt\": \"number line for x ≤ 5\"}'></div></div>"
-},
 "pC3": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> −5x > 10 (flip!)",
+"p": "<span class=\"np-lv l2\">Score 4</span> −5x > 10 (flip!)",
 "a": [
 "x<-2"
 ],
 "ineq": true,
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"−5x > 10\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": -5, \"max\": 1, \"at\": -2, \"open\": true, \"dir\": \"L\", \"c\": \"red\", \"label\": \"x < −2\", \"alt\": \"number line for x < −2\"}'></div></div>"
 },
-"pC4": {
-"p": "<span class=\"np-lv l1\">★ Try it</span> 2x + 3 ≥ 13",
-"a": [
-"x>=5",
-"x≥5"
-],
-"ineq": true,
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"2x + 3 ≥ 13\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 2, \"max\": 8, \"at\": 5, \"open\": false, \"dir\": \"R\", \"c\": \"red\", \"label\": \"x ≥ 5\", \"alt\": \"number line for x ≥ 5\"}'></div></div>"
-},
-"pC5": {
-"p": "<span class=\"np-lv l3\">★★★ Challenge</span> 9 − x < 5 (flip!)",
-"a": [
-"x>4"
-],
-"ineq": true,
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"9 − x < 5\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 1, \"max\": 7, \"at\": 4, \"open\": true, \"dir\": \"R\", \"c\": \"red\", \"label\": \"x > 4\", \"alt\": \"number line for x > 4\"}'></div></div>"
-},
 "pC6": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 3(x + 1) ≤ 12",
+"p": "<span class=\"np-lv l2\">Score 4</span> 3(x + 1) ≤ 12",
 "a": [
 "x<=3",
 "x≤3"
@@ -461,20 +286,12 @@ window.NOTE_TWINS = {
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"3(x + 1) ≤ 12\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 0, \"max\": 6, \"at\": 3, \"open\": false, \"dir\": \"L\", \"c\": \"red\", \"label\": \"x ≤ 3\", \"alt\": \"number line for x ≤ 3\"}'></div></div>"
 },
 "pC7": {
-"p": "<span class=\"np-lv l3\">★★★ Challenge</span> −2x + 8 ≥ 0 (flip!)",
+"p": "<span class=\"np-lv l3\">Score 5</span> −2x + 8 ≥ 0 (flip!)",
 "a": [
 "x<=4",
 "x≤4"
 ],
 "ineq": true,
 "after": "<div class=\"vw\" data-vw='{\"eq\": \"−2x + 8 ≥ 0\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 1, \"max\": 7, \"at\": 4, \"open\": false, \"dir\": \"L\", \"c\": \"red\", \"label\": \"x ≤ 4\", \"alt\": \"number line for x ≤ 4\"}'></div></div>"
-},
-"pC8": {
-"p": "<span class=\"np-lv l2\">★★ On level</span> 5x − 2 > 3x + 6",
-"a": [
-"x>4"
-],
-"ineq": true,
-"after": "<div class=\"vw\" data-vw='{\"eq\": \"5x − 2 > 3x + 6\"}'></div><div class=\"eqfig\"><div data-eq='{\"type\": \"nline\", \"min\": 1, \"max\": 7, \"at\": 4, \"open\": true, \"dir\": \"R\", \"c\": \"red\", \"label\": \"x > 4\", \"alt\": \"number line for x > 4\"}'></div></div>"
 }
 };

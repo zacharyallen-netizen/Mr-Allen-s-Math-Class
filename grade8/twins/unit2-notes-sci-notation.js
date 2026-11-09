@@ -1,7 +1,7 @@
 /* unit2-notes-sci-notation: similar problems for notes-flow.js. Built by _build/notes_twins/build.py — edit there, not here. */
 window.NOTE_TWINS = {
 "u2pB1": {
-"p": "1) 82,000,000 → scientific notation",
+"p": "<span class=\"np-lv l1\">Score 3</span> 82,000,000 → scientific notation",
 "a": [
 "8.2×10⁷",
 "8.2x10^7",
@@ -9,7 +9,7 @@ window.NOTE_TWINS = {
 ]
 },
 "u2pB2": {
-"p": "2) 0.00057 → scientific notation",
+"p": "<span class=\"np-lv l1\">Score 3</span> 0.00057 → scientific notation",
 "a": [
 "5.7×10⁻⁴",
 "5.7x10^-4",
@@ -17,79 +17,28 @@ window.NOTE_TWINS = {
 ]
 },
 "u2pB3": {
-"p": "3) 4.03 × 10⁷ → standard form",
+"p": "<span class=\"np-lv l1\">Score 3</span> 4.03 × 10⁷ → standard form",
 "a": [
 "40,300,000",
 "40300000"
 ]
 },
 "u2pB4": {
-"p": "4) 6.4 × 10⁻⁵ → standard form",
+"p": "<span class=\"np-lv l1\">Score 3</span> 6.4 × 10⁻⁵ → standard form",
 "a": [
 "0.000064"
 ]
 },
-"u2pB5": {
-"p": "5) 530,000 → scientific notation",
-"a": [
-"5.3×10⁵",
-"5.3x10^5",
-"5.3*10^5"
-]
-},
-"u2pB6": {
-"p": "6) 0.0000081 → scientific notation",
-"a": [
-"8.1×10⁻⁶",
-"8.1x10^-6",
-"8.1*10^-6"
-]
-},
-"u2pB7": {
-"p": "7) 2.76 × 10⁴ → standard form",
-"a": [
-"27,600",
-"27600"
-]
-},
-"u2pB8": {
-"p": "8) 4.5 × 10⁻³ → standard form",
-"a": [
-"0.0045"
-]
-},
-"u2pB9": {
-"p": "9) 7,140,000,000 → scientific notation",
-"a": [
-"7.14×10⁹",
-"7.14x10^9",
-"7.14*10^9"
-]
-},
-"u2pB10": {
-"p": "10) 3.6 × 10⁻² → standard form",
-"a": [
-"0.036"
-]
-},
 "u2pC1": {
-"p": "1) (2 × 10³)(4 × 10⁶)",
+"p": "<span class=\"np-lv l2\">Score 4</span> (2 × 10³)(4 × 10⁶)",
 "a": [
 "8×10⁹",
 "8x10^9",
 "8*10^9"
 ]
 },
-"u2pC2": {
-"p": "2) (9 × 10⁸) ÷ (3 × 10²)",
-"a": [
-"3×10⁶",
-"3x10^6",
-"3*10^6"
-]
-},
 "u2pC3": {
-"p": "3) (6 × 10⁴)(5 × 10⁵)",
+"p": "<span class=\"np-lv l2\">Score 4</span> (6 × 10⁴)(5 × 10⁵)",
 "a": [
 "3×10¹⁰",
 "3x10^10",
@@ -97,7 +46,7 @@ window.NOTE_TWINS = {
 ]
 },
 "u2pC4": {
-"p": "4) (8.4 × 10⁹) ÷ (2.1 × 10⁴)",
+"p": "<span class=\"np-lv l2\">Score 4</span> (8.4 × 10⁹) ÷ (2.1 × 10⁴)",
 "a": [
 "4×10⁵",
 "4x10^5",

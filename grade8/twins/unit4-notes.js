@@ -190,16 +190,8 @@ window.NOTE_TWINS = {
 "fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 128}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 128, \"label\": \"128°\", \"c\": \"blue\"}, {\"from\": 128, \"to\": 180, \"label\": \"?\", \"c\": \"gold\"}], \"alt\": \"a linear pair: 128 degrees and an unknown angle on a straight line\", \"maxW\": 300}'></div>",
 "why": "A linear pair adds to 180°. 180° − 128° = 52°."
 },
-"u4pA1": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 1) Supplementary Angles, given 140°. x = ?",
-"a": [
-"40"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 40}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 40, \"label\": \"x°\", \"c\": \"gold\"}, {\"from\": 40, \"to\": 180, \"label\": \"140°\", \"c\": \"blue\"}], \"alt\": \"supplementary: x and 140 degrees\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Supplementary angles add to 180°: x = 180 − 140 = 40.</div>"
-},
 "u4pA2": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 2) Complementary Angles, given 38°. x = ?",
+"p": "<span class=\"np-lv l1 u4-lv\">Score 3</span> Complementary Angles, given 38°. x = ?",
 "a": [
 "52"
 ],
@@ -207,199 +199,23 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Complementary angles add to 90°: x = 90 − 38 = 52.</div>"
 },
 "u4pA3": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 3) Vertical Angles, given 66°. x = ?",
+"p": "<span class=\"np-lv l1 u4-lv\">Score 3</span> Vertical Angles, given 66°. x = ?",
 "a": [
 "66"
 ],
 "fig": "<div data-geo='{\"type\": \"cross\", \"theta\": 66, \"angles\": [{\"q\": 1, \"label\": \"66°\", \"c\": \"blue\"}, {\"q\": 3, \"label\": \"x°\", \"c\": \"gold\"}], \"alt\": \"vertical angles 66 degrees and x\", \"maxW\": 220}'></div>",
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Vertical angles are equal: x = 66.</div>"
 },
-"u4pA4": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 4) Linear Pair, given 128°. x = ?",
-"a": [
-"52"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 52}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 52, \"label\": \"x°\", \"c\": \"gold\"}, {\"from\": 52, \"to\": 180, \"label\": \"128°\", \"c\": \"blue\"}], \"alt\": \"linear pair: x and 128 degrees\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">A linear pair adds to 180°: x = 180 − 128 = 52.</div>"
-},
-"u4pA5": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 5) Complementary Angles, given 25°. x = ?",
-"a": [
-"65"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 25}, {\"deg\": 90}], \"angles\": [{\"from\": 0, \"to\": 25, \"label\": \"25°\", \"c\": \"blue\"}, {\"from\": 25, \"to\": 90, \"label\": \"x°\", \"c\": \"gold\"}], \"alt\": \"complementary: 25 degrees and x\", \"right\": [[0, 90]], \"maxW\": 260}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Complementary angles add to 90°: x = 90 − 25 = 65.</div>"
-},
-"u4pA6": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 6) Supplementary Angles, given 115°. x = ?",
-"a": [
-"65"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 65}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 65, \"label\": \"x°\", \"c\": \"gold\"}, {\"from\": 65, \"to\": 180, \"label\": \"115°\", \"c\": \"blue\"}], \"alt\": \"supplementary: x and 115 degrees\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Supplementary angles add to 180°: x = 180 − 115 = 65.</div>"
-},
-"u4pA7": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 7) Vertical Angles, given 58°. x = ?",
-"a": [
-"58"
-],
-"fig": "<div data-geo='{\"type\": \"cross\", \"theta\": 58, \"angles\": [{\"q\": 1, \"label\": \"58°\", \"c\": \"blue\"}, {\"q\": 3, \"label\": \"x°\", \"c\": \"gold\"}], \"alt\": \"vertical angles 58 degrees and x\", \"maxW\": 220}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Vertical angles are equal: x = 58.</div>"
-},
-"u4pA8": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 8) Linear Pair, given 146°. x = ?",
-"a": [
-"34"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 34}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 34, \"label\": \"x°\", \"c\": \"gold\"}, {\"from\": 34, \"to\": 180, \"label\": \"146°\", \"c\": \"blue\"}], \"alt\": \"linear pair: x and 146 degrees\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">A linear pair adds to 180°: x = 180 − 146 = 34.</div>"
-},
-"u4pA9": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 9) Complementary Angles, given 61°. x = ?",
-"a": [
-"29"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 61}, {\"deg\": 90}], \"angles\": [{\"from\": 0, \"to\": 61, \"label\": \"61°\", \"c\": \"blue\"}, {\"from\": 61, \"to\": 90, \"label\": \"x°\", \"c\": \"gold\"}], \"alt\": \"complementary: 61 degrees and x\", \"right\": [[0, 90]], \"maxW\": 260}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Complementary angles add to 90°: x = 90 − 61 = 29.</div>"
-},
-"u4pA10": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 10) Supplementary Angles, given 102°. x = ?",
-"a": [
-"78"
-],
-"fig": "<div data-geo='{\"type\": \"rays\", \"rays\": [{\"deg\": 0}, {\"deg\": 78}, {\"deg\": 180}], \"angles\": [{\"from\": 0, \"to\": 78, \"label\": \"x°\", \"c\": \"gold\"}, {\"from\": 78, \"to\": 180, \"label\": \"102°\", \"c\": \"blue\"}], \"alt\": \"supplementary: x and 102 degrees\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Supplementary angles add to 180°: x = 180 − 102 = 78.</div>"
-},
-"u4pB1": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 1) Corresponding, given 70°. x = ?",
-"a": [
-"70"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 70, \"marks\": {\"2\": \"70°\", \"6\": \"x°\"}, \"colors\": {\"2\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: corresponding angles 70 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Corresponding angles are equal: x = 70.</div>"
-},
 "u4pB2": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 2) Alternate Interior, given 115°. x = ?",
+"p": "<span class=\"np-lv l1 u4-lv\">Score 3</span> Alternate Interior, given 115°. x = ?",
 "a": [
 "115"
 ],
 "fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 115, \"marks\": {\"3\": \"115°\", \"6\": \"x°\"}, \"colors\": {\"3\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: alternate interior angles 115 degrees and x\", \"maxW\": 300}'></div>",
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Alternate Interior angles are equal: x = 115.</div>"
 },
-"u4pB3": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 3) Alternate Exterior, given 80°. x = ?",
-"a": [
-"80"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 100, \"marks\": {\"1\": \"80°\", \"8\": \"x°\"}, \"colors\": {\"1\": \"blue\", \"8\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: alternate exterior angles 80 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Alternate Exterior angles are equal: x = 80.</div>"
-},
-"u4pB4": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 4) Corresponding, given 52°. x = ?",
-"a": [
-"52"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 52, \"marks\": {\"2\": \"52°\", \"6\": \"x°\"}, \"colors\": {\"2\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: corresponding angles 52 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Corresponding angles are equal: x = 52.</div>"
-},
-"u4pB5": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 5) Alternate Interior, given 125°. x = ?",
-"a": [
-"125"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 125, \"marks\": {\"3\": \"125°\", \"6\": \"x°\"}, \"colors\": {\"3\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: alternate interior angles 125 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Alternate Interior angles are equal: x = 125.</div>"
-},
-"u4pB6": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 6) Same-Side Interior, given 60°. x = ?",
-"a": [
-"120"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 120, \"marks\": {\"4\": \"60°\", \"6\": \"x°\"}, \"colors\": {\"4\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: same-side interior angles 60 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Same-side interior angles add to 180°: x = 180 − 60 = 120.</div>"
-},
-"u4pB7": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 7) Alternate Exterior, given 98°. x = ?",
-"a": [
-"98"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 82, \"marks\": {\"1\": \"98°\", \"8\": \"x°\"}, \"colors\": {\"1\": \"blue\", \"8\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: alternate exterior angles 98 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Alternate Exterior angles are equal: x = 98.</div>"
-},
-"u4pB8": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 8) Same-Side Interior, given 135°. x = ?",
-"a": [
-"45"
-],
-"fig": "<div data-geo='{\"type\": \"parallel\", \"theta\": 45, \"marks\": {\"4\": \"135°\", \"6\": \"x°\"}, \"colors\": {\"4\": \"blue\", \"6\": \"gold\"}, \"lineNames\": [\"m\", \"n\"], \"tName\": \"t\", \"alt\": \"parallel lines: same-side interior angles 135 degrees and x\", \"maxW\": 300}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Same-side interior angles add to 180°: x = 180 − 135 = 45.</div>"
-},
-"u4pC1": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 1) Angle Sum, given 70°, 72°. x = ?",
-"a": [
-"38"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 70, \"B\": 72, \"angles\": {\"A\": \"70°\", \"B\": \"72°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"B\": \"green\", \"C\": \"gold\"}, \"alt\": \"triangle with angles 70, 72 and x\", \"maxW\": 230}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">The angles of a triangle add to 180°: x = 180 − 70 − 72 = 38.</div>"
-},
-"u4pC2": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 2) Angle Sum, given 35°, 90°. x = ?",
-"a": [
-"55"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 35, \"B\": 90, \"angles\": {\"A\": \"35°\", \"B\": \"90°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"B\": \"green\", \"C\": \"gold\"}, \"alt\": \"triangle with angles 35, 90 and x\", \"maxW\": 230}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">The angles of a triangle add to 180°: x = 180 − 35 − 90 = 55.</div>"
-},
-"u4pC3": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 3) Angle Sum, given 58°, 49°. x = ?",
-"a": [
-"73"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 58, \"B\": 49, \"angles\": {\"A\": \"58°\", \"B\": \"49°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"B\": \"green\", \"C\": \"gold\"}, \"alt\": \"triangle with angles 58, 49 and x\", \"maxW\": 230}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">The angles of a triangle add to 180°: x = 180 − 58 − 49 = 73.</div>"
-},
-"u4pC4": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 4) Angle Sum, given 25°, 90°. x = ?",
-"a": [
-"65"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 25, \"B\": 90, \"angles\": {\"A\": \"25°\", \"B\": \"90°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"B\": \"green\", \"C\": \"gold\"}, \"alt\": \"triangle with angles 25, 90 and x\", \"maxW\": 230}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">The angles of a triangle add to 180°: x = 180 − 25 − 90 = 65.</div>"
-},
-"u4pC5": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 5) Exterior Angle Theorem, remotes 50°, 75°. Exterior x = ?",
-"a": [
-"125"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 50, \"B\": 55, \"angles\": {\"A\": \"50°\", \"C\": \"75°\"}, \"colors\": {\"A\": \"blue\", \"C\": \"green\"}, \"exterior\": {\"at\": \"B\", \"label\": \"x°\", \"c\": \"gold\"}, \"alt\": \"remote angles 50 and 75, exterior x\", \"maxW\": 280}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Exterior angle = sum of the two far inside angles: x = 50 + 75 = 125.</div>"
-},
-"u4pC6": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 6) Exterior Angle Theorem, remote 60°, exterior = 145°. x = ?",
-"a": [
-"85"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 60, \"B\": 35, \"angles\": {\"A\": \"60°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"C\": \"gold\"}, \"exterior\": {\"at\": \"B\", \"label\": \"145°\", \"c\": \"green\"}, \"alt\": \"remote angle 60 and x, exterior 145\", \"maxW\": 280}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Exterior angle = sum of the two far inside angles: x + 60 = 145, so x = 145 − 60 = 85.</div>"
-},
-"u4pC7": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 7) Exterior Angle Theorem, remote 42°, exterior = 115°. x = ?",
-"a": [
-"73"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 42, \"B\": 65, \"angles\": {\"A\": \"42°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"C\": \"gold\"}, \"exterior\": {\"at\": \"B\", \"label\": \"115°\", \"c\": \"green\"}, \"alt\": \"remote angle 42 and x, exterior 115\", \"maxW\": 280}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Exterior angle = sum of the two far inside angles: x + 42 = 115, so x = 115 − 42 = 73.</div>"
-},
-"u4pC8": {
-"p": "<span class=\"np-lv l1 u4-lv\">★ Try it</span> 8) Angle Sum, given 55°, 55°. x = ?",
-"a": [
-"70"
-],
-"fig": "<div data-geo='{\"type\": \"triangle\", \"A\": 55, \"B\": 55, \"angles\": {\"A\": \"55°\", \"B\": \"55°\", \"C\": \"x°\"}, \"colors\": {\"A\": \"blue\", \"B\": \"green\", \"C\": \"gold\"}, \"alt\": \"triangle with angles 55, 55 and x\", \"maxW\": 230}'></div>",
-"after": "<div class=\"np-sol u4-sol\" style=\"display:block\">The angles of a triangle add to 180°: x = 180 − 55 − 55 = 70.</div>"
-},
 "u4pD1": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 1) AA Similarity — two angles match: 45° and 75°. x = ?",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> AA Similarity — two angles match: 45° and 75°. x = ?",
 "a": [
 "60"
 ],
@@ -407,7 +223,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Two angles match (45° and 75°), so the triangles are similar by AA. The third angle: x = 180 − 45 − 75 = 60.</div>"
 },
 "u4pD2": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 2) △ABC ~ △DEF, given 40° and 72°. x = ?",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> △ABC ~ △DEF, given 40° and 72°. x = ?",
 "a": [
 "68"
 ],
@@ -415,7 +231,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">∠C = 180 − 40 − 72 = 68°. ∠F corresponds to ∠C, so x = 68.</div>"
 },
 "u4pD3": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 3) Parallel line inside a triangle, given 60° and 52°. x = ?",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> Parallel line inside a triangle, given 60° and 52°. x = ?",
 "a": [
 "68"
 ],
@@ -423,7 +239,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">A line parallel to the base cuts off a small top triangle. It has the same angles as the big one (corresponding angles). The three angles add to 180°: x = 180 − 60 − 52 = 68.</div>"
 },
 "u4pD4": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 4) Similar triangles — sides 4 and 6 match 10 and x. x = ?",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> Similar triangles — sides 4 and 6 match 10 and x. x = ?",
 "a": [
 "15"
 ],
@@ -431,7 +247,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Scale factor = 10 ÷ 4 = 2.5. x = 6 × 2.5 = 15.</div>"
 },
 "u4pD5": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 5) Similar right triangles, given 28°. x = ?",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> Similar right triangles, given 28°. x = ?",
 "a": [
 "62"
 ],
@@ -439,7 +255,7 @@ window.NOTE_TWINS = {
 "after": "<div class=\"np-sol u4-sol\" style=\"display:block\">Both triangles have a 90° angle and a 28° angle, so they are similar by AA. x = 180 − 90 − 28 = 62.</div>"
 },
 "u4pD6": {
-"p": "<span class=\"np-lv l2 u4-lv\">★★ On level</span> 6) Triangle 1: 55°, 65°. Triangle 2: 55°, 60°. Find x, Triangle 2’s third angle.",
+"p": "<span class=\"np-lv l2 u4-lv\">Score 4</span> Triangle 1: 55°, 65°. Triangle 2: 55°, 60°. Find x, Triangle 2’s third angle.",
 "a": [
 "65"
 ],

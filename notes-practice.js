@@ -27,6 +27,7 @@
    shows the answer and steps, then ONE similar problem (see notes-flow.js). Without a twin: hint, then the answer. */
 (function () {
   var LV = { 1: '★ Try it', 2: '★★ On level', 3: '★★★ Challenge' };
+  var SC = { 1: 'Score 3', 2: 'Score 4', 3: 'Score 5' };          // a box with data-score (Part 2 practice, Nov 2026)
   var css = document.createElement('style');
   css.textContent = [
     '.np{margin:18px 0 6px;padding:14px 16px 6px;border:2px solid #0056B3;border-radius:12px;background:#F4F8FD}',
@@ -93,7 +94,7 @@
       q.id = id;
       var prompt = q.querySelector('.np-prompt');
       var top = document.createElement('div'); top.className = 'np-top';
-      top.innerHTML = '<span class="np-num">' + (k + 1) + '.</span><span class="np-lv l' + lv + '">' + LV[lv] + '</span>';
+      top.innerHTML = '<span class="np-num">' + (k + 1) + '.</span><span class="np-lv l' + lv + '">' + (np.hasAttribute('data-score') ? SC : LV)[lv] + '</span>';
       q.insertBefore(top, q.firstChild); if (prompt) top.appendChild(prompt);
       var ans = q.getAttribute('data-ans'), choices = q.getAttribute('data-choices'), sol = q.querySelector('.np-sol');
       var show = q.getAttribute('data-show') || (ans ? ans.split('|')[0] : '');
