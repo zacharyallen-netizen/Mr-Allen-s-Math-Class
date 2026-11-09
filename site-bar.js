@@ -7,17 +7,21 @@
    ========================================================================== */
 (function () {
   var LINKS = [
-    { label: "8th Grade",      href: "grade8/index.html",            section: "grade8/" },
+    { label: "8th Grade Math", href: "grade8/index.html",            section: "grade8/" },
     { label: "NC Math 1",      href: "math1/index.html",             section: "math1/" },
     { label: "Grading & Standards", href: "grade8/grading.html", section: "grade8/targets/" },
-    { label: "Arcade",         href: "grade8/arcade.html" },
-    { label: "Reset Room",     href: "grade8/reset-room.html", section: "grade8/ripples" },
-    { label: "Chill Math Music", href: "grade8/drift.html", newtab: true },
+    { label: "Math Arcade",    href: "grade8/arcade.html" },
+    // A "menu" is a dropdown. Menu items: href from the site root (or a full https:// address),
+    // newtab: true opens a new tab, note: a short line under the name, section: same as above.
+    { label: "Reset Room & Music", menu: [
+        { label: "Reset Room", note: "calm-down activities", href: "grade8/reset-room.html", section: "grade8/ripples" },
+        { label: "Chill Math Music", note: "focus music · opens in a new tab ↗", href: "grade8/drift.html", newtab: true } ] },
     { label: "Calculators", menu: [
-        { label: "Desmos Scientific Calculator", href: "https://www.desmos.com/scientific" },
-        { label: "Desmos Graphing Calculator",   href: "https://www.desmos.com/calculator" } ] },
-    { label: "NC Check-Ins / Benchmarks", href: "grade8/benchmarks.html" },
-    { label: "EOG Prep",       href: "grade8/8th_grade_eog_hub.html" },
+        { label: "Desmos Scientific Calculator", note: "opens in a new tab ↗", href: "https://www.desmos.com/scientific", newtab: true },
+        { label: "Desmos Graphing Calculator",   note: "opens in a new tab ↗", href: "https://www.desmos.com/calculator", newtab: true } ] },
+    { label: "Check-Ins & EOG Prep", menu: [
+        { label: "NC Check-Ins / Benchmarks", note: "benchmark reviews", href: "grade8/benchmarks.html" },
+        { label: "EOG Prep", note: "end-of-grade test review", href: "grade8/8th_grade_eog_hub.html" } ] },
     { label: "Class Info",     href: "class-information.html" }
   ];
 
@@ -29,11 +33,17 @@
   if (rel === "" || /\/$/.test(rel)) rel += "index.html";
 
   // Current page: an exact link match wins; otherwise the course section.
-  var current = -1;
-  LINKS.forEach(function (l, i) { if (rel === l.href) current = i; });
+  // Items inside a dropdown count for their dropdown (current = the dropdown's index, curItem = the item).
+  var current = -1, curItem = null;
+  LINKS.forEach(function (l, i) {
+    if (rel === l.href) current = i;
+    (l.menu || []).forEach(function (m) { if (rel === m.href) { current = i; curItem = m; } });
+  });
   var best = 0;
   if (current < 0) LINKS.forEach(function (l, i) {   // longest matching section wins (a section can be a list)
-    [].concat(l.section || []).forEach(function (sec) { if (rel.indexOf(sec) === 0 && sec.length > best) { best = sec.length; current = i; } });
+    [l].concat(l.menu || []).forEach(function (it) {
+      [].concat(it.section || []).forEach(function (sec) { if (rel.indexOf(sec) === 0 && sec.length > best) { best = sec.length; current = i; curItem = it === l ? null : it; } });
+    });
   });
 
   // Fonts (shared with the page; harmless if already loaded or blocked)
@@ -82,11 +92,13 @@
     ".menu{display:none;background:none;border:1px solid rgba(255,255,255,.28);color:#fff;font:500 14px Inter,system-ui,sans-serif;border-radius:6px;height:36px;padding:0 14px;cursor:pointer}" +
     ".dd{position:relative;display:flex;align-items:center}" +
     ".ddb{background:none;border:0;border-bottom:2px solid transparent;color:#D9DEE8;font:500 14.5px Inter,system-ui,sans-serif;padding:18px 0 16px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}" +
+    ".ddb.cur{color:#fff;border-bottom-color:#FFC107}.mob .ddb.cur{box-shadow:inset 3px 0 0 #FFC107;padding-left:12px}" +
     ".ddb:hover,.ddb[aria-expanded=true]{color:#fff}.ddb svg{width:10px;height:10px;transition:transform .15s}.ddb[aria-expanded=true] svg{transform:rotate(180deg)}" +
     ".ddm{position:absolute;right:0;top:calc(100% - 4px);background:#fff;border-radius:10px;box-shadow:0 12px 30px rgba(15,23,42,.25);padding:6px;min-width:250px;z-index:5}" +
     ".ddm[hidden]{display:none}" +
     "nav .ddm a{display:flex;justify-content:space-between;gap:12px;color:#1E2D4F;font-size:15px;font-weight:600;padding:11px 12px;border:0;border-radius:7px;white-space:nowrap}" +
     "nav .ddm a:hover{background:#FFF6D6;color:#1E2D4F}.ddm small{color:#5B6576;font-weight:500}" +
+    "nav .ddm a[aria-current]{color:#1E2D4F;background:#FFF6D6;box-shadow:inset 3px 0 0 #FFC107;border-bottom:0}" +
     // Sizes are chosen by measuring (see fitNav below): t1 = tighter, t2 = tightest, mob = Menu button.
     ".t1 nav,.t2 nav{gap:14px}.t1 nav a,.t1 .ddb{font-size:14px}.t1 .in{gap:18px}" +
     ".t2 nav{gap:11px}.t2 nav a,.t2 .ddb{font-size:13.5px}.t2 .in{gap:14px;padding:0 16px}.t2 .mark span{display:none}" +
@@ -98,16 +110,18 @@
     ".mob nav a:last-child{border-bottom:0}" +
     ".mob .dd{display:block}.mob .ddb{width:100%;padding:13px 0;font-size:16px;border-bottom:1px solid rgba(255,255,255,.1);justify-content:space-between}" +
     ".mob .ddm{position:static;box-shadow:none;background:rgba(255,255,255,.06);margin:6px 0 8px;min-width:0}" +
-    ".mob nav .ddm a{color:#fff;font-size:15.5px;border-bottom:0}.mob nav .ddm a:hover{background:rgba(255,255,255,.1);color:#fff}.mob .ddm small{color:#AEB7C8}" +
+    ".mob nav .ddm a{color:#fff;font-size:15.5px;border-bottom:0}.mob nav .ddm a[aria-current]{background:rgba(255,255,255,.1);color:#fff}.mob nav .ddm a:hover{background:rgba(255,255,255,.1);color:#fff}.mob .ddm small{color:#AEB7C8}" +
     ".mob nav a[aria-current]{border-bottom-color:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFC107;padding-left:12px}" +
     "@media (max-width:380px){.mark span{display:none}}" +
     "@media print{.bar{display:none}}";
 
   var nav = LINKS.map(function (l, i) {
-    if (l.menu) return '<div class="dd"><button type="button" class="ddb" aria-expanded="false" aria-controls="sb-dd' + i + '">' + l.label +
+    if (l.menu) return '<div class="dd"><button type="button" class="ddb' + (i === current ? ' cur' : '') + '" aria-expanded="false" aria-controls="sb-dd' + i + '">' + l.label +
       '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 3l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>' +
       '<div class="ddm" id="sb-dd' + i + '" hidden>' + l.menu.map(function (m) {
-        return '<a href="' + m.href + '" target="_blank" rel="noopener">' + m.label + ' <small>opens in a new tab ↗</small></a>';
+        var h = /^https?:/.test(m.href) ? m.href : root + m.href;
+        return '<a href="' + h + '"' + (m.newtab ? ' target="_blank" rel="noopener"' : '') + (m === curItem ? ' aria-current="page"' : '') + '>' + m.label +
+          (m.note ? ' <small>' + m.note + '</small>' : '') + '</a>';
       }).join("") + "</div></div>";
     return '<a href="' + root + l.href + '"' + (l.newtab ? ' target="_blank" rel="noopener"' : "") + (i === current ? ' aria-current="page"' : "") + ">" + l.label + "</a>";
   }).join("");
@@ -147,11 +161,13 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNav);
   window.addEventListener("load", fitNav);
 
-  // Calculators list: open and close it; close when clicking elsewhere or pressing Escape
+  // Dropdowns (Reset Room & Music, Calculators, Check-Ins & EOG Prep): open and close; close when clicking elsewhere or pressing Escape
+  var closers = [];                                  // only one dropdown open at a time
   [].forEach.call(sr.querySelectorAll(".ddb"), function (b) {
     var m = sr.getElementById ? sr.getElementById(b.getAttribute("aria-controls")) : sr.querySelector("#" + b.getAttribute("aria-controls"));
     function set(open) { b.setAttribute("aria-expanded", open ? "true" : "false"); m.hidden = !open; }
-    b.addEventListener("click", function (e) { e.stopPropagation(); set(m.hidden); });
+    closers.push(set);
+    b.addEventListener("click", function (e) { e.stopPropagation(); var open = m.hidden; closers.forEach(function (c) { c(false); }); set(open); });
     m.addEventListener("click", function (e) { e.stopPropagation(); if (e.target.closest("a")) setTimeout(function () { set(false); }, 0); });
     document.addEventListener("click", function () { set(false); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !m.hidden) { set(false); b.focus(); } });
