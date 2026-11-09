@@ -903,7 +903,7 @@
         if (!cfg.onAnswer) { work.appendChild(el('p', 'sw-note', 'Now type your answer in the answer box.')); return; }
         var r = el('div', 'sw-acts'), b = btn('Put this answer in the answer box', 'go');
         b.addEventListener('click', function () { cfg.onAnswer(answerText(info, v), info); b.textContent = '✓ Answer filled in'; b.disabled = true; });
-        r.appendChild(b); work.appendChild(r);
+        r.appendChild(b); work.appendChild(r); keep(r);
       }
       function thenStage(x) {
         var t = el('div', 'sw-then');
@@ -1170,7 +1170,7 @@
       work.appendChild(d);
       var ur = el('div', 'sw-acts'), u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u);
       if (cfg.onAnswer) { var b = btn('Put this answer in the answer box', 'go'); b.addEventListener('click', function () { cfg.onAnswer(plainTerm(a)); b.textContent = '✓ Answer filled in'; b.disabled = true; }); ur.appendChild(b); }
-      work.appendChild(ur);
+      work.appendChild(ur); keep(ur);
     }
     return box;
   }
@@ -1226,7 +1226,9 @@
   }
   function numAns(a) { var m = String(a).replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, '').replace(/[−–]/g, '-').replace(/°/g, '').replace(/^\s*[a-z]\s*=\s*/i, '').trim(); if (/^-?\d+(\.\d+)?$/.test(m)) return qdec(m.replace('-', '')).n * (m[0] === '-' ? -1 : 1) / qdec(m.replace('-', '')).d; var f = m.match(/^(-?\d+)\/(\d+)$/); return f ? { n: +f[1], d: +f[2] } : null; }
   function toQ(a) { if (a == null) return null; if (a.n != null) return Q(a.n, a.d); var s = String(a); return a < 0 ? qneg(qdec(s.slice(1))) : qdec(s); }
-  function fillBox(inp, text) { inp.value = text; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus(); }
+  // When a workspace finishes, it gets much shorter. Keep its last part on screen so the page does not seem to jump.
+  function keep(n) { try { requestAnimationFrame(function () { var r = n.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) n.scrollIntoView({ block: 'center' }); }); } catch (e) {} }
+  function fillBox(inp, text) { inp.value = text; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus({ preventScroll: true }); try { inp.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { inp.focus(); } }
 
   function autoPractice() {
     var D = window.PRACTICE; if (!D) return;
