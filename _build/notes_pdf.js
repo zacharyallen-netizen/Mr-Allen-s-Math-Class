@@ -5,9 +5,9 @@
 //   e.g. node _build/notes_pdf.js unit4-notes.html Unit4_Geometry_Notes_Blank.pdf \
 //        Unit4_Geometry_Notes_AnswerKey.pdf - "Unit 4 Guided Notes"
 // All paths are inside grade8/.
-const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');
+const { chromium } = require('playwright');
 const fs = require('fs');
-const SITE = '/home/claude/mr-allen-s-math-class/grade8/';
+const SITE = require('path').join(__dirname, '..', 'grade8') + '/';
 const [, , page, blank, key, copy, label] = process.argv;
 if (!page || !blank || !key) { console.error('usage: node _build/notes_pdf.js page.html Blank.pdf AnswerKey.pdf [Copy.pdf] ["label"]'); process.exit(1); }
 const foot = (label || 'Guided Notes').replace(/[<&]/g, '');
