@@ -22,7 +22,9 @@ def np_ineq(id, eq, prompt=None, sol=None):
 
 
 def np_many(id, eq, prompt=None):
-    T[id] = {'p': prompt or f'How many solutions does {eq} have?', 'choices': HOW_MANY, 'a': how_many(eq), 'sol': br(steps(eq))}
+    st = steps(eq)
+    if how_many(eq) == 'One solution': st.append(f"The x's did NOT cancel → One solution (x = {fnum(solve(eq))}).")
+    T[id] = {'p': prompt or f'How many solutions does {eq} have?', 'choices': HOW_MANY, 'a': how_many(eq), 'sol': br(st)}
 
 
 # Section 1 — one-step

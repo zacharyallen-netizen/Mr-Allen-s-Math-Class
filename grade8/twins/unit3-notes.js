@@ -118,7 +118,7 @@ window.NOTE_TWINS = {
 "Infinitely many solutions"
 ],
 "a": "One solution",
-"sol": "Subtract 3x from both sides: 2x − 2 = −2<br>Add 2: 2x = 0<br>Divide by 2: x = 0"
+"sol": "Subtract 3x from both sides: 2x − 2 = −2<br>Add 2: 2x = 0<br>Divide by 2: x = 0<br>The x's did NOT cancel → One solution (x = 0)."
 },
 "np6-4": {
 "p": "What number goes in the box so 3(x − 4) = 3x − ☐ has infinitely many solutions? Type just the number.",
