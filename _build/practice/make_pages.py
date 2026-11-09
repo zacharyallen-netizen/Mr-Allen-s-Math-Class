@@ -1,4 +1,4 @@
-import json
+import json, os
 G='/home/claude/mr-allen-s-math-class/grade8/'
 SETS=json.load(open('/tmp/claude-0/-home-claude/71df80c8-d29a-5b9a-96ce-5a924999e656/scratchpad/prac2/sets.json'))
 LABEL={'Practice1':'Practice 1','Practice2':'Practice 2','Practice':'Practice','Problems':'Practice Problems 5.1–5.4'}
@@ -12,6 +12,8 @@ for key,s in SETS.items():
     from rename_pages import MAP as RENAMED
     fn=RENAMED.get(key+'_Interactive', key+'_Interactive')+'.html'
     d={'unit':s['unit'],'pdf':s['pdf'],'data':s['data']}
+    _k=s['pdf'].replace('_Blank.pdf','_AnswerKey.pdf') if s['pdf'].endswith('_Blank.pdf') else s['pdf'][:-4]+'_AnswerKey.pdf'
+    if os.path.exists(G+_k): d={'unit':d['unit'],'pdf':d['pdf'],'key':_k,'data':d['data']}
     stds=sorted({x['std'] for x in s['data']['secs']})
     page=f'''<!DOCTYPE html>
 <html lang="en">
@@ -31,7 +33,7 @@ for key,s in SETS.items():
 </div>
 <div class="site-footer">© Mr. Allen's Math Class</div>
 <script>window.PRACTICE = {json.dumps(d,ensure_ascii=False)};</script>
-<script src="practice/practice-engine.js?v=20261109"></script>
+<script src="practice/practice-engine.js?v=20261109b"></script>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
 <script> ScoreSend.setup({{ kind:'practice', unit:'{s['unit']}', page:'{name}', mount:'#ss-mount', std:'{stds[0]}', band:3 }}); </script>

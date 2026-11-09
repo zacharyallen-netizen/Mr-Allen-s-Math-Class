@@ -110,7 +110,8 @@
 
   /* ---------- render ---------- */
   var html = ['<div class="hero"><h1>' + data.title + '</h1><p>' + data.sub + '</p>' +
-    '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">Printable PDF of this practice</a></p></div>',
+    '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">🖨️ Printable PDF of this practice</a>' +
+    (D.key ? ' &nbsp;·&nbsp; <a href="' + D.key + '" target="_blank" rel="noopener">✅ Answer key (PDF)</a>' : '') + '</p></div>',
     '<p class="pr-how">Type your answer and press <b>Check</b>. Stuck? Tap <b>Hint</b>. After two tries you can see the answer. Do the work on paper first.</p>',
     '<div class="pr-score" aria-live="polite"><span id="prScore">0</span> of <span id="prTotal">0</span> right on the first try</div>'];
   var total = 0;
@@ -169,10 +170,10 @@
   // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261109'); document.body.appendChild(sw);
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261109b'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261109'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261109b'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

@@ -2,6 +2,7 @@
 """Reusable builder for Mr. Allen's standards-based pre-tests.
 Matches the unit2-pretest-exponents.html worksheet style exactly (shared style block),
 driven by a per-unit config. Data-driven answer checker via chk arrays."""
+import pdf_links
 import json, os, html, re
 
 SP = '/home/claude/mr-allen-s-math-class/_build'
@@ -124,7 +125,7 @@ NAV = """<script src="../site-bar.js"></script>
 TRACKER = """<style>@media (max-width:760px){{body>#scoresend{{margin:24px 12px!important}}}}</style>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
-<script src="step-work.js?v=20261109"></script><script src="one-at-a-time.js?v=20261109"></script>
+<script src="step-work.js?v=20261109b"></script><script src="one-at-a-time.js?v=20261109b"></script>
 <script>if(window.ScoreSend)ScoreSend.setup({setup});</script>"""
 
 # grade 8 codes (NC.8.EE.7) and Math 1 codes (NC.M1.A-REI.3, NC.M1.F-IF.8b)
@@ -190,6 +191,7 @@ def build(cfg):
     <p class="sub">%(sub)s</p>
     <p class="std">%(std)s</p>
   </div>
+%(pdfs)s
   <hr class="rule-gold">
   <div class="idline">
     <span class="fld"><b>Name:</b><span class="blank"></span></span>
@@ -210,7 +212,7 @@ def build(cfg):
 </script>
 %(tracker)s
 </body>
-</html>""" % dict(title=html.escape(cfg['title']), style=STYLE, nav=nav, h1=cfg['h1'], sub=cfg['sub'], std=cfg['std'], bands=bands, vocab=vocab_js, qs=qs_js, engine=cfg.get('engine', ENGINE), tracker=tracker,
+</html>""" % dict(title=html.escape(cfg['title']), style=STYLE, nav=nav, h1=cfg['h1'], sub=cfg['sub'], std=cfg['std'], pdfs=pdf_links.pretest_row(cfg['file']), bands=bands, vocab=vocab_js, qs=qs_js, engine=cfg.get('engine', ENGINE), tracker=tracker,
            head_pre=cfg.get('head_pre', ''), extra_css=cfg.get('extra_css', ''))
     out = os.path.join(cfg.get('repo', REPO), cfg['file'])
     open(out, 'w').write(doc)
