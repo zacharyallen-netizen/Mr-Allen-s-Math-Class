@@ -18,6 +18,11 @@
 .saved{color:var(--muted);font-size:14px;margin:8px 0 0}
 .pg{background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);margin:0 0 18px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line)}
+.prob .cropwrap{overflow-x:auto;border-bottom:1px solid var(--line)}.prob .crop{position:relative;overflow:hidden;width:100%}.prob .crop.wide{cursor:zoom-in}.prob .crop.big{width:230%;cursor:zoom-out}
+.zoomtip{display:none;margin:4px 16px 6px;font:500 13.5px var(--sans);color:var(--muted)}@media (max-width:700px){.zoomtip{display:block}}
+.prob .crop img{position:absolute;max-width:none;height:auto;border:0}
+.prob .ans{grid-template-columns:1fr}
+.whole{padding:8px 16px;border-bottom:1px solid var(--line);font:600 14px var(--sans)}.whole summary{cursor:pointer;color:var(--navy)}.whole img{display:block;width:100%;height:auto;margin-top:8px;border:1px solid var(--line)}
 .pgnum{font:600 12.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:10px 16px 0}
 .ans{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:10px;padding:12px 16px 16px;background:#F7F8FB}
 .ans h3{grid-column:1/-1;margin:4px 0 0;font:600 15px var(--sans);color:var(--navy)}
@@ -49,7 +54,7 @@
   <ol class="hw-steps">
     <li><b>1</b>Type your name and block.</li>
     <li><b>2</b>Do each problem (scratch paper is fine). Many problems have a <strong>Work it out step by step</strong> button that checks each line.</li>
-    <li><b>3</b>Type your answers in the boxes under each page.</li>
+    <li><b>3</b>Type your answer in the box under each problem.</li>
     <li><b>4</b>Tap <strong>Send to Mr. Allen</strong> at the bottom.</li>
   </ol>
   <div class="card">
@@ -73,6 +78,7 @@
 </div>
 <div class="site-footer">© Mr. Allen's Math Class</div>
 
+<script src="homework/crops.js?v=20261110a"></script>
 <script src="../tracker-config.js"></script>
 <script>
 (function(){
@@ -103,13 +109,25 @@
   $('back').href = back; $('back').textContent = h.unit === 'E' ? '← Back to EOG Hub' : '← Back to Unit ' + h.unit;
   $('pdf').href = h.file; $('doMode').hidden = false;
 
-  var base = 'homework/pages/HW_' + h.id + '-', out = '';
-  for (var pnum = 1; pnum <= h.pages; pnum++) {
+  var base = 'homework/pages/HW_' + h.id + '-', out = '', ineq = /^3\.(7|8|9|10)$/.test(h.id) ? ' data-ineq-bar' : '';
+  var crops = (window.HW_CROPS || {})[h.id], perProb = crops && h.p.every(function(p){ return crops[p[0]]; }) && !/[?&]paper=1/.test(location.search);
+  if (perProb) {
+    // one problem at a time (Nov 10, 2026): each problem is its box cut from the printed page (homework/crops.js, _build/hw_crops.py)
+    h.p.forEach(function(p, i){
+      var c = crops[p[0]], w = c[3] - c[1], ht = c[4] - c[2], src = base + c[0] + '.jpg';
+      out += '<section class="pg prob"><div class="pgnum">Problem ' + p[0] + ' · Score ' + p[2] + '</div>' +
+        (w > 0.6 ? '<p class="zoomtip">Words too small? Tap the problem to make it bigger.</p>' : '') +
+        '<div class="cropwrap"><div class="crop' + (w > 0.6 ? ' wide' : '') + '" style="aspect-ratio:' + (w * 1020).toFixed(1) + '/' + (ht * 1320).toFixed(1) + '"><img src="' + src + '" alt="Homework ' + h.id + ', problem ' + p[0] + '"' + (i ? ' loading="lazy"' : '') +
+        ' style="width:' + (100 / w).toFixed(3) + '%;left:' + (-100 * c[1] / w).toFixed(3) + '%;top:' + (-100 * c[2] / ht).toFixed(3) + '%"></div></div>' +
+        '<details class="whole"><summary>See the whole page</summary><img data-src="' + src + '" alt="Homework ' + h.id + ', page ' + c[0] + '" width="1020" height="1320"></details>' +
+        '<div class="ans"' + ineq + '><label>Problem ' + p[0] + ' <small>Score ' + p[2] + '</small><input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label></div></section>';
+    });
+  } else for (var pnum = 1; pnum <= h.pages; pnum++) {
     var probs = h.p.filter(function(p){ return p[1] === pnum; });
     out += '<section class="pg"><div class="pgnum">Page ' + pnum + ' of ' + h.pages + '</div>' +
       '<img src="' + base + pnum + '.jpg" alt="Homework ' + h.id + ', page ' + pnum + '" width="1020" height="1320"' + (pnum > 1 ? ' loading="lazy"' : '') + '>';
     if (probs.length) {
-      out += '<div class="ans"' + (/^3\.(7|8|9|10)$/.test(h.id) ? ' data-ineq-bar' : '') + '><h3>Answers for page ' + pnum + '</h3>';
+      out += '<div class="ans"' + ineq + '><h3>Answers for page ' + pnum + '</h3>';
       probs.forEach(function(p){
         out += '<label>Problem ' + p[0] + ' <small>Score ' + p[2] + '</small><input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label>';
       });
@@ -118,6 +136,8 @@
     out += '</section>';
   }
   $('pages').innerHTML = out;
+  $('pages').addEventListener('click', function(ev){ var c = ev.target.closest && ev.target.closest('.crop.wide'); if (c && innerWidth <= 700) c.classList.toggle('big'); });
+  $('pages').addEventListener('toggle', function(ev){ var im = ev.target.querySelector && ev.target.querySelector('img[data-src]'); if (im) { im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); } }, true);
 
   // remember name/block and this homework's answers on this device
   var KEY = 'hw-draft-' + h.id;
@@ -169,6 +189,6 @@
 <script src="ineq-keys.js"></script>
 <script src="homework-steps.js?v=20261110a"></script>
 <script src="step-work.js?v=20261110j"></script>
-<script src="one-at-a-time.js?v=20261110k"></script>
+<script src="one-at-a-time.js?v=20261110l"></script>
 </body>
 </html>

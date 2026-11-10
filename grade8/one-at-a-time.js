@@ -20,7 +20,7 @@
     { root: '.wrap', items: '.part .q', need: '.part' },                                // EOG practice
     { root: '.wrap', items: '.q-card' }                                                 // Unit 7/8/9 practice
   ];
-  var WORD = /pretest/.test(location.pathname) ? 'Question' : /homework_turn_in/.test(location.pathname) ? 'Page' : 'Problem';
+  var WORD = /pretest/.test(location.pathname) ? 'Question' : /homework_turn_in/.test(location.pathname) && !document.querySelector('section.pg.prob') ? 'Page' : 'Problem';
   var KEY = 'oat-mode';
 
   var css = document.createElement('style');
