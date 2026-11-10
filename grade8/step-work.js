@@ -1354,6 +1354,37 @@
   }
   function auto() { try { autoPractice(); } catch (e) { if (window.console) console.error(e); } try { autoPretest(); } catch (e) { if (window.console) console.error(e); } try { autoHomework(); } catch (e) { if (window.console) console.error(e); } }
 
-  window.StepWork = { mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
+  /* One problem anywhere (used by the Interactive Notes, notes-steps.js): pick the right workspace from the
+     problem's own words. o = { text (html), ans (answer text), unit, figure (bool), inp (answer box) } → workspace or null */
+  function forProblem(host, o) {
+    var html0 = String(o.text || '').replace(/<span class="(?:np-lv|badge|lvb)[^"]*"[^>]*>[^<]*<\/span>/g, ' ');
+    var plain = html0.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().replace(/^\(?\d+[.)]\s*/, '');
+    var unit = String(o.unit || ''), ans = numAns(o.ans), inp = o.inp;
+    var fill = function (t) { if (inp) fillBox(inp, t); };
+    var one = function (t, info) { return info && (info.kind === 'one' || info.kind === 'ineq') && !/[a-z]\s*=/i.test(String(o.ans || '')) ? (info.numText || qtxt(info.x)) : t; };
+    var w = null;
+    if (unit === '2' && !/[=<>≤≥→]/.test(plain) && (/^(simplify|multiply|divide|evaluate)\b/i.test(plain) || /^\(\s*[\d.]+\s*×\s*10/.test(plain))) {
+      var ex = html0.replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '(($1)/($2))').replace(/<(?!\/?sup)[^>]+>/g, '')
+        .replace(/^\s*\(?\d+[.)]\s*/, '').replace(/^\s*(simplify|multiply|divide|evaluate)\s*[:.,]?\s*/i, '').replace(/\.\s*(write|give|use|leave)[^]*$/i, '').replace(/\s+/g, ' ').trim();
+      try { w = mountExpr(host, { start: ex, sci: /×\s*10/.test(ex), onAnswer: function (t) { fill(t); } }); } catch (x) { w = null; }
+      if (w) return w;
+      host.innerHTML = '';
+    }
+    var cand = [o.text, html0.replace(/^\s*\(?\d+[.)]\s*/, '')]; var ci = plain.lastIndexOf(':'); if (ci > 0 && /[=<>≤≥]/.test(plain.slice(ci))) cand.push(plain.slice(ci + 1));
+    var start = null; cand.forEach(function (c) { if (!start) start = findEq(c); });
+    if (start) return mount(host, { start: start, onAnswer: function (t, info) { fill(one(t, info)); } });
+    if (ans == null) return null;
+    if (unit === '5' && PYTH_RE.test(plain) && !/right triangle\?|is it a right/i.test(plain))
+      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: pythHint(plain), figure: !!o.figure }, positive: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
+    if (unit === '9' && /find (its|the) (radius|height)|how tall|how high|radius\?|height\?/i.test(plain) && /holds|volume (is|of)|has a volume|V\s*=/i.test(plain) && !/same (radius|height)|twice|double|times/i.test(plain))
+      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: VOL_HINT + (/sphere|ball|hemisphere/i.test(plain) ? ' Sphere: <i>V</i> = ⁴⁄₃π<i>r</i><sup>3</sup>.' : ''), figure: !!o.figure }, positive: true, roots: true, pi: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
+    if (unit === '6' && /solve the system/i.test(plain))
+      return mount(host, { setup: { answer: ans, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fill(info.kind === 'one' ? qtxt(info.x) : t); } });
+    if (unit === '4' && /\bfind\s+x\b|\bx\s*=\s*\?|value of x/i.test(plain) && !/\bsides?\b|scale|proportion|similar triangles —/i.test(plain))
+      return mount(host, { setup: { answer: ans, hint: angleHint(plain), figure: !!o.figure }, onAnswer: function (t, info) { fill(info.kind === 'one' ? (info.numText || qtxt(info.x)) : t); } });
+    return null;
+  }
+
+  window.StepWork = { forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();
