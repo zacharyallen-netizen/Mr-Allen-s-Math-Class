@@ -96,4 +96,40 @@
     '6.13': { 6: { line: 'y + 3 = 2(x − 4)' } },
     '9.2': { 6: vol(2) }, '9.3': { 7: vol(6) }, '9.4': { 6: vol(7) }
   };
+  // Nov 10, 2026: more problems from the same PDFs — "find the mistake" items (the student solves the original
+  // problem correctly), more solve / find-x / Pythagorean / exponent / scientific-notation items, the cube root
+  // (9.3 #6), both intercepts (6.11 #1, one workspace per intercept) and the EOG Review homework E.1–E.7.
+  var SPH = 'Sphere: <i>V</i> = ⁴⁄₃π<i>r</i><sup>3</sup>. Put in the volume and use <i>r</i> for the radius. Get <i>r</i><sup>3</sup> alone, then take the cube root.';
+  var MORE = {
+    '2.2': { 6: { expr: 'x^4 · x^3' } }, '2.3': { 6: { expr: '(x^3)^4' } }, '2.4': { 7: { expr: '(2x^3)(4x^5)' } }, '2.5': { 7: { expr: '(3x^2)^3' } },
+    '2.8': { 5: { expr: '(1.5 × 10^5) / (3 × 10^1)', sci: 1 }, 8: { expr: '(5 × 10^6)(6 × 10^3)', sci: 1 }, 9: { expr: '(1 × 10^5)(3.65 × 10^2)', sci: 1 } },
+    '2.9': { 7: { expr: '(2.5 × 10^3)(4 × 10^6)', sci: 1 }, 9: { expr: '(8 × 10^9) / (4 × 10^7)', sci: 1 } },
+    '3.1': { 6: { start: '−3x + 2 = −10' } }, '3.2': { 6: { start: '2/3x = 10' } }, '3.3': { 6: { start: '2x + 9 = 5x − 3' } },
+    '3.4': { 6: { start: '4(x − 2) + x = 17' } }, '3.5': { 6: { start: '2/3(x + 6) = 10' } }, '3.6': { 6: { start: '0.3x − 0.6 = 1.5' } },
+    '3.7': { 8: { start: '2x + 3 = 2x + 3' } }, '3.8': { 8: { start: '2x − 5 ≥ 4x + 3' } }, '3.9': { 7: { start: '10 + 8t ≤ 50', v: 't' } },
+    '3.10': { 6: { start: '−2(x − 5) = 16' } },
+    '4.1': { 4: { setup: 133, hint: 'Supplementary angles add to <b>180°</b>.' }, 7: { setup: 15, hint: H.vertical } },
+    '4.2': { 3: { setup: 27, hint: H.comp }, 7: { setup: 16, hint: H.vertical } },
+    '4.3': { 7: { setup: 50, hint: H.parallel } }, '4.4': { 7: { setup: 30, hint: H.parallel } },
+    '4.5': { 7: { setup: 45, fig: 1, hint: H.exterior } },
+    '4.6': { 4: { setup: 105, hint: H.exterior }, 9: { setup: 55, fig: 1, hint: 'Use the parallel lines first: the 55° angle and the triangle\'s left angle are alternate interior angles. The 110° angle and the triangle\'s right angle make a straight line. ' + H.triangle } },
+    '5.1': { 7: py(13) }, '5.3': { 7: py(8) }, '5.4': { 7: py({ root: 52 }, DI) }, '5.5': { 7: py(10, DI) },
+    '6.1': { 8: { start: '3x − 7 = 20' } }, '6.3': { 6: { start: '3x + 1 = 16' } },
+    '6.5': { 9: { start: '(k − 4)/(5 − 1) = 1/2', v: 'k' } }, '6.8': { 10: { start: '(k − 15)/(10 − 4) = 3', v: 'k' } },
+    '6.10': { 7: { line: '6x + 2y = 8' } },
+    '6.11': { 1: [{ tag: 'x-intercept', title: 'x-intercept: put in y = 0. 2x + 5(0) = 10 becomes 2x = 10', start: '2x = 10' }, { tag: 'y-intercept', title: 'y-intercept: put in x = 0. 2(0) + 5y = 10 becomes 5y = 10', start: '5y = 10', v: 'y' }], 7: { line: '5x − 3y = 9' } },
+    '6.12': { 6: { start: 'x + 5 = 3x − 1', then: [{ label: 'y = x + 5', expr: 'x + 5' }] } },
+    '9.3': { 6: { setup: 3, any: 1, positive: 1, pi: 1, roots: 1, hint: SPH } },
+    'E.1': { 2: { expr: '6^8 / 6^3' }, 4: { start: '3(x + 2) = 5x − 8' }, 7: { expr: '12x^5y^-2 / (4x^-1y^3)' } },
+    'E.2': { 3: { expr: '(6 × 10^5)(5 × 10^3)', sci: 1 }, 5: { setup: 65, fig: 1, hint: H.triangle }, 6: { expr: '(8 × 10^11) / (4 × 10^6)', sci: 1 } },
+    'E.3': { 1: { start: 'x/4 + 6 = 1' }, 2: { start: '2(3x − 1) + 4x = 28' }, 3: { start: '9x + 5 = 4x − 15' }, 4: { start: '4(2x − 1) + 1 = 8x − 3' },
+             5: { expr: '(8.4 × 10^6) / (2.1 × 10^2)', sci: 1 }, 6: { start: '5 − 3x < 17' }, 8: { setup: 20, fig: 1, hint: H.parallel },
+             9: { setup: 6, v: 'w', hint: 'Start amount + (amount saved each week × weeks). Set Jamal\'s amount equal to Priya\'s amount.', prompt: 'Use <i>w</i> for the number of weeks. Write an equation that says they have the same amount.', then: [{ label: 'each has $', expr: '120 + 15w' }] } },
+    'E.4': { 4: { start: '6x − 11 = 2x + 9' }, 8: { setup: 40, fig: 1, hint: H.exterior } },
+    'E.5': { 1: { setup: 52, fig: 1, hint: H.straight }, 3: py(15), 6: { setup: 24, any: 1, hint: 'The short side grew from 5 to 15. Multiply the long side by the same scale factor.', prompt: 'Use a letter for the long side. Write an equation.' },
+             7: { expr: '(2x^3)^4' }, 8: py({ root: 74 }, DI), 9: { setup: 13, fig: 1, hint: H.parallel, then: [{ label: '4x + 8', expr: '4x + 8', unit: '°' }] } },
+    'E.6': { 7: py(4) },
+    'E.7': { 5: { expr: '(1.5 × 10^3)(4 × 10^5)', sci: 1 }, 7: { start: '−4x + 60 = 0' }, 8: { start: '3/4(x + 8) = 15' } }
+  };
+  Object.keys(MORE).forEach(function (id) { var t = window.HW_STEPS[id] = window.HW_STEPS[id] || {}; Object.keys(MORE[id]).forEach(function (n) { if (t[n]) throw new Error('homework-steps: ' + id + ' #' + n + ' twice'); t[n] = MORE[id][n]; }); });
 })();

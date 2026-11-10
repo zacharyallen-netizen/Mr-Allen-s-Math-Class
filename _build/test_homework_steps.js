@@ -46,6 +46,29 @@ const PSEQ = { '6.10': { 6: 'y - 5 = -3(x - 1)', 9: 'y - 10 = 2(x - 3)' }, '6.11
 const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['17'] }, '4.1': { 6: ['100', '80'], 8: ['54'], 10: ['144'] }, '4.2': { 6: ['70', '75'], 8: ['60'], 10: ['72', '108', '144'] },
   '4.3': { 6: ['106'] }, '4.4': { 6: ['64'], 10: ['55', '125'] }, '4.5': { 6: ['80', '50', '50'] }, '4.6': { 6: ['52'], 7: ['58'] } };
 
+
+// Nov 10, 2026 additions (worked by hand from the PDFs; checked against the MC choices where there are some)
+Object.assign(WANT, { '3.1': Object.assign(WANT['3.1'], { 6: '4' }), '3.2': Object.assign(WANT['3.2'], { 6: '15' }), '3.3': Object.assign(WANT['3.3'], { 6: '4' }),
+  '3.4': Object.assign(WANT['3.4'], { 6: '5' }), '3.5': Object.assign(WANT['3.5'], { 6: '9' }), '3.6': Object.assign(WANT['3.6'], { 6: '7' }),
+  '3.7': Object.assign(WANT['3.7'], { 8: 'all' }), '3.8': Object.assign(WANT['3.8'], { 8: '≤-4' }), '3.9': Object.assign(WANT['3.9'], { 7: '≤5' }),
+  '3.10': Object.assign(WANT['3.10'], { 6: '-3' }),
+  '6.1': { 8: '9' }, '6.3': { 6: '5' }, '6.5': { 9: '6' }, '6.8': { 10: '33' }, '6.11': { '1.0': '5', '1.1': '2' }, '6.12': { 6: '3' },
+  'E.1': { 4: '7' }, 'E.3': { 1: '-20', 2: '3', 3: '-4', 4: 'all', 6: '>-4' }, 'E.4': { 4: '5' }, 'E.7': { 7: '15', 8: '12' } });
+Object.assign(SETUP, { '4.1': Object.assign(SETUP['4.1'], { 4: ['x + 47 = 180'], 7: ['4x + 10 = 70'] }), '4.2': Object.assign(SETUP['4.2'], { 3: ['x + 63 = 90'], 7: ['5x − 12 = 3x + 20'] }),
+  '4.3': Object.assign(SETUP['4.3'], { 7: ['2x + 15 = 115'] }), '4.4': Object.assign(SETUP['4.4'], { 7: ['3x + 10 + 2x + 20 = 180'] }),
+  '4.5': Object.assign(SETUP['4.5'], { 7: ['2x + 10 = 40 + 60'] }), '4.6': Object.assign(SETUP['4.6'], { 4: ['x = 34 + 71'], 9: ['x + 55 + 70 = 180'] }),
+  '5.1': Object.assign(SETUP['5.1'], { 7: ['5^2 + 12^2 = c^2', 'c'] }), '5.3': Object.assign(SETUP['5.3'], { 7: ['6^2 + b^2 = 10^2', 'b'] }),
+  '5.4': Object.assign(SETUP['5.4'], { 7: ['6^2 + 4^2 = d^2', 'd'] }), '5.5': Object.assign(SETUP['5.5'], { 7: ['6^2 + 8^2 = d^2', 'd'] }),
+  '9.3': Object.assign(SETUP['9.3'], { 6: ['36π = 4/3 π r^3', 'r'] }),
+  'E.2': { 5: ['x + 47 + 68 = 180'] }, 'E.3': { 8: ['3x + 10 = 70'], 9: ['120 + 15w = 60 + 25w', 'w'] }, 'E.4': { 8: ['x + 2x = 120'] },
+  'E.5': { 1: ['x + 128 = 180'], 3: ['8^2 + b^2 = 17^2', 'b'], 6: ['x = 8 · 15/5', 'x'], 8: ['5^2 + 7^2 = d^2', 'd'], 9: ['4x + 8 = 2x + 34'] }, 'E.6': { 7: ['(√7)^2 + 3^2 = c^2', 'c'] } });
+Object.assign(EXPR, { '2.2': Object.assign(EXPR['2.2'], { 6: 'x^7' }), '2.3': Object.assign(EXPR['2.3'], { 6: 'x^12' }), '2.4': Object.assign(EXPR['2.4'], { 7: '8x^8' }),
+  '2.5': Object.assign(EXPR['2.5'], { 7: '27x^6' }), '2.8': Object.assign(EXPR['2.8'], { 5: '5*10^3', 8: '3*10^10', 9: '3.65*10^7' }),
+  '2.9': Object.assign(EXPR['2.9'], { 7: '1*10^10', 9: '2*10^2' }), 'E.1': { 2: '6^5', 7: '3x^6/y^5' }, 'E.2': { 3: '3*10^9', 6: '2*10^5' },
+  'E.3': { 5: '4*10^4' }, 'E.5': { 7: '16x^12' }, 'E.7': { 5: '6*10^8' } });
+Object.assign(LINE, { '6.10': Object.assign(LINE['6.10'], { 7: 'y = -3x + 4' }), '6.11': Object.assign(LINE['6.11'], { 7: 'y = 5/3x - 3' }) });
+Object.assign(THEN, { '6.12': { 6: ['8'] }, 'E.3': { 9: ['210'] }, 'E.5': { 9: ['60'] } });
+
 (async () => {
   const br = await chromium.launch(); const pg = await br.newPage();
   await pg.goto(BASE + 'grade8/units3-4.html');
@@ -53,9 +76,9 @@ const THEN = { '5.1': { 10: ['62'] }, '3.4': { 9: ['8', '11'] }, '3.9': { 9: ['1
   await pg.addScriptTag({ url: BASE + 'grade8/step-work.js' });
   const bad = await pg.evaluate(([WANT, SETUP, THEN, EXPR, LINE, PSEQ]) => {
     const T = StepWork._t, M = window.HW_STEPS, out = []; let n = 0;
-    const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind === 'sq' ? 'sq' + Math.sqrt(r.k.n / r.k.d) : r.kind; };
-    Object.keys(M).forEach(id => Object.keys(M[id]).forEach(p => {
-      const c = M[id][p], v = c.any ? ((SETUP[id] || {})[p] || [0, 'x'])[1] || 'x' : (c.v || 'x'); n++;
+    const res = (eq, v) => { const r = T.solve(T.parseEq(eq), v); return r.kind === 'one' ? T.qtxt(r.x) : r.kind === 'ineq' ? r.rel + T.qtxt(r.x) : r.kind === 'sq' ? 'sq' + Math.sqrt(r.k.n / r.k.d) : r.kind === 'cube' ? 'sq' + Math.cbrt(r.k.n / r.k.d) : r.kind; };
+    Object.keys(M).forEach(id => Object.keys(M[id]).flatMap(p0 => Array.isArray(M[id][p0]) ? M[id][p0].map((_, i) => p0 + '.' + i) : [p0]).forEach(p => {
+      const c = p.includes('.') ? M[id][p.split('.')[0]][+p.split('.')[1]] : M[id][p], v = c.any ? ((SETUP[id] || {})[p] || [0, 'x'])[1] || 'x' : (c.v || 'x'); n++;
       try {
         let x;
         if (c.line || c.ps) {

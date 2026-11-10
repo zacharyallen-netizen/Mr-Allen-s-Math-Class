@@ -33,22 +33,22 @@
   function qtxt(a) { if (a.d % 113 === 0) { var r = Q(a.n * 113, a.d * 355); if (r.d <= 1000) return (r.n === 1 && r.d === 1 ? '' : r.n === -1 && r.d === 1 ? '-' : qtxt(r)) + 'π'; } return a.d === 1 ? String(a.n) : a.n + '/' + a.d; }
   function err(code, extra) { var e = new Error(code); e.code = code; e.extra = extra; return e; }
 
-  /* ===================== polynomials in one variable (degree ≤ 2) ===================== */
-  function P(c0, c1, c2) { return [c0 || ZERO, c1 || ZERO, c2 || ZERO]; }
+  /* ===================== polynomials in one variable (degree ≤ 3; cubes since Nov 2026 for volume) ===================== */
+  function P(c0, c1, c2, c3) { return [c0 || ZERO, c1 || ZERO, c2 || ZERO, c3 || ZERO]; }
   function pconst(q) { return P(q); }
-  function padd(a, b) { return [qadd(a[0], b[0]), qadd(a[1], b[1]), qadd(a[2], b[2])]; }
-  function psub(a, b) { return [qsub(a[0], b[0]), qsub(a[1], b[1]), qsub(a[2], b[2])]; }
-  function pscale(a, k) { return [qmul(a[0], k), qmul(a[1], k), qmul(a[2], k)]; }
+  function padd(a, b) { return [qadd(a[0], b[0]), qadd(a[1], b[1]), qadd(a[2], b[2]), qadd(a[3], b[3])]; }
+  function psub(a, b) { return [qsub(a[0], b[0]), qsub(a[1], b[1]), qsub(a[2], b[2]), qsub(a[3], b[3])]; }
+  function pscale(a, k) { return [qmul(a[0], k), qmul(a[1], k), qmul(a[2], k), qmul(a[3], k)]; }
   function pmul(a, b) {
-    var r = [ZERO, ZERO, ZERO, ZERO, ZERO];
-    for (var i = 0; i < 3; i++) for (var j = 0; j < 3; j++) if (a[i].n && b[j].n) r[i + j] = qadd(r[i + j], qmul(a[i], b[j]));
-    if (r[3].n || r[4].n) throw err('degree');
-    return [r[0], r[1], r[2]];
+    var r = [ZERO, ZERO, ZERO, ZERO, ZERO, ZERO, ZERO];
+    for (var i = 0; i < 4; i++) for (var j = 0; j < 4; j++) if (a[i].n && b[j].n) r[i + j] = qadd(r[i + j], qmul(a[i], b[j]));
+    if (r[4].n || r[5].n || r[6].n) throw err('degree');
+    return [r[0], r[1], r[2], r[3]];
   }
-  function pdeg(a) { return a[2].n ? 2 : a[1].n ? 1 : 0; }
-  function peq(a, b) { return qeq(a[0], b[0]) && qeq(a[1], b[1]) && qeq(a[2], b[2]); }
-  function pzero(a) { return !a[0].n && !a[1].n && !a[2].n; }
-  function pat(a, x) { return qadd(qadd(a[0], qmul(a[1], x)), qmul(a[2], qmul(x, x))); }
+  function pdeg(a) { return a[3].n ? 3 : a[2].n ? 2 : a[1].n ? 1 : 0; }
+  function peq(a, b) { return qeq(a[0], b[0]) && qeq(a[1], b[1]) && qeq(a[2], b[2]) && qeq(a[3], b[3]); }
+  function pzero(a) { return !a[0].n && !a[1].n && !a[2].n && !a[3].n; }
+  function pat(a, x) { return qadd(qadd(qadd(a[0], qmul(a[1], x)), qmul(a[2], qmul(x, x))), qmul(a[3], qmul(x, qmul(x, x)))); }
 
   /* ===================== reading what students type ===================== */
   var VULGAR = { '½': '(1/2)', '⅓': '(1/3)', '⅔': '(2/3)', '¼': '(1/4)', '¾': '(3/4)', '⅕': '(1/5)', '⅖': '(2/5)', '⅗': '(3/5)', '⅘': '(4/5)', '⅙': '(1/6)', '⅚': '(5/6)', '⅛': '(1/8)', '⅜': '(3/8)', '⅝': '(5/8)', '⅞': '(7/8)' };
@@ -202,6 +202,7 @@
   function solve(e, v) {
     if (e.rel === '≈') e = { L: e.L, R: e.R, rel: '=', vars: e.vars };
     var s = sides(e, v), D = psub(s.L, s.R);
+    if (D[3].n) { if (D[1].n || D[2].n || e.rel !== '=') return { kind: 'quad' }; return { kind: 'cube', k: qdiv(qneg(D[0]), D[3]) }; }
     if (D[2].n) { if (D[1].n || e.rel !== '=') return { kind: 'quad' }; return { kind: 'sq', k: qdiv(qneg(D[0]), D[2]) }; }
     var a = D[1], b = D[0];
     if (!a.n) {
@@ -216,7 +217,7 @@
     if (a.kind !== b.kind) return false;
     if (a.kind === 'one') return qeq(a.x, b.x);
     if (a.kind === 'ineq') return qeq(a.x, b.x) && a.rel === b.rel;
-    if (a.kind === 'sq') return qeq(a.k, b.k);
+    if (a.kind === 'sq' || a.kind === 'cube') return qeq(a.k, b.k);
     return true;
   }
 
@@ -303,6 +304,7 @@
     }
     if (s.kind === 'one') { var side2 = aloneSide(e, v); return { kind: 'one', list: [qnum(s.x)], approx: side2 ? isApprox(side2, e) : false, s: s }; }
     if (s.kind === 'sq') { var k = qnum(s.k); return { kind: 'sq', list: k < 0 ? [] : k === 0 ? [0] : [-Math.sqrt(k), Math.sqrt(k)], s: s }; }
+    if (s.kind === 'cube') return { kind: 'cube', list: [Math.cbrt(qnum(s.k))], s: s };
     return { kind: s.kind, s: s };
   }
   /* is the new line still true for the same numbers? ctx.positive: only lengths (positive values) count */
@@ -370,6 +372,7 @@
   function eqHtml(e, sub) { return html(e.L, sub) + ' <span class="sw-rel">' + relHtml(e.rel) + '</span> ' + html(e.R, sub); }
   function polyHtml(p, v) {
     var parts = [];
+    if (p[3].n) parts.push([qsign(p[3]), coefHtml(p[3]) + '<i>' + v + '</i><sup>3</sup>']);
     if (p[2].n) parts.push([qsign(p[2]), coefHtml(p[2]) + '<i>' + v + '</i><sup>2</sup>']);
     if (p[1].n) parts.push([qsign(p[1]), coefHtml(p[1]) + '<i>' + v + '</i>']);
     if (p[0].n || !parts.length) parts.push([qsign(p[0]), fmtQ(p[0])]);
@@ -392,7 +395,7 @@
     var hasSum = false; walk(t.n, function (m) { if (m.t === 'par' && sumInside(m)) hasSum = true; });
     if (hasSum) return 'paren';
     if (PARAM && hasLetter(t.n, PARAM.l) && !hasLetter(t.n, v)) return 'pterm';
-    try { var p = poly(t.n, v); return p[2].n ? 'sq' : p[1].n ? 'xterm' : 'num'; } catch (e) { return 'num'; }
+    try { var p = poly(t.n, v); return p[2].n || p[3].n ? 'sq' : p[1].n ? 'xterm' : 'num'; } catch (e) { return 'num'; }
   }
   /* draw one side with colors: x-terms blue, numbers purple, parentheses gold; optional strike set */
   function sideHtml(n, v, mark) {
@@ -467,7 +470,7 @@
     if (c) {
       var wrongSide = cR && !qeq(cR, ONE) && !(cL && qeq(cL, cR)) ? 'left' : 'right';
       var A = wrongSide === 'left' ? a.L : a.R, B = wrongSide === 'left' ? b.L : b.R;
-      var oneTerm = [P(qmul(A[0], c), A[1], A[2]), P(A[0], qmul(A[1], c), A[2])].some(function (x) { return peq(x, B); });
+      var oneTerm = [P(qmul(A[0], c), A[1], A[2], A[3]), P(A[0], qmul(A[1], c), A[2], A[3])].some(function (x) { return peq(x, B); });
       if (oneTerm) return 'You ' + (qnum(c) < 1 && qnum(c) > -1 ? 'divided' : 'multiplied') + ' only part of the ' + wrongSide + ' side. Multiply or divide <b>every term</b> on both sides.';
       return 'Check the ' + wrongSide + ' side. If you multiply or divide one side by a number, do it to <b>every term</b> on the other side too.';
     }
@@ -586,7 +589,7 @@
       if (opts && opts.amountOnly) keys = touch ? (line ? [['x', 'x'], ['y', 'y']] : [[v, v]]).concat([['−', '-'], ['/', '/']]) : [];
       else { if (touch) keys.push(['=', '=']); if (ineq) keys = keys.concat([['<', '<'], ['>', '>'], ['≤', '≤'], ['≥', '≥']]); }
       if (opts && opts.exp) keys.push(['xⁿ', '^']);
-      if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (!cfg.positive) keys.push(['±', '±']); }
+      if (cfg.positive || cfg.roots) { keys.push(['²', '^2'], ['√', '√']); if (cfg.pi) keys.push(['³', '^3']); if (!cfg.positive) keys.push(['±', '±']); }
       if (cfg.pi) keys.push(['π', 'π']);
       if (!keys.length) { k.hidden = true; return k; }
       if (touch) keys.push(['⌫', 'BS']);
@@ -630,7 +633,7 @@
         try { sides(e, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
         if (e.vars.length !== 1 || e.vars[0] !== v) { fb.className = 'sw-fb no'; fb.innerHTML = S.any ? 'Your equation needs one letter for the unknown.' : 'Your equation needs the unknown <i>' + v + '</i> in it.'; return; }
         var sol = solve(e, v), want = S.answer.n != null ? S.answer.n / S.answer.d : Number(S.answer), tol = S.tol || 1e-9;
-        var val = sol.kind === 'one' || sol.kind === 'ineq' ? qnum(sol.x) : sol.kind === 'sq' && qnum(sol.k) > 0 ? Math.sqrt(qnum(sol.k)) : null;
+        var val = sol.kind === 'one' || sol.kind === 'ineq' ? qnum(sol.x) : sol.kind === 'sq' && qnum(sol.k) > 0 ? Math.sqrt(qnum(sol.k)) : sol.kind === 'cube' ? Math.cbrt(qnum(sol.k)) : null;
         var ok = val != null && Math.abs(val - want) <= tol && (sol.kind !== 'ineq' || !!S.ineq);
         var only = aloneSide(e, v); if (sol.kind === 'one' && !ok && only && (only.t === 'num' || (only.t === 'neg' && only.a.t === 'num'))) { fb.className = 'sw-fb no'; fb.innerHTML = 'Write the equation first, before you solve it. Start from the facts in the problem.'; tries++; return; }
         if (ok) { fb.className = 'sw-fb ok'; fb.innerHTML = '✓ Good equation. Now solve it.'; inp.readOnly = true; go.disabled = true; setTimeout(function () { solveStage(e, true); }, 300); return; }
@@ -698,11 +701,12 @@
         work.appendChild(el('p', 'sw-ask', 'What will you do next?'));
         var mv = el('div', 'sw-moves'); mv.setAttribute('role', 'group'); mv.setAttribute('aria-label', 'Choose a move');
         var MOVES = [['dist', 'Distribute'], ['comb', 'Combine like terms'], ['add', 'Add to both sides'], ['sub', 'Subtract from both sides'], ['mul', 'Multiply both sides'], ['div', 'Divide both sides']];
-        var hasSq = false, hasPow = false;
-        try { var sp0 = sides(e, v); hasSq = !!(sp0.L[2].n || sp0.R[2].n); } catch (x) { }
+        var hasSq = false, hasPow = false, hasCube = false;
+        try { var sp0 = sides(e, v); hasSq = !!(sp0.L[2].n || sp0.R[2].n); hasCube = !!(sp0.L[3].n || sp0.R[3].n); } catch (x) { }
         [e.L, e.R].forEach(function (sd) { walk(sd, function (z) { if (z.t === 'pow' && !hasVar(z.a)) hasPow = true; }); });
         if (hasPow) MOVES.unshift(['squares', 'Find the squares']);
         if (hasSq) MOVES.push(['sqrt', 'Square root both sides']);
+        if (hasCube) MOVES.push(['cbrt', 'Cube root both sides']);
         var mbtns = {};
         MOVES.forEach(function (m) { var b = btn(m[1]); b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { pick(m[0]); }); mv.appendChild(b); mbtns[m[0]] = b; });
         work.appendChild(mv);
@@ -744,6 +748,18 @@
             vis.hidden = false;
             vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">√( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>√( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +
               notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
+            showWrite();
+          } else if (m === 'cbrt') {
+            var spc = sides(e, v), bare3 = function (n) { return n.t === 'pow' && n.e === 3 && n.a.t === 'var'; };
+            var vsc = bare3(e.L) ? 'L' : bare3(e.R) ? 'R' : null, oth = vsc === 'L' ? spc.R : vsc === 'R' ? spc.L : null;
+            if (!vsc || pdeg(oth) > 0) { fb.className = 'sw-fb tip'; fb.innerHTML = 'First get <i>' + v + '</i><sup>3</sup> <b>alone</b> on one side, with no other terms next to it. Then take the cube root.'; return; }
+            var kc = oth[0], kcn = qnum(kc), rc = Math.round(Math.cbrt(kcn)), perf = kc.d === 1 && rc * rc * rc === kc.n;
+            var nts = ['The cube root <b>undoes</b> the cube: ∛(<i>' + v + '</i><sup>3</sup>) = <i>' + v + '</i>.'];
+            if (perf) nts.push('∛' + qHtml(kc) + ' = ' + rc + ', because ' + rc + ' · ' + rc + ' · ' + rc + ' = ' + qHtml(kc) + '.');
+            else nts.push(qHtml(kc) + ' is not a perfect cube. Use a calculator and round (use ≈).');
+            vis.hidden = false;
+            vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">∛( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>∛( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +
+              nts.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
             showWrite();
           } else if (m === 'comb') {
             var info = [e.L, e.R].map(function (side) { var ts = terms(side), xs = 0, ns = 0, ps = 0, px = 0; ts.forEach(function (t) { var k = kindOf(t, v); if (k === 'xterm') xs++; else if (k === 'num') ns++; else if (k === 'pterm') px++; else ps++; }); return { xs: xs, ns: ns, ps: ps, px: px }; });
@@ -1237,6 +1253,7 @@
         var card = document.getElementById('s' + si + 'p' + p.n); if (!card || card.querySelector('.sw-open')) return;
         var inp = card.querySelector('.pr-in'), host = el('div', 'sw-host'); card.appendChild(host);
         var ex = String(D.unit) === '2' && /^\s*(simplify|multiply|divide)\s*:/i.test(String(p.q).replace(/<[^>]+>/g, ''));
+        if (p.sw) { if (mountExpr(host, { start: p.sw, sci: /×/.test(p.sw), onAnswer: function (t) { fillBox(inp, t); } })) return; }
         if (ex) {
           var q2 = String(p.q).replace(/^\s*(simplify|multiply|divide)\s*:\s*/i, '').replace(/[—–]\s*[a-z][^<]*$/i, '').trim();
           var w2 = mountExpr(host, { start: q2, sci: /10\s*(<sup>|\^|[⁰¹²³⁴⁵⁶⁷⁸⁹⁻])/.test(q2) && /×/.test(q2), onAnswer: function (t) { fillBox(inp, t); } });
@@ -1280,7 +1297,8 @@
         fillBox(inp, t);
       };
       var w = null;
-      if (!start && /^(simplify|multiply|divide)$/i.test(q.op || '')) {
+      if (!start && q.sw) w = mountExpr(host, { start: q.sw, sci: /×/.test(q.sw), onAnswer: function (t) { fillBox(inp, t); } });   // word problem: the expression to simplify
+      else if (!start && /^(simplify|multiply|divide|multi-step)\b/i.test(q.op || '')) {
         w = mountExpr(host, { start: q.expr, sci: /10\s*<sup>/.test(q.expr) && /×/.test(q.expr), onAnswer: function (t) { fillBox(inp, t); } });
       }
       else if (!start && (chk[0] === 'val' || chk[0] === 'num') && /find the (radius|height)/i.test((q.op || '') + ' ' + q.expr)) {
@@ -1310,22 +1328,28 @@
     if (!map || !id || !map[id]) return;
     Object.keys(map[id]).forEach(function (num) {
       var inp = document.getElementById('a' + num); if (!inp) return;
-      var lab = inp.closest('label'), host = el('div', 'sw-host'); lab.appendChild(host);
-      var c = map[id][num], cfg = { onAnswer: function (t) { fillBox(inp, t); } };
-      if (c.expr) {
-        var bx = mountExpr(host, { start: c.expr, sci: !!c.sci, onAnswer: function (t) { fillBox(inp, t); } }), ob = host.querySelector('.sw-open');
-        if (bx && ob) ob.addEventListener('click', function () { lab.classList.toggle('sw-wide', !bx.hidden); });
-        return;
-      }
-      if (c.line) { cfg.start = c.line; cfg.line = true; }
-      if (c.ps) { cfg.setup = { line: c.ps, ps: true, hint: c.hint, prompt: 'Use <i>x</i> and <i>y</i>. Write the equation of the line in point-slope form.' }; cfg.line = true; }
-      if (c.start) cfg.start = c.start;
-      if (c.setup != null && !c.ps) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
-      if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;
-      if (c.then) cfg.then = c.then;
-      if (c.v) cfg.v = c.v;
-      var box = mount(host, cfg), open = host.querySelector('.sw-open');
-      if (box && open) open.addEventListener('click', function () { lab.classList.toggle('sw-wide', !box.hidden); });
+      var lab = inp.closest('label'), entry = map[id][num];
+      var parts = Array.isArray(entry) ? entry : [entry], got = [];
+      parts.forEach(function (c, pi) {   // an array = one workspace per part (e.g. both intercepts), answers joined
+        var host = el('div', 'sw-host'); lab.appendChild(host);
+        if (c.title) host.appendChild(el('p', 'sw-part', '<b>' + c.title + '</b>'));
+        var put = function (t) { if (parts.length === 1) return fillBox(inp, t); got[pi] = (c.tag || c.title ? (c.tag || c.title) + ': ' : '') + t; fillBox(inp, got.filter(Boolean).join('; ')); };
+        var cfg = { onAnswer: function (t) { put(t); } };
+        if (c.expr) {
+          var bx = mountExpr(host, { start: c.expr, sci: !!c.sci, onAnswer: function (t) { put(t); } }), ob = host.querySelector('.sw-open');
+          if (bx && ob) ob.addEventListener('click', function () { lab.classList.toggle('sw-wide', !bx.hidden); });
+          return;
+        }
+        if (c.line) { cfg.start = c.line; cfg.line = true; }
+        if (c.ps) { cfg.setup = { line: c.ps, ps: true, hint: c.hint, prompt: 'Use <i>x</i> and <i>y</i>. Write the equation of the line in point-slope form.' }; cfg.line = true; }
+        if (c.start) cfg.start = c.start;
+        if (c.setup != null && !c.ps) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any };
+        if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;
+        if (c.then) cfg.then = c.then;
+        if (c.v) cfg.v = c.v;
+        var box = mount(host, cfg), open = host.querySelector('.sw-open');
+        if (box && open) open.addEventListener('click', function () { lab.classList.toggle('sw-wide', !box.hidden); });
+      });
     });
   }
   function auto() { try { autoPractice(); } catch (e) { if (window.console) console.error(e); } try { autoPretest(); } catch (e) { if (window.console) console.error(e); } try { autoHomework(); } catch (e) { if (window.console) console.error(e); } }
