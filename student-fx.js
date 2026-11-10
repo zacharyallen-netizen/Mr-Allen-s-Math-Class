@@ -92,7 +92,7 @@
     if (!kind && g.check && g.text) kind = 'warn';
     if (!kind) return;
     var box = g.boxes && g.boxes.length === 1 ? g.boxes[0] : FX.box(g.el);
-    FX.flash(box, kind); if (kind === 'ok') FX.done(box);
+    FX.flash(box, kind); if (kind === 'ok') { FX.done(box); FX.good(box); }
   }
   function watch() {
     new MutationObserver(function (ms) {
@@ -121,7 +121,9 @@
   var DONE = []; FX.count = function () { return DONE.length; };
   var CHEERS = { 5: 'Nice — 5 done!', 10: '10 done! Keep going!', 15: '15 done — awesome!', 20: '20 done! You’re on a roll!' };
   FX.toast = function (t) { var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
-  FX.onDone = function (n) { if (n % 5) return; setTimeout(function () { FX.toast(CHEERS[n] || n + ' done! Great work!'); FX.play('cheer'); }, 450); };
+  var GOOD = [];
+  FX.good = function (box) { if (!box || GOOD.indexOf(box) >= 0) return; GOOD.push(box); var n = GOOD.length; if (n % 5) return;
+    setTimeout(function () { FX.toast(CHEERS[n] || n + ' done! Great work!'); FX.play('cheer'); }, 450); };
   FX.done = function (box) { if (!box || DONE.indexOf(box) >= 0) return; DONE.push(box); if (FX.onDone) FX.onDone(DONE.length); };
 
   /* ---------- matching buttons ---------- */
@@ -242,6 +244,21 @@
     if (n && FX.count() >= n) FX.prog('done');
   }
 
+  /* ---------- pre-tests: "Show answers" opens only after every question has an answer ---------- */
+  function gateReveal() {
+    var rv = document.getElementById('reveal'); if (!rv || !/show answers/i.test(rv.textContent)) return;
+    var note = document.createElement('span'); note.className = 'fx-gate'; note.textContent = 'Show answers opens after you answer every question.';
+    note.style.cssText = 'font:500 13px Inter,system-ui,sans-serif;color:#5B6475;align-self:center;margin-left:6px';
+    rv.parentNode.insertBefore(note, rv.nextSibling);
+    function upd() {
+      var f = [].filter.call(document.querySelectorAll('input:not([type]),input[type=text],input[type=number],select,textarea'), function (e) {
+        return !e.closest(SKIP) && !e.closest('.sw-host,.fx-foot,.ss-panel') && !/^ss|^nm$|^pd$/.test(e.id || '') && !e.closest('[id^="ss"]'); });
+      var ok = f.length && f.every(function (e) { return String(e.value).trim(); });
+      rv.style.display = ok ? '' : 'none'; note.style.display = ok ? 'none' : '';
+    }
+    document.addEventListener('input', upd, true); document.addEventListener('change', upd, true); upd();
+  }
+
   /* ---------- small bar at the bottom: Sound on/off ---------- */
   function foot() {
     var f = document.createElement('div'); f.className = 'fx-foot';
@@ -251,8 +268,8 @@
     show(); f.appendChild(sb); FX.footEl = f;
     var panel = teacher();
     if (panel) {
-      var tb = document.createElement('button'); tb.type = 'button'; tb.textContent = 'Teacher & printing ▾'; tb.setAttribute('aria-expanded', 'false');
-      tb.addEventListener('click', function () { panel.hidden = !panel.hidden; tb.setAttribute('aria-expanded', !panel.hidden); tb.textContent = 'Teacher & printing ' + (panel.hidden ? '▾' : '▴'); });
+      var tb = document.createElement('button'); tb.type = 'button'; tb.textContent = 'Printables ▾'; tb.setAttribute('aria-expanded', 'false');
+      tb.addEventListener('click', function () { panel.hidden = !panel.hidden; tb.setAttribute('aria-expanded', !panel.hidden); tb.textContent = 'Printables ' + (panel.hidden ? '▾' : '▴'); });
       f.appendChild(tb); f.appendChild(panel);
     }
     var sf = document.querySelector('.site-footer, body > footer'); if (sf) sf.parentNode.insertBefore(f, sf); else document.body.appendChild(f);
@@ -263,7 +280,7 @@
     addCss(); watch(); hookSS(); setTimeout(hookSS, 800); styleButtons(); foot();
     document.addEventListener('click', gesture, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) gesture(e); }, true);
-    readButtons(); stds(); FX.prog('seen'); window.addEventListener('pagehide', stop);
+    readButtons(); stds(); gateReveal(); FX.prog('seen'); window.addEventListener('pagehide', stop);
     new MutationObserver(function () { clearTimeout(init.t); init.t = setTimeout(function () { styleButtons(); readButtons(); stds(); finishedYet(); }, 120); }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
