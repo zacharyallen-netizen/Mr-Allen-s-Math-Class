@@ -149,7 +149,7 @@
       return;
     }
     if (card.classList.contains('done')) return;
-    var v = inp.value.trim(); if (!v) { inp.focus(); return; }
+    var v = inp.value.trim(); if (!v) { inp.focus(); fb.className = 'pr-fb tip'; fb.textContent = 'Type your answer first.'; if (window.FX) FX.mark('warn'); return; }
     var ok = check(v, p.ans) || (p.alt || []).some(function (x) { return check(v, x); }), tries = Number(card.dataset.tries || 0) + 1;
     card.dataset.tries = tries;
     try { if (window.ScoreSend) ScoreSend.record(card.id, ok, { std: sec.std, band: 3, label: sec.title.replace(/^[A-Z]\.\s*/, '') + ' #' + p.n }); } catch (x) {}
@@ -170,10 +170,10 @@
   // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261110a'); document.body.appendChild(sw);
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261110c'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261109b'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261110c'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

@@ -1,3 +1,6 @@
+/* loads student-fx.js (flash, sounds, matching buttons) once per page */
+(function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
+  s.src = new URL('student-fx.js?v=20261110a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* notes-flow.js — Interactive Notes, one section at a time + "try a similar one" (Nov 2026).
 
    1) ONE SECTION AT A TIME

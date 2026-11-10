@@ -257,17 +257,18 @@ EOGU.run = function (unit, ver) {
     d.querySelector(".chk").addEventListener("click", function () {
       var st = stats[q.id]; if (st.done) return; var good = false, msg = "";
       if (q.type === "num") { var raw = d.querySelector("#" + q.id + "n").value, v = num(raw);
-        if (isNaN(v)) { fb.className = "fb no"; fb.innerHTML = q.frac ? "Type a number or a fraction, like 3/4. Use a minus sign for negatives, like −2." : "Type a number. Use a minus sign for negatives, like −2."; return; }
+        if (isNaN(v)) { fb.className = "fb tip"; fb.innerHTML = q.frac ? "Type a number or a fraction, like 3/4. Use a minus sign for negatives, like −2." : "Type a number. Use a minus sign for negatives, like −2."; return; }
         good = same(v, q.ans);
         var fm = String(raw).replace(/[−–—]/g, "-").replace(/\s+/g, "").match(/^-?(\d+)\/(\d+)$/);
-        if (good && q.simplest && fm && gcd(+fm[1], +fm[2]) !== 1) { good = false; msg = "That fraction is equal, but it is not in simplest form. Divide the top and bottom by the same number."; }
+        if (good && q.simplest && fm && gcd(+fm[1], +fm[2]) !== 1) { good = false; if (window.FX) FX.mark("warn"); msg = "That fraction is equal, but it is not in simplest form. Divide the top and bottom by the same number."; }
         else if (good && q.simplest && !fm) { good = false; msg = "Write it as a fraction, like 3/4."; }
         else if (!good) msg = (q.wrong && q.wrong(v)) || q.redo || "Check your work and try again. Tap <b>Hint</b> if you are stuck."; }
       else { var sel = [].map.call(d.querySelectorAll(".opt.sel"), function (o) { return +o.dataset.j; });
-        if (!sel.length) { fb.className = "fb no"; fb.innerHTML = "Pick an answer first."; return; }
+        if (!sel.length) { fb.className = "fb tip"; fb.innerHTML = "Pick an answer first."; return; }
         if (q.type === "mc") { good = !!q.opts[sel[0]].ok; if (!good) msg = q.opts[sel[0]].why; }
         else { var wrongSel = sel.filter(function (j) { return !q.opts[j].ok; }), need = q.opts.filter(function (o) { return o.ok; }).length, got = sel.filter(function (j) { return q.opts[j].ok; }).length;
           good = !wrongSel.length && got === need;
+          if (!good && !wrongSel.length && window.FX) FX.mark("warn");
           if (!good) msg = wrongSel.length ? q.opts[wrongSel[0]].why : "Everything you picked is true. But there " + (need - got === 1 ? "is 1 more right answer." : "are " + (need - got) + " more right answers."); } }
       st.tries++; rec(q, good);
       if (good) { st.done = true; d.classList.add("done"); st.first = (st.tries === 1); fb.className = "fb ok"; fb.innerHTML = "<b>Yes!</b> " + q.ok + explain(q);
