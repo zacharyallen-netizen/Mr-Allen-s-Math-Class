@@ -1,7 +1,7 @@
 /* unit1-notes: similar problems for notes-flow.js. Built by _build/notes_twins/build.py — edit there, not here. */
 window.NOTE_TWINS = {
 "chk1a": {
-"p": "<span class=\"badge\">MC</span> Which number is irrational?",
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Which number is irrational?",
 "choices": [
 "0.25",
 "√64",
@@ -12,7 +12,7 @@ window.NOTE_TWINS = {
 "why": "✓ 11 is not a perfect square, so √11 is a non-repeating, non-terminating decimal — irrational."
 },
 "chk2a": {
-"p": "<span class=\"badge\">MC</span> Which of these is a perfect square?",
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Which of these is a perfect square?",
 "choices": [
 "40",
 "90",
@@ -23,13 +23,13 @@ window.NOTE_TWINS = {
 "why": "✓ 196 = 14², so √196 = 14 exactly. The others fall between perfect squares."
 },
 "chk2b": {
-"p": "<span class=\"badge\">CALC</span> What is √225 ?",
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l1\">Score 3</span> What is √225 ?",
 "a": [
 "15"
 ]
 },
 "chk4a": {
-"p": "<span class=\"badge\">CALC</span> Estimate √20 to the nearest tenth using the algorithm. (Hint: 16 < 20 < 25)",
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l2\">Score 4</span> Estimate √20 to the nearest tenth using the algorithm. (Hint: 16 < 20 < 25)",
 "a": [
 "4.4",
 "4.5",
@@ -38,7 +38,7 @@ window.NOTE_TWINS = {
 ]
 },
 "chk5t": {
-"p": "<span class=\"badge\">CALC</span> Use long division to write <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>11</span></span> as a decimal. Watch for a two-digit pattern. (Type the repeating digits in parentheses, like 0.(4) for 0.444…)",
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l2\">Score 4</span> Use long division to write <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>11</span></span> as a decimal. Watch for a two-digit pattern. (Type the repeating digits in parentheses, like 0.(4) for 0.444…)",
 "a": [
 "0.(45), which means 0.454545…",
 "0.(45)",
@@ -52,7 +52,7 @@ window.NOTE_TWINS = {
 ]
 },
 "chk5a": {
-"p": "<span class=\"badge\">MC</span> Which decimal equals the fraction <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>8</span></span> ?",
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Which decimal equals the fraction <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>8</span></span> ?",
 "choices": [
 "0.58",
 "0.625",

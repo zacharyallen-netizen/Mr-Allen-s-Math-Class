@@ -36,3 +36,7 @@ assert P['u2pA10'][1] == 3 and P['u2pA7'][1] == 9
 for k, (p, c, ex) in P.items():
     T[k] = {'p': p, 'a': ans(int(c), ex)}
 assert T['u2pA8']['a'] == ['8x⁴y³', '8x^4y^3'] and T['u2pA9']['a'] == ['5'] and T['u2pA12']['a'] == ['x⁸y⁶', 'x^8y^6']
+
+# Nov 10, 2026: Score label to match the section check on unit2-notes-exponents.html
+import re as _re
+if 'chk21a' in T: T['chk21a']['p'] = _re.sub(r'(<span class="badge">[^<]*</span>)', r'\1 <span class="np-lv l1">Score 3</span>', T['chk21a']['p'], count=1)

@@ -16,3 +16,8 @@ T['chk5t'] = {'p': '<span class="badge">CALC</span> Use long division to write <
 assert F(5, 8) == F(625, 1000)
 T['chk5a'] = {'p': '<span class="badge">MC</span> Which decimal equals the fraction <span class="sf"><span>5</span><span class="sfx">/</span><span>8</span></span> ?', 'choices': ['0.58', '0.625', '0.85', '0.375'], 'a': '0.625',
               'why': '✓ 5 ÷ 8 = 0.625, a terminating (rational) decimal.'}
+
+# Nov 10, 2026: Score labels to match the section checks on unit1-notes.html
+import re as _re
+for _k, _l in {'chk1a': 3, 'chk2a': 3, 'chk2b': 3, 'chk4a': 4, 'chk5t': 4, 'chk5a': 3}.items():
+    if _k in T: T[_k]['p'] = _re.sub(r'(<span class="badge">[^<]*</span>)', lambda m: m.group(1) + ' <span class="np-lv l%d">Score %d</span>' % (_l - 2, _l), T[_k]['p'], count=1)

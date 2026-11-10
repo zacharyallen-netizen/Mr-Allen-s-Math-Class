@@ -102,6 +102,13 @@
         return keep;
       });
     });
+    // a run of questions side by side in the notes (e.g. Unit 8 P1–P3): one at a time
+    var parents = [];
+    document.querySelectorAll('.chk').forEach(function (c) { var pa = c.parentElement; if (pa && parents.indexOf(pa) < 0 && !pa.closest('.np')) parents.push(pa); });
+    parents.forEach(function (pa) {
+      var items = [].filter.call(pa.children, function (c) { return c.classList.contains('chk') && isItem(c) && used.indexOf(c) < 0; });
+      if (items.length >= 2) { used = used.concat(items); pager(pa, items, null); }
+    });
     // every other ✏ Practice box: one question at a time inside the box
     document.querySelectorAll('.np').forEach(function (np) {
       var items = [].filter.call(np.querySelectorAll(':scope > .np-q'), function (q) { return used.indexOf(q) < 0; });

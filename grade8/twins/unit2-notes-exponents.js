@@ -1,7 +1,7 @@
 /* unit2-notes-exponents: similar problems for notes-flow.js. Built by _build/notes_twins/build.py — edit there, not here. */
 window.NOTE_TWINS = {
 "chk21a": {
-"p": "<span class=\"badge\">MC</span> Simplify y⁴ · y⁶. Which rule applies, and what is the result?",
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Simplify y⁴ · y⁶. Which rule applies, and what is the result?",
 "choices": [
 "y¹⁰ (Product Rule)",
 "y²⁴ (Power Rule)",

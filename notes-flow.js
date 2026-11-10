@@ -36,6 +36,8 @@
     '.nf-bar i{display:block;height:100%;background:#FFC107;border-radius:99px;transition:width .3s}' +
     '.nf-bot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin:16px 0 22px}' +
     '.nf-btn{font:700 16px Inter,system-ui,sans-serif;min-height:48px;padding:10px 20px;border-radius:10px;cursor:pointer;border:2px solid #1E2D4F;background:#fff;color:#1E2D4F;max-width:100%;white-space:normal;text-align:center}' +
+    '.nf-top{flex-wrap:wrap}.nf-top .nf-title{white-space:normal!important;overflow-wrap:anywhere;min-width:0;max-width:100%}' +
+    '.nf-bot .nf-btn{max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere;text-align:center;min-width:0}' +
     '.nf-btn.go{background:#FFC107;border-color:#FFC107}.nf-btn.go:hover{background:#E0A800;border-color:#E0A800}' +
     '.nf-btn:disabled{visibility:hidden}' +
     '.nf-btn:focus-visible{outline:3px solid #2747A0;outline-offset:2px}' +

@@ -90,3 +90,11 @@ mc('chk6c', 'P3', 'Which transformation can change the size of a figure?', ['tra
    'Dilation is the only one that resizes the figure (changes side lengths). Translations, reflections and rotations keep the same size.')
 mc('chk6d', '⭐ Challenge', 'A hexagon undergoes a sequence: rotation 180°, translation 4 units left, then reflection over the x-axis. The pre-image and image are…', ['congruent', 'similar but not congruent', 'neither'], 'congruent',
    'Rotations, translations and reflections are all rigid. No dilation, so size and shape stay the same → congruent.')
+
+# Nov 10, 2026: Score 3/4/5 labels (same levels as the questions on unit8-notes.html); the old "⭐ Challenge" badge is P4
+import re as _re
+LV8 = {'chk1a': 3, 'chk1b': 3, 'p-trans-1': 3, 'p-trans-2': 4, 'p-trans-3': 4, 'p-refl-1': 3, 'p-refl-2': 4, 'p-refl-3': 4,
+       'p-rot-1': 4, 'p-rot-2': 5, 'p-rot-3': 4, 'chk5a': 4, 'chk5b': 5, 'chk5c': 3, 'chk6a': 4, 'chk6b': 4, 'chk6c': 3, 'chk6d': 5}
+for _k, _l in LV8.items():
+    T[_k]['p'] = _re.sub(r'(<span class="badge">)⭐ Challenge(</span>)', r'\1P4\2', T[_k]['p'])
+    T[_k]['p'] = _re.sub(r'(<span class="badge">[^<]*</span>)', lambda m: m.group(1) + ' <span class="np-lv l%d">Score %d</span>' % ({3: 1, 4: 2, 5: 3}[_l], _l), T[_k]['p'], count=1)
