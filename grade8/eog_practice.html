@@ -199,7 +199,7 @@ body.class-mode .score{display:none}
 
 <section class="card" id="summary" aria-live="polite"></section>
 <div id="send"></div>
-<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">45</span> · Answered <span class="mono" id="doneN">0</span></div>
+<div class="score" id="score">Answered <span class="mono" id="doneN">0</span> of <span class="mono">45</span><span hidden><span class="mono" id="scoreN">0</span></span></div>
 </div>
 
 <button id="dFab" class="dfab" aria-expanded="false" aria-controls="dPanel">Desmos</button>
@@ -905,10 +905,10 @@ function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].do
   if(d===TOTAL)summary(n);}
 function summary(n){
   var miss=[];
-  ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[2]+'">'+p[1]+"</a> ("+m+" missed on the first try)");});
+  ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[2]+'">'+p[1]+"</a> ("+m+" to look at again)");});
   var el=document.getElementById("summary");el.classList.add("show");
   try{if(window.ArcadeSend)ArcadeSend.round({level:'All '+TOTAL+' questions',score:n,details:n+' of '+TOTAL+' right on the first try'})}catch(e){}
-  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You answered all <b>' + TOTAL + '</b> questions.</p>'+
    (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You got every one on the first try. You are ready for the EOG.</p>')+
    '<p class="small-note">Now send your work to Mr. Allen below.</p>';
 }
@@ -1020,6 +1020,6 @@ window.addEventListener("scroll",lift,{passive:true});window.addEventListener("r
 window.__QS=QS;
 })();
 </script>
-<script src="one-at-a-time.js?v=20261110c"></script>
+<script src="one-at-a-time.js?v=20261110d"></script>
 </body>
 </html>

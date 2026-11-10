@@ -97,7 +97,7 @@ details.pfig-check>summary{cursor:pointer;font-weight:700;color:#1E2D4F;font-siz
 </div>
 
 <div id="u7c1" class="tab-pane active">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc7c1">0</span><span>/ 7</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc7c1">0</span><span>/ 7</span></div>
 <div class="tip"><strong>Describe correlation:</strong> Up or down? Tight or spread out? Any outliers?</div>
 
 <div class="qc" id="u7c1_1">
@@ -193,7 +193,7 @@ details.pfig-check>summary{cursor:pointer;font-weight:700;color:#1E2D4F;font-siz
 </div>
 
 <div id="u7c2" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc7c2">0</span><span>/ 6</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc7c2">0</span><span>/ 6</span></div>
 <div class="tip"><strong>y = mx + b:</strong> m = slope (rate of change per unit of x) · b = y-intercept (starting value when x = 0)</div>
 
 <div class="qc" id="u7c2_1">
@@ -276,7 +276,7 @@ details.pfig-check>summary{cursor:pointer;font-weight:700;color:#1E2D4F;font-siz
 </div>
 
 <div id="u7c3" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc7c3">0</span><span>/ 7</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc7c3">0</span><span>/ 7</span></div>
 <div class="tip"><strong>Joint frequency</strong> = interior cells · <strong>Marginal frequency</strong> = row/column totals · <strong>Relative frequency</strong> = part ÷ a total. Use the grand total for everyone, or a row or column total for one group.</div>
 <div style="background:var(--lgray);border:2px solid #cdd5e0;border-radius:8px;padding:14px;margin:10px 0">
   <div style="font-family:'Arvo',serif;font-size:0.92em;color:#1E2D4F;margin-bottom:10px">📋 Use this table for Questions 1–8 (Practice 1)</div>
@@ -395,14 +395,14 @@ function mc(btn,cardId,correct){
   const card=document.getElementById(cardId);
   if(card.classList.contains('answered'))return;
   card.classList.add('answered');
+  const tab=card.closest('.tab-pane');
+  const scEl=tab?tab.querySelector('.sv'):null;
+  if(scEl){const key=scEl.id;scores[key]=(scores[key]||0)+1;scEl.textContent=scores[key];}
   try{if(window.ScoreSend)ScoreSend.record(cardId,btn.textContent.trim()===correct.trim(),{std:ssStd(cardId),label:ssLabel(card)});}catch(e){}
   card.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const fb=card.querySelector('.fb');
   if(btn.textContent.trim()===correct.trim()){
     btn.classList.add('correct');
-    const tab=card.closest('.tab-pane');
-    const scEl=tab?tab.querySelector('.sv'):null;
-    if(scEl){const key=scEl.id;scores[key]=(scores[key]||0)+1;scEl.textContent=scores[key];}
     fb.className='fb show c';fb.textContent='✓ Correct! '+(fb.textContent||'');
   }else{
     btn.classList.add('wrong');
@@ -746,7 +746,7 @@ function revealStep(prefix, total) {
 })();
 
 </script>
-<script src="one-at-a-time.js?v=20261110c"></script>
+<script src="one-at-a-time.js?v=20261110d"></script>
 <script>
 /* Paper copy only (?paper=1, used by _build/notes_pdf.js → Unit7_Practice1_Blank.pdf / Unit7_Practice1_AnswerKey.pdf).
    All tabs shown; answer buttons become ○ choices (the key marks the right one in green); feedback,

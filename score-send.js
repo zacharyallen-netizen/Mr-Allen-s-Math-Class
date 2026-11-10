@@ -134,7 +134,7 @@
       btn.disabled = false; btn.style.opacity = '1';
       if (S.sentSig === c.sig) {                     // nothing new since the last send
         btn.textContent = 'Sent ✓';
-        msg('Sent ✓ Mr. Allen has this work: ' + c.first + ' of ' + c.n + ' right on the first try.', 'ok');
+        msg('Sent ✓ Mr. Allen has your work (' + c.n + ' ' + noun(c.n) + ').', 'ok');
         return;
       }
       btn.textContent = S.sentOnce ? 'Send again' : 'Send my work';
@@ -142,8 +142,7 @@
         msg('You have new work since you sent. Tap Send again so Mr. Allen sees it.', 'muted');
         return;
       }
-      msg('You checked ' + c.n + ' ' + noun(c.n) + '. ' + c.first +
-          ' right on the first try. Type your first and last name, then tap Send.', 'muted');
+      msg('You answered ' + c.n + ' ' + noun(c.n) + '. Type your first and last name, then tap Send.', 'muted');
     },
 
     send: function () {
@@ -175,8 +174,7 @@
         if (res && res.ok) {
           S.sentSig = c.sig; S.sentOnce = true;
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Sent ✓';
-          msg('Got it, ' + res.name + '. Mr. Allen has your work: ' + c.first + ' of ' + c.n +
-              ' right on the first try. If you keep working, you can send again.', 'ok');
+          msg('Got it, ' + res.name + '. Mr. Allen has your work (' + c.n + ' ' + noun(c.n) + '). If you keep working, you can send again.', 'ok');
         } else {
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Try again';
           var off = res && /unknown skill|bad/.test(String(res.error));

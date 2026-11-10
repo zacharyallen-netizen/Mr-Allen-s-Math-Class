@@ -113,7 +113,7 @@
     '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">🖨️ Printable PDF of this practice</a>' +
     (D.key ? ' &nbsp;·&nbsp; <a href="' + D.key + '" target="_blank" rel="noopener">✅ Answer key (PDF)</a>' : '') + '</p></div>',
     '<p class="pr-how">Type your answer and press <b>Check</b>. Stuck? Tap <b>Hint</b>. After two tries you can see the answer. Do the work on paper first.</p>',
-    '<div class="pr-score" aria-live="polite"><span id="prScore">0</span> of <span id="prTotal">0</span> right on the first try</div>'];
+    '<div class="pr-score" aria-live="polite">Answered <span id="prScore">0</span> of <span id="prTotal">0</span></div>'];
   var total = 0;
   data.secs.forEach(function (sec, si) {
     html.push('<h2 class="pr-sec">' + sec.title + '</h2>');
@@ -135,7 +135,7 @@
   root.innerHTML = html.join('');
   document.getElementById('prTotal').textContent = total;
 
-  var first = 0;
+  function answered() { document.getElementById('prScore').textContent = root.querySelectorAll('.pr-card.done, .pr-card.shown').length; }
   function find(si, n) { var s = data.secs[si]; for (var i = 0; i < s.probs.length; i++) if (String(s.probs[i].n) === String(n)) return s.probs[i]; }
   root.addEventListener('click', function (e) {
     var b = e.target.closest('.pr-btn'); if (!b) return;
@@ -144,7 +144,7 @@
     if (b.classList.contains('pr-hint')) { card.querySelector('.pr-hintbox').hidden = false; return; }
     if (b.classList.contains('pr-show')) {
       fb.className = 'pr-fb show'; fb.innerHTML = 'Answer: <b>' + p.ans + '</b>';
-      card.classList.add('shown'); b.hidden = true;
+      card.classList.add('shown'); b.hidden = true; answered();
       try { if (window.ScoreSend) ScoreSend.revealed(); } catch (x) {}
       return;
     }
@@ -156,7 +156,7 @@
     if (ok) {
       card.classList.add('done'); inp.readOnly = true;
       fb.className = 'pr-fb ok'; fb.innerHTML = '✓ Correct!' + (tries === 1 ? '' : ' (on try ' + tries + ')');
-      if (tries === 1 && !card.classList.contains('shown')) { first++; document.getElementById('prScore').textContent = first; }
+      answered();
       card.querySelector('.pr-show').hidden = true;
     } else {
       fb.className = 'pr-fb no'; fb.textContent = tries === 1 ? 'Not yet — check your work and try again.' : 'Still not it. Try the hint, or show the answer.';
@@ -170,10 +170,10 @@
   // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261110c'); document.body.appendChild(sw);
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261110d'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261110c'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261110d'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

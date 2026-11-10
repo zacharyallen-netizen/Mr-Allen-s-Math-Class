@@ -195,7 +195,7 @@ EOGU.run = function (unit, ver) {
       (p.calc == null ? '' : '<span class="calcnote ' + (p.calc ? 'yes">You may use a calculator. Tap <b>Desmos</b> at the bottom right.' : 'no">Do not use a calculator.') + '</span>') + '</div><div id="qs' + (i + 1) + '"></div></section>';
   });
   h += '<section class="card" id="summary" aria-live="polite"></section><div id="send"></div>' +
-    '<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">' + TOTAL + '</span> · Answered <span class="mono" id="doneN">0</span></div>' +
+    '<div class="score" id="score">Answered <span class="mono" id="doneN">0</span> of <span class="mono">' + TOTAL + '</span><span hidden><span class="mono" id="scoreN">0</span></span></div>' +
     '<p class="small-note" style="text-align:center;margin-top:14px">Also try ' + other + '.</p>';
   wrap.innerHTML = h;
   if (anyCalc) document.body.insertAdjacentHTML("beforeend", '<button id="dFab" class="dfab off" aria-expanded="false" aria-controls="dPanel">Desmos</button>' +
@@ -205,9 +205,9 @@ EOGU.run = function (unit, ver) {
   function upd() { var n = 0, d = 0; Object.keys(stats).forEach(function (k) { if (stats[k].done) d++; if (stats[k].first) n++; });
     document.getElementById("scoreN").textContent = n; document.getElementById("doneN").textContent = d; if (d === TOTAL) summary(n); }
   function summary(n) { var miss = [];
-    parts.forEach(function (p, i) { var m = p.qs.filter(function (q) { return !stats[q.id].first; }).length; if (m) miss.push('<a href="#p' + (i + 1) + '">' + p.title + "</a> (" + m + " missed on the first try)"); });
+    parts.forEach(function (p, i) { var m = p.qs.filter(function (q) { return !stats[q.id].first; }).length; if (m) miss.push('<a href="#p' + (i + 1) + '">' + p.title + "</a> (" + m + " to look at again)"); });
     var el = document.getElementById("summary"); el.classList.add("show");
-    el.innerHTML = '<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>' + n + ' of ' + TOTAL + '</b> right on the first try.</p>' +
+    el.innerHTML = '<h3 style="margin-top:0">Nice work. You finished!</h3><p>You answered all <b>' + TOTAL + '</b> questions.</p>' +
       (miss.length ? '<p>Look at these once more:</p><ul class="steps">' + miss.map(function (m) { return "<li>" + m + "</li>"; }).join("") + '</ul>' : '<p>You got every one on the first try!</p>') +
       '<p class="small-note">Now send your work to Mr. Allen below.</p>'; }
   function num(s) { s = String(s).replace(/[−–—]/g, "-").replace(/[$°,%]/g, "").trim().replace(/^[a-z]+\s*=\s*/i, "").replace(/\s*(units?|feet|ft|inches|in|cm|m|degrees|months|buckets)\.?$/i, "");

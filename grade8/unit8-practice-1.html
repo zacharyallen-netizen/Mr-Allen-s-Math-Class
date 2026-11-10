@@ -99,7 +99,7 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 
 <!-- TRANSLATIONS -->
 <div id="u8c1" class="tab-pane active">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc8c1">0</span><span>/ 5</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc8c1">0</span><span>/ 5</span></div>
 <div class="rule-bar">Translation Rule: (x, y) → (x + h, y + k) &nbsp;|&nbsp; h > 0 → RIGHT &nbsp;|&nbsp; h < 0 → LEFT &nbsp;|&nbsp; k > 0 → UP &nbsp;|&nbsp; k < 0 → DOWN</div>
 <div class="tip"><strong>Remember:</strong> Translations are rigid — the image is congruent to the pre-image (same size and shape, just shifted).</div>
 
@@ -167,7 +167,7 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 
 <!-- REFLECTIONS -->
 <div id="u8c2" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc8c2">0</span><span>/ 5</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc8c2">0</span><span>/ 5</span></div>
 <div class="rule-bar">Over x-axis: (x, y) → (x, −y) &nbsp;|&nbsp; Over y-axis: (x, y) → (−x, y)<br>Memory trick: the axis you reflect OVER keeps its coordinate. Reflecting over x-axis → x stays, y flips.</div>
 
 <div class="qc" id="u8c2_1">
@@ -235,7 +235,7 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 
 <!-- ROTATIONS -->
 <div id="u8c3" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc8c3">0</span><span>/ 5</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc8c3">0</span><span>/ 5</span></div>
 <div class="rule-bar">90° CCW: (x,y)→(−y, x) &nbsp;|&nbsp; 180°: (x,y)→(−x,−y) &nbsp;|&nbsp; 270° CCW: (x,y)→(y,−x)<br>90° CW = 270° CCW &nbsp;|&nbsp; 90° CCW = 270° CW</div>
 
 <div class="qc" id="u8c3_1">
@@ -304,7 +304,7 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 
 <!-- DILATIONS -->
 <div id="u8c4" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc8c4">0</span><span>/ 5</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc8c4">0</span><span>/ 5</span></div>
 <div class="rule-bar">Dilation: (x, y) → (kx, ky) &nbsp;|&nbsp; k &gt; 1 = enlargement &nbsp;|&nbsp; 0 &lt; k &lt; 1 = reduction &nbsp;|&nbsp; Similar figures (SAME shape, DIFFERENT size)</div>
 
 <div class="qc" id="u8c4_1">
@@ -375,7 +375,7 @@ nav.top-nav{background:#1E2D4F;padding:10px 14px;position:sticky;top:0;z-index:1
 
 <!-- COMPOSITE -->
 <div id="u8c5" class="tab-pane">
-<div class="score-box"><span>Score:</span><span class="sv" id="sc8c5">0</span><span>/ 5</span></div>
+<div class="score-box"><span>Answered:</span><span class="sv" id="sc8c5">0</span><span>/ 5</span></div>
 <div class="rule-bar">Composite = two or more moves in a row. Do them ONE AT A TIME in the given order. Order matters!</div>
 <div class="tip"><strong>Congruence vs. Similarity:</strong> All rigid (translation + reflection + rotation) → Congruent ≅ · Any dilation → Similar ~</div>
 
@@ -456,14 +456,14 @@ function mc(btn,cardId,correct){
   const card=document.getElementById(cardId);
   if(card.classList.contains('answered'))return;
   card.classList.add('answered');
+  const tab=card.closest('.tab-pane');
+  const scEl=tab?tab.querySelector('.sv'):null;
+  if(scEl){const key=scEl.id;scores[key]=(scores[key]||0)+1;scEl.textContent=scores[key];}
   try{if(window.ScoreSend)ScoreSend.record(cardId,btn.textContent.trim()===correct.trim(),{std:ssStd(cardId),label:ssLabel(card)});}catch(e){}
   card.querySelectorAll('.ob').forEach(b=>b.disabled=true);
   const fb=card.querySelector('.fb');
   if(btn.textContent.trim()===correct.trim()){
     btn.classList.add('correct');
-    const tab=card.closest('.tab-pane');
-    const scEl=tab?tab.querySelector('.sv'):null;
-    if(scEl){const key=scEl.id;scores[key]=(scores[key]||0)+1;scEl.textContent=scores[key];}
     fb.className='fb show c';fb.textContent='✓ Correct! '+(fb.textContent||'');
   }else{
     btn.classList.add('wrong');
@@ -852,7 +852,7 @@ function revealStep(prefix, total) {
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { drawAll(document); }); else drawAll(document);
 })();
 </script>
-<script src="one-at-a-time.js?v=20261110c"></script>
+<script src="one-at-a-time.js?v=20261110d"></script>
 <script>
 /* Paper copy only (?paper=1, used by _build/notes_pdf.js → Unit8_Practice1_Blank.pdf / Unit8_Practice1_AnswerKey.pdf).
    All tabs shown; answer buttons become ○ choices (the key marks the right one in green); feedback,

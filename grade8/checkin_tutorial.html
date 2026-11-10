@@ -246,7 +246,7 @@ body.class-mode .score{display:none}
 
 
 <section class="card" id="summary" aria-live="polite"></section>
-<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">13</span> · Answered <span class="mono" id="doneN">0</span></div>
+<div class="score" id="score">Answered <span class="mono" id="doneN">0</span> of <span class="mono">13</span><span hidden><span class="mono" id="scoreN">0</span></span></div>
 </div>
 
 <script>
@@ -495,10 +495,10 @@ function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].do
   if(d===TOTAL)summary(n);}
 function summary(n){
   var parts=[["qs3","Functions"],["qs1","Reading coordinates"],["qs2","Transformations"]],miss=[];
-  parts.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push(p[1]+" ("+m+" missed on the first try)");});
+  parts.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push(p[1]+" ("+m+" to look at again)");});
   var el=document.getElementById("summary");el.classList.add("show");
   if(document.body.classList.contains("class-mode")){el.innerHTML='<h3 style="margin-top:0">Great work, class. You finished all 13 checks!</h3><p>Before you go, say these out loud together:</p><ul class="steps"><li>A function gives <b>each input exactly one output</b>. Outputs can repeat.</li><li>Read <b>x first</b> (right or left), then <b>y</b> (up or down).</li><li>Move <b>every vertex</b> with the rule. Slides, flips, and turns are <b>congruent</b>. Dilations are <b>similar</b>.</li></ul>';return;}
-  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You answered all <b>' + TOTAL + '</b> questions.</p>'+
    (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You are ready for these standards on the Check-In.</p>')+
    '<p class="small-note">Want more practice? Go back to the <a href="benchmarks.html">Benchmarks page</a> for the full Check-In review.</p>';
 }

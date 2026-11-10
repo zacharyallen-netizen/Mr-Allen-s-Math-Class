@@ -206,7 +206,7 @@ body.class-mode .score{display:none}
 
 <section class="card" id="summary" aria-live="polite"></section>
 <div id="send"></div>
-<div class="score" id="score">First-try score: <span class="mono" id="scoreN">0</span> of <span class="mono">29</span> · Answered <span class="mono" id="doneN">0</span></div>
+<div class="score" id="score">Answered <span class="mono" id="doneN">0</span> of <span class="mono">29</span><span hidden><span class="mono" id="scoreN">0</span></span></div>
 </div>
 <style>
 .entry.one input{width:110px}
@@ -626,9 +626,9 @@ function upd(){var n=0,d=0;Object.keys(stats).forEach(function(k){if(stats[k].do
   if(d===TOTAL)summary(n);}
 function summary(n){
   var miss=[];
-  ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[0].replace("qs","p")+'">'+p[1]+"</a> ("+m+" missed on the first try)");});
+  ORDER.forEach(function(p){var m=QS[p[0]].filter(function(q){return !stats[q.id].first;}).length;if(m)miss.push('<a href="#'+p[0].replace("qs","p")+'">'+p[1]+"</a> ("+m+" to look at again)");});
   var el=document.getElementById("summary");el.classList.add("show");
-  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You got <b>'+n+' of '+TOTAL+'</b> right on the first try.</p>'+
+  el.innerHTML='<h3 style="margin-top:0">Nice work. You finished!</h3><p>You answered all <b>' + TOTAL + '</b> questions.</p>'+
    (miss.length?'<p>Review these parts once more:</p><ul class="steps">'+miss.map(function(m){return "<li>"+m+"</li>";}).join("")+'</ul>':'<p>You are ready for the Unit 6 test.</p>')+
    '<p class="small-note">Now send your work to Mr. Allen below.</p>';
 }
@@ -714,6 +714,6 @@ cm.addEventListener("click",function(){var on=!document.body.classList.contains(
 window.__QS=QS;
 })();
 </script>
-<script src="../student-fx.js?v=20261110a"></script>
+<script src="../student-fx.js?v=20261110b"></script>
 </body>
 </html>

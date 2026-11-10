@@ -24,6 +24,8 @@
     '.fx-b1:disabled,.fx-b2:disabled,.fx-b3:disabled{opacity:.5;cursor:default}' +
     '.fx-foot{max-width:900px;margin:28px auto 18px;padding:0 16px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font:500 13px Inter,system-ui,sans-serif}' +
     '.fx-foot>button{font:600 12.5px Inter,system-ui,sans-serif;color:#5B6475;background:#fff;border:1px solid #D5D9E0;border-radius:999px;padding:5px 12px;cursor:pointer}' +
+    '@keyframes fxpop{0%{opacity:0;transform:translate(-50%,-14px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1.04)}20%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0}}' +
+    '.fx-toast{position:fixed;left:50%;top:76px;z-index:9999;transform:translateX(-50%);background:#1E2D4F;color:#FFC107;font:700 17px Inter,system-ui,sans-serif;padding:10px 20px;border-radius:999px;box-shadow:0 6px 20px rgba(30,45,79,.3);animation:fxpop 2.4s ease-out forwards;pointer-events:none;white-space:nowrap}' +
     '@media print{.fx-foot,.fx-toast,.fx-read{display:none!important}}';
   function addCss() { var st = document.createElement('style'); st.id = 'fx-css'; st.textContent = css; document.head.appendChild(st); }
 
@@ -76,6 +78,7 @@
   }
   function settle(g) {
     if (g !== G) return; G = null;
+    (g.fin || []).forEach(FX.done);
     if (g.reveal) { FX.done(FX.box(g.el)); return; }
     var kind = g.forced;
     if (!kind && g.rec.length) kind = g.rec.indexOf(false) >= 0 ? (WARNT.test(g.text) ? 'warn' : 'no') : 'ok';
@@ -94,6 +97,7 @@
           var old = ' ' + (m.oldValue || '') + ' ';
           [].forEach.call(el.classList, function (c) {
             var s = OKC.test(c) ? 'ok' : NOC.test(c) ? 'no' : WARNC.test(c) ? 'warn' : null;
+            if (/^(answered|done|solved|shown)$/.test(c) && old.indexOf(' ' + c + ' ') < 0) (G.fin = G.fin || []).push(FX.box(el));
             if (s && (old.indexOf(' ' + c + ' ') < 0 || /fb|feedback|msg|result/.test(el.className))) { G.states.push(s); (G.boxes = G.boxes || []).indexOf(FX.box(el)) < 0 && G.boxes.push(FX.box(el)); }
           });
         }
@@ -107,8 +111,11 @@
     S.__fx = 1;
   }
 
-  /* ---------- "done" counter (piece 2 adds the cheer) ---------- */
+  /* ---------- "done" counter + a cheer every 5 ---------- */
   var DONE = []; FX.count = function () { return DONE.length; };
+  var CHEERS = { 5: 'Nice — 5 done!', 10: '10 done! Keep going!', 15: '15 done — awesome!', 20: '20 done! You’re on a roll!' };
+  FX.toast = function (t) { var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
+  FX.onDone = function (n) { if (n % 5) return; setTimeout(function () { FX.toast(CHEERS[n] || n + ' done! Great work!'); FX.play('cheer'); }, 450); };
   FX.done = function (box) { if (!box || DONE.indexOf(box) >= 0) return; DONE.push(box); if (FX.onDone) FX.onDone(DONE.length); };
 
   /* ---------- matching buttons ---------- */
