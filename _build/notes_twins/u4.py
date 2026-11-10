@@ -110,8 +110,8 @@ T['chk41a'] = {'p': '<span class="badge">MC</span> Two angles form a linear pair
                'why': 'A linear pair adds to 180°. 180° − 128° = 52°.'}
 
 # ---- Part 2 practice (chkVal, page checker) ----
-LV1 = '<span class="np-lv l1 u4-lv">★ Try it</span> '
-LV2 = '<span class="np-lv l2 u4-lv">★★ On level</span> '
+LV1 = '<span class="np-lv l1 u4-lv">Score 3</span> '
+LV2 = '<span class="np-lv l2 u4-lv">Score 4</span> '
 
 
 def pv(id, lv, text, ans, fig, sol):

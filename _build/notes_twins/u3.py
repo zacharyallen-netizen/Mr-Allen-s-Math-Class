@@ -128,7 +128,7 @@ def pv(id, label, eq):
     return v
 
 
-L1, L2, L3 = '<span class="np-lv l1">★ Try it</span>', '<span class="np-lv l2">★★ On level</span>', '<span class="np-lv l3">★★★ Challenge</span>'
+L1, L2, L3 = '<span class="np-lv l1">Score 3</span>', '<span class="np-lv l2">Score 4</span>', '<span class="np-lv l3">Score 5</span>'
 assert pv('pA1', L1, '4x + 5 = 29') == 6
 assert pv('pA2', L1, '3(x − 2) = 15') == 7
 assert pv('pA3', L2, '6x − 5 = 2x + 15') == 5

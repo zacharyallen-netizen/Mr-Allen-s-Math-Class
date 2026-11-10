@@ -224,35 +224,35 @@ window.NOTE_TWINS = {
 "sol": "Bottom side: 6. Right side: 8. Slanted side: 6² + 8² = 36 + 64 = 100 → √100 = 10. Perimeter = 6 + 8 + 10 = 24"
 },
 "u5h1": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> Legs 6 and 8: 6² + 8² = c² → c = ?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 6 and 8: 6² + 8² = c² → c = ?",
 "a": [
 "10"
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides 8, 6, c\" viewBox=\"0 0 250 170\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 200.0,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"200.0\" y2=\"140.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"200.0\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">8</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">6</text><text x=\"132.0\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
 },
 "u5h2": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> Legs 9 and 12: 9² + 12² = c² → c = ?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 9 and 12: 9² + 12² = c² → c = ?",
 "a": [
 "15"
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides 12, 9, c\" viewBox=\"0 0 250 170\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 200.0,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"200.0\" y2=\"140.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"200.0\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">12</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">9</text><text x=\"132.0\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
 },
 "u5h3": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> Legs 8 and 15: 8² + 15² = c² → c = ?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 8 and 15: 8² + 15² = c² → c = ?",
 "a": [
 "17"
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides 15, 8, c\" viewBox=\"0 0 260 141\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,110.7 210.0,110.7 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"210.0\" y2=\"110.66666666666667\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"98.66666666666667\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"130.7\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">15</text><text x=\"32.0\" y=\"70.3\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">8</text><text x=\"137.0\" y=\"61.3\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
 },
 "u5h4": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> Legs 5 and 12: 5² + 12² = c² → c = ?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 5 and 12: 5² + 12² = c² → c = ?",
 "a": [
 "13"
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides 12, 5, c\" viewBox=\"0 0 260 121\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,90.8 210.0,90.8 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"210.0\" y2=\"90.83333333333333\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"78.83333333333333\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"110.8\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">12</text><text x=\"32.0\" y=\"60.4\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">5</text><text x=\"137.0\" y=\"51.4\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
 },
 "chk54a": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> <span class=\"badge\">MC</span> Sides 8, 15, 17 — right triangle?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> <span class=\"badge\">MC</span> Sides 8, 15, 17 — right triangle?",
 "choices": [
 "Yes",
 "No"
@@ -261,7 +261,7 @@ window.NOTE_TWINS = {
 "why": "8² + 15² = 64 + 225 = 289; 17² = 289; 289 = 289 → YES, right triangle."
 },
 "chk54b": {
-"p": "<span class=\"np-lv l1 lvb\">★ Try it</span> <span class=\"badge\">MC</span> Sides 5, 8, 10 — right triangle?",
+"p": "<span class=\"np-lv l1 lvb\">Score 3</span> <span class=\"badge\">MC</span> Sides 5, 8, 10 — right triangle?",
 "choices": [
 "Yes",
 "No"

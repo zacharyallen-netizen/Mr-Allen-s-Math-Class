@@ -4,7 +4,7 @@
    Markup (write it right where the section ends):
 
    <div class="np" data-title="Two-Step Equations" [data-std="NC.8.EE.7"]>
-     <div class="np-q" data-level="1" data-ans="4">                       ← level 1 ★ Try it, 2 ★★ On level, 3 ★★★ Challenge
+     <div class="np-q" data-level="1" data-ans="4">                       ← level 1 = Score 3, 2 = Score 4, 3 = Score 5
        <div class="np-prompt">Solve: 2x + 3 = 11</div>
        [any figure / table / graph html]
        <div class="np-sol">2x + 3 − 3 = 11 − 3 → 2x = 8 → x = 4</div>     ← worked steps (shown after 2 misses, and in the answer key)
@@ -26,7 +26,7 @@
    Similar problems (Nov 2026): if notes-flow.js and grade8/twins/<page>.js give this question a twin, a wrong answer
    shows the answer and steps, then ONE similar problem (see notes-flow.js). Without a twin: hint, then the answer. */
 (function () {
-  var LV = { 1: '★ Try it', 2: '★★ On level', 3: '★★★ Challenge' };
+  var LV = { 1: 'Score 3', 2: 'Score 4', 3: 'Score 5' };          // every box (Nov 9, 2026: stars → Score labels)
   var SC = { 1: 'Score 3', 2: 'Score 4', 3: 'Score 5' };          // a box with data-score (Part 2 practice, Nov 2026)
   var css = document.createElement('style');
   css.textContent = [

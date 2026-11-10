@@ -112,7 +112,7 @@ T['np7-10'] = {'p': 'A triangle has corners at (0,&nbsp;0), (6,&nbsp;0), and (6,
                'sol': 'Bottom side: 6. Right side: 8. Slanted side: 6² + 8² = 36 + 64 = 100 → √100 = 10. Perimeter = 6 + 8 + 10 = 24'}
 
 # ---- quick checks (page checker) ----
-LV1, LV2, LV3 = '<span class="np-lv l1 lvb">★ Try it</span> ', '<span class="np-lv l2 lvb">★★ On level</span> ', '<span class="np-lv l3 lvb">★★★ Challenge</span> '
+LV1, LV2, LV3 = '<span class="np-lv l1 lvb">Score 3</span> ', '<span class="np-lv l2 lvb">Score 4</span> ', '<span class="np-lv l3 lvb">Score 5</span> '
 for id, (a, b) in {'u5h1': (6, 8), 'u5h2': (9, 12), 'u5h3': (8, 15), 'u5h4': (5, 12)}.items():
     c = hyp(a, b); assert c == int(c)
     T[id] = {'p': f'{LV1}Legs {a} and {b}: {a}² + {b}² = c² → c = ?', 'a': [str(int(c))], 'fig': fig_tri(b, a, str(b), str(a), 'c', 'c')}
