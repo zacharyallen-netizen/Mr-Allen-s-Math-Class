@@ -1,7 +1,7 @@
 // Rebuilds the Unit 9 printable worksheet and answer key from unit9-practice.html (same problems, same pictures).
 //   node _build/u9_pdfs.js
-const { chromium } = require('/home/claude/.npm-global/lib/node_modules/playwright');
-const G='/home/claude/mr-allen-s-math-class/grade8/';
+const { chromium } = require('playwright');
+const G=require('path').join(__dirname,'..','grade8')+'/';
 (async()=>{
   const b=await chromium.launch();
   for(const [mode,out] of [['worksheet','volume_worksheet.pdf'],['key','volume_answer_key.pdf']]){
