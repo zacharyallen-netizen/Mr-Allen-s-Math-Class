@@ -228,6 +228,20 @@
     return panel;
   }
 
+
+  /* ---------- progress on this device (for the "Keep going" button on unit pages) ---------- */
+  FX.progKey = function () { var m = location.search.match(/[?&]hw=([^&#]+)/); return location.pathname.split('/').pop() + (m ? '?hw=' + m[1] : ''); };
+  FX.prog = function (mark) {
+    var all; try { all = JSON.parse(ls('fx-prog') || '{}'); } catch (e) { all = {}; }
+    var k = FX.progKey(), e = all[k] || {}; if (mark === 'seen') e.s = Date.now(); if (mark === 'done') { if (e.d) return; e.d = 1; } all[k] = e; ls('fx-prog', JSON.stringify(all));
+  };
+  function finishedYet() {
+    var sb = document.getElementById('ssbtn'), hw = document.getElementById('done');
+    if ((sb && /Sent ✓/.test(sb.textContent)) || (hw && /homework_turn_in/.test(location.pathname) && hw.style.display === 'block')) FX.prog('done');
+    var n = [].filter.call(document.querySelectorAll(RSEL), function (b) { return !b.closest('.tw') && !b.matches('.tw'); }).length;
+    if (n && FX.count() >= n) FX.prog('done');
+  }
+
   /* ---------- small bar at the bottom: Sound on/off ---------- */
   function foot() {
     var f = document.createElement('div'); f.className = 'fx-foot';
@@ -249,8 +263,8 @@
     addCss(); watch(); hookSS(); setTimeout(hookSS, 800); styleButtons(); foot();
     document.addEventListener('click', gesture, true);
     document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) gesture(e); }, true);
-    readButtons(); stds(); window.addEventListener('pagehide', stop);
-    new MutationObserver(function () { clearTimeout(init.t); init.t = setTimeout(function () { styleButtons(); readButtons(); stds(); }, 120); }).observe(document.body, { childList: true, subtree: true });
+    readButtons(); stds(); FX.prog('seen'); window.addEventListener('pagehide', stop);
+    new MutationObserver(function () { clearTimeout(init.t); init.t = setTimeout(function () { styleButtons(); readButtons(); stds(); finishedYet(); }, 120); }).observe(document.body, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
