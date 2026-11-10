@@ -132,13 +132,6 @@ window.NOTE_TWINS = {
 "fig": "<div class=\"graph-area geo-fig\"><div class=\"geo\" data-geo='{\"type\": \"plane\", \"xmin\": -4, \"xmax\": 5, \"ymin\": -3, \"ymax\": 3, \"size\": 210, \"labelEvery\": 2, \"maxW\": 280, \"points\": [{\"x\": -3, \"y\": -2, \"label\": \"(−3, −2)\", \"pos\": \"w\", \"c\": \"blue\"}, {\"x\": 3, \"y\": 2, \"label\": \"(3, 2)\", \"pos\": \"n\", \"c\": \"blue\"}], \"alt\": \"the points (−3, −2) and (3, 2)\", \"segments\": [{\"p\": [-3, -2], \"q\": [3, -2], \"c\": \"green\", \"dash\": \"6 4\", \"label\": \"run = ?\", \"dy\": 16}, {\"p\": [3, -2], \"q\": [3, 2], \"c\": \"gold\", \"dash\": \"6 4\", \"label\": \"rise = ?\", \"dx\": 34, \"dy\": 4}]}'></div></div>",
 "sol": "m = <span class=\"frac-inline\"><span class=\"fn\">2 − (−2)</span><span class=\"fb\"></span><span class=\"fd\">3 − (−3)</span></span> = <span class=\"frac-inline\"><span class=\"fn\">4</span><span class=\"fb\"></span><span class=\"fd\">6</span></span>. Simplify: 2/3."
 },
-"p4": {
-"p": "Find the slope through (−2, 6) and (2, −6).",
-"a": "-3",
-"show": "−3",
-"fig": "<div class=\"graph-area geo-fig\"><div class=\"geo\" data-geo='{\"type\": \"plane\", \"xmin\": -5, \"xmax\": 6, \"ymin\": -7, \"ymax\": 7, \"size\": 210, \"labelEvery\": 2, \"maxW\": 280, \"points\": [{\"x\": -2, \"y\": 6, \"label\": \"(−2, 6)\", \"pos\": \"w\", \"c\": \"blue\"}, {\"x\": 2, \"y\": -6, \"label\": \"(2, −6)\", \"pos\": \"s\", \"c\": \"blue\"}], \"alt\": \"the points (−2, 6) and (2, −6)\", \"segments\": [{\"p\": [-2, 6], \"q\": [2, 6], \"c\": \"green\", \"dash\": \"6 4\", \"label\": \"run = ?\", \"dy\": 16}, {\"p\": [2, 6], \"q\": [2, -6], \"c\": \"gold\", \"dash\": \"6 4\", \"label\": \"rise = ?\", \"dx\": 34, \"dy\": 4}]}'></div></div>",
-"sol": "m = <span class=\"frac-inline\"><span class=\"fn\">−6 − 6</span><span class=\"fb\"></span><span class=\"fd\">2 − (−2)</span></span> = <span class=\"frac-inline\"><span class=\"fn\">−12</span><span class=\"fb\"></span><span class=\"fd\">4</span></span> = −3."
-},
 "p5": {
 "p": "Find the slope through (−3, 5) and (4, 5). Type “undefined” if the slope is undefined.",
 "a": "0",

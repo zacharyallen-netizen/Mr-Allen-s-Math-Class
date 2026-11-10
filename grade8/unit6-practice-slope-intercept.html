@@ -86,6 +86,7 @@
   .machine-cap { font-size: 12.5px; color: #6B7488; text-align: center; font-weight: 600; margin-top: 3px; }
   @media (max-width: 520px) { .card-content { flex-direction: column; } .grid-wrap { max-width: 100%; } .header h1 { font-size: 20px; } }
 </style>
+<style>.pr-lv{font:700 12px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;margin-left:10px;white-space:nowrap}.pr-lv.l3{background:#E7F6EC;color:#15803D}.pr-lv.l4{background:#E8F0FB;color:#0056B3}.pr-lv.l5{background:#FDF0E1;color:#B45309}</style>
 <style id="u6-consistency">
 /* Unit 6 typography unified to the guided-notes look (Units 4 & 5) */
 body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif !important}
@@ -111,7 +112,7 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
   </div>
   <div class="progress-bar-wrap">
     <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-    <div class="progress-bar-text" id="progressText">0 of 6 Complete</div>
+    <div class="progress-bar-text" id="progressText">0 of 4 Complete</div>
   </div>
   <div class="celebration" id="celebration">🎉 Practice Set Complete! You're a slope-intercept pro! 🎉</div>
   <div id="cards"></div>
@@ -121,17 +122,13 @@ code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace 
 <script src="../geo-svg.js"></script>
 <script>
 const EQUATIONS = [
-  { id:1, label:"y = 2x", desc:"2x", fn:x=>2*x, xVals:[-3,-2,-1,0,1,2,3],
-    hint:(x)=>`Substitute <strong>x = ${x}</strong> into y = 2x → y = 2 · (${x}) = <strong>?</strong>` },
-  { id:2, label:"y = 2x + 1", desc:"2x+1", fn:x=>2*x+1, xVals:[-3,-2,-1,0,1,2,3],
+  { id:2, lv:3, label:"y = 2x + 1", desc:"2x+1", fn:x=>2*x+1, xVals:[-3,-2,-1,0,1,2,3],
     hint:(x)=>`Substitute <strong>x = ${x}</strong> into y = 2x + 1 → y = 2·(${x}) + 1 = <strong>?</strong>` },
-  { id:3, label:"y = −2x + 5", desc:"-2x+5", fn:x=>-2*x+5, xVals:[-2,-1,0,1,2,3,4],
+  { id:3, lv:4, label:"y = −2x + 5", desc:"-2x+5", fn:x=>-2*x+5, xVals:[-2,-1,0,1,2,3,4],
     hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = −2·(${x}) + 5 = <strong>?</strong>` },
-  { id:4, label:"y = ⅓x", desc:"⅓x", fn:x=>x/3, xVals:[-6,-3,0,3,6,9],
-    hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = ⅓ · (${x}) = <strong>?</strong>` },
-  { id:5, label:"y = ⅓x − 2", desc:"⅓x−2", fn:x=>x/3-2, xVals:[-6,-3,0,3,6,9],
+  { id:5, lv:5, label:"y = ⅓x − 2", desc:"⅓x−2", fn:x=>x/3-2, xVals:[-6,-3,0,3,6,9],
     hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = ⅓·(${x}) − 2 = <strong>?</strong>` },
-  { id:6, label:"y = −½x + 1", desc:"-½x+1", fn:x=>-x/2+1, xVals:[-4,-2,0,2,4,6,8],
+  { id:6, lv:5, label:"y = −½x + 1", desc:"-½x+1", fn:x=>-x/2+1, xVals:[-4,-2,0,2,4,6,8],
     hint:(x)=>`Substitute <strong>x = ${x}</strong> → y = −½·(${x}) + 1 = <strong>?</strong>` },
 ];
 
@@ -160,9 +157,9 @@ const state = EQUATIONS.map(eq=>({
 function updateProgress(){
   const done=state.filter(s=>s.complete).length;
   document.getElementById('progressFill').style.width=(done/6*100)+'%';
-  document.getElementById('progressText').textContent=`${done} of 6 Complete`;
+  document.getElementById('progressText').textContent=`${done} of ${EQUATIONS.length} Complete`;
   const c=document.getElementById('celebration');
-  if(done===6)c.classList.add('show');else c.classList.remove('show');
+  if(done===EQUATIONS.length)c.classList.add('show');else c.classList.remove('show');
 }
 
 function buildSVG(idx){
@@ -280,7 +277,7 @@ function render(idx){
 function buildCard(idx){
   const eq=EQUATIONS[idx];
   let rows='';eq.xVals.forEach((xv,i)=>{rows+=`<tr><td class="x-cell">${xv}</td><td class="y-cell y-cell-${i}"><input type="text" class="y-input" data-idx="${idx}" data-i="${i}" value="" inputmode="text"></td></tr>`;});
-  return`<div class="card" id="card-${idx}"><div class="card-header"><div style="display:flex;align-items:center"><span class="eq-badge">${eq.id}</span><span class="eq-label">${eq.label}</span></div><div class="btn-group"><button class="btn btn-hint" onclick="getHint(${idx})">💡 Hint</button><button class="btn btn-check" onclick="checkAnswers(${idx})">Check</button><button class="btn btn-show" style="display:none" onclick="showAnswer(${idx})">Show Answer</button><button class="btn btn-reset" onclick="resetEq(${idx})">Reset</button></div></div><div class="machine">${machineSVG(eq)}<div class="machine-cap">Each x in the table goes through the machine to make its y.</div></div><div class="feedback-area"></div><div class="card-content"><div><table class="eq-table"><thead><tr><th>Input (x)</th><th>${eq.label}</th></tr></thead><tbody>${rows}</tbody></table><div class="attempts"></div></div><div class="grid-wrap"><div class="grid-svg"></div><div class="grid-help">Click to plot points · click again to remove</div><div class="point-feedback"></div></div></div><div class="step-area"></div></div>`;
+  return`<div class="card" id="card-${idx}"><div class="card-header"><div style="display:flex;align-items:center"><span class="eq-badge">${idx+1}</span><span class="eq-label">${eq.label}</span><span class="pr-lv l${eq.lv}">Score ${eq.lv}</span></div><div class="btn-group"><button class="btn btn-hint" onclick="getHint(${idx})">💡 Hint</button><button class="btn btn-check" onclick="checkAnswers(${idx})">Check</button><button class="btn btn-show" style="display:none" onclick="showAnswer(${idx})">Show Answer</button><button class="btn btn-reset" onclick="resetEq(${idx})">Reset</button></div></div><div class="machine">${machineSVG(eq)}<div class="machine-cap">Each x in the table goes through the machine to make its y.</div></div><div class="feedback-area"></div><div class="card-content"><div><table class="eq-table"><thead><tr><th>Input (x)</th><th>${eq.label}</th></tr></thead><tbody>${rows}</tbody></table><div class="attempts"></div></div><div class="grid-wrap"><div class="grid-svg"></div><div class="grid-help">Click to plot points · click again to remove</div><div class="point-feedback"></div></div></div><div class="step-area"></div></div>`;
 }
 
 const cardsEl=document.getElementById('cards');

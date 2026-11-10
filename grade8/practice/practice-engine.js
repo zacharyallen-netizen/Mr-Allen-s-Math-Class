@@ -120,7 +120,7 @@
     sec.probs.forEach(function (p) {
       var id = 's' + si + 'p' + p.n; total++;
       html.push('<div class="pr-card" id="' + id + '" data-si="' + si + '">' +
-        '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + '</div><div class="pr-q">' + p.q + '</div>' +
+        '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + (p.lv ? ' <span class="pr-lv l' + p.lv + '">Score ' + p.lv + '</span>' : '') + '</div><div class="pr-q">' + p.q + '</div>' +
         (p.fig ? '<img class="pr-fig" src="' + p.fig + '" alt="Figure for problem ' + p.n + '" loading="lazy"' +
           (p.size ? ' width="' + Math.round(p.size[0] / 2) + '" height="' + Math.round(p.size[1] / 2) + '"' : '') + '>' : '') +
         '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"' + (/[<>≤≥]/.test(stripHtml(p.ans).replace(/&lt;/g, '<').replace(/&gt;/g, '>')) ? ' data-ineq' : '') + ' aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +

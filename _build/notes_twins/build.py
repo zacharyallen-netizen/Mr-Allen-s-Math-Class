@@ -19,6 +19,8 @@ for k in sys.argv[1:] or PAGES:
     # Part 2 practice (Nov 9, 2026): Score 3 / 4 / 5 labels in the twins' prompts; problems cut from Part 2 lose their twins
     sc = SCORES.get(page, {})
     P2 = {'unit2-notes-exponents': r'u2pA', 'unit2-notes-sci-notation': r'u2p[BC]', 'unit3-notes': r'(p[ABC]\d|np9-)', 'unit4-notes': r'(u4p|np5-)', 'unit5-notes': r'(u5p[A-E]|np7-)'}
+    CUT = {'unit6-notes-slope': ['p4']}            # Unit 6 cuts (Nov 9, 2026; _build/u6_scores.py)
+    for k in CUT.get(page, []): mod.T.pop(k, None)
     if page in P2:
         for k in [k for k in mod.T if re.match(P2[page], k) and k not in sc]: del mod.T[k]
     for k, t in mod.T.items():
