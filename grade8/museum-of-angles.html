@@ -183,7 +183,7 @@ button,input,select{font:inherit;color:inherit}
     </section>
     <div class="wings">
       <section class="wing" aria-labelledby="wa"><h3 id="wa">📐 Angle Wing</h3><p class="sub">Unit 4 · NC.8.G.5 · angle relationships, triangles, similarity</p><div class="rooms" id="roomsA"></div></section>
-      <section class="wing" aria-labelledby="wt"><h3 id="wt">🔁 Transformations Wing</h3><p class="sub">Unit 8 · NC.8.G.1–G.4 · reflections, translations, rotations, dilations</p><div class="rooms" id="roomsT"></div></section>
+      <section class="wing" aria-labelledby="wt"><h3 id="wt">🔁 Transformations Wing</h3><p class="sub">Unit 8 · NC.8.G.2–G.4 · reflections, translations, rotations, dilations</p><div class="rooms" id="roomsT"></div></section>
     </div>
     <div id="sendMount"></div>
   </main>
@@ -673,7 +673,7 @@ function genSlide(){
     {type:'rule',kind:'Translations',prompt:'Figure ABC slid to figure A′B′C′. Complete the <b>rule</b>.',answer:[a,b],hint:'translate',scene:s1,why:`Every point moved ${a} right and ${b} up: (x + ${a}, y + ${b}).`,std:'NC.8.G.3'},
     {type:'coord',kind:'Translations',prompt:`Translate figure ABC using <b>(x, y) → (x ${c<0?MINUS+' '+(-c):'+ '+c}, y ${d<0?MINUS+' '+(-d):'+ '+d})</b>. Where does <b>B</b> land?`,answer:[B[0]+c,B[1]+d],hint:'translate',scene:base,why:`B${fmtPt(B)} → ${fmtPt([B[0]+c,B[1]+d])}.`,std:'NC.8.G.3'},
     {type:'tapShape',kind:'Translations',prompt:`Tap the image of ABC after <b>(x, y) → (x ${MINUS} ${e}, y + ${f})</b>.`,accept:['ok'],names:{swap:`(x ${MINUS} ${f}, y + ${e}): the numbers were swapped`,sign:`(x + ${e}, y ${MINUS} ${f}): the directions were flipped`},hint:'translate',scene:ts.scene,why:`${e} left and ${f} up.`,std:'NC.8.G.3'},
-    {type:'choice',kind:'Translations',prompt:'Which statement about a translation is <b>true</b>?',options:shuffle([{t:'The image has the same size and shape (congruent).',ok:true},{t:'The image is larger than the original.',ok:false},{t:'The image is turned to face a new direction.',ok:false},{t:'The angles of the image change.',ok:false}]),hint:'rigid',scene:s1,why:'A slide moves every point the same way, so nothing about the size or shape changes.',std:'NC.8.G.1'},
+    {type:'choice',kind:'Translations',prompt:'Which statement about a translation is <b>true</b>?',options:shuffle([{t:'The image has the same size and shape (congruent).',ok:true},{t:'The image is larger than the original.',ok:false},{t:'The image is turned to face a new direction.',ok:false},{t:'The angles of the image change.',ok:false}]),hint:'rigid',scene:s1,why:'A slide moves every point the same way, so nothing about the size or shape changes.',std:'NC.8.G.2'},
   ];
 }
 function genTurn(){
@@ -702,7 +702,7 @@ function genCongruence(){
   const ts=tapScene(S,[{k:'cong',T:fit(cong)},{k:'dil',T:fit(dil)},{k:'str',T:fit(str)}],['','','']);ts.scene.lines=figHTML(S,'#f2c14e',null,'A');
   return [
     {type:'choice',kind:'Congruence',prompt:'Which sequence maps <b>figure A</b> onto <b>figure B</b>?',options:shuffle(opts),hint:'rigid',scene:s1,why:`${DESC[first]}, then ${tr(a,b)}.`,std:'NC.8.G.2'},
-    {type:'choice',kind:'Rigid transformations',prompt:'Rigid transformations keep many things the same. Which one is <b>NOT</b> always kept the same?',options:shuffle([{t:'The figure’s location on the grid',ok:true},{t:'Side lengths',ok:false},{t:'Angle measures',ok:false},{t:'Area',ok:false}]),hint:'rigid',scene:s1,why:'The figure moves, so its location changes; its size and shape don’t.',std:'NC.8.G.1'},
+    {type:'choice',kind:'Rigid transformations',prompt:'Rigid transformations keep many things the same. Which one is <b>NOT</b> always kept the same?',options:shuffle([{t:'The figure’s location on the grid',ok:true},{t:'Side lengths',ok:false},{t:'Angle measures',ok:false},{t:'Area',ok:false}]),hint:'rigid',scene:s1,why:'The figure moves, so its location changes; its size and shape don’t.',std:'NC.8.G.2'},
     {type:'tapShape',kind:'Congruence',prompt:'Tap the figure that is <b>congruent</b> to figure A.',accept:['cong'],names:{dil:'a dilation: it is bigger, so it is similar but not congruent',str:'stretched in one direction only, so its shape changed'},hint:'rigid',scene:ts.scene,why:'It was rotated and slid, so its size and shape are the same.',std:'NC.8.G.2'},
     {type:'choice',kind:'Congruence',prompt:'A figure is reflected over the y-axis and then translated 3 units down. Is the image congruent to the original?',options:shuffle([{t:'Yes. Reflections and translations are rigid motions, so size and shape stay the same.',ok:true},{t:'No. A reflection flips it, so it is a different shape.',ok:false},{t:'No. Moving it changes its size.',ok:false},{t:'Only if the translation happens first.',ok:false}]),hint:'rigid',scene:s1,why:'Any sequence of rigid motions produces a congruent image.',std:'NC.8.G.2'},
   ];
@@ -740,7 +740,7 @@ const ROOMS=[
   {id:'t1',wing:'T',n:'Room T1',name:'Mirror Room',tg:'Reflections over the axes',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genMirror,art:['Floor Plan with Mirrors','Reflections on Tile']},
   {id:'t2',wing:'T',n:'Room T2',name:'Slide Room',tg:'Translations and rules',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genSlide,art:['Sliding Exhibits','Moving Day']},
   {id:'t3',wing:'T',n:'Room T3',name:'Turn Room',tg:'Rotations 90° and 180°',target:'NC.8.G.3',std:'NC.8.G.3',band:3,gen:genTurn,art:['The Turning Floor','Quarter Turns']},
-  {id:'t4',wing:'T',n:'Room T4',name:'Congruence Studio',tg:'Sequences of rigid motions',target:'NC.8.G.1 · G.2',std:'NC.8.G.2',band:4,gen:genCongruence,art:['Two of a Kind','Matching Pieces']},
+  {id:'t4',wing:'T',n:'Room T4',name:'Congruence Studio',tg:'Sequences of rigid motions',target:'NC.8.G.2',std:'NC.8.G.2',band:4,gen:genCongruence,art:['Two of a Kind','Matching Pieces']},
   {id:'t5',wing:'T',n:'Room T5',name:'Scale Studio',tg:'Dilations and similarity',target:'NC.8.G.3 · G.4',std:'NC.8.G.4',band:4,gen:genScale,art:['Grow and Shrink','Scaled Studies']},
 ];
 const byId=Object.fromEntries(ROOMS.map(r=>[r.id,r]));

@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261110h', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261110i', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)
@@ -157,6 +157,12 @@
     if (scroll) { end.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' }); end.querySelector('h2').focus({ preventScroll: true }); }
   }
   function go(i) { idx = Math.max(0, Math.min(items.length, i)); render(true); }
+  // "jump to Part 3" links (#p3) on a paged page go to the first problem of that part
+  document.addEventListener('click', function (e) {
+    var l = e.target.closest && e.target.closest('a[href^="#"]'); if (!l || !on || !root || l.closest('.oat-end')) return;
+    var t; try { t = document.getElementById(l.getAttribute('href').slice(1)); } catch (x) { return; } if (!t) return;
+    for (var k = 0; k < items.length; k++) if (t === items[k] || t.contains(items[k])) { e.preventDefault(); go(k); return; }
+  });
   function setMode(v) {
     on = v; try { localStorage.setItem(KEY, v ? 'one' : 'all'); } catch (e) {}
     render(false); (v ? top : mode).scrollIntoView({ block: 'start' });

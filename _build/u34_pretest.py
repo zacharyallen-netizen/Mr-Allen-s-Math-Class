@@ -236,7 +236,7 @@ var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',functi
 })();
 """
             h = open(out).read()
-            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="step-work.js?v=20261110j"></script><script src="one-at-a-time.js?v=20261110l"></script>\n'
+            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="step-work.js?v=20261110j"></script><script src="one-at-a-time.js?v=20261110m"></script>\n'
             i = h.rindex('</body>'); h = h[:i] + tag + h[i:]
             open(out, 'w').write(h)
         print('built', out)

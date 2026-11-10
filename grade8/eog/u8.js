@@ -1,6 +1,6 @@
 /* Unit 8 EOG Practice: Transformations. From "EOG Unit Practice · Grade 8" (Version 1 and Version 2) and its answer key. */
 (function () { var H = EOGU.h, SF = H.SF, MO = H.MO, I = H.I, C = H.C;
-EOGU.add(8, { title: "Unit 8: Transformations", std: "NC.8.G.1–4", back: "unit8.html",
+EOGU.add(8, { title: "Unit 8: Transformations", std: "NC.8.G.2–4", back: "unit8.html",
 v1: { parts: [
  { title: "No calculator", std: "NC.8.G.2–4", calc: false, qs: [
   { id: "u8a1", std: "NC.8.G.3", text: "Point (3, −5) is reflected across the " + I("y") + "-axis. What are the coordinates of its image?",
@@ -84,14 +84,14 @@ v1: { parts: [
  ] }
 ] },
 v2: { parts: [
- { title: "Read the box, then choose A, B or C", std: "NC.8.G.1–4", qs: [
+ { title: "Read the box, then choose A, B or C", std: "NC.8.G.2–4", qs: [
   { id: "u8b1", std: "NC.8.G.3", box: "A translation slides a figure.", text: "Point (2, 3) slides 4 units to the right. Where does it land?",
     opts: [{ h: "(−2, 3)", why: "That moved left. Right means add to x: 2 + 4." }, { h: "(6, 3)", ok: 1 }, { h: "(2, 7)", why: "That moved up. Right changes x, not y." }],
     ok: "Right 4: add 4 to x. (2 + 4, 3) = (6, 3)." },
   { id: "u8b2", std: "NC.8.G.3", box: "A reflection flips a figure. Across the " + I("x") + "-axis, change the sign of " + I("y") + ".", text: "Reflect (4, 2) across the " + I("x") + "-axis.",
     opts: [{ h: "(4, −2)", ok: 1 }, { h: "(2, 4)", why: "Don't swap the numbers. Change the sign of y." }, { h: "(−4, 2)", why: "That changes x. Across the x-axis, change y." }],
     ok: "Change the sign of y: (4, 2) → (4, −2)." },
-  { id: "u8b3", std: "NC.8.G.1", box: "There are three ways to move a figure: slide, flip and turn.", text: "Which transformation turns a figure around a point?",
+  { id: "u8b3", std: "NC.8.G.2", box: "There are three ways to move a figure: slide, flip and turn.", text: "Which transformation turns a figure around a point?",
     opts: [{ h: "translation", why: "A translation slides." }, { h: "rotation", ok: 1 }, { h: "reflection", why: "A reflection flips." }],
     ok: "A rotation turns a figure around a point." },
   { id: "u8b4", std: "NC.8.G.4", box: "A dilation changes the size. Multiply each length by the scale factor.", text: "A side is 3 units long. The scale factor is 2. How long is the new side?",
@@ -100,7 +100,7 @@ v2: { parts: [
   { id: "u8b5", std: "NC.8.G.2", box: "Congruent figures have the same size and the same shape.", text: "Which transformation keeps the same size?",
     opts: [{ h: "dilation by " + SF(1, 2), why: "A dilation by " + SF(1, 2) + " makes it smaller." }, { h: "dilation by 3", why: "A dilation by 3 makes it bigger." }, { h: "translation", ok: 1 }],
     ok: "A translation only slides the figure, so the size stays the same." },
-  { id: "u8b6", std: "NC.8.G.1", box: "This shows a figure (blue) and its image (gold).", text: "Which transformation moved the figure?",
+  { id: "u8b6", std: "NC.8.G.2", box: "This shows a figure (blue) and its image (gold).", text: "Which transformation moved the figure?",
     fig: function () { var g = new H.Grid(-6, 6, -5, 5, { step: 2 }), A = [[-5, 1], [-2, 1], [-2, 4]], B = [[2, -3], [5, -3], [5, 0]]; return g.svg(g.poly(A, C.blue, true) + g.poly(B, C.goldT, true, true), "A blue triangle in the upper left and the same triangle, facing the same way, in the lower right"); },
     opts: [{ h: "translation", ok: 1 }, { h: "reflection", why: "A reflection would flip it. The image faces the same way." }, { h: "rotation", why: "A rotation would turn it. The image faces the same way." }],
     ok: "The image is the same size and faces the same way. It just slid: a translation." },

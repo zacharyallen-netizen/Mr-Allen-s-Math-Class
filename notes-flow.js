@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('student-fx.js?v=20261110h', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('student-fx.js?v=20261110i', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* notes-flow.js — Interactive Notes, one section at a time + "try a similar one" (Nov 2026).
 
    1) ONE SECTION AT A TIME
@@ -9,7 +9,7 @@
       students can move through the notes on their own (practice at home).
       The page remembers the last section on this device (localStorage "nf:<page>").
       Paper copies (?paper=1) and printing show every section.
-      Sections: section.topic (default). A page can set window.NF = { sections: '.tab-pane', active: true, hook: 'switchTab' }
+      Sections: section.topic (default; tutorials/reviews use { sections: 'section.part', word: 'Part', between: '.unitdiv' }). A page can set window.NF = { sections: '.tab-pane', active: true, hook: 'switchTab' }
       before this script (active: true = the page's CSS shows a section with class "active"; hook = the page's own
       tab/section function, so its in-page buttons still work).
 
@@ -217,7 +217,7 @@
         if (cfg.active) s.classList.toggle('active', on);
       });
       S[cur].insertAdjacentElement('afterend', bot);
-      top.querySelector('.nf-count').textContent = 'Section ' + (cur + 1) + ' of ' + S.length;
+      top.querySelector('.nf-count').textContent = (cfg.word || 'Section') + ' ' + (cur + 1) + ' of ' + S.length;
       top.querySelector('.nf-title').textContent = titleOf(S[cur]);
       top.querySelector('.nf-bar i').style.width = Math.round(100 * (cur + 1) / S.length) + '%';
       var back = bot.querySelector('.nf-back'), next = bot.querySelector('.nf-next');
@@ -230,6 +230,7 @@
         try { origHook(cfg.hookArg === 'id' ? S[cur].id : cur); } catch (e) {}
         window.scrollTo = st;
       }
+      if (cfg.between) [].forEach.call(S[0].parentNode.children, function (el) { if (S.indexOf(el) >= 0 || !el.matches(cfg.between)) return; var n = el.nextElementSibling; while (n && S.indexOf(n) < 0) n = n.nextElementSibling; el.style.display = n === S[cur] ? '' : 'none'; });
       if (cfg.onShow) try { cfg.onShow(S[cur], cur); } catch (e) {}
       try { window.dispatchEvent(new Event('resize')); } catch (e) {}
       if (scroll) top.scrollIntoView({ block: 'start' });
