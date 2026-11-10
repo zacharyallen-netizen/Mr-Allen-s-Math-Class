@@ -17,10 +17,10 @@ def vocab_table(terms, defs):
 terms = ['scientific notation', 'coefficient', 'standard form', 'base', 'positive exponent', 'negative exponent']
 defs = [
     ('A', 'A number written the ordinary way. <span class="ex">Example: 2,700 or 0.05</span>'),
-    ('B', 'The decimal factor in a × 10ⁿ — at least 1 and less than 10. <span class="ex">Example: the 8.3 in 8.3 × 10⁶</span>'),
+    ('B', 'The first number in a × 10ⁿ. It is at least 1 and less than 10. <span class="ex">Example: the 8.3 in 8.3 × 10⁶</span>'),
     ('C', 'Shows a small number between 0 and 1 (move the decimal left). <span class="ex">Example: the −2 in 5 × 10⁻² = 0.05</span>'),
     ('D', 'A number written as a × 10ⁿ, where 1 ≤ a &lt; 10. <span class="ex">Example: 8.3 × 10⁶</span>'),
-    ('E', 'In a power of ten, the number that is multiplied repeatedly. <span class="ex">Example: the 10 in 10⁴ = 10 · 10 · 10 · 10</span>'),
+    ('E', 'In a power of ten, the number that is multiplied again and again. <span class="ex">Example: the 10 in 10⁴ = 10 · 10 · 10 · 10</span>'),
     ('F', 'Shows a large number, 10 or greater (move the decimal right). <span class="ex">Example: the 6 in 8.3 × 10⁶ = 8,300,000</span>'),
 ]
 vocab_key = {'scientific notation':'D','coefficient':'B','standard form':'A','base':'E','positive exponent':'F','negative exponent':'C'}
@@ -108,7 +108,7 @@ cfg = {
    {'num':'3.0','name':'Basic Understanding','level':'basic','code':'NC.8.EE.3',
     'obj':'',
     'can':'I can write numbers in scientific notation and in standard form, like 45,000 = 4.5 × 10⁴.',
-    'prompt':'Match each vocabulary term to its definition, fill in the parts of a number in scientific notation, then write each number as directed.',
+    'prompt':'Match each word to its meaning. Fill in the parts of a number in scientific notation. Then write each number the way it asks.',
     'vocab_html':vocab_table(terms,defs),'refbox':refbox},
    {'num':'4.0','name':'Target Content','level':'target','code':'NC.8.EE.4',
     'obj':'',

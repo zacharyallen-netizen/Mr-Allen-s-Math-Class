@@ -34,7 +34,7 @@ defs=[('A','Terms with the same variable raised to the same power.'),
       ('C','A number multiplied by a variable.'),
       ('D','Operations that undo each other, such as + and −.'),
       ('E','A term with no variable — just a number.'),
-      ('F','Multiplying a factor across each term inside parentheses.')]
+      ('F','Multiplying the number outside the parentheses by each term inside.')]
 key={'coefficient':'C','constant':'E','inverse operations':'D','solution':'B','distributive property':'F','like terms':'A'}
 rb=refbox('Keep the equation balanced — worked example',
       '<p style="text-align:center;font-size:17px;margin:6px 0">2x + 5 = 13  →  <i>subtract 5</i>  →  2x = 8  →  <i>divide by 2</i>  →  <b>x = 4</b></p>'
@@ -66,7 +66,7 @@ CFGS.append(dict(file='unit3-pretest.html',unit='unit3',unitlabel='Unit 3',
    dict(num='3.0',name='Basic Understanding',level='basic',code='NC.8.EE.7',
      obj='Solve linear equations in one variable.',
      can='I can solve one-step and two-step equations using inverse operations.',
-     prompt='Match each vocabulary term to its definition, then solve each equation.',
+     prompt='Match each word to its meaning. Then solve each equation.',
      vocab_html=vocab_table(terms,defs),refbox=rb),
    dict(num='4.0',name='Target Content',level='target',code='NC.8.EE.7',
      obj='Solve equations with the distributive property and variables on both sides.',
@@ -74,8 +74,8 @@ CFGS.append(dict(file='unit3-pretest.html',unit='unit3',unitlabel='Unit 3',
      prompt='Solve each equation. Show your work.'),
    dict(num='5.0',name='Advanced Content',level='advanced',code='NC.8.EE.7',
      obj='Solve equations with fractions or decimals and identify special solutions.',
-     can='I can solve equations with rational coefficients and recognize equations with one, none, or infinitely many solutions.',
-     prompt='Solve. If there is no solution or infinitely many, write that instead.'),
+     can='I can solve equations with fractions or decimals and tell if an equation has one, no, or infinitely many solutions.',
+     prompt='Solve. If no number works, write no solution. If every number works, write infinitely many.'),
   ],qs=qs))
 
 # ============================================================ UNIT 4 — Angles & Geometry
