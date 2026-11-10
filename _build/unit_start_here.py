@@ -32,6 +32,8 @@ UNIT2 = [('part1', 'Exponent Rules', 'Notes, then practice.'),
          ('homework', 'Homework', 'Do each homework after its lesson.'),
          ('pretest', 'Pre-Tests', 'Check yourself at the end, before the unit test.')]
 
+PRACTICE_DESC = {6: 'Practice, then More Practice & Review.', 9: 'Check each answer as you go.'}   # Nov 10, 2026
+
 
 def strip(steps, title='Start here: do these in order'):
     lis = ''.join(f'<li><a href="#{a}"><span class="sh-n">{k}</span><span><span class="sh-t">{t}</span><span class="sh-d">{d}</span></span></a></li>'
@@ -77,6 +79,7 @@ def do(u):
         if not x.endswith('\n\n'): x = x.rstrip('\n') + '\n\n'
         out.append(x)
     steps = UNIT2 if u == 2 else DEFAULT
+    if u in PRACTICE_DESC: steps = [(a, t, PRACTICE_DESC[u] if a == 'practice' else d) for a, t, d in steps]
     missing = [a for a, _, _ in steps if a not in used]
     assert not missing, (u, missing)
     s = s[:start] + strip(steps) + ''.join(out) + s[end:]
