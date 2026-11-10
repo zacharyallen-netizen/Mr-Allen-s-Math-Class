@@ -125,7 +125,7 @@ NAV = """<script src="../site-bar.js"></script>
 TRACKER = """<style>@media (max-width:760px){{body>#scoresend{{margin:24px 12px!important}}}}</style>
 <script src="../tracker-config.js"></script>
 <script src="../score-send.js"></script>
-<script src="step-work.js?v=20261110d"></script><script src="one-at-a-time.js?v=20261110d"></script>
+<script src="step-work.js?v=20261110e"></script><script src="one-at-a-time.js?v=20261110e"></script>
 <script>if(window.ScoreSend)ScoreSend.setup({setup});</script>"""
 
 # grade 8 codes (NC.8.EE.7) and Math 1 codes (NC.M1.A-REI.3, NC.M1.F-IF.8b)
