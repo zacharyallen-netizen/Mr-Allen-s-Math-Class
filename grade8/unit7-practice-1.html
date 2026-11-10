@@ -88,6 +88,7 @@ details.pfig-check>summary{cursor:pointer;font-weight:700;color:#1E2D4F;font-siz
 <nav class="sb-local" aria-label="On this page"><a href="unit1.html">U1</a> <a href="unit2.html">U2</a> <a href="unit3.html">U3</a> <a href="unit4.html">U4</a> <a href="unit5.html">U5</a> <a href="unit6.html">U6</a> <a href="unit7.html" aria-current="page">U7</a> <a href="unit8.html">U8</a> <a href="volume.html">U9</a> <a href="Fluency-Lab-Package/fluency-lab/index.html">Fluency</a></nav>
 <div class="wrap">
 <div class="page-hdr"><h1>✏️ Unit 7 Practice 1 — Data Analysis</h1><p>Work through with your teacher · NC.8.SP.1–4</p></div>
+<style>@media print{.pdf-links{display:none!important}}</style><div class="pdf-links" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px"><a href="Unit7_Practice1_Blank.pdf" target="_blank" rel="noopener" style="font:700 14px Inter,system-ui,sans-serif;padding:8px 14px;background:#fff;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;color:#1E2D4F;border:2px solid #1E2D4F">🖨️ Print PDF</a><a href="Unit7_Practice1_AnswerKey.pdf" target="_blank" rel="noopener" style="font:700 14px Inter,system-ui,sans-serif;padding:8px 14px;background:#fff;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;color:#14532D;border:2px solid #15803D">✅ Answer Key (PDF)</a></div>
 
 <div class="tabs">
   <button class="tab-btn active" onclick="openTab('u7c1',this)">📊 Scatterplots</button>
@@ -746,5 +747,43 @@ function revealStep(prefix, total) {
 
 </script>
 <script src="one-at-a-time.js?v=20261109b"></script>
+<script>
+/* Paper copy only (?paper=1, used by _build/notes_pdf.js → Unit7_Practice1_Blank.pdf / Unit7_Practice1_AnswerKey.pdf).
+   All tabs shown; answer buttons become ○ choices (the key marks the right one in green); feedback,
+   score boxes, tabs and the top links are dropped; each question stays on one page. */
+window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
+  var st = document.createElement('style');
+  st.textContent = 'body.paper .tab-pane{display:block!important;border:0!important;padding:0!important;margin:0 0 6px}' +
+    'body.paper .tabs,body.paper .score-box,body.paper .sb-local,body.paper .fb{display:none!important}' +
+    'body.paper .pp-grid{display:block;font-size:0}body.paper .pp-grid>.qc{display:inline-block;vertical-align:top;width:calc(50% - 6px);margin:0 0 8px 0!important;font-size:16px}body.paper .pp-grid>.qc:nth-child(odd){margin-right:12px!important}' +
+    'body.paper .pfig{max-width:230px!important;margin:2px auto!important}body.paper .dia{max-width:250px!important;margin:2px auto!important}body.paper .dia svg{max-height:1.7in;width:auto!important;max-width:100%}body.paper .pp-mc{columns:2;column-gap:14px}body.paper .pfig svg{max-height:1.45in;width:auto!important;max-width:100%}' +
+    'body.paper .pfig-row>.pfig,body.paper .pfig-row>.pfig-box{max-width:240px!important}body.paper .pfig-cap{font-size:.8em}' +
+    'body.paper h2{break-after:avoid}body.paper .qc{break-inside:avoid;box-shadow:none!important;margin-bottom:8px!important}body.paper .tip,body.paper .study-step{break-inside:avoid}';
+  document.head.appendChild(st);
+  document.querySelectorAll('.tab-pane').forEach(function (pane) {   // questions two to a row
+    var run = [];
+    function flush() { if (run.length > 1) { var g = document.createElement('div'); g.className = 'pp-grid'; run[0].before(g); run.forEach(function (q) { g.appendChild(q); }); } run = []; }
+    Array.prototype.slice.call(pane.children).forEach(function (c) { if (c.classList.contains('qc')) run.push(c); else flush(); }); flush();
+  });
+  document.querySelectorAll('table.freq').forEach(function (t) {   // keep a table with the lines that introduce it
+    var box = t.parentElement; if (box && !box.classList.contains('tab-pane') && !box.classList.contains('qc')) box.style.breakInside = 'avoid';
+  });
+  var hdr = document.querySelector('.page-hdr'), nm = hdr && hdr.querySelector('.pp-name,.pp-keybar');
+  if (nm) hdr.after(nm);
+  document.querySelectorAll('.qc *').forEach(function (el) {   // web-only hints ("appears after you answer")
+    if (!el.children.length && /after you answer/i.test(el.textContent)) el.style.display = 'none';
+    else if (el.classList.contains('fig-key') && /^After you answer/i.test(el.textContent.trim())) el.style.display = 'none';
+  });
+  document.querySelectorAll('.qc .opts').forEach(function (box) {
+    var h = '<ol class="pp-mc">';
+    box.querySelectorAll('.ob').forEach(function (b) {
+      var m = /mc\(this,'[^']*','((?:[^'\\]|\\.)*)'\)/.exec(b.getAttribute('onclick') || ''), ok = m && b.textContent.trim() === m[1].replace(/\\'/g, "'").trim();
+      h += '<li class="' + (KEY && ok ? 'ok' : '') + '"><span class="o"></span>' + b.innerHTML.trim() + '</li>';
+    });
+    box.outerHTML = h + '</ol>';
+  });
+});
+</script>
+<script src="../paper.js"></script>
 </body>
 </html>

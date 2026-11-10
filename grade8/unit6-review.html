@@ -114,6 +114,7 @@ body.class-mode .score{display:none}
 @media(min-width:720px){body.class-mode .two{grid-template-columns:440px 1fr}}
 </style>
 <script src="../brand.js"></script>
+<style id="lv-css">.pr-lv{font:700 12px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;margin-left:8px;white-space:nowrap;vertical-align:1px}.pr-lv.l3{background:#E7F6EC;color:#15803D}.pr-lv.l4{background:#E8F0FB;color:#0056B3}.pr-lv.l5{background:#FDF0E1;color:#B45309}</style>
 </head>
 <body>
 <!-- SITE-BAR -->
@@ -607,7 +608,7 @@ function render(boxId){
   qi.forEach(function(q){
     qnum++;stats[q.id]={done:false,first:false,tries:0};
     var d=document.createElement("div");d.className="q";d.id="q-"+q.id;
-    var h='<div class="qn">Question '+qnum+'<span class="tag">'+q.tag+'</span></div><div class="qt">'+q.text+'</div>';
+    var h='<div class="qn">Question '+qnum+(q.band?'<span class="pr-lv l'+q.band+'">Score '+q.band+'</span>':'')+'<span class="tag">'+q.tag+'</span></div><div class="qt">'+q.text+'</div>';
     if(q.fig)h+='<div class="qfig">'+q.fig()+'</div>';
     if(q.type==="num"){
       h+='<div class="entry one"><label for="'+q.id+'n" style="display:inline;font:600 20px var(--mono);color:var(--navy)">'+(q.pre||"")+'</label> <input id="'+q.id+'n" inputmode="'+(q.frac?"text":"decimal")+'" autocomplete="off"></div>';

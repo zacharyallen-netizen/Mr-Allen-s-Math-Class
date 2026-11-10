@@ -60,6 +60,7 @@ h1,h2,h3,h4,h5,.sec-title,.concept-h,.title,.card-title,.hero h1,.page-hdr h1,.t
 code,kbd,.mono,pre{font-family:'JetBrains Mono',ui-monospace,Consolas,monospace !important}
 </style>
 <script src="../brand.js"></script>
+<style id="lv-css">.pr-lv{font:700 12px Inter,system-ui,sans-serif;padding:2px 8px;border-radius:999px;margin-left:8px;white-space:nowrap;vertical-align:1px}.pr-lv.l3{background:#E7F6EC;color:#15803D}.pr-lv.l4{background:#E8F0FB;color:#0056B3}.pr-lv.l5{background:#FDF0E1;color:#B45309}</style>
 </head>
 <body>
 <script src="../site-bar.js"></script>
@@ -250,14 +251,14 @@ function planSVG(m, b, color, eq) {
 
 // ========== SLOPE-INTERCEPT ==========
 var slopeProbs = [
-  {eq:"y = 2x + 1",m:2,b:1,desc:"Slope: 2 (up 2, right 1). Y-intercept: (0, 1)"},
-  {eq:"y = −x + 4",m:-1,b:4,desc:"Slope: −1 (down 1, right 1). Y-intercept: (0, 4)"},
-  {eq:"y = ½x − 2",m:0.5,b:-2,desc:"Slope: ½ (up 1, right 2). Y-intercept: (0, −2)"},
-  {eq:"y = −3x + 5",m:-3,b:5,desc:"Slope: −3 (down 3, right 1). Y-intercept: (0, 5)"},
-  {eq:"y = x",m:1,b:0,desc:"Slope: 1 (up 1, right 1). Y-intercept: origin (0, 0)"},
-  {eq:"y = −2x − 1",m:-2,b:-1,desc:"Slope: −2 (down 2, right 1). Y-intercept: (0, −1)"},
-  {eq:"y = ⅓x + 3",m:0.3333333333333333,b:3,desc:"Slope: ⅓ (up 1, right 3). Y-intercept: (0, 3)"},
-  {eq:"y = 4",m:0,b:4,desc:"Slope: 0 (horizontal line). Y-intercept: (0, 4)"},
+  {lv:3,eq:"y = 2x + 1",m:2,b:1,desc:"Slope: 2 (up 2, right 1). Y-intercept: (0, 1)"},
+  {lv:3,eq:"y = −x + 4",m:-1,b:4,desc:"Slope: −1 (down 1, right 1). Y-intercept: (0, 4)"},
+  {lv:3,eq:"y = x",m:1,b:0,desc:"Slope: 1 (up 1, right 1). Y-intercept: origin (0, 0)"},
+  {lv:4,eq:"y = ½x − 2",m:0.5,b:-2,desc:"Slope: ½ (up 1, right 2). Y-intercept: (0, −2)"},
+  {lv:4,eq:"y = −3x + 5",m:-3,b:5,desc:"Slope: −3 (down 3, right 1). Y-intercept: (0, 5)"},
+  {lv:4,eq:"y = −2x − 1",m:-2,b:-1,desc:"Slope: −2 (down 2, right 1). Y-intercept: (0, −1)"},
+  {lv:4,eq:"y = 4",m:0,b:4,desc:"Slope: 0 (horizontal line). Y-intercept: (0, 4)"},
+  {lv:5,eq:"y = ⅓x + 3",m:0.3333333333333333,b:3,desc:"Slope: ⅓ (up 1, right 3). Y-intercept: (0, 3)"},
 ];
 var slopeIdx = 0, slopeScore = 0;
 var slopePoints = [];
@@ -272,7 +273,7 @@ function initSlope() {
   var p = slopeProbs[slopeIdx];
   document.getElementById('slope-eq').textContent = p.eq;
   document.getElementById('slope-plan').innerHTML = planSVG(p.m, p.b, 'blue', p.eq);
-  document.getElementById('slope-counter').textContent = 'Problem '+(slopeIdx+1)+' of '+slopeProbs.length;
+  document.getElementById('slope-counter').innerHTML = 'Problem '+(slopeIdx+1)+' of '+slopeProbs.length+' <span class="pr-lv l'+slopeProbs[slopeIdx].lv+'">Score '+slopeProbs[slopeIdx].lv+'</span>';
   
   // Click handler
   c.onclick = function(e) {
@@ -371,11 +372,11 @@ function nextSlope() {
 
 // ========== SYSTEMS ==========
 var sysProbs = [
-  {eq1:"y = 2x + 1",m1:2,b1:1,eq2:"y = −x + 4",m2:-1,b2:4,sx:1,sy:3,desc:"Lines cross at (1, 3). Check: 2(1)+1=3 ✓, −1+4=3 ✓"},
-  {eq1:"y = x + 2",m1:1,b1:2,eq2:"y = −x + 6",m2:-1,b2:6,sx:2,sy:4,desc:"Lines cross at (2, 4). Check: 2+2=4 ✓, −2+6=4 ✓"},
-  {eq1:"y = 3x − 1",m1:3,b1:-1,eq2:"y = x + 3",m2:1,b2:3,sx:2,sy:5,desc:"Lines cross at (2, 5). Check: 3(2)−1=5 ✓, 2+3=5 ✓"},
-  {eq1:"y = −2x + 8",m1:-2,b1:8,eq2:"y = x − 1",m2:1,b2:-1,sx:3,sy:2,desc:"Lines cross at (3, 2). Check: −2(3)+8=2 ✓, 3−1=2 ✓"},
-  {eq1:"y = ½x + 1",m1:0.5,b1:1,eq2:"y = −x + 7",m2:-1,b2:7,sx:4,sy:3,desc:"Lines cross at (4, 3). Check: ½(4)+1=3 ✓, −4+7=3 ✓"},
+  {lv:3,eq1:"y = 2x + 1",m1:2,b1:1,eq2:"y = −x + 4",m2:-1,b2:4,sx:1,sy:3,desc:"Lines cross at (1, 3). Check: 2(1)+1=3 ✓, −1+4=3 ✓"},
+  {lv:3,eq1:"y = x + 2",m1:1,b1:2,eq2:"y = −x + 6",m2:-1,b2:6,sx:2,sy:4,desc:"Lines cross at (2, 4). Check: 2+2=4 ✓, −2+6=4 ✓"},
+  {lv:4,eq1:"y = 3x − 1",m1:3,b1:-1,eq2:"y = x + 3",m2:1,b2:3,sx:2,sy:5,desc:"Lines cross at (2, 5). Check: 3(2)−1=5 ✓, 2+3=5 ✓"},
+  {lv:4,eq1:"y = −2x + 8",m1:-2,b1:8,eq2:"y = x − 1",m2:1,b2:-1,sx:3,sy:2,desc:"Lines cross at (3, 2). Check: −2(3)+8=2 ✓, 3−1=2 ✓"},
+  {lv:5,eq1:"y = ½x + 1",m1:0.5,b1:1,eq2:"y = −x + 7",m2:-1,b2:7,sx:4,sy:3,desc:"Lines cross at (4, 3). Check: ½(4)+1=3 ✓, −4+7=3 ✓"},
 ];
 var sysIdx = 0, sysScore = 0;
 var sysLine1 = [], sysLine2 = [];
@@ -395,7 +396,7 @@ function initSys() {
   document.getElementById('sys-eq2').textContent = p.eq2;
   document.getElementById('sys-plan1').innerHTML = planSVG(p.m1, p.b1, 'blue', p.eq1);
   document.getElementById('sys-plan2').innerHTML = planSVG(p.m2, p.b2, 'red', p.eq2);
-  document.getElementById('sys-counter').textContent = 'Problem '+(sysIdx+1)+' of '+sysProbs.length;
+  document.getElementById('sys-counter').innerHTML = 'Problem '+(sysIdx+1)+' of '+sysProbs.length+' <span class="pr-lv l'+sysProbs[sysIdx].lv+'">Score '+sysProbs[sysIdx].lv+'</span>';
   
   c.onclick = function(e) {
     var pts = sysDrawing === 1 ? sysLine1 : sysLine2;
