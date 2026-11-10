@@ -91,7 +91,12 @@
     if (!kind && g.states.length) kind = g.states.indexOf('no') >= 0 ? (WARNT.test(g.text) ? 'warn' : 'no') : g.states.indexOf('warn') >= 0 ? 'warn' : 'ok';
     if (!kind && g.check && g.text) kind = 'warn';
     if (!kind) return;
-    var box = g.boxes && g.boxes.length === 1 ? g.boxes[0] : FX.box(g.el);
+    if (g.bs && g.bs.length > 1) {                       // one Check graded many questions (pre-tests)
+      var ks = g.bs.map(function (z) { return z.s; });
+      g.bs.forEach(function (z) { FX.flash(z.b, z.s, true); if (z.s === 'ok') { FX.done(z.b); FX.good(z.b); } });
+      FX.play(ks.every(function (k) { return k === 'ok'; }) ? 'ok' : ks.every(function (k) { return k === 'no'; }) ? 'no' : 'warn'); return;
+    }
+    var box = g.bs && g.bs.length === 1 ? g.bs[0].b : FX.box(g.el);
     FX.flash(box, kind); if (kind === 'ok') { FX.done(box); FX.good(box); }
   }
   function watch() {
@@ -104,7 +109,7 @@
           [].forEach.call(el.classList, function (c) {
             var s = OKC.test(c) ? 'ok' : NOC.test(c) ? 'no' : WARNC.test(c) ? 'warn' : null;
             if (/^(answered|done|solved|shown)$/.test(c) && old.indexOf(' ' + c + ' ') < 0) (G.fin = G.fin || []).push(FX.box(el));
-            if (s && (old.indexOf(' ' + c + ' ') < 0 || /fb|feedback|msg|result/.test(el.className))) { G.states.push(s); (G.boxes = G.boxes || []).indexOf(FX.box(el)) < 0 && G.boxes.push(FX.box(el)); }
+            if (s && (old.indexOf(' ' + c + ' ') < 0 || /fb|feedback|msg|result/.test(el.className))) { G.states.push(s); var bx = FX.box(el); G.bs = G.bs || []; var hit = G.bs.filter(function (z) { return z.b === bx; })[0]; if (!hit) G.bs.push({ b: bx, s: s }); else if (s === 'no' || (s === 'warn' && hit.s === 'ok')) hit.s = s; }
           });
         }
         if (/fb|feedback|msg|result|status/i.test(el.className + ' ' + (el.getAttribute('role') || ''))) G.text += ' ' + (el.textContent || '');
@@ -142,7 +147,7 @@
 
 
   /* ---------- read aloud (Chromebook voice; says math in words) ---------- */
-  var RSEL = '.pr-card,.q-card,.qc,div.q,section.q,#cards > .card,.np-q,.chk,.tw',
+  var RSEL = '.pr-card,.q-card,div.qc,div.q,section.q,#cards > .card,div.np-q,div.chk,div.tw',
       RSKIP = '.fx-read,.fb,.pr-fb,.np-fb,.chk-fb,.qfb,.sw-host,.hint,.pr-hintbox,.pr-how,.np-sol,.xwrap,.reveal,.whyall,.talk,.tag,.stdtag,.np-lv,.pr-lv,.np-type,.badge,.fx-std,.btnrow,.sanote,.oat-top,.oat-bot,script,style,noscript,input,select,textarea',
       CHOICE = /(^|\s)(opt|ob|np-ch|choice|sa-btn|mc-opt)(\s|$)/;
   var SUP = { '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4', '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9', '⁻': '−' };
@@ -192,7 +197,7 @@
   function readButtons() {
     if (!('speechSynthesis' in window)) return;
     [].forEach.call(document.querySelectorAll(RSEL), function (box) {
-      if (box._fxr || box.closest(SKIP) || box.matches('td,th,tr')) return; box._fxr = 1;
+      if (box._fxr || box.closest(SKIP) || box.matches('td,th,tr,button,a,input,label') || box.closest('button')) return; box._fxr = 1;
       var b = document.createElement('button'); b.type = 'button'; b.className = 'fx-read'; b.textContent = '🔊 Read'; b.setAttribute('aria-label', 'Read this question out loud');
       var d = getComputedStyle(box).display; if (/flex|grid/.test(d)) { b.classList.add('abs'); if (getComputedStyle(box).position === 'static') box.style.position = 'relative'; }
       b.addEventListener('click', function (e) { e.stopPropagation(); FX.read(box, b); });

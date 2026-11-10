@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261110f', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261110h', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)
@@ -12,6 +12,7 @@
   // Each page format: where its problems live and what counts as one problem.
   var FORMATS = [
     { root: '#practice', items: '.pr-card' },                                          // practice engine pages
+    { root: '#doMode', items: '#pages > section.pg', need: '#pages > section.pg' },     // homework: one printed page at a time
     { root: '.sheet', items: '.qgrid > .q, table.vocab, .fillparts', need: '.qgrid' },  // pre-tests
     { root: '#quiz', items: 'section.q' },                                              // Unit 1 pre-tests
     { root: '.container', items: '#cards > .card', need: '#cards' },                    // Unit 6 slope-intercept practice
@@ -19,7 +20,7 @@
     { root: '.wrap', items: '.part .q', need: '.part' },                                // EOG practice
     { root: '.wrap', items: '.q-card' }                                                 // Unit 7/8/9 practice
   ];
-  var WORD = /pretest/.test(location.pathname) ? 'Question' : 'Problem';
+  var WORD = /pretest/.test(location.pathname) ? 'Question' : /homework_turn_in/.test(location.pathname) ? 'Page' : 'Problem';
   var KEY = 'oat-mode';
 
   var css = document.createElement('style');
