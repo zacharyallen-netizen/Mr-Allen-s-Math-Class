@@ -79,5 +79,7 @@
     if (t === 'w') return 'no';
     return 'close';
   }
-  window.HWCheck = { check: check, has: function (hw, n) { return !!entry(hw, n); }, kind: function (hw, n) { var e = entry(hw, n); return e ? e[0] : null; }, _t: { num: num, nums: nums, words: words, letters: letters, form: form, h53: h53 } };
+  /* tap(hw, n, 'B') or tap(hw, n, 'ABD'): a tapped choice (letters in A-F order). No tidy-up rules: the letters are the code. */
+  function tap(hw, n, L) { var e = entry(hw, n); return !!e && e[0] === 'l' && h53('hw|' + hw + '|' + n + '|' + String(L).toLowerCase()) === e[1]; }
+  window.HWCheck = { check: check, tap: tap, has: function (hw, n) { return !!entry(hw, n); }, kind: function (hw, n) { var e = entry(hw, n); return e ? e[0] : null; }, _t: { num: num, nums: nums, words: words, letters: letters, form: form, h53: h53 } };
 })();

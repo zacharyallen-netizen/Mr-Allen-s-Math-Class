@@ -41,6 +41,19 @@
 .ans small{color:var(--gold-text);font-weight:600}
 .ans input{font:500 16px var(--mono);padding:9px 10px;border:1.5px solid var(--line-2);border-radius:7px;min-height:44px;min-width:0;background:#fff}
 .ans input.blank,.who input.blank{border-color:#E8A23A;background:#FFF8EC}
+/* number or multiple choice only (Nov 11, 2026): tap buttons for every choice problem */
+.mchid{display:none!important}
+.mcq{font:600 15.5px/1.4 var(--sans);color:var(--ink);display:block;margin:2px 0 2px}
+.inrow.mc{flex-wrap:wrap}.inrow.mc.txt{flex-direction:column}
+.mcbtn{font:600 16px/1.35 var(--sans);background:#fff;color:var(--navy);border:1.5px solid var(--line-2);border-radius:9px;padding:10px 14px;min-height:48px;cursor:pointer;text-align:left}
+.inrow.mc.let .mcbtn{flex:1 1 60px;text-align:center;font:700 18px var(--mono)}
+.mcbtn:hover{border-color:var(--navy)}.mcbtn.sel{border-color:var(--navy);box-shadow:inset 0 0 0 1.5px var(--navy)}
+.mcbtn.ok{border-color:#15803D;background:#F0FAF3;color:#14532D;box-shadow:inset 0 0 0 1.5px #15803D}
+.mcbtn.box::before{content:'';display:inline-block;width:18px;height:18px;border:2px solid currentColor;border-radius:4px;margin-right:10px;vertical-align:-3px;box-sizing:border-box}
+.mcbtn.box.sel::before{background:currentColor;box-shadow:inset 0 0 0 3px #fff}
+.inrow.mc .chkbtn{min-height:46px;align-self:flex-start}
+.mcbtn.no{border-color:#E4A8A1;background:#FEF3F2;color:#8A2A1F;box-shadow:none}
+.inrow input.blank~.mcbtn{border-color:#E8A23A;background:#FFF8EC}
 /* answer check (Nov 11, 2026) */
 .inrow{display:flex;gap:8px;align-items:stretch}.inrow input{flex:1 1 auto}
 .chkbtn{flex:0 0 auto;font:700 15px var(--sans);background:var(--navy);color:#fff;border:0;border-radius:8px;padding:0 18px;min-height:44px;cursor:pointer}
@@ -102,8 +115,9 @@
 <div class="site-footer">© Mr. Allen's Math Class</div>
 
 <script src="homework/crops.js?v=20261110a"></script>
-<script src="homework/check.js?v=20261111a"></script>
-<script src="homework-check.js?v=20261111a"></script>
+<script src="homework/check.js?v=20261111c"></script>
+<script src="homework/choices.js?v=20261111c"></script>
+<script src="homework-check.js?v=20261111c"></script>
 <script src="../tracker-config.js"></script>
 <script>
 (function(){
@@ -161,27 +175,76 @@
     out += '</section>';
   }
   $('pages').innerHTML = out;
-  // answer check (Nov 11, 2026): a Check button where the key has a clear-cut answer (homework-check.js; codes only, no answers on the site).
-  // Explanations, find-the-mistake and graph problems say "Mr. Allen checks this one." A finished step-by-step answer counts as checked.
+  // NUMBER OR MULTIPLE CHOICE ONLY (Nov 11, 2026, Mr. Allen: "The answer should be a number or a multiple choice answer").
+  // homework/choices.js says how each problem is answered: HW_MC[hw][num] = 4 (tap A-D, the choices are printed in the problem),
+  // or ["Rational", "Irrational"] / { q: "question", c: [choices] } (tap one), or { q, n: 1 } (type a number). A problem with a
+  // number code and no entry is a number box. homework/check.js holds only scrambled codes (no answers on the site).
+  // The sheet gets the FIRST try for each problem (like the notes do), so tapping until it turns green does not hide a miss.
+  var MC = (window.HW_MC || {})[h.id] || {}, LET = 'ABCDEF', KEY0 = 'hw-draft-' + h.id, draft = {}, first = {}, REDO = {}, TXT = {};
+  try { draft = JSON.parse(localStorage.getItem(KEY0) || '{}') || {}; first = JSON.parse(localStorage.getItem(KEY0 + '-first') || '{}') || {}; } catch (e) {}
+  function firstTry(num, v, ok){ if (first[num]) return; first[num] = [v, ok ? 1 : 0]; try { localStorage.setItem(KEY0 + '-first', JSON.stringify(first)); } catch (e) {} }
   h.p.forEach(function(p){
-    var inp = $('a' + p[0]); if (!inp) return; var lab = inp.closest('label'), num = String(p[0]);
+    var inp = $('a' + p[0]); if (!inp) return; var lab = inp.closest('label'), num = String(p[0]), mc = MC[num];
     var row = document.createElement('span'); row.className = 'inrow'; lab.insertBefore(row, inp); row.appendChild(inp);
-    if (!(window.HWCheck && HWCheck.has(h.id, num))) { var nt = document.createElement('span'); nt.className = 'hwnote'; nt.textContent = 'Mr. Allen checks this one.'; lab.appendChild(nt); return; }
-    if (HWCheck.kind(h.id, num) === 'l') inp.placeholder = 'Type the letter';
-    var b = document.createElement('button'); b.type = 'button'; b.className = 'chkbtn'; b.textContent = 'Check'; row.appendChild(b);
+    var has = !!(window.HWCheck && HWCheck.has(h.id, num)), kind = has ? HWCheck.kind(h.id, num) : null;
+    if (mc && mc.q) { var qs = document.createElement('span'); qs.className = 'mcq'; qs.textContent = mc.q; lab.insertBefore(qs, row); if (lab.firstChild.nodeType === 3 && perProb) lab.removeChild(lab.firstChild); }
+    if (!has) { var nt = document.createElement('span'); nt.className = 'hwnote'; nt.textContent = 'Mr. Allen checks this one.'; lab.appendChild(nt); return; }
     var fb = document.createElement('div'); fb.className = 'hwfb'; fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); lab.appendChild(fb);
     function show(cls, t){ fb.className = 'hwfb ' + cls; fb.textContent = t; inp.classList.toggle('right', cls === 'ok'); }
-    function run(){
-      var v = inp.value, r = (inp.dataset.swFilled && inp.dataset.swFilled === v) ? 'ok' : HWCheck.check(h.id, num, v), steps = !!lab.querySelector('.sw-host');
+    var steps = function(){ return !!lab.querySelector('.sw-host'); };
+
+    // ---- multiple choice: tap one ----
+    if (mc && !mc.n && kind === 'l') {
+      var list = typeof mc === 'number' ? null : (mc.c || mc), k = list ? list.length : mc, btns = [], tried = {}, multi = !!mc.m;
+      row.className = 'inrow mc ' + (list ? 'txt' : 'let'); inp.classList.add('mchid'); inp.tabIndex = -1;
+      var one = function(L){ return list ? list[LET.indexOf(L)] : L; }, text = function(v){ return v.split('').map(one).join('; '); };
+      TXT[num] = function(){ return inp.value ? text(inp.value) : ''; };
+      var paint = function(){ btns.forEach(function(b){ var L = b.getAttribute('data-v'), on = inp.value === L;
+        on = multi ? inp.value.indexOf(L) >= 0 : on; b.className = 'mcbtn' + (multi ? ' box' : '') + (on ? ' sel' : '') + (multi ? (on && tried[inp.value] === 1 ? ' ok' : '') : (tried[L] === 1 ? ' ok' : tried[L] === 0 ? ' no' : '')); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); };
+      var judge = function(quiet){
+        var L = inp.value; if (!L) { fb.className = 'hwfb'; fb.textContent = ''; return; }
+        var ok = HWCheck.tap(h.id, num, L); tried[L] = ok ? 1 : 0; if (!quiet) firstTry(num, text(L), ok); paint();
+        if (ok) show('ok', 'Correct! Nice work.'); else show('no', (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those.' : 'Not yet. Check your work and tap again.') + (steps() ? ' The step by step button can help.' : ''));
+      };
+      for (var ci = 0; ci < k; ci++) (function(L){
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'mcbtn'; b.setAttribute('data-v', L); b.textContent = one(L);
+        b.setAttribute('aria-label', (list ? '' : 'Choice ') + one(L));
+        b.addEventListener('click', function(e){ e.preventDefault(); inp.classList.remove('blank');
+          if (multi) { var cur = inp.value.split('').filter(function(x){ return x !== L; }); if (cur.length === inp.value.length) cur.push(L); inp.value = cur.sort().join(''); fb.className = 'hwfb'; fb.textContent = ''; paint(); }
+          else { inp.value = L; judge(false); }
+          inp.dispatchEvent(new Event('input', { bubbles: true })); });
+        row.appendChild(b); btns.push(b);
+      })(LET.charAt(ci));
+      if (multi) { var cb = document.createElement('button'); cb.type = 'button'; cb.className = 'chkbtn'; cb.textContent = 'Check'; row.appendChild(cb);
+        cb.addEventListener('click', function(e){ e.preventDefault(); if (!inp.value) { show('tip', 'Tap every one that is true first.'); return; } judge(false); }); }
+      // a finished step-by-step puts its last line in the box: keep the student's tap as the answer and ask them to tap
+      inp.addEventListener('input', function(){
+        if (inp.dataset.swFilled && inp.value === inp.dataset.swFilled) {
+          var got = inp.value, cur = ''; btns.forEach(function(b){ if (/\bsel\b/.test(b.className)) cur += b.getAttribute('data-v'); });
+          inp.value = cur; delete inp.dataset.swFilled; fb.className = 'hwfb tip'; fb.textContent = 'You got ' + got + '. Now tap your answer.';
+        }
+      });
+      var d0 = draft[num]; if (d0 && new RegExp('^[A-' + LET.charAt(k - 1) + ']' + (multi ? '+' : '') + '$').test(d0)) { inp.value = d0; if (first[num]) judge(true); else paint(); } else if (d0) { inp.value = ''; delete draft[num]; }
+      REDO[num] = function(){ judge(true); var t = btns[0]; try { t.focus({ preventScroll: true }); } catch (e) {} };
+      return;
+    }
+
+    // ---- a number (or, until its unit is switched over, the old typed answer) ----
+    if (kind === 'n') inp.placeholder = 'Type a number'; else if (kind === 'l') inp.placeholder = 'Type the letter';
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chkbtn'; b.textContent = 'Check'; row.appendChild(b);
+    function run(quiet){
+      var v = inp.value, r = (inp.dataset.swFilled && inp.dataset.swFilled === v) ? 'ok' : HWCheck.check(h.id, num, v);
+      if ((r === 'ok' || r === 'no') && !quiet) firstTry(num, v.trim(), r === 'ok');
       if (r === 'ok') show('ok', 'Correct! Nice work.');
       else if (r === 'blank') show('tip', 'Type your answer first.');
-      else if (r === 'form') show('tip', HWCheck.kind(h.id, num) === 'l' ? 'Type the letter of your choice: A, B, C or D.' : 'Type one number for your answer, like 12 or 3/4.');
+      else if (r === 'form') show('tip', kind === 'l' ? 'Type the letter of your choice: A, B, C or D.' : 'Type one number for your answer, like 12 or 3/4.');
       else if (r === 'close') show('tip', 'That does not match yet. Check your work and how you wrote it.');
-      else show('no', 'Not yet. Check your work and try again.' + (steps ? ' The step by step button can help.' : ''));
+      else show('no', 'Not yet. Check your work and try again.' + (steps() ? ' The step by step button can help.' : ''));
     }
-    b.addEventListener('click', function(e){ e.preventDefault(); run(); });
-    inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); run(); } });
-    inp.addEventListener('input', function(){ if (inp.dataset.swFilled && inp.dataset.swFilled === inp.value) { show('ok', 'Correct! You worked it out step by step.'); return; } fb.className = 'hwfb'; fb.textContent = ''; inp.classList.remove('right'); });
+    b.addEventListener('click', function(e){ e.preventDefault(); run(false); });
+    inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); run(false); } });
+    inp.addEventListener('input', function(){ if (inp.dataset.swFilled && inp.dataset.swFilled === inp.value) { firstTry(num, inp.value.trim(), true); show('ok', 'Correct! You worked it out step by step.'); return; } fb.className = 'hwfb'; fb.textContent = ''; inp.classList.remove('right'); });
+    REDO[num] = function(){ run(true); try { inp.focus({ preventScroll: true }); inp.select(); } catch (e) {} };
   });
   $('pages').addEventListener('click', function(ev){ var c = ev.target.closest && ev.target.closest('.crop.wide'); if (c && innerWidth <= 700) c.classList.toggle('big'); });
   $('pages').addEventListener('toggle', function(ev){ var im = ev.target.querySelector && ev.target.querySelector('img[data-src]'); if (im) { im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); } }, true);
@@ -214,7 +277,7 @@
     var n = localStorage.getItem('fluencyLabStudentName') || '', b = localStorage.getItem('hw-block') || '';
     if (n) { $('nm').value = n; $('pd').value = b; $('savedNote').hidden = false; }
     var d = JSON.parse(localStorage.getItem(KEY) || '{}');
-    h.p.forEach(function(p){ if (d[p[0]]) $('a' + p[0]).value = d[p[0]]; });
+    h.p.forEach(function(p){ var bx = $('a' + p[0]); if (d[p[0]] && !bx.classList.contains('mchid')) bx.value = d[p[0]]; });
   } catch (e) {}
   if (topBox) { topBox.open = !($('nm').value && $('pd').value); topLabel(); }
   $('pages').addEventListener('input', function(ev){
@@ -238,15 +301,21 @@
       confirmBlank = true; $('send').textContent = 'Send anyway'; return;
     }
     if (!CFG.ENDPOINT) { msg('Turning in is not switched on yet. Tell Mr. Allen.', 'warn'); return; }
-    // right / missed for Mr. Allen's sheet (Nov 11, 2026): every answer that has a check code is checked at Send, whether or not the
-    // student pressed Check. 1 = right, 0 = missed, '' = Mr. Allen checks this one (or blank). The mark is also put in front of the
-    // answer ("\u2713 17", "\u2717 11") so the sheet shows it even before the sheet's script is updated.
-    var marks = h.p.map(function(p, i){
+    // right / missed for Mr. Allen's sheet (Nov 11, 2026). Every answer with a code is checked at Send.
+    // now[i]: is the answer on the screen right (1), wrong (0) or not checkable / blank ('')? This drives the "Fix Problem n" buttons.
+    // marks[i]: the FIRST try (1 / 0), which is what the sheet colors and counts. The cell shows "✓ 17", "✗ 11", or
+    // "✗ 11 → 17" (first answer 11 was wrong, then fixed to 17).
+    var said = h.p.map(function(p, i){ var t = TXT[String(p[0])]; return t ? t() : answers[i]; });
+    var now = h.p.map(function(p, i){
       var v = answers[i], num = String(p[0]), inp = $('a' + p[0]); if (!v || !(window.HWCheck && HWCheck.has(h.id, num))) return '';
       if (inp.dataset.swFilled && inp.dataset.swFilled.trim() === v) return 1;
-      return HWCheck.check(h.id, num, v) === 'ok' ? 1 : 0;
+      return (TXT[num] ? HWCheck.tap(h.id, num, v) : HWCheck.check(h.id, num, v) === 'ok') ? 1 : 0;
     });
-    var shown = answers.map(function(v, i){ return marks[i] === 1 ? '\u2713 ' + v : marks[i] === 0 ? '\u2717 ' + v : v; });
+    var marks = h.p.map(function(p, i){ var f = first[String(p[0])]; return now[i] === '' ? '' : f ? f[1] : now[i]; });
+    var shown = said.map(function(v, i){ var f = first[String(h.p[i][0])];
+      if (now[i] === '') return v;
+      if (f && !f[1] && now[i] === 1 && f[0] !== v) return '✗ ' + f[0] + ' → ' + v;
+      return (marks[i] === 1 ? '✓ ' : '✗ ') + v; });
     var bands = h.p.map(function(p){ return Math.round(parseFloat(p[2])) || ''; });
     try { localStorage.setItem('fluencyLabStudentName', name); localStorage.setItem('hw-block', $('pd').value); } catch (e) {}
     var b = $('send'); b.disabled = true; b.textContent = 'Sending…'; msg('');
@@ -261,8 +330,8 @@
         // which ones to fix (Nov 11, 2026, Mr. Allen: "it does not tell me which one to correct"): name the checked answers that are
         // not right yet and give one button per problem that jumps straight to it. No answers are shown.
         var right = 0, chk = 0, mine = 0; lastMiss = [];
-        h.p.forEach(function(p, i){ if (marks[i] === 1) { right++; chk++; } else if (marks[i] === 0) { chk++; lastMiss.push(p[0]); } else if (answers[i]) mine++; });
-        $('doneScore').textContent = (chk ? right + ' of ' + chk + ' checked answer' + (chk > 1 ? 's are' : ' is') + ' right.' : '') +
+        h.p.forEach(function(p, i){ if (now[i] === 1) { right++; chk++; } else if (now[i] === 0) { chk++; lastMiss.push(p[0]); } else if (answers[i]) mine++; });
+        $('doneScore').textContent = (chk ? (mine ? right + ' of ' + chk + ' checked answer' + (chk > 1 ? 's are' : ' is') + ' right.' : right + ' of ' + chk + ' right.') : '') +
           (mine ? (chk ? ' Mr. Allen will check the other ' + mine + '.' : 'Mr. Allen will check your ' + mine + ' answer' + (mine > 1 ? 's.' : '.')) : '');
         var fx = $('doneFix'); fx.innerHTML = '';
         if (lastMiss.length) {
@@ -282,8 +351,7 @@
     var inp = $('a' + num), sec = inp && inp.closest('section.pg'); if (!sec) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
     var k = [].slice.call(document.querySelectorAll('#pages > section.pg')).indexOf(sec), st = window.OneAtATime && OneAtATime.state();
     if (st && st.on && k >= 0) OneAtATime.go(k); else sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    var cb = inp.closest('label') && inp.closest('label').querySelector('.chkbtn'); if (cb) cb.click();   // shows "Not yet" on that problem
-    try { inp.focus({ preventScroll: true }); inp.select(); } catch (e) {}
+    if (REDO[String(num)]) REDO[String(num)]();   // shows "Not yet" on that problem (does not count as a new try)
     // a short way back to Send, so the student does not have to tap Next through every problem again
     var lab = inp.closest('label');
     if (st && st.on && lab && !lab.querySelector('.hwback')) {
