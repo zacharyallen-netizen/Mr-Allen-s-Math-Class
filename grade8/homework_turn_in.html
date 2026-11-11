@@ -231,11 +231,21 @@
       confirmBlank = true; $('send').textContent = 'Send anyway'; return;
     }
     if (!CFG.ENDPOINT) { msg('Turning in is not switched on yet. Tell Mr. Allen.', 'warn'); return; }
+    // right / missed for Mr. Allen's sheet (Nov 11, 2026): every answer that has a check code is checked at Send, whether or not the
+    // student pressed Check. 1 = right, 0 = missed, '' = Mr. Allen checks this one (or blank). The mark is also put in front of the
+    // answer ("\u2713 17", "\u2717 11") so the sheet shows it even before the sheet's script is updated.
+    var marks = h.p.map(function(p, i){
+      var v = answers[i], num = String(p[0]), inp = $('a' + p[0]); if (!v || !(window.HWCheck && HWCheck.has(h.id, num))) return '';
+      if (inp.dataset.swFilled && inp.dataset.swFilled.trim() === v) return 1;
+      return HWCheck.check(h.id, num, v) === 'ok' ? 1 : 0;
+    });
+    var shown = answers.map(function(v, i){ return marks[i] === 1 ? '\u2713 ' + v : marks[i] === 0 ? '\u2717 ' + v : v; });
+    var bands = h.p.map(function(p){ return Math.round(parseFloat(p[2])) || ''; });
     try { localStorage.setItem('fluencyLabStudentName', name); localStorage.setItem('hw-block', $('pd').value); } catch (e) {}
     var b = $('send'); b.disabled = true; b.textContent = 'Sending…'; msg('');
     fetch(CFG.ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ code: CFG.CLASS_CODE, v: 2, kind: 'homework', unit: h.unit, hw: h.id,
-        page: 'Homework ' + h.id + ' — ' + h.title, name: name, period: $('pd').value, n: h.p.length, answers: answers }) })
+        page: 'Homework ' + h.id + ' — ' + h.title, name: name, period: $('pd').value, n: h.p.length, answers: shown, marks: marks, bands: bands }) })
     .then(function(r){ return r.json(); })
     .then(function(res){
       b.disabled = false; confirmBlank = false; b.textContent = 'Send to Mr. Allen';

@@ -17,6 +17,9 @@
  *      Click Deploy and copy the Web app URL (it ends in /exec).
  *   5. Send that URL to Claude (or paste it into tracker-config.js as ENDPOINT).
  *
+ *  Nov 11, 2026: Homework rows show right (green) / missed (red), "Checked right" and "Missed"; the summary tabs get
+ *  "Missed on first try"; a "Reteach" tab lists every question by % right, lowest first.
+ *
  *  Later changes to this script: Deploy → Manage deployments → pencil →
  *  Version: New version → Deploy. That keeps the same URL.
  * ════════════════════════════════════════════════════════════════════
@@ -61,18 +64,37 @@ function doPost(e) {
 }
 
 // ── Homework: one row per turn-in, typed answers in Q1…Q10 ──
+// Nov 11, 2026: the website also sends marks (1 = right, 0 = missed, '' = Mr. Allen checks / blank). Right answers are
+// colored green and missed ones red, "Checked right" and "Missed" are filled in, and every checked problem also goes to
+// the Responses tab (Source = Homework) so the Reteach tab counts it.
+var GREEN_ = '#d9ead3', RED_ = '#f4cccc';
 function homework_(d, name) {
   var ans = Array.isArray(d.answers) ? d.answers.slice(0, MAX_HW_Q) : [];
   if (!ans.length) return json_({ ok: false, error: 'no answers' });
   ans = ans.map(function (a) { return clip_(a, 300); });
+  var marks = Array.isArray(d.marks) ? d.marks.slice(0, MAX_HW_Q) : [], bands = Array.isArray(d.bands) ? d.bands : [];
   var answered = ans.filter(function (a) { return a !== ''; }).length;
-  var hw = clip_(d.hw, 10), title = clip_(d.page, 140);
+  var hw = clip_(d.hw, 10), title = clip_(d.page, 140), unit = clip_(d.unit, 6);
   var lock = LockService.getScriptLock(); lock.waitLock(25000);
   try {
     var ss = SpreadsheetApp.openById(WORK_ID), sh = ss.getSheetByName('Homework');
-    var period = periodFor_(ss, name) || clip_(d.period, 6);
+    var period = periodFor_(ss, name) || clip_(d.period, 6), now = new Date();
     while (ans.length < MAX_HW_Q) ans.push('');
-    sh.appendRow([new Date(), name, period, clip_(d.unit, 6), title || ('Homework ' + hw), answered + ' of ' + Number(d.n || answered)].concat(ans));
+    var right = 0, checked = 0, missed = [], colors = [], resp = [];
+    for (var i = 0; i < MAX_HW_Q; i++) {
+      var m = marks[i], isR = m === 1 || m === '1', isW = m === 0 || m === '0';
+      colors.push(isR ? GREEN_ : isW ? RED_ : null);
+      if (isR || isW) {
+        checked++; if (isR) right++; else missed.push('Q' + (i + 1));
+        var band = Number(bands[i]); if ([2, 3, 4, 5].indexOf(band) < 0) band = 4;
+        resp.push([now, name, period, 'Homework', unit, title || ('Homework ' + hw), 'Problem ' + (i + 1), '', band, isR ? 1 : 0, isR ? 1 : 0, 1]);
+      }
+    }
+    header_(sh, 7 + MAX_HW_Q, 'Checked right'); header_(sh, 8 + MAX_HW_Q, 'Missed');
+    sh.appendRow([now, name, period, unit, title || ('Homework ' + hw), answered + ' of ' + Number(d.n || answered)].concat(ans)
+      .concat(checked ? [right + ' of ' + checked, missed.join(', ')] : ['', '']));
+    if (checked) sh.getRange(sh.getLastRow(), 7, 1, MAX_HW_Q).setBackgrounds([colors]);
+    if (resp.length) { var rs = ss.getSheetByName('Responses'); rs.getRange(rs.getLastRow() + 1, 1, resp.length, resp[0].length).setValues(resp); reteach_(ss); }
   } finally { lock.releaseLock(); }
   return json_({ ok: true, name: name, answered: answered });
 }
@@ -98,15 +120,34 @@ function evidence_(d, name, kind) {
                  first, it.final ? 1 : 0, Math.max(1, Math.min(99, Number(it.tries) || 1))]);
     });
     var sub = ss.getSheetByName(tab);
-    sub.appendRow([now, name, period, unit, page, items.length, right, right / items.length, shown]);
+    // Nov 11, 2026: "Missed" lists the questions that were wrong on the first try (number in the order answered + the question)
+    var miss = []; resp.forEach(function (r, i) { if (!r[9]) miss.push('#' + (i + 1) + ' ' + String(r[6]).slice(0, 60)); });
+    header_(sub, 10, 'Missed on first try');
+    sub.appendRow([now, name, period, unit, page, items.length, right, right / items.length, shown,
+                   miss.length ? clip_(miss.length + ' missed: ' + miss.join(' | '), 900) : 'none']);
     sub.getRange(sub.getLastRow(), 8).setNumberFormat('0%');
     var rs = ss.getSheetByName('Responses');
     rs.getRange(rs.getLastRow() + 1, 1, resp.length, resp[0].length).setValues(resp);
+    reteach_(ss);
   } finally { lock.releaseLock(); }
   return json_({ ok: true, name: name, n: items.length, right: right });
 }
 
 // ── helpers ──
+function header_(sh, col, text) { var c = sh.getRange(1, col); if (String(c.getValue()) === '') c.setValue(text).setFontWeight('bold'); }
+
+// "Reteach" tab (made once, then it updates by itself): every question from the Responses tab with how many answers came in
+// and the % right on the first try, lowest first. The top of the list is what to reteach.
+function reteach_(ss) {
+  if (ss.getSheetByName('Reteach')) return;
+  var sh = ss.insertSheet('Reteach');
+  sh.getRange('A1').setFormula('=QUERY(Responses!D2:J, "select D, F, G, H, count(J), sum(J), avg(J) where G is not null group by D, F, G, H order by avg(J) asc label D \'Source\', F \'Page\', G \'Question\', H \'Standard\', count(J) \'Answers\', sum(J) \'Right on first try\', avg(J) \'% right\'", 0)');
+  sh.getRange('G2:G').setNumberFormat('0%');
+  sh.getRange('I1').setValue('Lowest % right is at the top: reteach those first. This tab updates by itself.');
+  sh.setFrozenRows(1);
+}
+// Run this once from the menu if you want the Reteach tab right away (it is also made by the next submission).
+function makeReteachTabs() { [WORK_ID, PRETEST_ID].forEach(function (id) { reteach_(SpreadsheetApp.openById(id)); }); return 'Reteach tabs ready'; }
 function periodFor_(ss, name) {
   var sh = ss.getSheetByName('Roster');
   if (!sh || sh.getLastRow() < 2) return '';
