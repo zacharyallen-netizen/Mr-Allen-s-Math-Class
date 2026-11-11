@@ -5,7 +5,18 @@
    or if the page's checker would not accept exactly one of the choices (then PretestTap.typed lists it). */
 (function () {
   "use strict";
-  if (typeof QS === 'undefined' || !window.TapAnswers) return;
+  if (!window.TapAnswers) return;
+  if (typeof QS === 'undefined') {                 // the Unit 1 pre-tests: "type R or IR" becomes Rational / Irrational (the card's own Check grades it)
+    var U1 = [];
+    [].forEach.call(document.querySelectorAll('input.answer'), function (inp) {
+      var cls = false; try { cls = typeof inp._check === 'function' && (inp._check('Rational') || inp._check('Irrational')) && !inp._check('5'); } catch (e) {}
+      if (!cls) { if (!inp.placeholder) inp.placeholder = 'Type a number'; return; }
+      U1.push(TapAnswers.mount(inp, ['Rational', 'Irrational'], { onPick: function () { var c = inp.parentNode.parentNode, b = c && c.querySelector('.check-btn'); if (b) b.click(); } }));
+      var card = inp.parentNode.parentNode, cb = card && card.querySelector('.check-btn'); if (cb) cb.hidden = true;      // a tap checks it
+      if (card) [].forEach.call(card.querySelectorAll('*'), function (el) { if (!el.children.length && /R or IR/i.test(el.textContent)) el.textContent = el.textContent.replace(/type R or IR/i, 'tap one').replace(/then R or IR/i, 'then tap one'); });
+    });
+    window.PretestTap = { u1: U1, typed: [] }; return;
+  }
   // the page's own checker: most pre-tests have runCheck(chk, text); the Unit 2 exponents pre-test has accepts(q) + canon(text)
   var grade = typeof runCheck === 'function' ? function (q, t) { return runCheck(q.chk, t); } : (typeof accepts === 'function' && typeof canon === 'function') ? function (q, t) { return accepts(q).has(canon(t)); } : null;
   if (!grade) return;
