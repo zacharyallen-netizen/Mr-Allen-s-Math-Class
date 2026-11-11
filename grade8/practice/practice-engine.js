@@ -112,28 +112,34 @@
   var html = ['<div class="hero"><h1>' + data.title + '</h1><p>' + data.sub + '</p>' +
     '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">🖨️ Printable PDF of this practice</a>' +
     (D.key ? ' &nbsp;·&nbsp; <a href="' + D.key + '" target="_blank" rel="noopener">✅ Answer key (PDF)</a>' : '') + '</p></div>',
-    '<p class="pr-how">Type your answer and press <b>Check</b>. Stuck? Tap <b>Hint</b>. After two tries you can see the answer. Do the work on paper first.</p>',
+    '<p class="pr-how"><b>Tap</b> your answer. If there is a box, type a <b>number</b> and press <b>Check</b>. Stuck? Tap <b>Hint</b>. After two tries you can see the answer. Do the work on paper first.</p>',
     '<div class="pr-score" aria-live="polite">Answered <span id="prScore">0</span> of <span id="prTotal">0</span></div>'];
-  var total = 0;
+  var total = 0, TAP = {};   // id -> { list, right, ui }: problems answered by tapping a choice (tap-answers.js). A number answer keeps its box.
   data.secs.forEach(function (sec, si) {
     html.push('<h2 class="pr-sec">' + sec.title + '</h2>');
     sec.probs.forEach(function (p) {
       var id = 's' + si + 'p' + p.n; total++;
+      var ch = window.TapAnswers ? TapAnswers.choices(p.ans, { q: p.q, key: (D.unit || '') + id, choices: p.choices }) : null, rt = ch ? TapAnswers.rightOf(ch, p.ans) : null;
+      if (ch && rt) TAP[id] = { list: ch, right: rt };
       html.push('<div class="pr-card" id="' + id + '" data-si="' + si + '">' +
         '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + (p.lv ? ' <span class="pr-lv l' + p.lv + '">Score ' + p.lv + '</span>' : '') + '</div><div class="pr-q">' + p.q + '</div>' +
         (p.fig ? '<img class="pr-fig" src="' + p.fig + '" alt="Figure for problem ' + p.n + '" loading="lazy"' +
           (p.size ? ' width="' + Math.round(p.size[0] / 2) + '" height="' + Math.round(p.size[1] / 2) + '"' : '') + '>' : '') +
-        '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"' + (/[<>≤≥]/.test(stripHtml(p.ans).replace(/&lt;/g, '<').replace(/&gt;/g, '>')) ? ' data-ineq' : '') + ' aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +
-        '<button class="pr-btn pr-check" type="button">Check</button>' +
+        '<div class="pr-row"><input class="pr-in" type="text" autocomplete="off" autocapitalize="off" spellcheck="false"' + (!TAP[id] && /[<>≤≥]/.test(stripHtml(p.ans).replace(/&lt;/g, '<').replace(/&gt;/g, '>')) ? ' data-ineq' : '') + ' aria-label="Answer to ' + sec.title.replace(/"/g, '') + ' problem ' + p.n + '">' +
+        '<button class="pr-btn pr-check" type="button"' + (TAP[id] ? ' hidden' : '') + '>Check</button>' +
         '<button class="pr-btn pr-ghost pr-hint" type="button">Hint</button>' +
         '<button class="pr-btn pr-ghost pr-show" type="button" hidden>Show answer</button></div>' +
         '<div class="pr-fb" role="status" aria-live="polite"></div><div class="pr-hintbox" hidden>💡 ' + sec.hint + '</div></div>');
     });
   });
-  html.push('<div class="pr-tips"><b>Typing tips:</b> exponents with ^ (x^7, 3.2 × 10^4 or 3.2x10^4), fractions with / (1/9), square roots as sqrt10 or √10, ≤ as &lt;=, ≥ as &gt;= (inequality problems also have ≤ ≥ buttons).</div>');
+  html.push('<div class="pr-tips"><b>Typing a number:</b> fractions with / (1/9 or 2 1/3), negatives with - (-4), decimals with a point (6.5).</div>');
   html.push('<div id="ss-mount"></div>');
   root.innerHTML = html.join('');
   document.getElementById('prTotal').textContent = total;
+  // tap choices: a tap puts the choice in the (hidden) box and presses Check
+  Object.keys(TAP).forEach(function (id) { var card = document.getElementById(id), inp = card.querySelector('.pr-in');
+    TAP[id].ui = TapAnswers.mount(inp, TAP[id].list, { onPick: function () { card.querySelector('.pr-check').click(); } }); });
+  window.PracticeEngine = { check: check, tap: TAP };
 
   function answered() { document.getElementById('prScore').textContent = root.querySelectorAll('.pr-card.done, .pr-card.shown').length; }
   function find(si, n) { var s = data.secs[si]; for (var i = 0; i < s.probs.length; i++) if (String(s.probs[i].n) === String(n)) return s.probs[i]; }
@@ -144,13 +150,15 @@
     if (b.classList.contains('pr-hint')) { card.querySelector('.pr-hintbox').hidden = false; return; }
     if (b.classList.contains('pr-show')) {
       fb.className = 'pr-fb show'; fb.innerHTML = 'Answer: <b>' + p.ans + '</b>';
+      if (TAP[card.id] && TAP[card.id].ui) { TAP[card.id].ui.mark(TAP[card.id].right, true); TAP[card.id].ui.lock(); }
       card.classList.add('shown'); b.hidden = true; answered();
       try { if (window.ScoreSend) ScoreSend.revealed(); } catch (x) {}
       return;
     }
     if (card.classList.contains('done')) return;
-    var v = inp.value.trim(); if (!v) { inp.focus(); fb.className = 'pr-fb tip'; fb.textContent = 'Type your answer first.'; if (window.FX) FX.mark('warn'); return; }
-    var ok = check(v, p.ans) || (p.alt || []).some(function (x) { return check(v, x); }), tries = Number(card.dataset.tries || 0) + 1;
+    var v = inp.value.trim(); if (!v) { if (!TAP[card.id]) inp.focus(); fb.className = 'pr-fb tip'; fb.textContent = TAP[card.id] ? 'Tap your answer first.' : 'Type your answer first.'; if (window.FX) FX.mark('warn'); return; }
+    var tap = TAP[card.id], ok = tap ? v === tap.right : (check(v, p.ans) || (p.alt || []).some(function (x) { return check(v, x); })), tries = Number(card.dataset.tries || 0) + 1;
+    if (tap && tap.ui) { tap.ui.mark(v, ok); if (ok) tap.ui.lock(); }
     card.dataset.tries = tries;
     try { if (window.ScoreSend) ScoreSend.record(card.id, ok, { std: sec.std, band: 3, label: sec.title.replace(/^[A-Z]\.\s*/, '') + ' #' + p.n }); } catch (x) {}
     if (ok) {
@@ -161,7 +169,7 @@
     } else {
       fb.className = 'pr-fb no'; fb.textContent = tries === 1 ? 'Not yet — check your work and try again.' : 'Still not it. Try the hint, or show the answer.';
       if (tries >= 2) card.querySelector('.pr-show').hidden = false;
-      inp.select();
+      if (!tap) inp.select();
     }
   });
   root.addEventListener('keydown', function (e) {
