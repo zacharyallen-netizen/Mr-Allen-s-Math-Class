@@ -45,7 +45,7 @@
     var inp = document.getElementById('i' + q.id); if (!inp) return;
     var disp = TapAnswers.plain(q.disp);
     if (q.chk && q.chk[0] === 'sci') disp = disp.replace(/^.*\u2192\s*/, '').replace(/\s*\(.*\)\s*$/, '').replace(/\s+[a-z]+\s*$/i, '');   // "24 × 10⁻⁸ → 2.4 × 10⁻⁷ g" → the final form
-    var qt = (q.op || '') + ' ' + q.expr, list = TapAnswers.choices(disp, { q: qt, key: page + q.id, choices: q.choices || EXTRA[q.id] }), div = document.getElementById('q' + q.id), fbq = document.getElementById('fb' + q.id);
+    var qt = (q.op || '') + ' ' + q.expr, list = TapAnswers.choices(disp, { q: qt, key: page + q.id, choices: q.choices || EXTRA[q.id], why: q.why }), div = document.getElementById('q' + q.id), fbq = document.getElementById('fb' + q.id);
     DISP[q.id] = [disp, qt];
     if (div && fbq) { var hb = TapAnswers.hintButton(div, TapAnswers.hint(disp, qt)); hb.style.marginTop = '8px'; div.insertBefore(hb, fbq); }      // a Hint on every question
     if (list === null) { if (!inp.placeholder) inp.placeholder = 'Type a number';

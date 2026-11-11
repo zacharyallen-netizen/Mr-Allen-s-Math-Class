@@ -119,7 +119,7 @@
     html.push('<h2 class="pr-sec">' + sec.title + '</h2>');
     sec.probs.forEach(function (p) {
       var id = 's' + si + 'p' + p.n; total++;
-      var ch = window.TapAnswers ? TapAnswers.choices(p.ans, { q: p.q, key: (D.unit || '') + id, choices: p.choices }) : null, rt = ch ? TapAnswers.rightOf(ch, p.ans) : null;
+      var ch = window.TapAnswers ? TapAnswers.choices(p.ans, { q: p.q, key: (D.unit || '') + id, choices: p.choices, why: p.why }) : null, rt = ch ? TapAnswers.rightOf(ch, p.ans) : null;
       if (ch && rt) TAP[id] = { list: ch, right: rt };
       html.push('<div class="pr-card" id="' + id + '" data-si="' + si + '">' +
         '<div class="pr-num">' + (data.qlabel ? data.qlabel + p.n + '.' : 'Problem ' + p.n) + (p.lv ? ' <span class="pr-lv l' + p.lv + '">Score ' + p.lv + '</span>' : '') + '</div><div class="pr-q">' + p.q + '</div>' +
