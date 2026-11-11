@@ -13,7 +13,7 @@ let bad = 0, n = 0;
 for (let u = 1; u <= 9; u++) {
   vm.runInContext(fs.readFileSync(path.join(G, 'u' + u + '.js'), 'utf8'), ctx);
   for (const v of ['v1', 'v2']) {
-    const qs = ctx.EOGU.data[u][v].parts.flatMap(p => p.qs), want = KEY[v][u].split(' ');
+    const qs = ctx.EOGU.data[u][v].parts.filter(p => !p.s5).flatMap(p => p.qs), want = KEY[v][u].split(' ');
     if (qs.length !== 10) { console.log('U' + u, v, 'has', qs.length, 'questions'); bad++; }
     qs.forEach((q, i) => { n++; const w = want[i]; let got;
       if (q.type === 'num') got = q.ans; else got = q.opts.map((o, j) => o.ok ? 'ABCDE'[j] : '').join('');
@@ -25,5 +25,15 @@ for (let u = 1; u <= 9; u++) {
       if (!q.ok) { bad++; console.log(q.id, 'no explanation'); } });
   }
 }
+// Score 5 questions (grade8/eog/s5.js, Nov 11, 2026) are not in the key PDF: check each has ONE right choice, a reason on
+// every wrong choice, an explanation, a Hint (Version 1) or a box (Version 2), and the right number of choices.
+vm.runInContext(fs.readFileSync(path.join(G, 's5.js'), 'utf8'), ctx); let s5 = 0; const ids = new Set();
+for (let u = 1; u <= 9; u++) for (const v of ['v1', 'v2']) {
+  const part = ctx.EOGU.data[u][v].parts.filter(p => p.s5); if (part.length !== 1 || part[0].qs.length !== 2) { bad++; console.log('U' + u, v, 'Score 5 part missing or not 2 questions'); continue; }
+  part[0].qs.forEach(q => { s5++; const ok = q.opts.filter(o => o.ok).length, want = v === 'v1' ? 4 : 3;
+    if (ids.has(q.id)) { bad++; console.log(q.id, 'id used twice'); } ids.add(q.id);
+    if (ok !== 1 || q.opts.length !== want || q.opts.some(o => !o.ok && !o.why) || !q.ok || (v === 'v1' ? !q.hint : !q.box) || q.tag !== 'Score 5') { bad++; console.log(q.id, 'Score 5 question is not complete'); } });
+}
+console.log('Score 5 questions checked:', s5);
 console.log(n, 'questions checked against the key;', bad ? bad + ' problem(s)' : 'all match');
 process.exit(bad ? 1 : 0);

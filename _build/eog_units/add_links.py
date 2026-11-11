@@ -4,9 +4,9 @@ import os, re
 G = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'grade8')
 BLOCK = ('<div class="section-label" id="eog">EOG Practice</div>\n'
   '<a href="unit{n}-eog.html" class="feature-card"><div class="fi">🎯</div><div><div class="ft">EOG Practice — Unit {n}</div>'
-  '<div class="fd">10 questions like the NC End-of-Grade test, one at a time, with hints.</div></div><span class="kind">Interactive</span></a>\n'
+  '<div class="fd">12 questions like the NC End-of-Grade test, one at a time, with hints. The last 2 are Score 5.</div></div><span class="kind">Interactive</span></a>\n'
   '<a href="unit{n}-eog-v2.html" class="feature-card"><div class="fi">🎯</div><div><div class="ft">EOG Practice — Version 2</div>'
-  '<div class="fd">10 questions. Read the box first, then choose A, B or C.</div></div><span class="kind">Interactive</span></a>\n\n')
+  '<div class="fd">12 questions. Read the box first, then choose A, B or C. The last 2 are Score 5.</div></div><span class="kind">Interactive</span></a>\n\n')
 for n in range(1, 10):
     p = os.path.join(G, 'unit%d.html' % n); s = open(p, encoding='utf-8').read()
     if 'unit%d-eog.html' % n in s: print('unit%d: already there' % n); continue

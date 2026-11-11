@@ -185,8 +185,8 @@ EOGU.run = function (unit, ver) {
     '<div class="std">EOG Practice · Unit ' + unit + (ver === 2 ? ' · Version 2' : '') + ' · ' + D.std + '</div>' +
     '<h1>' + D.title + (ver === 2 ? ' — Version 2' : '') + '</h1>' +
     '<p class="lede" id="lede">' + (ver === 1
-      ? TOTAL + ' questions in the style of the NC End-of-Grade test. Part 1 is <b>no calculator</b>. Part 2 lets you use a calculator. Pick an answer or type a number, then tap <b>Check</b>. Stuck? Tap <b>Hint</b>.'
-      : TOTAL + ' questions. <b>Read the box first.</b> It shows you how. Then pick A, B or C and tap <b>Check</b>.') + '</p>' +
+      ? TOTAL + ' questions in the style of the NC End-of-Grade test. Part 1 is <b>no calculator</b>. Part 2 lets you use a calculator. Pick an answer or type a number, then tap <b>Check</b>. Stuck? Tap <b>Hint</b>.' + (parts.some(function (p) { return p.s5; }) ? ' The last part is <b>Score 5</b>: explain your thinking.' : '')
+      : TOTAL + ' questions. <b>Read the box first.</b> It shows you how. Then pick A, B or C and tap <b>Check</b>.' + (parts.some(function (p) { return p.s5; }) ? ' The last two are <b>Score 5</b> questions.' : '')) + '</p>' +
     '<p class="keynote" id="keynote">Teacher answer key: answers and steps for every question.</p>' +
     '<div class="card howto" id="howto"><div class="modebar"><button id="classMode" aria-pressed="false">Turn on Class mode</button><span class="small-note">For the board: bigger text, talk prompts, and a Show answer button.</span></div>' +
     '<p class="small-note" style="margin:0">On your own device, work alone. A wrong answer tells you what went wrong, so try again. At the end, send your work to Mr. Allen.</p></div>';
