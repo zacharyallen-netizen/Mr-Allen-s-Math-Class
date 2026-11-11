@@ -303,7 +303,7 @@ const HINTS={
 /* Lines are drawn in the artwork's own style (lead came, paint bars, beams, ink), so the
    geometry is part of the picture instead of sitting on top of it. */
 const STY={
-  lead:{c:'#17110c',w:10,hi:'rgba(255,240,210,.16)'},
+  lead:{c:'#17110c',w:8,hi:'rgba(255,240,210,.14)'},
   bar:{c:'#141414',w:9,cap:'butt'},
   beam:{c:'#3e2616',w:7,hi:'rgba(255,214,160,.28)'},
   steel:{c:'#262b36',w:6,hi:'rgba(205,215,235,.32)'},
@@ -407,7 +407,7 @@ function parallel(al,opts){opts=opts||{};
   const m={};g.forEach(w=>m[w.id]=meas(w));
   return {g,rels,lines,m,al,p,t};
 }
-function glassScene(P,n){const I1=P.g[0].v,I2=P.g[4].v;return `<g clip-path="url(#arch)">${decoys(n==null?3:n,[I1,I2],[P.p,P.t],{sty:'lead',w:5})}${P.lines}</g>`}
+function glassScene(P,n){const I1=P.g[0].v,I2=P.g[4].v;return `<g clip-path="url(#arch)">${decoys(n==null?6:n+2,[I1,I2],[P.p,P.t],{sty:'lead',w:5,minD:46})}${P.lines}</g>`}
 const PAIRS={corr:[['1','5'],['2','6'],['3','7'],['4','8']],altint:[['3','6'],['4','5']],altext:[['1','8'],['2','7']],ssi:[['3','5'],['4','6']]};
 
 /* ---------- room generators ---------- */
@@ -449,9 +449,9 @@ function genMosaic(){
   const k=ri(24,66);const T3=triPoints(90,k,90-k,bx(2),ri(0,359),Math.random()<.5);
   let a4,b4,c4,big;do{[a4,b4,c4]=triangleAngles(28);const s=[a4,b4,c4].slice().sort((x,y)=>y-x);big=s[0]-s[1]>=12}while(!big);
   const T4=triPoints(a4,b4,c4,bx(3),ri(0,359),Math.random()<.5);
-  const fab=['#c9603f','#3f7f8c','#7c9a3a','#8a4f9e'],st='#2b2112',stitch=T=>poly(T,'none','rgba(250,240,215,.7)',1.3,'stroke-dasharray="5 4"');
+  const fab=['#7a2e3a','#2e4f6b','#5b6b2e','#4b2e6b'],st='rgba(43,33,18,.7)',stitch=T=>poly(T,'none','rgba(250,240,215,.5)',1.1,'stroke-dasharray="5 4"');
   const g=[...triWedges(['1','2','3'],T1),...triWedges(['4','5','6'],T2),...triWedges(['7','8','9'],T3),...triWedges(['10','11','12'],T4)];
-  const lines=[T1,T2,T3,T4].map((T,i)=>poly(T,fab[i],st,3.5)+stitch(T)).join('')+tick(T2[0],T2[1],'#2b2112')+tick(T2[0],T2[2],'#2b2112')+rightMark(T3[0],dirOf(T3[0],T3[1]),13,'#2b2112');
+  const lines=[T1,T2,T3,T4].map((T,i)=>poly(T,fab[i],st,2,'opacity=".9"')+stitch(T)).join('')+tick(T2[0],T2[1],'#2b2112')+tick(T2[0],T2[2],'#2b2112')+rightMark(T3[0],dirOf(T3[0],T3[1]),13,'#2b2112');
   const scene={bg:quilt(),lines,g,rels:{}};
   const largest=[['10',a4],['11',b4],['12',c4]].sort((x,y)=>y[1]-x[1])[0][0];
   return [
