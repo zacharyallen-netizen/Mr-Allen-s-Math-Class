@@ -1,4 +1,4 @@
-"""Version 2 of the NC Check-In Benchmark Review (simpler: 10 questions, 2 per standard, worked example
+"""Version 2 of the NC Check-In Benchmark Review (simpler: 10 questions, 2 per standard, plus 1 Score 5 question; worked example
 above each question, 2–3 choices, one question at a time, read-aloud).
 Builds:  grade8/checkin_benchmark_review_v2.html
          grade8/NC_CheckIn_Benchmark_Review_V2.pdf
@@ -159,7 +159,20 @@ Q = [
       opts=[f"(4, {M}2)", f"({M}4, 2)", "(2, 4)"], ans=0, say_opts=["4, negative 2", "negative 4, 2", "2, 4"],
       fb={1: "That is a flip over the y-axis. Over the x-axis, the y changes sign.", 2: "You swapped x and y. A reflection does not swap. Only the y changes sign."},
       why=f"Over the x-axis, x stays the same and y changes sign: (4, 2) → (4, {M}2). The point is now below the x-axis."),
+ # Nov 11, 2026 (Zach: "Add one Score 5 question to the Benchmark"): explain WHY, from his NC.8.EE.7 proficiency scale
+ # (Score 5 = "explain and justify the solution type with mathematical reasoning"). Same support as the others: an example first.
+ dict(std="EE.7", title="Score 5: Explain your thinking",
+      ex="2(x + 1) = 2x + 2. Both sides are the <b>same</b>, so every number works: <b>infinitely many solutions</b>.<br>x + 1 = x + 5. The x’s match, but 1 is not 5: <b>no solution</b>.",
+      ex_say="Example. 2 times the quantity x plus 1, equals 2x plus 2. Both sides are the same, so every number works. There are infinitely many solutions. Another example. x plus 1 equals x plus 5. The x's match, but 1 is not 5. There is no solution.",
+      stem="Why does <span class='expr'>3(x + 2) = 3x + 6</span> have <b>infinitely many solutions</b>?", say="Why does 3 times the quantity x plus 2, equals 3x plus 6, have infinitely many solutions?",
+      fig=None,
+      opts=["The x’s are the same, so there is no solution.", "After you distribute, both sides are the same: 3x + 6.", "Only x = 0 works."], ans=1,
+      say_opts=["The x's are the same, so there is no solution", "After you distribute, both sides are the same: 3x plus 6", "Only x equals 0 works"],
+      fb={0: "No solution needs different numbers, like 3x + 6 = 3x + 9. Here the numbers match too.", 2: "0 works, but so does every other number. Try x = 4: both sides are 18."},
+      why="Distribute: 3(x + 2) = 3x + 6. That is exactly the right side. Every number makes it true, so there are infinitely many solutions."),
 ]
+assert 3 * (4 + 2) == 3 * 4 + 6 == 18
+NQ = len(Q)
 for i, q in enumerate(Q):
     q["id"] = str(i + 1)
 L = "ABC"
@@ -530,7 +543,7 @@ page = f'''<!DOCTYPE html>
   <div class="eyebrow">NC Check-In Benchmark</div>
   <h1>NC Check-In Benchmark Review</h1>
   <div class="ver">Version 2</div>
-  <p class="lede">First, read the tips. Next, read the notes. Then answer 10 questions, one at a time. Each question has an example to help you.</p>
+  <p class="lede">First, read the tips. Next, read the notes. Then answer {NQ} questions, one at a time. The last one is a Score 5 question. Each question has an example to help you.</p>
   <div class="links"><a href="NC_CheckIn_Benchmark_Review_V2.pdf">Printable version (PDF)</a></div>
 </header>
 
@@ -569,7 +582,7 @@ page = f'''<!DOCTYPE html>
   {"".join(qcard(i, q) for i, q in enumerate(Q))}
   <section class="submit" id="submitbox" aria-live="polite">
     <h2>Submit to Mr. Allen</h2>
-    <p class="msg" id="smsg">When you finish all 10, tap Submit.</p>
+    <p class="msg" id="smsg">When you finish all {NQ}, tap Submit.</p>
     <div class="btns"><button type="button" class="btn" id="sbtn">Submit</button></div>
     <div class="score" id="scorebox">
       <div class="big" id="bigscore"></div>

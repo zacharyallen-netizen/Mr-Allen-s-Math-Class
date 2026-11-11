@@ -94,5 +94,113 @@ window.NOTE_TWINS = {
 ],
 "a": "∛60, √16, 4.1, √17",
 "why": "✓ ∛60 ≈ 3.91, √16 = 4, 4.1, and √17 ≈ 4.12."
+},
+"u1pA1": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Is 0.777… rational or irrational?",
+"choices": [
+"Rational",
+"Irrational"
+],
+"a": "Rational",
+"why": "✓ The 7 repeats forever: 0.777… = 7/9."
+},
+"u1pA2": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Is √36 rational or irrational?",
+"choices": [
+"Rational",
+"Irrational"
+],
+"a": "Rational",
+"why": "✓ 36 is a perfect square: √36 = 6."
+},
+"u1pA3": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Is √15 rational or irrational?",
+"choices": [
+"Rational",
+"Irrational"
+],
+"a": "Irrational",
+"why": "✓ 15 is not a perfect square, so its decimal never stops and never repeats."
+},
+"u1pA4": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l2\">Score 4</span> Is 0.121221222… rational or irrational?",
+"choices": [
+"Rational",
+"Irrational"
+],
+"a": "Irrational",
+"why": "✓ The runs of 2s keep growing, so no block ever repeats."
+},
+"u1pA5": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l2\">Score 4</span> Is −√64 rational or irrational?",
+"choices": [
+"Rational",
+"Irrational"
+],
+"a": "Rational",
+"why": "✓ 64 = 8 × 8, so −√64 = −8."
+},
+"u1pB1": {
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l1\">Score 3</span> Estimate √8 to the nearest tenth.",
+"a": [
+"2.8",
+"2.83"
+]
+},
+"u1pB2": {
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l2\">Score 4</span> Estimate √40 to the nearest tenth.",
+"a": [
+"6.3",
+"6.31",
+"6.32"
+]
+},
+"u1pB3": {
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l2\">Score 4</span> Estimate √85 to the nearest tenth.",
+"a": [
+"9.2",
+"9.21",
+"9.22"
+]
+},
+"u1pB4": {
+"p": "<span class=\"badge\">CALC</span> <span class=\"np-lv l3\">Score 5</span> Estimate −√27 to the nearest tenth.",
+"a": [
+"−5.2",
+"−5.18"
+]
+},
+"u1pC1": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l1\">Score 3</span> Which list is in order from least to greatest? 2.4, √6, <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>2</span></span>, √7",
+"choices": [
+"√6, 2.4, 5/2, √7",
+"2.4, √6, 5/2, √7",
+"√7, 5/2, √6, 2.4",
+"2.4, 5/2, √6, √7"
+],
+"a": "2.4, √6, 5/2, √7",
+"why": "✓ Decimals: 2.4, 2.45, 2.5, 2.65."
+},
+"u1pC2": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l2\">Score 4</span> Which list is in order from least to greatest? 5.3, √27, <span class=\"sf\"><span>16</span><span class=\"sfx\">/</span><span>3</span></span>, √30",
+"choices": [
+"5.3, √27, 16/3, √30",
+"√30, 16/3, 5.3, √27",
+"√27, 5.3, 16/3, √30",
+"√27, 16/3, 5.3, √30"
+],
+"a": "√27, 5.3, 16/3, √30",
+"why": "✓ Decimals: 5.20, 5.3, 5.33, 5.48."
+},
+"u1pC3": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l3\">Score 5</span> Which list is in order from least to greatest? −3.5, −√11, −<span class=\"sf\"><span>10</span><span class=\"sfx\">/</span><span>3</span></span>",
+"choices": [
+"−√11, −10/3, −3.5",
+"−3.5, −√11, −10/3",
+"−3.5, −10/3, −√11",
+"−10/3, −3.5, −√11"
+],
+"a": "−3.5, −10/3, −√11",
+"why": "✓ Decimals: −3.5, −3.33, −3.32. With negatives, the one farthest left is the least."
 }
 };
