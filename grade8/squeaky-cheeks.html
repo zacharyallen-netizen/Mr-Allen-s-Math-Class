@@ -269,7 +269,15 @@ const VOX={
   cough(p){const t=AC.currentTime+.02;for(let i=0;i<2;i++){const tt=t+i*.26;noise(tt,.13,.42,'bandpass',1100,.8);voice(tt,{dur:.11,amp:.3,f0:[[0,p*.55]],fm:[[0,[700,1200,2600]]],breath:.9})}},
   cry(p){const t=AC.currentTime+.02,f=p;for(let i=0;i<3;i++){const tt=t+i*.78;noise(tt,.12,.07,'highpass',3000);
     voice(tt+.13,{dur:.55,amp:.2,f0:[[0,f*.85],[.12,f*1.1],[.45,f*1.05],[.55,f*.8]],fm:[[0,[350,800,2600]],[.12,[1000,1600,3200]],[.55,[950,1500,3200]]],vib:8,vd:18})}},
-  sniff(){const t=AC.currentTime+.02;noise(t,.07,.12,'highpass',2500);noise(t+.15,.08,.14,'highpass',2500)}
+  sniff(){const t=AC.currentTime+.02;noise(t,.07,.12,'highpass',2500);noise(t+.15,.08,.14,'highpass',2500)},
+  /* Nov 11, 2026 (Mr. Allen: more silly noises): a quick "heh-heh-heh-heh" belly laugh that climbs, a pig snort, and an out-of-breath wheeze */
+  laugh(p){const t=AC.currentTime+.02,f=p*1.15,n=ri(5,8);
+    for(let i=0;i<n;i++){const tt=t+i*.115,up=1+i*.035,hi=i%2?1.12:1;
+      voice(tt,{dur:.075,amp:.26,f0:[[0,f*up*hi*1.08],[.075,f*up*hi*.9]],fm:[[0,[620,1750,2600]],[.075,[520,1900,2700]]],breath:.35})}
+    voice(t+n*.115+.03,{dur:.3,amp:.22,f0:[[0,f*1.5],[.3,f*.85]],fm:[[0,[750,1200,2600]],[.3,[450,1000,2500]]],vib:9,vd:14,breath:.3})},
+  snort(p){const t=AC.currentTime+.02;for(let i=0;i<2;i++){const tt=t+i*.17;noise(tt,.11,.3,'bandpass',420,6,250);fart(tt,{dur:.1,f0:95,f1:70,flutter:60,wet:.2,amp:.16,lp:600})}
+    voice(t+.36,{dur:.22,amp:.24,f0:[[0,p*1.3],[.22,p*1.7]],fm:[[0,[600,1700,2600]]],breath:.4})},
+  wheeze(p){const t=AC.currentTime+.02;noise(t,.5,.16,'bandpass',1500,3,2600);voice(t+.5,{dur:.14,amp:.2,f0:[[0,p*1.6],[.14,p*1.2]],fm:[[0,[600,1700,2600]]],breath:.6});noise(t+.7,.4,.14,'bandpass',1400,3,2400)}
 };
 function vox(kind,p){if(!live()||!voiceOk())return;VOX[kind](p)}
 const SND={
@@ -283,6 +291,7 @@ const SND={
     let tt=t;for(const sg of seq){if(sg.gap){tt+=sg.gap*v();continue}fart(tt,sg);tt+=sg.dur}
   },
   pfft(){if(!live())return;fart(AC.currentTime+.01,{dur:.2,f0:220,f1:150,flutter:70,wet:.6,amp:.24,lp:1700})},
+  stutter(delay){if(!live())return;const t=AC.currentTime+(delay||0),n=ri(4,7);for(let i=0;i<n;i++)fart(t+i*.11,{dur:.07,f0:rf(170,260),f1:rf(130,190),flutter:64,wet:.5,amp:.2,lp:1500,squeak:i===n-1&&Math.random()<.6?1:0})},
   babble(p){if(!live())return;const t=AC.currentTime;const n=ri(2,5);for(let i=0;i<n;i++)osc('square',p*rf(.85,1.25),t+i*.075,.06,.022,{lp:1400})},
   eww(p){if(!live())return;const t=AC.currentTime;osc('square',p*1.6,t,.45,.06,{to:p*.8,lp:1300,vib:9,vd:p*.06});osc('square',p*1.62,t+.02,.42,.03,{to:p*.82,lp:900})},
   giggle(p){if(!live())return;const t=AC.currentTime;for(let i=0;i<4;i++)osc('square',p*(1.2+i*.15),t+i*.09,.07,.03,{lp:1800})},
@@ -350,7 +359,7 @@ const cv=$('#room'),cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;
 function newGame(n){
   room=n;const T=ROOMS[n-1];
   G={T,n,npcs:[],clouds:[],texts:[],gasPips:0,gas:0,out:0,arrived:0,spawnT:3,shake:0,doors:T.doors.map(x=>({x,open:0,hold:0})),
-     player:{x:160,y:170,tx:160,ty:170,face:1,walk:0,blush:0,puff:0},won:false,right:0,wrong:0,beansHere:0,toots:0,
+     player:{x:160,y:170,tx:160,ty:170,face:1,walk:0,blush:0,puff:0,laugh:0,wiggle:0},won:false,right:0,wrong:0,beansHere:0,toots:0,
      q:{queue:[],seen:0,p:null,stage:'main',busy:false,lastKey:''}};
   for(let i=0;i<T.start;i++)G.npcs.push(makeNpc(rf(30,290),rf(50,180),false));
   $('#roomName').innerHTML=`Room ${n}: <b>${T.name}</b>`;
@@ -360,7 +369,7 @@ function newGame(n){
 function makeNpc(x,y,entering){
   const T=G.T,baby=!!T.babies&&Math.random()<T.babies;
   return {baby,x,y,tx:x,ty:y,sp:baby?rf(8,12):rf(14,22),skin:pick(SKIN),hair:pick(HAIR),hs:ri(0,4),shirt:pick(T.shirts),pants:pick(['#3b3b58','#2d4a6b','#5a4632','#222','#6b2d4a']),
-    onesie:pick(['#a8d8f0','#f7c6d9','#fff3a8','#c8f0c0']),face:1,walk:Math.random()*6,state:entering?'enter':'wander',wait:rf(0,3),stink:0,pitch:baby?rf(400,520):rf(170,330),talk:0,say:'',sayT:0,leaving:null,react:0,spot:null};
+    onesie:pick(['#a8d8f0','#f7c6d9','#fff3a8','#c8f0c0']),face:1,walk:Math.random()*6,state:entering?'enter':'wander',wait:rf(0,3),stink:0,pitch:baby?rf(400,520):rf(170,330),talk:0,say:'',sayT:0,leaving:null,react:0,spot:null,laugh:0,point:0,faint:0};
 }
 function updGoal(){
   const T=G.T;
@@ -379,6 +388,7 @@ function updNpc(n,dt){
   n.stink=Math.max(0,n.stink-dt*.07);
   if(n.sayT>0)n.sayT-=dt;
   if(n.react>0)n.react-=dt;
+  if(n.laugh>0)n.laugh-=dt;if(n.point>0)n.point-=dt;if(n.faint>0)n.faint-=dt;
   if(n.state==='gone')return;
   if(n.state==='enter'){n.ty=60;n.tx=n.x;if(moveTo(n,dt,1)){n.state='wander';n.wait=.3}return}
   if(n.state==='flee'){
@@ -433,7 +443,10 @@ function toot(){
   const p=G.player;p.puff=0;
   G.clouds.push({x:p.x-p.face*3,y:p.y-2,r:6,R:f.r,t:0,life:f.linger?f.linger:1.6,f,hit:new Set()});
   SND.toot(f.k);G.shake=Math.max(G.shake,f.shake);
-  floatText(p.x,p.y-26,pick(['PRRRT!','BRAAP!','FWEEE!','PFFFRT!','TOOT!']),'#d6ff9e');
+  floatText(p.x,p.y-26,pick(['PRRRT!','BRAAP!','FWEEE!','PFFFRT!','TOOT!','THBBBT!','BRRRMP!','FRRRP!','SQUEEEAK!','PBBBT!']),'#d6ff9e');
+  p.wiggle=1.1;                                                     // proud wiggle
+  if(Math.random()<.45)SND.stutter(.55);                           // rapid-fire finish
+  setTimeout(()=>{if(G&&!G.won){p.laugh=1.3;vox('laugh',260);floatText(p.x,p.y-34,pick(['hehehe','heh heh heh','tee hee','ha ha ha']),'#fff3a8')}},650);
   // blast damage now (lingering ones also tick)
   let hits=0;
   for(const n of G.npcs){if(n.state==='gone'||n.state==='flee'||n.state==='enter')continue;
@@ -449,10 +462,12 @@ function react(n){
     if(n.baby){kind='cry';line=pick(['WAAAH!','WAAAAH!','*sob*'])}
     else{kind=pick(['gross','gross','eww','eww','retch','retch','scream','cough','cough']);
       line=pick({gross:['GROSS!','SO GROSS!','GROSS GROSS!'],eww:['EWWW!','EWW, NO!','ewwww'],retch:['*GAG*','hurk!','BLEGH!'],scream:['AAAAH!','MY EYES!','WHO DID THAT?!'],cough:['*cough*','old cheese?!','I’m out!','NOPE!']}[kind])}
-    say(n,line,2.2);
+    say(n,line,2.2);if(!n.baby&&Math.random()<.3)n.faint=.7;
     setTimeout(()=>vox(kind,n.pitch),ri(0,350));
   }else if(n.react<=0){n.react=1.2;
     if(n.baby){say(n,pick(['?','uh-oh','*sniff*']),1.4);setTimeout(()=>vox('sniff'),ri(0,300))}
+    else if(Math.random()<.4){const k=pick(['laugh','laugh','snort','wheeze']);n.laugh=1.5;n.point=1.5;n.face=G.player.x>n.x?1:-1;
+      say(n,pick(k==='snort'?['*SNORT*','*snrk*']:k==='wheeze'?['I can’t breathe!','*wheeze*','stop, stop!']:['HA HA HA!','BAHAHA!','was that YOU?','good one!','heh heh heh!']),1.6);setTimeout(()=>vox(k,n.pitch),ri(0,300))}
     else{const k=pick(['sniff','ugh','sniff']);say(n,k==='sniff'?pick(['sniff sniff?','what’s that smell?','hmm?']):pick(['ugh','eww?','oof']),1.4);setTimeout(()=>vox(k,n.pitch),ri(0,300))}}
 }
 function updClouds(dt){
@@ -465,7 +480,7 @@ function updClouds(dt){
 function pfft(){
   const p=G.player;p.blush=2;SND.pfft();floatText(p.x,p.y-24,'pfft','#ffb3c7');
   let any=false;
-  for(const n of G.npcs){if(n.state==='gone'||n.state==='flee')continue;if(Math.hypot(n.x-p.x,n.y-p.y)<90){say(n,pick(['lol','haha','hehe','pfft lol','nice one']),1.3);if(!any){setTimeout(()=>SND.giggle(n.pitch),120);any=true}}}
+  for(const n of G.npcs){if(n.state==='gone'||n.state==='flee')continue;if(Math.hypot(n.x-p.x,n.y-p.y)<90){say(n,pick(['lol','haha','hehe','pfft lol','nice one','BAHAHA!','heh heh heh']),1.3);n.laugh=1.2;n.point=1.2;n.face=p.x>n.x?1:-1;if(!any){setTimeout(()=>{SND.giggle(n.pitch);vox('laugh',n.pitch)},120);any=true}}}
 }
 
 /* ================= drawing ================= */
@@ -501,7 +516,8 @@ function drawBaby(o){
 }
 function drawPerson(o,isP){
   if(o.baby)return drawBaby(o);
-  const x=Math.round(o.x),y=Math.round(o.y),f=o.face||1;
+  const lf=o.laugh>0,ph=lf?Math.floor(o.laugh*13)%2:0,wg=isP&&o.wiggle>0?(Math.floor(o.wiggle*16)%2?1:-1):0,fw=o.faint>0?Math.round(Math.sin(o.faint*26)*2):0;
+  const x=Math.round(o.x)+wg+fw,y=Math.round(o.y)-(lf?ph:0)-(wg?1:0),f=o.face||1;
   const step=o.walk?Math.floor(o.walk)%2:0;
   const green=!isP&&(o.state==='flee'||o.stink>.25);
   R(x-5,y,10,2,'rgba(0,0,0,.18)');
@@ -509,6 +525,8 @@ function drawPerson(o,isP){
   const shirt=isP?'#ffcf33':o.shirt;
   R(x-4,y-11,8,7,shirt);
   if(green&&o.state==='flee'){R(x+(f>0?1:-3),y-15,2,5,o.skin||'#f7d1b5')}
+  else if(lf&&!isP&&o.point>0){R(x+(f>0?-5:4),y-10,1,5,shirt);R(x+(f>0?4:-8),y-10,4,1,shirt);R(x+(f>0?8:-9),y-10,1,1,o.skin||'#f7d1b5')}   // pointing at you
+  else if(lf){R(x-6,y-13-ph,1,4,shirt);R(x+5,y-12-(1-ph),1,4,shirt)}                                                    // arms up, shaking
   else{R(x-5,y-10,1,5,shirt);R(x+4,y-10,1,5,shirt)}
   const sk=isP?'#f2c49b':o.skin;
   R(x-4,y-19,8,8,sk);R(x-3,y-20,6,1,sk);
@@ -521,6 +539,8 @@ function drawPerson(o,isP){
   else{R(x-4,y-22,8,3,hair);R(x+(f>0?2:-6),y-20,4,1,hair)}
   const ex=f>0?1:-1;
   if(green&&o.state==='flee'){R(x-2+ex,y-17,1,1,'#222');R(x+1+ex,y-17,1,1,'#222');R(x-2+ex,y-13,4,1,'#222');R(x-1+ex,y-14,1,1,'#222');R(x+1+ex,y-14,1,1,'#222')}
+  else if(lf&&!green){R(x-3+ex,y-17,2,1,'#222');R(x+1+ex,y-17,2,1,'#222');R(x-2+ex,y-14,4,3,'#5a1420');R(x-2+ex,y-14,4,1,'#fff');   // squinty eyes, big open mouth
+    if(ph){R(x-4+ex,y-16,1,1,'#9be0ff');R(x+3+ex,y-16,1,1,'#9be0ff')}}                                                          // happy tears
   else{R(x-2+ex,y-17,1,2,'#222');R(x+1+ex,y-17,1,2,'#222');
     if(o.sayT>0&&!green)R(x-1+ex,y-13,2,1,'#7a2a2a');else R(x-1+ex,y-13,2,1,'#5a3a2a')}
   if(isP){const c=Math.min(3,1+Math.floor(o.puff*2.2));R(x-4,y-15,c,2,'#ff7aa2');R(x+4-c,y-15,c,2,'#ff7aa2');
@@ -563,7 +583,7 @@ function frame(t){
   const dt=Math.min(.05,(t-last)/1000);last=t;
   if(G){
     babbleCD-=dt;
-    const p=G.player;p.sp=60;moveTo(p,dt,1);p.blush=Math.max(0,p.blush-dt);p.puff+=((G.gasPips/5+G.gas*.4)-p.puff)*dt*3;
+    const p=G.player;p.sp=60;moveTo(p,dt,1);p.blush=Math.max(0,p.blush-dt);p.laugh=Math.max(0,(p.laugh||0)-dt);p.wiggle=Math.max(0,(p.wiggle||0)-dt);p.puff+=((G.gasPips/5+G.gas*.4)-p.puff)*dt*3;
     for(const n of G.npcs)updNpc(n,dt);
     updClouds(dt);
     for(const d of G.doors){if(d.hold>0)d.hold-=dt;else d.open=Math.max(0,d.open-dt*3)}
@@ -764,11 +784,11 @@ $('#bWonRooms').addEventListener('click',()=>{$('#won').hidden=true;renderRooms(
 /* ================= boot ================= */
 room=asked>=1&&asked<=5?asked:1;for(let n=5;n>=1;n--)if(!asked&&roomOpen(n)&&!save.cleared[n]){room=n;break}
 renderRooms();newGame(room);
-if(/[?&]debug\b/.test(location.search)){window.__G=()=>G;
+if(/[?&]debug\b/.test(location.search)){window.__G=()=>G;window.__T={pfft:()=>pfft(),react:n=>react(n),say:(n,t,d)=>say(n,t,d),VOX,SND};
   window.__render=async(fn,arg)=>{const o=AC,om=master,on=noiseBuf,ol=window.__live;
     const oac=new OfflineAudioContext(1,44100*5,44100);AC=oac;master=oac.createGain();master.gain.value=.7;master.connect(oac.destination);
     const len=oac.sampleRate*2;noiseBuf=oac.createBuffer(1,len,oac.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
-    forceLive=true;let err=null;try{fn==='toot'?SND.toot(arg):fn==='pfft'?SND.pfft():VOX[fn](arg||250)}catch(e){err=String(e)}forceLive=false;
+    forceLive=true;let err=null;try{fn==='toot'?SND.toot(arg):fn==='pfft'?SND.pfft():fn==='stutter'?SND.stutter(0):VOX[fn](arg||250)}catch(e){err=String(e)}forceLive=false;
     const buf=await oac.startRendering();AC=o;master=om;noiseBuf=on;const c=buf.getChannelData(0);let pk=0,ss=0,last=0;for(let i=0;i<c.length;i++){const a=Math.abs(c[i]);if(a>pk)pk=a;ss+=c[i]*c[i];if(a>.01)last=i}
     return {err,peak:+pk.toFixed(3),rms:+Math.sqrt(ss/c.length).toFixed(4),len:+(last/44100).toFixed(2)}};}
 (document.fonts&&document.fonts.load?document.fonts.load('8px "Press Start 2P"'):Promise.resolve()).catch(()=>{}).then(()=>{});
