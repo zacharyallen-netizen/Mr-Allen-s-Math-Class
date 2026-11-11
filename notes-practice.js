@@ -81,7 +81,7 @@
     return norm(given) === norm(want) && norm(want) !== '';
   }
   var paper = /[?&]paper=1/.test(location.search), KEY = /[?&]key=1/.test(location.search);
-  var count = 0;
+  var count = 0, typed = [];
 
   function build(np, si) {
     var title = np.getAttribute('data-title') || '';
@@ -135,6 +135,15 @@
         if (tries === 1) fb.textContent = q.getAttribute('data-hint') || 'Not quite. Look back at the example above and try again.';
         else { fb.textContent = 'The answer is ' + show + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       }
+      // NUMBER OR MULTIPLE CHOICE ONLY (Nov 11, 2026, Mr. Allen): an answer that is not one number becomes tap choices
+      // (grade8/tap-answers.js builds the wrong choices from common mistakes). It is switched only when exactly ONE choice
+      // would be accepted by this box's own answers; anything left typed is listed in NotesPractice.typed.
+      if (!choices && ans && window.TapAnswers) {
+        var gen = TapAnswers.choices(ans.split('|')[0], { q: prompt ? prompt.innerHTML : '', key: location.pathname.split('/').pop() + id }), tol0 = +q.getAttribute('data-tol') || 0;
+        if (gen) { var hit = gen.filter(function (c) { return ans.split('|').some(function (a2) { return same(c, a2, tol0); }); });
+          if (hit.length === 1) { choices = gen.join('|'); ans = hit[0]; } else typed.push([id, 'checker', gen, hit]); }
+        else if (gen === undefined) typed.push([id, 'no rule', ans.split('|')[0]]);
+      }
       if (choices) {
         choices.split('|').forEach(function (c) {
           var b = document.createElement('button'); b.type = 'button'; b.className = 'np-ch'; b.textContent = c;
@@ -148,7 +157,7 @@
         row.appendChild(fb);
       } else if (ans) {
         var inp = document.createElement('input'); inp.className = 'np-in'; inp.type = 'text'; inp.autocomplete = 'off';
-        inp.setAttribute('aria-label', 'Your answer'); inp.placeholder = q.getAttribute('data-ph') || 'Your answer';
+        inp.setAttribute('aria-label', 'Your answer'); inp.placeholder = q.getAttribute('data-ph') || (window.TapAnswers ? 'Type a number' : 'Your answer');
         var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'np-btn'; btn.textContent = 'Check';
         var tol = +q.getAttribute('data-tol') || 0;
         function check() {
@@ -169,5 +178,5 @@
   }
   function init() { document.querySelectorAll('.np').forEach(build); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
-  window.NotesPractice = { count: function () { return count; }, same: same };
+  window.NotesPractice = { count: function () { return count; }, same: same, typed: typed };
 })();

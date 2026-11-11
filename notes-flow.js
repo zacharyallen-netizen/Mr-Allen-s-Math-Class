@@ -109,6 +109,7 @@
       var go = wrap.querySelector('.tw-go');
       go.onclick = function () { kind === 'chkVal' ? window.chkVal(t, [].concat(tw.a)) : window.chkInput(t, tw.xy); };
       wrap.querySelectorAll('input').forEach(function (i) { i.onkeydown = function (e) { if (e.key === 'Enter') go.onclick(); }; });
+      if (kind === 'chkVal' && window.NotesTap) NotesTap.val(document.getElementById(t + '-in'), go, [].concat(tw.a).map(String), tw.p, t);   // number or tap only (notes-tap.js)
     }
     draw(wrap);
   }
@@ -164,6 +165,11 @@
       else { fb.className = 'np-fb no'; fb.textContent = 'Not quite. The answer is ' + shown + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       record(id, ok, !ok);
     }
+    if (!tw.choices && window.TapAnswers) {           // number or tap only: the similar problem gets tap choices too (tap-answers.js)
+      var gen = TapAnswers.choices(answers[0], { q: tw.p, key: id + 't' });
+      if (gen) { var hit = gen.filter(function (c) { return answers.some(function (a2) { return same(c, a2, +tw.tol || 0); }); });
+        if (hit.length === 1) { tw = { p: tw.p, fig: tw.fig, sol: tw.sol, show: shown, choices: gen }; answers = [hit[0]]; } }
+    }
     if (tw.choices) {
       tw.choices.forEach(function (c) {
         var b = document.createElement('button'); b.type = 'button'; b.className = 'np-ch'; b.innerHTML = c;
@@ -172,7 +178,7 @@
       });
     } else {
       var inp = document.createElement('input'); inp.className = 'np-in'; inp.type = 'text'; inp.autocomplete = 'off';
-      inp.setAttribute('aria-label', 'Your answer'); inp.placeholder = tw.ph || q.getAttribute('data-ph') || 'Your answer';
+      inp.setAttribute('aria-label', 'Your answer'); inp.placeholder = tw.ph || q.getAttribute('data-ph') || (window.TapAnswers ? 'Type a number' : 'Your answer');
       if (tw.ineq) inp.setAttribute('data-ineq', '');
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'np-btn'; btn.textContent = 'Check';
       var tol = +tw.tol || 0;

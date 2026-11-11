@@ -5,7 +5,7 @@
    or if the page's checker would not accept exactly one of the choices (then PretestTap.typed lists it). */
 (function () {
   "use strict";
-  if (!window.TapAnswers) return;
+  if (!window.TapAnswers || /[?&](paper|key)=1/.test(location.search)) return;   // printed copies keep their blank lines
   if (typeof QS === 'undefined') {                 // the Unit 1 pre-tests: "type R or IR" becomes Rational / Irrational (the card's own Check grades it)
     var U1 = [];
     [].forEach.call(document.querySelectorAll('input.answer'), function (inp) {
