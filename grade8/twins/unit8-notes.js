@@ -189,5 +189,38 @@ window.NOTE_TWINS = {
 ],
 "a": "congruent",
 "why": "✓ Rotations, translations and reflections are all rigid. No dilation, so size and shape stay the same → congruent."
+},
+"chk6e": {
+"p": "<span class=\"badge\">P5</span> <span class=\"np-lv l3\">Score 5</span> A triangle is rotated 180° and then dilated by k = 3. How does the AREA of the image compare with the pre-image?",
+"choices": [
+"The same",
+"3 times as large",
+"6 times as large",
+"9 times as large"
+],
+"a": "9 times as large",
+"why": "✓ The rotation keeps the size. The dilation triples the base AND the height, so the area is 3 × 3 = 9 times as large."
+},
+"chk6f": {
+"p": "<span class=\"badge\">P6</span> <span class=\"np-lv l3\">Score 5</span> Point P(1, 3) is translated 2 units up, then reflected over the x-axis. Do you get the same image if you reflect FIRST and then translate?",
+"choices": [
+"Yes. The order never matters.",
+"Yes. Both give (1, −5).",
+"No. Translate then reflect gives (1, −5). Reflect then translate gives (1, −1).",
+"No. Translate then reflect gives (−1, 5)."
+],
+"a": "No. Translate then reflect gives (1, −5). Reflect then translate gives (1, −1).",
+"why": "✓ Translate first: (1, 3) → (1, 5) → (1, −5). Reflect first: (1, 3) → (1, −3) → (1, −1). The order can change the image."
+},
+"chk6g": {
+"p": "<span class=\"badge\">P7</span> <span class=\"np-lv l3\">Score 5</span> Rectangle PQRS is mapped to WXYZ by a reflection and then a dilation by k = 2. Mia says the rectangles are congruent. Who is right?",
+"choices": [
+"Mia is right. A reflection is rigid.",
+"Mia is wrong. The dilation changes the size, so they are similar but not congruent.",
+"Mia is right. Rectangles are always congruent.",
+"Mia is wrong. They are neither congruent nor similar."
+],
+"a": "Mia is wrong. The dilation changes the size, so they are similar but not congruent.",
+"why": "✓ One dilation is enough to change the size. The shape stays the same, so the rectangles are similar, not congruent."
 }
 };

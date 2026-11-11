@@ -61,5 +61,38 @@ window.NOTE_TWINS = {
 ],
 "a": "0.625",
 "why": "✓ 5 ÷ 8 = 0.625, a terminating (rational) decimal."
+},
+"u1s5a": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l3\">Score 5</span> Which statement about the real number system is TRUE?",
+"choices": [
+"Every integer is a whole number.",
+"Every whole number is an integer.",
+"Every irrational number can be written as a fraction of integers.",
+"Every decimal is rational."
+],
+"a": "Every whole number is an integer.",
+"why": "✓ The whole numbers (0, 1, 2, …) sit inside the integers. But −3 is an integer that is not a whole number."
+},
+"u1s5b": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l3\">Score 5</span> Why is <span class=\"sf\"><span>√3</span><span class=\"sfx\">/</span><span>3</span></span> irrational, even though it is written as a fraction?",
+"choices": [
+"It is not irrational. Every fraction is rational.",
+"The top, √3, is not an integer.",
+"Because 3 does not divide 3 evenly.",
+"Because its decimal has more than 10 digits."
+],
+"a": "The top, √3, is not an integer.",
+"why": "✓ A rational number is a ratio of two INTEGERS. √3 is not an integer, so √3/3 is irrational."
+},
+"u1s5c": {
+"p": "<span class=\"badge\">MC</span> <span class=\"np-lv l3\">Score 5</span> Which list is in order from least to greatest?",
+"choices": [
+"√16, ∛60, 4.1, √17",
+"∛60, √16, 4.1, √17",
+"√17, 4.1, √16, ∛60",
+"∛60, √16, √17, 4.1"
+],
+"a": "∛60, √16, 4.1, √17",
+"why": "✓ ∛60 ≈ 3.91, √16 = 4, 4.1, and √17 ≈ 4.12."
 }
 };

@@ -91,10 +91,21 @@ mc('chk6c', 'P3', 'Which transformation can change the size of a figure?', ['tra
 mc('chk6d', '⭐ Challenge', 'A hexagon undergoes a sequence: rotation 180°, translation 4 units left, then reflection over the x-axis. The pre-image and image are…', ['congruent', 'similar but not congruent', 'neither'], 'congruent',
    'Rotations, translations and reflections are all rigid. No dilation, so size and shape stay the same → congruent.')
 
+# Nov 11, 2026: twins for the three Score 5 questions P5-P7 (_build/notes_score5_nov11.py)
+mc('chk6e', 'P5', 'A triangle is rotated 180° and then dilated by k = 3. How does the AREA of the image compare with the pre-image?', ['The same', '3 times as large', '6 times as large', '9 times as large'], '9 times as large',
+   'The rotation keeps the size. The dilation triples the base AND the height, so the area is 3 × 3 = 9 times as large.')
+assert rx(tr((1, 3), 0, 2)) == (1, -5) and tr(rx((1, 3)), 0, 2) == (1, -1)
+mc('chk6f', 'P6', 'Point P(1, 3) is translated 2 units up, then reflected over the x-axis. Do you get the same image if you reflect FIRST and then translate?',
+   ['Yes. The order never matters.', 'Yes. Both give (1, −5).', 'No. Translate then reflect gives (1, −5). Reflect then translate gives (1, −1).', 'No. Translate then reflect gives (−1, 5).'],
+   'No. Translate then reflect gives (1, −5). Reflect then translate gives (1, −1).', 'Translate first: (1, 3) → (1, 5) → (1, −5). Reflect first: (1, 3) → (1, −3) → (1, −1). The order can change the image.')
+mc('chk6g', 'P7', 'Rectangle PQRS is mapped to WXYZ by a reflection and then a dilation by k = 2. Mia says the rectangles are congruent. Who is right?',
+   ['Mia is right. A reflection is rigid.', 'Mia is wrong. The dilation changes the size, so they are similar but not congruent.', 'Mia is right. Rectangles are always congruent.', 'Mia is wrong. They are neither congruent nor similar.'],
+   'Mia is wrong. The dilation changes the size, so they are similar but not congruent.', 'One dilation is enough to change the size. The shape stays the same, so the rectangles are similar, not congruent.')
+
 # Nov 10, 2026: Score 3/4/5 labels (same levels as the questions on unit8-notes.html); the old "⭐ Challenge" badge is P4
 import re as _re
 LV8 = {'chk1a': 3, 'chk1b': 3, 'p-trans-1': 3, 'p-trans-2': 4, 'p-trans-3': 4, 'p-refl-1': 3, 'p-refl-2': 4, 'p-refl-3': 4,
-       'p-rot-1': 4, 'p-rot-2': 5, 'p-rot-3': 4, 'chk5a': 4, 'chk5b': 5, 'chk5c': 3, 'chk6a': 4, 'chk6b': 4, 'chk6c': 3, 'chk6d': 5}
+       'p-rot-1': 4, 'p-rot-2': 5, 'p-rot-3': 4, 'chk5a': 4, 'chk5b': 5, 'chk5c': 3, 'chk6a': 4, 'chk6b': 4, 'chk6c': 3, 'chk6d': 5, 'chk6e': 5, 'chk6f': 5, 'chk6g': 5}
 for _k, _l in LV8.items():
     T[_k]['p'] = _re.sub(r'(<span class="badge">)⭐ Challenge(</span>)', r'\1P4\2', T[_k]['p'])
     T[_k]['p'] = _re.sub(r'(<span class="badge">[^<]*</span>)', lambda m: m.group(1) + ' <span class="np-lv l%d">Score %d</span>' % ({3: 1, 4: 2, 5: 3}[_l], _l), T[_k]['p'], count=1)

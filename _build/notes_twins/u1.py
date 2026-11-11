@@ -17,7 +17,19 @@ assert F(5, 8) == F(625, 1000)
 T['chk5a'] = {'p': '<span class="badge">MC</span> Which decimal equals the fraction <span class="sf"><span>5</span><span class="sfx">/</span><span>8</span></span> ?', 'choices': ['0.58', '0.625', '0.85', '0.375'], 'a': '0.625',
               'why': '✓ 5 ÷ 8 = 0.625, a terminating (rational) decimal.'}
 
+# Nov 11, 2026: twins for the three Score 5 questions in Part 2 section D (_build/notes_score5_nov11.py)
+T['u1s5a'] = {'p': '<span class="badge">MC</span> Which statement about the real number system is TRUE?',
+              'choices': ['Every integer is a whole number.', 'Every whole number is an integer.', 'Every irrational number can be written as a fraction of integers.', 'Every decimal is rational.'], 'a': 'Every whole number is an integer.',
+              'why': '✓ The whole numbers (0, 1, 2, …) sit inside the integers. But −3 is an integer that is not a whole number.'}
+T['u1s5b'] = {'p': '<span class="badge">MC</span> Why is <span class="sf"><span>√3</span><span class="sfx">/</span><span>3</span></span> irrational, even though it is written as a fraction?',
+              'choices': ['It is not irrational. Every fraction is rational.', 'The top, √3, is not an integer.', 'Because 3 does not divide 3 evenly.', 'Because its decimal has more than 10 digits.'], 'a': 'The top, √3, is not an integer.',
+              'why': '✓ A rational number is a ratio of two INTEGERS. √3 is not an integer, so √3/3 is irrational.'}
+assert 60 ** (1 / 3.0) < 4 < 4.1 < 17 ** 0.5
+T['u1s5c'] = {'p': '<span class="badge">MC</span> Which list is in order from least to greatest?',
+              'choices': ['√16, ∛60, 4.1, √17', '∛60, √16, 4.1, √17', '√17, 4.1, √16, ∛60', '∛60, √16, √17, 4.1'], 'a': '∛60, √16, 4.1, √17',
+              'why': '✓ ∛60 ≈ 3.91, √16 = 4, 4.1, and √17 ≈ 4.12.'}
+
 # Nov 10, 2026: Score labels to match the section checks on unit1-notes.html
 import re as _re
-for _k, _l in {'chk1a': 3, 'chk2a': 3, 'chk2b': 3, 'chk4a': 4, 'chk5t': 4, 'chk5a': 3}.items():
+for _k, _l in {'chk1a': 3, 'chk2a': 3, 'chk2b': 3, 'chk4a': 4, 'chk5t': 4, 'chk5a': 3, 'u1s5a': 5, 'u1s5b': 5, 'u1s5c': 5}.items():
     if _k in T: T[_k]['p'] = _re.sub(r'(<span class="badge">[^<]*</span>)', lambda m: m.group(1) + ' <span class="np-lv l%d">Score %d</span>' % (_l - 2, _l), T[_k]['p'], count=1)
