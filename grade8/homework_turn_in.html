@@ -18,7 +18,18 @@
 .saved{color:var(--muted);font-size:14px;margin:8px 0 0}
 .pg{background:#fff;border:1px solid var(--line-2);border-radius:var(--radius);margin:0 0 18px;overflow:hidden}
 .pg img{display:block;width:100%;height:auto;border-bottom:1px solid var(--line)}
-.prob .cropwrap{overflow-x:auto;border-bottom:1px solid var(--line)}.prob .crop{position:relative;overflow:hidden;width:100%}.prob .crop.wide{cursor:zoom-in}.prob .crop.big{width:230%;cursor:zoom-out}
+.prob .cropwrap{overflow-x:auto;border-bottom:1px solid var(--line)}
+/* one problem fits one Chromebook screen (Nov 11, 2026): small title, directions + name folded after the start, picture sized to the window */
+.hw-one .hero{margin:4px 0 8px;padding:0;border:0}.hw-one .hero h1{font-size:1.5rem;margin:0;display:inline}.hw-one .hero p{display:inline;margin:0 0 0 10px;font-size:15px}
+.hw-one .back-link{margin-bottom:4px}
+#hwTop{margin:0 0 10px}#hwTop>summary{cursor:pointer;list-style:none;font:600 14.5px var(--sans);color:var(--navy);background:#fff;border:1px solid var(--line-2);border-radius:10px;padding:9px 14px}
+#hwTop>summary::-webkit-details-marker{display:none}#hwTop>summary:after{content:" ▾";color:var(--muted)}#hwTop[open]>summary:after{content:" ▴"}#hwTop[open]>summary{margin-bottom:10px}
+#hwTop .go{display:block;width:100%;font:700 17px var(--sans);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:13px;min-height:48px;cursor:pointer;margin:0 0 6px}
+#hwTop .hw-steps{margin-bottom:10px}#hwTop .card{margin-bottom:10px}#hwTop .links{margin-bottom:10px}
+.hw-one .pg{margin-bottom:10px}.hw-one .whole{padding:6px 16px}.hw-one .prob .ans{padding:10px 16px 12px}
+@media (min-width:701px){.hw-one .prob .cropwrap{text-align:center}.hw-one .prob .crop{display:inline-block;vertical-align:top;width:min(100%,calc(var(--nw) * 1.3px),max(calc(var(--nw) * .8px),calc((100vh - 545px) * var(--ar))))}}
+.hw-one .prob{position:relative}.hw-one .whole{border-bottom:0;padding:0}.hw-one .whole>summary{position:absolute;top:7px;right:14px;font:600 13px var(--sans);color:var(--muted)}.hw-one .whole[open]{padding:0 16px 10px}
+@media print{#hwTop>summary,#hwTop .go{display:none}}.prob .crop{position:relative;overflow:hidden;width:100%}.prob .crop.wide{cursor:zoom-in}.prob .crop.big{width:230%;cursor:zoom-out}
 .zoomtip{display:none;margin:4px 16px 6px;font:500 13.5px var(--sans);color:var(--muted)}@media (max-width:700px){.zoomtip{display:block}}
 .prob .crop img{position:absolute;max-width:none;height:auto;border:0}
 .prob .ans{grid-template-columns:1fr}
@@ -29,7 +40,7 @@
 .ans label{display:flex;flex-direction:column;gap:5px;font:600 14px var(--sans);color:var(--navy)}
 .ans small{color:var(--gold-text);font-weight:600}
 .ans input{font:500 16px var(--mono);padding:9px 10px;border:1.5px solid var(--line-2);border-radius:7px;min-height:44px;min-width:0;background:#fff}
-.ans input.blank{border-color:#E8A23A;background:#FFF8EC}
+.ans input.blank,.who input.blank{border-color:#E8A23A;background:#FFF8EC}
 .send{display:block;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;font:700 18px var(--sans);padding:16px;min-height:54px;cursor:pointer}
 .send[disabled]{opacity:.6;cursor:default}
 .msg{margin-top:12px;font-size:15.5px}.msg.warn{color:#B42318}
@@ -117,10 +128,10 @@
       var c = crops[p[0]], w = c[3] - c[1], ht = c[4] - c[2], src = base + c[0] + '.jpg';
       out += '<section class="pg prob"><div class="pgnum">Problem ' + p[0] + ' · Score ' + p[2] + '</div>' +
         (w > 0.6 ? '<p class="zoomtip">Words too small? Tap the problem to make it bigger.</p>' : '') +
-        '<div class="cropwrap"><div class="crop' + (w > 0.6 ? ' wide' : '') + '" style="aspect-ratio:' + (w * 1020).toFixed(1) + '/' + (ht * 1320).toFixed(1) + '"><img src="' + src + '" alt="Homework ' + h.id + ', problem ' + p[0] + '"' + (i ? ' loading="lazy"' : '') +
+        '<div class="cropwrap"><div class="crop' + (w > 0.6 ? ' wide' : '') + '" style="--nw:' + (w * 1020).toFixed(0) + ';--ar:' + (w * 1020 / (ht * 1320)).toFixed(4) + ';aspect-ratio:' + (w * 1020).toFixed(1) + '/' + (ht * 1320).toFixed(1) + '"><img src="' + src + '" alt="Homework ' + h.id + ', problem ' + p[0] + '"' + (i ? ' loading="lazy"' : '') +
         ' style="width:' + (100 / w).toFixed(3) + '%;left:' + (-100 * c[1] / w).toFixed(3) + '%;top:' + (-100 * c[2] / ht).toFixed(3) + '%"></div></div>' +
         '<details class="whole"><summary>See the whole page</summary><img data-src="' + src + '" alt="Homework ' + h.id + ', page ' + c[0] + '" width="1020" height="1320"></details>' +
-        '<div class="ans"' + ineq + '><label>Problem ' + p[0] + ' <small>Score ' + p[2] + '</small><input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label></div></section>';
+        '<div class="ans"' + ineq + '><label>Your answer<input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label></div></section>';
     });
   } else for (var pnum = 1; pnum <= h.pages; pnum++) {
     var probs = h.p.filter(function(p){ return p[1] === pnum; });
@@ -139,6 +150,28 @@
   $('pages').addEventListener('click', function(ev){ var c = ev.target.closest && ev.target.closest('.crop.wide'); if (c && innerWidth <= 700) c.classList.toggle('big'); });
   $('pages').addEventListener('toggle', function(ev){ var im = ev.target.querySelector && ev.target.querySelector('img[data-src]'); if (im) { im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); } }, true);
 
+  // one screen per problem: directions, name and print link fold into "Start here" once the student has started
+  var topBox = null;
+  function topLabel(){ if (!topBox) return; var n = $('nm').value.replace(/\s+/g, ' ').trim(), b = $('pd').value;
+    topBox.firstChild.textContent = n ? '✓ ' + n + (b ? ' · Block ' + b : ' · choose your block') + ' · directions and print' : 'Start here: type your name and block'; }
+  function openTop(){ if (topBox) topBox.open = true; }
+  if (perProb) {
+    $('doMode').classList.add('hw-one'); document.querySelector('.page-wrap').classList.add('hw-one');
+    topBox = document.createElement('details'); topBox.id = 'hwTop'; topBox.appendChild(document.createElement('summary'));
+    var dm = $('doMode'); dm.insertBefore(topBox, dm.firstChild);
+    [dm.querySelector('.hw-steps'), dm.querySelector('.card'), dm.querySelector('.links')].forEach(function(el){ if (el) topBox.appendChild(el); });
+    var go = document.createElement('button'); go.type = 'button'; go.className = 'go'; go.textContent = 'Start my homework →'; topBox.insertBefore(go, topBox.querySelector('.links'));
+    go.addEventListener('click', function(){
+      var name = $('nm').value.replace(/\s+/g, ' ').trim();
+      if (name.length < 3 || name.indexOf(' ') < 0) { $('nm').focus(); $('nm').classList.add('blank'); return; }
+      if (!$('pd').value) { $('pd').focus(); return; }
+      $('nm').classList.remove('blank');
+      try { localStorage.setItem('fluencyLabStudentName', name); localStorage.setItem('hw-block', $('pd').value); } catch (e) {}
+      topBox.open = false; window.scrollTo({ top: 0 });
+    });
+    $('nm').addEventListener('input', topLabel); $('pd').addEventListener('change', topLabel);
+    window.addEventListener('beforeprint', openTop);
+  }
   // remember name/block and this homework's answers on this device
   var KEY = 'hw-draft-' + h.id;
   try {
@@ -147,6 +180,7 @@
     var d = JSON.parse(localStorage.getItem(KEY) || '{}');
     h.p.forEach(function(p){ if (d[p[0]]) $('a' + p[0]).value = d[p[0]]; });
   } catch (e) {}
+  if (topBox) { topBox.open = !($('nm').value && $('pd').value); topLabel(); }
   $('pages').addEventListener('input', function(ev){
     var d = {}; h.p.forEach(function(p){ var v = $('a' + p[0]).value; if (v) d[p[0]] = v; });
     try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {}
@@ -157,8 +191,8 @@
   var confirmBlank = false;
   $('send').addEventListener('click', function(){
     var name = $('nm').value.replace(/\s+/g, ' ').trim();
-    if (name.length < 3 || name.indexOf(' ') < 0) { msg('Type your first AND last name at the top.', 'warn'); $('nm').focus(); return; }
-    if (!$('pd').value) { msg('Choose your block at the top.', 'warn'); $('pd').focus(); return; }
+    if (name.length < 3 || name.indexOf(' ') < 0) { msg('Type your first AND last name at the top.', 'warn'); openTop(); $('nm').focus(); return; }
+    if (!$('pd').value) { msg('Choose your block at the top.', 'warn'); openTop(); $('pd').focus(); return; }
     var answers = h.p.map(function(p){ return $('a' + p[0]).value.trim(); });
     var blanks = h.p.filter(function(p, i){ return !answers[i]; }).map(function(p){ return p[0]; });
     if (blanks.length === h.p.length) { msg('Type at least one answer first.', 'warn'); return; }
