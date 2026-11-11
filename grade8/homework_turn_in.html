@@ -52,6 +52,9 @@
 .mcbtn.box::before{content:'';display:inline-block;width:18px;height:18px;border:2px solid currentColor;border-radius:4px;margin-right:10px;vertical-align:-3px;box-sizing:border-box}
 .mcbtn.box.sel::before{background:currentColor;box-shadow:inset 0 0 0 3px #fff}
 .inrow.mc .chkbtn{min-height:46px;align-self:flex-start}
+.inrow.mc.gxy{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}@media (min-width:701px){.inrow.mc.gxy{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.mcbtn.gr{position:relative;padding:6px;text-align:center}.mcbtn.gr .hwg{display:block;width:100%;height:auto;margin:0 auto}.mcbtn.gr .hwg.xy{max-width:240px}.mcbtn.gr .hwg.nl{max-width:420px;flex:1 1 auto;min-width:0}
+.mcbtn.gr .gl{position:absolute;left:8px;top:5px;font:700 13px var(--mono);color:var(--muted)}.inrow.mc.gnl{flex-direction:column}.inrow.mc.gnl .mcbtn.gr{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 30px}.mcbtn.gr .gt{font:700 15px var(--mono);flex:0 0 74px;text-align:left;order:-1}.inrow.mc.gxy .gt{display:block;font:600 13px var(--sans)}
 .mcbtn.no{border-color:#E4A8A1;background:#FEF3F2;color:#8A2A1F;box-shadow:none}
 .inrow input.blank~.mcbtn{border-color:#E8A23A;background:#FFF8EC}
 /* answer check (Nov 11, 2026) */
@@ -115,9 +118,10 @@
 <div class="site-footer">© Mr. Allen's Math Class</div>
 
 <script src="homework/crops.js?v=20261110a"></script>
-<script src="homework/check.js?v=20261111c"></script>
-<script src="homework/choices.js?v=20261111c"></script>
+<script src="homework/check.js?v=20261111d"></script>
+<script src="homework/choices.js?v=20261111d"></script>
 <script src="homework-check.js?v=20261111c"></script>
+<script src="homework-graph.js?v=20261111d"></script>
 <script src="../tracker-config.js"></script>
 <script>
 (function(){
@@ -196,19 +200,21 @@
     // ---- multiple choice: tap one ----
     if (mc && !mc.n && kind === 'l') {
       var list = typeof mc === 'number' ? null : (mc.c || mc), k = list ? list.length : mc, btns = [], tried = {}, multi = !!mc.m;
-      row.className = 'inrow mc ' + (list ? 'txt' : 'let'); inp.classList.add('mchid'); inp.tabIndex = -1;
-      var one = function(L){ return list ? list[LET.indexOf(L)] : L; }, text = function(v){ return v.split('').map(one).join('; '); };
+      row.className = 'inrow mc ' + (list && list[0] && list[0].g ? 'gfx g' + list[0].g.k : list ? 'txt' : 'let'); inp.classList.add('mchid'); inp.tabIndex = -1;
+      var raw = function(L){ return list ? list[LET.indexOf(L)] : L; }, one = function(L){ var c = raw(L); return typeof c === 'string' ? c : (c.d || c.t || 'Graph ' + L); }, text = function(v){ return v.split('').map(one).join('; '); };
+      var gk = list && list[0] && list[0].g ? list[0].g.k : '';
       TXT[num] = function(){ return inp.value ? text(inp.value) : ''; };
       var paint = function(){ btns.forEach(function(b){ var L = b.getAttribute('data-v'), on = inp.value === L;
-        on = multi ? inp.value.indexOf(L) >= 0 : on; b.className = 'mcbtn' + (multi ? ' box' : '') + (on ? ' sel' : '') + (multi ? (on && tried[inp.value] === 1 ? ' ok' : '') : (tried[L] === 1 ? ' ok' : tried[L] === 0 ? ' no' : '')); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); };
+        on = multi ? inp.value.indexOf(L) >= 0 : on; b.className = 'mcbtn' + (gk ? ' gr' : '') + (multi ? ' box' : '') + (on ? ' sel' : '') + (multi ? (on && tried[inp.value] === 1 ? ' ok' : '') : (tried[L] === 1 ? ' ok' : tried[L] === 0 ? ' no' : '')); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); };
       var judge = function(quiet){
         var L = inp.value; if (!L) { fb.className = 'hwfb'; fb.textContent = ''; return; }
         var ok = HWCheck.tap(h.id, num, L); tried[L] = ok ? 1 : 0; if (!quiet) firstTry(num, text(L), ok); paint();
         if (ok) show('ok', 'Correct! Nice work.'); else show('no', (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those.' : 'Not yet. Check your work and tap again.') + (steps() ? ' The step by step button can help.' : ''));
       };
       for (var ci = 0; ci < k; ci++) (function(L){
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'mcbtn'; b.setAttribute('data-v', L); b.textContent = one(L);
-        b.setAttribute('aria-label', (list ? '' : 'Choice ') + one(L));
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'mcbtn'; b.setAttribute('data-v', L); var c0 = raw(L);
+        if (c0 && c0.g && window.HWGraph) { b.innerHTML = '<span class="gl">' + L + '</span>' + HWGraph.svg(c0.g); if (c0.t) { var gt = document.createElement('span'); gt.className = 'gt'; gt.textContent = c0.t; b.appendChild(gt); } b.setAttribute('aria-label', 'Graph ' + L + (c0.t ? ': ' + c0.t : '')); }
+        else { b.textContent = one(L); b.setAttribute('aria-label', (list ? '' : 'Choice ') + one(L)); }
         b.addEventListener('click', function(e){ e.preventDefault(); inp.classList.remove('blank');
           if (multi) { var cur = inp.value.split('').filter(function(x){ return x !== L; }); if (cur.length === inp.value.length) cur.push(L); inp.value = cur.sort().join(''); fb.className = 'hwfb'; fb.textContent = ''; paint(); }
           else { inp.value = L; judge(false); }

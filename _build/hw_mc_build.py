@@ -39,6 +39,22 @@ def pick(right, options, q=None):
 def multi(rights, options, q=None):
     assert rights and all(r in options for r in rights) and len(rights) < len(options), (rights, options)
     return {'q': q, 'c': list(options), 'm': sorted(list(options).index(r) for r in rights)}
+def _op(o): return {'<': '<', '>': '>', '<=': '≤', '>=': '≥'}[o]
+def _n(v): return str(v).replace('-', '−')
+def line(m, b, d=None, **g):
+    """a graph choice: the line y = mx + b on a grid (d = what the sheet says; describe it by points, not by the equation)"""
+    g.update(k='xy', lines=[[m, b]]); return {'g': g, 'd': d or 'line through (0, %s) and (1, %s)' % (_n(b), _n(m + b))}
+def xyg(d, **g):
+    """any grid picture: lines=[[m,b]], v=[x], pts=[[x,y]], seg=[[x1,y1,x2,y2]], poly=[[[x,y],...]], curve=[[x,y],...], r=5"""
+    g['k'] = 'xy'; return {'g': g, 'd': d}
+def nlg(lo, hi, at, op, var='x'):
+    """a number-line choice with its inequality: nlg(2, 11, 7, '<')"""
+    return {'g': {'k': 'nl', 'lo': lo, 'hi': hi, 'at': at, 'op': op}, 't': '%s %s %s' % (var, _op(op), _n(at))}
+def dots(lo, hi, pts, step=1, every=1):
+    """a number line with labeled points: dots(0, 4, [(1.7, '√3'), (2.5, '5/2')], step=0.5)"""
+    return {'g': {'k': 'nl', 'lo': lo, 'hi': hi, 'step': step, 'every': every, 'dots': [[v, t] for v, t in pts]}, 'd': ',  '.join('%s at %s' % (t, _n(v)) for v, t in pts)}
+def _key(c): return c.strip().lower() if isinstance(c, str) else json.dumps(c, sort_keys=True)
+def _say(c): return c if isinstance(c, str) else (c.get('d') or c.get('t') or 'graph')
 def num(ans, q=None):
     assert K.num(str(ans)) is not None, ans
     return {'q': q, 'n': str(ans)}
@@ -57,7 +73,7 @@ def main():
     check = json.loads(re.search(r'window\.HW_CHECK = (\{.*\});', old, re.S).group(1))
     U = {}
     for f in sorted(glob.glob(os.path.join(priv, 'mc_*.py'))):
-        ns = {'mc': mc, 'pick': pick, 'num': num, 'multi': multi}; exec(open(f, encoding='utf-8').read(), ns)
+        ns = {'mc': mc, 'pick': pick, 'num': num, 'multi': multi, 'line': line, 'xyg': xyg, 'nlg': nlg, 'dots': dots}; exec(open(f, encoding='utf-8').read(), ns)
         for hw, d in ns['U'].items():
             assert hw not in U, hw + ' twice'; U[hw] = {str(k): v for k, v in d.items()}
     warn = []
@@ -87,20 +103,20 @@ def main():
                 if a.get('q'): cho[n] = {'q': a['q'], 'n': 1}
                 chk[n] = ['n', K.h53(key + canon)]; exp[n] = a['n']; stats['number'] += 1; continue
             if 'm' in a:
-                c = list(a['c']); L = ''.join(LET[i].lower() for i in a['m']); assert len(set(c)) == len(c) and len(c) <= 6, (hw, n)
+                c = list(a['c']); L = ''.join(LET[i].lower() for i in a['m']); assert len(set(_key(x) for x in c)) == len(c) and len(c) <= 6, (hw, n)
                 cho[n] = {'q': a.get('q') or 'Tap ALL that are true. Then tap Check.', 'c': c, 'm': 1}
                 chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper(); stats['tap a choice'] += 1; continue
             c = list(a['c']); right = c[a['a']]
-            if r[0] == 'p':                                            # the key had a written form: the right choice should say the same thing
+            if r[0] == 'p' and isinstance(right, str):                                            # the key had a written form: the right choice should say the same thing
                 f = lambda t: (K.form(re.sub(r'\s*(m|days?|sheets?|g|kg|cm|in|ft|units?)\b\.?$', '', t)) or '').replace('(', '').replace(')', '')
                 if f(right) != r[1].replace('(', '').replace(')', ''): warn.append('%s #%s key says %s, right choice is %s' % (hw, n, r[1], right))
-            if r[0] == 'w' and K.words(right) != r[1] and r[1] not in (K.words(right) or ''): warn.append('%s #%s key says %s, right choice is %s' % (hw, n, r[1], right))
-            assert len(set(x.strip().lower() for x in c)) == len(c), 'two choices are the same: %s #%s' % (hw, n)
+            if r[0] == 'w' and isinstance(right, str) and K.words(right) != r[1] and r[1] not in (K.words(right) or ''): warn.append('%s #%s key says %s, right choice is %s' % (hw, n, r[1], right))
+            assert len(set(_key(x) for x in c)) == len(c), 'two choices are the same: %s #%s' % (hw, n)
             assert 2 <= len(c) <= 5
             if a.get('shuffle'): random.Random(int(K.h53(key), 16)).shuffle(c)
             L = LET[c.index(right)].lower()
             cho[n] = {'q': a['q'], 'c': c} if a.get('q') else c
-            chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper() + ' = ' + right; stats['tap a choice'] += 1
+            chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper() + ' = ' + _say(right); stats['tap a choice'] += 1
         extra = set(U[hw]) - set(str(p[0]) for p in h['p']); assert not extra, (hw, extra)
         choices[hw] = cho; check[hw] = chk; expect[hw] = exp
     order = [h['id'] for h in HW]
