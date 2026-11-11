@@ -13,7 +13,7 @@
   var FORMATS = [
     { root: '#practice', items: '.pr-card' },                                          // practice engine pages
     { root: '#doMode', items: '#pages > section.pg', need: '#pages > section.pg' },     // homework: one printed page at a time
-    { root: '.sheet', items: '.qgrid > .q, table.vocab, .fillparts', need: '.qgrid' },  // pre-tests
+    { root: '.sheet', items: '.qgrid > .q, .vq, table.vocab:not(.vq-hide), .fillparts', need: '.qgrid' },  // pre-tests
     { root: '#quiz', items: 'section.q' },                                              // Unit 1 pre-tests
     { root: '.container', items: '#cards > .card', need: '#cards' },                    // Unit 6 slope-intercept practice
     { root: '.tab-pane.active', items: '.qc', tabs: '.tab-btn' },                       // Unit 7/8 practice 1 and 2 (tabs)

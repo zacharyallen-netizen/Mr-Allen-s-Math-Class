@@ -61,8 +61,34 @@
   // "parts of a number in scientific notation" blanks (Unit 2): tap the word
   [].forEach.call(document.querySelectorAll('input.partin[data-ans]'), function (inp, i) { UI['part' + i] = TapAnswers.mount(inp, ['Coefficient', 'Base', 'Exponent'], { onPick: now }); });
   [].forEach.call(document.querySelectorAll('#vocab select'), function (sel) { sel.addEventListener('change', now); });                 // vocabulary: graded when picked
+  // VOCABULARY, ONE WORD AT A TIME (Mr. Allen: the screen shows one problem). Each word gets its own card, "What does ___
+  // mean?", with the meanings as tap choices. A tap sets the page's own dropdown (the table is hidden on screen and still
+  // prints), so the page's own check grades it and the score counts it exactly as before.
+  var VP = [], vt = document.getElementById('vocab');
+  if (vt && vt.querySelector('select[data-term]') && vt.querySelector('td.def')) {
+    var defs = [].map.call(vt.querySelectorAll('td.def'), function (td) { var b = td.querySelector('b'); return [b ? b.textContent.replace(/[^A-Za-z]/g, '') : '', td.textContent.replace(/^\s*[A-Za-z]\.\s*/, '').trim()]; }).filter(function (d) { return d[0] && d[1]; });
+    var holder = document.createElement('div'), vsel = vt.querySelectorAll('select[data-term]'); holder.className = 'vq-list';
+    var vst = document.createElement('style'); vst.textContent = '@media screen{table.vocab.vq-hide{display:none}}@media print{.vq-list{display:none}}.vq .ta-row{margin-top:4px}.vq .ta-btn{font-weight:500}.vq .qfb{font:600 14.5px/1.4 Inter,system-ui,sans-serif;margin-top:6px}'; document.head.appendChild(vst);
+    [].forEach.call(vsel, function (sel, i) {
+      var card = document.createElement('div'); card.className = 'q vq'; card.id = 'vq' + (i + 1);
+      card.innerHTML = '<div><span class="n">Word ' + (i + 1) + ' of ' + vsel.length + '.</span> <span class="op">Vocabulary</span></div><div class="expr">What does <b></b> mean?</div><div class="ta-row col" role="group" aria-label="Meanings"></div><div class="qfb" role="status"></div>';
+      card.querySelector('b').textContent = sel.getAttribute('data-term');
+      var row = card.querySelector('.ta-row'), fb = card.querySelector('.qfb'), btns = [];
+      defs.forEach(function (d) { var b = document.createElement('button'); b.type = 'button'; b.className = 'ta-btn'; b.textContent = d[1]; b.setAttribute('data-v', d[0]);
+        b.addEventListener('click', function () { sel.value = d[0]; now(); paint(); }); row.appendChild(b); btns.push(b); });
+      var hb = TapAnswers.hintButton(card, 'Read each meaning slowly. Cross out the ones you know belong to other words. Think about where you saw this word in class.'); hb.style.marginTop = '8px'; card.insertBefore(hb, fb);
+      function paint() { var v = sel.value, sfb = sel.parentElement.querySelector('.fb'), graded = !!(v && sfb && sfb.textContent), good = graded && /\bok\b/.test(sfb.className);
+        btns.forEach(function (b) { var on = b.getAttribute('data-v') === v; b.classList.toggle('sel', on && !graded); b.classList.toggle('ok', on && good); b.classList.toggle('no', on && graded && !good); });
+        card.classList.toggle('correct', good); card.classList.toggle('wrong', graded && !good); card.classList.toggle('answered', !!v);
+        fb.className = 'qfb' + (good ? ' ok' : graded ? ' no' : ''); fb.textContent = good ? '✓ correct' : graded ? '✗ Not yet. That meaning goes with a different word. Read each one again and tap another.' : ''; }
+      VP.push(paint); holder.appendChild(card);
+    });
+    vt.parentNode.insertBefore(holder, vt.nextSibling); vt.classList.add('vq-hide');
+    ['reveal', 'reset'].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { setTimeout(function () { VP.forEach(function (f) { f(); }); }, 0); }); });
+  }
   // after every check: color the tapped choice and name the mistake under each wrong answer
   if (checkBtn) checkBtn.addEventListener('click', function () {
+    VP.forEach(function (f) { f(); });
     QS.forEach(function (q) { var div = document.getElementById('q' + q.id), inp = document.getElementById('i' + q.id); if (!div || !inp) return;
       var v = inp.value.trim(), bad = div.classList.contains('wrong') && v, ui = UI[q.id], d = DISP[q.id] || ['', ''];
       if (ui) ui.buttons.forEach(function (b) { b.classList.remove('ok', 'no'); if (v && b.getAttribute('data-t') === v) { b.classList.remove('sel'); b.classList.add(bad ? 'no' : 'ok'); } });
@@ -70,5 +96,5 @@
   });
   var rs = document.getElementById('reset');
   if (rs) rs.addEventListener('click', function () { last = {}; Object.keys(UI).forEach(function (k) { UI[k].buttons.forEach(function (b) { b.classList.remove('sel', 'ok', 'no'); }); }); [].forEach.call(document.querySelectorAll('.q > .ta-why'), function (n) { n.remove(); }); });
-  window.PretestTap = { ui: UI, typed: TYPED, grade: grade, sent: SENT };
+  window.PretestTap = { ui: UI, typed: TYPED, grade: grade, sent: SENT, vocab: VP.length };
 })();
