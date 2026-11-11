@@ -24,18 +24,24 @@ A homework listed in an mc_*.py file must have EVERY problem covered (the script
 Homework not listed yet keeps its old codes. The right answer can always be re-found from the codes by testing each choice
 with HWCheck.check, so losing PRIVATE_DIR does not break the site.
 """
-import sys, os, re, json, glob, random
+import sys, os, re, json, glob, random, subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hw_check_build as K
 
 LET = 'ABCDEF'
+NOTE = {}                                   # id(choice) is not stable: notes are kept by (problem dict id, choice key) while one file loads
+def _split(c):
+    """a wrong choice may be ('text', 'what the mistake is'): the note is shown when that choice is tapped"""
+    return (c[0], c[1]) if isinstance(c, tuple) else (c, None)
 def mc(q, right, *wrong):
     assert 1 <= len(wrong) <= 4, 'need 1 to 4 wrong choices'
-    return {'q': q, 'c': [right] + list(wrong), 'a': 0, 'shuffle': True}
+    pairs = [_split(w) for w in wrong]
+    return {'q': q, 'c': [right] + [w for w, _ in pairs], 'a': 0, 'shuffle': True, 'why': {_key(w): n for w, n in pairs if n}}
 def pick(right, options, q=None):
+    pairs = [_split(o) for o in options]; options = [o for o, _ in pairs]
     assert right in options, (right, options)
-    return {'q': q, 'c': list(options), 'a': list(options).index(right)}
+    return {'q': q, 'c': list(options), 'a': list(options).index(right), 'why': {_key(o): n for o, n in pairs if n}}
 def multi(rights, options, q=None):
     assert rights and all(r in options for r in rights) and len(rights) < len(options), (rights, options)
     return {'q': q, 'c': list(options), 'm': sorted(list(options).index(r) for r in rights)}
@@ -76,7 +82,18 @@ def main():
         ns = {'mc': mc, 'pick': pick, 'num': num, 'multi': multi, 'line': line, 'xyg': xyg, 'nlg': nlg, 'dots': dots}; exec(open(f, encoding='utf-8').read(), ns)
         for hw, d in ns['U'].items():
             assert hw not in U, hw + ' twice'; U[hw] = {str(k): v for k, v in d.items()}
-    warn = []
+    warn = []; jobs = []; TITLE = {h['id']: h.get('title', '') for h in HW}
+    def qtext(hw, n, extra=None):
+        r0 = raw.get(hw, {}).get(n) or {}; t = ' '.join(x['t'] for x in r0.get('q', []))
+        return (t + ' ' + (extra or '')).strip()
+    def gtext(c):
+        """a choice as words for the mistake finder: its text, or y = mx + b for a graphed line"""
+        if isinstance(c, str): return c
+        g = c.get('g') or {}
+        if c.get('t'): return c['t']
+        if g.get('k') == 'xy' and g.get('lines') and len(g['lines']) == 1 and not g.get('pts'):
+            m, b = g['lines'][0]; return 'y = %sx%s' % ('' if m == 1 else '-' if m == -1 else m, '' if b == 0 else (' + %s' % b if b > 0 else ' - %s' % -b))
+        return ''
     choices = {}; expect = {}; stats = {'tap printed letter': 0, 'tap a choice': 0, 'number': 0}
     try: choices = json.loads(re.search(r'window\.HW_MC = (\{.*\});', open(os.path.join(ROOT, 'grade8', 'homework', 'choices.js'), encoding='utf-8').read(), re.S).group(1))
     except Exception: choices = {}
@@ -93,19 +110,19 @@ def main():
                     assert q, 'count the choices for %s #%s by hand: pick(...)' % (hw, n)
                     for x in q['q']: L.update(re.findall(r'(?<![A-Za-z0-9])([A-E])(?=\s|$)', x['t']))
                     k = LET.index(max(L)) + 1; assert 3 <= k <= 4, (hw, n, sorted(L))
-                    cho[n] = k; chk[n] = ['l', K.h53(key + r[1])]; exp[n] = r[1].upper(); stats['tap printed letter'] += 1; continue
+                    cho[n] = k; chk[n] = ['l', K.h53(key + r[1])]; exp[n] = r[1].upper(); stats['tap printed letter'] += 1; jobs.append({'id': hw + '|' + n, 'q': qtext(hw, n), 'title': TITLE[hw], 'right': None, 'k': k}); continue
                 elif r[0] == 'w' and r[1] in AUTO: a = pick([o for o in AUTO[r[1]] if o.lower() == r[1]][0], AUTO[r[1]])
                 else: raise SystemExit('%s #%s (%s %s) has no choices yet' % (hw, n, r[0], r[1]))
             if isinstance(a, int):                                     # printed letters, counted by hand
-                assert r[0] == 'l' and len(r[1]) == 1, (hw, n); cho[n] = a; chk[n] = ['l', K.h53(key + r[1])]; exp[n] = r[1].upper(); stats['tap printed letter'] += 1; continue
+                assert r[0] == 'l' and len(r[1]) == 1, (hw, n); cho[n] = a; chk[n] = ['l', K.h53(key + r[1])]; exp[n] = r[1].upper(); stats['tap printed letter'] += 1; jobs.append({'id': hw + '|' + n, 'q': qtext(hw, n), 'title': TITLE[hw], 'right': None, 'k': a}); continue
             if 'n' in a:
                 canon = a['n'] if a.get('canon') else K.num(a['n'])
                 if a.get('q'): cho[n] = {'q': a['q'], 'n': 1}
-                chk[n] = ['n', K.h53(key + canon)]; exp[n] = a['n']; stats['number'] += 1; continue
+                chk[n] = ['n', K.h53(key + canon)]; exp[n] = a['n']; stats['number'] += 1; jobs.append({'id': hw + '|' + n, 'q': qtext(hw, n, a.get('q')), 'title': TITLE[hw], 'right': str(a['n']).split('/1')[0] if a.get('canon') else str(a['n'])}); continue
             if 'm' in a:
                 c = list(a['c']); L = ''.join(LET[i].lower() for i in a['m']); assert len(set(_key(x) for x in c)) == len(c) and len(c) <= 6, (hw, n)
                 cho[n] = {'q': a.get('q') or 'Tap ALL that are true. Then tap Check.', 'c': c, 'm': 1}
-                chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper(); stats['tap a choice'] += 1; continue
+                chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper(); stats['tap a choice'] += 1; jobs.append({'id': hw + '|' + n, 'q': qtext(hw, n, a.get('q')), 'title': TITLE[hw], 'right': gtext(c[a['m'][0]]), 'k': 0}); continue
             c = list(a['c']); right = c[a['a']]
             if r[0] == 'p' and isinstance(right, str):                                            # the key had a written form: the right choice should say the same thing
                 f = lambda t: (K.form(re.sub(r'\s*(m|days?|sheets?|g|kg|cm|in|ft|units?)\b\.?$', '', t)) or '').replace('(', '').replace(')', '')
@@ -117,6 +134,7 @@ def main():
             L = LET[c.index(right)].lower()
             cho[n] = {'q': a['q'], 'c': c} if a.get('q') else c
             chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper() + ' = ' + _say(right); stats['tap a choice'] += 1
+            jobs.append({'id': hw + '|' + n, 'q': qtext(hw, n, a.get('q')), 'title': TITLE[hw], 'right': c.index(right), 'choices': [gtext(x) for x in c], 'own': [(a.get('why') or {}).get(_key(x), '') for x in c], 'k': len(c)})
         extra = set(U[hw]) - set(str(p[0]) for p in h['p']); assert not extra, (hw, extra)
         choices[hw] = cho; check[hw] = chk; expect[hw] = exp
     order = [h['id'] for h in HW]
@@ -125,6 +143,42 @@ def main():
         '/* How each homework problem is answered: tap a choice or type a number (see homework_turn_in.html). Choices only: nothing here marks the right one. Made by _build/hw_mc_build.py. */\nwindow.HW_MC = ' + json.dumps(choices, separators=(',', ':'), ensure_ascii=False) + ';\n')
     open(os.path.join(ROOT, 'grade8', 'homework', 'check.js'), 'w', encoding='utf-8').write(
         '/* Scrambled codes for checking homework answers (no answers here). Made from the private key; see homework-check.js. */\nwindow.HW_CHECK = ' + json.dumps(check, separators=(',', ':')) + ';\n')
+    # ---- hints + "what went wrong" notes (grade8/homework/help.js): texts in one list, pointers per problem.
+    # A wrong choice's pointer is scrambled with the same hash the answer codes use, and the right choice gets a pointer
+    # too (to a random note), so nothing in the file marks the right one. Only homework listed in mc_*.py is written.
+    jf = os.path.join(priv, 'help_jobs.json'); json.dump(jobs, open(jf, 'w'), ensure_ascii=False)
+    res = json.loads(subprocess.run(['node', os.path.join(ROOT, '_build', 'hw_help.js'), jf], capture_output=True, text=True, check=True).stdout)
+    T = []; ix = {}
+    def tid(t):
+        if t not in ix: ix[t] = len(T); T.append(t)
+        return ix[t]
+    plan = []; cnt = {'own note': 0, 'found note': 0, 'skill note': 0}
+    for j, r in zip(jobs, res):
+        hw, n = j['id'].split('|'); notes = None
+        if j.get('choices'):
+            notes = [(j['own'][i] or r['why'][i]) for i in range(len(j['choices']))]
+            for i, t in enumerate(notes):
+                if i == j['right']: continue
+                cnt['own note' if j['own'][i] else 'found note' if t else 'skill note'] += 1
+        plan.append((hw, n, tid(r['hint']), tid(r['mis']), notes, j))
+        if notes:
+            for t in notes:
+                if t: tid(t)
+    M = len(T); hh = {}; mm = {}; ww = {}
+    for hw, n, hi, mi, notes, j in plan:
+        hh.setdefault(hw, {})[n] = hi; mm.setdefault(hw, {})[n] = mi
+        if notes:
+            codes = []
+            for i, t in enumerate(notes):
+                L = LET[i]; off = int(K.h53('why|' + hw + '|' + n + '|' + L)[-7:], 16) % M
+                idx = ix[t] if (t and i != j['right']) else (mi if i != j['right'] else int(K.h53('pad|' + hw + '|' + n + '|' + L)[-7:], 16) % M)
+                codes.append((idx + off) % M)
+            ww.setdefault(hw, {})[n] = codes
+    open(os.path.join(ROOT, 'grade8', 'homework', 'help.js'), 'w', encoding='utf-8').write(
+        '/* Homework hints and "what went wrong" notes (see homework-check.js). T = the notes; h = hint per problem; m = common mistakes per problem;\n   w = a scrambled pointer for every choice (right and wrong alike: nothing here marks the right one). Made by _build/hw_mc_build.py + hw_help.js. */\nwindow.HW_HELP = '
+        + json.dumps({'T': T, 'h': hh, 'm': mm, 'w': ww}, separators=(',', ':'), ensure_ascii=False) + ';\n')
+    json.dump([[j['id'], T[hi], T[mi], [(c, t) for c, t in zip(j.get('choices') or [], notes or [])], j.get('right')] for hw, n, hi, mi, notes, j in plan], open(os.path.join(priv, 'help_review.json'), 'w'), ensure_ascii=False, indent=0)
+    print('help.js:', len(T), 'notes |', len(plan), 'problems | wrong choices:', cnt)
     prev = {}
     try: prev = json.load(open(os.path.join(priv, 'expect.json')))
     except Exception: pass

@@ -81,5 +81,22 @@
   }
   /* tap(hw, n, 'B') or tap(hw, n, 'ABD'): a tapped choice (letters in A-F order). No tidy-up rules: the letters are the code. */
   function tap(hw, n, L) { var e = entry(hw, n); return !!e && e[0] === 'l' && h53('hw|' + hw + '|' + n + '|' + String(L).toLowerCase()) === e[1]; }
-  window.HWCheck = { check: check, tap: tap, has: function (hw, n) { return !!entry(hw, n); }, kind: function (hw, n) { var e = entry(hw, n); return e ? e[0] : null; }, _t: { num: num, nums: nums, words: words, letters: letters, form: form, h53: h53 } };
+  /* HINTS AND "WHAT WENT WRONG" NOTES (homework/help.js; Mr. Allen, Nov 11, 2026): every problem has a hint; a wrong tap gets the
+     note for THAT choice (its pointer is scrambled with the same hash as the answer codes, and the right choice has a pointer
+     too, so the file does not show which one is right); a wrong number gets "check your sign" when only the sign is off,
+     else the common mistakes for that kind of problem. Only call whyTap after the tap was judged wrong. */
+  function HP() { return window.HW_HELP || null; }
+  function txt(map, hw, n) { var H = HP(), i = H && H[map] && H[map][hw] ? H[map][hw][n] : null; return i == null || !H.T[i] ? '' : H.T[i]; }
+  function whyTap(hw, n, L) {
+    var H = HP(), a = H && H.w && H.w[hw] && H.w[hw][n], k = 'ABCDEF'.indexOf(String(L).toUpperCase()), fall = txt('m', hw, n);
+    if (!a || String(L).length !== 1 || k < 0 || a[k] == null) return fall;
+    var M = H.T.length, i = ((a[k] - parseInt(h53('why|' + hw + '|' + n + '|' + 'ABCDEF'.charAt(k)).slice(-7), 16) % M) % M + M) % M;
+    return H.T[i] || fall;
+  }
+  function whyNum(hw, n, text) {
+    var e = entry(hw, n), c = null; try { c = num(text); } catch (x) {}
+    if (e && e[0] === 'n' && c && !/^-?0(\/1)?$/.test(c)) { var flip = c.charAt(0) === '-' ? c.slice(1) : '-' + c; if (h53('hw|' + hw + '|' + n + '|' + flip) === e[1]) return 'Check your sign. The number is right, but the sign is wrong.'; }
+    return txt('m', hw, n);
+  }
+  window.HWCheck = { hint: function (hw, n) { return txt('h', hw, n); }, whyTap: whyTap, whyNum: whyNum, check: check, tap: tap, has: function (hw, n) { return !!entry(hw, n); }, kind: function (hw, n) { var e = entry(hw, n); return e ? e[0] : null; }, _t: { num: num, nums: nums, words: words, letters: letters, form: form, h53: h53 } };
 })();

@@ -60,6 +60,9 @@
 /* answer check (Nov 11, 2026) */
 .inrow{display:flex;gap:8px;align-items:stretch}.inrow input{flex:1 1 auto}
 .chkbtn{flex:0 0 auto;font:700 15px var(--sans);background:var(--navy);color:#fff;border:0;border-radius:8px;padding:0 18px;min-height:44px;cursor:pointer}
+.hinthw{align-self:flex-start;font:600 14px var(--sans);background:#fff;color:#1E2D4F;border:1.5px solid #B9C0D0;border-radius:8px;padding:6px 13px;min-height:38px;cursor:pointer;margin:2px 0}.hinthw:hover{border-color:#1E2D4F}
+.hwhint{padding:8px 11px;border-left:4px solid #E0A800;background:#FFF8E1;border-radius:6px;font:500 14.5px/1.45 var(--sans);color:#3B2F00}.hwhint[hidden]{display:none}
+@media print{.hinthw,.hwhint{display:none!important}}
 .hwfb{font:600 14.5px/1.35 var(--sans);min-height:0}.hwfb:empty{display:none}.hwfb.ok{color:#15803D}.hwfb.no{color:#B42318}.hwfb.tip{color:#8A5A00}
 .ans input.right{border-color:#15803D;background:#F0FAF3}.hwnote{font:500 13px var(--sans);color:var(--muted)}
 .send{display:block;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;font:700 18px var(--sans);padding:16px;min-height:54px;cursor:pointer}
@@ -119,8 +122,8 @@
 
 <script src="homework/crops.js?v=20261110a"></script>
 <script src="homework/check.js?v=20261111e"></script>
-<script src="homework/choices.js?v=20261111e"></script>
-<script src="homework-check.js?v=20261111c"></script>
+<script src="homework/choices.js?v=20261111e"></script><script src="homework/help.js?v=20261111a"></script>
+<script src="homework-check.js?v=20261111d"></script>
 <script src="homework-graph.js?v=20261111d"></script>
 <script src="../tracker-config.js"></script>
 <script>
@@ -195,6 +198,11 @@
     if (!has) { var nt = document.createElement('span'); nt.className = 'hwnote'; nt.textContent = 'Mr. Allen checks this one.'; lab.appendChild(nt); return; }
     var fb = document.createElement('div'); fb.className = 'hwfb'; fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); lab.appendChild(fb);
     function show(cls, t){ fb.className = 'hwfb ' + cls; fb.textContent = t; inp.classList.toggle('right', cls === 'ok'); }
+    var hintText = HWCheck.hint ? HWCheck.hint(h.id, num) : '';
+    if (hintText) { var hb = document.createElement('button'); hb.type = 'button'; hb.className = 'hinthw'; hb.textContent = '💡 Hint'; hb.setAttribute('aria-expanded', 'false');
+      var hbox = document.createElement('div'); hbox.className = 'hwhint'; hbox.hidden = true; hbox.textContent = 'Hint: ' + hintText; hbox.setAttribute('role', 'status');
+      hb.addEventListener('click', function(e){ e.preventDefault(); hbox.hidden = !hbox.hidden; hb.setAttribute('aria-expanded', hbox.hidden ? 'false' : 'true'); });
+      lab.insertBefore(hbox, fb); lab.insertBefore(hb, hbox); }
     var steps = function(){ return !!lab.querySelector('.sw-host'); };
 
     // ---- multiple choice: tap one ----
@@ -209,7 +217,8 @@
       var judge = function(quiet){
         var L = inp.value; if (!L) { fb.className = 'hwfb'; fb.textContent = ''; return; }
         var ok = HWCheck.tap(h.id, num, L); tried[L] = ok ? 1 : 0; if (!quiet) firstTry(num, text(L), ok); paint();
-        if (ok) show('ok', 'Correct! Nice work.'); else show('no', (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those.' : 'Not yet. Check your work and tap again.') + (steps() ? ' The step by step button can help.' : ''));
+        var wy = ok ? '' : (multi ? HWCheck.whyTap(h.id, num, '') : HWCheck.whyTap(h.id, num, L));
+        if (ok) show('ok', 'Correct! Nice work.'); else show('no', (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those. ' : 'Not yet. ') + (wy || 'Check your work and tap again.') + (steps() ? ' The step by step button can help.' : ''));
       };
       for (var ci = 0; ci < k; ci++) (function(L){
         var b = document.createElement('button'); b.type = 'button'; b.className = 'mcbtn'; b.setAttribute('data-v', L); var c0 = raw(L);
@@ -230,7 +239,7 @@
           inp.value = cur; delete inp.dataset.swFilled; fb.className = 'hwfb tip'; fb.textContent = 'You got ' + got + '. Now tap your answer.';
         }
       });
-      var d0 = draft[num]; if (d0 && new RegExp('^[A-' + LET.charAt(k - 1) + ']' + (multi ? '+' : '') + '$').test(d0)) { inp.value = d0; if (first[num]) judge(true); else paint(); } else if (d0) { inp.value = ''; delete draft[num]; }
+      var d0 = draft[num]; if (d0 && new RegExp('^[A-' + LET.charAt(k - 1) + ']' + (multi ? '+' : '') + '$').test(d0)) { inp.value = d0; if (first[num]) judge(true); else paint(); } else { if (d0) { inp.value = ''; delete draft[num]; } paint(); }
       REDO[num] = function(){ judge(true); var t = btns[0]; try { t.focus({ preventScroll: true }); } catch (e) {} };
       return;
     }
@@ -245,7 +254,7 @@
       else if (r === 'blank') show('tip', 'Type your answer first.');
       else if (r === 'form') show('tip', kind === 'l' ? 'Type the letter of your choice: A, B, C or D.' : 'Type one number for your answer, like 12 or 3/4.');
       else if (r === 'close') show('tip', 'That does not match yet. Check your work and how you wrote it.');
-      else show('no', 'Not yet. Check your work and try again.' + (steps() ? ' The step by step button can help.' : ''));
+      else show('no', 'Not yet. ' + (HWCheck.whyNum(h.id, num, v) || 'Check your work and try again.') + (steps() ? ' The step by step button can help.' : ''));
     }
     b.addEventListener('click', function(e){ e.preventDefault(); run(false); });
     inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); run(false); } });
@@ -371,6 +380,6 @@
 <script src="ineq-keys.js"></script>
 <script src="homework-steps.js?v=20261111a"></script>
 <script src="step-work.js?v=20261111a"></script>
-<script src="one-at-a-time.js?v=20261110m"></script>
+<script src="one-at-a-time.js?v=20261111a"></script>
 </body>
 </html>

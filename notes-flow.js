@@ -111,6 +111,7 @@
       wrap.querySelectorAll('input').forEach(function (i) { i.onkeydown = function (e) { if (e.key === 'Enter') go.onclick(); }; });
       if (kind === 'chkVal' && window.NotesTap) NotesTap.val(document.getElementById(t + '-in'), go, [].concat(tw.a).map(String), tw.p, t);   // number or tap only (notes-tap.js)
     }
+    if (window.NotesTap && NotesTap.hint) NotesTap.hint(wrap);
     draw(wrap);
   }
   function twinDone(t) {
@@ -157,23 +158,24 @@
     wrap.innerHTML = h; q.appendChild(wrap);
     var row = wrap.querySelector('.np-row'), sol = wrap.querySelector('.np-sol');
     var fb = document.createElement('span'); fb.className = 'np-fb'; fb.setAttribute('aria-live', 'polite');
-    var answers = String(tw.a == null ? '' : [].concat(tw.a).join('|')).split('|'), shown = tw.show || answers[0], done = false;
-    function finish(ok) {
+    var answers = String(tw.a == null ? '' : [].concat(tw.a).join('|')).split('|'), shown = tw.show || answers[0], done = false, genT = null, TA = window.TapAnswers, a0 = answers[0];
+    function finish(ok, picked, typedV) {
+      var wy = ok || !TA ? '' : picked != null ? ((genT && TA.why(genT, picked)) || TA.miss(a0, tw.p)) : TA.numWhy(typedV || '', a0, tw.p);   // name the mistake
       done = true; wrap.classList.add(ok ? 'done-ok' : 'done-no');
-      row.querySelectorAll('input,button').forEach(function (e) { e.disabled = true; });
+      row.querySelectorAll('input,button:not(.ta-hintbtn)').forEach(function (e) { e.disabled = true; });
       if (ok) { fb.className = 'np-fb ok'; fb.textContent = '✓ Correct! You fixed it.'; }
-      else { fb.className = 'np-fb no'; fb.textContent = 'Not quite. The answer is ' + shown + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
+      else { fb.className = 'np-fb no'; fb.textContent = 'Not quite. ' + (wy ? wy + ' ' : '') + 'The answer is ' + shown + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       record(id, ok, !ok);
     }
     if (!tw.choices && window.TapAnswers) {           // number or tap only: the similar problem gets tap choices too (tap-answers.js)
       var gen = TapAnswers.choices(answers[0], { q: tw.p, key: id + 't' });
       if (gen) { var hit = gen.filter(function (c) { return answers.some(function (a2) { return same(c, a2, +tw.tol || 0); }); });
-        if (hit.length === 1) { tw = { p: tw.p, fig: tw.fig, sol: tw.sol, show: shown, choices: gen }; answers = [hit[0]]; } }
+        if (hit.length === 1) { tw = { p: tw.p, fig: tw.fig, sol: tw.sol, show: shown, choices: gen }; answers = [hit[0]]; genT = gen; } }
     }
     if (tw.choices) {
       tw.choices.forEach(function (c) {
         var b = document.createElement('button'); b.type = 'button'; b.className = 'np-ch'; b.innerHTML = c;
-        b.onclick = function () { if (done) return; var ok = same(b.textContent, answers[0]); b.classList.add(ok ? 'ok' : 'no'); finish(ok); };
+        b.onclick = function () { if (done) return; var ok = same(b.textContent, answers[0]); b.classList.add(ok ? 'ok' : 'no'); finish(ok, b.textContent); };
         row.appendChild(b);
       });
     } else {
@@ -182,10 +184,11 @@
       if (tw.ineq) inp.setAttribute('data-ineq', '');
       var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'np-btn'; btn.textContent = 'Check';
       var tol = +tw.tol || 0;
-      var go = function () { if (done || !inp.value.trim()) return; finish(answers.some(function (a) { return same(inp.value, a, tol); })); };
+      var go = function () { if (done || !inp.value.trim()) return; finish(answers.some(function (a) { return same(inp.value, a, tol); }), null, inp.value); };
       btn.onclick = go; inp.onkeydown = function (e) { if (e.key === 'Enter') go(); };
       row.appendChild(inp); row.appendChild(btn);
     }
+    if (TA) row.appendChild(TA.hintButton(wrap, TA.hint(a0, tw.p)));
     row.appendChild(fb);
     draw(wrap);
   }

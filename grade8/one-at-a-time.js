@@ -193,3 +193,24 @@
   (function wait() { if (start() || ++tries > 40) return; setTimeout(wait, 150); })();
   window.OneAtATime = { go: go, state: function () { return { on: on, idx: idx, n: items.length, root: root && (root.id || root.className) }; } };
 })();
+/* A HINT ON EVERY PROBLEM (Mr. Allen, Nov 11, 2026). A problem that has no Hint button of its own gets one here
+   (tap-answers.js writes the hint from the question's words: how to start, and the rule to remember). Homework has its own
+   hints (homework/help.js). Printed copies are unchanged. */
+(function () {
+  if (/[?&](paper|key)=1/.test(location.search) || /homework_turn_in/.test(location.pathname)) return;
+  var here = document.currentScript && document.currentScript.src;
+  var SEL = '.pr-card, .qgrid > .q, #quiz section.q, #cards > .card, .tab-pane .qc, .part .q, .q-card';
+  function add() {
+    if (!window.TapAnswers) return;
+    [].forEach.call(document.querySelectorAll(SEL), function (it) {
+      if (it.getAttribute('data-hint-set')) return; it.setAttribute('data-hint-set', '1');
+      var has = [].some.call(it.querySelectorAll('button, summary'), function (b) { return /hint/i.test(b.textContent) || /hint/i.test(String(b.className)); }); if (has) return;
+      var q = it.querySelector('.qt, .q-text, .q-prompt, .stem, .expr') || it, row = document.createElement('div'); row.className = 'oat-hint'; row.style.cssText = 'margin:10px 0 0';
+      row.appendChild(TapAnswers.hintButton(row, TapAnswers.hint('', (q.textContent || '').slice(0, 400)))); it.appendChild(row);
+    });
+  }
+  function go() { if (window.TapAnswers) return add(); if (!here || !document.querySelector(SEL)) return;
+    var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261111b', here).href; s.onload = add; document.head.appendChild(s); }
+  function soon() { setTimeout(go, 600); setTimeout(add, 2500); }
+  if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon);
+})();

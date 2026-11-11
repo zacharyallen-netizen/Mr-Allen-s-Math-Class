@@ -47,7 +47,7 @@
     '.np-btn.ghost{background:transparent;color:#0056B3;border:1.5px solid #0056B3}',
     '.np-ch{font:inherit;font-size:.95rem;border:2px solid #B8C0CF;background:#fff;border-radius:8px;padding:7px 12px;cursor:pointer}',
     '.np-ch.ok{border-color:#15803D;background:#E7F6EC}.np-ch.no{border-color:#B42318;background:#FDECEC}',
-    '.np-fb{font-size:.93rem;font-weight:600;min-height:1.2em}.np-fb.ok{color:#15803D}.np-fb.no{color:#B45309}',
+    '.np-fb{font-size:.93rem;font-weight:600;min-height:1.2em}.np-fb.no{flex:1 1 100%}.np-fb.ok{color:#15803D}.np-fb.no{color:#B45309}',
     '.np-sol{display:none;margin-top:9px;padding:9px 12px;background:#ECFDF3;border-left:4px solid #15803D;border-radius:6px;font-size:.95rem;line-height:1.5}',
     '.np-q.solved .np-sol,.np-sol.show{display:block}',
     '.np-sol::before{content:"How to do it: ";font-weight:700;color:#15803D}',
@@ -118,13 +118,16 @@
       function solved(ok, msg) {
         done = true; q.classList.add('solved'); fb.className = 'np-fb ok'; fb.textContent = msg;
       }
-      function miss(el) {
-        var tw = window.NotesTwin && NotesTwin.get(id);
+      var genList = null, qtxt = prompt ? prompt.innerHTML : '', ans0 = ans ? ans.split('|')[0] : '';
+      function miss(el, picked) {
+        var tw = window.NotesTwin && NotesTwin.get(id), TA = window.TapAnswers;
+        // name the mistake (Mr. Allen, Nov 11, 2026): the tapped choice's own note, or what a wrong number gives away
+        var wy = !TA ? '' : picked != null ? ((genList && TA.why(genList, picked)) || TA.miss(ans0, qtxt)) : TA.numWhy(el ? el.value : '', ans0, qtxt);
         if (tw && !tries) {                       // wrong → show the answer, then one similar problem (notes-flow.js)
           tries++; rec(false); done = true;
-          fb.className = 'np-fb no'; fb.textContent = 'Not quite. The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');
+          fb.className = 'np-fb no'; fb.textContent = 'Not quite. ' + (wy ? wy + ' ' : '') + 'The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');
           if (sol) sol.classList.add('show');
-          row.querySelectorAll('input,button').forEach(function (e) { e.disabled = true; });
+          row.querySelectorAll('input,button:not(.ta-hintbtn)').forEach(function (e) { e.disabled = true; });
           if (el) { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
           NotesTwin.np(q, id, tw, same, show);
           return;
@@ -132,7 +135,7 @@
         tries++; rec(false);
         if (el) { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
         fb.className = 'np-fb no';
-        if (tries === 1) fb.textContent = q.getAttribute('data-hint') || 'Not quite. Look back at the example above and try again.';
+        if (tries === 1) fb.textContent = 'Not quite. ' + (wy || q.getAttribute('data-hint') || 'Look back at the example above.') + ' Try again.';
         else { fb.textContent = 'The answer is ' + show + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       }
       // NUMBER OR MULTIPLE CHOICE ONLY (Nov 11, 2026, Mr. Allen): an answer that is not one number becomes tap choices
@@ -141,7 +144,7 @@
       if (!choices && ans && window.TapAnswers) {
         var gen = TapAnswers.choices(ans.split('|')[0], { q: prompt ? prompt.innerHTML : '', key: location.pathname.split('/').pop() + id }), tol0 = +q.getAttribute('data-tol') || 0;
         if (gen) { var hit = gen.filter(function (c) { return ans.split('|').some(function (a2) { return same(c, a2, tol0); }); });
-          if (hit.length === 1) { choices = gen.join('|'); ans = hit[0]; } else typed.push([id, 'checker', gen, hit]); }
+          if (hit.length === 1) { choices = gen.join('|'); ans = hit[0]; genList = gen; } else typed.push([id, 'checker', gen, hit]); }
         else if (gen === undefined) typed.push([id, 'no rule', ans.split('|')[0]]);
       }
       if (choices) {
@@ -150,7 +153,7 @@
           b.onclick = function () {
             if (done) return;
             if (same(c, ans)) { b.classList.add('ok'); rec(true); solved(true, tries ? '✓ Yes, that\'s it.' : '✓ Correct!'); }
-            else { b.classList.add('no'); miss(null); }
+            else { b.classList.add('no'); miss(null, c); }
           };
           row.appendChild(b);
         });
@@ -173,6 +176,7 @@
         sb.onclick = function () { if (sol) sol.classList.toggle('show'); };
         row.appendChild(sb);
       }
+      if (ans && window.TapAnswers && row.contains(fb)) row.insertBefore(TapAnswers.hintButton(q, q.getAttribute('data-hint') || TapAnswers.hint(ans0, qtxt)), fb);   // a Hint on every problem
       if (sol) q.insertBefore(row, sol); else q.appendChild(row);
     });
   }

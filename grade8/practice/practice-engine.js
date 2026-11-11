@@ -167,7 +167,8 @@
       answered();
       card.querySelector('.pr-show').hidden = true;
     } else {
-      fb.className = 'pr-fb no'; fb.textContent = tries === 1 ? 'Not yet — check your work and try again.' : 'Still not it. Try the hint, or show the answer.';
+      var TA = window.TapAnswers, wy = !TA ? '' : tap ? (TA.why(tap.list, v) || TA.miss(p.ans, p.q)) : TA.numWhy(v, p.ans, p.q);   // name the mistake
+      fb.className = 'pr-fb no'; fb.textContent = (tries === 1 ? 'Not yet. ' : 'Still not it. ') + (wy || 'Check your work and try again.') + (tries === 1 ? '' : ' Try the hint, or show the answer.');
       if (tries >= 2) card.querySelector('.pr-show').hidden = false;
       if (!tap) inp.select();
     }
@@ -181,7 +182,7 @@
     var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261111a'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261110m'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261111a'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

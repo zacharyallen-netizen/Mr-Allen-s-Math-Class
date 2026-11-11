@@ -14,13 +14,19 @@
     var first = String(answers[0]), own = inp.getAttribute('data-choices'), yn = first.match(/^(yes|no)\b\s*[—–-]/i);
     var gfirst = own ? inp.getAttribute('data-right') : yn ? yn[1] : first;                           // "Yes — 20² + 21² = 841 ..." is a Yes / No question
     var list = own ? own.split('|') : TapAnswers.choices(gfirst, { q: qHtml || '', key: location.pathname.split('/').pop() + key });
-    if (list === null) { count.num++; if (!inp.placeholder || /^answer$/i.test(inp.placeholder)) inp.placeholder = 'Type a number'; return; }
+    var host = document.getElementById(key) || inp.parentNode, WY = null;
+    // name the mistake after the page's own Check has graded it (its feedback box gets class w = wrong, c = right)
+    function after(picked) { var f = document.getElementById('fb-' + key); if (!f) return;
+      if (f.classList.contains('w')) TapAnswers.note(host, picked != null ? ((WY && TapAnswers.why(WY, picked)) || TapAnswers.miss(gfirst, qHtml)) : TapAnswers.numWhy(inp.value, first, qHtml), 'why');
+      else if (f.classList.contains('c')) TapAnswers.note(host, '', 'why'); }
+    if (list === null) { count.num++; if (!inp.placeholder || /^answer$/i.test(inp.placeholder)) inp.placeholder = 'Type a number'; btn.addEventListener('click', function () { if (inp.value.trim()) after(null); }); return; }
     if (!list) { typed.push([key, 'no rule', first]); return; }
     var right = own ? gfirst : TapAnswers.rightOf(list, gfirst), acc = answers.map(N);
     var clash = list.filter(function (t) { return t !== right && acc.indexOf(N(t)) >= 0; });
     if (!right || clash.length) { typed.push([key, 'checker', list, right]); return; }
     count.tap++;
-    TapAnswers.mount(inp, list, { onPick: function (t) { inp.value = t === right ? first : t; btn.click(); } });
+    WY = list;
+    TapAnswers.mount(inp, list, { onPick: function (t) { inp.value = t === right ? first : t; btn.click(); after(t); } });
     btn.style.display = 'none';
   }
   function scan(root) {
@@ -31,6 +37,16 @@
       val(inp, btn, [].concat(ans).map(String), q ? q.innerHTML : '', m[1]);
     });
   }
-  window.NotesTap = { val: val, scan: scan, typed: typed, count: count };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { scan(); }); else scan();
+  /* a Hint button on every check box in the notes (tap, number, A/B/C or point boxes) */
+  function hint(root) {
+    [].forEach.call((root || document).querySelectorAll('.chk, .tw'), function (box) {
+      if (box.closest('.np') || box.querySelector('.ta-hintbtn')) return;
+      var fb = box.querySelector('.chk-fb'), q = box.querySelector('.chk-q, .np-prompt'); if (!fb || !fb.parentNode) return;
+      var b = TapAnswers.hintButton(fb.parentNode, TapAnswers.hint('', q ? q.innerHTML : box.textContent.slice(0, 300))); b.style.margin = '6px 0 2px';
+      fb.parentNode.insertBefore(b, fb);
+    });
+  }
+  window.NotesTap = { val: val, scan: scan, hint: hint, typed: typed, count: count };
+  function go() { scan(); hint(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
