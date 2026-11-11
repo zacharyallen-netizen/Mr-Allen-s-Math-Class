@@ -165,6 +165,7 @@ svg .mono{font-family:var(--mono)}
 <body>
 <script src="../tracker-config.js"></script>
 <script src="../arcade-send.js" data-game="Drone Shortcut" data-unit="5"></script>
+<script src="arcade-fx.js?v=20261111a"></script>
 <script src="../site-bar.js"></script>
 <!-- SITE-BAR -->
 <div class="wrap">
@@ -1007,7 +1008,12 @@ function focusActive(){
 }
 
 /* ============ checking ============ */
+/* sounds and sparkle (arcade-fx.js, Nov 11, 2026): a chime and gold sparks for a right step, a soft thud for a miss,
+   a whoosh and a spark trail while the drone flies, and a small celebration when the package lands. */
+function fxDo(fn){try{if(window.AFX)fn(AFX)}catch(e){}}
+function fxHere(){const el=document.activeElement&&$('#work').contains(document.activeElement)?document.activeElement:$('#work');const r=el.getBoundingClientRect();return [r.left+Math.min(r.width/2,160),r.top+r.height/2];}
 function record(st,ok){
+  fxDo(A=>{const q=fxHere();if(ok){A.sfx.coin();A.sparks(q[0],q[1],{color:'#E0A800',count:16});}else A.sfx.thud();});
   ssTrack(st,ok);
   if(st.tries===0){
     try{if(window.ArcadeSend)ArcadeSend.answer(!!ok)}catch(e){}
@@ -1059,7 +1065,7 @@ function afterStep(){
   if(P.si<P.steps.length){render(true);return;}
   // problem complete
   if(G.L.kind==='map'){
-    if(P.c>G.battery+1e-9){G.chosen.tooFar=true;G.phase='toofar';render(true);return;}
+    if(P.c>G.battery+1e-9){G.chosen.tooFar=true;G.phase='toofar';fxDo(A=>A.sfx.lose());render(true);return;}
     G.phase='fly';render(false);flyAnim();
   }else{
     G.done++;G.score+=10;G.phase='result';render(true);
@@ -1068,6 +1074,7 @@ function afterStep(){
 function flyAnim(){
   const P=G.prob,B=G.chosen;
   const fin=()=>{
+    fxDo(A=>{const d=$('#droneG');if(!d)return;const r=d.getBoundingClientRect(),x=r.left+r.width/2,y=r.top+r.height/2;A.sfx.power();A.confetti(x,y,{count:46,speed:380,colors:['#FFC107','#E0A800','#1E2D4F','#15803D','#1D4ED8']});A.text(x,y-34,'Delivered!',{color:'#15803D',size:26});});
     G.battery-=P.c;G.done++;G.score+=10;
     const shortest=G.offers.reduce((m,o)=>o.c<m.c?o:m,G.offers[0]);
     if(G.firstPick===shortest){G.bonus++;G.score+=5;}
@@ -1079,8 +1086,10 @@ function flyAnim(){
   const x1=+line.getAttribute('x1'),y1=+line.getAttribute('y1');
   const m=drawMapCoords(B);const x2=m[0],y2=m[1];
   const sc=dr.getAttribute('transform').match(/scale\(([^)]+)\)/);const scale=sc?sc[1]:1;
-  const t0=performance.now(),dur=1300;
+  const t0=performance.now(),dur=1300;let fxN=0;
+  fxDo(A=>A.sfx.whoosh());
   const tick=now=>{
+    if(++fxN%4===0)fxDo(A=>{const r=dr.getBoundingClientRect();A.sparks(r.left+r.width/2,r.top+r.height/2,{color:'#FFC107',count:3,speed:90});});
     let p=Math.min(1,(now-t0)/dur);const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
     const x=x1+(x2-x1)*e,y=y1+(y2-y1)*e;
     line.setAttribute('x2',x.toFixed(1));line.setAttribute('y2',y.toFixed(1));
@@ -1112,6 +1121,7 @@ $('#work').addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();checkNum(+e.target.id.slice(2));}
 });
 $('#quitBtn').addEventListener('click',goHome);
+fxDo(A=>{const q=$('#quitBtn');if(q&&q.parentNode){const b=A.soundButton();b.style.marginLeft='8px';q.parentNode.insertBefore(b,q.nextSibling);}});
 let rz=null;
 window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
   if(G&&!$('#play').hidden&&G.phase!=='fly'&&stageW()!==lastW)renderStage();
@@ -1121,6 +1131,7 @@ window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
 /* ============ end screen ============ */
 function endLevel(reason){
   cancelAnimationFrame(animId);
+  fxDo(A=>{if(reason==='done'){A.sfx.win();A.confetti(innerWidth/2,innerHeight*.3,{count:100,colors:['#FFC107','#E0A800','#1E2D4F','#15803D','#1D4ED8']});}});
   const L=G.L,acc=G.steps?Math.round(G.first/G.steps*100):0;
   saveBest(L.id,G.score);
   try{if(window.ArcadeSend)ArcadeSend.round({level:'Level '+L.id+' · '+L.name,score:G.score,details:G.done+' of '+L.n+' done, '+acc+'% first try'+(reason==='battery'?', battery empty':'')})}catch(e){}

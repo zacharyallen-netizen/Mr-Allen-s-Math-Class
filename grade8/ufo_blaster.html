@@ -572,6 +572,7 @@ body::after {
   </div>
 </div>
 
+<script src="arcade-fx.js?v=20261111a"></script>
 <script>
 // ============================================================
 // GAME CONFIGURATION & STATE
@@ -700,6 +701,7 @@ function playNoise({ dur = 0.3, vol = 0.3, filterFreq = 1000 }) {
 }
 
 function sfxLaser() {
+  fxDo((A) => { A.sfx.laser(); });
   // Two-phase laser: rising "charge" then dramatic descending "zap"
   // Phase 1: quick charge-up whine
   playTone({ freq: 400, dur: 0.12, type: 'sawtooth', vol: 0.1, slide: 800 });
@@ -724,10 +726,12 @@ function sfxExplosion() {
   }, 100);
 }
 function sfxMiss() {
+  fxDo((A) => { A.sfx.thud(); const g = document.getElementById('particle-layer'); if (g) A.shake(g.ownerSVGElement || g, 6, 260); });
   playTone({ freq: 180, dur: 0.2, type: 'square', vol: 0.15, slide: -80 });
   playTone({ freq: 150, dur: 0.2, type: 'square', vol: 0.12, slide: -60 });
 }
 function sfxLevelClear() {
+  fxDo((A) => { A.sfx.power(); A.confetti(innerWidth / 2, innerHeight * 0.3, { count: 90 }); A.text(innerWidth / 2, innerHeight * 0.26, 'SECTOR CLEAR', { color: '#00f0ff', size: 40, life: 1.4 }); });
   const notes = [523, 659, 784, 1047]; // C, E, G, C (major chord arpeggio)
   notes.forEach((f, i) => setTimeout(() => playTone({ freq: f, dur: 0.22, type: 'square', vol: 0.18 }), i * 80));
 }
@@ -1126,12 +1130,16 @@ function drawLaser(m, b) {
   setTimeout(() => { layer.innerHTML = ''; }, 900);
 }
 
+/* bigger explosions and sounds on top of the game's own (arcade-fx.js, Nov 11, 2026) */
+function fxDo(fn) { try { if (window.AFX) { AFX.muted = !state.soundOn; fn(AFX); } } catch (e) {} }
+function fxSvgPoint(layer, x, y) { const svg = layer.ownerSVGElement || layer, pt = svg.createSVGPoint(); pt.x = x; pt.y = y; const q = pt.matrixTransform(layer.getScreenCTM()); return [q.x, q.y]; }
 function explodeUfo(idx) {
   const u = state.ufos[idx];
   if (!u) return;
   const layer = document.getElementById('particle-layer');
   const ns = 'http://www.w3.org/2000/svg';
   const cx = toSvgX(u.x), cy = toSvgY(u.y);
+  fxDo((A) => { const q = fxSvgPoint(layer, cx, cy); A.boom(q[0], q[1], { color: '#ff8c00', color2: '#00f0ff', size: 1.5 }); A.sfx.boom(1.1); A.shake(layer.ownerSVGElement || layer, 8, 360); });
   const colors = ['#ffe94a', '#ff3355', '#ff8c00', '#ff2dbb', '#00f0ff', '#ffffff'];
 
   // Expanding shockwave ring (outermost)

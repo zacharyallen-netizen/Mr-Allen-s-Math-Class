@@ -473,6 +473,7 @@
   </div>
 </div>
 
+<script src="arcade-fx.js?v=20261111a"></script>
 <script>
 (() => {
   const canvas = document.getElementById("game");
@@ -1053,6 +1054,8 @@
     box.hitPulse = 1;
     clearSolvedBoxes(solvedIndex, box);
     spawnBurst(x, y, colors.green, 24, 1.2);
+    fxBoom(x, y, colors.green, 0.95 + 0.14 * multiplier, { color2: colors.cyan });
+    fxDo((A) => { A.sfx.boom(0.55 + 0.1 * multiplier); A.sfx.zap(); if (multiplier > 1) { const q = fxPt(x, y - 46); A.text(q[0], q[1], 'COMBO x' + multiplier, { color: colors.gold, size: 22 + 4 * multiplier }); } if (multiplier >= 3) A.shake(canvas, 3 + multiplier, 260); });
     addFloater(`+${gained}`, x, y, colors.green);
     commander.textContent = multiplier > 1 ? `Combo x${multiplier}. Keep it clean.` : "Correct hit.";
     chord([720, 920, 1160], 0.06, "triangle", 0.032);
@@ -1072,6 +1075,8 @@
     state.hearts--;
     if (box) box.hitPulse = 1;
     spawnBurst(x, y, colors.red, 20, 1);
+    fxBoom(x, y, colors.red, 0.8, { debris: false });
+    fxDo((A) => { A.sfx.thud(); A.shake(canvas, 9, 320); A.flash('rgba(255,40,70,.35)', 220); });
     addFloater("-ARMOR", x, y, colors.red);
     if (box) {
       const firstOpen = state.equations.find((eq) => !eq.solved);
@@ -1123,6 +1128,9 @@
 
   function completeWave() {
     spawnBurst(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 70, 2.2);
+    fxBoom(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 2.4, { color2: colors.gold, count: 46 });
+    fxDo((A) => { A.sfx.boom(1.3); A.sfx.power(); A.shake(canvas, 12, 480); const q = fxPt(window.innerWidth / 2, (window.innerHeight - 56) / 2 - 90); A.text(q[0], q[1], 'WAVE CLEAR', { color: colors.cyan, size: 44, life: 1.4 });
+      for (let i = 0; i < 4; i++) setTimeout(() => fxBoom(window.innerWidth * (0.2 + 0.2 * i), (window.innerHeight - 56) * (0.3 + 0.4 * Math.random()), [colors.gold, colors.green, colors.cyan, colors.red][i], 1.1), 140 + i * 130); });
     state.score += 350 + state.level * 100;
     state.speedMultiplier += 0.12;
     try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Wave ' + state.level, score: state.score, details: 'Cleared wave ' + state.level + ', best combo streak ' + state.bestStreak }); } catch (e) {}
@@ -1136,6 +1144,11 @@
       if (state.running) setupLevel();
     }, 780);
   }
+
+  /* bigger explosions and sounds (arcade-fx.js, Nov 11, 2026). Game x, y are canvas points; the canvas sits under the 56px top bar. */
+  function fxPt(x, y) { const r = canvas.getBoundingClientRect(); return [r.left + x, r.top + y]; }
+  function fxBoom(x, y, color, size, opts) { try { if (!window.AFX) return; const q = fxPt(x, y); AFX.boom(q[0], q[1], Object.assign({ color: color, size: size }, opts || {})); } catch (e) {} }
+  function fxDo(fn) { try { if (window.AFX) fn(AFX); } catch (e) {} }
 
   function spawnBurst(x, y, color, count, force) {
     for (let i = 0; i < count; i++) {
@@ -1321,6 +1334,7 @@
     updateHUD();
     commander.textContent = won ? "Grid overloaded. Perfectly legal math mayhem." : "Run ended. Reset and hit the matching integers.";
     chord(won ? [660, 880, 1180, 1480] : [220, 165, 110], 0.11, won ? "triangle" : "sawtooth", 0.035);
+    fxDo((A) => { if (won) { A.sfx.win(); A.confetti(window.innerWidth / 2, window.innerHeight * 0.35, { count: 110 }); } else { A.sfx.lose(); A.sfx.boom(1.5); A.boom(window.innerWidth / 2, window.innerHeight / 2, { color: colors.red, size: 2.6 }); A.shake(canvas, 14, 520); } });
     const title = won ? "Grid Overloaded" : "Game Over";
     const message = won
       ? "You cleared all five waves and kept the number stream under control."
@@ -1347,10 +1361,10 @@
     quietBtn.addEventListener("click", () => {
       if (!audioCtx) return;
       if (audioCtx.state === "running") {
-        audioCtx.suspend();
+        audioCtx.suspend(); fxDo((A) => { A.muted = true; });
         quietBtn.textContent = "Unmute";
       } else {
-        audioCtx.resume();
+        audioCtx.resume(); fxDo((A) => { A.muted = false; });
         quietBtn.textContent = "Mute";
       }
     });
