@@ -27,7 +27,7 @@
 #hwTop .go{display:block;width:100%;font:700 17px var(--sans);background:var(--navy);color:#fff;border:0;border-radius:10px;padding:13px;min-height:48px;cursor:pointer;margin:0 0 6px}
 #hwTop .hw-steps{margin-bottom:10px}#hwTop .card{margin-bottom:10px}#hwTop .links{margin-bottom:10px}
 .hw-one .pg{margin-bottom:10px}.hw-one .whole{padding:6px 16px}.hw-one .prob .ans{padding:10px 16px 12px}
-@media (min-width:701px){.hw-one .prob .cropwrap{text-align:center}.hw-one .prob .crop{display:inline-block;vertical-align:top;width:min(100%,calc(var(--nw) * 1.3px),max(calc(var(--nw) * .8px),calc((100vh - 545px) * var(--ar))))}}
+@media (min-width:701px){.hw-one .prob .cropwrap{text-align:center}.hw-one .prob .crop{display:inline-block;vertical-align:top;width:min(100%,calc(var(--nw) * 1.3px),max(calc(var(--nw) * .8px),calc((100vh - 560px) * var(--ar))))}}
 .hw-one .prob{position:relative}.hw-one .whole{border-bottom:0;padding:0}.hw-one .whole>summary{position:absolute;top:7px;right:14px;font:600 13px var(--sans);color:var(--muted)}.hw-one .whole[open]{padding:0 16px 10px}
 @media print{#hwTop>summary,#hwTop .go{display:none}}.prob .crop{position:relative;overflow:hidden;width:100%}.prob .crop.wide{cursor:zoom-in}.prob .crop.big{width:230%;cursor:zoom-out}
 .zoomtip{display:none;margin:4px 16px 6px;font:500 13.5px var(--sans);color:var(--muted)}@media (max-width:700px){.zoomtip{display:block}}
@@ -41,6 +41,11 @@
 .ans small{color:var(--gold-text);font-weight:600}
 .ans input{font:500 16px var(--mono);padding:9px 10px;border:1.5px solid var(--line-2);border-radius:7px;min-height:44px;min-width:0;background:#fff}
 .ans input.blank,.who input.blank{border-color:#E8A23A;background:#FFF8EC}
+/* answer check (Nov 11, 2026) */
+.inrow{display:flex;gap:8px;align-items:stretch}.inrow input{flex:1 1 auto}
+.chkbtn{flex:0 0 auto;font:700 15px var(--sans);background:var(--navy);color:#fff;border:0;border-radius:8px;padding:0 18px;min-height:44px;cursor:pointer}
+.hwfb{font:600 14.5px/1.35 var(--sans);min-height:0}.hwfb:empty{display:none}.hwfb.ok{color:#15803D}.hwfb.no{color:#B42318}.hwfb.tip{color:#8A5A00}
+.ans input.right{border-color:#15803D;background:#F0FAF3}.hwnote{font:500 13px var(--sans);color:var(--muted)}
 .send{display:block;width:100%;background:var(--navy);color:#fff;border:0;border-radius:10px;font:700 18px var(--sans);padding:16px;min-height:54px;cursor:pointer}
 .send[disabled]{opacity:.6;cursor:default}
 .msg{margin-top:12px;font-size:15.5px}.msg.warn{color:#B42318}
@@ -90,6 +95,8 @@
 <div class="site-footer">© Mr. Allen's Math Class</div>
 
 <script src="homework/crops.js?v=20261110a"></script>
+<script src="homework/check.js?v=20261111a"></script>
+<script src="homework-check.js?v=20261111a"></script>
 <script src="../tracker-config.js"></script>
 <script>
 (function(){
@@ -147,6 +154,28 @@
     out += '</section>';
   }
   $('pages').innerHTML = out;
+  // answer check (Nov 11, 2026): a Check button where the key has a clear-cut answer (homework-check.js; codes only, no answers on the site).
+  // Explanations, find-the-mistake and graph problems say "Mr. Allen checks this one." A finished step-by-step answer counts as checked.
+  h.p.forEach(function(p){
+    var inp = $('a' + p[0]); if (!inp) return; var lab = inp.closest('label'), num = String(p[0]);
+    var row = document.createElement('span'); row.className = 'inrow'; lab.insertBefore(row, inp); row.appendChild(inp);
+    if (!(window.HWCheck && HWCheck.has(h.id, num))) { var nt = document.createElement('span'); nt.className = 'hwnote'; nt.textContent = 'Mr. Allen checks this one.'; lab.appendChild(nt); return; }
+    if (HWCheck.kind(h.id, num) === 'l') inp.placeholder = 'Type the letter';
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chkbtn'; b.textContent = 'Check'; row.appendChild(b);
+    var fb = document.createElement('div'); fb.className = 'hwfb'; fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); lab.appendChild(fb);
+    function show(cls, t){ fb.className = 'hwfb ' + cls; fb.textContent = t; inp.classList.toggle('right', cls === 'ok'); }
+    function run(){
+      var v = inp.value, r = (inp.dataset.swFilled && inp.dataset.swFilled === v) ? 'ok' : HWCheck.check(h.id, num, v), steps = !!lab.querySelector('.sw-host');
+      if (r === 'ok') show('ok', 'Correct! Nice work.');
+      else if (r === 'blank') show('tip', 'Type your answer first.');
+      else if (r === 'form') show('tip', HWCheck.kind(h.id, num) === 'l' ? 'Type the letter of your choice: A, B, C or D.' : 'Type one number for your answer, like 12 or 3/4.');
+      else if (r === 'close') show('tip', 'That does not match yet. Check your work and how you wrote it.');
+      else show('no', 'Not yet. Check your work and try again.' + (steps ? ' The step by step button can help.' : ''));
+    }
+    b.addEventListener('click', function(e){ e.preventDefault(); run(); });
+    inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); run(); } });
+    inp.addEventListener('input', function(){ if (inp.dataset.swFilled && inp.dataset.swFilled === inp.value) { show('ok', 'Correct! You worked it out step by step.'); return; } fb.className = 'hwfb'; fb.textContent = ''; inp.classList.remove('right'); });
+  });
   $('pages').addEventListener('click', function(ev){ var c = ev.target.closest && ev.target.closest('.crop.wide'); if (c && innerWidth <= 700) c.classList.toggle('big'); });
   $('pages').addEventListener('toggle', function(ev){ var im = ev.target.querySelector && ev.target.querySelector('img[data-src]'); if (im) { im.src = im.getAttribute('data-src'); im.removeAttribute('data-src'); } }, true);
 
@@ -221,8 +250,8 @@
 })();
 </script>
 <script src="ineq-keys.js"></script>
-<script src="homework-steps.js?v=20261110a"></script>
-<script src="step-work.js?v=20261110j"></script>
+<script src="homework-steps.js?v=20261111a"></script>
+<script src="step-work.js?v=20261111a"></script>
 <script src="one-at-a-time.js?v=20261110m"></script>
 </body>
 </html>

@@ -1247,7 +1247,7 @@
   function toQ(a) { if (a == null) return null; if (a.n != null) return Q(a.n, a.d); var s = String(a); return a < 0 ? qneg(qdec(s.slice(1))) : qdec(s); }
   // When a workspace finishes, it gets much shorter. Keep its last part on screen so the page does not seem to jump.
   function keep(n) { try { requestAnimationFrame(function () { var r = n.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) n.scrollIntoView({ block: 'center' }); }); } catch (e) {} }
-  function fillBox(inp, text) { inp.value = text; inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus({ preventScroll: true }); try { inp.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { inp.focus(); } }
+  function fillBox(inp, text) { inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {} inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus({ preventScroll: true }); try { inp.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { inp.focus(); } }
 
   function autoPractice() {
     var D = window.PRACTICE; if (!D) return;
