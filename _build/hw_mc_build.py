@@ -44,7 +44,8 @@ def num(ans, q=None):
     return {'q': q, 'n': str(ans)}
 
 AUTO = {'true': ['True', 'False'], 'false': ['True', 'False'], 'yes': ['Yes', 'No'], 'no': ['Yes', 'No'],
-        'rational': ['Rational', 'Irrational'], 'irrational': ['Rational', 'Irrational'], '<': ['<', '>', '='], '>': ['<', '>', '=']}
+        'rational': ['Rational', 'Irrational'], 'irrational': ['Rational', 'Irrational'], '<': ['<', '>', '='], '>': ['<', '>', '='],
+        'infinitely many': ['One solution', 'No solution', 'Infinitely many'], 'no solution': ['One solution', 'No solution', 'Infinitely many']}
 
 def main():
     priv = os.path.abspath(sys.argv[1])
@@ -59,6 +60,7 @@ def main():
         ns = {'mc': mc, 'pick': pick, 'num': num, 'multi': multi}; exec(open(f, encoding='utf-8').read(), ns)
         for hw, d in ns['U'].items():
             assert hw not in U, hw + ' twice'; U[hw] = {str(k): v for k, v in d.items()}
+    warn = []
     choices = {}; expect = {}; stats = {'tap printed letter': 0, 'tap a choice': 0, 'number': 0}
     try: choices = json.loads(re.search(r'window\.HW_MC = (\{.*\});', open(os.path.join(ROOT, 'grade8', 'homework', 'choices.js'), encoding='utf-8').read(), re.S).group(1))
     except Exception: choices = {}
@@ -89,6 +91,10 @@ def main():
                 cho[n] = {'q': a.get('q') or 'Tap ALL that are true. Then tap Check.', 'c': c, 'm': 1}
                 chk[n] = ['l', K.h53(key + L)]; exp[n] = L.upper(); stats['tap a choice'] += 1; continue
             c = list(a['c']); right = c[a['a']]
+            if r[0] == 'p':                                            # the key had a written form: the right choice should say the same thing
+                f = lambda t: (K.form(re.sub(r'\s*(m|days?|sheets?|g|kg|cm|in|ft|units?)\b\.?$', '', t)) or '').replace('(', '').replace(')', '')
+                if f(right) != r[1].replace('(', '').replace(')', ''): warn.append('%s #%s key says %s, right choice is %s' % (hw, n, r[1], right))
+            if r[0] == 'w' and K.words(right) != r[1] and r[1] not in (K.words(right) or ''): warn.append('%s #%s key says %s, right choice is %s' % (hw, n, r[1], right))
             assert len(set(x.strip().lower() for x in c)) == len(c), 'two choices are the same: %s #%s' % (hw, n)
             assert 2 <= len(c) <= 5
             if a.get('shuffle'): random.Random(int(K.h53(key), 16)).shuffle(c)
@@ -107,6 +113,7 @@ def main():
     try: prev = json.load(open(os.path.join(priv, 'expect.json')))
     except Exception: pass
     prev.update(expect); json.dump(prev, open(os.path.join(priv, 'expect.json'), 'w'), ensure_ascii=False, indent=0)
+    for w in warn: print('LOOK:', w)
     left = sum(1 for h in HW if h['id'] not in choices)
     print(stats, '| homework switched over:', len(choices), 'of', len(HW), '| left:', left)
 

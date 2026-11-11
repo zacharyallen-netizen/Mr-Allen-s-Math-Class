@@ -148,7 +148,7 @@
   $('back').href = back; $('back').textContent = h.unit === 'E' ? '← Back to EOG Hub' : '← Back to Unit ' + h.unit;
   $('pdf').href = h.file; $('doMode').hidden = false;
 
-  var base = 'homework/pages/HW_' + h.id + '-', out = '', ineq = /^3\.(7|8|9|10)$/.test(h.id) ? ' data-ineq-bar' : '';
+  var base = 'homework/pages/HW_' + h.id + '-', out = '', ineq = /^3\.(7|8|9|10)$/.test(h.id) && !(window.HW_MC || {})[h.id] ? ' data-ineq-bar' : '';   // no typed inequalities once the homework is tap / number
   var crops = (window.HW_CROPS || {})[h.id], perProb = crops && h.p.every(function(p){ return crops[p[0]]; }) && !/[?&]paper=1/.test(location.search);
   if (perProb) {
     // one problem at a time (Nov 10, 2026): each problem is its box cut from the printed page (homework/crops.js, _build/hw_crops.py)
