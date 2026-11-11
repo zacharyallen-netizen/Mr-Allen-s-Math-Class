@@ -52,6 +52,11 @@
 .done{display:none;text-align:center;background:#ECFDF3;border:2px solid #15803D;border-radius:var(--radius);padding:26px 18px;margin:0 0 18px}
 .done .big{font:700 26px var(--serif);color:#15803D;margin:0 0 6px}
 .done p{margin:6px 0;color:var(--ink)}
+.hwback{display:block;margin-top:10px;background:var(--navy,#1E2D4F);color:#fff;border:0;border-radius:8px;font:600 15px var(--sans);padding:10px 16px;min-height:44px;cursor:pointer}
+.done #doneScore{font-weight:600}
+.done #doneFix{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+.done #doneFix span{font:700 15px var(--sans);color:#B91C1C;margin-top:10px}
+.done #doneFix button{border-color:#B91C1C;color:#B91C1C;background:#FEF2F2}
 .done button{margin-top:10px;background:#fff;border:1.5px solid #15803D;color:#15803D;font:600 15px var(--sans);border-radius:8px;padding:10px 16px;min-height:44px;cursor:pointer}
 .links{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 16px;font-weight:600}
 </style>
@@ -85,7 +90,9 @@
   <div class="done" id="done" role="status">
     <div class="big">✓ Mr. Allen got it!</div>
     <p id="doneTxt"></p>
-    <p>You can fix an answer and send again. The newest one counts.</p>
+    <p id="doneScore"></p>
+    <div id="doneFix"></div>
+    <p id="doneHint">You can fix an answer and send again. The newest one counts.</p>
     <button type="button" id="again">Fix an answer</button>
   </div>
   <button class="send" id="send" type="button">Send to Mr. Allen</button>
@@ -251,11 +258,39 @@
       b.disabled = false; confirmBlank = false; b.textContent = 'Send to Mr. Allen';
       if (res && res.ok) {
         $('doneTxt').textContent = res.name + ', your Homework ' + h.id + ' was sent (' + (h.p.length - blanks.length) + ' of ' + h.p.length + ' answered).';
+        // which ones to fix (Nov 11, 2026, Mr. Allen: "it does not tell me which one to correct"): name the checked answers that are
+        // not right yet and give one button per problem that jumps straight to it. No answers are shown.
+        var right = 0, chk = 0, mine = 0; lastMiss = [];
+        h.p.forEach(function(p, i){ if (marks[i] === 1) { right++; chk++; } else if (marks[i] === 0) { chk++; lastMiss.push(p[0]); } else if (answers[i]) mine++; });
+        $('doneScore').textContent = (chk ? right + ' of ' + chk + ' checked answer' + (chk > 1 ? 's are' : ' is') + ' right.' : '') +
+          (mine ? (chk ? ' Mr. Allen will check the other ' + mine + '.' : 'Mr. Allen will check your ' + mine + ' answer' + (mine > 1 ? 's.' : '.')) : '');
+        var fx = $('doneFix'); fx.innerHTML = '';
+        if (lastMiss.length) {
+          var lb = document.createElement('span'); lb.textContent = 'Not yet:'; fx.appendChild(lb);
+          lastMiss.forEach(function(n){ var fb = document.createElement('button'); fb.type = 'button'; fb.textContent = 'Fix Problem ' + n; fb.addEventListener('click', function(){ jumpTo(n); }); fx.appendChild(fb); });
+        }
+        $('doneHint').textContent = lastMiss.length ? 'Tap a problem to fix it. Then send again. The newest one counts.' : 'You can change an answer and send again. The newest one counts.';
+        $('again').style.display = lastMiss.length ? 'none' : '';
         $('done').style.display = 'block'; b.style.display = 'none'; $('done').scrollIntoView({ behavior: 'smooth', block: 'center' });
       } else msg('That did not go through' + (res && res.error ? ' (' + res.error + ')' : '') + '. Tap Send again, or tell Mr. Allen.', 'warn');
     })
     .catch(function(){ b.disabled = false; b.textContent = 'Try again'; confirmBlank = true; msg('Could not reach Mr. Allen\'s sheet. Check the internet and tap Try again.', 'warn'); });
   });
+  var lastMiss = [];
+  function jumpTo(num){
+    $('done').style.display = 'none'; $('send').style.display = 'block';
+    var inp = $('a' + num), sec = inp && inp.closest('section.pg'); if (!sec) { window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+    var k = [].slice.call(document.querySelectorAll('#pages > section.pg')).indexOf(sec), st = window.OneAtATime && OneAtATime.state();
+    if (st && st.on && k >= 0) OneAtATime.go(k); else sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var cb = inp.closest('label') && inp.closest('label').querySelector('.chkbtn'); if (cb) cb.click();   // shows "Not yet" on that problem
+    try { inp.focus({ preventScroll: true }); inp.select(); } catch (e) {}
+    // a short way back to Send, so the student does not have to tap Next through every problem again
+    var lab = inp.closest('label');
+    if (st && st.on && lab && !lab.querySelector('.hwback')) {
+      var bk = document.createElement('button'); bk.type = 'button'; bk.className = 'hwback'; bk.textContent = 'Done fixing. Go to Send \u2192';
+      bk.addEventListener('click', function(){ bk.remove(); OneAtATime.go(OneAtATime.state().n); }); lab.appendChild(bk);
+    }
+  }
   $('again').addEventListener('click', function(){ $('done').style.display = 'none'; $('send').style.display = 'block'; window.scrollTo({ top: 0, behavior: 'smooth' }); });
 })();
 </script>
