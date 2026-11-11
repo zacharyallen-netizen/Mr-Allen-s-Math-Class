@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261111a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261111b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* ─────────────────────────────────────────────────────────────────────────────
    Step Work: a step-by-step workspace for solving equations and inequalities.
    The student picks a move, sees it on the equation (what cancels, which terms are alike,

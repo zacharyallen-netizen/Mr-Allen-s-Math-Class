@@ -31,6 +31,8 @@
     '.fx-fin{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:9999;background:#fff;color:#1E2D4F;border:2px solid #15803D;border-radius:14px;padding:12px 20px;box-shadow:0 8px 28px rgba(30,45,79,.25);font:500 14.5px/1.4 Inter,system-ui,sans-serif;text-align:center;max-width:calc(100vw - 32px);animation:fxfin 5s ease-out forwards;pointer-events:none}' +
     '.fx-fin strong{display:block;font:600 1.25rem "Source Serif 4",Georgia,serif;color:#15803D;margin-bottom:2px}@keyframes fxfin{0%{opacity:0;transform:translate(-50%,-10px)}6%{opacity:1;transform:translate(-50%,0)}90%{opacity:1}100%{opacity:0}}' +
     '@media print{.fx-streak,.fx-fin{display:none!important}}@media (prefers-reduced-motion:reduce){.fx-streak i{transition:none}}' +
+    '.fx-help{clear:both;display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0 2px;padding:10px 12px;background:#F4F6FB;border:1px solid #D5D9E0;border-radius:10px;font:600 14px Inter,system-ui,sans-serif;color:#1E2D4F}.fx-help>span{margin-right:2px}section.pg>.fx-help{margin:10px 16px 12px}' +
+    '.fx-help button,.fx-help a{font:600 14px Inter,system-ui,sans-serif;color:#1E2D4F;background:#fff;border:1.5px solid #1E2D4F;border-radius:8px;padding:8px 12px;min-height:38px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}.fx-help button:hover,.fx-help a:hover{background:#EEF1F7}@media print{.fx-help{display:none!important}}' +
     '.fx-read{float:right;margin:0 0 6px 10px!important;font:600 13px/1 Inter,system-ui,sans-serif!important;color:#1E2D4F!important;background:#fff!important;border:1px solid #C9D0DC!important;border-radius:999px!important;padding:9px 13px!important;min-height:34px!important;height:auto!important;width:auto!important;cursor:pointer;position:relative;z-index:2;box-shadow:none!important}' +
     '.fx-read.abs{position:absolute;top:8px;right:8px;float:none;margin:0!important}.fx-read.on{background:#1E2D4F!important;color:#fff!important;border-color:#1E2D4F!important}' +
     '.fx-std{font-size:11px!important;font-weight:500!important;color:#8A93A3!important;background:none!important;border-color:transparent!important;letter-spacing:.02em!important;text-transform:none!important;padding-left:2px!important;padding-right:2px!important}' +
@@ -76,7 +78,7 @@
   FX.mark = function (kind) { if (G) G.forced = kind; };       // an engine can say "careful" for the check in progress
 
   /* ---------- what just happened? (a tap or Enter, then the page's own check) ---------- */
-  var G = null, SKIP = '.site-bar,nav,header,.oat-top,.oat-bot,.oat-end,.nf-top,.nf-bot,.nsp-bar,.fx-foot,[id^="ss"],.ss-panel';
+  var G = null, SKIP = '.site-bar,nav,header,.oat-top,.oat-bot,.oat-end,.nf-top,.nf-bot,.nsp-bar,.fx-foot,.fx-help,[id^="ss"],.ss-panel';
   var OKC = /^(ok|correct|right|good|yes|success|solved|c)$/, NOC = /^(no|wrong|incorrect|bad|err|error|miss|w)$/, WARNC = /^(tip|warn|warning|careful|close|partial|almost|blank)$/;
   var WARNT = /pick an answer|choose an answer|select an answer|answer first|type (a|an|your|the|just)\b|enter (a|an|your)\b|simplest form|write it as a fraction|everything you picked is true|more right answer|fill (it|them) in|use a minus|round(ed)? to/i;
   var CHECK = /^(check|check my answer|check answers?|check it|check this line|verify( the solution)?|submit|go)$/i, REVEAL = /^(show|reveal)\b/i;
@@ -104,6 +106,7 @@
     var box = g.bs && g.bs.length === 1 ? g.bs[0].b : FX.box(g.el);
     FX.flash(box, kind); if (kind === 'ok') { FX.done(box); FX.good(box); }
     FX.streak(kind, box);
+    if (kind === 'no') FX.help(box);
   }
   function watch() {
     new MutationObserver(function (ms) {
@@ -243,6 +246,33 @@
 
 
   /* ---------- progress on this device (for the "Keep going" button on unit pages) ---------- */
+  /* ---------- choose your help (Nov 11, 2026): after a miss on a practice page or homework, one row under the problem:
+     "Stuck? Pick one:" Hint / Step by step (only if the problem has them; they press the page's own buttons) / Review the notes
+     (opens that unit's Interactive Notes in a new tab). Shown once per problem. ---------- */
+  FX.notesPage = function () {
+    var f = location.pathname.split('/').pop(), m, hw = (location.search.match(/[?&]hw=([^&#]+)/) || [])[1];
+    if (/homework_turn_in/.test(f)) {
+      if (!hw || !(m = hw.match(/^(\d)\.(\d+)$/))) return null; var u = m[1], k = +m[2];
+      if (u === '2') return k >= 6 && k <= 8 ? 'unit2-notes-sci-notation.html' : 'unit2-notes-exponents.html';
+      if (u === '6') return k >= 12 ? 'unit6-notes-tables-systems.html' : k >= 8 && k <= 9 ? 'unit6-notes-tables-systems.html' : k >= 6 ? 'unit6-notes-slope-intercept.html' : k >= 4 ? 'unit6-notes-slope.html' : 'unit6-notes.html';
+      return u === '9' ? 'volume.html' : 'unit' + u + '-notes.html';
+    }
+    if (!/practice/.test(f) || /unit6-practice-tables/.test(f)) return null;
+    if (/^unit2-practice-exponents/.test(f)) return 'unit2-notes-exponents.html';
+    if (/^unit2-practice-sci/.test(f)) return 'unit2-notes-sci-notation.html';
+    if (/^unit6-practice-slope-intercept/.test(f)) return 'unit6-notes-slope-intercept.html';
+    m = f.match(/^unit(\d)[-_]practice/); if (!m) return null;
+    return m[1] === '9' ? 'volume.html' : 'unit' + m[1] + '-notes.html';
+  };
+  FX.help = function (box) {
+    var notes = FX.notesPage(); if (!notes || !box || box.querySelector('.fx-help')) return;
+    var row = document.createElement('div'); row.className = 'fx-help'; row.innerHTML = '<span>Stuck? Pick one:</span>';
+    function proxy(label, sel) { var o = box.querySelector(sel); if (!o || o.disabled) return; var b = document.createElement('button'); b.type = 'button'; b.textContent = label;
+      b.addEventListener('click', function () { o.click(); try { o.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} b.remove(); }); row.appendChild(b); }
+    proxy('Hint', '.pr-hint'); proxy('Step by step', '.sw-open');
+    var a = document.createElement('a'); a.href = notes; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Review the notes \u2197'; row.appendChild(a);
+    box.appendChild(row);
+  };
   /* ---------- streak dots (Nov 11, 2026): right answers in a row. Each question counts once; a miss restarts the row quietly;
      yellow (format) changes nothing. Small chip at the bottom of the screen, never in the way (pointer-events: none). ---------- */
   var STREAK = 0, BEST = 0, SBOX = [], chip = null, chipT = 0;
