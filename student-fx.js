@@ -26,6 +26,11 @@
     '.fx-foot>button{font:600 13px Inter,system-ui,sans-serif;color:#5B6475;background:#fff;border:1px solid #D5D9E0;border-radius:999px;padding:8px 14px;min-height:34px;cursor:pointer}' +
     '@keyframes fxpop{0%{opacity:0;transform:translate(-50%,-14px) scale(.9)}12%{opacity:1;transform:translate(-50%,0) scale(1.04)}20%{transform:translate(-50%,0) scale(1)}85%{opacity:1}100%{opacity:0}}' +
     '.fx-toast{position:fixed;left:50%;top:76px;z-index:9999;transform:translateX(-50%);background:#1E2D4F;color:#FFC107;font:700 17px Inter,system-ui,sans-serif;padding:10px 20px;border-radius:999px;box-shadow:0 6px 20px rgba(30,45,79,.3);animation:fxpop 2.4s ease-out forwards;pointer-events:none;white-space:nowrap}' +
+    '.fx-streak{position:fixed;left:50%;bottom:8px;transform:translateX(-50%);z-index:9000;display:flex;align-items:center;gap:6px;background:rgba(30,45,79,.94);color:#fff;font:600 12.5px Inter,system-ui,sans-serif;padding:6px 12px;border-radius:999px;pointer-events:none;box-shadow:0 3px 12px rgba(30,45,79,.25);transition:opacity .5s}' +
+    '.fx-streak i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.22);display:block;transition:background .25s,transform .25s}.fx-streak i.on{background:#FFC107}.fx-streak i.new{transform:scale(1.5)}.fx-streak b{font-weight:700;color:#FFC107;margin-left:3px;white-space:nowrap}.fx-streak b:empty{display:none}.fx-streak.off{opacity:0}' +
+    '.fx-fin{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:9999;background:#fff;color:#1E2D4F;border:2px solid #15803D;border-radius:14px;padding:12px 20px;box-shadow:0 8px 28px rgba(30,45,79,.25);font:500 14.5px/1.4 Inter,system-ui,sans-serif;text-align:center;max-width:calc(100vw - 32px);animation:fxfin 5s ease-out forwards;pointer-events:none}' +
+    '.fx-fin strong{display:block;font:600 1.25rem "Source Serif 4",Georgia,serif;color:#15803D;margin-bottom:2px}@keyframes fxfin{0%{opacity:0;transform:translate(-50%,-10px)}6%{opacity:1;transform:translate(-50%,0)}90%{opacity:1}100%{opacity:0}}' +
+    '@media print{.fx-streak,.fx-fin{display:none!important}}@media (prefers-reduced-motion:reduce){.fx-streak i{transition:none}}' +
     '.fx-read{float:right;margin:0 0 6px 10px!important;font:600 13px/1 Inter,system-ui,sans-serif!important;color:#1E2D4F!important;background:#fff!important;border:1px solid #C9D0DC!important;border-radius:999px!important;padding:9px 13px!important;min-height:34px!important;height:auto!important;width:auto!important;cursor:pointer;position:relative;z-index:2;box-shadow:none!important}' +
     '.fx-read.abs{position:absolute;top:8px;right:8px;float:none;margin:0!important}.fx-read.on{background:#1E2D4F!important;color:#fff!important;border-color:#1E2D4F!important}' +
     '.fx-std{font-size:11px!important;font-weight:500!important;color:#8A93A3!important;background:none!important;border-color:transparent!important;letter-spacing:.02em!important;text-transform:none!important;padding-left:2px!important;padding-right:2px!important}' +
@@ -98,6 +103,7 @@
     }
     var box = g.bs && g.bs.length === 1 ? g.bs[0].b : FX.box(g.el);
     FX.flash(box, kind); if (kind === 'ok') { FX.done(box); FX.good(box); }
+    FX.streak(kind, box);
   }
   function watch() {
     new MutationObserver(function (ms) {
@@ -125,7 +131,7 @@
   /* ---------- "done" counter + a cheer every 5 ---------- */
   var DONE = []; FX.count = function () { return DONE.length; };
   var CHEERS = { 5: 'Nice — 5 done!', 10: '10 done! Keep going!', 15: '15 done — awesome!', 20: '20 done! You’re on a roll!' };
-  FX.toast = function (t) { var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
+  FX.toast = function (t) { var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.documentElement.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
   var GOOD = [];
   FX.good = function (box) { if (!box || GOOD.indexOf(box) >= 0) return; GOOD.push(box); var n = GOOD.length; if (n % 5) return;
     setTimeout(function () { FX.toast(CHEERS[n] || n + ' done! Great work!'); FX.play('cheer'); }, 450); };
@@ -237,6 +243,34 @@
 
 
   /* ---------- progress on this device (for the "Keep going" button on unit pages) ---------- */
+  /* ---------- streak dots (Nov 11, 2026): right answers in a row. Each question counts once; a miss restarts the row quietly;
+     yellow (format) changes nothing. Small chip at the bottom of the screen, never in the way (pointer-events: none). ---------- */
+  var STREAK = 0, BEST = 0, SBOX = [], chip = null, chipT = 0;
+  FX.streak = function (kind, box) {
+    if (kind === 'warn') return;
+    if (kind === 'ok') { if (box && SBOX.indexOf(box) >= 0) return; if (box) SBOX.push(box); STREAK++; BEST = Math.max(BEST, STREAK); }
+    else { if (!STREAK) return; STREAK = 0; }
+    if (!chip) { chip = document.createElement('div'); chip.className = 'fx-streak off'; chip.setAttribute('aria-hidden', 'true'); chip.innerHTML = '<i></i><i></i><i></i><i></i><i></i><b></b>'; document.documentElement.appendChild(chip); }
+    var on = STREAK ? ((STREAK - 1) % 5) + 1 : 0, dots = chip.querySelectorAll('i');
+    [].forEach.call(dots, function (d, i) { d.className = i < on ? 'on' : ''; });
+    if (on) { dots[on - 1].classList.add('new'); setTimeout(function () { dots[on - 1].classList.remove('new'); }, 300); }
+    chip.querySelector('b').textContent = STREAK >= 2 ? STREAK + ' in a row' + (STREAK % 5 === 0 ? '!' : '') : '';
+    chip.classList.remove('off'); clearTimeout(chipT);
+    if (!STREAK) chipT = setTimeout(function () { chip.classList.add('off'); }, 1500);
+  };
+  FX.best = function () { return BEST; };
+  /* ---------- finish message: once per visit when the page is finished. A plain summary, no confetti. ---------- */
+  var FIN = false;
+  FX.finish = function (n) {
+    if (FIN) return; FIN = true;
+    setTimeout(function () {
+      [].forEach.call(document.querySelectorAll('.fx-toast'), function (t) { t.remove(); });
+      var d = document.createElement('div'); d.className = 'fx-fin'; d.setAttribute('role', 'status');
+      var st = document.createElement('strong'); st.textContent = '\u2713 Finished'; d.appendChild(st);
+      d.appendChild(document.createTextNode((n ? 'You answered all ' + n + '.' : 'Your work is in.') + (BEST >= 3 ? ' Best run: ' + BEST + ' in a row.' : '')));
+      document.documentElement.appendChild(d); FX.play('cheer'); setTimeout(function () { d.remove(); }, 5200);
+    }, 900);
+  };
   FX.progKey = function () { var m = location.search.match(/[?&]hw=([^&#]+)/); return location.pathname.split('/').pop() + (m ? '?hw=' + m[1] : ''); };
   FX.prog = function (mark) {
     var all; try { all = JSON.parse(ls('fx-prog') || '{}'); } catch (e) { all = {}; }
@@ -244,9 +278,9 @@
   };
   function finishedYet() {
     var sb = document.getElementById('ssbtn'), hw = document.getElementById('done');
-    if ((sb && /Sent ✓/.test(sb.textContent)) || (hw && /homework_turn_in/.test(location.pathname) && hw.style.display === 'block')) FX.prog('done');
+    if ((sb && /Sent ✓/.test(sb.textContent)) || (hw && /homework_turn_in/.test(location.pathname) && hw.style.display === 'block')) { FX.prog('done'); FX.finish(0); }
     var n = [].filter.call(document.querySelectorAll(RSEL), function (b) { return !b.closest('.tw') && !b.matches('.tw'); }).length;
-    if (n && FX.count() >= n) FX.prog('done');
+    if (n && FX.count() >= n) { FX.prog('done'); FX.finish(n); }
   }
 
   /* ---------- pre-tests: "Show answers" opens only after every question has an answer ---------- */
