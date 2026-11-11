@@ -15,17 +15,26 @@ const G = path.join(__dirname, '..', 'grade8') + '/';
     const title = await p.evaluate((mode) => {
       const D = window.PRACTICE.data;
       document.querySelectorAll('#site-bar,.site-bar,.sb-local,#ss-mount,#scoresend,.pr-how,.pr-score,.pr-links,.oat-bar,.oat-nav,.oat-finish,.ineq-keys,script+div:empty').forEach(e => e.remove());
-      document.querySelectorAll('.sw-host,.pr-tips,.site-footer').forEach(e => e.remove());
+      document.querySelectorAll('.sw-host,.pr-tips,.site-footer,.fx-read,.fx-foot,.fx-tpanel,.fx-help,.fx-streak,.fx-toast,.fx-fin,.fx-gate,.oat-hint,.ta-why').forEach(e => e.remove());   // screen-only helpers
+      document.querySelectorAll('body > *, .page-wrap > *').forEach(e => { if (!e.textContent.trim() && !e.querySelector('svg,img,canvas') && !/^(SCRIPT|STYLE|LINK)$/.test(e.tagName)) e.remove(); });
       document.querySelectorAll('a').forEach(a => { if (/^\s*←/.test(a.textContent)) a.remove(); });
       document.querySelectorAll('[class*="oat"]').forEach(e => { if (e !== document.body && !e.matches('.pr-sec,h1,h2,.page-wrap,.pr-sub,p') && !e.closest('.pr-card') && !e.querySelector('.pr-card')) e.style.display = 'none'; });
       D.secs.forEach((sec, si) => sec.probs.forEach(pr => {
         const c = document.getElementById('s' + si + 'p' + pr.n); if (!c) return;
         c.style.display = ''; c.style.breakInside = 'avoid';
         c.querySelectorAll('.pr-row,.pr-fb,.pr-hintbox').forEach(e => e.remove());
+        // a problem with its own answer choices prints them as A, B, C, D (Nov 11, 2026); the key marks the right one
+        let keyAns = pr.ans;
+        if (pr.choices && pr.choices.length) {
+          const L = 'ABCDEF', norm = t => String(t).replace(/<[^>]+>/g, '').replace(/\s+/g, ''), ri = pr.choices.findIndex(t => norm(t) === norm(pr.ans)), box = document.createElement('div');
+          box.style.cssText = 'margin:10px 0 0 2px;font:500 14.5px/1.5 Inter,system-ui,sans-serif;color:#1E2D4F';
+          box.innerHTML = pr.choices.map((t, i) => '<div style="margin:3px 0' + (mode === 'key' && i === ri ? ';color:#15803D;font-weight:700' : '') + '"><b>' + L[i] + '.</b> ' + t + '</div>').join('');
+          c.appendChild(box); if (ri >= 0) keyAns = L[ri];
+        }
         const a = document.createElement('div');
         a.style.cssText = 'margin-top:12px;font:600 15px Inter,system-ui,sans-serif;color:#1E2D4F';
         a.innerHTML = 'Answer: ' + (mode === 'key'
-          ? '<span style="color:#15803D;font-weight:700;border-bottom:1.5px solid #15803D;padding:0 10px">' + pr.ans + '</span>'
+          ? '<span style="color:#15803D;font-weight:700;border-bottom:1.5px solid #15803D;padding:0 10px">' + keyAns + '</span>'
           : '<span style="display:inline-block;width:2.6in;border-bottom:1.5px solid #1E2D4F">&nbsp;</span>');
         c.appendChild(a);
       }));
