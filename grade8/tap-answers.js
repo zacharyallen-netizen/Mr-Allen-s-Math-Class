@@ -20,7 +20,7 @@
   function unsup(s) { return s.replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+/g, function (m) { return '^' + m.split('').map(function (c) { return SUPMAP[c]; }).join(''); }); }
   function plain(h) {
     var s = String(h == null ? '' : h);
-    s = s.replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, function (m, a, b) { return a + '/' + b; });
+    s = s.replace(/<span class="fr(?:ac)?"><span(?: class="num")?>(.*?)<\/span><span(?: class="den")?>(.*?)<\/span><\/span>/g, function (m, a, b) { return a + '/' + b; });
     s = s.replace(/<sup>\s*([−-]?\d+)\s*<\/sup>/g, function (m, n) { return sup(n); }).replace(/<[^>]+>/g, '');
     s = s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&le;/g, '≤').replace(/&ge;/g, '≥').replace(/&minus;/g, '−').replace(/&times;/g, '×').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&pi;/g, 'π');
     return s.replace(/\s+/g, ' ').trim();
@@ -68,11 +68,18 @@
     var ten = String(Math.round(parseFloat(c) * 10 * 1e6) / 1e6);
     return uniq(f(c, n), [n ? f(c, -n) : f(c, 1), f(c, n > 0 ? n - 1 : n + 1), f(ten, n - 1), f(c, n + (n > 0 ? 1 : -1))]);
   }
-  function pair(a) {
+  function pair(a, q) {
     var m = asc(a).replace(/\s+/g, '').match(/^\((-?[\d.\/]+),(-?[\d.\/]+)\)$/); if (!m) return null;
-    var x = m[1], y = m[2], f = function (p, q) { return '(' + neg(p) + ', ' + neg(q) + ')'; }, N = function (t) { return /^-?0+$/.test(t) ? t : t.charAt(0) === '-' ? t.slice(1) : '-' + t; };
-    var bump = function (t) { return isNaN(+t) ? t : String(+t + 1); };
-    return uniq(f(x, y), [f(y, x), f(N(x), y), f(x, N(y)), f(N(x), N(y)), f(bump(x), y), f(x, bump(y))]);
+    var x = m[1], y = m[2], f = function (p, q2) { return '(' + neg(p) + ', ' + neg(q2) + ')'; }, N = function (t) { return /^-?0+$/.test(t) ? t : t.charAt(0) === '-' ? t.slice(1) : '-' + t; };
+    var bump = function (t) { return isNaN(+t) ? t : String(+t + 1); }, r = function (v) { return Math.abs(v * 10 - Math.round(v * 10)) > 1e-9 ? 'x' : String(Math.round(v * 10) / 10); }, cand = [];
+    var Q = asc(plain(q || '')), o = Q.replace(/\s+/g, '').match(/\((-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\)/);
+    if (o && !isNaN(+x) && !isNaN(+y)) { var a0 = +o[1], b0 = +o[2], X = +x, Y = +y;                // the moves students mix up
+      if (/dilat|scale factor/i.test(Q) && a0 && b0) { var k = X / a0; cand.push(f(r(a0 + k), r(b0 + k)), f(r(a0 / k), r(b0 / k)), f(r(X), r(b0))); }
+      else if (/translat|slide|left|right|\bup\b|\bdown\b|units/i.test(Q)) { var dx = X - a0, dy = Y - b0; cand.push(f(r(a0 - dx), r(b0 - dy)), f(r(a0 + dy), r(b0 + dx)), f(r(a0 + dx + dy), r(b0 + dx + dy))); }
+      else [[a0, -b0], [-a0, b0], [-a0, -b0], [b0, a0], [-b0, a0], [b0, -a0], [a0, b0]].forEach(function (pt) { cand.push(f(r(pt[0]), r(pt[1]))); });
+    }
+    cand = cand.filter(function (c) { return c.indexOf('x') < 0; });                             // untidy decimals are not offered
+    return uniq(f(x, y), cand.concat([f(y, x), f(N(x), y), f(x, N(y)), f(N(x), N(y)), f(bump(x), y), f(x, bump(y))]));
   }
   function linear(a) {
     var s = asc(a).replace(/\s+/g, ''), m = s.match(/^y=(.+)$/); if (!m) return null; var r = m[1], mm, b;
@@ -91,9 +98,14 @@
   }
   function between(a) { var m = a.match(/^(\d+) and (\d+)$/); if (!m || +m[2] !== +m[1] + 1) return null; var x = +m[1];
     return [[(x - 1) + ' and ' + x, x + ' and ' + (x + 1), (x + 1) + ' and ' + (x + 2), (x * x) + ' and ' + ((x + 1) * (x + 1))], x + ' and ' + (x + 1)]; }
-  function piAns(a) {
-    var m = asc(a).replace(/,/g, '').match(/^(?:[A-Za-z]\s*=\s*)?(\d+(?:\.\d+)?)\s*π(.*)$/); if (!m) return null; var k = +m[1], tail = m[2] || '', f = function (v) { return (Math.round(v * 100) / 100) + 'π' + tail; };
-    return uniq(f(k), [k % 3 === 0 ? f(k / 3) : f(k * 3), f(k * 2), f(k * 4), k % 2 === 0 ? f(k / 2) : f(k * 6)]);
+  function piAns(a, q) {
+    var m = asc(a).replace(/,/g, '').match(/^(?:[A-Za-z]\s*=\s*)?(\d+(?:\.\d+)?)\s*π(.*)$/); if (!m) return null; var k = +m[1], tail = m[2] || '', f = function (v) { return k === Math.round(k) && v !== Math.round(v) ? null : (Math.round(v * 100) / 100) + 'π' + tail; }, cand = [];   // whole-number answers get whole-number choices
+    var Q = asc(plain(q || '')), rm = Q.match(/\br\s*=\s*(\d+(?:\.\d+)?)|radius\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)/i), hm = Q.match(/\bh\s*=\s*(\d+(?:\.\d+)?)|height\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)/i), dm = Q.match(/\bd\s*=\s*(\d+(?:\.\d+)?)|diameter\s*(?:of|is|=)?\s*(\d+(?:\.\d+)?)/i);
+    var r = rm ? +(rm[1] || rm[2]) : dm ? +(dm[1] || dm[2]) / 2 : 0, h = hm ? +(hm[1] || hm[2]) : 0;
+    if (r && /sphere|ball/i.test(Q)) cand.push(f(4 * r * r / 3), f(r * r * r), f(4 * r * r * r), dm ? f(4 * 8 * r * r * r / 3) : f(2 * r * r * r / 3));      // squared, forgot 4/3, forgot ÷ 3, used the diameter
+    else if (r && h && /cone/i.test(Q)) cand.push(f(r * r * h), f(r * h / 3), f(2 * r * h));                                                           // forgot 1/3, did not square
+    else if (r && h) cand.push(f(r * h), f(r * r * h / 3), f(2 * r * h), dm ? f(4 * r * r * h) : f(r * r * h * 2));                                     // did not square, used the cone rule
+    return uniq(f(k), cand.concat([k % 3 === 0 ? f(k / 3) : f(k * 3), f(k * 2), f(k * 4), k % 2 === 0 ? f(k / 2) : f(k * 6)]));
   }
   function order(a) { var t = a.split(/\s*,\s*/); if (t.length < 3 || t.length > 6 || t.some(function (x) { return !x || x.length > 14; })) return null;
     var j = function (x) { return x.join(',  '); }, sw = function (i, k) { var c = t.slice(); var u = c[i]; c[i] = c[k]; c[k] = u; return j(c); };
@@ -102,14 +114,14 @@
      misuse them (multiply the exponents instead of adding, add the coefficients instead of multiplying, forget to flip ...) */
   function mono(a, q) {
     if (/[a-z]{3,}/i.test(asc(a)) || /\s[a-z]{2,}/i.test(a)) return null;                       // a word, not a monomial
-    var s = unsup(asc(a)).replace(/\s+/g, '').replace(/[·*]/g, ''); if (!/^[-\d\/a-z^().]+$/i.test(s) || !/\^|[a-z]/i.test(s) || /=|sqrt|π/.test(s)) return null;
+    var s = unsup(asc(a)).replace(/\s+/g, '').replace(/[·*]/g, ''); if (!/^[-\d\/a-z^().]+$/.test(s) || !/\^|[a-z]/.test(s) || /=|sqrt|π/.test(s)) return null;
     var parts = s.split('/'); if (parts.length > 2) return null;
-    function side(t) { t = t.replace(/^\((.*)\)$/, '$1'); var m = t.match(/^(-?\d*)((?:[a-z](?:\^-?\d+)?)*)$/i), pw; if (!m) { pw = t.match(/^(-?\d+)\^(-?\d+)$/); if (!pw) return null; return { c: 1, v: [[pw[1], +pw[2]]], num: true }; }
-      var v = [], re = /([a-z])(?:\^(-?\d+))?/gi, x; while ((x = re.exec(m[2]))) v.push([x[1], x[2] == null ? 1 : +x[2]]); return { c: m[1] === '' ? 1 : m[1] === '-' ? -1 : +m[1], v: v }; }
+    function side(t) { t = t.replace(/^\((.*)\)$/, '$1'); var m = t.match(/^(-?\d*)((?:[a-z](?:\^-?\d+)?)*)$/), pw; if (!m) { pw = t.match(/^(-?\d+)\^(-?\d+)$/); if (!pw) return null; return { c: 1, v: [[pw[1], +pw[2]]], num: true }; }
+      var v = [], re = /([a-z])(?:\^(-?\d+))?/g, x; while ((x = re.exec(m[2]))) v.push([x[1], x[2] == null ? 1 : +x[2]]); return { c: m[1] === '' ? 1 : m[1] === '-' ? -1 : +m[1], v: v }; }
     var top = side(parts[0]), bot = parts[1] ? side(parts[1]) : { c: 1, v: [] }; if (!top || !bot || (!top.v.length && !bot.v.length)) return null;
     var vars = top.v.map(function (p) { return [p[0], p[1]]; }).concat(bot.v.map(function (p) { return [p[0], -p[1]]; })), cn = top.c, cd = bot.c;
     function fmt(n, d, vs) { var t = '', b = ''; vs.forEach(function (p) { if (!p[1]) return; var e = Math.abs(p[1]), piece = p[0] + (e === 1 ? '' : sup(e)); if (p[1] > 0) t += piece; else b += piece; });
-      var tn = (n === 1 && t ? '' : n === -1 && t ? '−' : neg(n)) + t, bn = (d === 1 ? '' : d) + b; if (!tn) tn = '1'; return bn ? tn + '/' + (d !== 1 && b ? '(' + bn + ')' : bn) : tn; }
+      var tn = (n === 1 && t ? '' : n === -1 && t ? '−' : neg(n)) + t, bn = (d === 1 ? '' : d) + b; if (!tn) tn = '1'; return bn ? tn + '/' + ((d !== 1 && b) || vs.filter(function (p) { return p[1] < 0; }).length > 1 ? '(' + bn + ')' : bn) : tn; }
     var Qt = plain(q || ''), Q = unsup(asc(Qt)), div = /÷|\//.test(Qt), E = (Q.match(/\^-?\d+/g) || []).map(function (x) { return +x.slice(1); });
     var C = (Q.replace(/\^-?\d+/g, ' ').match(/-?\d+(?:\.\d+)?/g) || []).map(Number).filter(function (x) { return Math.abs(x) > 1 && Math.abs(x) < 100; });
     var right = fmt(cn, cd, vars), n0 = vars[0][1], eAlt = [], cAlt = [], i, k;
@@ -134,7 +146,8 @@
     if (isNumber(a)) return null;
     var w = wordSet(a, plain(o.q || '')); if (w) return w[0].slice();
     var b = between(a); if (b) return b[0];
-    var r = ineq(a) || sci(a) || pair(a) || linear(a) || piAns(a) || mono(a, o.q) || order(a);
+    if (/^[A-D]$/.test(a)) { var caps = (plain(o.q || '').match(/\b[A-D]\b/g) || []).filter(function (c, i2, arr) { return arr.indexOf(c) === i2; }).sort(); if (caps.indexOf(a) < 0) caps.push(a); if (caps.length < 2) caps = ['A', 'B']; caps.sort(); return caps.length === 2 ? caps.concat(['They are the same']) : caps; }
+    var r = ineq(a) || sci(a) || pair(a, o.q) || linear(a) || piAns(a, o.q) || mono(a, o.q) || order(a);
     if (r && r.length >= 3) { var right = r[0]; return shuffle(r, key + '|' + right); }
     return undefined;
   }
