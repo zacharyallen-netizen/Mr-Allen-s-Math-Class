@@ -93,6 +93,7 @@ Pushing to `main` publishes the site in about 2 minutes. He has authorized Claud
 - Read only what you need (grep first). Don't re-read big generated HTML; edit the builder and rebuild.
 - Verify math in code (`fractions.Fraction`, asserts) and layout with page counts + one low-res contact sheet.
 - Local page checks: `python3 -m http.server 8765 --bind 127.0.0.1` from the repo root, then the `check_*.py` scripts.
+- **Before every push:** `node _build/review/check_rules.js` must say "All rule checks passed." (Zach's rules, `_build/review/RULES.md`). A failure blocks the push. When Zach reports a new kind of problem, add a rule AND a check.
 - Commit with a clear message, `git fetch && git rebase origin/main`, push to `main`, then tell Zach where it is.
 - **Backup copy (Nov 12, 2026, Zach: "If there are duplicates, please make sure that both are fixed and 100% identical"):** the repo
   `ztallen1976-oss/backup-8th-grade-math-class` is an exact copy of this one. After every push to `main` here, push the SAME commit
