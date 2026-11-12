@@ -632,6 +632,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
   <h3 style="font-family:'Arvo',serif;color:var(--navy);margin:16px 0 8px">📊 Diagnostic Breakdown</h3>
   <p style="font-size:0.88em;color:var(--royal);margin-bottom:8px">Red = needs extra practice. Click a unit name to go review!</p>
   <div class="diag-grid" id="diag-grid"></div>
+  <div id="ss-mount" style="text-align:left;margin:16px 0"></div>
   <button class="restart-btn" onclick="location.reload()">Try Again 🔄</button>
 </div>
 
@@ -742,5 +743,25 @@ function showResults() {
 </script>
 
 
-<script src="one-in-part.js?v=20261111a"></script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/* Send my work (Nov 11, 2026): each answer goes to Mr. Allen's Student Work sheet with its standard. The Send box is on
+   the results screen. The questions, scoring and feedback are unchanged. */
+(function () {
+  var STD = { U1: 'NC.8.NS.1', U2: 'NC.8.EE.1', U3: 'NC.8.EE.7', U4: 'NC.8.G.5', U5: 'NC.8.G.7', U6: 'NC.8.F.4', U7: 'NC.8.SP.1', U8: 'NC.8.G.3', U9: 'NC.8.G.9' };
+  var orig = window.eogAnswer;
+  if (typeof orig !== 'function') return;
+  window.eogAnswer = function (btn, qid, correct, unit) {
+    var card = document.getElementById(qid), was = card && card.classList.contains('answered');
+    var r = orig.apply(this, arguments);
+    if (!was && window.ScoreSend && card && card.classList.contains('answered')) {
+      var q = card.querySelector('.q-text, .question, h3, p'), lab = ((q || card).textContent || qid).replace(/\s+/g, ' ').trim().slice(0, 80);
+      ScoreSend.record(qid, btn.classList.contains('correct'), { std: STD[unit] || 'NC.8.EE.7', band: 4, label: lab });
+    }
+    return r;
+  };
+  window.addEventListener('load', function () { if (window.ScoreSend) ScoreSend.setup({ kind: 'practice', unit: 'EOG', page: 'EOG Review (all units)', mount: '#ss-mount', std: 'NC.8.EE.7', band: 4 }); });
+})();
+</script>
 </body></html>

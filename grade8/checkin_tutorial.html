@@ -240,6 +240,7 @@ body.class-mode .score{display:none}
 </div>
 <div class="tabs2"><div class="card"><div class="label-try">Skills you need</div><ul class="skills"><li>Write the coordinates of every vertex first.</li><li>Use the rule on each vertex to find the image.</li><li>Name the transformation by comparing before and after coordinates.</li><li>Decide if the image is congruent or similar.</li></ul></div><div class="card"><div class="label-try" style="color:var(--no)">Common mistakes</div><ul class="mist"><li><b>Mistake:</b> Changing the sign of x for a flip over the x-axis.<span class="fix">Fix: Over the x-axis, the y changes: (x, −y). The axis you flip over keeps its number.</span></li><li><b>Mistake:</b> Mixing up clockwise and counterclockwise.<span class="fix">Fix: Clockwise (y, −x). Counterclockwise (−y, x). Check: a shape in Quadrant I turns clockwise into Quadrant IV.</span></li><li><b>Mistake:</b> Moving the wrong way in a translation.<span class="fix">Fix: x + 4 is right 4. y − 3 is down 3.</span></li><li><b>Mistake:</b> Adding for a dilation.<span class="fix">Fix: A dilation multiplies: (kx, ky). Adding is a slide.</span></li><li><b>Mistake:</b> Thinking a flipped or turned shape is not congruent.<span class="fix">Fix: Slides, flips, and turns never change size. Only a dilation does.</span></li></ul></div></div><div style="height:16px"></div>
 <div id="qs2"></div>
+<div class="card" style="margin-top:28px"><h3 style="margin-top:0">Send your work to Mr. Allen</h3><div id="sendMount"></div><p class="small-note">Your first try on each check is what Mr. Allen sees.</p></div>
 </section>
 
 <!-- ============ PART 3 ============ -->
@@ -568,6 +569,31 @@ window.__QS=QS;
 </script>
 <script>/* one part at a time (notes-flow.js), Nov 10, 2026 */ window.NF = { sections: 'section.part', word: 'Part' };</script>
 <script src="../notes-flow.js?v=20261111b"></script>
-<script src="one-in-part.js?v=20261111a"></script>
+<script src="one-in-part.js?v=20261111b"></script>
+<script src="../tracker-config.js"></script>
+<script src="../score-send.js"></script>
+<script>
+/* Send my work (Nov 11, 2026): records the FIRST check on each question (right or not yet) for Mr. Allen's Student Work
+   sheet (Tutorials tab). The questions and their feedback are unchanged. */
+(function () {
+  var STD = { qs1: 'NC.8.F.1', qs2: 'NC.8.G.3', qs3: 'NC.8.G.3' };
+  function hook() {
+    if (!window.ScoreSend) return;
+    ScoreSend.setup({ kind: 'practice', unit: 'Check-In', page: 'NC Check-In Tutorial: Functions & Transformations', mount: '#sendMount', std: 'NC.8.F.1', band: 4, noun: 'check' });
+    Object.keys(STD).forEach(function (box) {
+      [].forEach.call(document.querySelectorAll('#' + box + ' > .q'), function (d) {
+        var lab = ((d.querySelector('.qt') || {}).textContent || d.id).replace(/\s+/g, ' ').trim().slice(0, 80);
+        d.querySelector('.chk').addEventListener('click', function () { setTimeout(function () {
+          var t = (d.querySelector('.fb') || {}).textContent || '';
+          if (/^Yes!/.test(t)) ScoreSend.record(d.id, true, { std: STD[box], band: 4, label: lab });
+          else if (/^Not yet\./.test(t)) ScoreSend.record(d.id, false, { std: STD[box], band: 4, label: lab });
+        }, 0); });
+        d.querySelector('.reveal').addEventListener('click', function () { try { ScoreSend.revealed(); } catch (e) {} });
+      });
+    });
+  }
+  if (document.readyState === 'complete') hook(); else window.addEventListener('load', hook);
+})();
+</script>
 </body>
 </html>

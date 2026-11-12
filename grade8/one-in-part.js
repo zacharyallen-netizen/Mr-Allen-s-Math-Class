@@ -56,6 +56,8 @@
       var runs = [], run = [];
       [].forEach.call(pa.children, function (c) { if (isQ(c)) run.push(c); else if (skip(c)) return; else { if (run.length > 1) runs.push(run); run = []; } });
       if (run.length > 1) runs.push(run);
+      // a page that already shows one question at a time (its own cards start hidden with style="display:none") keeps its own pager
+      runs = runs.filter(function (r) { return !r.some(function (el) { return el.style.display === 'none'; }); });
       if (!runs.length) return; pa.__oip = true;
       runs.forEach(function (r) { PAGERS.push(pager(r)); });
     });
