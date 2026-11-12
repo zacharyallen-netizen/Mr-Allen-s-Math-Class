@@ -3,7 +3,7 @@
    shows ONE of them, with "Problem 2 of 5", dots (green = answered) and Back / Next. Nothing is locked, and checking,
    scoring and sending are unchanged: it only hides and shows.
    What gets paged: a RUN of 2 or more question blocks that sit next to each other in the same box (.q, .card or .chk
-   blocks, or the Unit 6 .practice-block boxes, that hold an answer: choice buttons, a typed box or a dropdown). Questions with teaching text between them are
+   blocks, the Unit 6 .practice-block boxes or .problem blocks (Unit 6 table practice), that hold an answer: choice buttons, a typed box or a dropdown). Questions with teaching text between them are
    left alone. A "Try a similar one" box stays with its question.
    It also gives every question a Hint button if it has none (tap-answers.js writes it from the question's words).
    ?paper=1, ?key=1 and print show everything. */
@@ -11,7 +11,7 @@
   "use strict";
   if (/[?&](paper|key)=1/.test(location.search)) return;
   var here = document.currentScript && document.currentScript.src;
-  var SEL = '.q, .card, .chk, .q-card, .practice-block', WIDGET = 'input:not([type=hidden]):not([type=checkbox]), select, textarea, button.opt, button.choice, .chk-btn, .ta-row, .opts button, .choices button, .opt-btn';
+  var SEL = '.q, .card, .chk, .q-card, .practice-block, .problem', WIDGET = 'input:not([type=hidden]):not([type=checkbox]), select, textarea, button.opt, button.choice, .chk-btn, .ta-row, .opts button, .choices button, .opt-btn';
   var st = document.createElement('style');
   st.textContent = '@media screen{.oip-x{display:none!important}}' +
     '.oip-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:12px 0 16px;padding:10px 12px;background:#fff;border:1px solid #E3E5EA;border-radius:10px;font-family:Inter,system-ui,sans-serif;color:#1E2D4F}' +

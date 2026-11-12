@@ -100,7 +100,7 @@
     if (!kind) return;
     if (g.bs && g.bs.length > 1) {                       // one Check graded many questions (pre-tests)
       var ks = g.bs.map(function (z) { return z.s; });
-      g.bs.forEach(function (z) { FX.flash(z.b, z.s, true); if (z.s === 'ok') { FX.done(z.b); FX.good(z.b); } });
+      g.bs.forEach(function (z) { FX.flash(z.b, z.s, true); if (z.s === 'ok') { FX.done(z.b); FX.good(z.b); } else if (z.s === 'no') FX.help(z.b); });
       FX.play(ks.every(function (k) { return k === 'ok'; }) ? 'ok' : ks.every(function (k) { return k === 'no'; }) ? 'no' : 'warn'); return;
     }
     var box = g.bs && g.bs.length === 1 ? g.bs[0].b : FX.box(g.el);
@@ -249,15 +249,29 @@
   /* ---------- choose your help (Nov 11, 2026): after a miss on a practice page or homework, one row under the problem:
      "Stuck? Pick one:" Hint / Step by step (only if the problem has them; they press the page's own buttons) / Review the notes
      (opens that unit's Interactive Notes in a new tab). Shown once per problem. ---------- */
-  FX.notesPage = function () {
+  // the notes page that teaches each NC standard (pre-tests, EOG sets and reviews link by the missed question's standard)
+  var STD_NOTES = { 'NS.1': 'unit1-notes.html', 'NS.2': 'unit1-notes.html', 'EE.2': 'unit1-notes.html', 'EE.1': 'unit2-notes-exponents.html',
+    'EE.3': 'unit2-notes-sci-notation.html', 'EE.4': 'unit2-notes-sci-notation.html', 'EE.7': 'unit3-notes.html', 'G.5': 'unit4-notes.html',
+    'G.6': 'unit5-notes.html', 'G.7': 'unit5-notes.html', 'G.8': 'unit5-notes.html', 'F.1': 'unit6-notes.html', 'F.2': 'unit6-notes.html',
+    'F.5': 'unit6-notes.html', 'F.3': 'unit6-notes-slope-intercept.html', 'F.4': 'unit6-notes-slope.html', 'EE.8': 'unit6-notes-tables-systems.html',
+    'SP.1': 'unit7-notes.html', 'SP.2': 'unit7-notes.html', 'SP.3': 'unit7-notes.html', 'SP.4': 'unit7-notes.html',
+    'G.2': 'unit8-notes.html', 'G.3': 'unit8-notes.html', 'G.4': 'unit8-notes.html', 'G.9': 'volume.html' };
+  function stdOf(box) {
+    var t = '', el = box; for (var k = 0; el && k < 4; k++, el = el.parentElement) { t = (el.textContent || '').slice(0, 4000); var m = t.match(/(?:NC\.)?8\.(NS|EE|F|G|SP)\.(\d)/); if (m) return m[1] + '.' + m[2]; }
+    var pg = (document.body.textContent || '').match(/(?:NC\.)?8\.(NS|EE|F|G|SP)\.(\d)/); return pg ? pg[1] + '.' + pg[2] : null;
+  }
+  FX.notesPage = function (box) {
     var f = location.pathname.split('/').pop(), m, hw = (location.search.match(/[?&]hw=([^&#]+)/) || [])[1];
+    if (/notes|volume\.html/.test(f)) return null;                                   // already on the notes
+    if (/pretest|-eog|eog_|review|tutorial|unit6-practice-tables/.test(f)) { var sd = box && stdOf(box); if (sd && STD_NOTES[sd]) return STD_NOTES[sd]; }
     if (/homework_turn_in/.test(f)) {
       if (!hw || !(m = hw.match(/^(\d)\.(\d+)$/))) return null; var u = m[1], k = +m[2];
       if (u === '2') return k >= 6 && k <= 8 ? 'unit2-notes-sci-notation.html' : 'unit2-notes-exponents.html';
       if (u === '6') return k >= 12 ? 'unit6-notes-tables-systems.html' : k >= 8 && k <= 9 ? 'unit6-notes-tables-systems.html' : k >= 6 ? 'unit6-notes-slope-intercept.html' : k >= 4 ? 'unit6-notes-slope.html' : 'unit6-notes.html';
       return u === '9' ? 'volume.html' : 'unit' + u + '-notes.html';
     }
-    if (!/practice/.test(f) || /unit6-practice-tables/.test(f)) return null;
+    if (/unit6-practice-tables/.test(f)) return 'unit6-notes-tables-systems.html';
+    if (!/practice/.test(f)) return null;
     if (/^unit2-practice-exponents/.test(f)) return 'unit2-notes-exponents.html';
     if (/^unit2-practice-sci/.test(f)) return 'unit2-notes-sci-notation.html';
     if (/^unit6-practice-slope-intercept/.test(f)) return 'unit6-notes-slope-intercept.html';
@@ -265,7 +279,9 @@
     return m[1] === '9' ? 'volume.html' : 'unit' + m[1] + '-notes.html';
   };
   FX.help = function (box) {
-    var notes = FX.notesPage(); if (!notes || !box || box.querySelector('.fx-help')) return;
+    if (!box || box === document.body || box.matches('.sheet, main, .wrap, .page-wrap, section.topic, .part') ||
+        box.querySelectorAll('.qgrid > .q, .pr-card, .q-card, .np-q, .chk, .qc').length > 1) return;          // one question, never the whole page
+    var notes = FX.notesPage(box); if (!notes || box.querySelector('.fx-help')) return;
     var row = document.createElement('div'); row.className = 'fx-help'; row.innerHTML = '<span>Stuck? Pick one:</span>';
     function proxy(label, sel) { var o = box.querySelector(sel); if (!o || o.disabled) return; var b = document.createElement('button'); b.type = 'button'; b.textContent = label;
       b.addEventListener('click', function () { o.click(); try { o.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } catch (e) {} b.remove(); }); row.appendChild(b); }

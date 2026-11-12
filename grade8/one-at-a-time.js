@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261111b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261111c', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)
@@ -145,6 +145,17 @@
       '<p class="oat-key">Green = you put an answer in.</p>' +
       (sendBox ? '<p><b>Last step:</b> send your work to Mr. Allen below.</p>' : '') +
       '<button type="button" class="oat-btn back">← Back to the last one</button>';
+    // tabbed pages (Nov 11, 2026): the end of one topic leads to the next topic, so no tab is missed
+    if (F.tabs) {
+      var tabs = [].filter.call(document.querySelectorAll(F.tabs), function (t) { return t.offsetParent !== null; }),
+        cur = tabs.findIndex(function (t) { return t.classList.contains('active') || t.getAttribute('aria-selected') === 'true'; }), nt = cur >= 0 ? tabs[cur + 1] : null;
+      if (nt) {
+        var nb = el('button', 'oat-btn go oat-nexttab', 'Next topic: ' + nt.textContent.replace(/[^\w\s\-’'&]/g, '').trim() + ' →'); nb.type = 'button';
+        nb.addEventListener('click', function () { nt.click(); setTimeout(function () { var t = document.querySelector('.oat-top') || nt; t.scrollIntoView({ block: 'start', behavior: reduce() ? 'auto' : 'smooth' }); }, 120); });
+        end.querySelector('p').insertAdjacentHTML('afterend', '<p><b>Topic ' + (cur + 1) + ' of ' + tabs.length + ' done.</b> Keep going with the next topic.</p>');
+        end.appendChild(nb); nb.style.marginLeft = '10px';
+      } else if (tabs.length > 1) end.querySelector('p').insertAdjacentHTML('afterend', '<p><b>That was the last topic.</b></p>');
+    }
     var grid = end.querySelector('.oat-grid');
     items.forEach(function (it, i) {
       var b = el('button', 'oat-num' + (answered(it) ? ' has' : ''), String(i + 1)); b.type = 'button';

@@ -49,11 +49,15 @@
   }
 
   /* ---------- 2. one problem at a time ---------- */
-  function isItem(el) { return el.classList.contains('np-q') || el.classList.contains('sa') || (el.classList.contains('chk') && !!el.querySelector('.val-chk,.chk-opts,.input-chk,.chk-btn')); }
-  function itemsIn(root) { return [].filter.call(root.querySelectorAll('.np-q, .chk, .sa'), function (el) { return isItem(el) && !el.closest('.tw') && !(el.parentElement && el.parentElement.closest('.np-q, .chk, .sa')); }); }
+  function isItem(el) { return el.classList.contains('np-q') || el.classList.contains('sa') || (el.classList.contains('chk') && !!el.querySelector('.val-chk,.chk-opts,.input-chk,.chk-btn')) ||
+    (el.classList.contains('practice-block') && !!el.querySelector('input, select, button')); }       // Unit 6 "Try It" graph / table blocks
+  function itemsIn(root) { return [].filter.call(root.querySelectorAll('.np-q, .chk, .sa, .practice-block'), function (el) { return isItem(el) && !el.closest('.tw') && !(el.parentElement && el.parentElement.closest('.np-q, .chk, .sa, .practice-block')); }); }
   function done(el) {
     if (el.classList.contains('solved')) return true;
-    var fb = el.querySelector('.chk-fb, .np-fb'); return !!(fb && /\b(c|ok|w|no)\b/.test(fb.className) && fb.textContent.trim());
+    // a .chk-fb often holds its "✓ …" explanation from the start (hidden until answered): it counts only once it is SHOWN
+    var fb = el.querySelector('.chk-fb, .np-fb'); if (!fb || !fb.textContent.trim()) return false;
+    if (fb.classList.contains('chk-fb')) return fb.classList.contains('show') && /\b(c|w)\b/.test(fb.className);
+    return /\b(ok|no)\b/.test(fb.className);
   }
   function pager(root, items, leadFor) {
     if (items.length < 2) return;
@@ -75,6 +79,8 @@
         var keep = leadFor(items[cur]);
         tops.forEach(function (c) { if (c === bar) return; var has = items.some(function (it) { return c === it || c.contains(it); }); c.classList.toggle('nsp-x', keep.indexOf(c) < 0 && (has || c.matches('h3, .blank-tip, .np-h') || c.classList.contains('lead-hidable'))); });
       }
+      // a section paged as one run (check question + ✏ Practice box): the Practice frame shows only when one of its questions is up
+      items.forEach(function (x) { var np = x.parentElement && x.parentElement.closest('.np'); if (np && root.contains(np) && np !== root) np.classList.toggle('nsp-x', !np.contains(items[cur])); });
       var it = items[cur]; place();
       bar.querySelector('.n').textContent = 'Problem ' + (cur + 1) + ' of ' + items.length;
       bar.querySelector('.back').disabled = cur === 0; bar.querySelector('.next').disabled = cur === items.length - 1;
@@ -101,6 +107,16 @@
         var np = it.closest('.np'); if (np) { var h = np.querySelector('.np-h'); if (h) keep.push(h); }
         return keep;
       });
+    });
+    // a notes section that has its own check question(s) AND a ✏ Practice box (Nov 11, 2026): one problem at a time across
+    // the whole section, the check first, then the practice questions (before, both showed together)
+    document.querySelectorAll((window.NF && window.NF.sections) || 'section.topic').forEach(function (sec) {
+      if (partTwo(sec)) return;
+      var items = itemsIn(sec).filter(function (x) { return used.indexOf(x) < 0; });
+      var inNp = items.filter(function (x) { return x.closest('.np'); }), out = items.filter(function (x) { return !x.closest('.np'); });
+      var blocks = out.filter(function (x) { return x.classList.contains('practice-block'); });
+      if (items.length < 2 || !((inNp.length && out.length) || blocks.length >= 2)) return;
+      used = used.concat(items); pager(sec, items, null);
     });
     // a run of questions side by side in the notes (e.g. Unit 8 P1–P3): one at a time
     var parents = [];
