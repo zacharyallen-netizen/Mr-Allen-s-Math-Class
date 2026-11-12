@@ -31,7 +31,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
 {
   const sw = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
   for (const [rule, needle, what] of [['A3', 'function alignSide', 'moves under matching like terms'], ['A2', 'function alignTrail', 'lined-up written solutions'],
-       ['C2', 'function nextMove', 'next good move after repeated misses'], ['C2', "Show me this step", 'way forward after the 3rd miss'], ['C4', 'swHelped', '"(used step help)" record']])
+       ['C2', 'function nextMove', 'next good move after repeated misses'], ['C2', "Show me this step", 'way forward after the 3rd miss'], ['C4', 'swHelped', '"(used step help)" record'],
+       ['C2', 'function nextMovePow', 'next move for squares / roots / π'], ['C2', 'function nextMoveLine', 'next move for solve-for-y'], ['C2', 'Show me the equation', 'way forward in Write an equation'],
+       ['C2', 'You tried this same equation before', 'repeat check in Write an equation'], ['C1', 'moves <i>', 'a true but wrong-way move is not praised']])
     if (!sw.includes(needle)) fail(rule, 'grade8/step-work.js', `missing ${what}`);
 }
 
@@ -80,6 +82,14 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     if (!want.test(T.hint('', q))) fail('C1', 'tap-answers.js', `wrong-topic hint for "${q}"`);
   const l = T.choices('a⁸', { q: 'Simplify a²·a⁵·a' });
   if (/You added the exponents/.test(T.why(l, 'a⁷'))) fail('E1', 'tap-answers.js', 'a²·a⁵·a → a⁷ is told "you added the exponents" (the mistake is forgetting a = a¹)');
+}
+
+/* C2: every homework "write an equation" problem has an equation to show after the 3rd miss. */
+{
+  const vm = require('vm'), ctx = { window: {} }; vm.createContext(ctx);
+  vm.runInContext(fs.readFileSync(path.join(ROOT, 'grade8/homework-steps.js'), 'utf8'), ctx);
+  const M = ctx.window.HW_STEPS || {};
+  for (const id in M) for (const n in M[id]) { const c = M[id][n]; if (!Array.isArray(c) && c.setup != null && !c.ps && !c.eq) fail('C2', `HW ${id} #${n}`, 'no "Show me the equation" equation (add it to SETUP in _build/test_homework_steps.js and EQ in homework-steps.js)'); }
 }
 
 /* E4: no made-up NC standard codes. */
