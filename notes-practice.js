@@ -135,7 +135,9 @@
         tries++; rec(false);
         if (el) { el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); }
         fb.className = 'np-fb no';
-        if (tries === 1) fb.textContent = 'Not quite. ' + (wy || q.getAttribute('data-hint') || 'Look back at the example above.') + ' Try again.';
+        var sh0 = String(show || '').replace(/<[^>]+>/g, '').trim().toLowerCase();   // the first note may not give the answer or a wrong-topic list
+        if (wy && sh0.length > 1 && wy.toLowerCase().indexOf(sh0) >= 0) wy = '';
+        if (tries === 1) fb.textContent = 'Not quite. ' + (wy || (q.getAttribute('data-hint') ? 'Hint: ' + q.getAttribute('data-hint') : '') || 'Look back at the example above.') + ' Try again.';
         else { fb.textContent = 'The answer is ' + show + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       }
       // NUMBER OR MULTIPLE CHOICE ONLY (Nov 11, 2026, Mr. Allen): an answer that is not one number becomes tap choices

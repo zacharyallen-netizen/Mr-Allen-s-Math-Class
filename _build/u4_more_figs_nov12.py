@@ -15,7 +15,8 @@ EXT = {'Unit4_Practice1_D3.png': (65, 52, None), 'Unit4_Practice1_D4.png': (None
 TRUE = {'Unit4_Practice1_D3.png': (65, 52), 'Unit4_Practice1_D4.png': (75, 55), 'Unit4_Practice2_D3.png': (60, 48), 'Unit4_Practice2_D4.png': (55, 70)}
 # pairs: (kind, given angle, size)
 PAIR = {'Unit4_Practice1_A1.png': ('comp', 48), 'Unit4_Practice1_A4.png': ('comp', 63), 'Unit4_Practice1_E1.png': ('comp', 72),
-        'Unit4_Practice2_A1.png': ('comp', 57), 'Unit4_Practice2_A4.png': ('comp', 36), 'Unit4_Practice2_E1.png': ('supp', 152)}
+        'Unit4_Practice2_A1.png': ('comp', 57), 'Unit4_Practice2_A4.png': ('comp', 36), 'Unit4_Practice2_E1.png': ('supp', 152),
+        'Unit4_Practice1_A2.png': ('supp', 105, (348, 181)), 'Unit4_Practice1_A3.png': ('supp', 119, (348, 165)), 'Unit4_Practice2_A2.png': ('supp', 142, (348, 124)), 'Unit4_Practice2_A3.png': ('supp', 83, (348, 184))}
 
 
 def new(w, h):
@@ -38,7 +39,8 @@ for name, (Ll, Tl, El) in EXT.items():
     ax.set_xlim(-0.08, 1.6); ax.set_ylim(-0.08, max(py, 0.5) + 0.08); ax.set_aspect('equal', adjustable='datalim')
     fig.savefig(os.path.join(OUT, name), dpi=100); plt.close(fig)
 
-for name, (kind, g) in PAIR.items():
+for name, spec in PAIR.items():
+    kind, g = spec[0], spec[1]; W, Hh = spec[2] if len(spec) > 2 else (348, 100)
     if kind == 'comp':
         fig, ax = new(189, 185); O = (0, 0)
         ax.plot([0, 2.2], [0, 0], color=NAVY, lw=2.4); ax.plot([0, 0], [0, 2.2], color=NAVY, lw=2.4); ax.plot([0.16, 0.16, 0], [0, 0.16, 0.16], color=NAVY, lw=1)
@@ -47,10 +49,11 @@ for name, (kind, g) in PAIR.items():
         ax.add_patch(Arc(O, 1.0, 1.0, theta1=g, theta2=90, color=GREEN, lw=1.8)); lab(ax, O, g, 90, 0.8 if 90 - g > 25 else 1.05, 'x°', GREEN)
         ax.set_xlim(-0.15, 2.3); ax.set_ylim(-0.15, 2.25)
     else:
-        fig, ax = new(348, 100); O = (0, 0)
-        ax.plot([-2.6, 2.6], [0, 0], color=NAVY, lw=2.4); t = math.radians(g); ax.plot([0, 1.3 * math.cos(t)], [0, 1.3 * math.sin(t) * 1], color=NAVY, lw=2.4)
-        ax.add_patch(Arc(O, 0.9, 0.9, theta1=0, theta2=g, color=BLUE, lw=1.8)); lab(ax, O, 0, g, 0.75, '%d°' % g, BLUE)
-        ax.add_patch(Arc(O, 1.3, 1.3, theta1=g, theta2=180, color=GREEN, lw=1.8)); lab(ax, O, g, 180, 1.0, 'x°', GREEN)
-        ax.set_xlim(-2.7, 2.7); ax.set_ylim(-0.12, 0.9)
+        fig, ax = new(W, Hh); O = (0, 0); top = 5.4 * Hh / W - 0.15   # same scale across: x from -2.7 to 2.7
+        ax.plot([-2.6, 2.6], [0, 0], color=NAVY, lw=2.4); t = math.radians(g); Lr = min(2.2, (top - 0.05) / max(math.sin(t), 0.2)); ax.plot([0, Lr * math.cos(t)], [0, Lr * math.sin(t)], color=NAVY, lw=2.4)
+        r1, r2 = 0.6, 0.85
+        ax.add_patch(Arc(O, 2 * r1, 2 * r1, theta1=0, theta2=g, color=BLUE, lw=1.8)); lab(ax, O, 0, g, r1 + 0.32 if g > 40 else r1 + 0.55, '%d°' % g, BLUE)
+        ax.add_patch(Arc(O, 2 * r2, 2 * r2, theta1=g, theta2=180, color=GREEN, lw=1.8)); lab(ax, O, g, 180, r2 + 0.3 if 180 - g > 40 else r2 + 0.5, 'x°', GREEN)
+        ax.set_xlim(-2.7, 2.7); ax.set_ylim(-0.15, top)
     fig.savefig(os.path.join(OUT, name), dpi=100); plt.close(fig)
 print('ok')

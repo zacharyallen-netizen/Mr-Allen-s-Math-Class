@@ -27,4 +27,19 @@ for name, (a, b, u) in F.items():
     ax.text(A / 2 + nx / d * 0.1, B / 2 + ny / d * 0.1, lab(round(c), 'c'), ha='left', va='bottom', color=GOLD, fontsize=13, fontweight='bold')
     ax.set_xlim(-0.55, 1.45); ax.set_ylim(-0.3, max(B, 0.55) + 0.25)
     fig.savefig(os.path.join(OUT, name), dpi=100); plt.close(fig)
-print(len(F), 'drawn')
+# story problems: (horizontal leg, vertical leg, labels)
+D = {'Unit5_Practice1_D1.png': (6, 8, 'b = 6', 'a = ?', 'c = 10'), 'Unit5_Practice1_D2.png': (12, 5, 'a = 12', 'b = 5', 'c = ?'),
+     'Unit5_Practice2_D1.png': (5, 12, 'b = 5', 'a = ?', 'c = 13'), 'Unit5_Practice2_D2.png': (24, 18, 'a = 24', 'b = 18', 'c = ?')}
+for name, (hx, vy, lh, lv, lc) in D.items():
+    fig, ax = plt.subplots(); fig.set_size_inches(2.84, 2.43); fig.subplots_adjust(0, 0, 1, 1); ax.set_aspect('equal'); ax.axis('off')
+    s = 1.0 / max(hx, vy); A, B = hx * s, vy * s
+    ax.fill([0, A, 0], [0, 0, B], color='#E7ECF5'); ax.plot([0, A, 0, 0], [0, 0, B, 0], color=NAVY, lw=2.6)
+    q = 0.07; ax.plot([q, q, 0], [0, q, q], color=NAVY, lw=1.2)
+    col = lambda t: GREEN if t.startswith('a') else BLUE if t.startswith('b') else GOLD
+    ax.text(A / 2, -0.08, lh, ha='center', va='top', color=col(lh), fontsize=13, fontweight='bold')
+    ax.text(-0.05, B / 2, lv, ha='right', va='center', color=col(lv), fontsize=13, fontweight='bold')
+    nx, ny = B, A; d = math.hypot(nx, ny)
+    ax.text(A / 2 + nx / d * 0.1, B / 2 + ny / d * 0.1, lc, ha='left', va='bottom', color=GOLD, fontsize=13, fontweight='bold')
+    ax.set_xlim(-0.55, 1.45); ax.set_ylim(-0.3, max(B, 0.55) + 0.25)
+    fig.savefig(os.path.join(OUT, name), dpi=100); plt.close(fig)
+print(len(F) + len(D), 'drawn')

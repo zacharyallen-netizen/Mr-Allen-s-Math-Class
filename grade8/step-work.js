@@ -923,29 +923,34 @@
         if (ang.length) {
           if (!ang.some(function (t) { return t.indexOf(L) >= 0; })) ang.push(L);
           var eqFirst = /equal|same|vertical|corresponding|alternate/i.test(S.hint || '');
+          var cPair = [], cTri = [], cExt = [], ext = /exterior|outside/i.test(T), tri = /triangle/i.test(H);
           for (var i = 0; i < ang.length; i++) for (var j = 0; j < ang.length; j++) { if (i === j) continue; var A = ang[i], B = ang[j];
             var eq = '(' + A + ') = (' + B + ')', sp = '(' + A + ') + (' + B + ') = 180', cp = '(' + A + ') + (' + B + ') = 90';
-            if (i < j && (A + B).indexOf(L) >= 0) (eqFirst ? [eq, sp, cp] : [sp, cp, eq]).forEach(function (t) { c.push(t); });
-            for (var k = 0; k < ang.length; k++) if (k !== i && k !== j) { var C = ang[k]; if (i < j && j < k) c.push('(' + A + ') + (' + B + ') + (' + C + ') = 180'); if (i < j) c.push('(' + A + ') + (' + B + ') = (' + C + ')'); }
+            if (i < j && (A + B).indexOf(L) >= 0) (eqFirst ? [eq, sp, cp] : [sp, cp, eq]).forEach(function (t) { cPair.push(t); });
+            for (var k = 0; k < ang.length; k++) if (k !== i && k !== j) { var C = ang[k]; if (i < j && j < k) cTri.push('(' + A + ') + (' + B + ') + (' + C + ') = 180'); if (i < j) cExt.push('(' + A + ') + (' + B + ') = (' + C + ')'); }
           }
+          // exterior angle = the two remote inside angles; a triangle's three angles = 180; pairs last when a triangle is named
+          (ext ? cExt.concat(cTri, cPair) : tri ? cTri.concat(cExt, cPair) : cPair.concat(cTri, cExt)).forEach(function (t) { c.push(t); });
         }
         var ns = (T.match(/\d[\d,]*(?:\.\d+)?/g) || []).map(num).filter(function (z, i, a) { return a.indexOf(z) === i; }).slice(0, 6);
         if (/hypot|leg|right triangle|ladder|diagonal|pythag|diamond|base|ramp|wire|kite|distance/i.test(H)) {
           var Lp = S.any ? 'c' : v;
           var pts = []; T.replace(/\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g, function (m, a, b) { pts.push([+a, +b]); return m; });
           if (pts.length >= 2) c.push(Math.abs(pts[1][0] - pts[0][0]) + '^2 + ' + Math.abs(pts[1][1] - pts[0][1]) + '^2 = ' + Lp + '^2');   // distance: the run and the rise are the legs
-          if (/area/i.test(T)) ns.forEach(function (a) { ns.forEach(function (b) { if (a !== b) { if (+a <= +b) c.push(a + ' + ' + b + ' = ' + Lp + '^2'); if (+a < +b) c.push(Lp + '^2 + ' + a + ' = ' + b); } }); });
+          if (/area/i.test(T)) ns.forEach(function (a) { ns.forEach(function (b) { if (a !== b) { if (+a <= +b) c.push(a + ' + ' + b + ' = ' + Lp + '^2'); if (+a < +b) c.push((S.any ? 'a' : v) + '^2 + ' + a + ' = ' + b); } }); });
           if (/square/i.test(T) && /diagonal/i.test(T)) ns.forEach(function (a) { c.push((S.any ? 's' : v) + '^2 + ' + (S.any ? 's' : v) + '^2 = ' + a + '^2'); });
           if (/square/i.test(T)) ns.forEach(function (a) { c.push(a + '^2 + ' + a + '^2 = ' + Lp + '^2'); });
-          ns.forEach(function (a) { ns.forEach(function (b) { if (a === b) return; if (+a <= +b) c.push(a + '^2 + ' + b + '^2 = ' + Lp + '^2'); if (+a < +b) c.push(Lp + '^2 + ' + a + '^2 = ' + b + '^2'); }); });
+          ns.forEach(function (a) { ns.forEach(function (b) { if (a === b) return; if (+a <= +b) c.push(a + '^2 + ' + b + '^2 = ' + Lp + '^2'); if (+a < +b) c.push((S.any ? 'a' : v) + '^2 + ' + a + '^2 = ' + b + '^2'); }); });
         }
         if (/volume|cylinder|cone|sphere|π|ball|tank|can\b|cup|hemisphere/i.test(H)) {
-          var Lv = S.any ? (/radius|diameter|wide/i.test(T) && !/height|tall/i.test(T.replace(/radius[^.]*/i, '')) ? 'r' : 'h') : v;
+          var ask = (T.match(/[^.?]*\?|(?:find|what is) [^.?]*/i) || [T])[0];   // the question sentence
+          var wantH = /height|tall|deep|high/i.test(ask), wantR = /radius|diameter|wide/i.test(ask);
           var vs = []; T.replace(/(\d[\d,]*(?:\.\d+)?)\s*π/g, function (m, a) { vs.push(num(a) + 'π'); return m; }); ns.forEach(function (a) { vs.push(a); });
-          vs.forEach(function (V) { ns.forEach(function (d) { if (V === d) return; ['r', 'h'].forEach(function (u) {
-            var Lr = S.any ? u : v;
-            c.push(V + ' = π*' + d + '^2*' + Lr, V + ' = π*' + Lr + '^2*' + d, V + ' = (1/3)*π*' + d + '^2*' + Lr, V + ' = (1/3)*π*' + Lr + '^2*' + d, V + ' = π*(' + d + '/2)^2*' + Lr); });
-            }); c.push(V + ' = (4/3)*π*' + (S.any ? 'r' : v) + '^3'); });
+          vs.forEach(function (V) { ns.forEach(function (d) { if (V === d) return;
+            var H = S.any ? 'h' : v, Rr = S.any ? 'r' : v;
+            if (!wantR) c.push(V + ' = π * ' + d + '^2 * ' + H, V + ' = (1/3) * π * ' + d + '^2 * ' + H, V + ' = π * (' + d + '/2)^2 * ' + H);   // the height is unknown: r is a number
+            if (!wantH) c.push(V + ' = π * ' + Rr + '^2 * ' + d, V + ' = (1/3) * π * ' + Rr + '^2 * ' + d);                                   // the radius is unknown: h is a number
+            }); if (!wantH) c.push(V + ' = (4/3) * π * ' + (S.any ? 'r' : v) + '^3'); });
         }
         // the picture holds the numbers (practice pages): build the equation from the named pair and the answer
         var want0 = S.answer.n != null ? S.answer.n / S.answer.d : Number(S.answer);
@@ -965,7 +970,7 @@
         if (sl && pt) c.push(pt[2] + ' = ' + sl[1] + '*' + pt[1] + ' + ' + (S.any ? 'b' : v), pt[2] + ' = ' + sl[1] + '*(' + pt[1] + ') + ' + (S.any ? 'b' : v));   // find b: y = mx + b with the point
         var ys = T.match(/y\s*=\s*[-+0-9x./() ]+?(?=\s*(?:,|;|and|\.\s|\.$|$|\?))/g);
         if (ys && ys.length >= 2) c.push(ys[0].replace(/^y\s*=\s*/, '') + ' = ' + ys[1].replace(/^y\s*=\s*/, ''));
-        for (var q = 0; q < c.length && q < 400; q++) if (fitsEq(c[q])) return c[q].replace(/\*(?=[a-zπ(])/g, '').replace(/π\*/g, 'π');
+        for (var q = 0; q < c.length && q < 400; q++) if (fitsEq(c[q])) return c[q].replace(/\s*\*\s*/g, ' × ');
         return null;
       }
       function missed(msg, e) {
