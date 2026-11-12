@@ -11,12 +11,13 @@
      text lines (they stay in the page, hidden). If it also explains things in sentences, the sentences stay and
      the lined-up work is added under them.
    - Solutions that show up later (after Check, "Try a similar one", Show answer) are handled as they appear.
-   - Off with ?paper=1 (the printed copies) and on pages that already draw their own aligned work (vwork, ss-sol).
+   - Off on blank printed copies (?paper=1); ON for answer keys (?paper=1&key=1), so the printed keys match and on pages that already draw their own aligned work (vwork, ss-sol).
    Loaded by student-fx.js; it loads step-work.js itself if the page does not have it. */
 (function () {
   'use strict';
   if (window.AlignedSteps) return;
-  if (/[?&]paper=1/.test(location.search)) return;
+  var KEY = /[?&]key=1/.test(location.search);
+  if (/[?&]paper=1/.test(location.search) && !KEY) return;   // blank printed copies: nothing to line up
   var SEL = '.np-sol, .sol, .steps, .xsteps, .sh-steps, .explain, .tw-sol, .twin-sol, .howto';   // worked solutions only (short feedback notes stay as text)
   var SKIP = '.sw, .sw-alb, .sw-alb-h, .vw, .ss-sol, .ss-trail, script, style, textarea, input, select, button';
   var MOVE = /^(subtract|add|divide|multiply|distribute|combine|simplify|undo|move|get|then|now|flip|solve)/i;
@@ -104,6 +105,7 @@
 
   function sig(box) { return box.textContent.replace(/\s+/g, ' ').trim() + '|' + box.querySelectorAll('.revealed').length; }
   function waiting(box) {   // click-to-reveal steps: draw only after every step is revealed (never give the answer early)
+    if (KEY) return false;   // answer keys show every step
     var r = box.querySelectorAll('[onclick*="reveal"]'); if (!r.length) return /click to reveal|tap to reveal/i.test(box.textContent) && !box.querySelector('.revealed');
     return Array.prototype.some.call(r, function (x) { return !x.classList.contains('revealed'); });
   }
@@ -124,7 +126,10 @@
     // only steps? (every line is an equation that went into the work, apart from short labels)
     var words = lines.filter(function (seg) { return !findEq(seg); }).join(' ');
     var pure = ch.list.length === 1 && ch.used === ch.eqs && words.replace(/[^a-z]/gi, '').length < 25;
-    var html = ch.list.map(function (c) { return StepWork.alignTrail(c, c[0].v); }).join('');
+    var html = ch.list.map(function (c) {   // a reason written on the first line ("Alternate interior angles are EQUAL") stays, above the work
+      var lead = c[0].label && !MOVE.test(c[0].label) ? '<div class="al-lead">' + c[0].label.replace(/[<&]/g, '') + ':</div>' : '';
+      return lead + StepWork.alignTrail(c, c[0].v);
+    }).join('');
     var isList = /^(UL|OL)$/.test(box.tagName);
     if (pure) {   // hide the text lines (kept in the page), show the lined-up work in their place
       Array.prototype.slice.call(box.childNodes).forEach(function (n) {
@@ -141,14 +146,16 @@
   function scan() {
     queued = false;
     document.querySelectorAll(SEL).forEach(function (b) { try { run(b); } catch (x) { if (window.console) console.warn('aligned-steps', x); } });
+    window.AlignedSteps.done = true;   // _build/notes_pdf.js waits for this before printing a key
   }
   function later() { if (!queued) { queued = true; setTimeout(scan, 120); } }
+  window.AlignedSteps = { scan: scan, done: false, _t: { plainLines: plainLines, findEq: findEq, chains: chains } };
   ready(function () {
-    if (!document.getElementById('al-css')) { var st = document.createElement('style'); st.id = 'al-css'; st.textContent = '.al-hid{display:none!important}'; document.head.appendChild(st); }
+    if (!document.getElementById('al-css')) { var st = document.createElement('style'); st.id = 'al-css'; st.textContent = '.al-hid{display:none!important}.al-lead{font:600 14.5px Inter,system-ui,sans-serif;color:#1E2D4F;margin:6px 0 -2px}'; document.head.appendChild(st); }
     scan();
     new MutationObserver(function (ms) {
       for (var i = 0; i < ms.length; i++) { var t = ms[i].target; if (t.nodeType !== 1) t = t.parentElement; if (t && !(t.closest && t.closest('.sw-alb'))) { later(); return; } }
     }).observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['class'] });
   });
-  window.AlignedSteps = { scan: scan, _t: { plainLines: plainLines, findEq: findEq, chains: chains } };
+
 })();

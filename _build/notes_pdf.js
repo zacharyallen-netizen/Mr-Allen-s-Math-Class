@@ -22,6 +22,9 @@ async function make(b, query, out) {
   await p.goto('file://' + SITE + page + query, { waitUntil: 'load' });
   await p.waitForSelector('html[data-paper-ready]', { timeout: 20000 });
   await p.waitForTimeout(500);
+  // answer keys: wait for grade8/aligned-steps.js to draw the worked steps lined up (Nov 12, 2026)
+  if (/key=1/.test(query)) await p.waitForFunction(() => window.AlignedSteps && window.AlignedSteps.done, null, { timeout: 15000 }).catch(() => console.log('  (no lined-up steps on this page)'));
+  await p.waitForTimeout(300);
   await p.emulateMedia({ media: 'print' });
   await p.pdf(Object.assign({ path: out.startsWith('/') ? out : SITE + out }, PDF));
   await p.close(); console.log('wrote', out, errs.length ? 'PAGE ERRORS: ' + errs.join(' | ') : '');
