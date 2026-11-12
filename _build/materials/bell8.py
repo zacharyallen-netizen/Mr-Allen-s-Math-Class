@@ -1,5 +1,5 @@
 """Bell Ringers I and J (Nov 12, 2026, Zach: "4 multi step equations, one vertical pair and one linear pair problem").
-Portrait, same look as G/H (bell7.py). Front: 4 multi-step equations. Back: 1 vertical pair + 1 linear pair.
+Portrait, same look as G/H (bell7.py). Front: 4 multi-step equations (#1-2 easier: x on one side only, Zach Nov 12). Back: 1 vertical pair + 1 linear pair.
 Keys: every solution lined up under like terms (bell7.work), every line checked with exact fractions.
 
     OUT_DIR=/path/to/out python3 _build/materials/bell8.py
@@ -22,16 +22,15 @@ def end(v): return dict(L=["x"], rel="=", R=[v])
 SETS = {
  "I": dict(
   eqs=[
-   ("3(x + 4) " + M + " 5 = 2x + 11", ("=", 4), [
-     dict(L=["3(x + 4)", "− 5"], rel="=", R=["2x", "+ 11"], lab="Distribute"),
-     dict(L=["3x", "+ 12", "− 5"], rel="=", R=["2x", "+ 11"], lab="Combine like terms"),
-     sub(["3x", "+ 7"], ["2x", "+ 11"], 0, 0, "− 2x", cancelR=True, lab="Subtract 2x"),
-     sub(["x", "+ 7"], ["11"], 1, 0, "− 7", cancelL=True, lab="Subtract 7"), end("4")]),
-   ("7x " + M + " 4 " + M + " 3x = 2(x + 5)", ("=", 7), [
-     dict(L=["7x", "− 4", "− 3x"], rel="=", R=["2(x + 5)"], lab="Combine; distribute"),
-     sub(["4x", "− 4"], ["2x", "+ 10"], 0, 0, "− 2x", cancelR=True, lab="Subtract 2x"),
-     sub(["2x", "− 4"], ["10"], 1, 0, "+ 4", cancelL=True, lab="Add 4"),
-     div(["2x"], ["14"], "2", "Divide by 2"), end("7")]),
+   ("2(x + 3) + 4 = 20", ("=", 5), [
+     dict(L=["2(x + 3)", "+ 4"], rel="=", R=["20"], lab="Distribute"),
+     dict(L=["2x", "+ 6", "+ 4"], rel="=", R=["20"], lab="Combine like terms"),
+     sub(["2x", "+ 10"], ["20"], 1, 0, "− 10", cancelL=True, lab="Subtract 10"),
+     div(["2x"], ["10"], "2", "Divide by 2"), end("5")]),
+   ("5x " + M + " 2x + 7 = 19", ("=", 4), [
+     dict(L=["5x", "− 2x", "+ 7"], rel="=", R=["19"], lab="Combine like terms"),
+     sub(["3x", "+ 7"], ["19"], 1, 0, "− 7", cancelL=True, lab="Subtract 7"),
+     div(["3x"], ["12"], "3", "Divide by 3"), end("4")]),
    ("5(x " + M + " 1) + 2 = 3x " + M + " 11", ("=", -4), [
      dict(L=["5(x − 1)", "+ 2"], rel="=", R=["3x", "− 11"], lab="Distribute"),
      dict(L=["5x", "− 5", "+ 2"], rel="=", R=["3x", "− 11"], lab="Combine like terms"),
@@ -56,17 +55,15 @@ SETS = {
  ),
  "J": dict(
   eqs=[
-   ("4(x " + M + " 2) + 3 = 2x + 9", ("=", 7), [
-     dict(L=["4(x − 2)", "+ 3"], rel="=", R=["2x", "+ 9"], lab="Distribute"),
-     dict(L=["4x", "− 8", "+ 3"], rel="=", R=["2x", "+ 9"], lab="Combine like terms"),
-     sub(["4x", "− 5"], ["2x", "+ 9"], 0, 0, "− 2x", cancelR=True, lab="Subtract 2x"),
-     sub(["2x", "− 5"], ["9"], 1, 0, "+ 5", cancelL=True, lab="Add 5"),
-     div(["2x"], ["14"], "2", "Divide by 2"), end("7")]),
-   ("9x + 6 " + M + " 4x = 3(x " + M + " 4)", ("=", -9), [
-     dict(L=["9x", "+ 6", "− 4x"], rel="=", R=["3(x − 4)"], lab="Combine; distribute"),
-     sub(["5x", "+ 6"], ["3x", "− 12"], 0, 0, "− 3x", cancelR=True, lab="Subtract 3x"),
-     sub(["2x", "+ 6"], ["−12"], 1, 0, "− 6", cancelL=True, lab="Subtract 6"),
-     div(["2x"], ["−18"], "2", "Divide by 2"), end("−9")]),
+   ("2(x " + M + " 4) + 3 = 11", ("=", 8), [
+     dict(L=["2(x − 4)", "+ 3"], rel="=", R=["11"], lab="Distribute"),
+     dict(L=["2x", "− 8", "+ 3"], rel="=", R=["11"], lab="Combine like terms"),
+     sub(["2x", "− 5"], ["11"], 1, 0, "+ 5", cancelL=True, lab="Add 5"),
+     div(["2x"], ["16"], "2", "Divide by 2"), end("8")]),
+   ("6x + 5 " + M + " 2x = 33", ("=", 7), [
+     dict(L=["6x", "+ 5", "− 2x"], rel="=", R=["33"], lab="Combine like terms"),
+     sub(["4x", "+ 5"], ["33"], 1, 0, "− 5", cancelL=True, lab="Subtract 5"),
+     div(["4x"], ["28"], "4", "Divide by 4"), end("7")]),
    (M + "3(x + 1) + 8x = 22", ("=", 5), [
      dict(L=["−3(x + 1)", "+ 8x"], rel="=", R=["22"], lab="Distribute"),
      dict(L=["−3x", "− 3", "+ 8x"], rel="=", R=["22"], lab="Combine like terms"),
