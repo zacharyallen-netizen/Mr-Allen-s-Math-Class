@@ -48,7 +48,8 @@
     show(0, false);
     return { go: show, count: items.length };
   }
-  var PAGERS = [];
+  var PAGERS = [], ALL = [];   // ALL: every paged problem, in page order → Send my work lists the skipped ones
+  (window.__skipLists = window.__skipLists || []).push({ word: 'Problem', items: function () { return ALL.slice().sort(function (a, b) { return a.compareDocumentPosition(b) & 2 ? 1 : -1; }); }, answered: answered });
   function scan() {
     var parents = [];
     [].forEach.call(document.querySelectorAll(SEL), function (q) { var pa = q.parentElement; if (pa && parents.indexOf(pa) < 0 && !pa.__oip) parents.push(pa); });
@@ -60,6 +61,7 @@
       runs = runs.filter(function (r) { return !r.some(function (el) { return el.style.display === 'none'; }); });
       if (!runs.length) return; pa.__oip = true;
       runs.forEach(function (r) { PAGERS.push(pager(r)); });
+      runs.forEach(function (r) { ALL.push.apply(ALL, r); });
     });
     hints();
   }

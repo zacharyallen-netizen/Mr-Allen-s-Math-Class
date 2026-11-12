@@ -188,6 +188,7 @@
       if (list.length < 2) continue;
       F = f; root = r; items = list; break;
     }
+    if (F && !start.reg) { start.reg = true; (window.__skipLists = window.__skipLists || []).push({ word: WORD, items: function () { return F && F.tabs ? [].slice.call(document.querySelectorAll('.tab-pane ' + F.items)) : items; }, answered: answered }); }   // Send my work lists skipped problems (score-send.js)
     if (!F) return false;
     if (!top) build();
     idx = 0; render(false);

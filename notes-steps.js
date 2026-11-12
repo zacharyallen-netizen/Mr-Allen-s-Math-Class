@@ -59,6 +59,8 @@
     if (fb.classList.contains('chk-fb')) return fb.classList.contains('show') && /\b(c|w)\b/.test(fb.className);
     return /\b(ok|no)\b/.test(fb.className);
   }
+  if (!PAPER) (window.__skipLists = window.__skipLists || []).push({ word: 'Problem', items: function () { return itemsIn(document.body).filter(function (el) { return !el.classList.contains('sa'); }); }, answered: done });   // skipped problems → Send my work
+
   function pager(root, items, leadFor) {
     if (items.length < 2) return;
     root.classList.add('nsp-on');

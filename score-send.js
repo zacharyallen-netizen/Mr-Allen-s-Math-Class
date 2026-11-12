@@ -20,6 +20,11 @@
 
    If tracker-config.js has no ENDPOINT, nothing appears and the page
    works exactly as before.
+
+   SKIPPED PROBLEMS (Nov 11, 2026, Mr. Allen: "Do not lock, but record if skipped").
+   Next is never locked. The paging scripts (one-at-a-time.js, notes-steps.js, one-in-part.js) list the page's
+   problems in window.__skipLists = [{ word, items, answered(el) }]. At Send, every listed problem that was not
+   answered is reported: the panel tells the student (they may still send) and the Sheet gets a "Skipped" column.
    ─────────────────────────────────────────────────────────────── */
 (function () {
   var CFG = window.TRACKER_CONFIG || {};
@@ -72,13 +77,30 @@
       } else {
         it.final = ok ? 1 : 0; it.tries++;
       }
-      S.refresh();
+      S.refresh(); setTimeout(S.refresh, 200);         // again once the page has marked the problem answered (skipped count)
     },
 
     reset: function () {
       S.items = {}; S.order = []; S.session = newSession(); S.wasRevealed = false; S.sentSig = ''; S.sentOnce = false; S.refresh();
     },
     revealed: function () { S.wasRevealed = true; },
+
+    skipped: function () {
+      var lists = window.__skipLists || [], seen = [], out = [], total = 0;
+      lists.forEach(function (l) {
+        var items = typeof l.items === 'function' ? l.items() : (l.items || []);
+        items.forEach(function (it, k) {
+          if (!it || !it.isConnected || seen.indexOf(it) >= 0) return; seen.push(it); total++;
+          var ok = true; try { ok = !!l.answered(it); } catch (e) {}
+          if (ok) return;
+          var q = it.querySelector('.pr-q, .q-text, .qt, .np-prompt, .chk-q, .stem, .prompt, .q-prompt, .qtext, .expr, p, h3, h4') || it;
+          var t = String(q.textContent || '').replace(/🔊\s*Read|\bScore [345]\b|\bMC\b|\bQ\d+\.|\bProblem \d+|^\s*\d+\)/g, ' ')
+            .replace(/\s+/g, ' ').trim().slice(0, 50);
+          out.push((l.word || 'Problem') + ' ' + (k + 1) + (t ? ': ' + t : ''));
+        });
+      });
+      return { total: total, list: out };
+    },
 
     count: function () {
       var n = S.order.length, first = 0, fin = 0;
@@ -142,7 +164,10 @@
         msg('You have new work since you sent. Tap Send again so Mr. Allen sees it.', 'muted');
         return;
       }
-      msg('You answered ' + c.n + ' ' + noun(c.n) + '. Type your first and last name, then tap Send.', 'muted');
+      var sk = S.skipped();
+      msg('You answered ' + c.n + ' ' + noun(c.n) + '.' + (sk.list.length ? ' You skipped ' + sk.list.length + ' ' + noun(sk.list.length) +
+          ' (' + sk.list.map(function (x) { return x.split(':')[0]; }).slice(0, 8).join(', ') + (sk.list.length > 8 ? ' …' : '') + '). You can go back to ' +
+          (sk.list.length === 1 ? 'it' : 'them') + ', or send now.' : '') + ' Type your first and last name, then tap Send.', 'muted');
     },
 
     send: function () {
@@ -157,7 +182,7 @@
       var btn = document.getElementById('ssbtn');
       S.sending = true; btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = 'Sending…';
       msg('Sending…', 'muted');
-      var o = S.opts;
+      var o = S.opts, sk = S.skipped();
       fetch(CFG.ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },   // "simple" request: no CORS preflight
@@ -165,7 +190,8 @@
           code: CFG.CLASS_CODE, v: 2, kind: o.kind, unit: String(o.unit || ''), page: o.page || document.title,
           url: location.pathname.split('/').slice(-2).join('/'),
           name: name, session: S.session, revealed: S.wasRevealed,
-          items: S.order.map(function (k) { return S.items[k]; })
+          items: S.order.map(function (k) { return S.items[k]; }),
+          skipped: sk.list.slice(0, 60), total: sk.total
         })
       })
       .then(function (r) { return r.json(); })
@@ -174,7 +200,7 @@
         if (res && res.ok) {
           S.sentSig = c.sig; S.sentOnce = true;
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Sent ✓';
-          msg('Got it, ' + res.name + '. Mr. Allen has your work (' + c.n + ' ' + noun(c.n) + '). If you keep working, you can send again.', 'ok');
+          msg('Got it, ' + res.name + '. Mr. Allen has your work (' + c.n + ' ' + noun(c.n) + (sk.list.length ? ', ' + sk.list.length + ' skipped' : '') + '). If you keep working, you can send again.', 'ok');
         } else {
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Try again';
           var off = res && /unknown skill|bad/.test(String(res.error));

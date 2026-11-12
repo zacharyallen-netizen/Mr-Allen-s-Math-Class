@@ -20,6 +20,9 @@
  *  Nov 11, 2026: Homework rows show right (green) / missed (red), "Checked right" and "Missed"; the summary tabs get
  *  "Missed on first try"; a "Reteach" tab lists every question by % right, lowest first.
  *
+ *  Nov 11, 2026 (night): Pre-Tests / Notes Practice / Tutorials rows get a "Skipped (not answered)" column. Skips are
+ *  only listed, never counted as wrong.
+ *
  *  Later changes to this script: Deploy → Manage deployments → pencil →
  *  Version: New version → Deploy. That keeps the same URL.
  * ════════════════════════════════════════════════════════════════════
@@ -123,8 +126,13 @@ function evidence_(d, name, kind) {
     // Nov 11, 2026: "Missed" lists the questions that were wrong on the first try (number in the order answered + the question)
     var miss = []; resp.forEach(function (r, i) { if (!r[9]) miss.push('#' + (i + 1) + ' ' + String(r[6]).slice(0, 60)); });
     header_(sub, 10, 'Missed on first try');
+    // Nov 11, 2026 ("Do not lock, but record if skipped"): problems the student moved past without answering.
+    // Not counted as wrong. Blank = the page did not report skips.
+    var sk = Array.isArray(d.skipped) ? d.skipped.slice(0, 60).map(function (x) { return String(x).slice(0, 60); }) : null;
+    header_(sub, 11, 'Skipped (not answered)');
     sub.appendRow([now, name, period, unit, page, items.length, right, right / items.length, shown,
-                   miss.length ? clip_(miss.length + ' missed: ' + miss.join(' | '), 900) : 'none']);
+                   miss.length ? clip_(miss.length + ' missed: ' + miss.join(' | '), 900) : 'none',
+                   sk === null ? '' : sk.length ? clip_(sk.length + ' skipped: ' + sk.join(' | '), 900) : 'none']);
     sub.getRange(sub.getLastRow(), 8).setNumberFormat('0%');
     var rs = ss.getSheetByName('Responses');
     rs.getRange(rs.getLastRow() + 1, 1, resp.length, resp[0].length).setValues(resp);

@@ -3,7 +3,7 @@ Each page is a small shell; the engine is grade8/eog/eog-unit.js and the questio
 Run after adding a unit or changing the version number:  python3 _build/eog_units/make_pages.py"""
 import os, re
 G = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'grade8')
-V = '20261111a'   # bump when eog-unit.js, eog-unit.css or a uN.js changes
+V = '20261111b'   # bump when eog-unit.js, eog-unit.css or a uN.js changes
 TITLES = {1: 'Real Numbers', 2: 'Exponents & Scientific Notation', 3: 'Linear Equations', 4: 'Angles & Geometry', 5: 'Pythagorean Theorem',
           6: 'Functions, Slope & Systems', 7: 'Data Analysis & Statistics', 8: 'Transformations', 9: 'Volume'}
 PAGE = '''<!DOCTYPE html>

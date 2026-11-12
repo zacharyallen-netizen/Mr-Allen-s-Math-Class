@@ -279,6 +279,8 @@ EOGU.run = function (unit, ver) {
   }); }
   if (KEY) document.body.classList.add("key-mode");
   parts.forEach(function (p, i) { render(p, document.getElementById("qs" + (i + 1))); });
+  if (!KEY) (window.__skipLists = window.__skipLists || []).push({ word: 'Question', items: function () { return [].slice.call(document.querySelectorAll('div.q[id^="q-"]')); },
+    answered: function (d) { var st = stats[d.id.slice(2)]; return !!st && (st.done || st.tries > 0); } });   // skipped questions → Send my work (Nov 11, 2026)
   if (!KEY && window.ScoreSend) ScoreSend.setup({ kind: 'practice', unit: String(unit), page: 'Unit ' + unit + ' · EOG Practice' + (ver === 2 ? ' · Version 2' : ''), mount: '#send', std: D.std.split(' ')[0], band: 4 });
   var cm = document.getElementById("classMode");
   cm.addEventListener("click", function () { var on = !document.body.classList.contains("class-mode"); document.body.classList.toggle("class-mode", on);
