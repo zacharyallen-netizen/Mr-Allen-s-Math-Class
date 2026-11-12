@@ -1,0 +1,48 @@
+# Mr. Allen's review rules (the checklist every review and every automatic check uses)
+
+Collected from Zach's own words. Every fix he asks for adds a rule here, so it cannot come back.
+A page FAILS if any rule fails anywhere on it (screen, key view `?key=1`, or printed PDF).
+
+## A. Worked steps (equations and inequalities)
+A1. Each step is a new line, written horizontally, one move per line.
+A2. Lines line up on the = (or <, >, ≤, ≥) sign.
+A3. A move done to both sides (add/subtract) is written UNDER THE MATCHING LIKE TERM on BOTH sides
+    (x-term under x-term, number under number). Never tacked on at the end of a side.
+A4. Terms that cancel are shown cancelling (crossed out, with the move under them).
+A5. Dividing/multiplying both sides is shown on both sides (fraction bar under each side, or the reciprocal in front).
+A6. Inequality: when multiplying/dividing by a negative, the sign flip is shown and said.
+A7. Every line is mathematically equivalent to the one before (exact check), and the final answer is right.
+A8. Labels name the move in plain words ("Subtract 3x"), at a 5th-grade reading level.
+
+## B. Answers and choices
+B1. Every answer is a number box or a multiple-choice tap (no typed words/sentences/expressions as the ANSWER).
+B2. A choice with more than one value says WHAT EACH VALUE IS (e.g. "x = 25; 4x° = 100°, (2x + 30)° = 80°"),
+    using the names printed in the problem. No unlabeled "12 and 2" or "6, 8 and 13".
+B3. Exactly one choice is right (unless "select all"), and it is marked right by the page.
+B4. Every wrong choice is a common mistake, and picking it shows a note that NAMES that mistake.
+B5. Every problem has a Hint button, and the answer is checked right away.
+B6. Choices are readable: not cut off, not overlapping, no raw code/HTML, no "undefined"/"NaN".
+
+## C. Help when a student is stuck (no loops)
+C1. A wrong answer gets feedback that names the specific mistake (not just "try again").
+C2. Repeating the SAME wrong answer/move must not get the same message forever: by the 2nd miss the student
+    is shown the correct next move; by the 3rd, a way forward ("Show me this step"), recorded for the teacher.
+C3. The step-by-step tool never shows the final answer before the student finishes, but it never leaves a student stuck.
+C4. When "Show me this step" is used, the teacher's sheet says "(used step help)" for that question.
+
+## D. Layout and flow
+D1. One problem on the screen at a time (practice, pre-tests, notes practice, homework), with Back/Next.
+D2. Nothing overlaps, nothing is cut off, no sideways scrolling on a 1366-wide laptop or a 375-wide phone.
+D3. Figures match the numbers (angles drawn to scale, acute looks acute).
+D4. No page errors in the browser console.
+
+## E. Math content
+E1. Every answer, key and explanation is mathematically correct.
+E2. Repeating decimals → fractions use the 9's rule only.
+E3. Exponent answers use positive exponents.
+E4. NC standard codes are real (no NC.8.G.1).
+E5. Printed PDFs and answer keys match the interactive page (same problems, same answers).
+
+## F. Sending work
+F1. "Send my work" / homework Send still sends name, answers and right/wrong to the Sheet.
+F2. Student names never appear in the repo.

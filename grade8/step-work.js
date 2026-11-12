@@ -627,6 +627,7 @@
     '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:500 20px/1.7 Inter,system-ui,sans-serif;align-items:center}' +
     '.sw-grid .sw-r{text-align:center}.sw-grid .sw-op{color:#B45309;font-weight:700}.sw-grid .sw-lft{text-align:right}' +
     '.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
+    '.sw-coach{margin-top:8px;background:#FFFBEB;border:1.5px solid #E0A800;border-radius:8px;padding:8px 10px;color:#1E2D4F}.sw-coach-h{font:700 14.5px Inter,sans-serif;margin:0 0 2px}.sw-coach .sw-al{margin:4px 0}' +
     '.sw-alb{margin:6px 0;padding:6px 8px;background:#FBFBF9;border:1px solid #EEF0F3;border-radius:8px;color:#1E2D4F;text-align:left}.sw-alb .sw-tg{font-size:18px;margin:0}' +
     '.sw-alb .sw-n{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:50%;background:#1E2D4F;color:#FFC107;font:700 12px Inter,sans-serif}' +
     '.sw-alb .sw-mv{font:600 13px Inter,sans-serif;color:#8A6100;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
@@ -673,6 +674,53 @@
   function css() { if (document.getElementById('sw-css')) return; var s = document.createElement('style'); s.id = 'sw-css'; s.textContent = CSS; document.head.appendChild(s); }
   function el(tag, cls, h) { var e = document.createElement(tag); if (cls) e.className = cls; if (h != null) e.innerHTML = h; return e; }
   function btn(label, cls) { var b = el('button', cls || '', label); b.type = 'button'; return b; }
+
+  /* ===================== no loops: the next good move (Nov 12, 2026, Zach) =====================
+     "I am seeing students attempt to solve equations and spiral into loops of mistakes instead of being redirected."
+     nextMove(e, v): the next move a teacher would make on this line, for one-letter linear equations and inequalities:
+     distribute / combine like terms, then get the x's on the LEFT (subtract the right side's x-term), then move the
+     number, then divide (or multiply by the reciprocal; flip for a negative). Returns { label, op, text } or null. */
+  function polyTxt(p) {   // plain text a student could type: (3/2)x + 5
+    var out = [];
+    [[1, 'x'], [0, '']].forEach(function (z) {
+      var c = p[z[0]]; if (!c.n) return;
+      var a = qsign(c) < 0 ? qneg(c) : c, t = z[1] ? (a.d !== 1 ? '(' + qtxt(a) + ')' : a.n === 1 ? '' : qtxt(a)) + 'x' : qtxt(a);
+      out.push((out.length ? (qsign(c) < 0 ? ' - ' : ' + ') : (qsign(c) < 0 ? '-' : '')) + t);
+    });
+    return out.length ? out.join('') : '0';
+  }
+  function nextMove(e, v) {
+    var sp; try { sp = sides(e, v); } catch (x) { return null; }
+    if (pdeg(sp.L) > 1 || pdeg(sp.R) > 1 || PARAM) return null;
+    var rel = e.rel === '≈' ? '=' : e.rel, sw = function (t) { return t.replace(/x/g, v); };
+    var line = function (L, r, R) { return sw(polyTxt(L) + ' ' + ({ '<=': '≤', '>=': '≥' }[r] || r) + ' ' + polyTxt(R)); };
+    var ts = [terms(e.L), terms(e.R)];
+    var paren = ts.some(function (t) { return t.some(function (x) { return kindOf(x, v) === 'paren'; }); });
+    if (paren) return { label: 'Distribute: multiply the number outside the ( ) by <b>every</b> term inside. Then combine like terms.', text: line(sp.L, rel, sp.R) };
+    var messy = ts.some(function (t) { var k = {}; return t.some(function (x) { var kk = kindOf(x, v); if (k[kk]) return true; k[kk] = 1; return false; }); });
+    if (messy) return { label: 'Combine like terms on each side (' + v + '-terms together, numbers together).', text: line(sp.L, rel, sp.R) };
+    var a1 = sp.L[1], b1 = sp.L[0], a2 = sp.R[1], b2 = sp.R[0];
+    if (!a1.n && !a2.n) return null;
+    if (a2.n) {   // get the x's on the left: undo the right side's x-term
+      var k = P(ZERO, a2), L = psub(sp.L, k), R = psub(sp.R, k);
+      if (!L[1].n) return null;   // the x's cancel: no / every solution (the tool explains that)
+      return { label: (qsign(a2) > 0 ? 'Subtract ' : 'Add ') + polyHtml(P(ZERO, qsign(a2) > 0 ? a2 : qneg(a2)), v) + ' on <b>both sides</b> to get the ' + v + '-terms on the left.',
+        op: { kind: 'add', parts: opParts({ xterm: a2 }, 'sub', v) }, text: line(L, rel, R) };
+    }
+    if (b1.n) {   // undo the number next to the x-term
+      var k2 = P(b1), L2 = psub(sp.L, k2), R2 = psub(sp.R, k2);
+      return { label: (qsign(b1) > 0 ? 'Subtract ' : 'Add ') + qHtml(qsign(b1) > 0 ? b1 : qneg(b1)) + ' on <b>both sides</b>. It cancels the ' + qHtml(b1) + ' next to the ' + v + '-term.',
+        op: { kind: 'add', parts: opParts({ num: b1 }, 'sub', v) }, text: line(L2, rel, R2) };
+    }
+    if (!qeq(a1, ONE)) {   // x is multiplied by a1
+      var f = qdiv(ONE, a1), R3 = pscale(sp.R, f), r3 = qsign(a1) < 0 && rel !== '=' ? FLIP[rel] : rel;
+      var frac = a1.d !== 1, neg = qsign(a1) < 0;
+      return { label: (frac ? 'Multiply <b>both sides</b> by the reciprocal of ' + qHtml(a1) + ', which is ' + qHtml(f) + '.' : 'Divide <b>both sides</b> by ' + qHtml(a1) + '.') +
+          (neg && rel !== '=' ? ' It is <b>negative</b>, so <b>flip</b> the sign.' : ''),
+        op: frac ? { kind: 'scale', div: false, k: f } : { kind: 'scale', div: true, k: a1 }, text: line(P(ZERO, ONE), r3, R3) };
+    }
+    return null;
+  }
 
   /* ===================== written solutions, lined up (Nov 12, 2026, Zach: "Yes") =====================
      alignTrail([{e, label}], v): the same lined-up grid as the workspace trail, for worked steps that a
@@ -805,6 +853,7 @@
       if (!keepSetup) box.innerHTML = '';
       original = start;
       var lines = [{ e: start, mv: null }], move = null, amount = null;
+      var wrongSeen = {}, helped = 0, sameKey = function (e) { try { return eqHtml(e).replace(/\s+/g, ''); } catch (x) { return String(Math.random()); } };
       box.appendChild(el('p', 'sw-h', (cfg.setup ? 'Step 2 · ' : '') + 'Solve it one step at a time'));
       var trail = el('ol', 'sw-trail'); box.appendChild(trail);
       var legend = el('p', 'sw-legend'); legend.dataset.all = ('<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; ' + (line ? '<span style="color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px">x-terms</span> &nbsp; ' : '') + '<span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> ');
@@ -1001,7 +1050,31 @@
           }
           var prev = cur(), cmp;
           try { cmp = line ? { ok: lineSame(prev, n) } : compareLines(prev, n, v, cfg); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
-          if (!cmp.ok) { fb.className = 'sw-fb no'; tried++; fb.innerHTML = 'Not quite. ' + (cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.')) + (tried >= 3 ? calm(lines.length) : ''); return; }
+          if (!cmp.ok) {
+            fb.className = 'sw-fb no'; tried++;
+            // the same wrong line again (even after Undo)? say so plainly
+            var pk = sameKey(prev), nk = sameKey(n), seen = wrongSeen[pk] = wrongSeen[pk] || {}, again = !!seen[nk]; seen[nk] = 1;
+            var why = cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.');
+            var mvN = !line && (tried >= 2 || again) ? nextMove(prev, v) : null;
+            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + why + (mvN ? '' : tried >= 3 ? calm(lines.length) : '');
+            if (mvN) {   // 2nd miss on this step (or a repeat): show the next good move, lined up on the equation
+              var coach = '<div class="sw-coach"><p class="sw-coach-h">Here is a good next move:</p><p class="sw-note">' + mvN.label + '</p>';
+              if (mvN.op) { try { coach += '<div class="sw-al">' + alignedEq(prev, v, false, mvN.op, true) + '</div>'; } catch (x) { } }
+              coach += '<p class="sw-note">Now write the new line in the box.</p></div>';
+              fb.innerHTML += coach;
+              if (tried >= 3) {   // 3rd miss: a way forward, recorded for Mr. Allen
+                var sb = btn('Show me this step', 'ghost'); sb.style.marginTop = '6px';
+                sb.addEventListener('click', function () {
+                  var bx = write.querySelector('input.line'); if (!bx) return;
+                  bx.value = mvN.text; bx.dispatchEvent(new Event('input', { bubbles: true }));
+                  helped++; host.dataset.swHelped = String(helped); if (cfg.onHelp) try { cfg.onHelp(helped); } catch (x) { }
+                  fb.className = 'sw-fb tip'; fb.innerHTML = 'Here is the line. Read it, then press <b>Check this line</b>. Next time, try this move yourself.';
+                });
+                fb.appendChild(sb);
+              }
+            }
+            return;
+          }
           var rooted = false; try { rooted = valsOf(prev, v).kind === 'sq' && !!isSolved(n, v); } catch (x) { }
           var d = exact && !rooted ? describe(prev, n, v) : { type: 'root' }, label = d.type === 'root' ? 'square root of both sides' : line ? lineLabel(prev, n, d, v) : moveLabel(d, v), note = cmp.note || '';
           if (d.type === 'rewrite' && sameText(prev, n)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Make a change first.'; return; }

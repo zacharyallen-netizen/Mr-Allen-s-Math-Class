@@ -77,7 +77,19 @@
       } else {
         it.final = ok ? 1 : 0; it.tries++;
       }
+      // "Show me this step" in the step-by-step tool (Nov 12, 2026, Zach): the sheet shows "(used step help)" on this question
+      if (!it.helped && S.helpedNow()) { it.helped = 1; it.label = String(it.label || it.id).slice(0, 62) + ' (used step help)'; }
       S.refresh(); setTimeout(S.refresh, 200);         // again once the page has marked the problem answered (skipped count)
+    },
+
+    helpedNow: function () {   // the question being checked: did its step-by-step tool give a "Show me this step"?
+      var el = document.activeElement, n = 0;
+      while (el && el !== document.body && n++ < 8) {
+        if (el.querySelectorAll && el.querySelectorAll('.sw-open').length > 1) return false;   // climbed past this question
+        if (el.querySelector && el.querySelector('[data-sw-helped]')) return true;
+        el = el.parentElement;
+      }
+      return false;
     },
 
     reset: function () {
