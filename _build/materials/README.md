@@ -19,6 +19,7 @@ python3 _build/materials/combine.py ALL.pdf "Title A=a.pdf" "Title B=b.pdf"
 | `bell2.py` | Two-sided bell ringers. `side(letter, title, std, remember, parts, key, label)`; parts are `(directions, kind, cols, items)`. Holds Bell Ringer A (NS.1) and B (EE.1). |
 | `bell5.py` | Bell Ringer E: multi-step equations + vertical angles &amp; linear pairs (same format as D, new numbers). |
 | `bell6.py` | Bell Ringer F (Nov 2026): 4 multi-step equations (#3 needs a reciprocal) + 1 vertical-angles and 1 linear-pair problem with algebra. |
+| `bell7.py` | Bell Ringers G and H (Nov 12, 2026): front = 1 multi-step equation, 1 multi-step inequality (flip), 1 vertical pair, 1 linear pair; back = one long equation (distribute a fraction → x gets a fraction coefficient; other x-terms cancel). Keys show every solution **lined up under like terms** (`work()`: moves under each like term on both sides, cancels crossed out, fraction bar for ÷, reciprocal in front), every line checked with `Fraction`. |
 | `bell.py` | Bell ringer cell styles + helpers: `rep("27")` repeating decimal with bar, `nines("27")` 9's rule value, `RULES` (exponent rules box). |
 | `equations.py` | `flowchart()` for solving equations/inequalities. |
 | `functions.py` | `curve`, `circle`, `dots`, `is_function` for function graphs. |
