@@ -77,15 +77,6 @@ window.NOTE_TWINS = {
 "sol": "Missing leg: 8² + b² = 17² → 64 + b² = 289 → b² = 225 → b = 15. Perimeter = 8 + 15 + 17 = 40"
 },
 "np4-1": {
-"p": "A triangle has sides 9, 12, and 15. Is it a right triangle?",
-"choices": [
-"Yes",
-"No"
-],
-"a": "Yes",
-"sol": "9² + 12² = 81 + 144 = 225 and 15² = 225. They are equal, so Yes."
-},
-"np4-2": {
 "p": "A triangle has sides 25, 7, and 24. Is it a right triangle?",
 "choices": [
 "Yes",
@@ -94,16 +85,7 @@ window.NOTE_TWINS = {
 "a": "Yes",
 "sol": "Put the sides in order: 7, 24, 25. Test: 7² + 24² = 49 + 576 = 625 and 25² = 625. Equal, so Yes."
 },
-"np4-3": {
-"p": "A triangle has sides 6, 9, and 11. Is it a right triangle?",
-"choices": [
-"Yes",
-"No"
-],
-"a": "No",
-"sol": "6² + 9² = 36 + 81 = 117, but 11² = 121. 117 ≠ 121, so No."
-},
-"np4-4": {
+"np4-2": {
 "p": "A triangle has sides 12, 35, and x. The side x is the longest. What must x be for a right triangle?",
 "a": "37",
 "show": "37",
@@ -230,27 +212,6 @@ window.NOTE_TWINS = {
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides 8, 6, c\" viewBox=\"0 0 250 170\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 200.0,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"200.0\" y2=\"140.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"200.0\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">8</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">6</text><text x=\"132.0\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
 },
-"u5h2": {
-"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 9 and 12: 9² + 12² = c² → c = ?",
-"a": [
-"15"
-],
-"fig": "<svg role=\"img\" aria-label=\"right triangle with sides 12, 9, c\" viewBox=\"0 0 250 170\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 200.0,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"200.0\" y2=\"140.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"200.0\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">12</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">9</text><text x=\"132.0\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
-},
-"u5h3": {
-"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 8 and 15: 8² + 15² = c² → c = ?",
-"a": [
-"17"
-],
-"fig": "<svg role=\"img\" aria-label=\"right triangle with sides 15, 8, c\" viewBox=\"0 0 260 141\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,110.7 210.0,110.7 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"210.0\" y2=\"110.66666666666667\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"98.66666666666667\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"130.7\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">15</text><text x=\"32.0\" y=\"70.3\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">8</text><text x=\"137.0\" y=\"61.3\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
-},
-"u5h4": {
-"p": "<span class=\"np-lv l1 lvb\">Score 3</span> Legs 5 and 12: 5² + 12² = c² → c = ?",
-"a": [
-"13"
-],
-"fig": "<svg role=\"img\" aria-label=\"right triangle with sides 12, 5, c\" viewBox=\"0 0 260 121\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,90.8 210.0,90.8 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"210.0\" y2=\"90.83333333333333\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"78.83333333333333\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"110.8\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">12</text><text x=\"32.0\" y=\"60.4\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">5</text><text x=\"137.0\" y=\"51.4\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
-},
 "chk54a": {
 "p": "<span class=\"np-lv l1 lvb\">Score 3</span> <span class=\"badge\">MC</span> Sides 8, 15, 17 — right triangle?",
 "choices": [
@@ -269,13 +230,6 @@ window.NOTE_TWINS = {
 "a": "No",
 "why": "5² + 8² = 25 + 64 = 89; 10² = 100; 89 ≠ 100 → NO, not a right triangle."
 },
-"u5pA8": {
-"p": "<span class=\"np-lv l2 lvb\">Score 4</span> Legs 12, 35. c = ?",
-"a": [
-"37"
-],
-"fig": "<svg role=\"img\" aria-label=\"right triangle with sides 35, 12, c\" viewBox=\"0 0 260 108\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,78.3 210.0,78.3 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"78.28571428571428\" x2=\"210.0\" y2=\"78.28571428571428\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"40\" y1=\"78.28571428571428\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"78.28571428571428\" x2=\"40\" y2=\"20.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><rect x=\"40\" y=\"66.28571428571428\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"98.3\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">35</text><text x=\"32.0\" y=\"54.1\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">12</text><text x=\"137.0\" y=\"45.1\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">c</text></svg>"
-},
 "u5pB2": {
 "p": "<span class=\"np-lv l1 lvb\">Score 3</span> Known leg 5, hyp 13. Leg = ?",
 "a": [
@@ -283,26 +237,12 @@ window.NOTE_TWINS = {
 ],
 "fig": "<svg role=\"img\" aria-label=\"right triangle with sides ?, 5, 13\" viewBox=\"0 0 260 121\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,90.8 210.0,90.8 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"210.0\" y2=\"90.83333333333333\" stroke=\"#E0A800\" stroke-width=\"3\"/><line x1=\"40\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"90.83333333333333\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><rect x=\"40\" y=\"78.83333333333333\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"110.8\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">?</text><text x=\"32.0\" y=\"60.4\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">5</text><text x=\"137.0\" y=\"51.4\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">13</text></svg>"
 },
-"u5pB7": {
-"p": "<span class=\"np-lv l2 lvb\">Score 4</span> Known leg 21, hyp 29. Leg = ?",
-"a": [
-"20"
-],
-"fig": "<svg role=\"img\" aria-label=\"right triangle with sides ?, 21, 29\" viewBox=\"0 0 204 170\" width=\"204\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 154.3,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"154.3\" y2=\"140.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"154.3\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"97.1\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">?</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">21</text><text x=\"109.1\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">29</text></svg>"
-},
 "u5pD2": {
 "p": "<span class=\"np-lv l1 lvb\">Score 3</span> (0,0) → (6,8). d = ?",
 "a": [
 "10"
 ],
 "fig": "<svg role=\"img\" aria-label=\"points (0, 0) and (6, 8)\" viewBox=\"0 0 240 240\" width=\"200\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"20.0\" y1=\"220.0\" x2=\"20.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"220.0\" x2=\"220.0\" y2=\"220.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"40.0\" y1=\"220.0\" x2=\"40.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"200.0\" x2=\"220.0\" y2=\"200.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"60.0\" y1=\"220.0\" x2=\"60.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"180.0\" x2=\"220.0\" y2=\"180.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"80.0\" y1=\"220.0\" x2=\"80.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"160.0\" x2=\"220.0\" y2=\"160.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"100.0\" y1=\"220.0\" x2=\"100.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"140.0\" x2=\"220.0\" y2=\"140.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"120.0\" y1=\"220.0\" x2=\"120.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"120.0\" x2=\"220.0\" y2=\"120.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"140.0\" y1=\"220.0\" x2=\"140.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"100.0\" x2=\"220.0\" y2=\"100.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"160.0\" y1=\"220.0\" x2=\"160.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"80.0\" x2=\"220.0\" y2=\"80.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"180.0\" y1=\"220.0\" x2=\"180.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"60.0\" x2=\"220.0\" y2=\"60.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"200.0\" y1=\"220.0\" x2=\"200.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"40.0\" x2=\"220.0\" y2=\"40.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"220.0\" y1=\"220.0\" x2=\"220.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"20.0\" x2=\"220.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"40.0\" y1=\"220.0\" x2=\"40.0\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><line x1=\"20.0\" y1=\"200.0\" x2=\"220.0\" y2=\"200.0\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><polyline points=\"40.0,200.0 160.0,200.0 160.0,40.0\" fill=\"none\" stroke=\"#0056B3\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><line x1=\"40.0\" y1=\"200.0\" x2=\"160.0\" y2=\"40.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><circle cx=\"40.0\" cy=\"200.0\" r=\"4.5\" fill=\"#1E2D4F\"/><text x=\"40.0\" y=\"219.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#1E2D4F\">(0, 0)</text><circle cx=\"160.0\" cy=\"40.0\" r=\"4.5\" fill=\"#1E2D4F\"/><text x=\"160.0\" y=\"31.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#1E2D4F\">(6, 8)</text></svg>"
-},
-"u5pD5": {
-"p": "<span class=\"np-lv l2 lvb\">Score 4</span> (−3,−1) → (5,14). d = ?",
-"a": [
-"17"
-],
-"fig": "<svg role=\"img\" aria-label=\"points (-3, -1) and (5, 14)\" viewBox=\"0 0 240 240\" width=\"200\" xmlns=\"http://www.w3.org/2000/svg\"><line x1=\"20.0\" y1=\"220.0\" x2=\"20.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"220.0\" x2=\"220.0\" y2=\"220.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"30.5\" y1=\"220.0\" x2=\"30.5\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"209.5\" x2=\"220.0\" y2=\"209.5\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"41.1\" y1=\"220.0\" x2=\"41.1\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"198.9\" x2=\"220.0\" y2=\"198.9\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"51.6\" y1=\"220.0\" x2=\"51.6\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"188.4\" x2=\"220.0\" y2=\"188.4\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"62.1\" y1=\"220.0\" x2=\"62.1\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"177.9\" x2=\"220.0\" y2=\"177.9\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"72.6\" y1=\"220.0\" x2=\"72.6\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"167.4\" x2=\"220.0\" y2=\"167.4\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"83.2\" y1=\"220.0\" x2=\"83.2\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"156.8\" x2=\"220.0\" y2=\"156.8\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"93.7\" y1=\"220.0\" x2=\"93.7\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"146.3\" x2=\"220.0\" y2=\"146.3\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"104.2\" y1=\"220.0\" x2=\"104.2\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"135.8\" x2=\"220.0\" y2=\"135.8\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"114.7\" y1=\"220.0\" x2=\"114.7\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"125.3\" x2=\"220.0\" y2=\"125.3\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"125.3\" y1=\"220.0\" x2=\"125.3\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"114.7\" x2=\"220.0\" y2=\"114.7\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"135.8\" y1=\"220.0\" x2=\"135.8\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"104.2\" x2=\"220.0\" y2=\"104.2\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"146.3\" y1=\"220.0\" x2=\"146.3\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"93.7\" x2=\"220.0\" y2=\"93.7\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"156.8\" y1=\"220.0\" x2=\"156.8\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"83.2\" x2=\"220.0\" y2=\"83.2\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"167.4\" y1=\"220.0\" x2=\"167.4\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"72.6\" x2=\"220.0\" y2=\"72.6\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"177.9\" y1=\"220.0\" x2=\"177.9\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"62.1\" x2=\"220.0\" y2=\"62.1\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"188.4\" y1=\"220.0\" x2=\"188.4\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"51.6\" x2=\"220.0\" y2=\"51.6\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"198.9\" y1=\"220.0\" x2=\"198.9\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"41.1\" x2=\"220.0\" y2=\"41.1\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"209.5\" y1=\"220.0\" x2=\"209.5\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"30.5\" x2=\"220.0\" y2=\"30.5\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"220.0\" y1=\"220.0\" x2=\"220.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"20.0\" y1=\"20.0\" x2=\"220.0\" y2=\"20.0\" stroke=\"#D5DBE6\" stroke-width=\"1\"/><line x1=\"62.1\" y1=\"220.0\" x2=\"62.1\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><line x1=\"20.0\" y1=\"177.9\" x2=\"220.0\" y2=\"177.9\" stroke=\"#1E2D4F\" stroke-width=\"1.6\"/><polyline points=\"30.5,188.4 114.7,188.4 114.7,30.5\" fill=\"none\" stroke=\"#0056B3\" stroke-width=\"2\" stroke-dasharray=\"5 4\"/><line x1=\"30.5\" y1=\"188.4\" x2=\"114.7\" y2=\"30.5\" stroke=\"#E0A800\" stroke-width=\"3\"/><circle cx=\"30.5\" cy=\"188.4\" r=\"4.5\" fill=\"#1E2D4F\"/><text x=\"30.5\" y=\"207.4\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#1E2D4F\">(−3, −1)</text><circle cx=\"114.7\" cy=\"30.5\" r=\"4.5\" fill=\"#1E2D4F\"/><text x=\"114.7\" y=\"21.5\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#1E2D4F\">(5, 14)</text></svg>"
 },
 "u5pE5": {
 "p": "<span class=\"np-lv l3 lvb\">Score 5</span> Sides 12, 35, 38 — right triangle? (type <em>yes</em> or <em>no</em>)",
@@ -315,15 +255,36 @@ window.NOTE_TWINS = {
 "not a right triangle"
 ]
 },
-"u5pE6": {
-"p": "<span class=\"np-lv l3 lvb\">Score 5</span> Sides 12, 35, 37 — right triangle? (type <em>yes</em> or <em>no</em>)",
+"u5ea": {
+"p": "<span class=\"np-lv l2 lvb\">Score 4</span> <span class=\"badge\">ERROR ANALYSIS</span> A student finds the missing leg when c = 17 and b = 8 by writing <span class=\"err-bad\">a² = 17² + 8² = 353</span>. What is the fix?",
+"fig": "<svg role=\"img\" aria-label=\"right triangle with sides a, 8, 17\" viewBox=\"0 0 260 141\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,110.7 210.0,110.7 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"210.0\" y2=\"110.66666666666667\" stroke=\"#E0A800\" stroke-width=\"3\"/><line x1=\"40\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"210.0\" y1=\"110.66666666666667\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><rect x=\"40\" y=\"98.66666666666667\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"125.0\" y=\"130.7\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">a</text><text x=\"32.0\" y=\"70.3\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">8</text><text x=\"137.0\" y=\"61.3\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">17</text></svg>",
+"choices": [
+"They added the squares. To find a leg, subtract: 17² − 8² = 225, so a = 15.",
+"Nothing is wrong. a = √353 ≈ 18.8",
+"They should add the sides: a = 17 + 8 = 25.",
+"They should subtract the sides: a = 17 − 8 = 9."
+],
+"a": "They added the squares. To find a leg, subtract: 17² − 8² = 225, so a = 15.",
+"why": "a is a leg, so subtract: a² = 17² − 8² = 289 − 64 = 225, and a = √225 = 15."
+},
+"np7-11": {
+"p": "You know the hypotenuse is 10 and one leg is 6. What do you do to find the other leg?",
+"choices": [
+"Subtract the squares: 10² − 6²",
+"Add the squares: 10² + 6²",
+"Subtract the sides: 10 − 6",
+"Add the sides: 10 + 6"
+],
+"a": "Subtract the squares: 10² − 6²",
+"fig": "<svg role=\"img\" aria-label=\"right triangle with sides ?, 6, 10\" viewBox=\"0 0 250 170\" width=\"220\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"40.0,140.0 200.0,140.0 40.0,20.0\" fill=\"#EEF3FB\" stroke=\"none\"/><line x1=\"40\" y1=\"140.0\" x2=\"200.0\" y2=\"140.0\" stroke=\"#E0A800\" stroke-width=\"3\"/><line x1=\"40\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><line x1=\"200.0\" y1=\"140.0\" x2=\"40\" y2=\"20.0\" stroke=\"#1E2D4F\" stroke-width=\"3\"/><rect x=\"40\" y=\"128.0\" width=\"12\" height=\"12\" fill=\"none\" stroke=\"#1E2D4F\" stroke-width=\"1.5\"/><text x=\"120.0\" y=\"160.0\" text-anchor=\"middle\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">?</text><text x=\"32.0\" y=\"85.0\" text-anchor=\"end\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">6</text><text x=\"132.0\" y=\"76.0\" text-anchor=\"start\" font-family=\"Inter,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1E2D4F\">10</text></svg>",
+"sol": "You are finding a LEG, so subtract the squares: 10² − 6² = 100 − 36 = 64, and √64 = 8."
+},
+"u5pF1": {
+"p": "<span class=\"np-lv l3 lvb\">Score 5</span> A box is 6 in long, 2 in wide, and 3 in tall. What is the longest straight stick that fits inside, from a bottom corner to the opposite top corner?",
 "a": [
-"Yes — 12² + 35² = 1369, and 37² = 1369, so 1369 = 1369",
-"yes",
-"y",
-"right",
-"right triangle",
-"yes it is"
-]
+"7",
+"7 in"
+],
+"fig": "<svg role=\"img\" aria-label=\"Box 6 in long, 2 in wide and 3 in tall, with a dashed line from a bottom corner to the opposite top corner\" width=\"262\" height=\"146\" viewBox=\"0 0 262 146\" xmlns=\"http://www.w3.org/2000/svg\"><polygon points=\"30,112 170,112 170,62 30,62\" fill=\"#eef4ff\" stroke=\"none\"/><polygon points=\"30,62 170,62 214,28 74,28\" fill=\"#eef4ff\" stroke=\"none\"/><polygon points=\"170,112 214,78 214,28 170,62\" fill=\"#eef4ff\" stroke=\"none\"/><line x1=\"30\" y1=\"112\" x2=\"74\" y2=\"78\" stroke=\"#8a93a6\" stroke-width=\"1.5\" stroke-dasharray=\"4 4\"/><line x1=\"74\" y1=\"78\" x2=\"214\" y2=\"78\" stroke=\"#8a93a6\" stroke-width=\"1.5\" stroke-dasharray=\"4 4\"/><line x1=\"74\" y1=\"78\" x2=\"74\" y2=\"28\" stroke=\"#8a93a6\" stroke-width=\"1.5\" stroke-dasharray=\"4 4\"/><line x1=\"30\" y1=\"112\" x2=\"214\" y2=\"78\" stroke=\"#8a93a6\" stroke-width=\"1.6\" stroke-dasharray=\"2 4\"/><line x1=\"30\" y1=\"112\" x2=\"170\" y2=\"112\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"170\" y1=\"112\" x2=\"170\" y2=\"62\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"170\" y1=\"62\" x2=\"30\" y2=\"62\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"30\" y1=\"62\" x2=\"30\" y2=\"112\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"30\" y1=\"62\" x2=\"74\" y2=\"28\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"170\" y1=\"62\" x2=\"214\" y2=\"28\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"74\" y1=\"28\" x2=\"214\" y2=\"28\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"170\" y1=\"112\" x2=\"214\" y2=\"78\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"214\" y1=\"78\" x2=\"214\" y2=\"28\" stroke=\"#1E2D4F\" stroke-width=\"2.2\"/><line x1=\"30\" y1=\"112\" x2=\"214\" y2=\"28\" stroke=\"#b08800\" stroke-width=\"3\" stroke-dasharray=\"7 4\"/><text x=\"100\" y=\"131\" text-anchor=\"middle\" font-family=\"Arvo,serif\" font-weight=\"bold\" font-size=\"13\" fill=\"#0056B3\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">6 in</text><text x=\"22\" y=\"92\" text-anchor=\"end\" font-family=\"Arvo,serif\" font-weight=\"bold\" font-size=\"13\" fill=\"#0056B3\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">3 in</text><text x=\"200\" y=\"104\" text-anchor=\"start\" font-family=\"Arvo,serif\" font-weight=\"bold\" font-size=\"13\" fill=\"#0056B3\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">2 in</text><text x=\"112\" y=\"52\" text-anchor=\"middle\" font-family=\"Arvo,serif\" font-weight=\"bold\" font-size=\"13\" fill=\"#b08800\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">d = ?</text></svg>"
 }
 };

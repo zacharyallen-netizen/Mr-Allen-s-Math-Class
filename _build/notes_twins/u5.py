@@ -55,11 +55,10 @@ T['np3-3'] = {'p': 'A right triangle has a hypotenuse of 17 and one leg of 8. Wh
               'sol': 'Missing leg: 8² + b² = 17² → 64 + b² = 289 → b² = 225 → b = 15. Perimeter = 8 + 15 + 17 = 40'}
 # ---- 4. converse ----
 assert is_right(9, 12, 15) and is_right(7, 24, 25) and not is_right(6, 9, 11) and is_right(12, 35, 37)
-T['np4-1'] = {'p': 'A triangle has sides 9, 12, and 15. Is it a right triangle?', 'choices': ['Yes', 'No'], 'a': 'Yes', 'sol': '9² + 12² = 81 + 144 = 225 and 15² = 225. They are equal, so Yes.'}
-T['np4-2'] = {'p': 'A triangle has sides 25, 7, and 24. Is it a right triangle?', 'choices': ['Yes', 'No'], 'a': 'Yes',
+# Nov 11, 2026: the page cut 6-8-10 and 7-9-12, so its converse problems are now 17-8-15 (np4-1) and 9-40-x (np4-2)
+T['np4-1'] = {'p': 'A triangle has sides 25, 7, and 24. Is it a right triangle?', 'choices': ['Yes', 'No'], 'a': 'Yes',
               'sol': 'Put the sides in order: 7, 24, 25. Test: 7² + 24² = 49 + 576 = 625 and 25² = 625. Equal, so Yes.'}
-T['np4-3'] = {'p': 'A triangle has sides 6, 9, and 11. Is it a right triangle?', 'choices': ['Yes', 'No'], 'a': 'No', 'sol': '6² + 9² = 36 + 81 = 117, but 11² = 121. 117 ≠ 121, so No.'}
-T['np4-4'] = {'p': 'A triangle has sides 12, 35, and x. The side x is the longest. What must x be for a right triangle?', 'a': '37', 'show': '37',
+T['np4-2'] = {'p': 'A triangle has sides 12, 35, and x. The side x is the longest. What must x be for a right triangle?', 'a': '37', 'show': '37',
               'sol': 'For a right triangle, 12² + 35² = x² → 144 + 1225 = 1369 → x = √1369 = 37'}
 # ---- 5. word problems ----
 assert hyp(12, 5) == 13
@@ -113,7 +112,7 @@ T['np7-10'] = {'p': 'A triangle has corners at (0,&nbsp;0), (6,&nbsp;0), and (6,
 
 # ---- quick checks (page checker) ----
 LV1, LV2, LV3 = '<span class="np-lv l1 lvb">Score 3</span> ', '<span class="np-lv l2 lvb">Score 4</span> ', '<span class="np-lv l3 lvb">Score 5</span> '
-for id, (a, b) in {'u5h1': (6, 8), 'u5h2': (9, 12), 'u5h3': (8, 15), 'u5h4': (5, 12)}.items():
+for id, (a, b) in {'u5h1': (6, 8)}.items():
     c = hyp(a, b); assert c == int(c)
     T[id] = {'p': f'{LV1}Legs {a} and {b}: {a}² + {b}² = c² → c = ?', 'a': [str(int(c))], 'fig': fig_tri(b, a, str(b), str(a), 'c', 'c')}
 assert is_right(8, 15, 17) and not is_right(5, 8, 10)
@@ -134,9 +133,41 @@ for k, (id, (lv, p, q)) in enumerate(D.items(), 1):
     T[id] = {'p': f'{lv}{k}) ({fnum(p[0])},{fnum(p[1])}) → ({fnum(q[0])},{fnum(q[1])}). d = ?', 'a': [str(d)], 'fig': grid_pts(p, q, f'points {p} and {q}', lo, hi, 200)}
 YES = ["yes", "y", "right", "right triangle", "yes it is"]
 NO = ["no", "n", "not right", "no it is not", "not a right triangle"]
-E = {'u5pE1': (LV1, 6, 8, 11), 'u5pE2': (LV2, 9, 12, 15), 'u5pE3': (LV1, 8, 14, 17), 'u5pE4': (LV2, 8, 15, 17), 'u5pE5': (LV3, 12, 35, 38), 'u5pE6': (LV3, 12, 35, 37)}
+E = {'u5pE1': (LV1, 6, 8, 11), 'u5pE2': (LV2, 9, 12, 15), 'u5pE3': (LV1, 8, 14, 17), 'u5pE4': (LV2, 8, 15, 17), 'u5pE5': (LV3, 12, 35, 38)}
 for k, (id, (lv, a, b, c)) in enumerate(E.items(), 1):
     r = is_right(a, b, c)
-    assert r == (id in ('u5pE2', 'u5pE4', 'u5pE6'))
+    assert r == (id in ('u5pE2', 'u5pE4'))
     lead = (f"Yes — {a}² + {b}² = {a*a+b*b}, and {c}² = {c*c}, so {a*a+b*b} = {c*c}" if r else f"No — {a}² + {b}² = {a*a+b*b}, and {c}² = {c*c}, so {a*a+b*b} ≠ {c*c}")
     T[id] = {'p': f'{lv}{k}) Sides {a}, {b}, {c} — right triangle? (type <em>yes</em> or <em>no</em>)', 'a': [lead] + (YES if r else NO)}
+
+# ---- Nov 11, 2026 trim (_build/u5_trim_nov11.py): error analysis tap, add/subtract rule tap, 3-D box ----
+assert 17 ** 2 - 8 ** 2 == 225 and 17 ** 2 + 8 ** 2 == 353
+T['u5ea'] = {'p': '<span class="np-lv l2 lvb">Score 4</span> <span class="badge">ERROR ANALYSIS</span> A student finds the missing leg when c = 17 and b = 8 by writing '
+                  '<span class="err-bad">a² = 17² + 8² = 353</span>. What is the fix?', 'fig': fig_tri(15, 8, 'a', '8', '17', 'a'),
+             'choices': ['They added the squares. To find a leg, subtract: 17² − 8² = 225, so a = 15.', 'Nothing is wrong. a = √353 ≈ 18.8',
+                         'They should add the sides: a = 17 + 8 = 25.', 'They should subtract the sides: a = 17 − 8 = 9.'],
+             'a': 'They added the squares. To find a leg, subtract: 17² − 8² = 225, so a = 15.',
+             'why': 'a is a leg, so subtract: a² = 17² − 8² = 289 − 64 = 225, and a = √225 = 15.'}
+T['np7-11'] = {'p': 'You know the hypotenuse is 10 and one leg is 6. What do you do to find the other leg?',
+               'choices': ['Subtract the squares: 10² − 6²', 'Add the squares: 10² + 6²', 'Subtract the sides: 10 − 6', 'Add the sides: 10 + 6'],
+               'a': 'Subtract the squares: 10² − 6²', 'fig': fig_tri(8, 6, '?', '6', '10', 'a'),
+               'sol': 'You are finding a LEG, so subtract the squares: 10² − 6² = 100 − 36 = 64, and √64 = 8.'}
+
+
+def _box(l, w, h, unit):
+    A, B, C, D = (30, 112), (170, 112), (170, 62), (30, 62)
+    sh = lambda p: (p[0] + 44, p[1] - 34)
+    A2, B2, C2, D2 = sh(A), sh(B), sh(C), sh(D)
+    ln = lambda p, q, st='#1E2D4F', w_=2.2, da='': f'<line x1="{p[0]}" y1="{p[1]}" x2="{q[0]}" y2="{q[1]}" stroke="{st}" stroke-width="{w_}"' + (f' stroke-dasharray="{da}"' if da else '') + '/>'
+    t = lambda x, y, txt, a='middle', c='#0056B3': f'<text x="{x}" y="{y}" text-anchor="{a}" font-family="Arvo,serif" font-weight="bold" font-size="13" fill="{c}" paint-order="stroke" stroke="#fff" stroke-width="3">{txt}</text>'
+    poly = lambda *pts: '<polygon points="%s" fill="#eef4ff" stroke="none"/>' % ' '.join(f'{x},{y}' for x, y in pts)
+    return (f'<svg role="img" aria-label="Box {l} {unit} long, {w} {unit} wide and {h} {unit} tall, with a dashed line from a bottom corner to the opposite top corner" '
+            f'width="262" height="146" viewBox="0 0 262 146" xmlns="http://www.w3.org/2000/svg">' + poly(A, B, C, D) + poly(D, C, C2, D2) + poly(B, B2, C2, C)
+            + ln(A, A2, '#8a93a6', 1.5, '4 4') + ln(A2, B2, '#8a93a6', 1.5, '4 4') + ln(A2, D2, '#8a93a6', 1.5, '4 4') + ln(A, B2, '#8a93a6', 1.6, '2 4')
+            + ln(A, B) + ln(B, C) + ln(C, D) + ln(D, A) + ln(D, D2) + ln(C, C2) + ln(D2, C2) + ln(B, B2) + ln(B2, C2) + ln(A, C2, '#b08800', 3, '7 4')
+            + t(100, 131, f'{l} {unit}') + t(22, 92, f'{h} {unit}', 'end') + t(200, 104, f'{w} {unit}', 'start') + t(112, 52, 'd = ?', 'middle', '#b08800') + '</svg>')
+
+
+assert 6 * 6 + 2 * 2 + 3 * 3 == 49 and isqrt_exact(49) == 7
+T['u5pF1'] = {'p': '<span class="np-lv l3 lvb">Score 5</span> A box is 6 in long, 2 in wide, and 3 in tall. What is the longest straight stick that fits inside, from a bottom corner to the opposite top corner?',
+              'a': ['7', '7 in'], 'fig': _box(6, 2, 3, 'in')}

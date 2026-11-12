@@ -39,10 +39,10 @@ PLAN = {
      ('Score 5', [('np', 'np5-5', 5), ('np', 'np5-8', 5), ('np', 'np5-10', 5)])],
  'unit5-notes': [
      ('Score 3', [('np', 'np7-1', 3), ('np', 'np7-2', 3), ('np', 'np7-3', 3), ('chk', 'u5pB2', 3), ('chk', 'u5pD2', 3)]),
-     ('Score 4', [('np', 'np7-4', 4), ('np', 'np7-5', 4), ('np', 'np7-6', 4), ('np', 'np7-7', 4), ('np', 'np7-8', 4),
-                  ('chk', 'u5pA8', 4), ('chk', 'u5pB7', 4), ('chk', 'u5pD5', 4), ('sa', ('C. Word Problems', 1), 4)]),
-     ('Score 5', [('np', 'np7-9', 5), ('np', 'np7-10', 5), ('np', 'np7-11', 5), ('chk', 'u5pE5', 5), ('chk', 'u5pE6', 5),
-                  ('sa', ('C. Word Problems', 3), 5), ('sa', ('C. Word Problems', 4), 5)])],
+     # Nov 11, 2026 trim (_build/u5_trim_nov11.py): Score 4 lost u5pA8, u5pB7, u5pD5 and the ladder; Score 5 lost u5pE6,
+     # the baseball diamond and the kite, and gained the 3-D box u5pF1. (This plan is no longer re-run on the page.)
+     ('Score 4', [('np', 'np7-4', 4), ('np', 'np7-5', 4), ('np', 'np7-6', 4), ('np', 'np7-7', 4), ('np', 'np7-8', 4)]),
+     ('Score 5', [('np', 'np7-9', 5), ('np', 'np7-10', 5), ('np', 'np7-11', 5), ('chk', 'u5pE5', 5), ('chk', 'u5pF1', 5)])],
 }
 UNIT1 = {'Classify Each Number': [(1, 3), (3, 3), (4, 3), (8, 4), (11, 4)],
          'Estimate Each Square Root': [(1, 3), (4, 4), (9, 4), (11, 5)],
