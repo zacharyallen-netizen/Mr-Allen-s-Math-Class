@@ -5,8 +5,9 @@ One example of a vertical pair and one example of a linear pair. Then, give one 
 to solve for, with at least one fraction to distribute that results in a rational coefficient for x (to make it a
 little easier, other x variables can cancel out at different parts.)"
 
-Front: 1 multi-step equation, 1 multi-step inequality (flip the sign), 1 vertical pair, 1 linear pair (figures to scale).
-Back:  1 long equation: a fraction is distributed, x ends with a fraction coefficient, other x-terms cancel on the way.
+Nov 12 revision (Zach): PORTRAIT; 2 easier two-step equations + 1 multi-step equation + 1 inequality on the front;
+vertical pair + linear pair + the challenge on the back (the challenge gets the most room).
+Challenge: 1 long equation: a fraction is distributed, x ends with a fraction coefficient, other x-terms cancel on the way.
 Keys show every solution LINED UP (Zach's rule): each move sits under its like term on both sides, what cancels is
 crossed out, dividing is a fraction bar under each side, a reciprocal is written in front of each side.
 Every line of every solution is checked with exact fractions before anything is drawn.
@@ -26,9 +27,9 @@ M = "−"
 D = "°"
 kit.CSS += CSS_BR + """
 .g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.c{display:flex;flex-direction:column;min-height:2.95in}
+.c{display:flex;flex-direction:column}.g1{display:grid;grid-template-columns:1fr;gap:10px}.c.ez{min-height:2.35in}.c.big{min-height:2.75in}.c.ang{min-height:3.05in}.c.ch{min-height:4.6in}
 .cq{white-space:nowrap}.fg{display:flex;justify-content:center;margin:2px 0 0}
-.back .c{min-height:5.7in}.back .cq{font-size:1.18em}
+.back .c.ch .cq{font-size:1.12em;white-space:normal}
 .aw{display:grid;grid-template-columns:auto auto auto auto;column-gap:7px;row-gap:3px;align-items:start;margin:6px 0 0;
     font:500 13.5px/1.55 'JetBrains Mono',monospace;color:#1E2D4F}
 .back .aw{font-size:16px;row-gap:5px;column-gap:9px}
@@ -40,7 +41,7 @@ kit.CSS += CSS_BR + """
 .back .aw .aw-lab{font-size:12.5px}
 .aw .aw-fin{border:2px solid #15803D;border-radius:6px;padding:0 6px;color:#15803D}
 .aw .aw-rule{grid-column:1/-1;height:0;border-top:1px dashed #E5E7EB}
-.angans{margin-top:4px;font:600 13px Inter,sans-serif;color:#15803D}
+.c.ang .aw{font-size:12.5px;column-gap:5px}.c.ang .aw-lab{font-size:9.5px;padding:1px 4px}.angans{margin-top:4px;font:600 13px Inter,sans-serif;color:#15803D}
 """
 render = kit.render
 
@@ -135,7 +136,7 @@ G_v = [
  dict(L=["x"], rel="=", R=["13"]),
 ]
 G_l = [
- dict(L=["(3x + 22)", "+ (5x − 2)"], rel="=", R=["180"], lab="Combine like terms"),
+ dict(L=["(3x + 22)", "+ (5x − 2)"], rel="=", R=["180"], lab="Combine"),
  dict(L=["8x", "+ 20"], rel="=", R=["180"], ops={"L": {1: "− 20"}, "R": {0: "− 20"}}, x={("L", 1)}, lab="Subtract 20"),
  dict(L=["8x"], rel="=", R=["160"], div="8", x={("L", 0), ("L", "d")}, lab="Divide by 8"),
  dict(L=["x"], rel="=", R=["20"]),
@@ -155,6 +156,20 @@ SETS["G"] = dict(eq=("4(x " + M + " 3) + 2x = 3x + 9", G_eq, ("=", F(7))),
                  v=("(6x " + M + " 15)°", "(4x + 11)°", 63, G_v, ("=", F(13)), "x = 13; each angle = 63°"),
                  l=("(3x + 22)°", "(5x " + M + " 2)°", 82, G_l, ("=", F(20)), "x = 20; the angles are 82° and 98°"),
                  long=(fr(3, 4) + "(2x + 8) + 5x " + M + " 3(x " + M + " 2) " + M + " 7 = 6x + 2(5 " + M + " 2x) + 1", G_long, ("=", F(4))))
+
+G_e1 = [
+ dict(L=["3x", "+ 7"], rel="=", R=["22"], ops={"L": {1: "− 7"}, "R": {0: "− 7"}}, x={("L", 1)}, lab="Subtract 7"),
+ dict(L=["3x"], rel="=", R=["15"], div="3", x={("L", 0), ("L", "d")}, lab="Divide by 3"),
+ dict(L=["x"], rel="=", R=["5"]),
+]
+G_e2 = [
+ dict(L=["−2x", "+ 5"], rel="=", R=["17"], ops={"L": {1: "− 5"}, "R": {0: "− 5"}}, x={("L", 1)}, lab="Subtract 5"),
+ dict(L=["−2x"], rel="=", R=["12"], div="−2", x={("L", 0), ("L", "d")}, lab="Divide by −2"),
+ dict(L=["x"], rel="=", R=["−6"]),
+]
+eq_check(G_e1, "=", 5); eq_check(G_e2, "=", -6)
+SETS["G"]["e1"] = ("3x + 7 = 22", G_e1, ("=", F(5)))
+SETS["G"]["e2"] = (M + "2x + 5 = 17", G_e2, ("=", F(-6)))
 
 # ===== H =====
 H_eq = [
@@ -180,7 +195,7 @@ H_v = [
  dict(L=["x"], rel="=", R=["15"]),
 ]
 H_l = [
- dict(L=["(2x + 34)", "+ (6x − 6)"], rel="=", R=["180"], lab="Combine like terms"),
+ dict(L=["(2x + 34)", "+ (6x − 6)"], rel="=", R=["180"], lab="Combine"),
  dict(L=["8x", "+ 28"], rel="=", R=["180"], ops={"L": {1: "− 28"}, "R": {0: "− 28"}}, x={("L", 1)}, lab="Subtract 28"),
  dict(L=["8x"], rel="=", R=["152"], div="8", x={("L", 0), ("L", "d")}, lab="Divide by 8"),
  dict(L=["x"], rel="=", R=["19"]),
@@ -201,42 +216,54 @@ SETS["H"] = dict(eq=("5(x + 2) " + M + " 3x = 4x " + M + " 8", H_eq, ("=", F(9))
                  l=("(2x + 34)°", "(6x " + M + " 6)°", 72, H_l, ("=", F(19)), "x = 19; the angles are 72° and 108°"),
                  long=(fr(2, 5) + "(x + 15) + 4(2x " + M + " 1) " + M + " 6x = 3(x + 2) " + M + " x + 2(x " + M + " 1) " + M + " 2x + 2", H_long, ("=", F(10))))
 
-# ───────────── pages ─────────────
-REM_F = ("<b>Multi-step:</b> 1. Distribute. 2. Combine like terms on each side. 3. Get the x’s on one side. 4. Undo + or −, then × or ÷. "
-         "Write each move <b>under its like term on BOTH sides</b>. &nbsp; <b>Inequality:</b> multiply or divide by a <b>negative</b> → <b>flip</b> the sign. &nbsp; "
-         "<b>Vertical angles</b> are <b>equal</b>. A <b>linear pair</b> <b>adds to 180°</b>.")
-REM_B = ("<b>Fraction outside the ( )?</b> Multiply it by <b>BOTH</b> terms inside. &nbsp; <b>Look for x’s that cancel</b> (like 2x − 2x = 0). &nbsp; "
-         "<b>Fraction in front of x at the end?</b> Multiply both sides by its <b>reciprocal</b> (flip it). &nbsp; <b>Check:</b> put x back into the first line.")
+H_e1 = [
+ dict(L=["5x", "− 9"], rel="=", R=["26"], ops={"L": {1: "+ 9"}, "R": {0: "+ 9"}}, x={("L", 1)}, lab="Add 9"),
+ dict(L=["5x"], rel="=", R=["35"], div="5", x={("L", 0), ("L", "d")}, lab="Divide by 5"),
+ dict(L=["x"], rel="=", R=["7"]),
+]
+H_e2 = [
+ dict(L=["4", "− 3x"], rel="=", R=["19"], ops={"L": {0: "− 4"}, "R": {0: "− 4"}}, x={("L", 0)}, lab="Subtract 4"),
+ dict(L=["−3x"], rel="=", R=["15"], div="−3", x={("L", 0), ("L", "d")}, lab="Divide by −3"),
+ dict(L=["x"], rel="=", R=["−5"]),
+]
+eq_check(H_e1, "=", 7); eq_check(H_e2, "=", -5)
+SETS["H"]["e1"] = ("5x " + M + " 9 = 26", H_e1, ("=", F(7)))
+SETS["H"]["e2"] = ("4 " + M + " 3x = 19", H_e2, ("=", F(-5)))
 
-def ans_line(rel_x):
-    r, v = rel_x; sym = {"=": "=", "<=": "≤", ">=": "≥", "<": "<", ">": ">"}[r]
-    return "x " + sym + " " + (M + str(-v) if v < 0 else str(v))
-def cell(n, q, key, body):
-    return f'<div class="c"><div class="cq"><span class="n">{n}</span>{q}</div>{body}</div>'
+# ───────────── pages ─────────────
+REM_F = ("<b>Solve:</b> 1. Distribute. 2. Combine like terms on each side. 3. Get the x’s on one side. 4. Undo + or −, then × or ÷. "
+         "Write each move <b>under its like term on BOTH sides</b>. &nbsp; <b>Inequality:</b> multiply or divide by a <b>negative</b> → <b>flip</b> the sign. &nbsp; "
+         "<b>Check:</b> put your answer back in.")
+REM_B = ("<b>Vertical angles</b> are <b>equal</b>. A <b>linear pair</b> <b>adds to 180°</b>. &nbsp; "
+         "<b>Fraction outside the ( )?</b> Multiply it by <b>BOTH</b> terms inside. <b>Look for x’s that cancel</b> (like 2x − 2x = 0). "
+         "<b>Fraction in front of x at the end?</b> Multiply both sides by its <b>reciprocal</b> (flip it).")
+
+def cell(n, q, key, body, cls=""):
+    return f'<div class="c{cls}"><div class="cq"><span class="n">{n}</span>{q}</div>{body}</div>'
 def blank(): return '<div style="margin-top:auto"><span class="ln"></span></div>'
 
 def build(letter, key):
     S = SETS[letter]
-    p1 = page_head(f"Bell Ringer {letter} · NC.8.EE.7 · NC.8.G.5", "Multi-step Equations, Inequalities &amp; Angle Pairs",
-                   "Front · Solve, then find the angles", key)
+    W = lambda t: work(t[1], t[2]) if key else blank()
+    p1 = page_head(f"Bell Ringer {letter} · NC.8.EE.7", "Multi-step Equations &amp; Inequalities", "Front · Solve each one", key)
     p1 += f'<div data-fit><div class="rem"><b>Remember:</b> {REM_F}</div>'
-    p1 += '<div class="part">A. Solve. Show each step, lined up under like terms.</div><div class="g2">'
-    p1 += cell(1, "Solve: " + S["eq"][0], key, work(S["eq"][1], S["eq"][2]) if key else blank())
-    p1 += cell(2, "Solve: " + S["ineq"][0], key, work(S["ineq"][1], S["ineq"][2]) if key else blank())
-    p1 += '</div><div class="part">B. Name the pair, write an equation, solve for x, then find the angle(s).</div><div class="g2">'
-    a1, a2, deg, wv, xv, txt = S["v"]
-    fig = AP.cross(deg, a1, "", a2, "", L=80)
-    p1 += cell(3, "<span>Vertical angles. Find x, then the angle.</span>", key,
-               f'<div class="fg">{fig}</div>' + ((work(wv, xv) + f'<div class="angans">{txt}</div>') if key else blank()))
-    b1, b2, t, wl, xl, txt2 = S["l"]
-    fig2 = AP.straight(t, b1, b2, L=80)
-    p1 += cell(4, "<span>Linear pair. Find x, then both angles.</span>", key,
-               f'<div class="fg">{fig2}</div>' + ((work(wl, xl) + f'<div class="angans">{txt2}</div>') if key else blank()))
+    p1 += '<div class="part">A. Warm up. Solve. Line up each move under its like term.</div><div class="g2">'
+    p1 += cell(1, "Solve: " + S["e1"][0], key, W(S["e1"]), " ez") + cell(2, "Solve: " + S["e2"][0], key, W(S["e2"]), " ez")
+    p1 += '</div><div class="part">B. Multi-step. Show each step.</div><div class="g1">'
+    p1 += cell(3, "Solve: " + S["eq"][0], key, W(S["eq"]), " big")
+    p1 += cell(4, "Solve: " + S["ineq"][0], key, W(S["ineq"]), " big")
     p1 += "</div></div>"
-    p2 = page_head(f"Bell Ringer {letter} · NC.8.EE.7", "One Long Equation", "Back · Distribute a fraction, watch for x’s that cancel", key)
+    p2 = page_head(f"Bell Ringer {letter} · NC.8.G.5 · NC.8.EE.7", "Angle Pairs &amp; the Challenge", "Back · Find the angles, then the challenge", key)
     p2 += f'<div data-fit class="back"><div class="rem"><b>Remember:</b> {REM_B}</div>'
-    p2 += '<div class="part">C. Solve for x. Show every step, lined up under like terms.</div>'
-    p2 += cell(5, S["long"][0], key, work(S["long"][1], S["long"][2]) if key else '<div style="margin-top:auto">x = <span class="ln"></span></div>')
+    p2 += '<div class="part">C. Name the pair, write an equation, solve for x, then find the angle(s).</div><div class="g2">'
+    a1, a2, deg, wv, xv, txt = S["v"]
+    p2 += cell(5, "Vertical angles. Find x, then the angle.", key,
+               f'<div class="fg">{AP.cross(deg, a1, "", a2, "", L=70)}</div>' + ((work(wv, xv) + f'<div class="angans">{txt}</div>') if key else blank()), " ang")
+    b1, b2, t, wl, xl, txt2 = S["l"]
+    p2 += cell(6, "Linear pair. Find x, then both angles.", key,
+               f'<div class="fg">{AP.straight(t, b1, b2, L=70)}</div>' + ((work(wl, xl) + f'<div class="angans">{txt2}</div>') if key else blank()), " ang")
+    p2 += '</div><div class="part">D. Challenge. Solve for x. Show every step, lined up under like terms.</div>'
+    p2 += cell(7, S["long"][0], key, work(S["long"][1], S["long"][2]) if key else '<div style="margin-top:auto">x = <span class="ln"></span></div>', " ch")
     p2 += "</div>"
     return [p1, p2]
 
@@ -244,5 +271,5 @@ if __name__ == "__main__":
     for letter in ("G", "H"):
         for key in (False, True):
             render(build(letter, key), f"{OUT}/Bell_Ringer_{letter}_MultiStep_Equations_Inequalities_Angles{'_AnswerKey' if key else ''}.pdf",
-                   landscape=True, footer=f"Bell Ringer {letter} · Multi-step Equations, Inequalities & Angle Pairs" + (" — Answer Key" if key else ""), fit=True)
+                   landscape=False, footer=f"Bell Ringer {letter} · Multi-step Equations, Inequalities & Angle Pairs" + (" — Answer Key" if key else ""), fit=True)
     print("ok")
