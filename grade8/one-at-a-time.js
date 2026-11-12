@@ -222,7 +222,7 @@
     });
   }
   function go() { if (window.TapAnswers) return add(); if (!here || !document.querySelector(SEL)) return;
-    var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261112a', here).href; s.onload = add; document.head.appendChild(s); }
+    var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261112b', here).href; s.onload = add; document.head.appendChild(s); }
   function soon() { setTimeout(go, 600); setTimeout(add, 2500); }
   if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon);
 })();
@@ -255,7 +255,7 @@
       }
       miss++; card.dataset.miss = miss; btn.classList.add('wrong'); btn.disabled = true;
       var q = card.querySelector('.qt, .q-text, .q-prompt, .stem') || card, qt = (q.textContent || '').slice(0, 400);
-      var why = btn.getAttribute('data-why') || (window.TapAnswers ? TapAnswers.miss(String(correct), qt) : '') || 'Read the question again. What is it asking for?';
+      var why = btn.getAttribute('data-why') || ('“' + btn.textContent.trim() + '” does not fit. Check that choice against the question' + (card.querySelector('svg, img, canvas, table, .tx') ? ' and the picture or table' : '') + ', one part at a time.');   // a general note can name the wrong skill, so only a choice's own note names a mistake
       if (miss >= 3 || left === 0) {
         [].forEach.call(bs, function (b) { if (b.textContent.trim() === String(correct).trim()) b.classList.add('reveal'); }); finish(false);
         fb.className = (A ? 'feedback' : 'fb') + ' show w'; fb.textContent = 'Not this time. The answer is ' + correct + '. ' + card.dataset.expl + ' Read this, then try the next one.';

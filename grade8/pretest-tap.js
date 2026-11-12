@@ -100,7 +100,10 @@
     QS.forEach(function (q) { var div = document.getElementById('q' + q.id), inp = document.getElementById('i' + q.id); if (!div || !inp) return;
       var v = inp.value.trim(), bad = div.classList.contains('wrong') && v, ui = UI[q.id], d = DISP[q.id] || ['', ''];
       if (ui) ui.buttons.forEach(function (b) { b.classList.remove('ok', 'no'); if (v && b.getAttribute('data-t') === v) { b.classList.remove('sel'); b.classList.add(bad ? 'no' : 'ok'); } });
-      TapAnswers.note(div, !bad ? '' : ui ? (TapAnswers.why(LIST[q.id], v) || TapAnswers.miss(d[0], d[1])) : TapAnswers.numWhy(v, d[0], d[1]), 'why');
+      var nt = !bad ? '' : ui ? (TapAnswers.why(LIST[q.id], v) || TapAnswers.miss(d[0], d[1])) : TapAnswers.numWhy(v, d[0], d[1]);
+      var here = bad && div.contains(document.activeElement), same = here && LASTV[q.id] === v;   // no loops (review fix, Nov 12, 2026)
+      if (bad && (same || (MISS[q.id] || 0) >= 1 && LASTV[q.id] !== v && here)) { var hn = TapAnswers.hint(d[0], d[1]); nt = (same ? 'You tried this same answer before. ' : '') + nt + (hn ? ' Hint: ' + hn : ''); }
+      TapAnswers.note(div, nt, 'why');
       var fb = document.getElementById('fb' + q.id);
       if (bad && fb && !REVEALED) { if (LASTV[q.id] !== v) { LASTV[q.id] = v; MISS[q.id] = (MISS[q.id] || 0) + 1; }
         if (MISS[q.id] < 2 && /answer/i.test(fb.textContent)) fb.innerHTML = '✗ Not yet. Read the note, then try again.'; } });

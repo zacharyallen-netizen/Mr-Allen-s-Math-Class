@@ -325,7 +325,9 @@
     if (same) return { ok: true, note: (B.approx && Math.abs(a[0] - b[0]) > 1e-9 ? ' (rounded)' : '') + note };
     if (!(ctx && ctx.positive) && A.kind === 'sq' && b.length === 1 && a.length === 2 && a.some(function (z) { return Math.abs(z - b[0]) <= tol; }))
       return { ok: false, msg: 'Almost! ' + v + '<sup>2</sup> has <b>two</b> square roots, one positive and one negative. Write ' + v + ' = ±… .' };
-    if (A.kind === 'sq' && B.kind !== 'sq' && b.length) return { ok: false, msg: 'Check your square root. What number times itself makes the other side?' };
+    if (A.kind === 'sq' && B.kind !== 'sq' && b.length) {
+      var near = a.some(function (z) { return Math.abs(z * z - b[0]) < 1e-6; });   // wrote k instead of √k: the ² was dropped
+      return { ok: false, msg: near ? 'Keep the <sup>2</sup> on ' + v + '. Get ' + v + '<sup>2</sup> alone first, then take the square root of <b>both sides</b> last.' : 'Check your square root. What number times itself makes the other side?' }; }
     return { ok: false };
   }
 
@@ -559,7 +561,9 @@
     } } catch (e) { }
     // changed only one side
     if (peq(a.R, b.R) && !peq(a.L, b.L)) side = 'left'; else if (peq(a.L, b.L) && !peq(a.R, b.R)) side = 'right';
-    if (side) return 'You changed only the ' + side + ' side. Do the same thing to <b>both sides</b>.';
+    if (side) { var hadPar = false; walk(side === 'left' ? prev.L : prev.R, function (m) { if (m.t === 'par' && sumInside(m)) hadPar = true; });
+      if (hadPar) return 'Check your distributing. Multiply the number outside the ( ) by <b>every</b> term inside: 3(x + 2) = 3x + 6.';
+      return 'You changed only the ' + side + ' side. Do the same thing to <b>both sides</b>.'; }
     // added on one side, subtracted on the other
     var dL = psub(b.L, a.L), dR = psub(b.R, a.R);
     if (!pzero(dL) && peq(dL, pscale(dR, qneg(ONE)))) return 'It looks like you added on one side and subtracted on the other. Do the <b>same</b> thing to both sides.';
@@ -601,7 +605,7 @@
     return {
       empty: 'Type the new line first.', norel: 'Your line needs an = sign (or &lt;, &gt;, ≤, ≥).', tworel: 'Use only one = sign (or one inequality sign).',
       side: 'Something is missing on one side of the sign.', paren: 'Check your parentheses. Each ( needs a ).', missing: 'Something is missing. Check for a sign with nothing after it.',
-      syntax: 'I can\'t read that yet. Check the signs and numbers.', letter: 'Use the letter <i>' + v + '</i> in this problem.', divx: 'This tool can\'t divide by ' + v + '. Try another move.',
+      syntax: 'I can\'t read that yet. Check the signs and numbers.', letter: v === 'x' ? 'Use one letter for the unknown, and only one letter.' : 'Use the letter <i>' + v + '</i> in this problem.', divx: 'This tool can\'t divide by ' + v + '. Try another move.',
       degree: v + ' got multiplied by itself. Check your multiplying.', zero: 'You can\'t divide by 0.', char: 'I can\'t read the symbol "' + (e && e.extra) + '". Use the keys below.',
       exp: 'Exponents here must be whole numbers.', sqrtx: 'Take the square root of a number, not of ' + v + '.', negroot: 'A negative number has no square root here.', irrmid: 'Keep the square root for the last step, when ' + v + ' is alone on one side.', pm: 'Use ± only in the last line, like ' + v + ' = ±7.', negexp: 'I can\'t use a negative exponent on ' + v + ' here.'
     }[c] || 'I can\'t read that yet. Check the signs and numbers.';
@@ -715,11 +719,13 @@
     if (hasPow || messy) return { label: hasPow ? 'Find the squares: work out each number with an exponent' + (typeof hasPow === 'string' ? ' (' + hasPow + ')' : '') + '.' : 'Combine like terms on each side.', text: line(sp.L, sp.R) };
     var d = pdeg(sp.L) >= pdeg(sp.R) ? pdeg(sp.L) : pdeg(sp.R), aL = sp.L[d], aR = sp.R[d], bL = sp.L[0];
     var vp = v + (d === 2 ? '²' : '³'), vpH = '<i>' + v + '</i><sup>' + d + '</sup>';
-    if (!aL.n && aR.n && !sp.R[0].n && rel === '=') return { label: 'Switch the two sides so ' + vpH + ' is on the left. Both ways say the same thing.', text: line(sp.R, sp.L) };
+    if (!aL.n && aR.n && !sp.R[0].n && rel === '=' && !qeq(aR, ONE)) { var g = qdiv(ONE, aR), R0 = P(); R0[d] = ONE;
+      return { label: 'Divide <b>both sides</b> by ' + qHtml(aR) + ', the number with ' + vpH + '.', op: { kind: 'scale', div: true, k: aR }, text: line(pscale(sp.L, g), R0) }; }
+    if (!aL.n && aR.n && !sp.R[0].n && rel === '=') return nextMovePow({ L: e.R, R: e.L, rel: e.rel }, v, { L: sp.R, R: sp.L }, opt);   // 89 = c²: same as c² = 89, so go straight to the root
     if (aR.n) { var k = P(); k[d] = aR; var L = psub(sp.L, k), R = psub(sp.R, k); if (!L[d].n) return null;
       return { label: (qsign(aR) > 0 ? 'Subtract ' : 'Add ') + (qeq(aR, ONE) || qeq(aR, qneg(ONE)) ? '' : qHtml(qsign(aR) > 0 ? aR : qneg(aR))) + vpH + ' on <b>both sides</b> to get the ' + vpH + ' terms together.', text: line(L, R) }; }
     if (bL.n) { var k2 = P(bL), L2 = psub(sp.L, k2), R2 = psub(sp.R, k2);
-      return { label: (qsign(bL) > 0 ? 'Subtract ' : 'Add ') + qHtml(qsign(bL) > 0 ? bL : qneg(bL)) + ' on <b>both sides</b> to get ' + vpH + ' alone.', op: { kind: 'add', parts: opParts({ num: bL }, 'sub', v) }, text: line(L2, R2) }; }
+      return { label: (qsign(bL) > 0 ? 'Subtract ' : 'Add ') + qHtml(qsign(bL) > 0 ? bL : qneg(bL)) + ' on <b>both sides</b> to get ' + vpH + ' alone.', op: { kind: 'add', parts: opParts({ num: qneg(bL) }, 'net', v) }, text: line(L2, R2) }; }
     if (!qeq(aL, ONE)) { var f = qdiv(ONE, aL), R3 = pscale(sp.R, f), L3 = P(); L3[d] = ONE;
       return { label: (aL.d !== 1 && !piPart(aL) ? 'Multiply <b>both sides</b> by the reciprocal, ' + qHtml(f) + '.' : 'Divide <b>both sides</b> by ' + qHtml(aL) + '.'), op: aL.d !== 1 && !piPart(aL) ? { kind: 'scale', div: false, k: f } : { kind: 'scale', div: true, k: aL }, text: line(L3, R3) }; }
     var kk = sp.R[0], kv = qnum(kk), root = d === 2 ? Math.sqrt(kv) : Math.cbrt(kv), exact = Math.abs(root - Math.round(root)) < 1e-9 && kk.d === 1;
@@ -764,16 +770,23 @@
     if (messy) return { label: 'Combine like terms on each side (' + v + '-terms together, numbers together).', text: line(sp.L, rel, sp.R) };
     var a1 = sp.L[1], b1 = sp.L[0], a2 = sp.R[1], b2 = sp.R[0];
     if (!a1.n && !a2.n) return null;
+    var numPow = false; [e.L, e.R].forEach(function (sd) { walk(sd, function (z) { if (z.t === 'pow' && !hasVar(z.a)) numPow = true; }); });
+    if (numPow) return { label: 'Find the squares first: work out each number with an exponent (7² = 7 × 7 = 49).', text: line(sp.L, rel, sp.R) };
+    if (!a1.n && qeq(a2, ONE) && !b2.n) return null;   // 2 = h: already solved
+    if (!a1.n && a2.n && !b2.n && rel === '=' && !qeq(a2, ONE)) {   // like 98π = 49πh: the letter is alone on the right, so divide (no need to move it)
+      var fR = qdiv(ONE, a2);
+      return { label: 'Divide <b>both sides</b> by ' + qHtml(a2) + ', the number with ' + v + '.', op: { kind: 'scale', div: true, k: a2 }, text: line(pscale(sp.L, fR), rel, P(ZERO, ONE)) };
+    }
     if (a2.n) {   // get the x's on the left: undo the right side's x-term
       var k = P(ZERO, a2), L = psub(sp.L, k), R = psub(sp.R, k);
       if (!L[1].n) return null;   // the x's cancel: no / every solution (the tool explains that)
       return { label: (qsign(a2) > 0 ? 'Subtract ' : 'Add ') + polyHtml(P(ZERO, qsign(a2) > 0 ? a2 : qneg(a2)), v) + ' on <b>both sides</b> to get the ' + v + '-terms on the left.',
-        op: { kind: 'add', parts: opParts({ xterm: a2 }, 'sub', v) }, text: line(L, rel, R) };
+        op: { kind: 'add', parts: opParts({ xterm: qneg(a2) }, 'net', v) }, text: line(L, rel, R) };
     }
     if (b1.n) {   // undo the number next to the x-term
       var k2 = P(b1), L2 = psub(sp.L, k2), R2 = psub(sp.R, k2);
       return { label: (qsign(b1) > 0 ? 'Subtract ' : 'Add ') + qHtml(qsign(b1) > 0 ? b1 : qneg(b1)) + ' on <b>both sides</b>. It cancels the ' + qHtml(b1) + ' next to the ' + v + '-term.',
-        op: { kind: 'add', parts: opParts({ num: b1 }, 'sub', v) }, text: line(L2, rel, R2) };
+        op: { kind: 'add', parts: opParts({ num: qneg(b1) }, 'net', v) }, text: line(L2, rel, R2) };
     }
     if (!qeq(a1, ONE)) {   // x is multiplied by a1
       var f = qdiv(ONE, a1), R3 = pscale(sp.R, f), r3 = qsign(a1) < 0 && rel !== '=' ? FLIP[rel] : rel;
@@ -885,7 +898,7 @@
         if (/pi/.test(h)) return 'Put the <b>volume</b> on one side. On the other side write the formula with the numbers you know, and a letter for the one you don\'t know. Example shape: 50π = ⅓ · π · 5<sup>2</sup> · <i>h</i>.';
         if (/pyth/.test(h)) return 'Shape of the equation: <b>leg</b><sup>2</sup> + <b>leg</b><sup>2</sup> = <b>hypotenuse</b><sup>2</sup>. The hypotenuse is the longest side, across from the square corner. Use a letter for the side you don\'t know.';
         if (/180|90|360|equal|same|vertical|supplement|complement|straight|right angle|triangle/i.test(h)) return 'Shape of the equation: <b>(one angle) + (the other angle) = 180</b> for a straight line, <b>= 90</b> for a right angle, <b>= 180</b> for the 3 angles of a triangle. If the two angles are <b>equal</b> (vertical, corresponding, alternate), write <b>(one angle) = (the other angle)</b>.';
-        return 'Shape of the equation: <b>start amount + (amount each time) × letter = total</b>. Find each of those numbers in the problem first.';
+        return 'Turn the words into math, one piece at a time: <b>times</b> → multiply, <b>more than / plus</b> → add, <b>less than</b> → subtract ("5 less than 3n" is 3<i>n</i> − 5), <b>is / equals / total</b> → =. A number that happens again and again goes <b>next to the letter</b>; a one-time number is added. Two plans that cost the same: (plan A) = (plan B).';
       }
       function missed(msg, e) {
         var k = ''; try { k = eqHtml(e).replace(/\s+/g, ''); } catch (x) { }
@@ -896,7 +909,7 @@
         if (tries === 1 && S.hint) out += '<br>💡 ' + S.hint;
         if (tries >= 2 || again) out += '<div class="sw-coach"><p class="sw-coach-h">Here is how the equation should look:</p><p class="sw-note">' + plan() + '</p>' + (S.hint && tries > 1 ? '<p class="sw-note">💡 ' + S.hint + '</p>' : '') + '</div>';
         fb.innerHTML = out;
-        var shown = S.eq || (S.line ? (S.ps ? 'y - (' + qtxt(toQ(S.line[1])) + ') = (' + qtxt(toQ(S.line[0])) + ')(x - 0)' : 'y = (' + qtxt(toQ(S.line[0])) + ')x + (' + qtxt(toQ(S.line[1])) + ')') : null);
+        var shown = S.eq || (S.line && !S.ps ? 'y = (' + qtxt(toQ(S.line[0])) + ')x + (' + qtxt(toQ(S.line[1])) + ')' : null);   // point-slope needs the problem's own point (homework EQ table)
         if (tries >= 3 && shown) {
           var sb = btn('Show me the equation', 'sw-show'); fb.appendChild(sb);
           sb.addEventListener('click', function () {
@@ -904,11 +917,12 @@
             var hp = (+host.dataset.swHelped || 0) + 1; host.dataset.swHelped = String(hp); if (cfg.onHelp) try { cfg.onHelp(hp); } catch (x) { }
             fb.className = 'sw-fb tip'; fb.innerHTML = 'Here is the equation. Read it and find each number in the problem. Then press <b>Check my equation</b>.';
           });
-        } else if (tries >= 3) fb.innerHTML += '<p class="sw-note">Read the problem again, one sentence at a time. Ask Mr. Allen if you are still stuck.</p>';
+        } else if (tries >= 3) fb.innerHTML += '<p class="sw-note">Read the problem again, one sentence at a time. Still stuck? Use the problem\'s <b>Hint</b>, or <b>Show answer</b> and study how it was done.</p>';
       }
       function check() {
         if (S.line) return checkLine0();
         var e; try { e = parseEq(inp.value); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
+        if (S.any && e.vars.length > 1) { fb.className = 'sw-fb tip'; fb.innerHTML = 'Good start. Now put in the numbers you know. Only the unknown stays a letter.'; return; }
         if (S.any && e.vars.length === 1) v = e.vars[0];
         try { sides(e, v); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = readErr(x, v); return; }
         if (e.vars.length !== 1 || e.vars[0] !== v) { fb.className = 'sw-fb no'; fb.innerHTML = S.any ? 'Your equation needs one letter for the unknown.' : 'Your equation needs the unknown <i>' + v + '</i> in it.'; return; }
@@ -1176,7 +1190,7 @@
             if (pdeg(sa.L) <= 1 && pdeg(sa.R) <= 1 && pdeg(sb.L) <= 1 && pdeg(sb.R) <= 1) {
               var ab = function (q) { return Math.abs(qnum(q)); };
               if (d.type === 'add' && sa.L[1].n && sb.L[1].n && sa.L[0].n && ab(sb.L[0]) > ab(sa.L[0]) && !sa.R[1].n) away = 'The number next to <i>' + v + '</i> got <b>bigger</b>. To get <i>' + v + '</i> alone, do the <b>opposite</b> of that number.';
-              else if (d.type === 'add' && sa.R[1].n && sb.R[1].n && ab(sb.R[1]) > ab(sa.R[1])) away = 'Now there are <b>more</b> ' + v + '\'s on the right. To move them, do the <b>opposite</b> of the ' + v + '-term.';
+              else if (d.type === 'add' && sa.R[1].n && sb.R[1].n && sb.L[1].n && ab(sb.R[1]) > ab(sa.R[1])) away = 'Now there are <b>more</b> ' + v + '\'s on the right. To move them, do the <b>opposite</b> of the ' + v + '-term.';
               else if (d.type === 'scale' && !sa.L[0].n && !sa.R[1].n && sa.L[1].n && ab(sb.L[1]) > ab(sa.L[1])) away = 'The number with <i>' + v + '</i> got <b>bigger</b>. To undo multiplying, <b>divide</b>.';
             } } catch (x) { } }
           if (away) note = '💡 That line is true, but it moves <i>' + v + '</i> <b>away</b> from being alone. ' + away + ' You can press <b>Undo my last line</b>.';
@@ -1375,7 +1389,7 @@
     var mp = mono(prevAst), lp = letters(mp), ln = letters(mNew), off = [];
     Object.keys(lp).concat(Object.keys(ln)).forEach(function (k) { if (lp[k] !== ln[k] && off.indexOf(k) < 0) off.push(k); });
     if (off.length) return 'Check the exponent on <i>' + off[0] + '</i>. Which rule fits: add, subtract or multiply the exponents?';
-    return 'The letters are right. Check the <b>numbers</b>: the number in front, and any number with an exponent.';
+    return (Object.keys(lp).length ? 'The letters are right. ' : '') + 'Check the <b>numbers</b>: the number in front, and any number with an exponent.';
   }
   /* is this line written in simplest form (positive exponents, each base once, one number on top and bottom)? */
   function exFactors(n, out, sign) {
@@ -1439,7 +1453,7 @@
     var open = btn('Work it out step by step', 'sw-open'); open.setAttribute('aria-expanded', 'false');
     var box = el('div', 'sw'); box.hidden = true; box.id = 'sw' + uid; open.setAttribute('aria-controls', box.id);
     host.appendChild(open); host.appendChild(box);
-    var built = false, lines = [{ a: start, mv: null }];
+    var built = false, lines = [{ a: start, mv: null }], exSeen = {};
     open.addEventListener('click', function () {
       box.hidden = !box.hidden; open.setAttribute('aria-expanded', String(!box.hidden));
       open.textContent = box.hidden ? 'Work it out step by step' : 'Hide step-by-step work';
@@ -1494,7 +1508,13 @@
           var t, mNew;
           try { t = parseTerm(cfg.sci ? inp.value.replace(/(\d)\s*[x×]\s*10/gi, '$1*10') : inp.value); mNew = mono(t); } catch (x) { fb.className = 'sw-fb no'; fb.innerHTML = exErr(x); return; }
           var mOld = mono(a);
-          if (!sameMono(mOld, mNew)) { fb.className = 'sw-fb no'; fb.innerHTML = 'Not quite. ' + exDiagnose(a, mNew) + (++tried >= 3 ? calm(lines.length) : ''); return; }
+          if (!sameMono(mOld, mNew)) {   // no loops (review fix, Nov 12, 2026): a repeat says so; the 2nd miss lists the rules; the 3rd points to the page's help
+            var key = html(t).replace(/\s+/g, ''), again = !!exSeen[key]; exSeen[key] = 1; ++tried;
+            fb.className = 'sw-fb no';
+            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + exDiagnose(a, mNew) +
+              (tried >= 2 || again ? '<div class="sw-coach"><p class="sw-coach-h">Do one rule at a time:</p><p class="sw-note">Multiply same bases → <b>add</b> the exponents. Divide → <b>subtract</b> (top − bottom). Power of a power → <b>multiply</b> the exponents. A power outside ( ) goes on <b>every</b> factor inside. Anything to the 0 power is 1. A negative exponent means <b>flip</b> it to the other side of the fraction bar.</p><p class="sw-note">Work the <b>numbers</b> first, then each letter.</p></div>' : '') +
+              (tried >= 3 ? '<p class="sw-note">Still stuck? Press <b>Undo my last line</b>, pick a smaller move, or use the problem\'s <b>Hint</b> button.</p>' : '');
+            return; }
           if (html(t) === html(a)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Use a rule to change it.'; return; }
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
           var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); }
@@ -1603,7 +1623,7 @@
         var angle = unit === '4' && /find x/i.test(p.q) && ans != null;
         var word = unit === '3' && /word/i.test(sec.title) && ans != null;
         if (angle || word) mount(host, {
-          setup: { answer: ans, hint: angle ? angleHint(p.q + ' ' + sec.title) : 'Start amount + (rate × number of times) = total. "At most" means ≤.', ineq: word, figure: angle },
+          setup: { answer: ans, hint: angle ? angleHint(p.q + ' ' + sec.title) : 'Turn the words into math one piece at a time. A number that happens once is added; a number that happens again and again is multiplied by the letter.' + (/at most|no more than/i.test(p.q) ? ' "At most" means ≤.' : /at least|no less than/i.test(p.q) ? ' "At least" means ≥.' : ''), ineq: word, figure: angle },
           v: angle ? 'x' : 'x',
           onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' || info.kind === 'ineq' ? (info.numText || qtxt(info.x)) : t); }
         });
@@ -1665,7 +1685,7 @@
           return;
         }
         if (c.line) { cfg.start = c.line; cfg.line = true; }
-        if (c.ps) { cfg.setup = { line: c.ps, ps: true, hint: c.hint, prompt: 'Use <i>x</i> and <i>y</i>. Write the equation of the line in point-slope form.' }; cfg.line = true; }
+        if (c.ps) { cfg.setup = { line: c.ps, ps: true, eq: c.eq, hint: c.hint, prompt: 'Use <i>x</i> and <i>y</i>. Write the equation of the line in point-slope form.' }; cfg.line = true; }
         if (c.start) cfg.start = c.start;
         if (c.setup != null && !c.ps) cfg.setup = { answer: c.setup.root ? Math.sqrt(c.setup.root) : c.setup, tol: c.setup.root ? 1e-6 : c.tol, hint: c.hint, ineq: !!c.ineq, figure: !!c.fig, prompt: c.prompt, any: !!c.any, eq: c.eq };
         if (c.positive) cfg.positive = true; if (c.pi) cfg.pi = true; if (c.roots) cfg.roots = true;

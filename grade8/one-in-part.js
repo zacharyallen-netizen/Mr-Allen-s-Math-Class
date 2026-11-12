@@ -76,7 +76,7 @@
   }
   function start() {
     scan(); setTimeout(scan, 800); setTimeout(scan, 2500);
-    if (!window.TapAnswers && here) { var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261112a', here).href; s.onload = hints; document.head.appendChild(s); }
+    if (!window.TapAnswers && here) { var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261112b', here).href; s.onload = hints; document.head.appendChild(s); }
   }
   if (document.readyState === 'complete') setTimeout(start, 50); else window.addEventListener('load', function () { setTimeout(start, 50); });
   window.OneInPart = { pagers: PAGERS, scan: scan };

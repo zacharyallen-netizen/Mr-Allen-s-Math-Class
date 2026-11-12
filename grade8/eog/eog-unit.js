@@ -225,7 +225,7 @@ EOGU.run = function (unit, ver) {
   function hideAns(msg, q) {
     var r = q.type === "num" ? String(q.ans) : q.type === "mc" ? (q.opts.filter(function (o) { return o.ok; })[0] || {}).h : null;
     if (r == null) return msg;
-    var t = String(r).replace(/<[^>]+>/g, "").replace(/[°\s]|cm|in|ft|m\b|units?/g, "").replace(/[−–]/g, "-");
+    var t = String(r).replace(/<[^>]+>/g, "").replace(/[≈°\s,π³²]|cm|in|ft|m\b|units?|cubic|square|sq/g, "").replace(/[−–]/g, "-");
     if (!/^-?\d+(\.\d+)?$/.test(t)) return msg;
     var esc = t.replace(/^-/, "[-−]").replace(/\./g, "\\."), re = new RegExp("(^|[^\\d.])" + esc + "(?![\\d]|\\.\\d)", "g");
     return String(msg).replace(re, "$1?");
