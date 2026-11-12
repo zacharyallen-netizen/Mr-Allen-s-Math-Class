@@ -1024,7 +1024,7 @@
             var k = other[0], kn = qnum(k), rt = Math.round(Math.sqrt(kn)), perfect = k.d === 1 && rt * rt === k.n;
             var notes = ['The square root <b>undoes</b> the square: √(<i>' + v + '</i><sup>2</sup>) = <i>' + v + '</i>.'];
             if (kn < 0) notes.push('No number times itself makes a negative, so this has no solution.');
-            else if (perfect) notes.push('√' + qHtml(k) + ' = ' + rt + ', because ' + rt + ' · ' + rt + ' = ' + qHtml(k) + '.');
+            else if (perfect) notes.push('Find √' + qHtml(k) + ': what number times <b>itself</b> makes ' + qHtml(k) + '?');   // the student finds it (review fix, Nov 12, 2026)
             else notes.push(qHtml(k) + ' is not a perfect square. Write √' + qtxt(k) + ', or use a calculator and round (use ≈).');
             notes.push(cfg.positive ? 'A length is positive, so use the <b>positive</b> square root.' : 'A positive and a negative number both work. Write ± in front of the root.');
             vis.hidden = false;
@@ -1037,7 +1037,7 @@
             if (!vsc || pdeg(oth) > 0) { fb.className = 'sw-fb tip'; fb.innerHTML = 'First get <i>' + v + '</i><sup>3</sup> <b>alone</b> on one side, with no other terms next to it. Then take the cube root.'; return; }
             var kc = oth[0], kcn = qnum(kc), rc = Math.round(Math.cbrt(kcn)), perf = kc.d === 1 && rc * rc * rc === kc.n;
             var nts = ['The cube root <b>undoes</b> the cube: ∛(<i>' + v + '</i><sup>3</sup>) = <i>' + v + '</i>.'];
-            if (perf) nts.push('∛' + qHtml(kc) + ' = ' + rc + ', because ' + rc + ' · ' + rc + ' · ' + rc + ' = ' + qHtml(kc) + '.');
+            if (perf) nts.push('Find ∛' + qHtml(kc) + ': what number times itself <b>3 times</b> makes ' + qHtml(kc) + '?');
             else nts.push(qHtml(kc) + ' is not a perfect cube. Use a calculator and round (use ≈).');
             vis.hidden = false;
             vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">∛( ' + sideHtml(e.L, v, { colors: true }) + ' )</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>∛( ' + sideHtml(e.R, v, { colors: true }) + ' )</div></div>' +

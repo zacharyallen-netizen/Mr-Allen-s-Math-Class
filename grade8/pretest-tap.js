@@ -38,14 +38,19 @@
   // questions no rule covers: the page's own choices (the page's checker still decides which one is right)
   var EXTRA = {
     'unit7-pretest.html': { 3: ['Outlier', 'Cluster', 'Trend line', 'Slope'], 4: ['Scatterplot', 'Bar graph', 'Two-way table', 'Number line'], 6: ['Best fit', 'Slope', 'Symmetry', 'Outliers'], 16: ['Outlier', 'Cluster', 'Trend line', 'Slope'], 17: ['$4,000', '$50,000', '$46,000', '$400'] },
-    'unit8-pretest.html': { 15: ['Larger', 'Smaller', 'The same size'] },
-    'unit9-pretest.html': { 17: ['1/3', '1/2', '2/3', '3'], 18: ['The cylinder', 'The sphere', 'They are the same'] }
+    'unit8-pretest.html': { 15: ['Larger', 'Smaller', 'The same size'], 18: ['(−2, 1)', '(1, −2)', '(2, −1)', '(−1, −2)'] },
+    'unit9-pretest.html': { 15: ['108π', '36π', '288π', '27π'], 17: ['1/3', '1/2', '2/3', '3'], 18: ['The cylinder', 'The sphere', 'They are the same'] }
+  }[page] || {};
+  // what each wrong choice above gives away (review fix, Nov 12, 2026: real common mistakes as the wrong choices)
+  var XWHY = {
+    'unit8-pretest.html': { 18: { '(−2, 1)': 'That is 90° COUNTERclockwise. Clockwise: (x, y) → (y, −x).', '(−1, −2)': 'That is a 180° turn: both signs changed. 90° clockwise: (x, y) → (y, −x).', '(1, −2)': 'That is a reflection over the x-axis, not a turn. 90° clockwise: (x, y) → (y, −x).' } },
+    'unit9-pretest.html': { 15: { '288π': 'You used the diameter, 6, as the radius. The radius is half: 3.', '27π': 'You left out the ⁴⁄₃. V = ⁴⁄₃πr³.', '108π': 'You multiplied by 4 but did not divide by 3. V = ⁴⁄₃πr³.' } }
   }[page] || {};
   QS.forEach(function (q) {
     var inp = document.getElementById('i' + q.id); if (!inp) return;
     var disp = TapAnswers.plain(q.disp);
     if (q.chk && q.chk[0] === 'sci') disp = disp.replace(/^.*\u2192\s*/, '').replace(/\s*\(.*\)\s*$/, '').replace(/\s+[a-z]+\s*$/i, '');   // "24 × 10⁻⁸ → 2.4 × 10⁻⁷ g" → the final form
-    var qt = (q.op || '') + ' ' + q.expr, list = TapAnswers.choices(disp, { q: qt, key: page + q.id, choices: q.choices || EXTRA[q.id], why: q.why }), div = document.getElementById('q' + q.id), fbq = document.getElementById('fb' + q.id);
+    var qt = (q.op || '') + ' ' + q.expr, list = TapAnswers.choices(disp, { q: qt, key: page + q.id, choices: q.choices || EXTRA[q.id], why: q.why || XWHY[q.id] }), div = document.getElementById('q' + q.id), fbq = document.getElementById('fb' + q.id);
     DISP[q.id] = [disp, qt];
     if (div && fbq) { var hb = TapAnswers.hintButton(div, TapAnswers.hint(disp, qt)); hb.style.marginTop = '8px'; div.insertBefore(hb, fbq); }      // a Hint on every question
     if (list === null) { if (!inp.placeholder) inp.placeholder = 'Type a number';

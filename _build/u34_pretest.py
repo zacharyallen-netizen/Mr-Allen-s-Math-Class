@@ -199,6 +199,7 @@ if __name__ == '__main__':
             REF = {4: 'para', 5: 'para', 10: 'para', 11: 'para', 16: 'para', 6: 'tri', 12: 'tri', 17: 'tri', 18: 'tri'}
             data = dict(seq={str(q['id']): to_js(PT['pt%d' % q['id']]) for q in c['qs']},
                         sol={str(q['id']): trail_html(PT['pt%d' % q['id']]) for q in c['qs']},
+                        eqs={str(q['id']): [dict(t=plain(PT['pt%d' % q['id']]['start'] or ''))] + [dict(t=plain(st.get('res') or ''), label=plain(st.get('move') or '')) for st in to_js(PT['pt%d' % q['id']])['steps']] for q in c['qs']},
                         graph={str(i): dict(PT['pt%d' % i]['graph'], lo=-8, hi=8) for i in (2, 9, 15)},
                         ref={str(k): v for k, v in REF.items()}, tpl={'para': para_ref('__P__'), 'tri': tri_ref('__P__')})
             for i in (2, 9, 15):
@@ -217,7 +218,15 @@ Object.keys(D.seq).forEach(function(id){var card=document.getElementById('q'+id)
    if(!r.hidden&&!r.firstChild)StepSolver.ref(r,D.ref[id],D.tpl[D.ref[id]]);};}
  var m=document.createElement('div');box.appendChild(m);StepSolver.mount(m,D.seq[id]);
  if(D.graph[id]){var g=document.createElement('div');box.appendChild(g);G[id]=StepSolver.graph(g,D.graph[id],{title:'Graph your answer (this counts as 1 point)'});}
- var s=document.createElement('div');s.className='pt-sol';s.id='ptsol'+id;s.innerHTML=D.sol[id];box.appendChild(s);});
+ var s=document.createElement('div');s.className='pt-sol';s.id='ptsol'+id;s.innerHTML=D.sol[id];box.appendChild(s);if(document.readyState==='complete')align(id,s);else window.addEventListener('load',function(){align(id,s);});});
+/* the solution's equation lines, lined up under like terms (Zach's rule: moves sit under the matching term on BOTH sides).
+   Used only when every line parses, each line has the same answer as the one before, and each step is one move; else the text stays. */
+function align(id,s){var E=D.eqs[id];if(!E||!window.StepWork||!StepWork.alignTrail)return;var T=StepWork._t,list=[],v=null;
+ try{for(var i=0;i<E.length;i++){var t=(E[i].t||'').replace(/−/g,'-');if(!t)break;var e=T.parseEq(t);if(e.vars.length!==1)return;v=v||e.vars[0];if(e.vars[0]!==v)return;
+  if(list.length){var p=list[list.length-1].e;if(!T.sameSet(T.solve(p,v),T.solve(e,v)))return;var d=T.describe(p,e,v);if(!d||d.type==='mixed')return;}
+  list.push({e:e,label:i?String(E[i].label||'').replace(/<[^>]+>/g,''):''});}}catch(x){return;}
+ for(var j=list.length;j<E.length;j++)if(E[j].t)return;
+ if(list.length<2)return;var ol=s.querySelector('.ss-trail');if(!ol)return;var w=document.createElement('div');w.innerHTML=StepWork.alignTrail(list,v);ol.parentNode.insertBefore(w,ol);ol.style.display='none';}
 /* the graphs count: one point each, in the same level as their question (checked with Check answers) */
 function scoreGraphs(){var lv=document.getElementById('lvls'),sb=document.getElementById('scorebox');if(!lv||!sb)return;
  var m=[0];lv.textContent.replace(/(\d+)\/(\d+)/g,function(_,a,b){m.push(+a,+b);});if(m.length<7)m=null;var t=sb.firstChild.textContent.match(/(\d+)\s*\/\s*(\d+)/);if(!m||!t)return;
@@ -236,7 +245,7 @@ var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',functi
 })();
 """
             h = open(out).read()
-            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="tap-answers.js?v=20261111b"></script>\n<script src="pretest-tap.js?v=20261112a"></script>\n<script src="step-work.js?v=20261112e"></script><script src="one-at-a-time.js?v=20261111c"></script>\n'
+            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="tap-answers.js?v=20261112a"></script>\n<script src="pretest-tap.js?v=20261112b"></script>\n<script src="step-work.js?v=20261112f"></script><script src="one-at-a-time.js?v=20261112a"></script>\n'
             i = h.rindex('</body>'); h = h[:i] + tag + h[i:]
             open(out, 'w').write(h)
         print('built', out)

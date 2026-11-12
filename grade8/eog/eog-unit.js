@@ -222,6 +222,14 @@ EOGU.run = function (unit, ver) {
     return q.opts.map(function (o, j) { return o.ok ? "ABCDE"[j] : null; }).filter(Boolean).join(", "); }
   function explain(q) { return (q.steps ? '<div class="xwrap"><b>Step by step</b><ol class="xsteps">' + q.steps.map(function (s) { return "<li>" + s + "</li>"; }).join("") + '</ol>' : '<div class="xwrap">') +
     (q.mist ? '<div class="mist1"><b>Common mistake:</b> ' + q.mist + '</div>' : '') + '</div>'; }
+  function hideAns(msg, q) {
+    var r = q.type === "num" ? String(q.ans) : q.type === "mc" ? (q.opts.filter(function (o) { return o.ok; })[0] || {}).h : null;
+    if (r == null) return msg;
+    var t = String(r).replace(/<[^>]+>/g, "").replace(/[°\s]|cm|in|ft|m\b|units?/g, "").replace(/[−–]/g, "-");
+    if (!/^-?\d+(\.\d+)?$/.test(t)) return msg;
+    var esc = t.replace(/^-/, "[-−]").replace(/\./g, "\\."), re = new RegExp("(^|[^\\d.])" + esc + "(?![\\d]|\\.\\d)", "g");
+    return String(msg).replace(re, "$1?");
+  }
   function whyAll(q) { return q.type !== "num" ? '<ul class="whyall">' + q.opts.map(function (o, j) { return o.ok ? "" : "<li><b>" + "ABCDE"[j] + " is wrong:</b> " + o.why + "</li>"; }).join("") + '</ul>' : ""; }
 
   function render(p, box) { p.qs.forEach(function (q) {
@@ -270,6 +278,7 @@ EOGU.run = function (unit, ver) {
           good = !wrongSel.length && got === need;
           if (!good && !wrongSel.length && window.FX) FX.mark("warn");
           if (!good) msg = wrongSel.length ? q.opts[wrongSel[0]].why : "Everything you picked is true. But there " + (need - got === 1 ? "is 1 more right answer." : "are " + (need - got) + " more right answers."); } }
+      if (!good && st.tries === 0) msg = hideAns(msg, q);   // the first miss names the mistake but does not give the answer (review fix, Nov 12, 2026)
       st.tries++; rec(q, good);
       if (good) { st.done = true; d.classList.add("done"); st.first = (st.tries === 1); fb.className = "fb ok"; fb.innerHTML = "<b>Yes!</b> " + q.ok + explain(q);
         d.querySelector(".chk").disabled = true; if (choice) [].forEach.call(d.querySelectorAll(".opt.sel"), function (o) { o.classList.add("right"); }); upd(); }

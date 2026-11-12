@@ -67,6 +67,7 @@
   var ALIAS = { 'non-linear': 'nonlinear', 'not linear': 'nonlinear', 'infinitely many': 'infinitely many solutions', 'infinite': 'infinitely many solutions', 'infinite solutions': 'infinitely many solutions', 'no solutions': 'no solution', 'none': 'no solution', 'the slope': 'slope', 'integers': 'integer' };
   function wordSet(a, q) {
     var low = a.toLowerCase().replace(/[.!]$/, ''); low = ALIAS[low] || low;
+    if (/^(no|none|no (linear )?association)$/.test(low) && /associat|correlat/i.test(q || '')) return [['Positive', 'Negative', 'No association'], 'No association', 'Positive: both go up together. Negative: one goes up while the other goes down. No association: the dots show no up or down pattern.'];   // not Yes/No (review fix, Nov 12, 2026)
     if ((low === 'positive' || low === 'negative') && /associat|correlat|scatter|trend/i.test(q || '')) return [['Positive', 'Negative', 'No association'], low === 'positive' ? 'Positive' : 'Negative', 'Positive: both go up together. Negative: one goes up while the other goes down. No association: the dots show no pattern.'];
     for (var i = 0; i < SETS.length; i++) for (var j = 0; j < SETS[i][0].length; j++) if (SETS[i][0][j].toLowerCase() === low) return [SETS[i][0], SETS[i][0][j], SETS[i][1]];
     return null;

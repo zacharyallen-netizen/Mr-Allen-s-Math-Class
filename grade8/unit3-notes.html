@@ -1087,7 +1087,9 @@ function chk(qid, correct, chosen){
   } else {
     fb.classList.add('show','w');
     fb.classList.remove('c');
-    fb.innerHTML = '✗ Not quite — the correct answer is highlighted in green. ' + (fb.dataset.hint || '');
+    var wb = [].filter.call(box.querySelectorAll('.chk-btn'), function (b) { return b.textContent.trim().replace(/\s+/g,' ') === chosen.replace(/\s+/g,' '); })[0], qq = box.querySelector('.chk-q, .q-text, .qt') || box;
+    var why = (wb && wb.getAttribute('data-why')) || (window.TapAnswers ? TapAnswers.miss(correct, (qq.textContent || '').slice(0, 400)) : '');   // name the mistake (review fix, Nov 12, 2026)
+    fb.innerHTML = '✗ Not quite. ' + (why ? why + ' ' : '') + 'The right answer is in green. ' + (fb.dataset.hint || '');
   }
 }
 
@@ -1237,7 +1239,7 @@ if(location.search.indexOf("key=1") !== -1){
 
 </script>
 <script src="../vwork.js"></script>
-<script src="tap-answers.js?v=20261111b"></script>
+<script src="tap-answers.js?v=20261112a"></script>
 <script src="../notes-practice.js?v=20261111b"></script>
 <script src="ineq-keys.js"></script>
 <script>
@@ -1508,6 +1510,6 @@ function ssRec(qid, ok){
 <script src="twins/unit3-notes.js?v=20261109e"></script>
 <script src="notes-tap.js?v=20261111b"></script>
 <script src="../notes-flow.js?v=20261111c"></script>
-<script src="step-work.js?v=20261112e"></script><script src="../notes-steps.js?v=20261111d"></script>
+<script src="step-work.js?v=20261112f"></script><script src="../notes-steps.js?v=20261111d"></script>
 </body>
 </html>

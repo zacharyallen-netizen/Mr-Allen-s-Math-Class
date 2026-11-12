@@ -559,7 +559,7 @@ nav.top-nav{background:var(--navy);padding:10px 14px;position:sticky;top:0;z-ind
 </div>
 
   <div class="opts">    <button class="opt-btn" onclick="eogAnswer(this,'q28','Negative','U7')">Negative</button>
-    <button class="opt-btn" onclick="eogAnswer(this,'q28','Negative','U7')">Strong</button>
+    <button class="opt-btn" onclick="eogAnswer(this,'q28','Negative','U7')">Nonlinear</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q28','Negative','U7')">No correlation</button>
     <button class="opt-btn" onclick="eogAnswer(this,'q28','Negative','U7')">Positive</button>
 </div>
@@ -759,8 +759,26 @@ function showResults() {
       var q = card.querySelector('.q-text, .question, h3, p'), lab = ((q || card).textContent || qid).replace(/\s+/g, ' ').trim().slice(0, 80);
       ScoreSend.record(qid, btn.classList.contains('correct'), { std: STD[unit] || 'NC.8.EE.7', band: 4, label: lab });
     }
+    if (!was && card && btn.classList.contains('wrong') && window.TapAnswers) {   // name the mistake (review fix, Nov 12, 2026)
+      var fb = card.querySelector('.feedback'), qq = card.querySelector('.q-text, .question, h3, p') || card;
+      var why = btn.getAttribute('data-why') || TapAnswers.miss(correct, (qq.textContent || '').slice(0, 400));
+      if (fb && why) fb.innerHTML = fb.innerHTML.replace(/^✗\s*/, '✗ <b>Not this one.</b> ' + why + '<br>');
+    }
     return r;
   };
+  function hints() {   // a Hint on every question (before answering)
+    if (!window.TapAnswers) return;
+    [].forEach.call(document.querySelectorAll('.q-card'), function (card) {
+      if (card.querySelector('.oat-hint, .ta-hintbtn') || [].some.call(card.querySelectorAll('button'), function (b) { return /hint/i.test(b.textContent); })) return;
+      var qq = card.querySelector('.q-text, .question, h3, p') || card, row = document.createElement('div'); row.className = 'oat-hint'; row.style.cssText = 'margin:10px 0 0';
+      row.appendChild(TapAnswers.hintButton(row, TapAnswers.hint('', (qq.textContent || '').slice(0, 400))));
+      var opts = card.querySelector('.opts'); if (opts && opts.parentNode) opts.parentNode.insertBefore(row, opts.nextSibling); else card.appendChild(row);
+    });
+  }
+  window.addEventListener('load', function () {
+    if (window.TapAnswers) return hints();
+    var s = document.createElement('script'); s.src = 'tap-answers.js?v=20261112a'; s.onload = hints; document.head.appendChild(s);
+  });
   window.addEventListener('load', function () { if (window.ScoreSend) ScoreSend.setup({ kind: 'practice', unit: 'EOG', page: 'EOG Review (all units)', mount: '#ss-mount', std: 'NC.8.EE.7', band: 4 }); });
 })();
 </script>

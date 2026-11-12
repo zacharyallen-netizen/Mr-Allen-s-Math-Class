@@ -29,12 +29,16 @@ C2. Repeating the SAME wrong answer/move must not get the same message forever: 
     is shown the correct next move; by the 3rd, a way forward ("Show me this step"), recorded for the teacher.
 C3. The step-by-step tool never shows the final answer before the student finishes, but it never leaves a student stuck.
 C4. When "Show me this step" is used, the teacher's sheet says "(used step help)" for that question.
+C5. The FIRST wrong-answer note names the mistake but does not give the answer (the answer may show after the 2nd miss).
+C6. This holds at every stage of the step tool: "Write an equation" (template after the 2nd miss, "Show me the equation" after
+    the 3rd), squares and roots, π, and solve-for-y. A true move that goes the wrong way is not praised.
 
 ## D. Layout and flow
 D1. One problem on the screen at a time (practice, pre-tests, notes practice, homework), with Back/Next.
 D2. Nothing overlaps, nothing is cut off, no sideways scrolling on a 1366-wide laptop or a 375-wide phone.
 D3. Figures match the numbers (angles drawn to scale, acute looks acute).
 D4. No page errors in the browser console.
+D5. No emoji in headings (site look).
 
 ## E. Math content
 E1. Every answer, key and explanation is mathematically correct.

@@ -541,7 +541,7 @@ h3.sub{
 
 <!-- ═══════ PAGE HEADER ═══════ -->
 <div class="page-hdr">
-  <h1>📝 Unit 8 Guided Notes — Transformations</h1>
+  <h1>Unit 8 Guided Notes — Transformations</h1>
   <p>Slide it. Flip it. Turn it. Resize it. Then describe what changed and what stayed the same.</p>
 <style>@media print{.pdf-links{display:none!important}}</style><div class="pdf-links" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0 14px"><a href="transformations-fill-in-the-blank.pdf" target="_blank" rel="noopener" style="font:700 14px Inter,system-ui,sans-serif;padding:8px 14px;background:#fff;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;color:#1E2D4F;border:2px solid #1E2D4F">🖨️ Blank Notes (PDF)</a><a href="transformations-fill-in-the-blank_AnswerKey.pdf" target="_blank" rel="noopener" style="font:700 14px Inter,system-ui,sans-serif;padding:8px 14px;background:#fff;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:40px;color:#14532D;border:2px solid #15803D">✅ Answer Key (PDF)</a></div>
   
@@ -1397,7 +1397,9 @@ function chk(qid, correct, chosen){
   } else {
     fb.classList.add('show','w');
     fb.classList.remove('c');
-    fb.innerHTML = '✗ Not quite — the correct answer is highlighted in green. ' + (fb.dataset.hint || '');
+    var wb = [].filter.call(box.querySelectorAll('.chk-btn'), function (b) { return b.textContent.trim().replace(/\s+/g,' ') === chosen.replace(/\s+/g,' '); })[0], qq = box.querySelector('.chk-q, .q-text, .qt') || box;
+    var why = (wb && wb.getAttribute('data-why')) || (window.TapAnswers ? TapAnswers.miss(correct, (qq.textContent || '').slice(0, 400)) : '');   // name the mistake (review fix, Nov 12, 2026)
+    fb.innerHTML = '✗ Not quite. ' + (why ? why + ' ' : '') + 'The right answer is in green. ' + (fb.dataset.hint || '');
   }
 }
 
@@ -1784,7 +1786,7 @@ window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
 </script>
 <script src="../paper.js"></script>
 <script src="twins/unit8-notes.js?v=20261111a"></script>
-<script src="tap-answers.js?v=20261111b"></script><script src="notes-tap.js?v=20261111b"></script><script src="../notes-flow.js?v=20261111c"></script>
-<script src="step-work.js?v=20261112e"></script><script src="../notes-steps.js?v=20261111d"></script>
+<script src="tap-answers.js?v=20261112a"></script><script src="notes-tap.js?v=20261111b"></script><script src="../notes-flow.js?v=20261111c"></script>
+<script src="step-work.js?v=20261112f"></script><script src="../notes-steps.js?v=20261111d"></script>
 </body>
 </html>

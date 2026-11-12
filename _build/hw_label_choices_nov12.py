@@ -113,6 +113,24 @@ for (hw, n), rule in RULES.items():
             cs[i] = new
             changed += 1
 
+# Review fix (Nov 12, 2026, C-M6): two more problems whose values were not tied to names. Exact text, position kept.
+EXACT = {
+    ('E.5', '9'): {
+        'x = 13; the angles are 60° and 120°; alternate interior angles': 'x = 13;  (4x + 8)° = 60°,  (2x + 34)° = 120°;  alternate interior angles',
+        'x = 13; both angles are 60°; alternate interior angles': 'x = 13;  (4x + 8)° = 60°,  (2x + 34)° = 60°;  alternate interior angles',
+        'x = 7; both angles are 36°; corresponding angles': 'x = 7;  (4x + 8)° = 36°,  (2x + 34)° = 36°;  corresponding angles',
+        'x = 23; the angles are 100° and 80°; same-side interior angles': 'x = 23;  (4x + 8)° = 100°,  (2x + 34)° = 80°;  same-side interior angles'},
+}
+for (hw, n), mp in EXACT.items():
+    e = MC[hw][n]; cs = e['c'] if isinstance(e, dict) else e
+    for i, c in enumerate(cs):
+        if c in mp: cs[i] = mp[c]; changed += 1
+# 4.1 #10: say WHICH angle each of "the other two" is across from
+e = MC['4.1']['10']; cs = e['c'] if isinstance(e, dict) else e
+for i, c in enumerate(cs):
+    m2 = re.match(r'(.*);  the other two: (\S+) and (\S+)$', c)
+    if m2: cs[i] = '%s;  across from x°: %s,  across from 4x°: %s' % (m2.group(1), m2.group(2), m2.group(3)); changed += 1
+
 open(PATH, 'w', encoding='utf-8').write(head + json.dumps(MC, ensure_ascii=False, separators=(',', ':')) + tail)
 print('labeled', changed, 'choices')
 for (hw, n) in RULES:

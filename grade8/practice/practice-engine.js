@@ -168,7 +168,11 @@
       card.querySelector('.pr-show').hidden = true;
     } else {
       var TA = window.TapAnswers, wy = !TA ? '' : tap ? (TA.why(tap.list, v) || TA.miss(p.ans, p.q)) : TA.numWhy(v, p.ans, p.q);   // name the mistake
-      fb.className = 'pr-fb no'; fb.textContent = (tries === 1 ? 'Not yet. ' : 'Still not it. ') + (wy || 'Check your work and try again.') + (tries === 1 ? '' : ' Try the hint, or show the answer.');
+      var seen = (card.dataset.seen || '').split('\u0001'), vk = v.replace(/\s+/g, ''), again = seen.indexOf(vk) >= 0; if (!again) card.dataset.seen = seen.concat([vk]).join('\u0001');
+      var hbx = card.querySelector('.pr-hintbox'), opened = false; if (tries >= 2 && hbx && hbx.hidden) { hbx.hidden = false; opened = true; }   // no loops: the 2nd miss opens the hint
+      var swb = card.querySelector('.sw-open');
+      fb.className = 'pr-fb no'; fb.textContent = (again ? 'You tried this same answer before. ' : '') + (tries === 1 ? 'Not yet. ' : 'Still not it. ') + (wy || 'Check your work and try again.') +
+        (tries === 1 ? '' : (opened ? ' The hint is open below. Read it, then try again.' : hbx ? ' Read the hint again.' : '') + (swb ? ' The step by step button walks you through it.' : '') + ' If you are stuck, press Show answer and study it.');
       if (tries >= 2) card.querySelector('.pr-show').hidden = false;
       if (!tap) inp.select();
     }
@@ -179,10 +183,10 @@
   // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261112e'); document.body.appendChild(sw);
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261112f'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261111d'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261112a'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

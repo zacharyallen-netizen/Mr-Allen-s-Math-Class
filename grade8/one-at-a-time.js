@@ -222,7 +222,52 @@
     });
   }
   function go() { if (window.TapAnswers) return add(); if (!here || !document.querySelector(SEL)) return;
-    var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261111b', here).href; s.onload = add; document.head.appendChild(s); }
+    var s = document.createElement('script'); s.src = new URL('tap-answers.js?v=20261112a', here).href; s.onload = add; document.head.appendChild(s); }
   function soon() { setTimeout(go, 600); setTimeout(add, 2500); }
   if (document.readyState === 'complete') soon(); else window.addEventListener('load', soon);
+})();
+/* TRY AGAIN ON UNITS 7–9 PRACTICE (review fix, Nov 12, 2026). These pages used to lock after one tap and show the answer.
+   Now: a wrong tap is marked and turned off, the note names the mistake (the button's data-why, or the common mistakes for
+   that skill); the 2nd miss opens the hint; the answer and the worked explanation show after the 3rd miss (or when only the
+   right one is left). Every tap is sent (first try / final), as before. */
+(function () {
+  if (!/unit[789]-practice/.test(location.pathname) || /[?&](paper|key)=1/.test(location.search)) return;
+  function start() {
+    if (typeof window.mc !== 'function' || window.mc.__retry) return;
+    var old = window.mc;
+    var re = function (btn, id, correct) {
+      var card = document.getElementById(id); if (!card || card.classList.contains('answered')) return;
+      var A = !!card.querySelector('.opt-btn'), bs = card.querySelectorAll(A ? '.opt-btn' : '.ob'), fb = card.querySelector(A ? '.feedback' : '.fb');
+      if (!fb) return old(btn, id, correct);
+      if (card.dataset.expl == null) card.dataset.expl = fb.textContent || '';
+      var right = btn.textContent.trim() === String(correct).trim(), miss = Number(card.dataset.miss || 0);
+      try { if (window.ScoreSend) ScoreSend.record(id, right, { std: window.ssStd ? ssStd(id) : '', label: window.ssLabel ? ssLabel(card) : id }); } catch (e) { }
+      var left = [].filter.call(bs, function (b) { return !b.disabled && b !== btn && b.textContent.trim() !== String(correct).trim(); }).length;
+      var finish = function (ok) {
+        card.classList.add('answered'); [].forEach.call(bs, function (b) { b.disabled = true; });
+        if (A) { try { if (ok) window.ts = (window.ts || 0) + 1; window.ta = (window.ta || 0) + 1; var s1 = document.getElementById('score'), s2 = document.getElementById('answered'); if (s1) s1.textContent = window.ts; if (s2) s2.textContent = window.ta; } catch (e) { } }
+        else { var tab = card.closest('.tab-pane'), sc = tab && tab.querySelector('.sv'); if (sc) { try { /* global lexical `scores` on these pages */ scores[sc.id] = (scores[sc.id] || 0) + 1; sc.textContent = scores[sc.id]; } catch (e) { } } }
+      };
+      if (right) {
+        btn.classList.add('correct'); finish(true);
+        fb.className = (A ? 'feedback' : 'fb') + ' show c'; fb.textContent = '✓ Correct!' + (miss ? ' (on try ' + (miss + 1) + ')' : '') + ' ' + card.dataset.expl;
+        return;
+      }
+      miss++; card.dataset.miss = miss; btn.classList.add('wrong'); btn.disabled = true;
+      var q = card.querySelector('.qt, .q-text, .q-prompt, .stem') || card, qt = (q.textContent || '').slice(0, 400);
+      var why = btn.getAttribute('data-why') || (window.TapAnswers ? TapAnswers.miss(String(correct), qt) : '') || 'Read the question again. What is it asking for?';
+      if (miss >= 3 || left === 0) {
+        [].forEach.call(bs, function (b) { if (b.textContent.trim() === String(correct).trim()) b.classList.add('reveal'); }); finish(false);
+        fb.className = (A ? 'feedback' : 'fb') + ' show w'; fb.textContent = 'Not this time. The answer is ' + correct + '. ' + card.dataset.expl + ' Read this, then try the next one.';
+        return;
+      }
+      var hb = miss >= 2 && [].filter.call(card.querySelectorAll('button'), function (b) { return /hint/i.test(b.textContent); })[0], hbox = card.querySelector('.ta-hint, .oat-hint .ta-note, .hintbox');
+      if (hb && !(hbox && hbox.offsetParent)) hb.click();
+      fb.className = (A ? 'feedback' : 'fb') + ' show w';
+      fb.textContent = (miss === 1 ? 'Not yet. ' : 'Still not it. ') + why + (miss >= 2 ? ' The hint is open. Read it, then try once more.' : ' Try again.');
+    };
+    re.__retry = true; window.mc = re;
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  setTimeout(start, 50);
 })();

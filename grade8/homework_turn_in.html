@@ -122,7 +122,7 @@
 
 <script src="homework/crops.js?v=20261110a"></script>
 <script src="homework/check.js?v=20261111e"></script>
-<script src="homework/choices.js?v=20261112a"></script><script src="homework/help.js?v=20261112a"></script>
+<script src="homework/choices.js?v=20261112b"></script><script src="homework/help.js?v=20261112a"></script>
 <script src="homework-check.js?v=20261111d"></script>
 <script src="homework-graph.js?v=20261111d"></script>
 <script src="../tracker-config.js"></script>
@@ -198,16 +198,16 @@
     if (!has) { var nt = document.createElement('span'); nt.className = 'hwnote'; nt.textContent = 'Mr. Allen checks this one.'; lab.appendChild(nt); return; }
     var fb = document.createElement('div'); fb.className = 'hwfb'; fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); lab.appendChild(fb);
     function show(cls, t){ fb.className = 'hwfb ' + cls; fb.textContent = t; inp.classList.toggle('right', cls === 'ok'); }
-    var hintText = HWCheck.hint ? HWCheck.hint(h.id, num) : '';
+    var hintText = HWCheck.hint ? HWCheck.hint(h.id, num) : '', hbox = null;
     if (hintText) { var hb = document.createElement('button'); hb.type = 'button'; hb.className = 'hinthw'; hb.textContent = '💡 Hint'; hb.setAttribute('aria-expanded', 'false');
-      var hbox = document.createElement('div'); hbox.className = 'hwhint'; hbox.hidden = true; hbox.textContent = 'Hint: ' + hintText; hbox.setAttribute('role', 'status');
+      hbox = document.createElement('div'); hbox.className = 'hwhint'; hbox.hidden = true; hbox.textContent = 'Hint: ' + hintText; hbox.setAttribute('role', 'status');
       hb.addEventListener('click', function(e){ e.preventDefault(); hbox.hidden = !hbox.hidden; hb.setAttribute('aria-expanded', hbox.hidden ? 'false' : 'true'); });
       lab.insertBefore(hbox, fb); lab.insertBefore(hb, hbox); }
     var steps = function(){ return !!lab.querySelector('.sw-host'); };
 
     // ---- multiple choice: tap one ----
     if (mc && !mc.n && kind === 'l') {
-      var list = typeof mc === 'number' ? null : (mc.c || mc), k = list ? list.length : mc, btns = [], tried = {}, multi = !!mc.m;
+      var list = typeof mc === 'number' ? null : (mc.c || mc), k = list ? list.length : mc, btns = [], tried = {}, multi = !!mc.m, misses = 0;
       row.className = 'inrow mc ' + (list && list[0] && list[0].g ? 'gfx g' + list[0].g.k : list ? 'txt' : 'let'); inp.classList.add('mchid'); inp.tabIndex = -1;
       var raw = function(L){ return list ? list[LET.indexOf(L)] : L; }, one = function(L){ var c = raw(L); return typeof c === 'string' ? c : (c.d || c.t || 'Graph ' + L); }, text = function(v){ return v.split('').map(one).join('; '); };
       var gk = list && list[0] && list[0].g ? list[0].g.k : '';
@@ -216,9 +216,14 @@
         on = multi ? inp.value.indexOf(L) >= 0 : on; b.className = 'mcbtn' + (gk ? ' gr' : '') + (multi ? ' box' : '') + (on ? ' sel' : '') + (multi ? (on && tried[inp.value] === 1 ? ' ok' : '') : (tried[L] === 1 ? ' ok' : tried[L] === 0 ? ' no' : '')); b.setAttribute('aria-pressed', on ? 'true' : 'false'); }); };
       var judge = function(quiet){
         var L = inp.value; if (!L) { fb.className = 'hwfb'; fb.textContent = ''; return; }
+        var again = !quiet && tried[L] === 0;
         var ok = HWCheck.tap(h.id, num, L); tried[L] = ok ? 1 : 0; if (!quiet) firstTry(num, text(L), ok); paint();
+        if (!ok && !quiet) misses++;
         var wy = ok ? '' : (multi ? HWCheck.whyTap(h.id, num, '') : HWCheck.whyTap(h.id, num, L));
-        if (ok) show('ok', 'Correct! Nice work.'); else show('no', (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those. ' : 'Not yet. ') + (wy || 'Check your work and tap again.') + (steps() ? ' The step by step button can help.' : ''));
+        // no loops (Nov 12, 2026): a repeat says so; the 2nd miss adds the hint and the problem's next step
+        var more = '';
+        if (!ok && misses >= 2) { if (hintText && hbox && hbox.hidden) more += ' Hint: ' + hintText; more += steps() ? ' Press the step by step button and do one step at a time.' : ' Work it on paper one step at a time, then tap the choice that matches.'; if (!multi) more += ' The red ones are not right, so pick from the others.'; }
+        if (ok) show('ok', 'Correct! Nice work.'); else show('no', (again ? 'You tapped this one before. ' : '') + (multi ? 'Not yet. Look at each one again. Tap all that are true, and only those. ' : 'Not yet. ') + (wy || 'Check your work and tap again.') + (misses < 2 && steps() ? ' The step by step button can help.' : '') + more);
       };
       for (var ci = 0; ci < k; ci++) (function(L){
         var b = document.createElement('button'); b.type = 'button'; b.className = 'mcbtn'; b.setAttribute('data-v', L); var c0 = raw(L);
@@ -254,8 +259,11 @@
       else if (r === 'blank') show('tip', 'Type your answer first.');
       else if (r === 'form') show('tip', kind === 'l' ? 'Type the letter of your choice: A, B, C or D.' : 'Type one number for your answer, like 12 or 3/4.');
       else if (r === 'close') show('tip', 'That does not match yet. Check your work and how you wrote it.');
-      else show('no', 'Not yet. ' + (HWCheck.whyNum(h.id, num, v) || 'Check your work and try again.') + (steps() ? ' The step by step button can help.' : ''));
+      else { var vk = v.replace(/\s+/g, ''), again = !quiet && seenN[vk]; seenN[vk] = 1; if (!quiet) nmiss++;
+        var more = nmiss >= 2 ? ((hintText && hbox && hbox.hidden ? ' Hint: ' + hintText : '') + (steps() ? ' Press the step by step button and do one step at a time.' : ' Work it on paper one step at a time.')) : (steps() ? ' The step by step button can help.' : '');
+        show('no', (again ? 'You tried this same answer before. ' : '') + 'Not yet. ' + (HWCheck.whyNum(h.id, num, v) || 'Check your work and try again.') + more); }
     }
+    var seenN = {}, nmiss = 0;
     b.addEventListener('click', function(e){ e.preventDefault(); run(false); });
     inp.addEventListener('keydown', function(e){ if (e.key === 'Enter') { e.preventDefault(); run(false); } });
     inp.addEventListener('input', function(){ if (inp.dataset.swFilled && inp.dataset.swFilled === inp.value) { firstTry(num, inp.value.trim(), true); show('ok', 'Correct! You worked it out step by step.'); return; } fb.className = 'hwfb'; fb.textContent = ''; inp.classList.remove('right'); });
@@ -381,7 +389,7 @@
 </script>
 <script src="ineq-keys.js"></script>
 <script src="homework-steps.js?v=20261112a"></script>
-<script src="step-work.js?v=20261112e"></script>
-<script src="one-at-a-time.js?v=20261111d"></script>
+<script src="step-work.js?v=20261112f"></script>
+<script src="one-at-a-time.js?v=20261112a"></script>
 </body>
 </html>

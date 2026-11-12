@@ -92,6 +92,25 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   for (const id in M) for (const n in M[id]) { const c = M[id][n]; if (!Array.isArray(c) && c.setup != null && !c.ps && !c.eq) fail('C2', `HW ${id} #${n}`, 'no "Show me the equation" equation (add it to SETUP in _build/test_homework_steps.js and EQ in homework-steps.js)'); }
 }
 
+/* C2/C3 (review batch 3, Nov 12, 2026): every kind of page escalates after a miss and never just shows the answer first. */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const need = [
+    ['C2', 'grade8/one-at-a-time.js', 'TRY AGAIN ON UNITS 7–9 PRACTICE', 'Units 7–9 practice lets students try again (no lock after one tap)'],
+    ['C2', 'grade8/practice/practice-engine.js', 'the 2nd miss opens the hint', 'practice pages open the hint on the 2nd miss'],
+    ['C2', 'grade8/homework_turn_in.html', 'You tapped this one before', 'homework taps say when a choice was already tried'],
+    ['C2', 'grade8/homework_turn_in.html', 'You tried this same answer before', 'homework numbers say when an answer was already tried'],
+    ['C5', 'grade8/eog/eog-unit.js', 'function hideAns', 'EOG first-miss note does not give the answer'],
+    ['C1', 'grade8/eog_review.html', 'TapAnswers.miss(correct', 'EOG review names the mistake'],
+  ];
+  for (const [r, f, needle, what] of need) if (!rd(f).includes(needle)) fail(r, f, 'missing: ' + what);
+  for (const f of ['unit1-notes', 'unit2-notes-sci-notation', 'unit2-notes-exponents', 'unit3-notes', 'unit4-notes', 'unit5-notes', 'unit7-notes', 'unit8-notes', 'unit1-tutorial-cube-roots'])
+    if (/the correct answer is highlighted in green\. ' \+ \(fb\.dataset\.hint/.test(rd('grade8/' + f + '.html'))) fail('C1', 'grade8/' + f + '.html', 'wrong multiple-choice answer does not name the mistake');
+  if (/'√' \+ qHtml\(k\) \+ ' = ' \+ rt/.test(rd('grade8/step-work.js'))) fail('C3', 'grade8/step-work.js', 'square-root preview prints the answer before the student writes it');
+  const EM = /<h[1-4][^>]*>[^<]*[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+  for (const f of fs.readdirSync(path.join(ROOT, 'grade8'))) if (/^unit8.*\.html$/.test(f) && EM.test(rd('grade8/' + f))) fail('D5', 'grade8/' + f, 'emoji in a heading');
+}
+
 /* E4: no made-up NC standard codes. */
 {
   const bad = /NC\.8\.G\.1\b/;

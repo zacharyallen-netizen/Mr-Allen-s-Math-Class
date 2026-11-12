@@ -832,7 +832,9 @@ function chk(qid, correct, chosen){
   } else {
     fb.classList.add('show','w');
     fb.classList.remove('c');
-    fb.innerHTML = '✗ Not quite — the correct answer is highlighted in green. ' + (fb.dataset.hint || '');
+    var wb = [].filter.call(box.querySelectorAll('.chk-btn'), function (b) { return b.textContent.trim().replace(/\s+/g,' ') === chosen.replace(/\s+/g,' '); })[0], qq = box.querySelector('.chk-q, .q-text, .qt') || box;
+    var why = (wb && wb.getAttribute('data-why')) || (window.TapAnswers ? TapAnswers.miss(correct, (qq.textContent || '').slice(0, 400)) : '');   // name the mistake (review fix, Nov 12, 2026)
+    fb.innerHTML = '✗ Not quite. ' + (why ? why + ' ' : '') + 'The right answer is in green. ' + (fb.dataset.hint || '');
   }
 }
 
@@ -1480,7 +1482,7 @@ window.PAPER_HOOKS = (window.PAPER_HOOKS || []).concat(function (KEY) {
 <script src="../paper.js"></script>
 <script src="../student-fx.js?v=20261112b"></script>
 <script>/* one part at a time (notes-flow.js), Nov 10, 2026 */ window.NF = { sections: 'section.topic', word: 'Part' };</script>
-<script src="tap-answers.js?v=20261111b"></script>
+<script src="tap-answers.js?v=20261112a"></script>
 <script src="notes-tap.js?v=20261111b"></script>
 <script src="../notes-flow.js?v=20261111c"></script>
 <script src="one-in-part.js?v=20261111d"></script>
