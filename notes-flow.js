@@ -157,6 +157,15 @@
       (tw.sol ? '<div class="np-sol">' + tw.sol + '</div>' : '');
     wrap.innerHTML = h; q.appendChild(wrap);
     var row = wrap.querySelector('.np-row'), sol = wrap.querySelector('.np-sol');
+    // a "Solve: …" twin shows its work lined up under like terms, like the worked examples (vwork.js; review fix, Nov 12, 2026)
+    var sm = String(tw.p || '').replace(/<[^>]+>/g, ' ').match(/Solve:\s*([^.?]*?[=<>≤≥][^.?]*?)(?:\.|\s+Tap|\s*$)/);
+    if (sol && sm && /x/.test(sm[1]) && window.VWORK && /unit3-notes/.test(location.pathname)) {
+      try { var lead = String(tw.sol || '').split(/<br\s*\/?>/).filter(function (l) { return !/[=<>≤≥→]|&[lg]t;/.test(l.replace(/<[^>]+>/g, '')); }).join(' ');
+        var vw = document.createElement('div'); vw.className = 'vw'; vw.setAttribute('data-vw', JSON.stringify({ eq: sm[1].trim(), mode: 'all', compact: true }));
+        var probe = document.createElement('div'); probe.appendChild(vw.cloneNode(true)); VWORK.drawAll(probe);
+        if (probe.querySelector('.vw-rows')) { sol.innerHTML = lead ? lead + ' ' : ''; sol.appendChild(probe.firstChild); }
+      } catch (e) { }
+    }
     var fb = document.createElement('span'); fb.className = 'np-fb'; fb.setAttribute('aria-live', 'polite');
     var answers = String(tw.a == null ? '' : [].concat(tw.a).join('|')).split('|'), shown = tw.show || answers[0], done = false, genT = null, TA = window.TapAnswers, a0 = answers[0];
     function finish(ok, picked, typedV) {

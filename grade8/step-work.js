@@ -900,6 +900,74 @@
         if (/180|90|360|equal|same|vertical|supplement|complement|straight|right angle|triangle/i.test(h)) return 'Shape of the equation: <b>(one angle) + (the other angle) = 180</b> for a straight line, <b>= 90</b> for a right angle, <b>= 180</b> for the 3 angles of a triangle. If the two angles are <b>equal</b> (vertical, corresponding, alternate), write <b>(one angle) = (the other angle)</b>.';
         return 'Turn the words into math, one piece at a time: <b>times</b> → multiply, <b>more than / plus</b> → add, <b>less than</b> → subtract ("5 less than 3n" is 3<i>n</i> − 5), <b>is / equals / total</b> → =. A number that happens again and again goes <b>next to the letter</b>; a one-time number is added. Two plans that cost the same: (plan A) = (plan B).';
       }
+      /* "Show me the equation" when no equation was stored (practice pages, notes, pre-tests; review fix, Nov 12, 2026):
+         build equations from the numbers and angle expressions in the problem's own words and keep the FIRST one whose
+         solution is the answer. Only angle, Pythagorean, volume and two-line problems; plain word problems keep Hint / Show answer. */
+      function fitsEq(t) {
+        try { var e = parseEq(t); if (e.vars.length !== 1) return false; var vv = e.vars[0], sol = solve(e, vv), want = S.answer.n != null ? S.answer.n / S.answer.d : Number(S.answer);
+          var val = sol.kind === 'one' || sol.kind === 'ineq' ? qnum(sol.x) : sol.kind === 'sq' && qnum(sol.k) > 0 ? Math.sqrt(qnum(sol.k)) : sol.kind === 'cube' ? Math.cbrt(qnum(sol.k)) : null;
+          return val != null && Math.abs(val - want) <= Math.max(S.tol || 0, 1e-9) && (sol.kind !== 'ineq' || !!S.ineq) && (S.any || vv === v); } catch (x) { return false; }
+      }
+      function guessEq() {
+        // picture labels are read now (figtext.js may load after the page)
+        var T = String((S.text || '') + ' ' + figT({ fig: S.fig })).replace(/<[^>]+>/g, ' ').replace(/&[a-z]+;/g, ' ').replace(/[−–]/g, '-').replace(/[×·]/g, '*').replace(/\s+/g, ' ');
+        if (!T) return null;
+        var c = [], L = S.any ? 'x' : v, H = (S.hint || '') + ' ' + T;
+        var num = function (z) { return z.replace(/,/g, ''); };
+        // angles: (3x + 10)°, 72°, x°
+        var ang = [];
+        T.replace(/\(([^()]*\d[^()]*|[^()]*x[^()]*)\)\s*°|(\d+(?:\.\d+)?\s*x(?:\s*[+-]\s*\d+(?:\.\d+)?)?|\d+(?:\.\d+)?|x)\s*°/g, function (m, a, b) { var t = (a || b).trim().replace(/x/g, L); if (ang.indexOf(t) < 0) ang.push(t); return m; });
+        if (/angle|°|parallel|triangle|complement|supplement|linear pair|vertical|corresponding|alternate|same-side/i.test(H)) {
+          T.replace(/(?:^|[^a-z0-9])(\d*\s*x(?:\s*[+-]\s*\d+(?:\.\d+)?)?)(?![a-z0-9^])/gi, function (m, a) { var t = a.trim().replace(/x/g, L); if (/\d/.test(t) && ang.indexOf(t) < 0) ang.push(t); return m; });
+        }
+        if (ang.length) {
+          if (!ang.some(function (t) { return t.indexOf(L) >= 0; })) ang.push(L);
+          var eqFirst = /equal|same|vertical|corresponding|alternate/i.test(S.hint || '');
+          for (var i = 0; i < ang.length; i++) for (var j = 0; j < ang.length; j++) { if (i === j) continue; var A = ang[i], B = ang[j];
+            var eq = '(' + A + ') = (' + B + ')', sp = '(' + A + ') + (' + B + ') = 180', cp = '(' + A + ') + (' + B + ') = 90';
+            if (i < j && (A + B).indexOf(L) >= 0) (eqFirst ? [eq, sp, cp] : [sp, cp, eq]).forEach(function (t) { c.push(t); });
+            for (var k = 0; k < ang.length; k++) if (k !== i && k !== j) { var C = ang[k]; if (i < j && j < k) c.push('(' + A + ') + (' + B + ') + (' + C + ') = 180'); if (i < j) c.push('(' + A + ') + (' + B + ') = (' + C + ')'); }
+          }
+        }
+        var ns = (T.match(/\d[\d,]*(?:\.\d+)?/g) || []).map(num).filter(function (z, i, a) { return a.indexOf(z) === i; }).slice(0, 6);
+        if (/hypot|leg|right triangle|ladder|diagonal|pythag|diamond|base|ramp|wire|kite|distance/i.test(H)) {
+          var Lp = S.any ? 'c' : v;
+          var pts = []; T.replace(/\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g, function (m, a, b) { pts.push([+a, +b]); return m; });
+          if (pts.length >= 2) c.push(Math.abs(pts[1][0] - pts[0][0]) + '^2 + ' + Math.abs(pts[1][1] - pts[0][1]) + '^2 = ' + Lp + '^2');   // distance: the run and the rise are the legs
+          if (/area/i.test(T)) ns.forEach(function (a) { ns.forEach(function (b) { if (a !== b) { if (+a <= +b) c.push(a + ' + ' + b + ' = ' + Lp + '^2'); if (+a < +b) c.push(Lp + '^2 + ' + a + ' = ' + b); } }); });
+          if (/square/i.test(T) && /diagonal/i.test(T)) ns.forEach(function (a) { c.push((S.any ? 's' : v) + '^2 + ' + (S.any ? 's' : v) + '^2 = ' + a + '^2'); });
+          if (/square/i.test(T)) ns.forEach(function (a) { c.push(a + '^2 + ' + a + '^2 = ' + Lp + '^2'); });
+          ns.forEach(function (a) { ns.forEach(function (b) { if (a === b) return; if (+a <= +b) c.push(a + '^2 + ' + b + '^2 = ' + Lp + '^2'); if (+a < +b) c.push(Lp + '^2 + ' + a + '^2 = ' + b + '^2'); }); });
+        }
+        if (/volume|cylinder|cone|sphere|π|ball|tank|can\b|cup|hemisphere/i.test(H)) {
+          var Lv = S.any ? (/radius|diameter|wide/i.test(T) && !/height|tall/i.test(T.replace(/radius[^.]*/i, '')) ? 'r' : 'h') : v;
+          var vs = []; T.replace(/(\d[\d,]*(?:\.\d+)?)\s*π/g, function (m, a) { vs.push(num(a) + 'π'); return m; }); ns.forEach(function (a) { vs.push(a); });
+          vs.forEach(function (V) { ns.forEach(function (d) { if (V === d) return; ['r', 'h'].forEach(function (u) {
+            var Lr = S.any ? u : v;
+            c.push(V + ' = π*' + d + '^2*' + Lr, V + ' = π*' + Lr + '^2*' + d, V + ' = (1/3)*π*' + d + '^2*' + Lr, V + ' = (1/3)*π*' + Lr + '^2*' + d, V + ' = π*(' + d + '/2)^2*' + Lr); });
+            }); c.push(V + ' = (4/3)*π*' + (S.any ? 'r' : v) + '^3'); });
+        }
+        // the picture holds the numbers (practice pages): build the equation from the named pair and the answer
+        var want0 = S.answer.n != null ? S.answer.n / S.answer.d : Number(S.answer);
+        if (isFinite(want0) && want0 > 0 && want0 < 180 && Math.round(want0) === want0) {
+          if (/complementary/i.test(T)) c.push(L + ' + ' + (90 - want0) + ' = 90');
+          else if (/supplementary|linear pair|same-side/i.test(T)) c.push(L + ' + ' + (180 - want0) + ' = 180');
+          else if (/vertical|corresponding|alternate/i.test(T)) c.push(L + ' = ' + want0);
+        }
+        // word problems: start + rate × letter = total, in the order the numbers appear (only when S.word)
+        if (S.word && ns.length >= 2 && ns.length <= 4) {
+          var R = /at most|no more than|can spend|up to/i.test(T) ? ' <= ' : /at least|no less than/i.test(T) ? ' >= ' : ' = ', o = ns;
+          if (o.length === 2) c.push(o[1] + L + R + o[0], o[0] + L + R + o[1]);
+          if (o.length >= 3) { c.push(o[0] + ' + ' + o[1] + L + R + o[2], o[0] + ' + ' + o[1] + L + ' = ' + o[2] + L);
+            if (o.length === 4) c.push(o[0] + ' + ' + o[1] + L + ' = ' + o[2] + ' + ' + o[3] + L, o[0] + ' + ' + o[1] + L + ' = ' + o[3] + L); }
+        }
+        var sl = T.match(/slope (?:of |is )?(-?\d+(?:\.\d+)?(?:\/\d+)?)/i), pt = T.match(/\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/);
+        if (sl && pt) c.push(pt[2] + ' = ' + sl[1] + '*' + pt[1] + ' + ' + (S.any ? 'b' : v), pt[2] + ' = ' + sl[1] + '*(' + pt[1] + ') + ' + (S.any ? 'b' : v));   // find b: y = mx + b with the point
+        var ys = T.match(/y\s*=\s*[-+0-9x./() ]+?(?=\s*(?:,|;|and|\.\s|\.$|$|\?))/g);
+        if (ys && ys.length >= 2) c.push(ys[0].replace(/^y\s*=\s*/, '') + ' = ' + ys[1].replace(/^y\s*=\s*/, ''));
+        for (var q = 0; q < c.length && q < 400; q++) if (fitsEq(c[q])) return c[q].replace(/\*(?=[a-zπ(])/g, '').replace(/π\*/g, 'π');
+        return null;
+      }
       function missed(msg, e) {
         var k = ''; try { k = eqHtml(e).replace(/\s+/g, ''); } catch (x) { }
         var again = k && seenEq[k]; if (k) seenEq[k] = 1;
@@ -909,7 +977,7 @@
         if (tries === 1 && S.hint) out += '<br>💡 ' + S.hint;
         if (tries >= 2 || again) out += '<div class="sw-coach"><p class="sw-coach-h">Here is how the equation should look:</p><p class="sw-note">' + plan() + '</p>' + (S.hint && tries > 1 ? '<p class="sw-note">💡 ' + S.hint + '</p>' : '') + '</div>';
         fb.innerHTML = out;
-        var shown = S.eq || (S.line && !S.ps ? 'y = (' + qtxt(toQ(S.line[0])) + ')x + (' + qtxt(toQ(S.line[1])) + ')' : null);   // point-slope needs the problem's own point (homework EQ table)
+        var shown = S.eq || (S.line && !S.ps ? 'y = (' + qtxt(toQ(S.line[0])) + ')x + (' + qtxt(toQ(S.line[1])) + ')' : null) || guessEq();   // point-slope needs the problem's own point (homework EQ table)
         if (tries >= 3 && shown) {
           var sb = btn('Show me the equation', 'sw-show'); fb.appendChild(sb);
           sb.addEventListener('click', function () {
@@ -1369,6 +1437,22 @@
   }
   function letters(m) { var o = {}; for (var k in m.b) if (k[0] !== '#' && m.b[k]) o[k] = m.b[k]; return o; }
   function valueOf(m) { var v = m.c; for (var k in m.b) if (k[0] === '#' && m.b[k]) v = bmul(v, bpow(B(BigInt(k.slice(1).replace('.', '')), 10n ** BigInt((k.split('.')[1] || '').length)), m.b[k])); return v; }
+  /* a monomial written out in simplest form: positive exponents, each base once (for "Show me this step") */
+  function monoText(m) {
+    try {
+      var c = m.c, n = c.n < 0n ? -c.n : c.n, d = c.d < 0n ? -c.d : c.d, neg = (c.n < 0n) !== (c.d < 0n) && c.n !== 0n;
+      var ks = Object.keys(m.b).filter(function (k) { return m.b[k] !== 0; }).sort(function (x, y) { return (x[0] === '#' ? 0 : 1) - (y[0] === '#' ? 0 : 1) || (x < y ? -1 : 1); });
+      var part = function (list, coef) { var out = coef !== 1n || !list.length ? String(coef) : '';
+        list.forEach(function (k) { var e = Math.abs(m.b[k]), b = k[0] === '#' ? k.slice(1) : k; out += (k[0] === '#' && out ? '*' : '') + b + (e !== 1 ? '^' + e : ''); }); return out; };
+      var dec = null, kk = 0, P10 = 1n; while (d !== 1n && kk < 20 && P10 % d !== 0n) { P10 *= 10n; kk++; }
+      if (d !== 1n && P10 % d === 0n) { n = n * (P10 / d); d = P10; }
+      if (d !== 1n && /^10*$/.test(String(d))) { var ds = String(n).padStart(String(d).length, '0'), cut = ds.length - (String(d).length - 1); dec = (ds.slice(0, cut) || '0') + '.' + ds.slice(cut); dec = dec.replace(/\.?0+$/, ''); d = 1n; }
+      var top = part(ks.filter(function (k) { return m.b[k] > 0; }), dec ? 1n : n), bot = ks.filter(function (k) { return m.b[k] < 0; });
+      if (dec) top = dec + (top && top !== '1' ? (/^\d/.test(top) ? '*' : '') + top : '');
+      var den = bot.length || d !== 1n ? part(bot, d) : '';
+      return (neg ? '-' : '') + (den ? (/^\d+$/.test(top) ? top : '(' + top + ')') + '/(' + den + ')' : top);
+    } catch (x) { return null; }
+  }
   function sameMono(a, b) {
     var la = letters(a), lb = letters(b), ka = Object.keys(la).sort(), kb = Object.keys(lb).sort();
     if (ka.join() !== kb.join() || ka.some(function (k) { return la[k] !== lb[k]; })) return false;
@@ -1513,7 +1597,14 @@
             fb.className = 'sw-fb no';
             fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + exDiagnose(a, mNew) +
               (tried >= 2 || again ? '<div class="sw-coach"><p class="sw-coach-h">Do one rule at a time:</p><p class="sw-note">Multiply same bases → <b>add</b> the exponents. Divide → <b>subtract</b> (top − bottom). Power of a power → <b>multiply</b> the exponents. A power outside ( ) goes on <b>every</b> factor inside. Anything to the 0 power is 1. A negative exponent means <b>flip</b> it to the other side of the fraction bar.</p><p class="sw-note">Work the <b>numbers</b> first, then each letter.</p></div>' : '') +
-              (tried >= 3 ? '<p class="sw-note">Still stuck? Press <b>Undo my last line</b>, pick a smaller move, or use the problem\'s <b>Hint</b> button.</p>' : '');
+              '';
+            var shownT = tried >= 3 ? monoText(mOld) : null;
+            if (shownT) {   // 3rd miss: "Show me this step" writes the same value with every rule used once (student still presses Check)
+              var sbx = btn('Show me this step', 'sw-show'); fb.appendChild(sbx);
+              sbx.addEventListener('click', function () { inp.value = shownT; inp.dispatchEvent(new Event('input', { bubbles: true }));
+                var hp = (+host.dataset.swHelped || 0) + 1; host.dataset.swHelped = String(hp); if (cfg.onHelp) try { cfg.onHelp(hp); } catch (x) { }
+                fb.className = 'sw-fb tip'; fb.innerHTML = 'Here is the line with each rule used. Read it: which exponents were added, subtracted or multiplied? Then press <b>Check this line</b>.'; });
+            }
             return; }
           if (html(t) === html(a)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Use a rule to change it.'; return; }
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
@@ -1612,18 +1703,18 @@
         if (start) { mount(host, { start: start, onAnswer: function (t, info) { fillBox(inp, fmt(t, info)); } }); return; }
         var unit = String(D.unit), ans = numAns(p.ans);
         if (unit === '5' && ans != null && PYTH_RE.test(p.q + ' ' + sec.title) && !/right triangle\?/i.test(p.q)) {
-          mount(host, { setup: { answer: ans, tol: tolFor(p.ans, p.q), any: true, hint: pythHint(p.q + ' ' + sec.title), figure: !!p.fig }, positive: true,
+          mount(host, { setup: { answer: ans, tol: tolFor(p.ans, p.q), any: true, hint: pythHint(p.q + ' ' + sec.title), figure: !!p.fig, text: p.q, fig: p.fig }, positive: true,
             onAnswer: function (t, info) { fillBox(inp, info.numText || (info.x ? qtxt(info.x) : t)); } });
           return;
         }
         if (unit === '6' && /solve the system/i.test(p.q) && ans != null) {
-          mount(host, { setup: { answer: ans, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' ? qtxt(info.x) : t); } });
+          mount(host, { setup: { answer: ans, text: p.q, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' ? qtxt(info.x) : t); } });
           return;
         }
         var angle = unit === '4' && /find x/i.test(p.q) && ans != null;
         var word = unit === '3' && /word/i.test(sec.title) && ans != null;
         if (angle || word) mount(host, {
-          setup: { answer: ans, hint: angle ? angleHint(p.q + ' ' + sec.title) : 'Turn the words into math one piece at a time. A number that happens once is added; a number that happens again and again is multiplied by the letter.' + (/at most|no more than/i.test(p.q) ? ' "At most" means ≤.' : /at least|no less than/i.test(p.q) ? ' "At least" means ≥.' : ''), ineq: word, figure: angle },
+          setup: { answer: ans, text: p.q, fig: p.fig, word: !angle, hint: angle ? angleHint(p.q + ' ' + sec.title) : 'Turn the words into math one piece at a time. A number that happens once is added; a number that happens again and again is multiplied by the letter.' + (/at most|no more than/i.test(p.q) ? ' "At most" means ≤.' : /at least|no less than/i.test(p.q) ? ' "At least" means ≥.' : ''), ineq: word, figure: angle },
           v: angle ? 'x' : 'x',
           onAnswer: function (t, info) { fillBox(inp, info.kind === 'one' || info.kind === 'ineq' ? (info.numText || qtxt(info.x)) : t); }
         });
@@ -1646,10 +1737,10 @@
         w = mountExpr(host, { start: q.expr, sci: /10\s*<sup>/.test(q.expr) && /×/.test(q.expr), onAnswer: function (t) { fillBox(inp, t); } });
       }
       else if (!start && (chk[0] === 'val' || chk[0] === 'num') && /find the (radius|height)/i.test((q.op || '') + ' ' + q.expr)) {
-        w = mount(host, { setup: { answer: chk[1], tol: 1e-6, any: true, hint: VOL_HINT, figure: !!q.svg }, positive: true, roots: true, pi: true, onAnswer: fill });
+        w = mount(host, { setup: { answer: chk[1], tol: 1e-6, any: true, hint: VOL_HINT, figure: !!q.svg, text: q.expr }, positive: true, roots: true, pi: true, onAnswer: fill });
       }
       else if (!start && chk[0] === 'num' && PYTH_RE.test(q.expr + ' ' + (q.op || ''))) {
-        w = mount(host, { setup: { answer: chk[1], tol: Math.max(chk[2] || 0, 1e-6), any: true, hint: pythHint(q.expr), figure: !!q.svg }, positive: true, onAnswer: fill });
+        w = mount(host, { setup: { answer: chk[1], tol: Math.max(chk[2] || 0, 1e-6), any: true, hint: pythHint(q.expr), figure: !!q.svg, text: q.expr }, positive: true, onAnswer: fill });
       }
       else if (start) w = mount(host, { start: start, onAnswer: fill });
       else if ((chk[0] === 'num' || chk[0] === 'val') && /y-intercept/i.test((q.op || '') + ' ' + q.expr) && /slope\s+-?−?\d+.*through\s*\(\s*-?−?[1-9]/i.test(q.expr)) {
@@ -1657,7 +1748,7 @@
       }
       else if (chk[0] === 'num' && /°|angle|triangle/i.test(String(q.svg || '') + q.expr + ' ' + (q.op || '')) &&
                (/<text[^>]*>[^<]*\d?x\b/.test(String(q.svg || '')) || /(^|[^a-z])x([^a-z]|$)/i.test(String(q.expr).replace(/<[^>]+>/g, ' ')))) {   // angle problems with an x
-        var a = chk[1]; w = mount(host, { setup: { answer: a, hint: angleHint(q.expr + ' ' + (q.op || '')), figure: !!q.svg }, onAnswer: fill });
+        var a = chk[1]; w = mount(host, { setup: { answer: a, hint: angleHint(q.expr + ' ' + (q.op || '')), figure: !!q.svg, text: q.expr }, onAnswer: fill });
       }
       if (w) {
         var ob = host.querySelector('.sw-open'); if (ob) ob.addEventListener('click', function () { card.classList.toggle('sw-wide', !w.hidden); });
@@ -1700,6 +1791,7 @@
 
   /* One problem anywhere (used by the Interactive Notes, notes-steps.js): pick the right workspace from the
      problem's own words. o = { text (html), ans (answer text), unit, figure (bool), inp (answer box) } → workspace or null */
+  function figT(p) { var f = String(p && p.fig || '').split('/').pop(); return (window.FIG_TEXT && window.FIG_TEXT[f]) || ''; }
   function forProblem(host, o) {
     var html0 = String(o.text || '').replace(/<span class="(?:np-lv|badge|lvb)[^"]*"[^>]*>[^<]*<\/span>/g, ' ');
     var plain = html0.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().replace(/^\(?\d+[.)]\s*/, '');
@@ -1719,16 +1811,16 @@
     if (start) return mount(host, { start: start, onAnswer: function (t, info) { fill(one(t, info)); } });
     if (ans == null) return null;
     if (unit === '5' && PYTH_RE.test(plain) && !/right triangle\?|is it a right/i.test(plain))
-      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: pythHint(plain), figure: !!o.figure }, positive: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
+      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: pythHint(plain), figure: !!o.figure, text: plain + ' ' + (o.figText || '') }, positive: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
     if (unit === '9' && /find (its|the) (radius|height)|how tall|how high|radius\?|height\?/i.test(plain) && /holds|volume (is|of)|has a volume|V\s*=/i.test(plain) && !/same (radius|height)|twice|double|times/i.test(plain))
-      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: VOL_HINT + (/sphere|ball|hemisphere/i.test(plain) ? ' Sphere: <i>V</i> = ⁴⁄₃π<i>r</i><sup>3</sup>.' : ''), figure: !!o.figure }, positive: true, roots: true, pi: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
+      return mount(host, { setup: { answer: ans, tol: tolFor(o.ans, plain), any: true, hint: VOL_HINT + (/sphere|ball|hemisphere/i.test(plain) ? ' Sphere: <i>V</i> = ⁴⁄₃π<i>r</i><sup>3</sup>.' : ''), figure: !!o.figure, text: plain + ' ' + (o.figText || '') }, positive: true, roots: true, pi: true, onAnswer: function (t, info) { fill(info.numText || (info.x ? qtxt(info.x) : t)); } });
     if (unit === '6' && /solve the system/i.test(plain))
-      return mount(host, { setup: { answer: ans, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fill(info.kind === 'one' ? qtxt(info.x) : t); } });
+      return mount(host, { setup: { answer: ans, text: plain, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fill(info.kind === 'one' ? qtxt(info.x) : t); } });
     if (unit === '4' && /\bfind\s+x\b|\bx\s*=\s*\?|value of x/i.test(plain) && !/\bsides?\b|scale|proportion|similar triangles —/i.test(plain))
-      return mount(host, { setup: { answer: ans, hint: angleHint(plain), figure: !!o.figure }, onAnswer: function (t, info) { fill(info.kind === 'one' ? (info.numText || qtxt(info.x)) : t); } });
+      return mount(host, { setup: { answer: ans, hint: angleHint(plain), figure: !!o.figure, text: plain + ' ' + (o.figText || '') }, onAnswer: function (t, info) { fill(info.kind === 'one' ? (info.numText || qtxt(info.x)) : t); } });
     return null;
   }
 
-  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove } };
+  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove, monoText: monoText, mono: mono, parseTerm: parseTerm, sameMono: sameMono, exSimplest: exSimplest } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();

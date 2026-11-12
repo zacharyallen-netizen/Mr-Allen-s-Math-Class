@@ -122,6 +122,7 @@
     var V = window.VWORK;
     document.querySelectorAll('.vw').forEach(function (el) {
       if (el.closest('.sa-ans')) return;
+      if (el.closest('.np-sol')) return;   // short lined-up solutions stay as they are (they are the key's work)
       var inPractice = !!el.closest('.vw-after');
       if (V && V.paper) V.paper(el, { key: KEY, labels: !inPractice });
       if (inPractice) { var g = el.querySelector('.vw-g'); if (g) g.style.display = 'none'; }

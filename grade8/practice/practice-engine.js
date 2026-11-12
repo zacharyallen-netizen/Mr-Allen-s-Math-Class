@@ -184,7 +184,8 @@
   // step-by-step workspace (pick a move, write the next line, instant feedback) for equations, inequalities,
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261112h'); document.body.appendChild(sw);
+    var ft = document.createElement('script'); ft.src = (ENGINE_SRC || '').replace(/practice-engine\.js.*$/, 'figtext.js?v=20261112a'); document.body.appendChild(ft);   // labels inside the pictures
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261112m'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
   if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261112b'); document.body.appendChild(oat); }

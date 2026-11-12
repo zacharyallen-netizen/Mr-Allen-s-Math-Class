@@ -111,6 +111,22 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   for (const f of fs.readdirSync(path.join(ROOT, 'grade8'))) if (/^unit8.*\.html$/.test(f) && EM.test(rd('grade8/' + f))) fail('D5', 'grade8/' + f, 'emoji in a heading');
 }
 
+/* C1/C5/C6 (review batch 4, Nov 12, 2026, "do the rest"). */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (const f of ['unit7-practice', 'unit7-practice-1', 'unit7-practice-2', 'unit8-practice', 'unit8-practice-1', 'unit8-practice-2', 'unit9-practice']) {
+    const h = rd('grade8/' + f + '.html'); const re = /<button[^>]*onclick="mc\(this,\s*'([^']+)',\s*'((?:[^'\\]|\\.)*)'\)"[^>]*>([\s\S]*?)<\/button>/g; let m, n = 0;
+    while ((m = re.exec(h))) { const txt = m[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(), right = m[2].replace(/\\'/g, "'").replace(/\s+/g, ' ').trim();
+      if (txt !== right && !/data-why="/.test(m[0])) { n++; if (n < 4) fail('C1', 'grade8/' + f + '.html', `wrong choice "${txt}" (${m[1]}) has no note of its own`); } }
+  }
+  const need = [['C5', 'grade8/notes-tap.js', 'FIRST MISS', 'notes: the first wrong answer names the mistake and lets the student try again'],
+    ['C5', 'notes-practice.js', 'tw && tries === 1', 'notes practice: answer + twin only after the 2nd miss'],
+    ['C6', 'grade8/step-work.js', 'function guessEq', '"Show me the equation" on practice, notes and pre-tests'],
+    ['C6', 'grade8/step-work.js', 'function monoText', '"Show me this step" in the exponent tool'],
+    ['A1', 'paper.js', "closest('.np-sol')", 'lined-up notes solutions stay in the answer key']];
+  for (const [r, f, needle, what] of need) if (!rd(f).includes(needle)) fail(r, f, 'missing: ' + what);
+}
+
 /* E4: no made-up NC standard codes. */
 {
   const bad = /NC\.8\.G\.1\b/;

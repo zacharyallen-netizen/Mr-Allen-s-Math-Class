@@ -123,7 +123,7 @@
         var tw = window.NotesTwin && NotesTwin.get(id), TA = window.TapAnswers;
         // name the mistake (Mr. Allen, Nov 11, 2026): the tapped choice's own note, or what a wrong number gives away
         var wy = !TA ? '' : picked != null ? ((genList && TA.why(genList, picked)) || TA.miss(ans0, qtxt)) : TA.numWhy(el ? el.value : '', ans0, qtxt);
-        if (tw && !tries) {                       // wrong → show the answer, then one similar problem (notes-flow.js)
+        if (tw && tries === 1) {                  // 2nd wrong → show the answer, then one similar problem (notes-flow.js). The 1st wrong only names the mistake (review fix, Nov 12, 2026)
           tries++; rec(false); done = true;
           fb.className = 'np-fb no'; fb.textContent = 'Not quite. ' + (wy ? wy + ' ' : '') + 'The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');
           if (sol) sol.classList.add('show');

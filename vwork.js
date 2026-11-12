@@ -321,6 +321,12 @@
     });
     h += '</div>' + (spec.note ? '<div class="vw-cap">' + spec.note + '</div>' : '') +
       (mode === 'step' && B.steps.length ? '<div class="vw-btns"><button type="button" class="vw-next">Next step ▸</button><button type="button" class="vw-sec vw-all">Show all steps</button></div>' : '');
+    if (spec.compact) {   // short solutions (notes "np-sol"): the lined-up rows only, one step under the other
+      h = '<div class="vw-box vw-compact"><div class="vw-rows">' + rowsHTML('Start', B.start);
+      B.steps.forEach(function (s) { h += (s.doit ? rowsHTML('Step ' + s.n, s.doit) : '') + rowsHTML(s.doit ? '' : 'Step ' + s.n, s.after, '', s.final && !s.verdict); });
+      h += '</div>' + (B.steps.length && B.steps[B.steps.length - 1].verdict ? '<div class="vw-ver">' + B.steps[B.steps.length - 1].verdict.text + '</div>' : '') + '</div>';
+      mode = 'all';
+    }
     el.innerHTML = h;
     el.setAttribute('role', 'group'); el.setAttribute('aria-label', 'Step by step work for ' + spec.eq);
     var st = { cur: mode === 'all' ? B.steps.length : 0, max: B.steps.length };
