@@ -411,6 +411,105 @@
     }).join('');
   }
 
+  /* ===================== aligned work (Nov 12, 2026, Zach) =====================
+     A move on both sides is written UNDER the matching like term on each side (x under x, number
+     under number). If a side has no like term, the move gets its own column (x-terms before the
+     numbers, numbers at the end). Terms that cancel are crossed out with the move under them.
+     Dividing draws a fraction bar under each whole side. Lines in the trail line up on the = sign. */
+  var KEYS = ['sq3', 'sq2', 'xterm', 'pterm', 'num'];
+  function termKey(t, v) {
+    var k = kindOf(t, v);
+    if (k === 'sq') { try { return 'sq' + pdeg(poly(t.n, v)); } catch (e) { return 'sq2'; } }
+    return k;
+  }
+  function vecOf(n, s, v, line) {   // signed {key: coef} of one term or of a whole change
+    var out = {};
+    try {
+      if (line) { var l = linOf(n); if (s < 0) l = linNeg(l); if (l.y.n) out.xterm = l.y; if (l.x.n) out.pterm = l.x; if (l.c.n) out.num = l.c; }
+      else { var p = poly(n, v); if (s < 0) p = pscale(p, qneg(ONE)); if (p[3].n) out.sq3 = p[3]; if (p[2].n) out.sq2 = p[2]; if (p[1].n) out.xterm = p[1]; if (p[0].n) out.num = p[0]; }
+    } catch (e) { }
+    return out;
+  }
+  function monoHtml(key, c, v) {   // |c| with its letter
+    var a = qsign(c) < 0 ? qneg(c) : c;
+    if (key === 'num') return fmtQ(a);
+    var L = key === 'pterm' ? 'x' : v;
+    return coefHtml(a) + '<i>' + L + '</i>' + (key === 'sq2' ? '<sup>2</sup>' : key === 'sq3' ? '<sup>3</sup>' : '');
+  }
+  /* op parts for "add/subtract this to both sides". vec = the amount typed (preview) or the change (trail). */
+  function opParts(vec, how, v) {
+    return KEYS.filter(function (k) { return vec[k] && vec[k].n; }).map(function (k) {
+      var c = vec[k], neg = qsign(c) < 0, h = monoHtml(k, c, v), txt;
+      if (how === 'net') txt = (neg ? '− ' : '+ ') + h;
+      else if (how === 'add') txt = neg ? '+ (−' + h + ')' : '+ ' + h;
+      else txt = neg ? '− (−' + h + ')' : '− ' + h;
+      return { key: k, html: txt, ch: how === 'sub' ? qneg(c) : c };
+    });
+  }
+  function alignSide(n, v, line, op, colors) {
+    var ts = terms(n), cells = ts.map(function (t) {
+      var key = termKey(t, v), vec = vecOf(t.n, t.s, v, line), ks = Object.keys(vec);
+      var cls = colors ? (key === 'xterm' ? 't-v' : key === 'num' ? 't-k' : key === 'paren' ? 't-p' : key === 'pterm' ? 't-x' : '') : '';
+      return { t: t, key: key, coef: ks.length === 1 && ks[0] === key ? vec[key] : null, cls: cls, top: true };
+    });
+    if (op && op.kind === 'scale') return scaleSide(n, v, cells, op, colors);
+    (op && op.parts || []).forEach(function (pt) {
+      var j = -1; cells.forEach(function (c, i) { if (c.top && c.key === pt.key && !c.bot) j = i; });
+      if (j >= 0) { cells[j].bot = pt; if (cells[j].coef && !qadd(cells[j].coef, pt.ch).n) cells[j].cancel = true; return; }
+      var cell = { bot: pt, key: pt.key }, at = cells.length;
+      if (pt.key !== 'num') { for (var i = 0; i < cells.length; i++) if (cells[i].key === 'num') { at = i; break; } }
+      cells.splice(at, 0, cell);
+    });
+    var firstTop = true, hasBot = cells.some(function (c) { return c.bot; });
+    var top = cells.map(function (c) {
+      if (!c.top) return '<span class="sw-c"></span>';
+      var neg = c.t.s < 0, sign = firstTop ? (neg ? '−' : '') : (neg ? '− ' : '+ '); firstTop = false;
+      var cls = (c.cls + (c.cancel ? ' t-c' : '')).trim();
+      return '<span class="sw-c">' + sign + (cls ? '<span class="' + cls + '">' + html(c.t.n) + '</span>' : html(c.t.n)) + '</span>';
+    }).join('');
+    var bot = hasBot ? cells.map(function (c) { return '<span class="sw-c sw-o' + (c.cancel ? ' t-c' : '') + '">' + (c.bot ? c.bot.html : '') + '</span>'; }).join('') : '';
+    return '<span class="sw-sd" style="grid-template-columns:repeat(' + cells.length + ',auto)">' + top + bot + '</span>';
+  }
+  function scaleSide(n, v, cells, op, colors) {
+    // one x-term whose number is undone by this move: cross out that number
+    var one = cells.length === 1 && cells[0].coef && cells[0].key === 'xterm' ? cells[0] : null, strike = false;
+    if (one) strike = op.div ? qeq(one.coef, op.k) : qeq(qmul(one.coef, op.k), ONE);
+    var side;
+    if (strike) {
+      var c = one.coef, ch = c.d === 1 ? qHtml(c) : (qsign(c) < 0 ? '−' : '') + fmtQ(c);
+      side = '<span class="' + (colors ? 't-v' : '') + '"><span class="t-c">' + ch + '</span><i>' + v + '</i></span>';
+    } else {
+      var first = true;
+      side = cells.map(function (c) { var neg = c.t.s < 0, sign = first ? (neg ? '−' : '') : (neg ? ' − ' : ' + '); first = false; return sign + (c.cls ? '<span class="' + c.cls + '">' + html(c.t.n) + '</span>' : html(c.t.n)); }).join('');
+    }
+    var kh = qHtml(op.k);
+    if (op.div) return '<span class="sw-fd"><span>' + side + '</span><span class="sw-o' + (strike ? ' t-c' : '') + '">' + kh + '</span></span>';
+    var wrap = cells.length > 1 ? '(' + side + ')' : side;
+    var kk = strike ? '<span class="t-c">' + kh + '</span>' : kh;
+    return '<span class="sw-sd1"><span class="sw-o">' + (op.k.d !== 1 ? '(' + kk + ')' : kk) + ' · </span>' + wrap + '</span>';
+  }
+  /* the op between two lines of the trail, from what actually changed */
+  function trailOp(prev, next, d, v, line) {
+    if (!d) return null;
+    if (d.type === 'add') {
+      var vec;
+      if (line) {
+        var k = function (q) { return withX(q, function () { return psub(poly(next.L, 'y'), poly(prev.L, 'y')); }); }, k0 = k(ZERO), k1 = k(ONE);
+        vec = {}; if (k0[1].n) vec.xterm = k0[1]; var kx = qsub(k1[0], k0[0]); if (kx.n) vec.pterm = kx; if (k0[0].n) vec.num = k0[0];
+      } else { vec = {}; if (d.k[3].n) vec.sq3 = d.k[3]; if (d.k[2].n) vec.sq2 = d.k[2]; if (d.k[1].n) vec.xterm = d.k[1]; if (d.k[0].n) vec.num = d.k[0]; }
+      return { kind: 'add', parts: opParts(vec, 'net', v) };
+    }
+    if (d.type === 'scale') {
+      var c = d.c;
+      if (Math.abs(c.n) === 1 && c.d !== 1) return { kind: 'scale', div: true, k: Q(c.n * c.d, 1) };   // ×(1/5) is ÷ 5
+      return { kind: 'scale', div: false, k: c };
+    }
+    return null;
+  }
+  function alignedEq(e, v, line, op, colors) {   // the grid cells for one line: left, sign, right
+    return '<span class="sw-L">' + alignSide(e.L, v, line, op, colors) + '</span><span class="sw-R0' + (op && op.kind === 'scale' && op.div ? ' mid' : '') + '">' + relHtml(e.rel) + '</span><span class="sw-Rt">' + alignSide(e.R, v, line, op, colors) + '</span>';
+  }
+
   /* ===================== comparing two lines ===================== */
   function ratio(Pa, Pb) {   // constant c with Pb = c·Pa, or null
     var c = null;
@@ -528,6 +627,18 @@
     '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:500 20px/1.7 Inter,system-ui,sans-serif;align-items:center}' +
     '.sw-grid .sw-r{text-align:center}.sw-grid .sw-op{color:#B45309;font-weight:700}.sw-grid .sw-lft{text-align:right}' +
     '.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
+    '.sw-al,.sw-tg{display:grid;column-gap:10px;row-gap:4px;align-items:start;font:500 20px/1.7 Inter,system-ui,sans-serif}' +
+    '.sw-al{grid-template-columns:auto auto auto;justify-content:start}' +
+    '.sw-tg{grid-template-columns:auto auto auto auto minmax(90px,1fr);margin:0 0 6px}' +
+    '.sw-tgw{overflow-x:auto}' +
+    '.sw-L{justify-self:end}.sw-Rt{justify-self:start}.sw-R0{text-align:center;color:#1E2D4F}.sw-R0.mid{align-self:center}' +
+    '.sw-sd{display:inline-grid;column-gap:6px;row-gap:0;white-space:nowrap;vertical-align:top}' +
+    '.sw-c{text-align:center}.sw-o{color:#B45309;font-weight:700}' +
+    '.sw-fd{display:inline-grid;grid-template-columns:auto;text-align:center;white-space:nowrap;vertical-align:middle}' +
+    '.sw-fd>span:first-child{border-bottom:2.5px solid #B45309;padding:0 4px}' +
+    '.sw-sd1{white-space:nowrap}' +
+    '.sw-tg .sw-n{margin-top:6px}.sw-tg .sw-mv{align-self:center;justify-self:start}' +
+    '.sw-tg .sw-row-end{grid-column:1/-1;border-bottom:1px solid #EEF0F3;height:0}' +
     '.sw-write{margin-top:10px}.sw-write label{display:block;font:600 14.5px Inter,sans-serif;margin-bottom:4px}' +
     '.sw-keys{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.sw-keys button{min-width:44px;font:600 16px "JetBrains Mono",monospace;padding:4px 8px}' +
     '.sw-prev{font:500 15px Inter,sans-serif;color:#5B6475;margin-top:6px;min-height:1.4em}.sw-prev .sw-ln{font-size:18px;color:#1E2D4F}' +
@@ -544,6 +655,7 @@
     '.sw .t-x{color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px}' +
     '.sw .t-p{color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px}' +
     '.sw .t-c{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px;opacity:.75}' +
+    '.sw .t-c .sw-fr>span{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px}' +
     '.sw-rel{color:#1E2D4F}' +
     '.sw-sqrt>span{border-top:1.6px solid currentColor;padding:0 2px;margin-left:1px}' +
     '.sw-legend{font:500 13px Inter,sans-serif;color:#5B6475;margin-top:4px}' +
@@ -674,15 +786,19 @@
       drawTrail(); step();
 
       function cur() { return lines[lines.length - 1].e; }
-      function drawTrail() {
+      function drawTrail() {   // every line lines up on the sign; a move sits under the like terms it changes
         trail.innerHTML = '';
+        var g = '';
         lines.forEach(function (l, i) {
-          var li = el('li');
-          li.appendChild(el('span', 'sw-n', String(i + 1)));
-          li.appendChild(el('span', 'sw-ln', i === lines.length - 1 ? colorLine(l.e) : eqHtml(l.e)));
-          if (l.mv) li.appendChild(el('span', 'sw-mv', l.mv));
-          trail.appendChild(li);
+          var nx = lines[i + 1], op = null;
+          if (nx && nx.d) { try { op = trailOp(l.e, nx.e, nx.d, v, line); } catch (x) { op = null; } }
+          var row;
+          try { row = alignedEq(l.e, v, line, op, i === lines.length - 1); } catch (x) { row = '<span class="sw-L"></span><span class="sw-R0"></span><span class="sw-Rt">' + eqHtml(l.e) + '</span>'; }
+          var mv = nx && nx.mv ? '↓ ' + nx.mv : '';   // the label sits next to the move it names
+          g += '<span class="sw-n">' + (i + 1) + '</span>' + row + '<span class="sw-mv"' + (mv ? '' : ' style="visibility:hidden"') + '>' + mv + '</span>';
+          if (i < lines.length - 1) g += '<span class="sw-row-end"></span>';
         });
+        var li = el('li'); li.className = 'sw-tgw'; li.innerHTML = '<div class="sw-tg">' + g + '</div>'; trail.appendChild(li);
       }
       function drawLegend(e) {   // a small color key with only the kinds of terms on this line
         var has = {}; [e.L, e.R].forEach(function (sd) { terms(sd).forEach(function (t) { has[kindOf(t, v)] = 1; }); });
@@ -825,8 +941,16 @@
             if (e.rel !== '=' && qsign(f) < 0) notes.push('You are ' + (m === 'mul' ? 'multiplying' : 'dividing') + ' by a <b>negative</b> number. Think about what that does to the inequality sign.');
           }
           vis.hidden = false;
-          vis.innerHTML = '<div class="sw-grid"><div class="sw-lft">' + sideHtml(e.L, v, { colors: true, strike: strikeL }) + '</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>' + sideHtml(e.R, v, { colors: true, strike: strikeR }) + '</div>' +
-            '<div class="sw-lft sw-op' + (strikeL.length ? ' t-c' : '') + '">' + opH + '</div><div></div><div class="sw-op' + (strikeR.length ? ' t-c' : '') + '">' + opH + '</div></div>' +
+          var aop;
+          if (change) aop = { kind: 'add', parts: opParts(line ? (function (l) { var o = {}; if (l.y.n) o.xterm = l.y; if (l.x.n) o.pterm = l.x; if (l.c.n) o.num = l.c; return o; })(kl) : (function () { var o = {}; if (k[3].n) o.sq3 = k[3]; if (k[2].n) o.sq2 = k[2]; if (k[1].n) o.xterm = k[1]; if (k[0].n) o.num = k[0]; return o; })(), m, v) };
+          else aop = { kind: 'scale', div: m === 'div', k: k[0] };
+          var aligned;
+          try { aligned = '<div class="sw-al">' + alignedEq(e, v, line, aop, true) + '</div>'; }
+          catch (x) {
+            aligned = '<div class="sw-grid"><div class="sw-lft">' + sideHtml(e.L, v, { colors: true, strike: strikeL }) + '</div><div class="sw-r">' + relHtml(e.rel) + '</div><div>' + sideHtml(e.R, v, { colors: true, strike: strikeR }) + '</div>' +
+              '<div class="sw-lft sw-op' + (strikeL.length ? ' t-c' : '') + '">' + opH + '</div><div></div><div class="sw-op' + (strikeR.length ? ' t-c' : '') + '">' + opH + '</div></div>';
+          }
+          vis.innerHTML = aligned +
             notes.map(function (t) { return '<p class="sw-note">' + t + '</p>'; }).join('');
           showWrite();
         }
@@ -861,7 +985,7 @@
           }
           var before = exact ? countTerms(prev) : 0, after = exact ? countTerms(n) : 0;
           if (d.type === 'add' && after > before) note += '<br>💡 That move is allowed, but now there are <b>more</b> terms. Did it get <i>' + v + '</i> closer to being alone? You can undo it.';
-          lines.push({ e: n, mv: label });
+          lines.push({ e: n, mv: label, d: exact && !rooted ? d : null });
           drawTrail();
           step();
           var nfb = work.querySelector('.sw-fb');
