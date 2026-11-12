@@ -920,6 +920,9 @@
         if (/angle|°|parallel|triangle|complement|supplement|linear pair|vertical|corresponding|alternate|same-side/i.test(H)) {
           T.replace(/(?:^|[^a-z0-9])(\d*\s*x(?:\s*[+-]\s*\d+(?:\.\d+)?)?)(?![a-z0-9^])/gi, function (m, a) { var t = a.trim().replace(/x/g, L); if (/\d/.test(t) && ang.indexOf(t) < 0) ang.push(t); return m; });
         }
+        if (/triangle/i.test(H) && new RegExp('(^|[^0-9a-z])' + L + '(?![0-9a-z^])').test(T.replace(/find\s+x/ig, ' ')) && ang.indexOf(L) < 0 && ang.some(function (t) { return t.indexOf(L) >= 0; })) ang.unshift(L);   // "angles x, 2x and 3x"
+        var iso = T.match(/isosceles[^.]*?vertex angle (?:of |is )?(\d+(?:\.\d+)?)/i);
+        if (iso) { c.push(iso[1] + ' + ' + L + ' + ' + L + ' = 180', iso[1] + ' + 2' + L + ' = 180'); }
         if (ang.length) {
           if (!ang.some(function (t) { return t.indexOf(L) >= 0; })) ang.push(L);
           var eqFirst = /equal|same|vertical|corresponding|alternate/i.test(S.hint || '');
@@ -937,9 +940,11 @@
           var Lp = S.any ? 'c' : v;
           var pts = []; T.replace(/\(\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*\)/g, function (m, a, b) { pts.push([+a, +b]); return m; });
           if (pts.length >= 2) c.push(Math.abs(pts[1][0] - pts[0][0]) + '^2 + ' + Math.abs(pts[1][1] - pts[0][1]) + '^2 = ' + Lp + '^2');   // distance: the run and the rise are the legs
+          if (/area of the square/i.test(T)) ns.forEach(function (a) { ns.forEach(function (b) { if (+a < +b) c.push(a + ' + ' + b + ' = ' + (S.any ? 'x' : v), (S.any ? 'x' : v) + ' + ' + a + ' = ' + b); }); });   // the areas themselves add
           if (/area/i.test(T)) ns.forEach(function (a) { ns.forEach(function (b) { if (a !== b) { if (+a <= +b) c.push(a + ' + ' + b + ' = ' + Lp + '^2'); if (+a < +b) c.push((S.any ? 'a' : v) + '^2 + ' + a + ' = ' + b); } }); });
           if (/square/i.test(T) && /diagonal/i.test(T)) ns.forEach(function (a) { c.push((S.any ? 's' : v) + '^2 + ' + (S.any ? 's' : v) + '^2 = ' + a + '^2'); });
           if (/square/i.test(T)) ns.forEach(function (a) { c.push(a + '^2 + ' + a + '^2 = ' + Lp + '^2'); });
+          if (/\bbox\b|prism|cube/i.test(T) && ns.length >= 3) c.push(ns[0] + '^2 + ' + ns[1] + '^2 + ' + ns[2] + '^2 = ' + (S.any ? 'd' : v) + '^2');   // longest diagonal of a box: l² + w² + h² = d²
           ns.forEach(function (a) { ns.forEach(function (b) { if (a === b) return; if (+a <= +b) c.push(a + '^2 + ' + b + '^2 = ' + Lp + '^2'); if (+a < +b) c.push((S.any ? 'a' : v) + '^2 + ' + a + '^2 = ' + b + '^2'); }); });
         }
         if (/volume|cylinder|cone|sphere|π|ball|tank|can\b|cup|hemisphere/i.test(H)) {
@@ -1443,7 +1448,7 @@
   function letters(m) { var o = {}; for (var k in m.b) if (k[0] !== '#' && m.b[k]) o[k] = m.b[k]; return o; }
   function valueOf(m) { var v = m.c; for (var k in m.b) if (k[0] === '#' && m.b[k]) v = bmul(v, bpow(B(BigInt(k.slice(1).replace('.', '')), 10n ** BigInt((k.split('.')[1] || '').length)), m.b[k])); return v; }
   /* a monomial written out in simplest form: positive exponents, each base once (for "Show me this step") */
-  function monoText(m) {
+  function monoText(m, keepNeg) {
     try {
       var c = m.c, n = c.n < 0n ? -c.n : c.n, d = c.d < 0n ? -c.d : c.d, neg = (c.n < 0n) !== (c.d < 0n) && c.n !== 0n;
       var ks = Object.keys(m.b).filter(function (k) { return m.b[k] !== 0; }).sort(function (x, y) { return (x[0] === '#' ? 0 : 1) - (y[0] === '#' ? 0 : 1) || (x < y ? -1 : 1); });
@@ -1452,11 +1457,29 @@
       var dec = null, kk = 0, P10 = 1n; while (d !== 1n && kk < 20 && P10 % d !== 0n) { P10 *= 10n; kk++; }
       if (d !== 1n && P10 % d === 0n) { n = n * (P10 / d); d = P10; }
       if (d !== 1n && /^10*$/.test(String(d))) { var ds = String(n).padStart(String(d).length, '0'), cut = ds.length - (String(d).length - 1); dec = (ds.slice(0, cut) || '0') + '.' + ds.slice(cut); dec = dec.replace(/\.?0+$/, ''); d = 1n; }
-      var top = part(ks.filter(function (k) { return m.b[k] > 0; }), dec ? 1n : n), bot = ks.filter(function (k) { return m.b[k] < 0; });
+      if (keepNeg) part = (function (p0) { return function (list, coef) { var out = coef !== 1n || !list.length ? String(coef) : '';
+        list.forEach(function (k) { var e = m.b[k], b = k[0] === '#' ? k.slice(1) : k; out += (k[0] === '#' && out ? '*' : '') + b + (e !== 1 ? '^' + e : ''); }); return out; }; })(part);
+      var top = part(ks.filter(function (k) { return keepNeg ? true : m.b[k] > 0; }), dec ? 1n : n), bot = ks.filter(function (k) { return !keepNeg && m.b[k] < 0; });
       if (dec) top = dec + (top && top !== '1' ? (/^\d/.test(top) ? '*' : '') + top : '');
       var den = bot.length || d !== 1n ? part(bot, d) : '';
       return (neg ? '-' : '') + (den ? (/^\d+$/.test(top) ? top : '(' + top + ')') + '/(' + den + ')' : top);
     } catch (x) { return null; }
+  }
+  /* a number like 21.6 × 10^11 written in scientific notation (1 ≤ a < 10) */
+  function sciText(m) {
+    try { var ks = Object.keys(m.b).filter(function (k) { return m.b[k] !== 0; }); if (ks.some(function (k) { return k !== '#10'; })) return null;
+      var c = Number(m.c.n) / Number(m.c.d), e = m.b['#10'] || 0; if (!c) return null; var sg = c < 0 ? '-' : ''; c = Math.abs(c);
+      while (c >= 10) { c /= 10; e++; } while (c < 1) { c *= 10; e--; }
+      return sg + String(+c.toPrecision(10)) + '*10^' + e; } catch (x) { return null; }
+  }
+  /* "Show me this step": the next line, one stage at a time: all rules except moving negative exponents → positive exponents → scientific notation */
+  function nextExprLine(m, cur, sci) {
+    var norm = function (t) { return String(t || '').replace(/\s+/g, '').replace(/[×·]/g, '*'); }, c = norm(cur);
+    var hasNeg = Object.keys(m.b).some(function (k) { return m.b[k] < 0; });
+    var list = (sci ? [monoText(m, true), sciText(m)] : [hasNeg ? monoText(m, true) : null, monoText(m)]).filter(Boolean);
+    list = list.filter(function (t, i) { return list.map(norm).indexOf(norm(t)) === i; });
+    var at = list.map(norm).indexOf(c);
+    return at < 0 ? list[0] : list[at + 1] || null;   // never goes back a stage
   }
   function sameMono(a, b) {
     var la = letters(a), lb = letters(b), ka = Object.keys(la).sort(), kb = Object.keys(lb).sort();
@@ -1603,7 +1626,7 @@
             fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + exDiagnose(a, mNew) +
               (tried >= 2 || again ? '<div class="sw-coach"><p class="sw-coach-h">Do one rule at a time:</p><p class="sw-note">Multiply same bases → <b>add</b> the exponents. Divide → <b>subtract</b> (top − bottom). Power of a power → <b>multiply</b> the exponents. A power outside ( ) goes on <b>every</b> factor inside. Anything to the 0 power is 1. A negative exponent means <b>flip</b> it to the other side of the fraction bar.</p><p class="sw-note">Work the <b>numbers</b> first, then each letter.</p></div>' : '') +
               '';
-            var shownT = tried >= 3 ? monoText(mOld) : null;
+            var shownT = tried >= 3 ? nextExprLine(mOld, plainTerm(a), cfg.sci) : null;
             if (shownT) {   // 3rd miss: "Show me this step" writes the same value with every rule used once (student still presses Check)
               var sbx = btn('Show me this step', 'sw-show'); fb.appendChild(sbx);
               sbx.addEventListener('click', function () { inp.value = shownT; inp.dispatchEvent(new Event('input', { bubbles: true }));
@@ -1749,7 +1772,7 @@
       }
       else if (start) w = mount(host, { start: start, onAnswer: fill });
       else if ((chk[0] === 'num' || chk[0] === 'val') && /y-intercept/i.test((q.op || '') + ' ' + q.expr) && /slope\s+-?−?\d+.*through\s*\(\s*-?−?[1-9]/i.test(q.expr)) {
-        w = mount(host, { setup: { answer: chk[1], any: true, hint: B_HINT, prompt: 'Use <i>b</i> for the y-intercept. Write an equation that matches the problem.' }, onAnswer: fill });
+        w = mount(host, { setup: { answer: chk[1], any: true, text: q.expr, hint: B_HINT, prompt: 'Use <i>b</i> for the y-intercept. Write an equation that matches the problem.' }, onAnswer: fill });
       }
       else if (chk[0] === 'num' && /°|angle|triangle/i.test(String(q.svg || '') + q.expr + ' ' + (q.op || '')) &&
                (/<text[^>]*>[^<]*\d?x\b/.test(String(q.svg || '')) || /(^|[^a-z])x([^a-z]|$)/i.test(String(q.expr).replace(/<[^>]+>/g, ' ')))) {   // angle problems with an x
@@ -1822,10 +1845,16 @@
     if (unit === '6' && /solve the system/i.test(plain))
       return mount(host, { setup: { answer: ans, text: plain, hint: 'Both equations say what <i>y</i> equals. Set the two right sides equal to each other.' }, onAnswer: function (t, info) { fill(info.kind === 'one' ? qtxt(info.x) : t); } });
     if (unit === '4' && /\bfind\s+x\b|\bx\s*=\s*\?|value of x/i.test(plain) && !/\bsides?\b|scale|proportion|similar triangles —/i.test(plain))
-      return mount(host, { setup: { answer: ans, hint: angleHint(plain), figure: !!o.figure, text: plain + ' ' + (o.figText || '') }, onAnswer: function (t, info) { fill(info.kind === 'one' ? (info.numText || qtxt(info.x)) : t); } });
+    {
+      // "Find x. Then find the measure of the angle (2x + 15)°": the equation is about x; the box wants the angle (review fix, Nov 12, 2026)
+      var thenM = plain.match(/then find the measure of (?:the )?(?:exterior )?angle(?: marked)?,?\s*\(?([0-9x+\-−. ]*x[0-9x+\-−. ]*)\)?\s*°/i), xAns = ans, thenE = null;
+      if (thenM && ans != null) { try { thenE = thenM[1].replace(/−/g, '-'); var se = solve(parseEq(thenE + ' = ' + (typeof ans === 'object' ? qtxt(ans) : String(ans))), 'x'); if (se.kind === 'one') xAns = se.x; else thenE = null; } catch (x) { thenE = null; } }
+      return mount(host, { setup: { answer: xAns, hint: angleHint(plain) + (thenE ? ' Find x first. Then put x into (' + thenE + ') to find the angle.' : ''), figure: !!o.figure, text: plain + ' ' + (o.figText || '') },
+        onAnswer: function (t, info) { if (thenE && info.kind === 'one') { fill(typeof ans === 'object' ? qtxt(ans) : String(ans)); return; } fill(info.kind === 'one' ? (info.numText || qtxt(info.x)) : t); } });
+    }
     return null;
   }
 
-  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove, monoText: monoText, mono: mono, parseTerm: parseTerm, sameMono: sameMono, exSimplest: exSimplest } };
+  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove, monoText: monoText, nextExprLine: nextExprLine, mono: mono, parseTerm: parseTerm, sameMono: sameMono, exSimplest: exSimplest } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();
