@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
-(function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261111c', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+(function () { try { if (window.FX || window.SW_NO_FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
+  s.src = new URL('../student-fx.js?v=20261112a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* ─────────────────────────────────────────────────────────────────────────────
    Step Work: a step-by-step workspace for solving equations and inequalities.
    The student picks a move, sees it on the equation (what cancels, which terms are alike,
@@ -484,7 +484,7 @@
     }
     var kh = qHtml(op.k);
     if (op.div) return '<span class="sw-fd"><span>' + side + '</span><span class="sw-o' + (strike ? ' t-c' : '') + '">' + kh + '</span></span>';
-    var wrap = cells.length > 1 ? '(' + side + ')' : side;
+    var wrap = cells.length > 1 || (cells[0] && cells[0].t.s < 0) || /^−/.test(side) ? '(' + side + ')' : side;
     var kk = strike ? '<span class="t-c">' + kh + '</span>' : kh;
     return '<span class="sw-sd1"><span class="sw-o">' + (op.k.d !== 1 ? '(' + kk + ')' : kk) + ' · </span>' + wrap + '</span>';
   }
@@ -501,7 +501,7 @@
     }
     if (d.type === 'scale') {
       var c = d.c;
-      if (Math.abs(c.n) === 1 && c.d !== 1) return { kind: 'scale', div: true, k: Q(c.n * c.d, 1) };   // ×(1/5) is ÷ 5
+      if (Math.abs(c.n) === 1 && (c.d !== 1 || c.n === -1)) return { kind: 'scale', div: true, k: Q(c.n * c.d, 1) };   // ×(1/5) is ÷ 5; ×(−1) is ÷ (−1)
       return { kind: 'scale', div: false, k: c };
     }
     return null;
@@ -627,6 +627,14 @@
     '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:500 20px/1.7 Inter,system-ui,sans-serif;align-items:center}' +
     '.sw-grid .sw-r{text-align:center}.sw-grid .sw-op{color:#B45309;font-weight:700}.sw-grid .sw-lft{text-align:right}' +
     '.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
+    '.sw-alb{margin:6px 0;padding:6px 8px;background:#FBFBF9;border:1px solid #EEF0F3;border-radius:8px;color:#1E2D4F;text-align:left}.sw-alb .sw-tg{font-size:18px;margin:0}' +
+    '.sw-alb .sw-n{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:50%;background:#1E2D4F;color:#FFC107;font:700 12px Inter,sans-serif}' +
+    '.sw-alb .sw-mv{font:600 13px Inter,sans-serif;color:#8A6100;background:#FFF6D6;border-radius:6px;padding:1px 8px}' +
+    '.sw-alb .t-v{color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px}.sw-alb .t-k{color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px}' +
+    '.sw-alb .t-p{color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px}' +
+    '.sw-alb .t-c,.sw-alb .t-c .sw-fr>span{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px}.sw-alb .t-c{opacity:.75}' +
+    '.sw-alb .sw-fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin:0 2px;font-size:.85em}.sw-alb .sw-fr>span:first-child{border-bottom:1.6px solid currentColor;padding:0 3px}' +
+    '@media print{.sw-alb{background:none;border-color:#ccc}}' +
     '.sw-al,.sw-tg{display:grid;column-gap:10px;row-gap:4px;align-items:start;font:500 20px/1.7 Inter,system-ui,sans-serif}' +
     '.sw-al{grid-template-columns:auto auto auto;justify-content:start}' +
     '.sw-tg{grid-template-columns:auto auto auto auto minmax(90px,1fr);margin:0 0 6px}' +
@@ -665,6 +673,25 @@
   function css() { if (document.getElementById('sw-css')) return; var s = document.createElement('style'); s.id = 'sw-css'; s.textContent = CSS; document.head.appendChild(s); }
   function el(tag, cls, h) { var e = document.createElement(tag); if (cls) e.className = cls; if (h != null) e.innerHTML = h; return e; }
   function btn(label, cls) { var b = el('button', cls || '', label); b.type = 'button'; return b; }
+
+  /* ===================== written solutions, lined up (Nov 12, 2026, Zach: "Yes") =====================
+     alignTrail([{e, label}], v): the same lined-up grid as the workspace trail, for worked steps that a
+     page shows as text. Each move sits under its like terms; the label (the page's own words, or the
+     move worked out from the two lines) sits beside it. Used by grade8/aligned-steps.js. */
+  function alignTrail(list, v) {
+    css();
+    var g = '';
+    list.forEach(function (l, i) {
+      var nx = list[i + 1], op = null, d = null;
+      if (nx) { try { d = describe(l.e, nx.e, v); op = trailOp(l.e, nx.e, d, v, false); } catch (x) { op = null; } }
+      var mv = nx ? (nx.label || (d && d.type !== 'mixed' ? moveLabel(d, v) : '')) : '';
+      var row;
+      try { row = alignedEq(l.e, v, false, op, i === list.length - 1); } catch (x) { row = '<span class="sw-L"></span><span class="sw-R0"></span><span class="sw-Rt">' + eqHtml(l.e) + '</span>'; }
+      g += '<span class="sw-n">' + (i + 1) + '</span>' + row + '<span class="sw-mv"' + (mv ? '' : ' style="visibility:hidden"') + '>' + (mv ? '↓ ' + mv : '') + '</span>';
+      if (i < list.length - 1) g += '<span class="sw-row-end"></span>';
+    });
+    return '<div class="sw-alb"><div class="sw-tgw"><div class="sw-tg">' + g + '</div></div></div>';
+  }
 
   /* ===================== the workspace ===================== */
   var uid = 0;
@@ -1087,7 +1114,7 @@
   function sameText(a, b) { return eqHtml(a) === eqHtml(b); }
   function moveLabel(d, v) {
     if (d.type === 'add') { var neg = qsign(d.k[1].n ? d.k[1] : d.k[0]) < 0; return (neg ? 'subtracted ' + polyHtml(pscale(d.k, qneg(ONE)), v) : 'added ' + polyHtml(d.k, v)) + ' on both sides'; }
-    if (d.type === 'scale') { var c = d.c; return (c.n === 1 && c.d !== 1 ? 'divided both sides by ' + c.d : (c.d === 1 || Math.abs(c.n) !== 1 ? 'multiplied both sides by ' + qHtml(c) : 'divided both sides by −' + c.d)) + (d.flip ? ', flipped the sign' : ''); }
+    if (d.type === 'scale') { var c = d.c; return (c.n === -1 && c.d === 1 ? 'divided both sides by −1' : c.n === 1 && c.d !== 1 ? 'divided both sides by ' + c.d : (c.d === 1 || Math.abs(c.n) !== 1 ? 'multiplied both sides by ' + qHtml(c) : 'divided both sides by −' + c.d)) + (d.flip ? ', flipped the sign' : ''); }
     if (d.type === 'rewrite') return 'simplified';
     if (d.type === 'swap') return 'switched sides';
     return 'more than one step';
@@ -1512,6 +1539,6 @@
     return null;
   }
 
-  window.StepWork = { forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
+  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();

@@ -5,6 +5,9 @@
    Loaded by one-at-a-time.js, notes-flow.js and step-work.js (and a script tag on a few review pages).
    It only watches: right/wrong comes from ScoreSend.record() and from the feedback classes each page already sets.
    Nothing here changes checking, scoring or sending. ?paper=1, ?key=1 and print: no effects. */
+/* written solutions, lined up (grade8/aligned-steps.js; Nov 12, 2026): loaded on every page that has student-fx */
+(function () { try { if (window.AlignedSteps || document.querySelector('script[src*="aligned-steps.js"]')) return; var me = document.currentScript && document.currentScript.src; if (!me) return;
+  var a = document.createElement('script'); a.src = new URL('grade8/aligned-steps.js?v=20261112b', me).href; document.head.appendChild(a); } catch (e) {} })();
 (function () {
   if (window.FX) return;
   var FX = window.FX = {}, OFF = /[?&](paper|key)=1\b/.test(location.search);
