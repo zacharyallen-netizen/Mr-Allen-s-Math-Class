@@ -521,6 +521,20 @@ add("G.3", "Select All That Apply", "Rectangle WXYZ is dilated by a scale factor
     ans="A, C, E", correct=[0, 2, 4],
     why="Multiply each coordinate by ½: W(2, 1) → W′(1, 0.5) ✓; Z(2, 4) → Z′(1, 2), not (4, 8) (that is scale factor 2). Original sides are 4 and 3, so the image sides are 2 and 1.5 ✓. A dilation changes size, so the image is <b>similar, not congruent</b>. Angles never change in a dilation ✓.")
 
+# ---- Score 5 (Nov 11, 2026; Zach: "Make sure the Benchmark has Score 5 questions"). From his proficiency scales:
+# NC.8.EE.1 Score 5 = explain why a^0 = 1; NC.8.G.3 Score 5 = a sequence with a dilation and its effect on congruence / similarity.
+# They keep their real standard (for the tracker) and print in their own last section (part = "S5").
+add("EE.1", "Multiple Choice", "<b>Score 5.</b> Which shows <b>why</b> 6<sup>0</sup> = 1?",
+    ["6 × 0 = 0, and 0 + 1 = 1.", "6<sup>3</sup> ÷ 6<sup>3</sup> = 6<sup>0</sup>, and a number divided by itself is 1.", "6<sup>1</sup> = 6, so 6<sup>0</sup> = 6 − 5 = 1.", "It is only a rule to memorize. There is no reason."], cols=1,
+    ans="B", correct=[1],
+    why="Quotient rule: 6<sup>3</sup> ÷ 6<sup>3</sup> = 6<sup>3 − 3</sup> = 6<sup>0</sup>. Any number (not 0) divided by itself is 1, so 6<sup>0</sup> = 1. The same works for every base.")
+Q[-1]["part"] = "S5"
+add("G.3", "Multiple Choice", "<b>Score 5.</b> Triangle T is reflected over the x-axis and then dilated by a scale factor of 2 to make triangle T′. Which statement is true?",
+    ["T and T′ are congruent, because a reflection is a rigid motion.", "T and T′ are similar but not congruent. Each side of T′ is 2 times as long.", "T and T′ are similar. Each angle of T′ is 2 times as large.", "T and T′ are neither similar nor congruent."], cols=1,
+    ans="B", correct=[1],
+    why="The reflection keeps the size. The dilation multiplies every side by 2 but keeps every angle. Same shape, different size: similar, not congruent.")
+Q[-1]["part"] = "S5"
+
 def question_html(i, q, key):
     L = "ABCDEF"
     top = f'<div class="qtop"><span class="qnum">{i+1}</span><span class="qstd">NC.8.{q["std"]}</span><span class="qtype">{q["typ"]}</span></div>'
@@ -550,9 +564,13 @@ def questions(key):
     order = ["NS.1", "EE.1", "EE.7", "F.1", "G.3"]
     names = {"NS.1": "Rational &amp; Irrational Numbers", "EE.1": "Integer Exponents", "EE.7": "Equations &amp; Inequalities", "F.1": "Functions", "G.3": "Transformations"}
     for s in order:
-        idx = [i for i, q in enumerate(Q) if q["std"] == s]
+        idx = [i for i, q in enumerate(Q) if q["std"] == s and q.get("part") != "S5"]
         out.append(f'{"<div class=pb></div>" if s=="NS.1" else "<div style=height:6px></div>"}{sec(s, ("Answer Key — " if key else "Practice — ") + names[s], "4 questions")}')
         out.append("".join(question_html(i, Q[i], key) for i in idx))
+    s5 = [i for i, q in enumerate(Q) if q.get("part") == "S5"]
+    if s5:
+        out.append(f'<div style=height:6px></div>{sec("Score 5", ("Answer Key — " if key else "Practice — ") + "Explain Your Thinking", f"{len(s5)} questions")}')
+        out.append("".join(question_html(i, Q[i], key) for i in s5))
     return "".join(out)
 
 def score_table():
@@ -560,11 +578,12 @@ def score_table():
       <table class="t"><tr><th>Standard</th><th>Questions</th><th>My score</th><th>Next step</th></tr>
       <tr><td class="math">NS.1</td><td>1–4</td><td>____ / 4</td><td rowspan="5" class="small">4/4 — Ready! &nbsp; 3/4 — Re-read the notes page. &nbsp; 0–2/4 — See your teacher for a re-teach.</td></tr>
       <tr><td class="math">EE.1</td><td>5–8</td><td>____ / 4</td></tr><tr><td class="math">EE.7</td><td>9–12</td><td>____ / 4</td></tr>
-      <tr><td class="math">F.1</td><td>13–16</td><td>____ / 4</td></tr><tr><td class="math">G.3</td><td>17–20</td><td>____ / 4</td></tr></table></div>"""
+      <tr><td class="math">F.1</td><td>13–16</td><td>____ / 4</td></tr><tr><td class="math">G.3</td><td>17–20</td><td>____ / 4</td></tr>
+      <tr><td class="math">Score 5</td><td>21–22</td><td>____ / 2</td><td class="small">These ask you to explain WHY.</td></tr></table></div>"""
 
 student = page("NC Check-In Review", cover() + strategies() + notes() + questions(False) + score_table())
 
-key_summary = "<h3 style='margin:14px 0 6px'>Answer Summary</h3><table class='t'><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans'].split('&nbsp;')[0]}</b></td>" for i in range(10)) + "</tr><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10, 20)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans']}</b></td>" for i in range(10, 20)) + "</tr></table>"
+key_summary = "<h3 style='margin:14px 0 6px'>Answer Summary</h3><table class='t'><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans'].split('&nbsp;')[0]}</b></td>" for i in range(10)) + "</tr><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(10, 20)) + "</tr><tr>" + "".join(f"<td class='center math'><b>{Q[i]['ans']}</b></td>" for i in range(10, 20)) + "</tr><tr>" + "".join(f"<th class='center'>{i+1}</th>" for i in range(20, len(Q))) + "<th colspan='%d'></th></tr><tr>" % (30 - len(Q)) + "".join(f"<td class='center math'><b>{Q[i]['ans']}</b></td>" for i in range(20, len(Q))) + "<td colspan='%d'></td></tr></table>" % (30 - len(Q))
 key = page("NC Check-In Review — Answer Key", cover(True) + key_summary + questions(True))
 
 footer = lambda label: f'<div style="width:100%;font-family:Inter;font-size:8px;color:#55607a;padding:0 0.6in;display:flex;justify-content:space-between"><span>Mr. Allen\'s 8th Grade Math • {label}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'

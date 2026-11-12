@@ -20,7 +20,9 @@ LABELS = ["Select all irrational", "9's rule: 0.36(rep) to a fraction", "Fractio
           "How many solutions?", "Solve with fractions", "Word problem: inequality (T-shirts)",
           "Which table is a function?", "Which graph is a function?", "Select all ordered pairs that are functions",
           "Value of k that makes it NOT a function", "Translation: find B'", "Reflection over the y-axis",
-          "Rotation 90 degrees counterclockwise", "Dilation by 1/2: select all true"]
+          "Rotation 90 degrees counterclockwise", "Dilation by 1/2: select all true",
+          "Score 5: why 6^0 = 1", "Score 5: reflection then dilation (similar, not congruent)"]
+assert len(LABELS) == len(Q)
 
 def fr(a, b): return f'<span class="fr"><span>{a}</span><span>{b}</span></span>'
 
@@ -47,6 +49,8 @@ WRONG = {
  18: {1: "That is 90° clockwise. Counterclockwise uses (x, y) → (−y, x).", 2: "That is a 180° rotation. Both signs flipped.", 3: "That is a reflection over the x-axis."},
  19: {"pick": {1: "Z(2, 4) times ½ is (1, 2). (4, 8) would be scale factor 2.", 3: "A dilation changes size. The image is similar, not congruent."},
       "miss": {0: "W(2, 1) times ½ is (1, 0.5). This one is true.", 2: "The sides 4 and 3 times ½ are 2 and 1.5. This one is true.", 4: "A dilation never changes angles. They stay 90°. This one is true."}},
+ 20: {0: "An exponent does not mean “multiply by the exponent”. Use the quotient rule: 6³ ÷ 6³ = 6⁰.", 2: "Going down one exponent DIVIDES by 6. It does not subtract: 6 ÷ 6 = 1.", 3: "There is a reason. 6³ ÷ 6³ = 6⁰ by the quotient rule, and a number divided by itself is 1."},
+ 21: {0: "The reflection is rigid, but the dilation by 2 changes the size. So the triangles are not congruent.", 2: "A dilation never changes the angles. Only the side lengths are multiplied by 2.", 3: "A dilation keeps the shape, so the triangles are similar."},
 }
 # Numeric entry: exact answers and detectable mistakes, as [num, den] fractions
 NUMKEY = {
@@ -89,7 +93,7 @@ for i, q in enumerate(Q):
             for j, o in enumerate(q["opts"])) + "</div>"
     if q["fig"]:
         body = f'<div class="withfig"><div class="wf-main">{body}</div><div class="wf-fig" aria-hidden="true">{q["fig"]}</div></div>'
-    qblocks.append((q["std"], f'''
+    qblocks.append((q.get("part") or q["std"], f'''
   <div class="q" id="q{i+1}" data-i="{i}">
     <div class="q-top"><span class="qn">{i+1}</span><div class="q-text"><div class="q-type">{qtype}</div><div class="stem">{stem}</div></div></div>
     <div class="q-body">{body}
@@ -111,6 +115,9 @@ parts = []
 for n, s in enumerate(["NS.1", "EE.1", "EE.7", "F.1", "G.3"], 1):
     parts.append(f'<section class="part"><div class="part-h"><span class="tag">Part {n}</span><h2>{TITLES[s]}</h2><span class="std">NC.8.{s}</span></div>'
                  f'<div class="tip"><b class="lbl">REMEMBER</b> {TIPS[s]}</div>' + "".join(b for st, b in qblocks if st == s) + "</section>")
+
+parts.append('<section class="part"><div class="part-h"><span class="tag">Part 6</span><h2>Score 5: Explain Your Thinking</h2><span class="std">NC.8.EE.1 · NC.8.G.3</span></div>'
+             '<div class="tip"><b class="lbl">REMEMBER</b> These questions ask <b>why</b>. Pick the answer you can defend. A dilation changes the size but never the angles.</div>' + "".join(b for st, b in qblocks if st == "S5") + "</section>")
 
 note_parts = notes().split('<div class="pb"></div>')[1:]
 note_ids = ["NS.1", "EE.1", "EE.7", "F.1", "G.3"]
@@ -142,7 +149,7 @@ page = f'''<!DOCTYPE html>
 <header class="hdr">
   <div class="eyebrow">NC Check-In Benchmark</div>
   <h1>NC Check-In Benchmark Review</h1>
-  <p class="lede">Read the test strategies. Review the notes. Then do the 20 practice questions. Tap <b>Check my answer</b> after each one to see if you got it right. When you finish, tap <b>Submit</b>. Mr. Allen gets your results.</p>
+  <p class="lede">Read the test strategies. Review the notes. Then do the {len(Q)} practice questions. The last 2 are Score 5. Tap <b>Check my answer</b> after each one to see if you got it right. When you finish, tap <b>Submit</b>. Mr. Allen gets your results.</p>
   <p class="stds">NC.8.NS.1 · NC.8.EE.1 · NC.8.EE.7 · NC.8.F.1 · NC.8.G.3</p>
   <div class="links"><a href="NC_CheckIn_Benchmark_Review.pdf">Printable packet (PDF)</a></div>
 </header>
@@ -181,7 +188,7 @@ page = f'''<!DOCTYPE html>
   </div>
 </div>
 
-<div class="prog" aria-live="polite"><span id="progtxt">0 of 20 checked</span><span class="pbar"><i id="pbar"></i></span><span id="progok">0 right</span></div>
+<div class="prog" aria-live="polite"><span id="progtxt">0 of {len(Q)} checked</span><span class="pbar"><i id="pbar"></i></span><span id="progok">0 right</span></div>
 
 {"".join(parts)}
 

@@ -55,7 +55,7 @@ with sync_playwright() as pw:
             p.screenshot(path=str(SHOTS / f'{tab}_{width}.png'), full_page=True)
 
         QD = p.evaluate('window.__bench.QD')
-        check(len(QD) == 20, '20 questions')
+        check(len(QD) == 22, '22 questions (20 + 2 Score 5)')
 
         # instant feedback: blank check nudges
         p.click('#q1 .chk'); check('Tap' in p.inner_text('#q1 .nudge'), f'{width}: blank check nudges')
@@ -64,7 +64,7 @@ with sync_playwright() as pw:
         check(pv == [[5, 3], [5, 3], [-4, 1], [18, 1], [15, 10], None], f'parseNum variants {pv}')
 
         # pass 1 (1280): all right with typed variants; pass 2 (390): Q1–Q5 wrong to test specific feedback
-        for i in range(20):
+        for i in range(len(QD)):
             right = width == 1280 or i >= 5
             answer(p, QD, i, right, variant=1 if width == 390 else 0)
             p.click(f'#q{i+1} .chk')
@@ -76,7 +76,7 @@ with sync_playwright() as pw:
         # first check counts: can't change after check
         check(p.is_disabled('#q3 .chip[data-v="0"]') if QD[2]['kind'] != 'num' else True, 'checked question locks')
         # simplest-form message
-        check(p.inner_text('#progtxt').startswith('20 of 20'), f'{width}: progress 20 of 20')
+        check(p.inner_text('#progtxt').startswith('22 of 22'), f'{width}: progress 22 of 22')
 
         # submit gates
         p.fill('#sname', ''); p.click('#sbtn'); check('first AND last' in p.inner_text('#smsg'), f'{width}: name required')
@@ -86,8 +86,8 @@ with sync_playwright() as pw:
         p.click('.cls >> text=B5'); p.click('#sbtn'); p.wait_for_timeout(500)
         check(len(captured) == 1, f'{width}: one payload sent')
         pay = json.loads(captured[0])
-        exp = 20 if width == 1280 else 15
-        check(pay['score'] == exp and pay['total'] == 20, f'{width}: score {pay["score"]}/20 (expect {exp})')
+        exp = len(QD) if width == 1280 else len(QD) - 5
+        check(pay['score'] == exp and pay['total'] == len(QD), f'{width}: score {pay["score"]}/{len(QD)} (expect {exp})')
         check(pay['code'] == 'allen-8th-benchmark' and pay['kind'] == 'benchmark' and pay['period'] == 'B5', f'{width}: payload code/kind/class')
         check(all(it['std'] in ('NC.8.NS.1', 'NC.8.EE.1', 'NC.8.EE.7', 'NC.8.F.1', 'NC.8.G.3') for it in pay['items']), f'{width}: standards labelled')
         check('Sent ✓' in p.inner_text('#sendmsg'), f'{width}: sent message shown')
