@@ -86,14 +86,25 @@
     vt.parentNode.insertBefore(holder, vt.nextSibling); vt.classList.add('vq-hide');
     ['reveal', 'reset'].forEach(function (id) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { setTimeout(function () { VP.forEach(function (f) { f(); }); }, 0); }); });
   }
-  // after every check: color the tapped choice and name the mistake under each wrong answer
-  if (checkBtn) checkBtn.addEventListener('click', function () {
+  // after every check: color the tapped choice and name the mistake under each wrong answer.
+  // Review Nov 12, 2026: (1) it must run however the page was checked (button, Enter, a tap), not only on the button;
+  // (2) the first wrong try says "Not yet" and names the mistake; the answer shows only after a 2nd wrong try (or Show answers).
+  var MISS = {}, LASTV = {};
+  function after() {
     VP.forEach(function (f) { f(); });
     QS.forEach(function (q) { var div = document.getElementById('q' + q.id), inp = document.getElementById('i' + q.id); if (!div || !inp) return;
       var v = inp.value.trim(), bad = div.classList.contains('wrong') && v, ui = UI[q.id], d = DISP[q.id] || ['', ''];
       if (ui) ui.buttons.forEach(function (b) { b.classList.remove('ok', 'no'); if (v && b.getAttribute('data-t') === v) { b.classList.remove('sel'); b.classList.add(bad ? 'no' : 'ok'); } });
-      TapAnswers.note(div, !bad ? '' : ui ? (TapAnswers.why(LIST[q.id], v) || TapAnswers.miss(d[0], d[1])) : TapAnswers.numWhy(v, d[0], d[1]), 'why'); });
-  });
+      TapAnswers.note(div, !bad ? '' : ui ? (TapAnswers.why(LIST[q.id], v) || TapAnswers.miss(d[0], d[1])) : TapAnswers.numWhy(v, d[0], d[1]), 'why');
+      var fb = document.getElementById('fb' + q.id);
+      if (bad && fb && !REVEALED) { if (LASTV[q.id] !== v) { LASTV[q.id] = v; MISS[q.id] = (MISS[q.id] || 0) + 1; }
+        if (MISS[q.id] < 2 && /answer/i.test(fb.textContent)) fb.innerHTML = '✗ Not yet. Read the note, then try again.'; } });
+  }
+  var REVEALED = false, rv = document.getElementById('reveal'); if (rv) rv.addEventListener('click', function () { REVEALED = true; }, true);
+  if (checkBtn) checkBtn.addEventListener('click', after);
+  var rs0 = document.getElementById('reset'); if (rs0) rs0.addEventListener('click', function () { MISS = {}; LASTV = {}; REVEALED = false; });
+  // Enter in any answer box (the page checks on Enter without pressing the button): run the same notes right after
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT' && e.target.closest('.q')) setTimeout(after, 0); }, true);
   var rs = document.getElementById('reset');
   if (rs) rs.addEventListener('click', function () { last = {}; Object.keys(UI).forEach(function (k) { UI[k].buttons.forEach(function (b) { b.classList.remove('sel', 'ok', 'no'); }); }); [].forEach.call(document.querySelectorAll('.q > .ta-why'), function (n) { n.remove(); }); });
   window.PretestTap = { ui: UI, typed: TYPED, grade: grade, sent: SENT, vocab: VP.length };

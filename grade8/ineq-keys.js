@@ -57,7 +57,7 @@
     bs.addEventListener('click', function () { put(inp, null); });
     row.appendChild(bs);
     var host = inp.closest('.row, .ans, .val-chk, .np-row, .pr-row') || inp;
-    host.parentNode.insertBefore(row, host.nextSibling);
+    host.parentNode.insertBefore(row, host.nextSibling); row.__inp = inp;
   }
   // One shared bar for a group of answer boxes: <div data-ineq-bar> … inputs … </div>.
   // The buttons type into the box the student tapped last (or the first box).
@@ -76,12 +76,21 @@
     });
     var h = el.querySelector('h3, h4');
     if (h) h.parentNode.insertBefore(row, h.nextSibling); else el.insertBefore(row, el.firstChild);
-    el.querySelectorAll('input').forEach(function (i) { i.__ik = true; });
+    el.querySelectorAll('input').forEach(function (i) { i.__ik = true; }); row.__bar = el;
+  }
+  // a box that became tap choices (tap-answers.js hides it) needs no typing keys (review Nov 12, 2026)
+  function gone(i) { return i.classList.contains('ta-hid') || i.type === 'hidden' || i.style.display === 'none'; }
+  function tidy() {
+    document.querySelectorAll('.ik-row').forEach(function (r) {
+      var off = r.__inp ? gone(r.__inp) : r.__bar ? [].every.call(r.__bar.querySelectorAll('input'), gone) : false;
+      if (r.hidden !== off) r.hidden = off;
+    });
   }
   function scan() {
     document.querySelectorAll('[data-ineq-bar]').forEach(attachBar);
     document.querySelectorAll('input').forEach(attach);
+    tidy();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
-  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true });
+  new MutationObserver(scan).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style'] });
 })();

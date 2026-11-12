@@ -127,7 +127,7 @@ window.NOTE_TWINS = {
 "sol": "Distribute: 3(x − 4) = 3x − 12.<br>For a TRUE statement, both sides must be the same: 3x − 12 = 3x − 12. The box is 12."
 },
 "np7-1": {
-"p": "Solve: x + 4 ≥ 9. <span class=\"np-type\">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>",
+"p": "Solve: x + 4 ≥ 9. <span class=\"np-type\">Tap your answer.</span>",
 "a": "x>=5|5<=x|x≥5|5≤x|x=>5",
 "show": "x ≥ 5",
 "ineq": true,
@@ -135,7 +135,7 @@ window.NOTE_TWINS = {
 "sol": "Subtract 4: x ≥ 5"
 },
 "np7-2": {
-"p": "What inequality does this number line show? <span class=\"np-type\">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>",
+"p": "What inequality does this number line show? <span class=\"np-type\">Tap your answer.</span>",
 "fig": "<div class=\"eqfig sm\"><div data-eq='{\"type\":\"nline\",\"min\":-1,\"max\":5,\"at\":3,\"open\":true,\"dir\":\"L\",\"c\":\"blue\",\"alt\":\"number line: open circle at 3, shaded to the left\"}'></div></div>",
 "a": "x<3|3>x",
 "show": "x < 3",
@@ -144,7 +144,7 @@ window.NOTE_TWINS = {
 "sol": "Open circle at 3 → 3 is NOT included. Shaded left → less. x < 3"
 },
 "np7-3": {
-"p": "Solve: −3x + 2 > 14. <span class=\"np-type\">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>",
+"p": "Solve: −3x + 2 > 14. <span class=\"np-type\">Tap your answer.</span>",
 "a": "x<-4|-4>x",
 "show": "x < −4",
 "ineq": true,
@@ -152,7 +152,7 @@ window.NOTE_TWINS = {
 "sol": "Subtract 2: −3x > 12<br>Divide by −3 and FLIP the sign: x < −4"
 },
 "np7-4": {
-"p": "Rae solved −4x ≤ 24 and got x ≤ −6. Find her mistake. What is the correct answer? <span class=\"np-type\">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>",
+"p": "Rae solved −4x ≤ 24 and got x ≤ −6. Find her mistake. What is the correct answer? <span class=\"np-type\">Tap your answer.</span>",
 "a": "x>=-6|-6<=x|x≥-6|-6≤x|x=>-6",
 "show": "x ≥ −6",
 "ineq": true,

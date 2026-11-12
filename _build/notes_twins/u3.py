@@ -15,7 +15,7 @@ def np_eq(id, eq, prompt=None, sol=None):
 
 def np_ineq(id, eq, prompt=None, sol=None):
     op, v = solve(eq)
-    T[id] = {'p': prompt or f'Solve: {eq}. <span class="np-type">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>',
+    T[id] = {'p': prompt or f'Solve: {eq}. <span class="np-type">Tap your answer.</span>',
              'a': '|'.join(ineq_answers(op, v)), 'show': ineq_show(op, v), 'ineq': True, 'ph': 'like x<=4',
              'sol': sol or br(steps(eq))}
     return op, v
@@ -63,13 +63,13 @@ T['np6-4'] = {'p': 'What number goes in the box so 3(x − 4) = 3x − ☐ has i
               'sol': 'Distribute: 3(x − 4) = 3x − 12.<br>For a TRUE statement, both sides must be the same: 3x − 12 = 3x − 12. The box is 12.'}
 # Section 7 — inequalities
 np_ineq('np7-1', 'x + 4 ≥ 9')
-T['np7-2'] = {'p': 'What inequality does this number line show? <span class="np-type">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>',
+T['np7-2'] = {'p': 'What inequality does this number line show? <span class="np-type">Tap your answer.</span>',
               'fig': '<div class="eqfig sm"><div data-eq=\'{"type":"nline","min":-1,"max":5,"at":3,"open":true,"dir":"L","c":"blue","alt":"number line: open circle at 3, shaded to the left"}\'></div></div>',
               'a': '|'.join(ineq_answers('<', 3)), 'show': 'x < 3', 'ineq': True, 'ph': 'like x>3',
               'sol': 'Open circle at 3 → 3 is NOT included. Shaded left → less. x < 3'}
 np_ineq('np7-3', '−3x + 2 > 14')
 op, v = solve('−4x ≤ 24'); assert (op, v) == ('≥', -6)
-T['np7-4'] = {'p': 'Rae solved −4x ≤ 24 and got x ≤ −6. Find her mistake. What is the correct answer? <span class="np-type">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>',
+T['np7-4'] = {'p': 'Rae solved −4x ≤ 24 and got x ≤ −6. Find her mistake. What is the correct answer? <span class="np-type">Tap your answer.</span>',
               'a': '|'.join(ineq_answers(op, v)), 'show': ineq_show(op, v), 'ineq': True, 'ph': 'like x<=4',
               'sol': 'Rae divided by −4 but forgot to FLIP the sign.<br>−4x ≤ 24 → divide by −4 and flip → x ≥ −6'}
 # Section 8 — word problems
@@ -95,7 +95,7 @@ np_eq('np9-4', '−2(x + 5) = 4', prompt='Section 3 · Solve: −2(x + 5) = 4')
 np_eq('np9-5', '7x − 4 = 3x + 20', prompt='Section 4 · Solve: 7x − 4 = 3x + 20')
 np_many('np9-6', '2(3x + 1) = 6x − 2', prompt='Section 6 · How many solutions does 2(3x + 1) = 6x − 2 have?')
 assert how_many('2(3x + 1) = 6x − 2') == 'No solution'
-np_ineq('np9-7', '10 − 2x ≥ 16', prompt='Section 7 · Solve: 10 − 2x ≥ 16. <span class="np-type">Tap the buttons for &lt; &gt; ≤ ≥, or type x&lt;=4.</span>')
+np_ineq('np9-7', '10 − 2x ≥ 16', prompt='Section 7 · Solve: 10 − 2x ≥ 16. <span class="np-type">Tap your answer.</span>')
 np_eq('np9-8', '3(2x − 2) + 5 = 2(x + 3) + 1', prompt='Section 5 · Solve: 3(2x − 2) + 5 = 2(x + 3) + 1')
 assert solve('4x + 6 = −18') == -6
 T['np9-9'] = {'p': 'Section 8 · The sum of four times a number and 6 is −18. What is the number?', 'a': '-6', 'show': '−6',

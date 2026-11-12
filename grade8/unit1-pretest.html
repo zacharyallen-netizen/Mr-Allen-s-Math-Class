@@ -248,6 +248,8 @@ function parseClass(raw){
   return null;
 }
 function valCheck(target,tol){ return v=>{const n=parseNum(v);return isFinite(n)&&Math.abs(n-target)<=tol;}; }
+/* "Write as a decimal" (review Nov 12, 2026): a decimal, not a fraction; a repeating decimal must show it repeats (… or a bar, or 3+ repeats like 2.8333), same rule as the practice pages */
+function decCheck(target,tol,rep){ return v=>{ const s=String(v==null?'':v); if(/\//.test(s)) return false; const n=parseNum(s.replace(/[\u0304\u0305]/g,'')); if(!isFinite(n)||Math.abs(n-target)>tol) return false; if(!rep) return true; return /\u2026|\.\.\.|[\u0304\u0305]/.test(s) || /\.\d*(\d)\1\1/.test(s); }; }
 function classCheck(want){ return v=>parseClass(v)===want; }
 
 /* ================= SVG helper ================= */
@@ -400,7 +402,7 @@ function buildOrderLine(items,lo,hi,onChange){
 const BANDS = [
   { band:"3.0", label:"Score", name:"Basic Understanding", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
-      { no:1, prompt:'Write as a decimal: <span class="math"><span class="sf"><span>3</span><span class="sfx">/</span><span>8</span></span></span>', label:"=", hint:"e.g. 0.5", type:'text', ans:'0.375', check:valCheck(0.375,1e-6), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
+      { no:1, prompt:'Write as a decimal: <span class="math"><span class="sf"><span>3</span><span class="sfx">/</span><span>8</span></span></span>', label:"=", hint:"e.g. 0.5", type:'text', ans:'0.375', check:decCheck(0.375,1e-6,false), why:"3 ÷ 8 = 0.375. It terminates, so it is rational." },
       { no:2, prompt:'Write as a fraction: <span class="math">0.25</span>', label:"=", hint:"simplest form, e.g. 1/4", type:'text', ans:'1/4', check:valCheck(0.25,1e-6), why:"0.25 = <span class=\"sf\"><span>25</span><span class=\"sfx\">/</span><span>100</span></span> = <span class=\"sf\"><span>1</span><span class=\"sfx\">/</span><span>4</span></span> in simplest form." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
@@ -410,7 +412,7 @@ const BANDS = [
   { band:"4.0", label:"Score", name:"Target Content", sections:[
     { code:"1.1", title:"Converting Rational Numbers", directive:"Convert each number as directed. Write fractions in simplest form.", qs:[
       { no:4, prompt:'Write as a fraction: <span class="math">0.6&#773;</span> <span class="hint" style="display:inline">(the 6 repeats)</span>', label:"=", hint:"simplest form", type:'text', ans:'2/3', check:valCheck(2/3,1e-4), why:"One digit repeats → put it over 9: <span class=\"sf\"><span>6</span><span class=\"sfx\">/</span><span>9</span></span> = <span class=\"sf\"><span>2</span><span class=\"sfx\">/</span><span>3</span></span>." },
-      { no:5, prompt:'Write as a decimal: <span class="math">2<span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span></span> <span class="hint" style="display:inline">(2 and <span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span>)</span>', label:"=", hint:"use … for the repeating part", type:'text', ans:'2.833…', check:valCheck(2.8333,0.005), why:"2<span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2 + <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2.8333… (the 3 repeats)." },
+      { no:5, prompt:'Write as a decimal: <span class="math">2<span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span></span> <span class="hint" style="display:inline">(2 and <span class="sf"><span>5</span><span class="sfx">/</span><span>6</span></span>)</span>', label:"=", hint:"use … for the repeating part", type:'text', ans:'2.833…', check:decCheck(2.8333,0.005,true), why:"2<span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2 + <span class=\"sf\"><span>5</span><span class=\"sfx\">/</span><span>6</span></span> = 2.8333… (the 3 repeats)." },
     ]},
     { code:"1.2", title:"Real Number Classification", directive:"Classify the number as Rational (R) or Irrational (IR).", qs:[
       { no:6, prompt:'Classify: <span class="math">√20</span>', label:"Classification:", hint:"type R or IR", type:'text', ans:'IR', check:classCheck('IR'), why:"20 is not a perfect square, so √20 is irrational. √20 ≈ 4.47… never ends and never repeats." },
@@ -585,7 +587,7 @@ window.showAnswerKey=showAnswerKey;
 <script src="../score-send.js?v=20261112a"></script>
 <script>if(window.ScoreSend)ScoreSend.setup({kind:'pretest',unit:'1',page:'Unit 1 Pre-Test — Real Numbers',mount:'.sheet',std:'NC.8.NS.1',band:4});</script>
 <script src="tap-answers.js?v=20261111b"></script>
-<script src="pretest-tap.js?v=20261111d"></script>
+<script src="pretest-tap.js?v=20261112a"></script>
 <script src="step-work.js?v=20261112d"></script>
 <script src="one-at-a-time.js?v=20261111d"></script>
 </body>
