@@ -35,6 +35,14 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     if (!sw.includes(needle)) fail(rule, 'grade8/step-work.js', `missing ${what}`);
 }
 
+/* A7: the lined-up redraw of written solutions stays OFF until it passes a check on every solution (review, Nov 12, 2026). */
+{
+  const fx = fs.readFileSync(path.join(ROOT, 'student-fx.js'), 'utf8');
+  if (/aligned-steps\.js\?v=/.test(fx)) fail('A7', 'student-fx.js', 'loads aligned-steps.js again before it passed the every-solution check');
+  const sw = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
+  if (!/piPart\(inv\)/.test(sw)) fail('A5', 'grade8/step-work.js', 'trail can show the hidden π stand-in (113/355) instead of ÷ kπ');
+}
+
 /* E4: no made-up NC standard codes. */
 {
   const bad = /NC\.8\.G\.1\b/;

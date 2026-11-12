@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || window.SW_NO_FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261112a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261112b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* ─────────────────────────────────────────────────────────────────────────────
    Step Work: a step-by-step workspace for solving equations and inequalities.
    The student picks a move, sees it on the equation (what cancels, which terms are alike,
@@ -500,7 +500,8 @@
       return { kind: 'add', parts: opParts(vec, 'net', v) };
     }
     if (d.type === 'scale') {
-      var c = d.c;
+      var c = d.c, inv = qdiv(ONE, c);
+      if (piPart(inv) || piPart(c)) return piPart(inv) ? { kind: 'scale', div: true, k: inv } : { kind: 'scale', div: false, k: c };   // ÷ 9π, never the hidden stand-in
       if (Math.abs(c.n) === 1 && (c.d !== 1 || c.n === -1)) return { kind: 'scale', div: true, k: Q(c.n * c.d, 1) };   // ×(1/5) is ÷ 5; ×(−1) is ÷ (−1)
       return { kind: 'scale', div: false, k: c };
     }
@@ -1187,6 +1188,7 @@
   function sameText(a, b) { return eqHtml(a) === eqHtml(b); }
   function moveLabel(d, v) {
     if (d.type === 'add') { var neg = qsign(d.k[1].n ? d.k[1] : d.k[0]) < 0; return (neg ? 'subtracted ' + polyHtml(pscale(d.k, qneg(ONE)), v) : 'added ' + polyHtml(d.k, v)) + ' on both sides'; }
+    if (d.type === 'scale' && piPart(qdiv(ONE, d.c))) return 'divided both sides by ' + qHtml(qdiv(ONE, d.c)) + (d.flip ? ', flipped the sign' : '');
     if (d.type === 'scale') { var c = d.c; return (c.n === -1 && c.d === 1 ? 'divided both sides by −1' : c.n === 1 && c.d !== 1 ? 'divided both sides by ' + c.d : (c.d === 1 || Math.abs(c.n) !== 1 ? 'multiplied both sides by ' + qHtml(c) : 'divided both sides by −' + c.d)) + (d.flip ? ', flipped the sign' : ''); }
     if (d.type === 'rewrite') return 'simplified';
     if (d.type === 'swap') return 'switched sides';
