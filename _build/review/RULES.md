@@ -90,3 +90,7 @@ I3. Squeaky Cheeks: the other guests are fancy and polite (monocles, top hats, p
 I4. Neon Integer Assault "next level" look (synthwave grid, wave boss whose shield = open equations, laser trails, shatter,
     OVERDRIVE at 6 in a row) is looks only; the game sizes itself to the space beside the side menu.
     The boxes with right answers look like every other box (no green glow).
+I5. Equation Master monsters are evil looking and attack every few seconds; Space (or the Block button) blocks. Space never
+    presses an answer button. Unblocked attacks and wrong steps hurt the hero (knocked down at 0, gets back up); the beast
+    roars, grunts and wails; death = slow motion, cut in two, goo, eyeballs; 6 weapons unlock by beasts defeated (saved per
+    device); original dramatic music with Music: on/off. None of this changes questions, feedback, score or what is sent.

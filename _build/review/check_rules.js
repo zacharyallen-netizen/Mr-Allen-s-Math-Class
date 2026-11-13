@@ -229,6 +229,7 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   const sq = rd('grade8/squeaky-cheeks.html');
   if (/'burp'|'achoo'/.test(sq) || !/acc:/.test(sq)) fail('I3', 'grade8/squeaky-cheeks.html', 'background guests are polite and fancy (no burps/sneezes)');
   if (!/id="ar-bb"/.test(ea) || !/'ROUND ' \+/.test(ea) || /FATALITY|FINISH HIM|FLAWLESS|Kombat/i.test(ea.replace(/\/\*[\s\S]*?\*\//g, ''))) fail('I1', 'grade8/equation-arena.js', 'fighting-game look (health bars, ROUND / FIGHT) with nothing copied from a real game');
+  if (!/e\.code !== 'Space'/.test(ea) || !/var WEAPONS = /.test(ea) || !/var MUS = /.test(ea) || !/function gore\(/.test(ea) || !/keyup/.test(ea)) fail('I5', 'grade8/equation-arena.js', 'Space to block (never picks an answer), weapons, music, slow-motion death');
   const ni = rd('grade8/neon-integer-assault.html');
   if (/box\.correct \? colors\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must not glow green');
   if (!/const NX = /.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'next-level look + game sized beside the side menu');
