@@ -83,7 +83,10 @@ G11. Unit 5: the 5.1–5.4 practice page is listed as "Targeted Practice Problem
 ## I. Arcade games (Nov 13, 2026)
 I1. Equation Master: the equation work is on the LEFT and the fight on the RIGHT (side by side; phones: fight on top, small).
     The fight is cartoon gory (goo splats, flying teeth, K.O. puddle); it never changes questions, feedback or scores.
+    It looks like a classic 2-D arcade fighting game (health bars, ROUND n / FIGHT!, combo counter, K.O., PERFECT!), but
+    nothing is copied from a real game: no names, characters, logos or catchphrases.
 I2. Zero Pair Run is called "Tiles for Miles" everywhere students see it (file name unchanged).
 I3. Squeaky Cheeks: the other guests are fancy and polite (monocles, top hats, pearls; "I say!", *titters*); only the player is gassy.
 I4. Neon Integer Assault "next level" look (synthwave grid, wave boss whose shield = open equations, laser trails, shatter,
     OVERDRIVE at 6 in a row) is looks only; the game sizes itself to the space beside the side menu.
+    The boxes with right answers look like every other box (no green glow).

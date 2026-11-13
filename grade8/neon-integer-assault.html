@@ -922,7 +922,8 @@
 
   function drawBox(box) {
     const palette = [colors.cyan, colors.pink, colors.gold];
-    const accent = box.correct ? colors.green : palette[box.hue];
+    /* Nov 13, 2026 (Zach): right answers no longer glow green; every box looks alike until it is hit */
+    const accent = palette[box.hue];
     const pulse = box.hitPulse;
     const cx = box.x + box.w / 2;
     const cy = box.y + box.h / 2;
@@ -930,8 +931,8 @@
     ctx.save();
     ctx.shadowColor = accent;
     ctx.shadowBlur = 12 + pulse * 24;
-    ctx.fillStyle = box.correct ? "rgba(87, 255, 147, 0.14)" : "rgba(10, 19, 34, 0.76)";
-    ctx.strokeStyle = box.correct ? "rgba(87, 255, 147, 0.82)" : "rgba(67, 247, 255, 0.55)";
+    ctx.fillStyle = "rgba(10, 19, 34, 0.76)";
+    ctx.strokeStyle = "rgba(67, 247, 255, 0.55)";
     ctx.lineWidth = 2 + pulse * 2;
     roundRect(box.x, box.y, box.w, box.h, 8);
     ctx.fill();

@@ -1,4 +1,8 @@
-/* Nov 13, 2026 (Zach): side by side — the work on the LEFT, the fight on the RIGHT (stacked on narrow screens, fight on top),
+/* Nov 13, 2026, later (Zach: "change the style to imitate Mortal Kombat"): the arena now LOOKS like a classic 2-D arcade
+   fighting game (a genre look only: two health bars with names, ROUND n / FIGHT!, hit sparks with a freeze, an "n HIT COMBO"
+   counter, a K.O. and PERFECT! for a problem with no wrong step, a dark stone temple with braziers and a red moon).
+   Nothing from that series is used: no names, characters, ninjas, logos or its catchphrases. Same hero and beasts.
+   Nov 13, 2026 (Zach): side by side — the work on the LEFT, the fight on the RIGHT (stacked on narrow screens, fight on top),
    and the fight is more violent in a CARTOON way: goo splats stick to the beast, teeth fly, X-eyes, a goo puddle when it falls,
    bandages and dizzy stars on the hero when he gets hit. No real blood: bright monster goo only.
    EQUATION ARENA (Nov 11, 2026, Mr. Allen: "make Equation Master less dry, sword-and-sorcery action").
@@ -20,12 +24,23 @@
     '.em-split{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:20px;align-items:start;max-width:1400px;margin:0 auto}' +
     '.em-work{min-width:0}.em-fight{position:sticky;top:12px;min-width:0}' +
     '@media (max-width:880px){.em-split{grid-template-columns:1fr;gap:10px}.em-fight{order:-1;top:0;z-index:5}.em-fight .arena svg{max-height:190px}}' +
-    '.arena{position:relative;margin:0 0 16px;border-radius:12px;border:3px solid #FFC107;overflow:hidden;background:linear-gradient(180deg,#1b1436 0%,#3b1d3f 46%,#7a3524 78%,#2a160f 100%)}' +
+    '.arena{position:relative;margin:0 0 16px;border-radius:6px;border:3px solid #3a2a1a;box-shadow:0 0 0 2px #000,0 10px 30px rgba(0,0,0,.45);overflow:hidden;background:#0c0806}' +
+    '.arena .bars{position:absolute;left:10px;right:10px;top:8px;display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start;z-index:2;pointer-events:none}' +
+    '.arena .bar{height:16px;border:2px solid #e8d9a8;background:#5a0b0b;box-shadow:0 0 0 2px #000;position:relative;overflow:hidden}' +
+    '.arena .bar b{position:absolute;top:0;bottom:0;background:linear-gradient(180deg,#ffe36b,#e0a800 55%,#b57a00);transition:width .35s ease-out}' +
+    '.arena .bar.l b{left:0}.arena .bar.r b{right:0}.arena .bar b.low{background:linear-gradient(180deg,#ff8a5b,#d6331f)}' +
+    '.arena .nm2{font:900 12px Inter,system-ui,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:#fff;text-shadow:2px 2px 0 #000;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.arena .r .nm2,.arena .rt{text-align:right}' +
+    '.arena .rnd{min-width:44px;text-align:center;font:900 20px "JetBrains Mono",monospace;color:#ffe36b;text-shadow:2px 2px 0 #000;border:2px solid #e8d9a8;background:#1a0e08;box-shadow:0 0 0 2px #000;padding:1px 6px;line-height:1.1}' +
+    '.arena .rnd small{display:block;font:800 8px Inter,sans-serif;letter-spacing:.14em;color:#e8d9a8}' +
+    '.arena .combo{position:absolute;left:12px;top:30%;font:900 clamp(16px,3vw,26px) Impact,"Arial Black",sans-serif;font-style:italic;color:#ffe36b;text-shadow:3px 3px 0 #000,0 0 12px #ff6a00;opacity:0;pointer-events:none;letter-spacing:.03em}' +
+    '.arena .combo span{display:block;font-size:.55em;color:#fff}' +
+    '.arena .flashw{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}' +
     '.arena svg{display:block;width:100%;height:auto;max-height:420px}' +
     '.arena .tag{position:absolute;left:12px;top:8px;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#FFD86B;text-shadow:0 1px 2px #000}' +
     '.arena .foe{position:absolute;right:12px;top:8px;text-align:right;font:700 13px Inter,system-ui,sans-serif;color:#fff;text-shadow:0 1px 2px #000}' +
     '.arena .hp{display:flex;gap:4px;justify-content:flex-end;margin-top:4px}.arena .hp i{width:18px;height:9px;border-radius:3px;background:#e23b3b;border:1px solid rgba(0,0,0,.5);transition:background .3s,transform .3s}.arena .hp i.gone{background:rgba(255,255,255,.14);transform:scaleY(.6)}' +
-    '.arena .shout{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);font:900 clamp(22px,5vw,40px) "Arvo",Georgia,serif;color:#FFC107;text-shadow:0 2px 0 #5a1a00,0 0 18px rgba(255,150,40,.8);letter-spacing:.04em;pointer-events:none;opacity:0;white-space:nowrap}' +
+    '.arena .shout{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);font:900 clamp(26px,6.5vw,58px) Impact,"Arial Black",sans-serif;font-style:italic;color:#ffe36b;-webkit-text-stroke:2px #3a0000;text-shadow:4px 4px 0 #000,0 0 22px rgba(255,90,0,.85);letter-spacing:.04em;pointer-events:none;opacity:0;white-space:nowrap;z-index:3}' +
     '.arena .rage{position:absolute;left:12px;bottom:8px;font:800 13px Inter,system-ui,sans-serif;color:#ffb347;text-shadow:0 1px 2px #000;opacity:0;transition:opacity .3s}.arena .rage.on{opacity:1}' +
     '.arena .snd{position:absolute;right:10px;bottom:8px}.arena .snd button{font:600 12px Inter,system-ui,sans-serif!important;padding:5px 10px!important;min-height:30px!important;background:rgba(255,255,255,.9)!important}' +
     '@media print{.arena{display:none}}';
@@ -82,15 +97,23 @@
   function build() {
     if (box) return; var gs = document.getElementById('game-screen'), eq = document.getElementById('eq-panel'); if (!gs || !eq) return;
     box = document.createElement('div'); box.className = 'arena'; box.setAttribute('aria-hidden', 'true');
-    box.innerHTML = '<span class="tag">The Arena</span><div class="foe"><span class="nm"></span><div class="hp"></div></div>' +
-      '<svg viewBox="0 -70 600 240" preserveAspectRatio="xMidYMid meet"><rect x="0" y="-70" width="600" height="70" fill="#140f2a"/>' +
-        '<path d="M0,112 L60,70 L110,98 L170,52 L240,100 L300,64 L370,104 L440,58 L520,96 L600,66 L600,170 L0,170 Z" fill="rgba(20,10,30,.55)"/>' +
-        '<circle cx="318" cy="40" r="20" fill="#ffd9a0" opacity=".8"/>' +
-        '<rect x="0" y="150" width="600" height="20" fill="#2a160f"/><path d="M0,150 L600,150" stroke="#8a5a3a" stroke-width="2"/>' +
+    box.innerHTML = '<div class="bars"><div class="l"><div class="bar l"><b id="ar-hb" style="width:100%"></b></div><div class="nm2">Hero</div></div>' +
+      '<div class="rnd"><small>ROUND</small><span id="ar-rn">1</span></div>' +
+      '<div class="r"><div class="bar r"><b id="ar-bb" style="width:100%"></b></div><div class="nm2 nm"></div></div></div><div class="hp" style="display:none"></div>' +
+      '<svg viewBox="0 -70 600 240" preserveAspectRatio="xMidYMid meet"><defs><linearGradient id="ar-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0405"/><stop offset=".6" stop-color="#4a0d08"/><stop offset="1" stop-color="#7a2a10"/></linearGradient>' +
+        '<radialGradient id="ar-moon"><stop offset="0" stop-color="#ffb08a"/><stop offset=".7" stop-color="#d0391f"/><stop offset="1" stop-color="#d0391f" stop-opacity="0"/></radialGradient></defs>' +
+        '<rect x="0" y="-70" width="600" height="240" fill="url(#ar-sky)"/><circle cx="300" cy="-10" r="62" fill="url(#ar-moon)" opacity=".9"/>' +
+        '<path d="M0,96 L40,60 L80,84 L130,40 L190,88 L250,58 L300,82 L360,44 L420,86 L480,54 L540,80 L600,50 L600,150 L0,150 Z" fill="#200605"/>' +
+        '<g fill="#2b1810" stroke="#120804" stroke-width="2"><rect x="70" y="-20" width="34" height="170"/><rect x="496" y="-20" width="34" height="170"/><rect x="60" y="-30" width="54" height="14"/><rect x="486" y="-30" width="54" height="14"/>' +
+        '<path d="M180,40 L420,40 L440,26 L160,26 Z"/><rect x="200" y="40" width="16" height="110"/><rect x="384" y="40" width="16" height="110"/></g>' +
+        '<g fill="#6a0f0f" stroke="#2a0404" stroke-width="1.5"><path d="M118,-12 h22 v70 l-11,-10 l-11,10 Z"/><path d="M460,-12 h22 v70 l-11,-10 l-11,10 Z"/></g>' +
+        '<g fill="none" stroke="#e0a800" stroke-width="2"><circle cx="129" cy="14" r="6"/><path d="M465,8 l12,12 m0,-12 l-12,12"/></g>' +
+        '<rect x="0" y="150" width="600" height="20" fill="#3a2418"/><path d="M0,150 L600,150" stroke="#a87a4a" stroke-width="2"/>' +
+        '<path d="M0,160 L600,160 M60,150 L40,170 M160,150 L150,170 M260,150 L258,170 M360,150 L366,170 M460,150 L474,170 M560,150 L582,170" stroke="#1e120a" stroke-width="1.5"/>' +
         '<g id="ar-torch1" transform="translate(40,150)"><rect x="-3" y="-46" width="6" height="46" fill="#4a2c14"/><path class="fl" d="M0,-74 Q12,-58 0,-46 Q-12,-58 0,-74 Z" fill="#ffb347"/></g>' +
         '<g id="ar-torch2" transform="translate(560,150)"><rect x="-3" y="-46" width="6" height="46" fill="#4a2c14"/><path class="fl" d="M0,-74 Q12,-58 0,-46 Q-12,-58 0,-74 Z" fill="#ffb347"/></g>' +
         '<g id="ar-puddles"></g>' + HERO + '<g id="ar-foe"></g><path id="ar-slash" d="M380,40 Q470,70 520,150" fill="none" stroke="#fff" stroke-width="0" stroke-linecap="round"/>' +
-      '</svg><div class="shout"></div><div class="rage">Berserker streak!</div><div class="snd"></div>';
+      '</svg><div class="flashw"></div><div class="shout"></div><div class="combo"></div><div class="rage">Berserker streak!</div><div class="snd"></div>';
     var split = document.createElement('div'); split.className = 'em-split';
     var work = document.createElement('div'); work.className = 'em-work';
     var fight = document.createElement('div'); fight.className = 'em-fight';
@@ -101,7 +124,7 @@
     fx(function (A) { box.querySelector('.snd').appendChild(A.soundButton()); });
     if (!RM) [].forEach.call(box.querySelectorAll('.fl'), function (f, i) { try { f.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(.86,1.16)' }, { transform: 'scale(1.08,.92)' }, { transform: 'scale(1,1)' }], { duration: 520 + i * 90, iterations: Infinity }); f.style.transformOrigin = '0px -46px'; f.style.transformBox = 'view-box'; } catch (e) {} });
   }
-  function el(id) { return svg.querySelector('#' + id); }
+  function el(id) { return svg.querySelector('#' + id) || (box && box.querySelector('#' + id)); }
   function at(node) { var r = node.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
   function say(t, color) { shout.textContent = t; shout.style.color = color || '#FFC107'; try { shout.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.5) rotate(-6deg)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.12) rotate(-3deg)', offset: .18 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1) rotate(-3deg)', offset: .7 }, { opacity: 0, transform: 'translate(-50%,-70%) scale(1) rotate(-3deg)' }], { duration: RM ? 900 : 1000 }); } catch (e) {} }
   function anim(node, frames, ms) { if (RM || !node || !node.animate) return; try { node.animate(frames, { duration: ms, easing: 'ease-out' }); } catch (e) {} }
@@ -121,13 +144,20 @@
     svg.appendChild(t); var x0 = from[0], y0 = from[1], dx = 60 + Math.random() * 80, up = 70 + Math.random() * 40;
     try { var a = t.animate([{ transform: 'translate(' + x0 + 'px,' + y0 + 'px) rotate(0deg)' }, { transform: 'translate(' + (x0 + dx * .5) + 'px,' + (y0 - up) + 'px) rotate(260deg)', offset: .45 }, { transform: 'translate(' + (x0 + dx) + 'px,148px) rotate(560deg)' }], { duration: 750, easing: 'ease-in', fill: 'forwards' }); a.onfinish = function () { setTimeout(function () { t.remove(); }, 900); }; } catch (e) { t.remove(); }
   }
-  function pips() { hpBox.innerHTML = ''; for (var i = 0; i < hpMax; i++) { var p = document.createElement('i'); if (i >= hp) p.className = 'gone'; hpBox.appendChild(p); } }
+  var heroHP = 100, wrongs = 0;
+  function bars() { var bb = el('ar-bb'), hb = el('ar-hb'); if (!bb) return; var w = hpMax ? Math.round(100 * hp / hpMax) : 0;
+    bb = box.querySelector('#ar-bb'); hb = box.querySelector('#ar-hb'); bb.style.width = w + '%'; bb.classList.toggle('low', w <= 34); hb.style.width = heroHP + '%'; hb.classList.toggle('low', heroHP <= 34); }
+  function freeze() { if (RM) return; var f = box.querySelector('.flashw'); try { f.animate([{ opacity: .55 }, { opacity: 0 }], { duration: 120 }); } catch (e) {} }
+  function combo(n) { var c = box.querySelector('.combo'); if (n < 2) return; c.innerHTML = n + ' HIT<span>COMBO</span>'; try { c.animate([{ opacity: 0, transform: 'translateX(-30px) skewX(-8deg)' }, { opacity: 1, transform: 'translateX(0) skewX(-8deg)', offset: .15 }, { opacity: 1, offset: .75 }, { opacity: 0 }], { duration: 1100 }); } catch (e) {} }
+  function pips() { bars(); hpBox.innerHTML = ''; for (var i = 0; i < hpMax; i++) { var p = document.createElement('i'); if (i >= hp) p.className = 'gone'; hpBox.appendChild(p); } }
 
   function newBeast(prob, idx) {
     build(); if (!box) return;
     kind = KINDS[idx % KINDS.length]; hpMax = hp = (prob.steps || []).length || 1;
     var t = String(prob.title || 'Equation').replace(/\s*\(.*\)$/, '').replace(/:.*$/, '');
-    foeName.textContent = 'The ' + t + ' ' + kind.name; el('ar-foe').innerHTML = beastSVG(kind); pips();
+    foeName.textContent = t + ' ' + kind.name; el('ar-foe').innerHTML = beastSVG(kind); heroHP = 100; wrongs = 0; pips();
+    var rn = box.querySelector('#ar-rn'); if (rn) rn.textContent = idx + 1;
+    say('ROUND ' + (idx + 1), '#ffe36b'); setTimeout(function () { say('FIGHT!', '#ff5a2a'); }, RM ? 0 : 900);
     el('ar-puddles').innerHTML = ''; [].forEach.call(svg.querySelectorAll('.ouch'), function (n) { n.remove(); });
     anim(el('ar-beast'), [{ transform: 'translate(640px,150px)' }, { transform: 'translate(450px,150px)' }], 520);
     fx(function (A) { A.sfx.roar(); });
@@ -140,11 +170,12 @@
     fx(function (A) { A.sfx.whoosh(); });
     setTimeout(function () {
       if (!RM && slash.animate) slash.animate([{ strokeWidth: 0, opacity: 1 }, { strokeWidth: berserk ? 16 : 10, opacity: 1, offset: .3 }, { strokeWidth: 0, opacity: 0 }], { duration: 260 });
-      hp = Math.max(0, hp - 1); pips();
+      hp = Math.max(0, hp - 1); pips(); freeze(); combo(window.streak || 0);
       var p = beast ? at(beast) : at(box);
       fx(function (A) { A.sfx.clang(); A.sparks(p[0], p[1], { color: berserk ? '#ff7a3c' : '#FFC107', count: berserk ? 30 : 18, speed: 420 }); if (berserk) A.shake(box, 7, 260); });
       if (last) {
-        say(pick(['K.O.!', 'BEAST SPLATTED!', 'GOO-BYE!', 'IT IS SOLVED!']), '#7CFC9A');
+        say('K.O.!', '#ff3b1f'); if (!wrongs) setTimeout(function () { say('PERFECT!', '#ffe36b'); }, RM ? 0 : 1100);
+        if (!RM) try { svg.animate([{ filter: 'saturate(1)' }, { filter: 'saturate(0) brightness(1.4)', offset: .1 }, { filter: 'saturate(.3)', offset: .6 }, { filter: 'saturate(1)' }], { duration: 1400 }); } catch (e) {}
         if (beast) { var xe = svgEl('path', { d: 'M-26,-88 l14,14 m0,-14 l-14,14 M12,-88 l14,14 m0,-14 l-14,14', stroke: '#111', 'stroke-width': 5, 'stroke-linecap': 'round' }); beast.appendChild(xe); tooth([440, 100]); tooth([460, 96]); }
         var pd = el('ar-puddles'); if (pd) { var pu = svgEl('ellipse', { cx: 455, cy: 150, rx: 8, ry: 3, fill: kind.goo, opacity: .9 }); pd.appendChild(pu); anim(pu, [{ rx: 8 }, { rx: 78 }], 700); pu.setAttribute('rx', 78);
           for (var c = 0; c < 4; c++) splat(400 + c * 35, 140 + Math.random() * 8, 6 + Math.random() * 5, kind.goo, pd); }
@@ -153,7 +184,7 @@
         if (beast) { if (!RM && beast.animate) beast.animate([{ opacity: 1, transform: 'translate(450px,150px) scale(1)' }, { opacity: 0, transform: 'translate(470px,120px) scale(1.5) rotate(18deg)' }], { duration: 420, fill: 'forwards' }); else beast.style.opacity = '0'; }
         anim(sword, [{ transform: 'rotate(-28deg)' }, { transform: 'rotate(-95deg)' }, { transform: 'rotate(-95deg)' }, { transform: 'rotate(-28deg)' }], 1300);
       } else {
-        say(pick(berserk ? ['MIGHTY BLOW!', 'GOO EVERYWHERE!', 'UNSTOPPABLE!', 'THAT HAD TO HURT!'] : ['SPLAT!', 'SLASH!', 'SPLURCH!', 'A CLEAN HIT!']));
+        say(pick(berserk ? ['BRUTAL!', 'UNSTOPPABLE!', 'GOO EVERYWHERE!', 'DEVASTATING!'] : ['SPLAT!', 'SLASH!', 'SPLURCH!', 'GREAT HIT!']));
         if (beast) { splat(-30 + Math.random() * 60, -100 + Math.random() * 70, berserk ? 13 : 9, kind.goo, beast); if (Math.random() < .6) tooth([450, 100]); }
         fx(function (A) { A.sparks(p[0], p[1], { color: kind.goo, count: berserk ? 26 : 16, speed: 360 }); });
         anim(beast, [{ transform: 'translate(450px,150px)' }, { transform: 'translate(478px,144px) rotate(8deg)', offset: .3 }, { transform: 'translate(450px,150px)' }], 360);
@@ -164,7 +195,8 @@
     if (!box) return; var beast = el('ar-beast'), shield = el('ar-shield'), hero = el('ar-hero'); rage.classList.remove('on');
     anim(beast, [{ transform: 'translate(450px,150px)' }, { transform: 'translate(250px,150px)', offset: .4 }, { transform: 'translate(450px,150px)' }], 560);
     anim(shield, [{ transform: 'translate(-30px,-56px) scale(1)' }, { transform: 'translate(6px,-60px) scale(1.5)', offset: .35 }, { transform: 'translate(6px,-60px) scale(1.5)', offset: .7 }, { transform: 'translate(-30px,-56px) scale(1)' }], 700);
-    setTimeout(function () { say(pick(['BLOCKED!', 'THE BEAST STRIKES!', 'HOLD THE LINE!', 'SHIELD UP!']), '#ff8a7a');
+    wrongs++; heroHP = Math.max(10, heroHP - 25);
+    setTimeout(function () { bars(); freeze(); say(pick(['BLOCKED!', 'COUNTER!', 'OUCH!', 'SHIELD UP!']), '#ff8a7a');
       var p = at(hero); fx(function (A) { A.sfx.thud(); A.sfx.clang(); A.sparks(p[0] - 10, p[1] - 10, { color: '#9ec5ff', count: 14 }); A.shake(box, 8, 300); });
       anim(hero, [{ transform: 'translate(150px,150px)' }, { transform: 'translate(132px,150px)', offset: .3 }, { transform: 'translate(150px,150px)' }], 320);
       if (hero && !hero.querySelector('.ouch')) { var bd = svgEl('g', { 'class': 'ouch', transform: 'translate(-8,-104) rotate(-20)' }); bd.appendChild(svgEl('rect', { x: -9, y: -3, width: 18, height: 6, rx: 2, fill: '#f6e7c8', stroke: '#8a7350', 'stroke-width': 1 })); bd.appendChild(svgEl('rect', { x: -3, y: -9, width: 6, height: 18, rx: 2, fill: '#f6e7c8', stroke: '#8a7350', 'stroke-width': 1 })); hero.appendChild(bd); }
@@ -172,7 +204,7 @@
         try { st.animate([{ transform: 'translate(0px,-126px) rotate(0deg)' }, { transform: 'translate(0px,-126px) rotate(360deg)' }], { duration: 500, iterations: 2 }).onfinish = function () { st.remove(); }; } catch (e) { st.remove(); } }
     }, RM ? 0 : 220);
     /* the step is still shown after a miss (as before), so the beast still loses that point: a plain hit, no glory */
-    setTimeout(function () { hp = Math.max(0, hp - 1); pips(); if (hp === 0 && beast) { beast.style.opacity = '.25'; say('It falls… barely.', '#d6d6d6'); } }, 950);
+    setTimeout(function () { hp = Math.max(0, hp - 1); pips(); if (hp === 0 && beast) { beast.style.opacity = '.25'; say('K.O.', '#d6d6d6'); } }, 950);
   }
 
   var _load = window.loadProblem, _choice = window.handleChoice, _results = window.showResults;

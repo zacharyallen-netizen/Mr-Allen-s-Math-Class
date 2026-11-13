@@ -228,7 +228,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   ['grade8/arcade.html', 'grade8/unit3.html', 'grade8/materials_index.html'].forEach(f => { if (/>Zero Pair Run/.test(rd(f))) fail('I2', f, 'card must say Tiles for Miles'); });
   const sq = rd('grade8/squeaky-cheeks.html');
   if (/'burp'|'achoo'/.test(sq) || !/acc:/.test(sq)) fail('I3', 'grade8/squeaky-cheeks.html', 'background guests are polite and fancy (no burps/sneezes)');
+  if (!/id="ar-bb"/.test(ea) || !/'ROUND ' \+/.test(ea) || /FATALITY|FINISH HIM|FLAWLESS|Kombat/i.test(ea.replace(/\/\*[\s\S]*?\*\//g, ''))) fail('I1', 'grade8/equation-arena.js', 'fighting-game look (health bars, ROUND / FIGHT) with nothing copied from a real game');
   const ni = rd('grade8/neon-integer-assault.html');
+  if (/box\.correct \? colors\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must not glow green');
   if (!/const NX = /.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'next-level look + game sized beside the side menu');
 }
 
