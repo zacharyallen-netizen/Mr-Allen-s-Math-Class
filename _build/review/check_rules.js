@@ -163,5 +163,16 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (bad) fail('D6', 'grade8/step-work.js', bad + ' plain .focus() call(s) that can jump the page (use calm() or preventScroll)');
 }
 
+/* G5–G6 (Nov 13, 2026): one problem on screen; finished step work is submitted automatically. */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const oat = rd('grade8/one-at-a-time.js');
+  if (/Show all ' \+ WORD/.test(oat)) fail('G5', 'grade8/one-at-a-time.js', 'still has the "Show all problems" switch');
+  if (/See the whole page/.test(rd('grade8/homework_turn_in.html'))) fail('G5', 'grade8/homework_turn_in.html', 'still has "See the whole page"');
+  const sw = rd('grade8/step-work.js');
+  if (/Put this answer in the answer box/.test(sw)) fail('G6', 'grade8/step-work.js', 'still asks students to put the answer in the box');
+  if (!/function submitBox\(inp, text\)/.test(sw)) fail('G6', 'grade8/step-work.js', 'missing submitBox (auto check)');
+}
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');

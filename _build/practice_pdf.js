@@ -10,7 +10,7 @@ const G = path.join(__dirname, '..', 'grade8') + '/';
   const b = await chromium.launch();
   for (const [mode, out] of [['blank', blank], ['key', key]]) {
     const p = await b.newPage({ viewport: { width: 900, height: 1200 } }); const errs = []; p.on('pageerror', e => errs.push(e.message));
-    await p.goto('http://127.0.0.1:8765/grade8/' + page); await p.evaluate(() => localStorage.setItem('oat-mode', 'all'));
+    await p.goto('http://127.0.0.1:8765/grade8/' + page); await p.evaluate(() => localStorage.setItem('oat-mode', 'all-test'));
     await p.reload(); await p.waitForTimeout(1200);
     const title = await p.evaluate((mode) => {
       const D = window.PRACTICE.data;

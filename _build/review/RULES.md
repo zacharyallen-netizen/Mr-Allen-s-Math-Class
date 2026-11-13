@@ -59,3 +59,7 @@ G1. Homework is called **"Targeted Practice"** everywhere students see it ("Targ
 G2. Unit pages have NO big gold "Start here / Keep going / Next" button and no fold; the "Start here: do these in order" strip stays.
 G3. Units 3 and 4 keep their own pages. The combined Units 3–4 page holds ONLY the Units 3–4 Pre-Test and the Units 3–4 Tutorial.
 G4. Every page with the top bar has the ♪ Music button (top right); it opens the small pop-out player (drift.html?mini=1).
+G5. One problem on the screen (Nov 13, 2026): no "Show all problems" switch for students (one-at-a-time.js ignores a saved "all";
+    ?all=1 is for teachers/tests) and no "See the whole page" on Targeted Practice.
+G6. A finished step-by-step puts the answer in the answer box AND checks it (matching tap choice is tapped). No
+    "Put this answer in the answer box" button, no scrolling to the top.

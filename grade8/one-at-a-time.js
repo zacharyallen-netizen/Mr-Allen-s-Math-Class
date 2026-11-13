@@ -4,7 +4,7 @@
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)
-   waits for the finish screen. "Show all problems" switches back to the long page. Printing shows everything.
+   waits for the finish screen. No "Show all" for students (Nov 13, 2026); ?all=1 shows the long page. Printing shows everything.
    Nothing about the problems, checking, scoring or sending changes: this script only hides and shows. */
 (function () {
   if (window.__oat) return; window.__oat = true;
@@ -50,7 +50,10 @@
   document.head.appendChild(css);
 
   var F = null, root = null, items = [], idx = 0, on = true, top, bot, end, mode, flats = [];
-  try { on = localStorage.getItem(KEY) !== 'all'; } catch (e) {}
+  // Nov 13, 2026 (Zach: "students should only be working one problem at a time and other problems should not be visible"):
+  // no "Show all problems" button for students, and an old saved "all" choice is ignored. Teachers/tests: add ?all=1 to the address.
+  on = !/[?&]all=1\b/.test(location.search);
+  try { if (localStorage.getItem(KEY) === 'all') localStorage.removeItem(KEY); if (localStorage.getItem(KEY) === 'all-test') on = false; } catch (e) {}
 
   function sig(el) { return el.tagName + '.' + (typeof el.className === 'string' ? el.className.replace(/\b(active|done|shown|oat-[a-z]+|sw-wide|correct|wrong)\b/g, '').trim().split(/\s+/).sort().join('.') : ''); }
   function hasItem(el) { return items.some(function (it) { return el === it || el.contains(it); }); }
@@ -59,8 +62,7 @@
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function build() {
     top = el('div', 'oat-top');
-    top.innerHTML = '<span class="oat-count" aria-live="polite"></span><span class="oat-bar" aria-hidden="true"><i></i></span><button type="button" class="oat-link">Show all ' + WORD.toLowerCase() + 's</button>';
-    top.querySelector('.oat-link').addEventListener('click', function () { setMode(false); });
+    top.innerHTML = '<span class="oat-count" aria-live="polite"></span><span class="oat-bar" aria-hidden="true"><i></i></span>';
     bot = el('div', 'oat-bot');
     bot.innerHTML = '<button type="button" class="oat-btn back">← Back</button><button type="button" class="oat-btn go next"></button>';
     bot.querySelector('.back').addEventListener('click', function () { go(idx - 1); });

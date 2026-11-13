@@ -12,7 +12,7 @@
      cfg.setup   { answer: 20, hint: "...", ineq: false }  student writes the equation first
      cfg.then    [{ label: "(4x + 15)°", expr: "4x + 15", unit: "°" }]   evaluate after solving
      cfg.v       variable letter (default: found in start, else "x")
-     cfg.onAnswer(text, info)   "Use this answer" fills the page's answer box
+     cfg.onAnswer(text, info)   called as soon as the work is finished: fills the page's answer box and checks it
    Auto-attach: pre-test pages (QS), practice pages (window.PRACTICE), homework (window.HW_STEPS).
    Notation: type - for minus, / for fractions (2/3x means ⅔x), ^ for exponents, <= and >= or the ≤ ≥ keys.
    ───────────────────────────────────────────────────────────────────────────── */
@@ -637,7 +637,7 @@
     '.sw-vis{margin-top:10px;background:#FBFBF9;border:1px solid #EEF0F3;border-radius:8px;padding:8px 10px;overflow-x:auto}' +
     '.sw-grid{display:grid;grid-template-columns:auto auto auto;justify-content:start;column-gap:14px;row-gap:2px;font:500 20px/1.7 Inter,system-ui,sans-serif;align-items:center}' +
     '.sw-grid .sw-r{text-align:center}.sw-grid .sw-op{color:#B45309;font-weight:700}.sw-grid .sw-lft{text-align:right}' +
-    '.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
+    '.sw-sent{color:#1B5E20;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:10px;padding:10px 14px;font-weight:600}.sw-note{font:400 14.5px/1.45 Inter,sans-serif;color:#3A4356;margin-top:6px}' +
     '.sw-coach{margin-top:8px;background:#FFFBEB;border:1.5px solid #E0A800;border-radius:8px;padding:8px 10px;color:#1E2D4F}.sw-coach-h{font:700 14.5px Inter,sans-serif;margin:0 0 2px}.sw-coach .sw-al{margin:4px 0}' +
     '.sw-alb{margin:6px 0;padding:6px 8px;background:#FBFBF9;border:1px solid #EEF0F3;border-radius:8px;color:#1E2D4F;text-align:left}.sw-alb .sw-tg{font-size:18px;margin:0}' +
     '.sw-alb .sw-n{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:50%;background:#1E2D4F;color:#FFC107;font:700 12px Inter,sans-serif}' +
@@ -1315,7 +1315,7 @@
           info = { kind: rel === '=' ? 'one' : 'ineq', x: x, rel: rel };
         }
         work.appendChild(box2);
-        if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
+        if (lines.length > 1 && !cfg.onAnswer) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
         if (cfg.then && info.kind === 'one' && info.x) thenStage(info.x);
         else useBtn(info);
       }
@@ -1328,14 +1328,13 @@
           '<br>Slope <i>m</i> = ' + qHtml(ld.m) + ', <i>y</i>-intercept <i>b</i> = ' + qHtml(ld.b) + '.' +
           '<br>Check with <i>x</i> = 1: the first line gives <i>y</i> = ' + qHtml(y1) + ', and ' + qHtml(ld.m) + ' · 1 + ' + (ld.b.n < 0 ? '(' + qHtml(ld.b) + ')' : qHtml(ld.b)) + ' = ' + qHtml(qadd(ld.m, ld.b)) + ' ✓';
         work.appendChild(box2);
-        if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
+        if (lines.length > 1 && !cfg.onAnswer) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); var ur = el('div', 'sw-acts'); ur.appendChild(u); work.appendChild(ur); }
         useBtn({ kind: 'line', text: lineTxt(ld.m, ld.b), m: ld.m, b: ld.b });
       }
       function useBtn(info) {
         if (!cfg.onAnswer) { work.appendChild(el('p', 'sw-note', 'Now type your answer in the answer box.')); return; }
-        var r = el('div', 'sw-acts'), b = btn('Put this answer in the answer box', 'go');
-        b.addEventListener('click', function () { cfg.onAnswer(answerText(info, v), info); b.textContent = '✓ Answer filled in'; b.disabled = true; });
-        r.appendChild(b); work.appendChild(r); keep(r);
+        var t0 = answerText(info, v); cfg.onAnswer(t0, info);
+        var r = doneNote(t0); work.appendChild(r); keep(r);
       }
       function thenStage(x) {
         var t = el('div', 'sw-then');
@@ -1356,9 +1355,9 @@
         work.appendChild(t);
         function after() {
           if (!cfg.onAnswer) return;
-          var r = el('div', 'sw-acts'), b = btn('Put this answer in the answer box', 'go');
-          b.addEventListener('click', function () { cfg.onAnswer(v + ' = ' + qtxt(x) + '; ' + cfg.then.map(function (it, i) { return it.label + ' = ' + vals[i]; }).join(', '), { kind: 'one', x: x }); b.textContent = '✓ Answer filled in'; b.disabled = true; });
-          r.appendChild(b); work.appendChild(r);
+          var t1 = v + ' = ' + qtxt(x) + '; ' + cfg.then.map(function (it, i) { return it.label + ' = ' + vals[i]; }).join(', ');
+          cfg.onAnswer(t1, { kind: 'one', x: x });
+          var r = doneNote(t1); work.appendChild(r); keep(r);
         }
       }
     }
@@ -1651,8 +1650,8 @@
       d.innerHTML = '<b>Simplified:</b> <span class="sw-ln">' + html(a) + '</span><br>Every base shows up once, and all exponents are positive.' + (cfg.sci ? ' It is in scientific notation.' : '');
       work.appendChild(d);
       var ur = el('div', 'sw-acts'), u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u);
-      if (cfg.onAnswer) { var b = btn('Put this answer in the answer box', 'go'); b.addEventListener('click', function () { cfg.onAnswer(plainTerm(a)); b.textContent = '✓ Answer filled in'; b.disabled = true; }); ur.appendChild(b); }
-      work.appendChild(ur); keep(ur);
+      if (!cfg.onAnswer) work.appendChild(ur);
+      if (cfg.onAnswer) { cfg.onAnswer(plainTerm(a)); var dn = doneNote(plainTerm(a)); work.appendChild(dn); keep(dn); } else keep(ur);
     }
     return box;
   }
@@ -1729,7 +1728,37 @@
     }); });
   }
   function lastLine(trail) { if (!trail) return null; var n = trail.querySelectorAll('.sw-n'); return n.length ? n[n.length - 1] : (trail.lastElementChild || trail); }
-  function fillBox(inp, text) { inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {} inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus({ preventScroll: true }); try { inp.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { inp.focus(); } }
+  // Nov 13, 2026 (Zach: "remove the step that requires the student to enter the answer at the top, it is redundant"):
+  // when the step-by-step work is finished, the answer goes into the problem's own answer box AND is checked right away
+  // (a matching tap choice is tapped; a number box is checked with the page's own Check). The page does not scroll.
+  var lastSubmit = '';
+  function normA(t) { return String(t || '').toLowerCase().replace(/<[^>]+>/g, '').replace(/[−–]/g, '-').replace(/\s|\(|\)|°/g, '').replace(/^[a-d][.):]/, '').replace(/≤/g, '<=').replace(/≥/g, '>='); }
+  function fillBox(inp, text) {
+    lastSubmit = '';
+    inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {}
+    inp.dispatchEvent(new Event('input', { bubbles: true }));
+    try { lastSubmit = submitBox(inp, text); } catch (e) { lastSubmit = ''; }
+  }
+  function submitBox(inp, text) {
+    var box = inp.closest('.pr-card, .prob, .np-q, .np, .chk, .vq, .q-card, .practice-block, .problem, .q, .card, [id^="q"], label') || inp.parentElement;
+    var taps = [].filter.call(box.querySelectorAll('.ta-btn, .mcbtn'), function (b) { return !b.closest('.sw-host') && !/\bbox\b/.test(b.className) && !b.hidden; });
+    if (taps.length || inp.classList.contains('ta-hid')) {
+      var want = normA(text), bare = want.replace(/^[a-z]=/, '');
+      var hit = taps.filter(function (b) { var gt = b.querySelector('.gt'); return [b.getAttribute('data-t'), gt && gt.textContent, b.textContent].some(function (x) { if (!x) return false; var t = normA(x); return t === want || t === bare || t.replace(/^[a-z]=/, '') === bare; }); });
+      if (hit.length === 1) { if (!/\b(sel|ok)\b/.test(hit[0].className)) hit[0].click(); return 'tap'; }
+      return 'nomatch';
+    }
+    if (/homework_turn_in/.test(location.pathname)) return 'checked';          // the homework box checks itself when the work fills it
+    var chk = [].filter.call(box.querySelectorAll('button'), function (b) { return !b.closest('.sw-host') && !b.hidden && !b.disabled && /^(check|check (my )?answers?|check it)$/i.test(b.textContent.trim()); });
+    if (chk.length) { chk[0].click(); return 'checked'; }
+    inp.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+    return 'checked';
+  }
+  function doneNote(text) {
+    var msg = lastSubmit === 'nomatch' ? 'You got <b>' + text + '</b>. Now tap the answer choice that matches it.'
+      : '✓ Your answer <b>' + text + '</b> is in the answer box and has been checked. Go on to the next problem.';
+    return el('p', 'sw-note sw-sent', msg);
+  }
 
   function autoPractice() {
     var D = window.PRACTICE; if (!D) return;
@@ -1877,6 +1906,6 @@
     return null;
   }
 
-  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove, monoText: monoText, nextExprLine: nextExprLine, mono: mono, parseTerm: parseTerm, sameMono: sameMono, exSimplest: exSimplest } };
+  window.StepWork = { alignTrail: alignTrail, forProblem: forProblem, mount: mount, mountExpr: mountExpr, auto: auto, _t: { fillBox: fillBox, lastSubmit: function () { return lastSubmit; }, html: html, parseTerm: parseTerm, mono: mono, sameMono: sameMono, exDiagnose: exDiagnose, exSimplest: exSimplest, exMoves: exMoves, plainTerm: plainTerm, parseEq: parseEq, solve: solve, sides: sides, sameSet: sameSet, diagnose: diagnose, describe: describe, isSolved: isSolved, findEq: findEq, lineSame: lineSame, lineDone: lineDone, withX: withX, linOf: linOf, lineTxt: lineTxt, Q: Q, qtxt: qtxt, poly: poly, eqHtml: eqHtml, nextMove: nextMove, monoText: monoText, nextExprLine: nextExprLine, mono: mono, parseTerm: parseTerm, sameMono: sameMono, exSimplest: exSimplest } };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', auto); else auto();
 })();
