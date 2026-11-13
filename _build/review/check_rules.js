@@ -198,5 +198,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/SaveWork\.note\('sw'/.test(rd('grade8/step-work.js'))) fail('H2', 'grade8/step-work.js', 'finished step work must be saved');
 }
 
+/* G8: praise above the next question */
+{ const sw = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
+  if ((sw.match(/work\.insertBefore\(pz2?, work\.firstChild\)/g) || []).length < 2) fail('G8', 'grade8/step-work.js', 'praise must go above "What will you do next?"'); }
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');

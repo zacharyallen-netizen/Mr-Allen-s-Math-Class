@@ -678,7 +678,7 @@
     '.sw .t-c .sw-fr>span{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px}' +
     '.sw-rel{color:#1E2D4F}' +
     '.sw-sqrt>span{border-top:1.6px solid currentColor;padding:0 2px;margin-left:1px}' +
-    '.sw-ans-hid{display:none!important}.sw-prev:empty{display:none}.sw-trail:not(.sw-all) .sw-old{display:none!important}' +
+    '.sw-praise{margin:2px 0 10px}.sw-ans-hid{display:none!important}.sw-prev:empty{display:none}.sw-trail:not(.sw-all) .sw-old{display:none!important}' +
     '.sw-allbtn{display:block;background:none;border:0;padding:2px 0 6px;font:600 13.5px Inter,sans-serif;color:#1E2D4F;text-decoration:underline;cursor:pointer}' +
     '.sw-more{margin-top:4px;font-weight:400}.sw-more>summary{cursor:pointer;font:600 13.5px Inter,sans-serif;color:#1E2D4F;text-decoration:underline}' +
     '.sw-legend{font:500 13px Inter,sans-serif;color:#5B6475;margin-top:4px}' +
@@ -1283,7 +1283,8 @@
           step();
           var nfb = work.querySelector('.sw-fb');
           if (line) { var ld1 = lineDone(n); if (ld1 && !ld1.simple) note += '<br><i>y</i> is alone. Now simplify the other side so it looks like <i>y</i> = <i>mx</i> + <i>b</i>.'; }
-          if (nfb && (line || !isSolved(n, v)) && !noVar(n)) { nfb.className = away ? 'sw-fb tip' : 'sw-fb ok'; nfb.innerHTML = (away ? note.replace(/^<br>/, '') : praise() + note); }
+          // affirm FIRST, then ask for the next move (Nov 13, 2026, Zach): the note sits above "What will you do next?"
+          if ((line || !isSolved(n, v)) && !noVar(n)) { var pz = el('div', away ? 'sw-fb tip sw-praise' : 'sw-fb ok sw-praise'); pz.setAttribute('role', 'status'); pz.innerHTML = away ? note.replace(/^<br>/, '') : praise() + note; work.insertBefore(pz, work.firstChild); void nfb; }
         }
       }
       function finish(e, done) {
@@ -1641,7 +1642,7 @@
             return; }
           if (html(t) === html(a)) { fb.className = 'sw-fb tip'; fb.innerHTML = 'That is the same line. Use a rule to change it.'; return; }
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
-          var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); }
+          if (!exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why, pz2 = el('div', 'sw-fb ok sw-praise'); pz2.setAttribute('role', 'status'); pz2.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); work.insertBefore(pz2, work.firstChild); }
         };
         var check2 = function () { check(); if (write.isConnected && fb.innerHTML) calmScroll(fb, inp); };
         go.addEventListener('click', check2); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check2(); } });
@@ -1771,8 +1772,9 @@
     inp.dispatchEvent(new Event('input', { bubbles: true }));
     try { lastSubmit = submitBox(inp, text); } catch (e) { lastSubmit = ''; }
   }
+  var lastBox = null;
   function submitBox(inp, text) {
-    var box = inp.closest('.pr-card, .prob, .np-q, .np, .chk, .vq, .q-card, .practice-block, .problem, .q, .card, [id^="q"], label') || inp.parentElement;
+    var box = lastBox = inp.closest('.pr-card, .prob, .np-q, .np, .chk, .vq, .q-card, .practice-block, .problem, .q, .card, [id^="q"], label') || inp.parentElement;
     var taps = [].filter.call(box.querySelectorAll('.ta-btn, .mcbtn'), function (b) { return !b.closest('.sw-host') && !/\bbox\b/.test(b.className) && !b.hidden; });
     if (taps.length || inp.classList.contains('ta-hid')) {
       var want = normA(text), bare = want.replace(/^[a-z]=/, '');
@@ -1788,7 +1790,11 @@
     return 'checked';
   }
   function doneNote(text) {
+    var ok = false, bad = false;
+    try { [].forEach.call(lastBox ? lastBox.querySelectorAll('.pr-fb, .np-fb, .chk-fb, .hwfb, .fb, .ta-btn, .mcbtn') : [], function (f) { if (f.closest('.sw-host')) return; var c = ' ' + f.className + ' '; if (/ (ok|correct|c) /.test(c) && (f.textContent || '').trim()) ok = true; if (/ (no|wrong|w) /.test(c) && /not|✗/i.test(f.textContent || '')) bad = true; });
+      if (lastBox && /\b(correct|done|solved)\b/.test(lastBox.className)) ok = true; } catch (e) { }
     var msg = lastSubmit === 'nomatch' ? 'You got <b>' + text + '</b>. Now tap the answer choice that matches it.'
+      : ok && !bad ? '✓ <b>Correct!</b> Your answer <b>' + text + '</b> is checked. Go on to the next problem.'
       : '✓ Your answer <b>' + text + '</b> is in the answer box and has been checked. Go on to the next problem.';
     return el('p', 'sw-note sw-sent', msg);
   }

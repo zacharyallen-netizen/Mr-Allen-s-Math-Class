@@ -72,3 +72,5 @@ H1. Students get 3 tries before an answer (or Show answer) appears: practice, pr
 H2. Student work is saved: save-work.js (loaded by score-send.js and Targeted Practice) keeps every answer action on the
     Chromebook and in the Student Work Sheet ("Saved Work" tab; StudentWork.gs kind 'save' / 'load') and plays it back
     when the page is opened again on any Chromebook with the same name.
+G8. After a right line, the praise comes FIRST, above "What will you do next?" (Nov 13, 2026). When the work is solved,
+    the Solved box and "Correct! Your answer … is checked" are on screen without scrolling up.
