@@ -458,7 +458,7 @@
       }
       misses++;
       if (mode === 'try') {
-        fb('no', r.msg); if (misses >= 2) hintEl.hidden = false; if (misses >= 3) showBtn.hidden = false;
+        fb('no', r.msg); if (misses >= 2) { showBtn.hidden = false; hintEl.hidden = false; }
         if (input) { input.classList.remove('bad'); void input.offsetWidth; input.classList.add('bad'); }
         return;
       }

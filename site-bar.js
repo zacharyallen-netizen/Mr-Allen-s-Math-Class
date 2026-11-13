@@ -29,6 +29,14 @@
   if (!me || document.getElementById("site-bar")) return;
   if (/[?&]mini=1/.test(location.search)) return;                 // the small pop-out music player has no top bar
   var root = me.src.replace(/site-bar\.js(\?.*)?$/, "");          // site root URL
+  // PREVIEW (Nov 13, 2026): the side menu. ?nav=side turns it on for this browser, ?nav=top turns it off.
+  try {
+    var nv = (/[?&]nav=(side|top)\b/.exec(location.search) || [])[1];
+    if (nv) localStorage.setItem("nav-style", nv);
+    if (localStorage.getItem("nav-style") === "side") {
+      var sn = document.createElement("script"); sn.src = root + "side-nav.js?v=20261113a"; document.head.appendChild(sn); return;
+    }
+  } catch (e) {}
   var here = location.href.split("#")[0].split("?")[0];
   var rel  = here.indexOf(root) === 0 ? here.slice(root.length) : "";
   if (rel === "" || /\/$/.test(rel)) rel += "index.html";

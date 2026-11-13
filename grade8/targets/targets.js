@@ -2,7 +2,7 @@
    I Can Targets — makes each question card interactive.
    • Choices are shuffled every visit, so the answer is never always "A".
    • Wrong pick: a short nudge about that mistake; try again.
-     After two misses the "Show answer" button appears.
+     After three misses the "Show answer" button appears.
    • Right pick: the worked steps open and the target is marked solved.
    • Solved targets are remembered in this browser only (localStorage).
    ========================================================================== */
