@@ -93,7 +93,7 @@
   }
   // after every check: color the tapped choice and name the mistake under each wrong answer.
   // Review Nov 12, 2026: (1) it must run however the page was checked (button, Enter, a tap), not only on the button;
-  // (2) the first wrong try says "Not yet" and names the mistake; the answer shows only after a 2nd wrong try (or Show answers).
+  // (2) the first wrong try says "Not yet" and names the mistake; the answer shows only after a 3rd wrong try (or Show answers). (3 tries, Nov 13, 2026)
   var MISS = {}, LASTV = {};
   function after() {
     VP.forEach(function (f) { f(); });
@@ -106,7 +106,7 @@
       TapAnswers.note(div, nt, 'why');
       var fb = document.getElementById('fb' + q.id);
       if (bad && fb && !REVEALED) { if (LASTV[q.id] !== v) { LASTV[q.id] = v; MISS[q.id] = (MISS[q.id] || 0) + 1; }
-        if (MISS[q.id] < 2 && /answer/i.test(fb.textContent)) fb.innerHTML = '✗ Not yet. Read the note, then try again.'; } });
+        if (MISS[q.id] < 3 && /answer/i.test(fb.textContent)) fb.innerHTML = '✗ Not yet. Read the note, then ' + (MISS[q.id] === 2 ? 'try once more.' : 'try again.'); } });
   }
   var REVEALED = false, rv = document.getElementById('reveal'); if (rv) rv.addEventListener('click', function () { REVEALED = true; }, true);
   if (checkBtn) checkBtn.addEventListener('click', after);

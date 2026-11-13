@@ -54,7 +54,7 @@
     o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t + dur + 0.02);
   }
   FX.play = function (kind) {
-    if (!FX.soundOn() || OFF) return;
+    if (!FX.soundOn() || OFF || window.__swReplay) return;
     try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) { return; }
     if (kind === 'ok') { tone(784, 0, 0.12, 'sine', 0.07); tone(1175, 0.09, 0.18, 'sine', 0.06); }
     else if (kind === 'warn') { tone(587, 0, 0.16, 'triangle', 0.05); }
@@ -86,7 +86,7 @@
   var CHECK = /^(check|check my answer|check answers?|check it|check this line|verify( the solution)?|submit|go)$/i, REVEAL = /^(show|reveal)\b/i;
   function lab(b) { return String(b && b.textContent || '').replace(/[💡✓✔→←↻▶✏️]/g, '').replace(/\s+/g, ' ').trim(); }
   function gesture(e) {
-    if (OFF) return; var t = e.target; if (!t || !t.closest || t.closest(SKIP)) return;
+    if (OFF || window.__swReplay) return; var t = e.target; if (!t || !t.closest || t.closest(SKIP)) return;
     var b = t.closest('button,[role=button],.opt,.ob,a,input,label,.match-item,td') || t;
     G = { t: Date.now(), el: b, rec: [], states: [], text: '', forced: null, check: CHECK.test(lab(b)) || e.type === 'keydown', reveal: REVEAL.test(lab(b)) };
     var g = G; setTimeout(function () { settle(g); }, 90);
@@ -136,7 +136,7 @@
   /* ---------- "done" counter + a cheer every 5 ---------- */
   var DONE = []; FX.count = function () { return DONE.length; };
   var CHEERS = { 5: 'Nice — 5 done!', 10: '10 done! Keep going!', 15: '15 done — awesome!', 20: '20 done! You’re on a roll!' };
-  FX.toast = function (t) { var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.documentElement.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
+  FX.toast = function (t) { if (window.__swReplay) return; var d = document.createElement('div'); d.className = 'fx-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.documentElement.appendChild(d); setTimeout(function () { d.remove(); }, 2500); };
   var GOOD = [];
   FX.good = function (box) { if (!box || GOOD.indexOf(box) >= 0) return; GOOD.push(box); var n = GOOD.length; if (n % 5) return;
     setTimeout(function () { FX.toast(CHEERS[n] || n + ' done! Great work!'); FX.play('cheer'); }, 450); };

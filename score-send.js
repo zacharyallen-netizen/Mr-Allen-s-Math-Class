@@ -236,4 +236,6 @@
   }
 
   window.ScoreSend = S;
+  // Save my work (Nov 13, 2026): every page with Send also saves the student's work to the Sheet (save-work.js, next to this file)
+  try { var me = document.currentScript && document.currentScript.src; if (me && !window.SaveWork) { var sw = document.createElement('script'); sw.src = me.replace(/score-send\.js[^/]*$/, 'save-work.js?v=20261113a'); document.head.appendChild(sw); } } catch (e) { }
 })();

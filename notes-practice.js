@@ -7,7 +7,7 @@
      <div class="np-q" data-level="1" data-ans="4">                       ← level 1 = Score 3, 2 = Score 4, 3 = Score 5
        <div class="np-prompt">Solve: 2x + 3 = 11</div>
        [any figure / table / graph html]
-       <div class="np-sol">2x + 3 − 3 = 11 − 3 → 2x = 8 → x = 4</div>     ← worked steps (shown after 2 misses, and in the answer key)
+       <div class="np-sol">2x + 3 − 3 = 11 − 3 → 2x = 8 → x = 4</div>     ← worked steps (shown after 3 misses, and in the answer key)
      </div>
      …
    </div>
@@ -123,7 +123,7 @@
         var tw = window.NotesTwin && NotesTwin.get(id), TA = window.TapAnswers;
         // name the mistake (Mr. Allen, Nov 11, 2026): the tapped choice's own note, or what a wrong number gives away
         var wy = !TA ? '' : picked != null ? ((genList && TA.why(genList, picked)) || TA.miss(ans0, qtxt)) : TA.numWhy(el ? el.value : '', ans0, qtxt);
-        if (tw && tries === 1) {                  // 2nd wrong → show the answer, then one similar problem (notes-flow.js). The 1st wrong only names the mistake (review fix, Nov 12, 2026)
+        if (tw && tries === 2) {                  // 3rd wrong (Nov 13, 2026: students asked for 3 tries; was 2nd) → show the answer, then one similar problem (notes-flow.js). The 1st wrong only names the mistake (review fix, Nov 12, 2026)
           tries++; rec(false); done = true;
           fb.className = 'np-fb no'; fb.textContent = 'Not quite. ' + (wy ? wy + ' ' : '') + 'The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');
           if (sol) sol.classList.add('show');
@@ -137,7 +137,7 @@
         fb.className = 'np-fb no';
         var sh0 = String(show || '').replace(/<[^>]+>/g, '').trim().toLowerCase();   // the first note may not give the answer or a wrong-topic list
         if (wy && sh0.length > 1 && wy.toLowerCase().indexOf(sh0) >= 0) wy = '';
-        if (tries === 1) fb.textContent = 'Not quite. ' + (wy || (q.getAttribute('data-hint') ? 'Hint: ' + q.getAttribute('data-hint') : '') || 'Look back at the example above.') + ' Try again.';
+        if (tries <= 2) fb.textContent = 'Not quite. ' + (wy || (q.getAttribute('data-hint') ? 'Hint: ' + q.getAttribute('data-hint') : '') || 'Look back at the example above.') + (tries === 2 ? ' You have one more try.' : ' Try again.');
         else { fb.textContent = 'The answer is ' + show + '. Read the steps below.'; if (sol) sol.classList.add('show'); }
       }
       // NUMBER OR MULTIPLE CHOICE ONLY (Nov 11, 2026, Mr. Allen): an answer that is not one number becomes tap choices

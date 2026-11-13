@@ -80,7 +80,7 @@
           b.classList.add("wrong"); b.disabled = true;
           fb.className = "fb no";
           fb.innerHTML = "<b>Not quite.</b> " + note + (misses === 1 ? " Try again." : "");
-          if (misses >= 2 && showBtn) showBtn.hidden = false;
+          if (misses >= 3 && showBtn) showBtn.hidden = false;
         }
       });
     });

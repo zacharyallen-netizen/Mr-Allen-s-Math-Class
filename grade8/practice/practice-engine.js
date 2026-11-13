@@ -1,7 +1,7 @@
 /* ───────────────────────────────────────────────────────────────
    Interactive practice sets (Units 1–6)
    Same problems as the printed Practice PDFs. Each problem:
-   type an answer → Check (instant feedback) · Hint · after 2 misses, Show answer.
+   type an answer → Check (instant feedback) · Hint · after 3 misses, Show answer (Nov 13, 2026: 3 tries).
    Every check is recorded with ScoreSend (score-send.js) so the
    "Send my work" panel can post results to Mr. Allen's sheet.
 
@@ -173,8 +173,8 @@
       var hbx = card.querySelector('.pr-hintbox'), opened = false; if (tries >= 2 && hbx && hbx.hidden) { hbx.hidden = false; opened = true; }   // no loops: the 2nd miss opens the hint
       var swb = card.querySelector('.sw-open');
       fb.className = 'pr-fb no'; fb.textContent = (again ? 'You tried this same answer before. ' : '') + (tries === 1 ? 'Not yet. ' : 'Still not it. ') + (wy || 'Check your work and try again.') +
-        (tries === 1 ? '' : (opened ? ' The hint is open below. Read it, then try again.' : hbx ? ' Read the hint again.' : '') + (swb ? ' The step by step button walks you through it.' : '') + ' If you are stuck, press Show answer and study it.');
-      if (tries >= 2) card.querySelector('.pr-show').hidden = false;
+        (tries === 1 ? '' : (opened ? ' The hint is open below. Read it, then try again.' : hbx ? ' Read the hint again.' : '') + (swb ? ' The step by step button walks you through it.' : '') + (tries >= 3 ? ' If you are stuck, press Show answer and study it.' : ' You have one more try.'));
+      if (tries >= 3) card.querySelector('.pr-show').hidden = false;
       if (!tap) inp.select();
     }
   });
@@ -185,10 +185,10 @@
   // word problems (Unit 3) and angle problems (Unit 4); see ../step-work.js
   if (!window.StepWork) {
     var ft = document.createElement('script'); ft.src = (ENGINE_SRC || '').replace(/practice-engine\.js.*$/, 'figtext.js?v=20261112a'); document.body.appendChild(ft);   // labels inside the pictures
-    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261113c'); document.body.appendChild(sw);
+    var sw = document.createElement('script'); sw.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'step-work.js?v=20261113d'); document.body.appendChild(sw);
   } else window.StepWork.auto();
   // one problem at a time, with Back / Next (see ../one-at-a-time.js)
-  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261112b'); document.body.appendChild(oat); }
+  if (!window.__oat) { var oat = document.createElement('script'); oat.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'one-at-a-time.js?v=20261113a'); document.body.appendChild(oat); }
   // tap buttons for x < > ≤ ≥ − (Chromebooks can't type ≤ and ≥)
   if (document.querySelector('.pr-in[data-ineq]') && !window.__ineqKeys) {
     var ik = document.createElement('script'); ik.src = (ENGINE_SRC || '').replace(/practice\/practice-engine\.js.*$/, 'ineq-keys.js'); document.body.appendChild(ik);

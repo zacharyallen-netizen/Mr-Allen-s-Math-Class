@@ -23,6 +23,10 @@
  *  Nov 11, 2026 (night): Pre-Tests / Notes Practice / Tutorials rows get a "Skipped (not answered)" column. Skips are
  *  only listed, never counted as wrong.
  *
+ *  Nov 13, 2026: SAVE MY WORK. Pages save each student's work to a new "Saved Work" tab (made the first time a
+ *  student saves): one row per student per page. When the student opens the page on any Chromebook and types the
+ *  same name, the work comes back. You do not need to do anything with this tab.
+ *
  *  Later changes to this script: Deploy → Manage deployments → pencil →
  *  Version: New version → Deploy. That keeps the same URL.
  * ════════════════════════════════════════════════════════════════════
@@ -60,6 +64,8 @@ function doPost(e) {
     if (kind === 'homework') return homework_(d, name);
     if (kind === 'pretest' || kind === 'practice') return evidence_(d, name, kind);
     if (kind === 'arcade') return arcade_(d, name);          // ArcadeLog.gs
+    if (kind === 'save') return saveWork_(d, name);          // Save my work (Nov 13, 2026)
+    if (kind === 'load') return loadWork_(d, name);
     return json_({ ok: false, error: 'bad kind' });
   } catch (err) {
     return json_({ ok: false, error: String(err) });
@@ -173,3 +179,42 @@ function tidyName_(s) {
 }
 function clip_(s, n) { return String(s == null ? '' : s).replace(/^[=+\-@]/, "'$&").slice(0, n); }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+
+// ── Save my work (Nov 13, 2026): one row per student + page on the "Saved Work" tab ──
+var SAVE_CHUNK = 45000;                                    // a cell holds 50,000 characters
+function savedSheet_() {
+  var ss = SpreadsheetApp.openById(WORK_ID), sh = ss.getSheetByName('Saved Work');
+  if (!sh) {
+    sh = ss.insertSheet('Saved Work');
+    sh.getRange(1, 1, 1, 5).setValues([['Saved', 'Name', 'Page', 'Actions', 'Saved work (used by the website)']]).setFontWeight('bold');
+    sh.setFrozenRows(1); sh.setColumnWidth(5, 220);
+  }
+  return sh;
+}
+function savedRow_(sh, name, page) {
+  var n = sh.getLastRow() - 1; if (n < 1) return 0;
+  var v = sh.getRange(2, 2, n, 2).getValues(), key = name.toLowerCase() + '|' + page;
+  for (var i = n - 1; i >= 0; i--) if (String(v[i][0]).toLowerCase() + '|' + v[i][1] === key) return i + 2;
+  return 0;
+}
+function saveWork_(d, name) {
+  var page = String(d.page || '').slice(0, 200), data = String(d.data || '');
+  if (!page) return json_({ ok: false, error: 'no page' });
+  if (data.length > SAVE_CHUNK * 8) return json_({ ok: false, error: 'too big' });
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var sh = savedSheet_(), r = savedRow_(sh, name, page), parts = data.match(new RegExp('[\\s\\S]{1,' + SAVE_CHUNK + '}', 'g')) || [''];
+    var row = [new Date(), name, page, Number(d.n) || 0].concat(parts);
+    if (!r) r = sh.getLastRow() + 1;
+    var old = sh.getLastColumn(); if (old > 4) sh.getRange(r, 5, 1, old - 4).clearContent();
+    sh.getRange(r, 5, 1, parts.length).setNumberFormat('@');   // plain text: a piece that starts with = or + is never a formula
+    sh.getRange(r, 1, 1, row.length).setValues([row]);
+  } finally { lock.releaseLock(); }
+  return json_({ ok: true, name: name });
+}
+function loadWork_(d, name) {
+  var page = String(d.page || '').slice(0, 200), sh = savedSheet_(), r = savedRow_(sh, name, page);
+  if (!r) return json_({ ok: true, name: name, data: '' });
+  var w = sh.getLastColumn(), v = sh.getRange(r, 5, 1, Math.max(w - 4, 1)).getValues()[0];
+  return json_({ ok: true, name: name, data: v.join('') });
+}

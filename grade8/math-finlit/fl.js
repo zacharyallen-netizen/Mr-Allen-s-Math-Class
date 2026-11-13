@@ -387,7 +387,7 @@
       var extra = '';
       if (it.mode.scored && it.tries === 1) extra = ' Try once more.';
       if (it.tries >= (it.mode.scored ? 2 : 1)) it.showBtn.hidden = false;
-      if (it.mode.scored && it.tries >= 2) extra = ' You can try again or tap Show me.';
+      if (it.mode.scored && it.tries >= 3) extra = ' You can try again or tap Show me.';
       it.say('no', r.msg + extra);
       if (it.btns && it.item.type !== 'sel') { it.btns[it.sel[0]].classList.add('bad'); }
     }
@@ -413,7 +413,7 @@
     it.showBtn.hidden = true;
   };
   IP.say = function (kind, html) { this.fb.className = 'fl-fb ' + kind; this.fb.innerHTML = html; };
-  IP.done = function () { return this.right || this.shown || (this.mode.scored && this.tries >= 2); };
+  IP.done = function () { return this.right || this.shown || (this.mode.scored && this.tries >= 3); };
   IP.status = function () {
     if (this.right) return this.tries === 1 ? 'Right (1st try)' : 'Right (try ' + this.tries + ')';
     if (this.shown) return 'Not yet (answer shown)';

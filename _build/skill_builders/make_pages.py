@@ -44,7 +44,7 @@ def shell(n, title, mode):
 {FONTS}
 <link rel="stylesheet" href="skills/sb.css?v={V}">
 <script src="../tracker-config.js"></script>
-<script src="../score-send.js?v=20261112a"></script>
+<script src="../score-send.js?v=20261113a"></script>
 <script src="step-work.js?v=20261112c"></script>
 <script src="skills/sb.js?v={V}"></script>
 <script src="skills/sbfig.js?v={V}"></script>
@@ -65,7 +65,7 @@ def shell(n, title, mode):
 <p class="pr-row pr-links">Printable copies: <a href="skills/pdf/{pdf(n, kind)}">{what} (PDF)</a><a href="skills/pdf/{pdf(n, kind, True)}">Answer key (PDF)</a></p>
 </div>
 </div>
-<script src="../student-fx.js?v=20261112a"></script>
+<script src="../student-fx.js?v=20261113a"></script>
 </body>
 </html>
 '''

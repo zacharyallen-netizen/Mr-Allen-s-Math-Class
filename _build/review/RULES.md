@@ -29,7 +29,7 @@ C2. Repeating the SAME wrong answer/move must not get the same message forever: 
     is shown the correct next move; by the 3rd, a way forward ("Show me this step"), recorded for the teacher.
 C3. The step-by-step tool never shows the final answer before the student finishes, but it never leaves a student stuck.
 C4. When "Show me this step" is used, the teacher's sheet says "(used step help)" for that question.
-C5. The FIRST wrong-answer note names the mistake but does not give the answer (the answer may show after the 2nd miss).
+C5. The first two wrong-answer notes name the mistake but do not give the answer (3 tries; the answer may show after the 3rd miss, Nov 13, 2026).
 C6. This holds at every stage of the step tool: "Write an equation" (template after the 2nd miss, "Show me the equation" after
     the 3rd), squares and roots, π, and solve-for-y. A true move that goes the wrong way is not praised.
 
@@ -66,3 +66,9 @@ G6. A finished step-by-step puts the answer in the answer box AND checks it (mat
 G7. Step-by-step screens stay short (Nov 13, 2026): only the last two lines of work show ("Show all my steps" opens the
     rest), no "Colors" key, no "I read this as" line, wrong-line feedback = one sentence + "Tell me more", and the
     problem's own answer box is hidden while the step-by-step work is open.
+
+## H. Tries and saved work (Nov 13, 2026)
+H1. Students get 3 tries before an answer (or Show answer) appears: practice, pre-tests, notes, EOG sets, targets.
+H2. Student work is saved: save-work.js (loaded by score-send.js and Targeted Practice) keeps every answer action on the
+    Chromebook and in the Student Work Sheet ("Saved Work" tab; StudentWork.gs kind 'save' / 'load') and plays it back
+    when the page is opened again on any Chromebook with the same name.

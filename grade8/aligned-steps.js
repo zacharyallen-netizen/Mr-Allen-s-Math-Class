@@ -25,7 +25,7 @@
   function ready(f) { if (window.StepWork && StepWork.alignTrail) return f(); var s = document.querySelector('script[src*="step-work.js"]');
     if (!s) { if (!window.FX) window.SW_NO_FX = true;   // a page without the student look stays as it is
       s = document.createElement('script'); var me = document.querySelector('script[src*="aligned-steps.js"]'), base = me ? me.src.replace(/aligned-steps\.js.*$/, '') : '';
-      s.src = base + 'step-work.js?v=20261113c'; document.head.appendChild(s); }
+      s.src = base + 'step-work.js?v=20261113d'; document.head.appendChild(s); }
     var n = 0, t = setInterval(function () { if (window.StepWork && StepWork.alignTrail) { clearInterval(t); f(); } else if (++n > 100) clearInterval(t); }, 100); }
 
   /* ---- text of a box, one step per line ---- */

@@ -120,7 +120,7 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
       if (txt !== right && !/data-why="/.test(m[0])) { n++; if (n < 4) fail('C1', 'grade8/' + f + '.html', `wrong choice "${txt}" (${m[1]}) has no note of its own`); } }
   }
   const need = [['C5', 'grade8/notes-tap.js', 'FIRST MISS', 'notes: the first wrong answer names the mistake and lets the student try again'],
-    ['C5', 'notes-practice.js', 'tw && tries === 1', 'notes practice: answer + twin only after the 2nd miss'],
+    ['C5', 'notes-practice.js', 'tw && tries === 2', 'notes practice: answer + twin only after the 3rd miss'],
     ['C6', 'grade8/step-work.js', 'function guessEq', '"Show me the equation" on practice, notes and pre-tests'],
     ['C6', 'grade8/step-work.js', 'function monoText', '"Show me this step" in the exponent tool'],
     ['A1', 'paper.js', "closest('.np-sol')", 'lined-up notes solutions stay in the answer key']];
@@ -182,6 +182,20 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (/'Colors: ' \+ out\.join/.test(sw)) fail('G7', 'grade8/step-work.js', 'still shows the Colors key');
   if (!/function brief\(h\)/.test(sw) || !/function hideAns\(host, hide\)/.test(sw)) fail('G7', 'grade8/step-work.js', 'missing short feedback or hidden answer box');
   if ((sw.match(/function calm\(/g) || []).length > 1) fail('G7', 'grade8/step-work.js', 'two functions named calm()');
+}
+
+/* H1–H2 (Nov 13, 2026): 3 tries before an answer shows; work is saved to the Sheet. */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const need3 = [['grade8/practice/practice-engine.js', "if (tries >= 3) card.querySelector('.pr-show').hidden = false;"],
+    ['grade8/eog/eog-unit.js', 'if (st.tries >= 3) d.querySelector(".reveal")'], ['notes-practice.js', 'tw && tries === 2'],
+    ['grade8/notes-tap.js', '(+host.dataset.nm1 || 0) >= 2'], ['grade8/pretest-tap.js', 'MISS[q.id] < 3'], ['grade8/targets/targets.js', 'misses >= 3 && showBtn']];
+  need3.forEach(([f, t]) => { if (!rd(f).includes(t)) fail('H1', f, 'must give 3 tries before the answer shows'); });
+  if (!/save-work\.js/.test(rd('score-send.js'))) fail('H2', 'score-send.js', 'must load save-work.js');
+  if (!/save-work\.js/.test(rd('grade8/homework_turn_in.html'))) fail('H2', 'grade8/homework_turn_in.html', 'must load save-work.js');
+  const gs = rd('_build/student_work/StudentWork.gs');
+  if (!/kind === 'save'/.test(gs) || !/kind === 'load'/.test(gs)) fail('H2', '_build/student_work/StudentWork.gs', 'missing save/load');
+  if (!/SaveWork\.note\('sw'/.test(rd('grade8/step-work.js'))) fail('H2', 'grade8/step-work.js', 'finished step work must be saved');
 }
 
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }

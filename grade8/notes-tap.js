@@ -27,10 +27,10 @@
     count.tap++;
     WY = list;
     TapAnswers.mount(inp, list, { onPick: function (t) {
-      if (t !== right && !host.dataset.nm1) {   // first miss: name the mistake, no answer, try again (review fix, Nov 12, 2026)
-        host.dataset.nm1 = '1'; if (window.ssRec) try { ssRec(key, false); } catch (e) { }
+      if (t !== right && (+host.dataset.nm1 || 0) < 2) {   // first two misses (3 tries, Nov 13, 2026): name the mistake, no answer, try again (review fix, Nov 12, 2026)
+        host.dataset.nm1 = String((+host.dataset.nm1 || 0) + 1); if (window.ssRec) try { ssRec(key, false); } catch (e) { }
         [].forEach.call(host.querySelectorAll('button'), function (b) { if (b.textContent.trim() === String(t).trim()) { b.disabled = true; b.classList.add('ta-no'); } });
-        var fb3 = document.getElementById('fb-' + key); TapAnswers.note(host, 'Not yet. ' + clean((WY && TapAnswers.why(WY, t)) || TapAnswers.miss(gfirst, qHtml), right, fb3 && fb3.dataset.hint) + ' Try again.', 'why'); return;
+        var fb3 = document.getElementById('fb-' + key); TapAnswers.note(host, 'Not yet. ' + clean((WY && TapAnswers.why(WY, t)) || TapAnswers.miss(gfirst, qHtml), right, fb3 && fb3.dataset.hint) + (host.dataset.nm1 === '2' ? ' You have one more try.' : ' Try again.'), 'why'); return;
       }
       inp.value = t === right ? first : t; btn.click(); after(t); } });
     btn.style.display = 'none';
@@ -67,12 +67,12 @@
   function numOf(t) { t = String(t).replace(/[−–]/g, '-').replace(/\s+/g, '').replace(/^[a-z]=/i, '').replace(/,/g, '');
     var m = t.match(/^(-?\d+(?:\.\d+)?)(?:\/(\d+(?:\.\d+)?))?$/); return m ? (m[2] ? +m[1] / +m[2] : +m[1]) : null; }
   function firstMiss(host, key, note, mark) {
-    if (!host || host.dataset.nm1) return false;
-    host.dataset.nm1 = '1'; if (window.ssRec) try { ssRec(key, false); } catch (e) { }
+    if (!host || (+host.dataset.nm1 || 0) >= 2) return false;   // 3 tries (Nov 13, 2026): two free misses
+    host.dataset.nm1 = String((+host.dataset.nm1 || 0) + 1); if (window.ssRec) try { ssRec(key, false); } catch (e) { }
     if (mark) { mark.disabled = true; mark.classList.add('wrong'); }
     var f = document.getElementById('fb-' + key);
-    if (f) { f.classList.add('show', 'w'); f.classList.remove('c'); f.innerHTML = '✗ Not yet. ' + (note ? note + ' ' : '') + 'Try again.'; }
-    else if (window.TapAnswers) TapAnswers.note(host, 'Not yet. ' + note + ' Try again.', 'why');
+    if (f) { f.classList.add('show', 'w'); f.classList.remove('c'); f.innerHTML = '✗ Not yet. ' + (note ? note + ' ' : '') + (host.dataset.nm1 === '2' ? 'You have one more try.' : 'Try again.'); }
+    else if (window.TapAnswers) TapAnswers.note(host, 'Not yet. ' + note + (host.dataset.nm1 === '2' ? ' You have one more try.' : ' Try again.'), 'why');
     return true;
   }
   document.addEventListener('click', function (ev) {

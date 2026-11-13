@@ -278,12 +278,12 @@ EOGU.run = function (unit, ver) {
           good = !wrongSel.length && got === need;
           if (!good && !wrongSel.length && window.FX) FX.mark("warn");
           if (!good) msg = wrongSel.length ? q.opts[wrongSel[0]].why : "Everything you picked is true. But there " + (need - got === 1 ? "is 1 more right answer." : "are " + (need - got) + " more right answers."); } }
-      if (!good && st.tries === 0) msg = hideAns(msg, q);   // the first miss names the mistake but does not give the answer (review fix, Nov 12, 2026)
+      if (!good && st.tries < 2) msg = hideAns(msg, q);   // the first two misses (3 tries, Nov 13, 2026) names the mistake but does not give the answer (review fix, Nov 12, 2026)
       st.tries++; rec(q, good);
       if (good) { st.done = true; d.classList.add("done"); st.first = (st.tries === 1); fb.className = "fb ok"; fb.innerHTML = "<b>Yes!</b> " + q.ok + explain(q);
         d.querySelector(".chk").disabled = true; if (choice) [].forEach.call(d.querySelectorAll(".opt.sel"), function (o) { o.classList.add("right"); }); upd(); }
-      else { fb.className = "fb no"; fb.innerHTML = "<b>Not yet.</b> " + msg + (st.tries >= 2 ? ' <span class="small-note">Answer: ' + ansText(q) + '. Tap <b>Show answer</b> for every step.</span>' : " Try again.");
-        if (st.tries >= 2) d.querySelector(".reveal").style.display = "inline-flex"; }
+      else { fb.className = "fb no"; fb.innerHTML = "<b>Not yet.</b> " + msg + (st.tries >= 3 ? ' <span class="small-note">Answer: ' + ansText(q) + '. Tap <b>Show answer</b> for every step.</span>' : " Try again.");
+        if (st.tries >= 3) d.querySelector(".reveal").style.display = "inline-flex"; }
     });
   }); }
   if (KEY) document.body.classList.add("key-mode");

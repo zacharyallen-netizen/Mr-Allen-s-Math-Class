@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261112b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261113a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)

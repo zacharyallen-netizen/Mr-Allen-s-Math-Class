@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || window.SW_NO_FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261112b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261113a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* ─────────────────────────────────────────────────────────────────────────────
    Step Work: a step-by-step workspace for solving equations and inequalities.
    The student picks a move, sees it on the equation (what cancels, which terms are alike,
@@ -1765,6 +1765,7 @@
     trail.insertBefore(b, trail.firstChild);
   }
   function fillBox(inp, text) {
+    if (window.SaveWork && !window.__swReplay) try { SaveWork.note('sw', inp, text); } catch (e) { }
     lastSubmit = '';
     inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {}
     inp.dispatchEvent(new Event('input', { bubbles: true }));
