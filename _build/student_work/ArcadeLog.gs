@@ -76,7 +76,7 @@ function setupArcadeSheet() {
     ['Each row on Sessions is one visit to an arcade game, sent when the student leaves the game or switches tabs.'],
     ['Students type their name once (the same name box as the Fluency Lab and practice pages). The period comes from the Roster tab of the Student Work sheet.'],
     ['Minutes played counts only time the game was on screen. Visits shorter than about 15 seconds with no answers are skipped.'],
-    ['Rounds finished, Level reached, Score, Correct and Tries are filled in by games that report them (Zero Pair Run, UFO Blaster, Museum of Angles). Other games report time only.'],
+    ['Rounds finished, Level reached, Score, Correct and Tries are filled in by games that report them (Tiles for Miles (was Zero Pair Run), UFO Blaster, Museum of Angles). Other games report time only.'],
     ['Accuracy = Correct ÷ Tries.'],
     ['By Student and By Game update by themselves.'],
     ['To start fresh, delete rows 2 and below on Sessions (keep the header row).'],

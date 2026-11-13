@@ -218,5 +218,19 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (/More Practice &amp; Review/.test(u6) || u6.indexOf('unit6-review.html') < u6.indexOf('id="homework"')) fail('G11', 'grade8/unit6.html', 'practice and review must sit inside Targeted Practice');
 }
 
+/* I1–I4: arcade games (Nov 13, 2026) */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  const ea = rd('grade8/equation-arena.js');
+  if (!/em-split/.test(ea) || !/em-work/.test(ea) || !/em-fight/.test(ea)) fail('I1', 'grade8/equation-arena.js', 'Equation Master: work on the left, fight on the right');
+  const zp = rd('grade8/zero-pair-run.html');
+  if (!/Tiles for Miles/.test(zp) || /<title>[^<]*Zero Pair Run/.test(zp)) fail('I2', 'grade8/zero-pair-run.html', 'game is named Tiles for Miles');
+  ['grade8/arcade.html', 'grade8/unit3.html', 'grade8/materials_index.html'].forEach(f => { if (/>Zero Pair Run/.test(rd(f))) fail('I2', f, 'card must say Tiles for Miles'); });
+  const sq = rd('grade8/squeaky-cheeks.html');
+  if (/'burp'|'achoo'/.test(sq) || !/acc:/.test(sq)) fail('I3', 'grade8/squeaky-cheeks.html', 'background guests are polite and fancy (no burps/sneezes)');
+  const ni = rd('grade8/neon-integer-assault.html');
+  if (!/const NX = /.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'next-level look + game sized beside the side menu');
+}
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');

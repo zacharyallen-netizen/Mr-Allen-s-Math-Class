@@ -1,4 +1,7 @@
-/* EQUATION ARENA (Nov 11, 2026, Mr. Allen: "make Equation Master less dry, sword-and-sorcery action").
+/* Nov 13, 2026 (Zach): side by side — the work on the LEFT, the fight on the RIGHT (stacked on narrow screens, fight on top),
+   and the fight is more violent in a CARTOON way: goo splats stick to the beast, teeth fly, X-eyes, a goo puddle when it falls,
+   bandages and dizzy stars on the hero when he gets hit. No real blood: bright monster goo only.
+   EQUATION ARENA (Nov 11, 2026, Mr. Allen: "make Equation Master less dry, sword-and-sorcery action").
    A battle strip for Equation Master. Every problem is a beast; every correct step is a sword strike; the last step
    is the finishing blow. A wrong step: the beast strikes and the hero blocks (the game still goes on, as before).
    It only WATCHES the game: it wraps loadProblem / handleChoice / showResults and never changes a question, a choice,
@@ -14,8 +17,11 @@
 
   var css = document.createElement('style');
   css.textContent =
+    '.em-split{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:20px;align-items:start;max-width:1400px;margin:0 auto}' +
+    '.em-work{min-width:0}.em-fight{position:sticky;top:12px;min-width:0}' +
+    '@media (max-width:880px){.em-split{grid-template-columns:1fr;gap:10px}.em-fight{order:-1;top:0;z-index:5}.em-fight .arena svg{max-height:190px}}' +
     '.arena{position:relative;margin:0 0 16px;border-radius:12px;border:3px solid #FFC107;overflow:hidden;background:linear-gradient(180deg,#1b1436 0%,#3b1d3f 46%,#7a3524 78%,#2a160f 100%)}' +
-    '.arena svg{display:block;width:100%;height:auto;max-height:215px}' +
+    '.arena svg{display:block;width:100%;height:auto;max-height:420px}' +
     '.arena .tag{position:absolute;left:12px;top:8px;font:700 12px Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#FFD86B;text-shadow:0 1px 2px #000}' +
     '.arena .foe{position:absolute;right:12px;top:8px;text-align:right;font:700 13px Inter,system-ui,sans-serif;color:#fff;text-shadow:0 1px 2px #000}' +
     '.arena .hp{display:flex;gap:4px;justify-content:flex-end;margin-top:4px}.arena .hp i{width:18px;height:9px;border-radius:3px;background:#e23b3b;border:1px solid rgba(0,0,0,.5);transition:background .3s,transform .3s}.arena .hp i.gone{background:rgba(255,255,255,.14);transform:scaleY(.6)}' +
@@ -48,12 +54,12 @@
 
   /* beasts: one body, different horns / eyes / colors, picked by the problem number */
   var KINDS = [
-    { name: 'Ogre', c: '#5f9e3e', d: '#2f5a1c', horns: 0, eyes: 2 },
-    { name: 'Cyclops', c: '#b0623c', d: '#5c2c14', horns: 1, eyes: 1 },
-    { name: 'Hydra', c: '#3e8f9e', d: '#184a55', horns: 2, eyes: 3 },
-    { name: 'Wraith', c: '#7d5fb0', d: '#3a2760', horns: 3, eyes: 2 },
-    { name: 'Troll', c: '#8c8f3a', d: '#4a4c14', horns: 1, eyes: 2 },
-    { name: 'Dragon', c: '#c0392b', d: '#6a140c', horns: 2, eyes: 2 }
+    { name: 'Ogre', c: '#5f9e3e', d: '#2f5a1c', horns: 0, eyes: 2, goo: '#c6ff3d' },
+    { name: 'Cyclops', c: '#b0623c', d: '#5c2c14', horns: 1, eyes: 1, goo: '#8BEA3C' },
+    { name: 'Hydra', c: '#3e8f9e', d: '#184a55', horns: 2, eyes: 3, goo: '#b46cff' },
+    { name: 'Wraith', c: '#7d5fb0', d: '#3a2760', horns: 3, eyes: 2, goo: '#5ef0c8' },
+    { name: 'Troll', c: '#8c8f3a', d: '#4a4c14', horns: 1, eyes: 2, goo: '#8BEA3C' },
+    { name: 'Dragon', c: '#c0392b', d: '#6a140c', horns: 2, eyes: 2, goo: '#b46cff' }
   ];
   function beastSVG(k) {
     var h = '';
@@ -77,15 +83,20 @@
     if (box) return; var gs = document.getElementById('game-screen'), eq = document.getElementById('eq-panel'); if (!gs || !eq) return;
     box = document.createElement('div'); box.className = 'arena'; box.setAttribute('aria-hidden', 'true');
     box.innerHTML = '<span class="tag">The Arena</span><div class="foe"><span class="nm"></span><div class="hp"></div></div>' +
-      '<svg viewBox="0 0 600 170" preserveAspectRatio="xMidYMid meet">' +
+      '<svg viewBox="0 -70 600 240" preserveAspectRatio="xMidYMid meet"><rect x="0" y="-70" width="600" height="70" fill="#140f2a"/>' +
         '<path d="M0,112 L60,70 L110,98 L170,52 L240,100 L300,64 L370,104 L440,58 L520,96 L600,66 L600,170 L0,170 Z" fill="rgba(20,10,30,.55)"/>' +
         '<circle cx="318" cy="40" r="20" fill="#ffd9a0" opacity=".8"/>' +
         '<rect x="0" y="150" width="600" height="20" fill="#2a160f"/><path d="M0,150 L600,150" stroke="#8a5a3a" stroke-width="2"/>' +
         '<g id="ar-torch1" transform="translate(40,150)"><rect x="-3" y="-46" width="6" height="46" fill="#4a2c14"/><path class="fl" d="M0,-74 Q12,-58 0,-46 Q-12,-58 0,-74 Z" fill="#ffb347"/></g>' +
         '<g id="ar-torch2" transform="translate(560,150)"><rect x="-3" y="-46" width="6" height="46" fill="#4a2c14"/><path class="fl" d="M0,-74 Q12,-58 0,-46 Q-12,-58 0,-74 Z" fill="#ffb347"/></g>' +
-        HERO + '<g id="ar-foe"></g><path id="ar-slash" d="M380,40 Q470,70 520,150" fill="none" stroke="#fff" stroke-width="0" stroke-linecap="round"/>' +
+        '<g id="ar-puddles"></g>' + HERO + '<g id="ar-foe"></g><path id="ar-slash" d="M380,40 Q470,70 520,150" fill="none" stroke="#fff" stroke-width="0" stroke-linecap="round"/>' +
       '</svg><div class="shout"></div><div class="rage">Berserker streak!</div><div class="snd"></div>';
-    gs.insertBefore(box, eq);
+    var split = document.createElement('div'); split.className = 'em-split';
+    var work = document.createElement('div'); work.className = 'em-work';
+    var fight = document.createElement('div'); fight.className = 'em-fight';
+    gs.insertBefore(split, eq);
+    ['eq-panel', 'feedback', 'choices-panel', 'next-wrap', 'next-prob-wrap'].forEach(function (id) { var n = document.getElementById(id); if (n) work.appendChild(n); });
+    fight.appendChild(box); split.appendChild(work); split.appendChild(fight);
     svg = box.querySelector('svg'); foeName = box.querySelector('.nm'); hpBox = box.querySelector('.hp'); shout = box.querySelector('.shout'); rage = box.querySelector('.rage');
     fx(function (A) { box.querySelector('.snd').appendChild(A.soundButton()); });
     if (!RM) [].forEach.call(box.querySelectorAll('.fl'), function (f, i) { try { f.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(.86,1.16)' }, { transform: 'scale(1.08,.92)' }, { transform: 'scale(1,1)' }], { duration: 520 + i * 90, iterations: Infinity }); f.style.transformOrigin = '0px -46px'; f.style.transformBox = 'view-box'; } catch (e) {} });
@@ -94,6 +105,22 @@
   function at(node) { var r = node.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
   function say(t, color) { shout.textContent = t; shout.style.color = color || '#FFC107'; try { shout.animate([{ opacity: 0, transform: 'translate(-50%,-50%) scale(.5) rotate(-6deg)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.12) rotate(-3deg)', offset: .18 }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1) rotate(-3deg)', offset: .7 }, { opacity: 0, transform: 'translate(-50%,-70%) scale(1) rotate(-3deg)' }], { duration: RM ? 900 : 1000 }); } catch (e) {} }
   function anim(node, frames, ms) { if (RM || !node || !node.animate) return; try { node.animate(frames, { duration: ms, easing: 'ease-out' }); } catch (e) {} }
+  function svgEl(tag, attrs) { var n = document.createElementNS(NS, tag); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
+  function splat(x, y, r, color, parent) {        // a cartoon goo splat with drips
+    var g = svgEl('g', { transform: 'translate(' + x + ',' + y + ')', 'class': 'goo' });
+    g.appendChild(svgEl('circle', { r: r, fill: color, stroke: 'rgba(0,0,0,.35)', 'stroke-width': 1.5 }));
+    for (var i = 0; i < 5; i++) { var a = Math.random() * 6.28, d = r * (0.8 + Math.random() * 0.6); g.appendChild(svgEl('circle', { cx: Math.cos(a) * d, cy: Math.sin(a) * d, r: r * (0.22 + Math.random() * 0.25), fill: color })); }
+    var drip = svgEl('path', { d: 'M' + (-r * 0.3) + ',' + (r * 0.6) + ' q' + (r * 0.15) + ',' + (r * 1.2) + ' ' + (r * 0.3) + ',0', fill: color, stroke: color, 'stroke-width': r * 0.35, 'stroke-linecap': 'round' });
+    g.appendChild(drip); g.appendChild(svgEl('circle', { cx: -r * 0.35, cy: -r * 0.35, r: r * 0.22, fill: 'rgba(255,255,255,.55)' }));
+    parent.appendChild(g);
+    anim(g, [{ transform: 'translate(' + x + 'px,' + y + 'px) scale(.2)' }, { transform: 'translate(' + x + 'px,' + y + 'px) scale(1.25)', offset: .5 }, { transform: 'translate(' + x + 'px,' + y + 'px) scale(1)' }], 260);
+    return g;
+  }
+  function tooth(from) {                          // a tooth flies off (cartoon)
+    if (RM) return; var t = svgEl('path', { d: 'M-4,-5 L4,-5 L3,5 L0,2 L-3,5 Z', fill: '#fffbe6', stroke: '#333', 'stroke-width': 1.2 });
+    svg.appendChild(t); var x0 = from[0], y0 = from[1], dx = 60 + Math.random() * 80, up = 70 + Math.random() * 40;
+    try { var a = t.animate([{ transform: 'translate(' + x0 + 'px,' + y0 + 'px) rotate(0deg)' }, { transform: 'translate(' + (x0 + dx * .5) + 'px,' + (y0 - up) + 'px) rotate(260deg)', offset: .45 }, { transform: 'translate(' + (x0 + dx) + 'px,148px) rotate(560deg)' }], { duration: 750, easing: 'ease-in', fill: 'forwards' }); a.onfinish = function () { setTimeout(function () { t.remove(); }, 900); }; } catch (e) { t.remove(); }
+  }
   function pips() { hpBox.innerHTML = ''; for (var i = 0; i < hpMax; i++) { var p = document.createElement('i'); if (i >= hp) p.className = 'gone'; hpBox.appendChild(p); } }
 
   function newBeast(prob, idx) {
@@ -101,6 +128,7 @@
     kind = KINDS[idx % KINDS.length]; hpMax = hp = (prob.steps || []).length || 1;
     var t = String(prob.title || 'Equation').replace(/\s*\(.*\)$/, '').replace(/:.*$/, '');
     foeName.textContent = 'The ' + t + ' ' + kind.name; el('ar-foe').innerHTML = beastSVG(kind); pips();
+    el('ar-puddles').innerHTML = ''; [].forEach.call(svg.querySelectorAll('.ouch'), function (n) { n.remove(); });
     anim(el('ar-beast'), [{ transform: 'translate(640px,150px)' }, { transform: 'translate(450px,150px)' }], 520);
     fx(function (A) { A.sfx.roar(); });
   }
@@ -116,12 +144,18 @@
       var p = beast ? at(beast) : at(box);
       fx(function (A) { A.sfx.clang(); A.sparks(p[0], p[1], { color: berserk ? '#ff7a3c' : '#FFC107', count: berserk ? 30 : 18, speed: 420 }); if (berserk) A.shake(box, 7, 260); });
       if (last) {
-        say(pick(['VICTORY!', 'BEAST SLAIN!', 'CONQUERED!', 'IT IS SOLVED!']), '#7CFC9A');
+        say(pick(['K.O.!', 'BEAST SPLATTED!', 'GOO-BYE!', 'IT IS SOLVED!']), '#7CFC9A');
+        if (beast) { var xe = svgEl('path', { d: 'M-26,-88 l14,14 m0,-14 l-14,14 M12,-88 l14,14 m0,-14 l-14,14', stroke: '#111', 'stroke-width': 5, 'stroke-linecap': 'round' }); beast.appendChild(xe); tooth([440, 100]); tooth([460, 96]); }
+        var pd = el('ar-puddles'); if (pd) { var pu = svgEl('ellipse', { cx: 455, cy: 150, rx: 8, ry: 3, fill: kind.goo, opacity: .9 }); pd.appendChild(pu); anim(pu, [{ rx: 8 }, { rx: 78 }], 700); pu.setAttribute('rx', 78);
+          for (var c = 0; c < 4; c++) splat(400 + c * 35, 140 + Math.random() * 8, 6 + Math.random() * 5, kind.goo, pd); }
+        fx(function (A) { A.sparks(p[0], p[1], { color: kind.goo, count: 44, speed: 520 }); A.sparks(p[0], p[1], { color: kind.c, count: 22, speed: 420 }); });
         fx(function (A) { A.boom(p[0], p[1], { color: kind.c, color2: '#FFC107', size: 1.6 }); A.sfx.boom(1.1); A.sfx.power(); A.shake(box, 10, 420); });
         if (beast) { if (!RM && beast.animate) beast.animate([{ opacity: 1, transform: 'translate(450px,150px) scale(1)' }, { opacity: 0, transform: 'translate(470px,120px) scale(1.5) rotate(18deg)' }], { duration: 420, fill: 'forwards' }); else beast.style.opacity = '0'; }
         anim(sword, [{ transform: 'rotate(-28deg)' }, { transform: 'rotate(-95deg)' }, { transform: 'rotate(-95deg)' }, { transform: 'rotate(-28deg)' }], 1300);
       } else {
-        say(pick(berserk ? ['MIGHTY BLOW!', 'CLEAVE!', 'UNSTOPPABLE!', 'BY THE BLADE!'] : ['SLASH!', 'STRIKE!', 'SMITE!', 'A CLEAN HIT!']));
+        say(pick(berserk ? ['MIGHTY BLOW!', 'GOO EVERYWHERE!', 'UNSTOPPABLE!', 'THAT HAD TO HURT!'] : ['SPLAT!', 'SLASH!', 'SPLURCH!', 'A CLEAN HIT!']));
+        if (beast) { splat(-30 + Math.random() * 60, -100 + Math.random() * 70, berserk ? 13 : 9, kind.goo, beast); if (Math.random() < .6) tooth([450, 100]); }
+        fx(function (A) { A.sparks(p[0], p[1], { color: kind.goo, count: berserk ? 26 : 16, speed: 360 }); });
         anim(beast, [{ transform: 'translate(450px,150px)' }, { transform: 'translate(478px,144px) rotate(8deg)', offset: .3 }, { transform: 'translate(450px,150px)' }], 360);
       }
     }, RM ? 0 : 250);
@@ -132,7 +166,11 @@
     anim(shield, [{ transform: 'translate(-30px,-56px) scale(1)' }, { transform: 'translate(6px,-60px) scale(1.5)', offset: .35 }, { transform: 'translate(6px,-60px) scale(1.5)', offset: .7 }, { transform: 'translate(-30px,-56px) scale(1)' }], 700);
     setTimeout(function () { say(pick(['BLOCKED!', 'THE BEAST STRIKES!', 'HOLD THE LINE!', 'SHIELD UP!']), '#ff8a7a');
       var p = at(hero); fx(function (A) { A.sfx.thud(); A.sfx.clang(); A.sparks(p[0] - 10, p[1] - 10, { color: '#9ec5ff', count: 14 }); A.shake(box, 8, 300); });
-      anim(hero, [{ transform: 'translate(150px,150px)' }, { transform: 'translate(132px,150px)', offset: .3 }, { transform: 'translate(150px,150px)' }], 320); }, RM ? 0 : 220);
+      anim(hero, [{ transform: 'translate(150px,150px)' }, { transform: 'translate(132px,150px)', offset: .3 }, { transform: 'translate(150px,150px)' }], 320);
+      if (hero && !hero.querySelector('.ouch')) { var bd = svgEl('g', { 'class': 'ouch', transform: 'translate(-8,-104) rotate(-20)' }); bd.appendChild(svgEl('rect', { x: -9, y: -3, width: 18, height: 6, rx: 2, fill: '#f6e7c8', stroke: '#8a7350', 'stroke-width': 1 })); bd.appendChild(svgEl('rect', { x: -3, y: -9, width: 6, height: 18, rx: 2, fill: '#f6e7c8', stroke: '#8a7350', 'stroke-width': 1 })); hero.appendChild(bd); }
+      if (hero && !RM) { var st = svgEl('g', { transform: 'translate(0,-126)' }); for (var k = 0; k < 3; k++) st.appendChild(svgEl('path', { d: 'M0,-5 L1.5,-1.5 L5,0 L1.5,1.5 L0,5 L-1.5,1.5 L-5,0 L-1.5,-1.5 Z', fill: '#FFD86B', transform: 'translate(' + (Math.cos(k * 2.1) * 16) + ',' + (Math.sin(k * 2.1) * 5) + ')' })); hero.appendChild(st);
+        try { st.animate([{ transform: 'translate(0px,-126px) rotate(0deg)' }, { transform: 'translate(0px,-126px) rotate(360deg)' }], { duration: 500, iterations: 2 }).onfinish = function () { st.remove(); }; } catch (e) { st.remove(); } }
+    }, RM ? 0 : 220);
     /* the step is still shown after a miss (as before), so the beast still loses that point: a plain hit, no glory */
     setTimeout(function () { hp = Math.max(0, hp - 1); pips(); if (hp === 0 && beast) { beast.style.opacity = '.25'; say('It falls… barely.', '#d6d6d6'); } }, 950);
   }

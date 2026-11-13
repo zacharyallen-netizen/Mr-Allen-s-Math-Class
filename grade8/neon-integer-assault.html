@@ -54,10 +54,10 @@
 
   canvas {
     position: fixed;
-    inset: 56px 0 0 0;   /* starts under the site top bar (56px) */
+    inset: 56px 0 0 var(--nia-pad, 0px);   /* starts under the site top bar (56px); left of it = side menu */
     z-index: 0;
     display: block;
-    width: 100vw;
+    width: calc(100vw - var(--nia-pad, 0px));
     height: calc(100vh - 56px);
     cursor: crosshair;
   }
@@ -65,12 +65,12 @@
   #hud {
     position: fixed;
     top: 56px;
-    left: 0;
+    left: var(--nia-pad, 0px);
     z-index: 5;
     display: grid;
     grid-template-columns: minmax(260px, 1fr) auto;
     gap: 18px;
-    width: 100%;
+    width: calc(100% - var(--nia-pad, 0px));
     padding: max(14px, env(safe-area-inset-top)) 18px 14px;
     pointer-events: none;
   }
@@ -160,7 +160,7 @@
 
   #commander {
     position: fixed;
-    left: 50%;
+    left: calc(50% + var(--nia-pad, 0px) / 2);
     bottom: max(16px, env(safe-area-inset-bottom));
     z-index: 4;
     width: min(540px, calc(100vw - 28px));
@@ -179,7 +179,7 @@
 
   #overlay {
     position: fixed;
-    inset: 56px 0 0 0;
+    inset: 56px 0 0 var(--nia-pad, 0px);
     z-index: 20;
     display: grid;
     place-items: start center;
@@ -477,6 +477,8 @@
 <script>
 (() => {
   const canvas = document.getElementById("game");
+  /* play-area width: the side menu (side-nav.js) pads the page on the left, so the game uses what is left (Nov 13, 2026) */
+  function GW() { const de = document.documentElement; return Math.max(300, de.clientWidth - (parseFloat(getComputedStyle(de).paddingLeft) || 0)); }
   const ctx = canvas.getContext("2d");
   const equationsDiv = document.getElementById("equations");
   const levelDiv = document.getElementById("level");
@@ -528,22 +530,23 @@
   };
 
   function resize() {
+    try { document.documentElement.style.setProperty("--nia-pad", (parseFloat(getComputedStyle(document.documentElement).paddingLeft) || 0) + "px"); } catch (e) {}
     const dpr = Math.min(window.devicePixelRatio || 1, DPR_LIMIT);
-    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.width = Math.floor(GW() * dpr);
     canvas.height = Math.floor((window.innerHeight - 56) * dpr);
-    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.width = `${GW()}px`;
     canvas.style.height = `${(window.innerHeight - 56)}px`;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    pointer.x = window.innerWidth / 2;
+    pointer.x = GW() / 2;
     pointer.y = (window.innerHeight - 56) / 2;
     buildStars();
     layoutBelts();
   }
 
   function buildStars() {
-    const count = Math.min(140, Math.floor((window.innerWidth * (window.innerHeight - 56)) / 9000));
+    const count = Math.min(140, Math.floor((GW() * (window.innerHeight - 56)) / 9000));
     state.stars = Array.from({ length: count }, (_, i) => ({
-      x: (i * 179 + 37) % Math.max(1, window.innerWidth),
+      x: (i * 179 + 37) % Math.max(1, GW()),
       y: (i * 113 + 71) % Math.max(1, (window.innerHeight - 56)),
       size: 1 + (i % 3) * 0.55,
       speed: 8 + (i % 7) * 3,
@@ -696,12 +699,13 @@
     }
     layoutBelts();
     state.shots = [];
+    NX.newBoss();
     commander.textContent = `Wave ${state.level}: solve ${count} equations before the grid speeds up.`;
     updateHUD();
   }
 
   function createBelt(index) {
-    const boxCount = Math.ceil(window.innerWidth / 150) + 4;
+    const boxCount = Math.ceil(GW() / 150) + 4;
     const boxes = [];
     for (let i = 0; i < boxCount; i++) {
       boxes.push(createBox(i * 164 + randomInt(0, 40)));
@@ -733,8 +737,8 @@
 
   function layoutBelts() {
     if (!state.belts.length) return;
-    const topPad = window.innerWidth < 760 ? 138 : 128;
-    const bottomPad = window.innerWidth < 760 ? 106 : 112;
+    const topPad = GW() < 760 ? 138 : 128;
+    const bottomPad = GW() < 760 ? 106 : 112;
     const space = Math.max(280, (window.innerHeight - 56) - topPad - bottomPad);
     const gap = space / state.belts.length;
 
@@ -742,7 +746,7 @@
       belt.y = topPad + index * gap + gap * 0.18;
       belt.boxes.forEach((box) => {
         box.y = belt.y;
-        box.w = clamp(window.innerWidth * 0.12, 96, 138);
+        box.w = clamp(GW() * 0.12, 96, 138);
         box.h = clamp((window.innerHeight - 56) * 0.074, 50, 66);
       });
     });
@@ -849,7 +853,8 @@
   }
 
   function drawBackground(dt, elapsed) {
-    const w = window.innerWidth;
+    if (NX.bg(dt, elapsed)) return;
+    const w = GW();
     const h = (window.innerHeight - 56);
     const gradient = ctx.createLinearGradient(0, 0, 0, h);
     gradient.addColorStop(0, "#081525");
@@ -884,7 +889,7 @@
         box.hitPulse = Math.max(0, box.hitPulse - dt * 4);
 
         if (belt.direction < 0 && box.x + box.w < -16) refillBox(box, belt);
-        if (belt.direction > 0 && box.x > window.innerWidth + 16) refillBox(box, belt);
+        if (belt.direction > 0 && box.x > GW() + 16) refillBox(box, belt);
       });
     });
   }
@@ -897,12 +902,12 @@
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.moveTo(0, trackY - 46);
-      ctx.lineTo(window.innerWidth, trackY - 46);
+      ctx.lineTo(GW(), trackY - 46);
       ctx.moveTo(0, trackY + 46);
-      ctx.lineTo(window.innerWidth, trackY + 46);
+      ctx.lineTo(GW(), trackY + 46);
       ctx.stroke();
 
-      for (let x = ((elapsed * belt.speed * 0.35) % 58) - 58; x < window.innerWidth + 58; x += 58) {
+      for (let x = ((elapsed * belt.speed * 0.35) % 58) - 58; x < GW() + 58; x += 58) {
         ctx.strokeStyle = "rgba(255,255,255,0.08)";
         ctx.beginPath();
         ctx.moveTo(x, trackY - 44);
@@ -969,6 +974,7 @@
       checked: false
     });
     tone(520 + state.streak * 14, 0.035, "square", 0.032);
+    NX.fired();
   }
 
   function updateShots(dt) {
@@ -978,6 +984,8 @@
       const dy = shot.ty - shot.y;
       const distance = Math.hypot(dx, dy) || 1;
       const speed = 1100;
+      (shot.trail || (shot.trail = [])).push([shot.x, shot.y]);
+      if (shot.trail.length > 9) shot.trail.shift();
       shot.x += (dx / distance) * speed * dt;
       shot.y += (dy / distance) * speed * dt;
       shot.life -= dt;
@@ -991,6 +999,7 @@
   }
 
   function drawShots() {
+    if (NX.shots()) return;
     state.shots.forEach((shot) => {
       ctx.save();
       ctx.shadowBlur = 16;
@@ -1052,6 +1061,7 @@
     box.correct = false;
     box.equationIndex = -1;
     box.hitPulse = 1;
+    NX.shatter(box, x, y);
     clearSolvedBoxes(solvedIndex, box);
     spawnBurst(x, y, colors.green, 24, 1.2);
     fxBoom(x, y, colors.green, 0.95 + 0.14 * multiplier, { color2: colors.cyan });
@@ -1074,6 +1084,7 @@
     state.streak = 0;
     state.hearts--;
     if (box) box.hitPulse = 1;
+    NX.missed(x, y);
     spawnBurst(x, y, colors.red, 20, 1);
     fxBoom(x, y, colors.red, 0.8, { debris: false });
     fxDo((A) => { A.sfx.thud(); A.shake(canvas, 9, 320); A.flash('rgba(255,40,70,.35)', 220); });
@@ -1127,10 +1138,11 @@
   }
 
   function completeWave() {
-    spawnBurst(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 70, 2.2);
-    fxBoom(window.innerWidth / 2, (window.innerHeight - 56) / 2, colors.cyan, 2.4, { color2: colors.gold, count: 46 });
-    fxDo((A) => { A.sfx.boom(1.3); A.sfx.power(); A.shake(canvas, 12, 480); const q = fxPt(window.innerWidth / 2, (window.innerHeight - 56) / 2 - 90); A.text(q[0], q[1], 'WAVE CLEAR', { color: colors.cyan, size: 44, life: 1.4 });
-      for (let i = 0; i < 4; i++) setTimeout(() => fxBoom(window.innerWidth * (0.2 + 0.2 * i), (window.innerHeight - 56) * (0.3 + 0.4 * Math.random()), [colors.gold, colors.green, colors.cyan, colors.red][i], 1.1), 140 + i * 130); });
+    NX.bossDown();
+    spawnBurst(GW() / 2, (window.innerHeight - 56) / 2, colors.cyan, 70, 2.2);
+    fxBoom(GW() / 2, (window.innerHeight - 56) / 2, colors.cyan, 2.4, { color2: colors.gold, count: 46 });
+    fxDo((A) => { A.sfx.boom(1.3); A.sfx.power(); A.shake(canvas, 12, 480); const q = fxPt(GW() / 2, (window.innerHeight - 56) / 2 - 90); A.text(q[0], q[1], 'WAVE CLEAR', { color: colors.cyan, size: 44, life: 1.4 });
+      for (let i = 0; i < 4; i++) setTimeout(() => fxBoom(GW() * (0.2 + 0.2 * i), (window.innerHeight - 56) * (0.3 + 0.4 * Math.random()), [colors.gold, colors.green, colors.cyan, colors.red][i], 1.1), 140 + i * 130); });
     state.score += 350 + state.level * 100;
     state.speedMultiplier += 0.12;
     try { if (window.ArcadeSend) ArcadeSend.round({ level: 'Wave ' + state.level, score: state.score, details: 'Cleared wave ' + state.level + ', best combo streak ' + state.bestStreak }); } catch (e) {}
@@ -1144,6 +1156,212 @@
       if (state.running) setupLevel();
     }, 780);
   }
+
+
+  /* NEXT LEVEL graphics (Nov 13, 2026, Zach: make Integer Assault "next level"). Looks only:
+     questions, answers, hits, hearts, score and ArcadeSend are unchanged. */
+  const NX = (() => {
+    const RM = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const WAVE = [colors.cyan, colors.pink, colors.gold, colors.green, colors.red];
+    const shards = [], beams = [], rings = [];
+    let recoil = 0, flash = 0, hurt = 0, bossHit = 0, bossDie = 0, bossIn = 0, gridT = 0;
+    let vig = null, vigKey = "";
+    const H = () => window.innerHeight - 56, W = () => GW();
+    const hue = () => WAVE[(state.level - 1) % WAVE.length];
+    const od = () => state.streak >= 6;
+    function rgba(hex, a) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; }
+    function bossPos() { return { x: W() / 2, y: Math.max(150, H() * 0.42) }; }
+    function shield() { const e = state.equations; if (!e.length) return 0; return e.filter((q) => !q.solved).length / e.length; }
+
+    function bg(dt, el) {
+      const w = W(), h = H(), c = hue();
+      const g = ctx.createLinearGradient(0, 0, 0, h);
+      g.addColorStop(0, "#03060f"); g.addColorStop(0.55, "#070a1c"); g.addColorStop(1, "#14061c");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+      // nebula clouds
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      [[0.18, 0.3, c], [0.82, 0.22, colors.pink], [0.6, 0.62, colors.cyan]].forEach(([fx, fy, col], i) => {
+        const x = w * fx + Math.sin(el * 0.07 + i * 2) * 40, y = h * fy + Math.cos(el * 0.05 + i) * 30, r = Math.max(w, h) * 0.38;
+        const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+        rg.addColorStop(0, rgba(col, 0.11)); rg.addColorStop(1, rgba(col, 0));
+        ctx.fillStyle = rg; ctx.fillRect(0, 0, w, h);
+      });
+      ctx.restore();
+      // parallax stars (3 depths, the faster the brighter)
+      state.stars.forEach((s, i) => {
+        const d = 1 + (i % 3) * 1.6;
+        s.x -= s.speed * d * dt * (od() ? 2.2 : 1);
+        if (s.x < -6) s.x = w + 6;
+        ctx.fillStyle = `rgba(190, 250, 255, ${Math.min(0.9, s.alpha * d * 1.4)})`;
+        if (d > 3 && !RM) ctx.fillRect(s.x, s.y, s.size * (od() ? 9 : 3), s.size * 0.7);
+        else ctx.fillRect(s.x, s.y, s.size, s.size);
+      });
+      // synthwave sun + perspective grid floor
+      const hz = h * 0.7;
+      ctx.save();
+      const sr = Math.min(w, h) * 0.22, sx = w / 2;
+      const sg = ctx.createLinearGradient(0, hz - sr, 0, hz);
+      sg.addColorStop(0, rgba(colors.gold, 0.32)); sg.addColorStop(1, rgba(c, 0.18));
+      ctx.beginPath(); ctx.arc(sx, hz, sr, Math.PI, 0); ctx.closePath(); ctx.fillStyle = sg; ctx.fill();
+      ctx.fillStyle = "#070a1c";
+      for (let k = 0; k < 6; k++) { const yy = hz - sr * (0.08 + k * 0.13); ctx.fillRect(sx - sr, yy, sr * 2, 2 + k * 0.9); }
+      ctx.restore();
+      const fl = ctx.createLinearGradient(0, hz, 0, h);
+      fl.addColorStop(0, "rgba(10,4,24,0.9)"); fl.addColorStop(1, "rgba(30,6,40,0.95)");
+      ctx.fillStyle = fl; ctx.fillRect(0, hz, w, h - hz);
+      if (!RM) gridT = (gridT + dt * (od() ? 1.6 : 0.7)) % 1;
+      ctx.save(); ctx.strokeStyle = rgba(c, od() ? 0.55 : 0.32); ctx.lineWidth = 1.2;
+      ctx.shadowColor = c; ctx.shadowBlur = 8;
+      for (let k = 0; k < 14; k++) { const f = (k + gridT) / 14, y = hz + (h - hz) * f * f; ctx.globalAlpha = f; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+      for (let k = -14; k <= 14; k++) { ctx.beginPath(); ctx.moveTo(sx + k * 18, hz); ctx.lineTo(sx + k * w * 0.11, h); ctx.stroke(); }
+      ctx.restore();
+      ctx.fillStyle = rgba(c, 0.6); ctx.fillRect(0, hz - 1, w, 2);
+      return true;
+    }
+
+    // the wave boss: an original neon mothership; its shield ring = equations still open
+    function boss(el) {
+      if (!state.equations.length && bossDie <= 0) return;
+      const p = bossPos(), c = hue(), n = 4 + state.level, s = Math.min(W(), H()) * 0.16;
+      bossIn = Math.min(1, bossIn + 0.02);
+      ctx.save();
+      ctx.translate(p.x + Math.sin(el * 0.6) * 18, p.y + Math.cos(el * 0.9) * 8 - (1 - bossIn) * 200);
+      if (bossDie > 0) { ctx.globalAlpha = Math.max(0, bossDie); ctx.scale(1 + (1 - bossDie) * 0.6, 1 + (1 - bossDie) * 0.6); }
+      else ctx.globalAlpha = 0.5;
+      ctx.shadowColor = c; ctx.shadowBlur = 24 + bossHit * 40;
+      ctx.strokeStyle = bossHit > 0.05 ? colors.white : c; ctx.lineWidth = 2.5;
+      ctx.fillStyle = "rgba(8,6,24,0.85)";
+      ctx.beginPath();
+      for (let i = 0; i <= n * 2; i++) { const a = Math.PI + (i / (n * 2)) * Math.PI, r = i % 2 ? s * 0.55 : s; ctx.lineTo(Math.cos(a) * r * 1.5, Math.sin(a) * r * 0.55); }
+      ctx.lineTo(s * 0.9, s * 0.18); ctx.lineTo(-s * 0.9, s * 0.18); ctx.closePath(); ctx.fill(); ctx.stroke();
+      // eye / core
+      const pulse = 0.6 + 0.4 * Math.sin(el * 4);
+      ctx.fillStyle = rgba(c, 0.5 + 0.4 * pulse); ctx.beginPath(); ctx.ellipse(0, -s * 0.12, s * 0.22, s * 0.12, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = colors.white; ctx.beginPath(); ctx.arc(Math.sin(el * 1.7) * s * 0.08, -s * 0.12, s * 0.05, 0, Math.PI * 2); ctx.fill();
+      // shield segments
+      const segs = state.equations.length, open = state.equations.map((q) => !q.solved);
+      for (let i = 0; i < segs; i++) {
+        if (!open[i]) continue;
+        const a0 = Math.PI * 1.05 + (i / segs) * Math.PI * 0.9 + el * 0.15, a1 = a0 + (Math.PI * 0.9) / segs - 0.08;
+        ctx.strokeStyle = rgba(colors.cyan, 0.7); ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.arc(0, 0, s * 1.75, a0, a1); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function shotsDraw() {
+      const col = od() ? colors.gold : colors.pink;
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      state.shots.forEach((s) => {
+        const tr = (s.trail || []).concat([[s.x, s.y]]);
+        for (let i = 1; i < tr.length; i++) {
+          const f = i / tr.length;
+          ctx.strokeStyle = rgba(col, f * 0.9); ctx.lineWidth = 2 + f * 7; ctx.lineCap = "round";
+          ctx.shadowColor = col; ctx.shadowBlur = 18;
+          ctx.beginPath(); ctx.moveTo(tr[i - 1][0], tr[i - 1][1]); ctx.lineTo(tr[i][0], tr[i][1]); ctx.stroke();
+        }
+        ctx.fillStyle = colors.white; ctx.beginPath(); ctx.arc(s.x, s.y, 4, 0, Math.PI * 2); ctx.fill();
+      });
+      beams.forEach((b) => {
+        ctx.strokeStyle = rgba(b.c, b.life * 0.8); ctx.lineWidth = 3 + b.life * 6; ctx.shadowColor = b.c; ctx.shadowBlur = 24;
+        ctx.beginPath(); ctx.moveTo(b.x0, b.y0);
+        const mx = (b.x0 + b.x1) / 2 + (Math.random() - 0.5) * 30, my = (b.y0 + b.y1) / 2 + (Math.random() - 0.5) * 30;
+        ctx.quadraticCurveTo(mx, my, b.x1, b.y1); ctx.stroke();
+      });
+      rings.forEach((r) => {
+        ctx.strokeStyle = rgba(r.c, r.life); ctx.lineWidth = 3 * r.life + 1; ctx.shadowColor = r.c; ctx.shadowBlur = 16;
+        ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+      });
+      ctx.restore();
+      return true;
+    }
+
+    function fired() { recoil = 1; flash = 1; }
+    function shatter(box, x, y) {
+      const n = RM ? 6 : 14;
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2, v = 160 + Math.random() * 320;
+        shards.push({ x: box.x + Math.random() * box.w, y: box.y + Math.random() * box.h, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 120,
+          r: Math.random() * 6, vr: (Math.random() - 0.5) * 14, s: 8 + Math.random() * 16, life: 1, c: i % 3 ? colors.green : colors.white });
+      }
+      rings.push({ x, y, r: 10, life: 1, c: colors.green }, { x, y, r: 4, life: 0.8, c: colors.white });
+      const p = bossPos();
+      beams.push({ x0: x, y0: y, x1: p.x, y1: p.y, life: 1, c: colors.green });
+      bossHit = 1;
+    }
+    function missed(x, y) { hurt = 1; rings.push({ x, y, r: 6, life: 1, c: colors.red }); }
+    function bossDown() { bossDie = 1; const p = bossPos(); for (let i = 0; i < 4; i++) rings.push({ x: p.x, y: p.y, r: 10 + i * 30, life: 1, c: [colors.white, hue(), colors.gold, colors.pink][i] }); }
+    function newBoss() { bossDie = 0; bossIn = 0; }
+    function reset() { shards.length = beams.length = rings.length = 0; bossDie = 0; bossIn = 0; }
+
+    function update(dt) {
+      recoil = Math.max(0, recoil - dt * 7); flash = Math.max(0, flash - dt * 12);
+      hurt = Math.max(0, hurt - dt * 2.2); bossHit = Math.max(0, bossHit - dt * 3);
+      if (bossDie > 0) bossDie = Math.max(0, bossDie - dt * 1.2);
+      for (let i = shards.length - 1; i >= 0; i--) { const s = shards[i]; s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 620 * dt; s.r += s.vr * dt; s.life -= dt * 1.1; if (s.life <= 0) shards.splice(i, 1); }
+      for (let i = beams.length - 1; i >= 0; i--) { beams[i].life -= dt * 3; if (beams[i].life <= 0) beams.splice(i, 1); }
+      for (let i = rings.length - 1; i >= 0; i--) { const r = rings[i]; r.r += 420 * dt; r.life -= dt * 2; if (r.life <= 0) rings.splice(i, 1); }
+    }
+    function drawShards() {
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      shards.forEach((s) => {
+        ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.r); ctx.globalAlpha = Math.max(0, s.life);
+        ctx.fillStyle = rgba(s.c, 0.5); ctx.strokeStyle = s.c; ctx.shadowColor = s.c; ctx.shadowBlur = 12; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(-s.s / 2, -s.s / 3); ctx.lineTo(s.s / 2, -s.s / 4); ctx.lineTo(0, s.s / 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      });
+      ctx.restore();
+    }
+    // hologram scanline sweeping over each number box
+    function boxFx(el) {
+      if (RM) return;
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      state.belts.forEach((b) => b.boxes.forEach((box, i) => {
+        const f = (el * 0.9 + i * 0.37) % 1.6; if (f > 1) return;
+        const y = box.y + box.h * f;
+        ctx.fillStyle = "rgba(160,250,255,0.10)"; ctx.fillRect(box.x + 3, y, box.w - 6, 3);
+      }));
+      ctx.restore();
+    }
+
+    function turret(el) {
+      const t = getTurret(), ang = Math.atan2(pointer.y - t.y, pointer.x - t.x), c = od() ? colors.gold : colors.cyan;
+      ctx.save(); ctx.translate(t.x, t.y);
+      // streak charge ring (fills toward overdrive at 6 in a row)
+      const ch = Math.min(1, state.streak / 6);
+      ctx.strokeStyle = "rgba(255,255,255,0.1)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = c; ctx.shadowColor = c; ctx.shadowBlur = 16;
+      ctx.beginPath(); ctx.arc(0, 0, 40, -Math.PI / 2, -Math.PI / 2 + ch * Math.PI * 2); ctx.stroke();
+      if (od()) { ctx.lineWidth = 2; ctx.globalAlpha = 0.5 + 0.5 * Math.sin(el * 12); ctx.beginPath(); ctx.arc(0, 0, 50 + Math.sin(el * 6) * 4, 0, Math.PI * 2); ctx.stroke(); ctx.globalAlpha = 1; }
+      ctx.rotate(ang);
+      const k = -recoil * 10;
+      ctx.fillStyle = c; ctx.shadowBlur = 20;
+      roundRect(4 + k, -9, 50, 7, 3); ctx.fill(); roundRect(4 + k, 2, 50, 7, 3); ctx.fill();
+      if (flash > 0) { ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = rgba(colors.white, flash); ctx.beginPath(); ctx.arc(60 + k, 0, 12 * flash + 4, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = rgba(c, flash * 0.8); ctx.beginPath(); ctx.moveTo(56 + k, -10); ctx.lineTo(84 + k, 0); ctx.lineTo(56 + k, 10); ctx.fill(); ctx.globalCompositeOperation = "source-over"; }
+      ctx.restore();
+      ctx.save(); ctx.translate(t.x, t.y);
+      ctx.fillStyle = "#061522"; ctx.strokeStyle = c; ctx.lineWidth = 3; ctx.shadowColor = c; ctx.shadowBlur = 18;
+      ctx.beginPath(); for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3 + el * 0.4; ctx.lineTo(Math.cos(a) * 26, Math.sin(a) * 26); } ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = od() ? colors.gold : colors.pink; ctx.beginPath(); ctx.arc(0, 0, 7 + Math.sin(el * 8) * 1.5, 0, Math.PI * 2); ctx.fill();
+      if (od()) { ctx.shadowBlur = 12; ctx.fillStyle = colors.gold; ctx.font = "900 14px Inter, Arial, sans-serif"; ctx.textAlign = "center"; ctx.fillText("OVERDRIVE", 0, -60); }
+      ctx.restore();
+      return true;
+    }
+
+    function overlay(el) {
+      const w = W(), h = H(), key = w + "x" + h;
+      if (vigKey !== key) {
+        vigKey = key; vig = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75);
+        vig.addColorStop(0, "rgba(0,0,0,0)"); vig.addColorStop(1, "rgba(0,0,0,0.55)");
+      }
+      ctx.fillStyle = vig; ctx.fillRect(0, 0, w, h);
+      if (hurt > 0) { ctx.fillStyle = `rgba(255,30,70,${hurt * 0.12})`; ctx.fillRect(0, 0, w, h); ctx.strokeStyle = `rgba(255,61,110,${hurt})`; ctx.lineWidth = 10 * hurt; ctx.strokeRect(0, 0, w, h); }
+      if (!RM) { ctx.fillStyle = "rgba(0,0,0,0.08)"; for (let y = (el * 30) % 4; y < h; y += 4) ctx.fillRect(0, y, w, 1); }
+    }
+
+    return { bg, boss, shots: shotsDraw, fired, shatter, missed, bossDown, newBoss, reset, update, drawShards, boxFx, turret, overlay };
+  })();
 
   /* bigger explosions and sounds (arcade-fx.js, Nov 11, 2026). Game x, y are canvas points; the canvas sits under the 56px top bar. */
   function fxPt(x, y) { const r = canvas.getBoundingClientRect(); return [r.left + x, r.top + y]; }
@@ -1216,12 +1434,13 @@
 
   function getTurret() {
     return {
-      x: window.innerWidth / 2,
-      y: (window.innerHeight - 56) - (window.innerWidth < 760 ? 54 : 62)
+      x: GW() / 2,
+      y: (window.innerHeight - 56) - (GW() < 760 ? 54 : 62)
     };
   }
 
   function drawTurret(elapsed) {
+    if (NX.turret(elapsed)) return;
     const turret = getTurret();
     const angle = Math.atan2(pointer.y - turret.y, pointer.x - turret.x);
     ctx.save();
@@ -1263,13 +1482,13 @@
     if (!state.paused) return;
     ctx.save();
     ctx.fillStyle = "rgba(2,5,12,0.54)";
-    ctx.fillRect(0, 0, window.innerWidth, (window.innerHeight - 56));
+    ctx.fillRect(0, 0, GW(), (window.innerHeight - 56));
     ctx.fillStyle = colors.white;
     ctx.textAlign = "center";
     ctx.font = "950 48px Inter, Arial, sans-serif";
-    ctx.fillText("PAUSED", window.innerWidth / 2, (window.innerHeight - 56) / 2);
+    ctx.fillText("PAUSED", GW() / 2, (window.innerHeight - 56) / 2);
     ctx.font = "800 16px Inter, Arial, sans-serif";
-    ctx.fillText("Press P to resume", window.innerWidth / 2, (window.innerHeight - 56) / 2 + 34);
+    ctx.fillText("Press P to resume", GW() / 2, (window.innerHeight - 56) / 2 + 34);
     ctx.restore();
   }
 
@@ -1286,10 +1505,15 @@
       updateShots(dt);
       updateParticles(dt);
     }
+    if (!state.paused) NX.update(dt);
+    NX.boss(elapsed);
     drawBelts(elapsed);
+    NX.boxFx(elapsed);
     drawShots();
+    NX.drawShards();
     drawParticles();
     drawTurret(elapsed);
+    NX.overlay(elapsed);
     drawPause();
 
     rafId = requestAnimationFrame(loop);
@@ -1313,6 +1537,7 @@
     state.problemHistory = [];
     state.missHistory = [];
     state.nextProblemId = 1;
+    NX.reset();
     setupLevel();
   }
 
@@ -1334,7 +1559,7 @@
     updateHUD();
     commander.textContent = won ? "Grid overloaded. Perfectly legal math mayhem." : "Run ended. Reset and hit the matching integers.";
     chord(won ? [660, 880, 1180, 1480] : [220, 165, 110], 0.11, won ? "triangle" : "sawtooth", 0.035);
-    fxDo((A) => { if (won) { A.sfx.win(); A.confetti(window.innerWidth / 2, window.innerHeight * 0.35, { count: 110 }); } else { A.sfx.lose(); A.sfx.boom(1.5); A.boom(window.innerWidth / 2, window.innerHeight / 2, { color: colors.red, size: 2.6 }); A.shake(canvas, 14, 520); } });
+    fxDo((A) => { if (won) { A.sfx.win(); A.confetti(GW() / 2, window.innerHeight * 0.35, { count: 110 }); } else { A.sfx.lose(); A.sfx.boom(1.5); A.boom(GW() / 2, window.innerHeight / 2, { color: colors.red, size: 2.6 }); A.shake(canvas, 14, 520); } });
     const title = won ? "Grid Overloaded" : "Game Over";
     const message = won
       ? "You cleared all five waves and kept the number stream under control."
@@ -1446,6 +1671,9 @@
   });
 
   window.addEventListener("resize", resize);
+  if (/[?&]debug/.test(location.search)) window.__NIA = state;
+  /* the side menu loads after this page and pads it; size the game again when that happens */
+  setInterval(() => { const p = (parseFloat(getComputedStyle(document.documentElement).paddingLeft) || 0) + "px"; if (document.documentElement.style.getPropertyValue("--nia-pad") !== p) { resize(); if (!state.running) drawBackground(0.016, 0); } }, 400);
   startBtn.addEventListener("click", startGame);
 
   resize();

@@ -70,7 +70,7 @@
     if (!cfg().ENDPOINT) return;
     if (!document.body || document.getElementById('arcade-send')) return;
     var host = document.createElement('div'); host.id = 'arcade-send';
-    host.style.cssText = 'position:fixed;left:10px;bottom:10px;z-index:2147483000';
+    host.style.cssText = 'position:fixed;left:' + (innerWidth > 760 ? 86 : 10) + 'px;bottom:10px;z-index:2147483000';   // clear of the side menu (Nov 13, 2026)
     document.body.appendChild(host);
     var root = host.attachShadow ? host.attachShadow({ mode: 'open' }) : host;
     root.innerHTML = '<style>' +

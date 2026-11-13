@@ -79,3 +79,11 @@ G9. The top of each unit page shows "What you will learn": learning targets (the
 G10. The side menu (side-nav.js) is the site menu on every page (?nav=top on one browser brings back the top bar for checking).
 G11. Unit 5: the 5.1–5.4 practice page is listed as "Targeted Practice Problems 5.x — topic" after each Targeted Practice 5.x and
      opens on that topic (page.html#s0p1 …). Unit 6: the interactive practice and review pages sit inside Targeted Practice in order.
+
+## I. Arcade games (Nov 13, 2026)
+I1. Equation Master: the equation work is on the LEFT and the fight on the RIGHT (side by side; phones: fight on top, small).
+    The fight is cartoon gory (goo splats, flying teeth, K.O. puddle); it never changes questions, feedback or scores.
+I2. Zero Pair Run is called "Tiles for Miles" everywhere students see it (file name unchanged).
+I3. Squeaky Cheeks: the other guests are fancy and polite (monocles, top hats, pearls; "I say!", *titters*); only the player is gassy.
+I4. Neon Integer Assault "next level" look (synthwave grid, wave boss whose shield = open equations, laser trails, shatter,
+    OVERDRIVE at 6 in a row) is looks only; the game sizes itself to the space beside the side menu.
