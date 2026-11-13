@@ -32,7 +32,7 @@
   function getName() { var hn = HW && document.getElementById('nm'); var n = hn && nameOk(hn.value) ? hn.value : ls(NAME_KEY); return nameOk(n) ? tidy(n) : ''; }
 
   /* ---------- finding the same thing again on the next visit ---------- */
-  function skip(el) { return !el || !el.closest || el.closest('#site-bar, .sw-host, .sv-bar, #scoresend, #ss-mount, .fx-foot, .fx-toast, .oat-fin-send') || el.id === 'ssbtn' || el.id === 'ssname' || el.id === 'nm'; }
+  function skip(el) { return !el || !el.closest || el.closest('#site-bar, #side-nav, .sw-host, .sv-bar, #scoresend, #ss-mount, .fx-foot, .fx-toast, .oat-fin-send') || el.id === 'ssbtn' || el.id === 'ssname' || el.id === 'nm'; }
   function anc(el) { for (var p = el.parentElement; p && p !== document.body; p = p.parentElement) if (p.id && !/^sw\d+$/.test(p.id)) return p; return document.body; }
   function lab(el) {
     if (/^(INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) return (el.type || '') + '|' + String(el.className || '').replace(/\b(sw-filled|bad|ok|no|wrong|correct|ta-hid|blank)\b/g, '').replace(/\s+/g, ' ').trim() + '|' + (el.name || '');
@@ -150,7 +150,7 @@
   function show(t) { var st = bar && bar.querySelector('.sv-st'); if (st) st.textContent = t; }
   function drawBar() {
     if (HW) return;                                    // Targeted Practice already asks for the name at the top
-    if (!bar) { bar = document.createElement('div'); bar.className = 'sv-bar'; var sb = document.getElementById('site-bar'); document.body.insertBefore(bar, sb ? sb.nextSibling : document.body.firstChild); }
+    if (!bar) { bar = document.createElement('div'); bar.className = 'sv-bar'; var sb = document.getElementById('site-bar') || document.getElementById('side-nav'); document.body.insertBefore(bar, sb ? sb.nextSibling : document.body.firstChild); }
     var nm = getName();
     if (!nm) {
       bar.classList.remove('sv-on');

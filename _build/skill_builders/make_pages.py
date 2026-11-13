@@ -65,7 +65,7 @@ def shell(n, title, mode):
 <p class="pr-row pr-links">Printable copies: <a href="skills/pdf/{pdf(n, kind)}">{what} (PDF)</a><a href="skills/pdf/{pdf(n, kind, True)}">Answer key (PDF)</a></p>
 </div>
 </div>
-<script src="../student-fx.js?v=20261113a"></script>
+<script src="../student-fx.js?v=20261113b"></script>
 </body>
 </html>
 '''

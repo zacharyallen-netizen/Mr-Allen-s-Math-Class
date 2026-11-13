@@ -26,7 +26,7 @@ PAGE = '''<!DOCTYPE html>
 <script src="eog/u{n}.js?v={V}"></script>
 <script src="eog/s5.js?v={V}"></script>
 <script>EOGU.run({n}, {ver});</script>
-<script src="one-at-a-time.js?v=20261113a"></script>
+<script src="one-at-a-time.js?v=20261113b"></script>
 </body>
 </html>
 '''

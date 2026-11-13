@@ -29,11 +29,12 @@
   if (!me || document.getElementById("site-bar")) return;
   if (/[?&]mini=1/.test(location.search)) return;                 // the small pop-out music player has no top bar
   var root = me.src.replace(/site-bar\.js(\?.*)?$/, "");          // site root URL
-  // PREVIEW (Nov 13, 2026): the side menu. ?nav=side turns it on for this browser, ?nav=top turns it off.
+  // Nov 13, 2026 (Zach: "lets try that as the menu for everyone"): the side menu (side-nav.js) is the menu on every page.
+  // ?nav=top brings the old top bar back on that browser only (for checking); ?nav=side undoes it.
   try {
     var nv = (/[?&]nav=(side|top)\b/.exec(location.search) || [])[1];
     if (nv) localStorage.setItem("nav-style", nv);
-    if (localStorage.getItem("nav-style") === "side") {
+    if (localStorage.getItem("nav-style") !== "top") {
       var sn = document.createElement("script"); sn.src = root + "side-nav.js?v=20261113a"; document.head.appendChild(sn); return;
     }
   } catch (e) {}

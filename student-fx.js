@@ -80,7 +80,7 @@
   FX.mark = function (kind) { if (G) G.forced = kind; };       // an engine can say "careful" for the check in progress
 
   /* ---------- what just happened? (a tap or Enter, then the page's own check) ---------- */
-  var G = null, SKIP = '.site-bar,nav,header,.oat-top,.oat-bot,.oat-end,.nf-top,.nf-bot,.nsp-bar,.fx-foot,.fx-help,[id^="ss"],.ss-panel';
+  var G = null, SKIP = '#side-nav,.site-bar,nav,header,.oat-top,.oat-bot,.oat-end,.nf-top,.nf-bot,.nsp-bar,.fx-foot,.fx-help,[id^="ss"],.ss-panel';
   var OKC = /^(ok|correct|right|good|yes|success|solved|c)$/, NOC = /^(no|wrong|incorrect|bad|err|error|miss|w)$/, WARNC = /^(tip|warn|warning|careful|close|partial|almost|blank)$/;
   var WARNT = /pick an answer|choose an answer|select an answer|answer first|type (a|an|your|the|just)\b|enter (a|an|your)\b|simplest form|write it as a fraction|everything you picked is true|more right answer|fill (it|them) in|use a minus|round(ed)? to/i;
   var CHECK = /^(check|check my answer|check answers?|check it|check this line|verify( the solution)?|submit|go)$/i, REVEAL = /^(show|reveal)\b/i;

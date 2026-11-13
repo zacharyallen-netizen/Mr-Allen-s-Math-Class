@@ -202,5 +202,21 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
 { const sw = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
   if ((sw.match(/work\.insertBefore\(pz2?, work\.firstChild\)/g) || []).length < 2) fail('G8', 'grade8/step-work.js', 'praise must go above "What will you do next?"'); }
 
+/* G9–G11 (Nov 13, 2026) */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+  for (let u = 1; u <= 9; u++) { const t = rd('grade8/unit' + u + '.html');
+    if (/class="start-here"/.test(t)) fail('G9', 'grade8/unit' + u + '.html', 'still has the Start here strip');
+    if (!/class="unit-goals"/.test(t) || !/class="ug-t"/.test(t) || !/class="ug-s"/.test(t)) fail('G9', 'grade8/unit' + u + '.html', 'missing What you will learn (targets + standards)'); }
+  ['unit1-notes', 'unit2-notes-exponents', 'unit2-notes-sci-notation', 'unit3-notes', 'unit4-notes', 'unit5-notes', 'unit6-notes', 'unit7-notes', 'unit8-notes', 'volume'].forEach(n => { const t = rd('grade8/' + n + '.html');
+    if (!/id="ican-hide"/.test(t)) fail('G9', 'grade8/' + n + '.html', 'the I can box must be hidden on screen');
+    if ((t.match(/<body/g) || []).length !== 1 || (t.match(/class="ican-box"/g) || []).length !== 1) fail('G9', 'grade8/' + n + '.html', 'page content is doubled or the I can box is missing'); });
+  if (!/getItem\("nav-style"\) !== "top"/.test(rd('site-bar.js'))) fail('G10', 'site-bar.js', 'the side menu must be the default');
+  const u5 = rd('grade8/unit5.html');
+  if (!/unit5-practice-problems\.html#s0p1/.test(u5) || /Practice Problems 5\.1–5\.4 — Interactive/.test(u5)) fail('G11', 'grade8/unit5.html', 'Targeted Practice Problems 5.x cards');
+  const u6 = rd('grade8/unit6.html');
+  if (/More Practice &amp; Review/.test(u6) || u6.indexOf('unit6-review.html') < u6.indexOf('id="homework"')) fail('G11', 'grade8/unit6.html', 'practice and review must sit inside Targeted Practice');
+}
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');

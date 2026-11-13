@@ -56,7 +56,7 @@ F2. Student names never appear in the repo.
 ## G. Names and layout decisions (Nov 13, 2026)
 G1. Homework is called **"Targeted Practice"** everywhere students see it ("Targeted Practice 3.1 — One- and Two-Step Equations").
     The numbers match the printed sheets. Data sent to the Sheet still says kind "homework" (Sheet tabs unchanged).
-G2. Unit pages have NO big gold "Start here / Keep going / Next" button and no fold; the "Start here: do these in order" strip stays.
+G2. Unit pages have NO big gold "Start here / Keep going / Next" button and no fold. (Nov 13, 2026: the "Start here" strip was replaced too, see G9.)
 G3. Units 3 and 4 keep their own pages. The combined Units 3–4 page holds ONLY the Units 3–4 Pre-Test and the Units 3–4 Tutorial.
 G4. Every page with the top bar has the ♪ Music button (top right); it opens the small pop-out player (drift.html?mini=1).
 G5. One problem on the screen (Nov 13, 2026): no "Show all problems" switch for students (one-at-a-time.js ignores a saved "all";
@@ -74,3 +74,8 @@ H2. Student work is saved: save-work.js (loaded by score-send.js and Targeted Pr
     when the page is opened again on any Chromebook with the same name.
 G8. After a right line, the praise comes FIRST, above "What will you do next?" (Nov 13, 2026). When the work is solved,
     the Solved box and "Correct! Your answer … is checked" are on screen without scrolling up.
+G9. The top of each unit page shows "What you will learn": learning targets (the notes' "I can" list) + standards with a short
+    meaning (_build/unit_start_here.py). The notes hide their own "I can" box on screen (it still prints). No "Start here" strip.
+G10. The side menu (side-nav.js) is the site menu on every page (?nav=top on one browser brings back the top bar for checking).
+G11. Unit 5: the 5.1–5.4 practice page is listed as "Targeted Practice Problems 5.x — topic" after each Targeted Practice 5.x and
+     opens on that topic (page.html#s0p1 …). Unit 6: the interactive practice and review pages sit inside Targeted Practice in order.

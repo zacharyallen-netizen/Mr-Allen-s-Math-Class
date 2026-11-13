@@ -5,7 +5,6 @@ Rerun after unit3.html changes:
     python3 _build/build_units34.py"""
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from unit_start_here import CSS as SH_CSS, strip as sh_strip
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 G = os.path.join(ROOT, 'grade8')

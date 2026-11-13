@@ -1,6 +1,6 @@
 /* loads student-fx.js (flash, sounds, matching buttons) once per page */
 (function () { try { if (window.FX || document.getElementById('fx-js')) return; var s = document.createElement('script'); s.id = 'fx-js';
-  s.src = new URL('../student-fx.js?v=20261113a', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
+  s.src = new URL('../student-fx.js?v=20261113b', document.currentScript.src).href; document.head.appendChild(s); } catch (e) {} })();
 /* One problem at a time (Nov 2026) for every practice page and pre-test.
    Shows the current problem with the headings and directions that lead into it, a "Problem 3 of 22" bar,
    Back / Next buttons and a finish screen. Everything after the last problem (Send my work, typing tips)
@@ -57,7 +57,7 @@
 
   function sig(el) { return el.tagName + '.' + (typeof el.className === 'string' ? el.className.replace(/\b(active|done|shown|oat-[a-z]+|sw-wide|correct|wrong)\b/g, '').trim().split(/\s+/).sort().join('.') : ''); }
   function hasItem(el) { return items.some(function (it) { return el === it || el.contains(it); }); }
-  function skip(el) { return /^(SCRIPT|STYLE|LINK|TEMPLATE)$/.test(el.tagName) || el.id === 'site-bar' || /\boat-(top|bot|end|mode)\b/.test(el.className); }
+  function skip(el) { return /^(SCRIPT|STYLE|LINK|TEMPLATE)$/.test(el.tagName) || el.id === 'site-bar' || el.id === 'side-nav' || /\bsv-bar\b/.test(el.className) || /\boat-(top|bot|end|mode)\b/.test(el.className); }
 
   function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
   function build() {
@@ -193,7 +193,12 @@
     if (F && !start.reg) { start.reg = true; (window.__skipLists = window.__skipLists || []).push({ word: WORD, items: function () { return F && F.tabs ? [].slice.call(document.querySelectorAll('.tab-pane ' + F.items)) : items; }, answered: answered }); }   // Send my work lists skipped problems (score-send.js)
     if (!F) return false;
     if (!top) build();
-    idx = 0; render(false);
+    idx = 0;
+    if (!start.hashed) {   // a link like page.html#s3p1 opens on that problem (Nov 13, 2026: Unit 5 Targeted Practice Problems 5.1–5.4)
+      start.hashed = true; var hid = location.hash.slice(1), ht = hid && document.getElementById(hid);
+      if (ht) for (var hk = 0; hk < items.length; hk++) if (items[hk] === ht || items[hk].contains(ht)) { idx = hk; break; }
+    }
+    render(false);
     if (F.tabs && !start.tabbed) {          // tabbed pages: start over on the tab the student picks
       start.tabbed = true;
       [].forEach.call(document.querySelectorAll(F.tabs), function (t) {

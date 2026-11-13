@@ -15,7 +15,7 @@
 
   var CSS = [
     'body.paper{background:#fff!important}',
-    'body.paper #site-bar,body.paper #scoresend,body.paper .back-link,body.paper .topic-nav,body.paper .reveal-all,body.paper .sa-btn,',
+    'body.paper #site-bar,body.paper #side-nav,body.paper .sv-bar,body.paper #scoresend,body.paper .back-link,body.paper .topic-nav,body.paper .reveal-all,body.paper .sa-btn,',
     'body.paper .match-reset,body.paper .vw-btns,body.paper .vw-show,body.paper .val-chk,body.paper .chk-fb,body.paper .pp-hide,body.paper .match-status{display:none!important}',
     'body.paper .topic{box-shadow:none!important;border:1.5px solid #B8C0CF!important;break-inside:auto}',
     'body.paper .chk,body.paper .sa,body.paper .vw,body.paper .pp-block,body.paper table,body.paper .eqfig,body.paper .key,body.paper .note{break-inside:avoid}',
