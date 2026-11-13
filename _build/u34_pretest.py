@@ -245,7 +245,7 @@ var rs=document.getElementById('reset');if(rs)rs.addEventListener('click',functi
 })();
 """
             h = open(out).read()
-            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="tap-answers.js?v=20261112b"></script>\n<script src="pretest-tap.js?v=20261112c"></script>\n<script src="step-work.js?v=20261112r"></script><script src="one-at-a-time.js?v=20261112b"></script>\n'
+            tag = '<script src="step-solver.js"></script><script src="ineq-keys.js"></script><script>' + js.replace('__D__', json.dumps(data, ensure_ascii=False)) + '</script>\n<script src="tap-answers.js?v=20261112b"></script>\n<script src="pretest-tap.js?v=20261112c"></script>\n<script src="step-work.js?v=20261113a"></script><script src="one-at-a-time.js?v=20261112b"></script>\n'
             i = h.rindex('</body>'); h = h[:i] + tag + h[i:]
             open(out, 'w').write(h)
         print('built', out)

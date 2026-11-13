@@ -39,6 +39,8 @@ D2. Nothing overlaps, nothing is cut off, no sideways scrolling on a 1366-wide l
 D3. Figures match the numbers (angles drawn to scale, acute looks acute).
 D4. No page errors in the browser console.
 D5. No emoji in headings (site look).
+D6. The step-by-step tool never jumps or centers the page (Nov 13, 2026): it scrolls only as far as needed to show the next
+    thing to use, keeping the line just worked on in view (`calm()` in step-work.js; no plain `.focus()` that scrolls).
 
 ## E. Math content
 E1. Every answer, key and explanation is mathematically correct.

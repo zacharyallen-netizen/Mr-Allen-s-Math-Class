@@ -546,7 +546,7 @@
     }
     // distributing mistakes
     var mist = [['first', 'Check your distributing. Multiply the number outside the parentheses by <b>every</b> term inside, not just the first one.'],
-                ['sign', 'Check the signs when you distribute. A negative times a negative is positive.']];
+                ['sign', 'Check the signs when you distribute. Keep each sign with its number: a positive times a negative is negative, and a negative times a negative is positive.']];
     for (var i = 0; i < mist.length; i++) {
       try {
         var w = sides(prev, v, { dist: mist[i][0] });
@@ -866,7 +866,7 @@
           var s = inp.selectionStart == null ? inp.value.length : inp.selectionStart, t = inp.selectionEnd == null ? s : inp.selectionEnd;
           if (kk[1] === 'BS') { if (s === t && s > 0) s--; inp.value = inp.value.slice(0, s) + inp.value.slice(t); inp.setSelectionRange(s, s); }
           else { inp.value = inp.value.slice(0, s) + kk[1] + inp.value.slice(t); inp.setSelectionRange(s + kk[1].length, s + kk[1].length); }
-          inp.focus(); inp.dispatchEvent(new Event('input', { bubbles: true }));
+          try { inp.focus({ preventScroll: true }); } catch (e) { inp.focus(); } inp.dispatchEvent(new Event('input', { bubbles: true }));
         });
         k.appendChild(b);
       });
@@ -1038,7 +1038,7 @@
       var legend = el('p', 'sw-legend'); legend.dataset.all = ('<span class="t-v" style="color:#1D4ED8;background:#E6EDFD;border-radius:4px;padding:0 3px">' + v + '-terms</span> &nbsp; ' + (line ? '<span style="color:#166534;background:#E3F4E8;border-radius:4px;padding:0 3px">x-terms</span> &nbsp; ' : '') + '<span style="color:#7E22A8;background:#F4E8FA;border-radius:4px;padding:0 3px">numbers</span> &nbsp; <span style="color:#7A5300;background:#FFE58A;border-radius:4px;padding:0 3px">parentheses</span> ');
       box.appendChild(legend);
       var work = el('div'); box.appendChild(work);
-      drawTrail(); step();
+      var stepped = !!keepSetup; drawTrail(); step();
 
       function cur() { return lines[lines.length - 1].e; }
       function drawTrail() {   // every line lines up on the sign; a move sits under the like terms it changes
@@ -1090,6 +1090,7 @@
         var fb = el('div', 'sw-fb'); fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); work.appendChild(fb);
         var undoRow = el('div', 'sw-acts'); work.appendChild(undoRow);
         if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); undoRow.appendChild(u); }
+        if (lines.length > 1 || stepped) calm(mv, lastLine(trail)); stepped = true;
 
         function pick(m) {
           move = m; amount = null; fb.className = 'sw-fb'; fb.innerHTML = '';
@@ -1151,7 +1152,7 @@
             amtRow.appendChild(keypad(a, { amountOnly: true }));
             var run = function () { showMove(m, a.value); };
             show.addEventListener('click', run); a.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); run(); } });
-            a.focus();
+            calm(amtRow, lastLine(trail), a);
           }
         }
         function showMove(m, raw) {
@@ -1215,9 +1216,9 @@
           lab.appendChild(inp); write.appendChild(lab); write.appendChild(keypad(inp));
           var pv = el('div', 'sw-prev'); write.appendChild(pv); preview(inp, pv);
           var acts = el('div', 'sw-acts'), go = btn('Check this line', 'go'); acts.appendChild(go); write.appendChild(acts);
-          var check = function () { checkLine(inp.value); };
+          var check = function () { checkLine(inp.value); if (write.isConnected && fb.innerHTML) calm(fb, inp); };
           go.addEventListener('click', check); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
-          inp.focus();
+          calm(write, vis.hidden ? lastLine(trail) : vis, inp);
         }
         function checkLine(raw) {
           var n, exact = true;
@@ -1601,6 +1602,7 @@
         });
       });
       work.appendChild(mv); work.appendChild(vis); work.appendChild(write); work.appendChild(fb);
+      if (lines.length > 1) calm(mv, lastLine(trail));
       if (cfg.sci) work.appendChild(el('p', 'sw-note', 'To type ×, use * or x. To type an exponent, use ^. Example: 6*10^8 means 6 × 10<sup>8</sup>.'));
       if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'), ur = el('div', 'sw-acts'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u); work.appendChild(ur); }
       if (lines.length === 1 && simp.ok) { fb.className = 'sw-fb tip'; fb.innerHTML = 'This is already simplified. Type it in the answer box.'; }
@@ -1610,7 +1612,7 @@
         lab.appendChild(inp); write.appendChild(lab);
         var k = el('div', 'sw-keys'); [['xⁿ', '^'], ['(', '('], [')', ')'], ['/', '/'], ['×', '*'], ['−', '-'], ['⌫', 'BS']].forEach(function (kk) {
           var b2 = btn(kk[0]); b2.setAttribute('aria-label', kk[1] === 'BS' ? 'Erase' : 'Type ' + kk[0]); b2.addEventListener('mousedown', function (e) { e.preventDefault(); });
-          b2.addEventListener('click', function () { var s = inp.selectionStart, t = inp.selectionEnd; if (kk[1] === 'BS') { if (s === t && s > 0) s--; inp.value = inp.value.slice(0, s) + inp.value.slice(t); inp.setSelectionRange(s, s); } else { inp.value = inp.value.slice(0, s) + kk[1] + inp.value.slice(t); inp.setSelectionRange(s + kk[1].length, s + kk[1].length); } inp.focus(); inp.dispatchEvent(new Event('input', { bubbles: true })); });
+          b2.addEventListener('click', function () { var s = inp.selectionStart, t = inp.selectionEnd; if (kk[1] === 'BS') { if (s === t && s > 0) s--; inp.value = inp.value.slice(0, s) + inp.value.slice(t); inp.setSelectionRange(s, s); } else { inp.value = inp.value.slice(0, s) + kk[1] + inp.value.slice(t); inp.setSelectionRange(s + kk[1].length, s + kk[1].length); } inp.focus({ preventScroll: true }); inp.dispatchEvent(new Event('input', { bubbles: true })); });
           k.appendChild(b2);
         }); write.appendChild(k);
         var pv = el('div', 'sw-prev'); write.appendChild(pv);
@@ -1638,8 +1640,9 @@
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
           var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); }
         };
-        go.addEventListener('click', check); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
-        inp.focus();
+        var check2 = function () { check(); if (write.isConnected && fb.innerHTML) calm(fb, inp); };
+        go.addEventListener('click', check2); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check2(); } });
+        calm(write, vis.hidden ? lastLine(trail) : vis, inp);
       }
     }
     function finish(a) {
@@ -1706,7 +1709,26 @@
   function numAns(a) { var m = String(a).replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, '').replace(/[−–]/g, '-').replace(/°/g, '').replace(/^\s*[a-z]\s*=\s*/i, '').trim(); if (/^-?\d+(\.\d+)?$/.test(m)) return qdec(m.replace('-', '')).n * (m[0] === '-' ? -1 : 1) / qdec(m.replace('-', '')).d; var f = m.match(/^(-?\d+)\/(\d+)$/); return f ? { n: +f[1], d: +f[2] } : null; }
   function toQ(a) { if (a == null) return null; if (a.n != null) return Q(a.n, a.d); var s = String(a); return a < 0 ? qneg(qdec(s.slice(1))) : qdec(s); }
   // When a workspace finishes, it gets much shorter. Keep its last part on screen so the page does not seem to jump.
-  function keep(n) { try { requestAnimationFrame(function () { var r = n.getBoundingClientRect(); if (r.bottom > innerHeight || r.top < 0) n.scrollIntoView({ block: 'center' }); }); } catch (e) {} }
+  function keep(n) { calm(n, lastLine(n.parentNode && n.parentNode.parentNode && n.parentNode.parentNode.querySelector('.sw-trail'))); }
+  // CALM SCROLL (Nov 13, 2026, Zach: "the screen autoscrolls too far down and it is very easy for the student to lose where they are").
+  // Never center or jump. Scroll only as far as needed so `target` (what the student uses next) is fully on screen, and,
+  // if it fits, keep `anchor` (the line they just worked on) on screen too. Focus never scrolls by itself.
+  function calm(target, anchor, focusEl) {
+    if (focusEl) { try { focusEl.focus({ preventScroll: true }); } catch (e) { } }
+    if (!target || typeof requestAnimationFrame === 'undefined') return;
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      try {
+        if (!target.isConnected) return;
+        var TOP = 60, BOT = innerHeight - 16, r = target.getBoundingClientRect(), d = 0;
+        if (r.bottom > BOT) d = r.bottom - BOT;
+        if (anchor && anchor.isConnected) { var a = anchor.getBoundingClientRect(); if (a.height && d > a.top - TOP) d = Math.max(0, a.top - TOP); }
+        if (r.top - d < TOP) d = r.top - TOP;                       // the top of what they use next always stays on screen
+        if (d > 0 && r.bottom - d > BOT && r.height > BOT - TOP) d = r.top - TOP;
+        if (Math.abs(d) > 3) window.scrollBy({ top: d, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      } catch (e) { }
+    }); });
+  }
+  function lastLine(trail) { if (!trail) return null; var n = trail.querySelectorAll('.sw-n'); return n.length ? n[n.length - 1] : (trail.lastElementChild || trail); }
   function fillBox(inp, text) { inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {} inp.dispatchEvent(new Event('input', { bubbles: true })); inp.focus({ preventScroll: true }); try { inp.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); } catch (e) { inp.focus(); } }
 
   function autoPractice() {

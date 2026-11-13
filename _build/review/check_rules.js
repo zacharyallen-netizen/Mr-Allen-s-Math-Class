@@ -155,5 +155,13 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/MINI/.test(rd('grade8/drift.html'))) fail('G4', 'grade8/drift.html', 'missing the small player (?mini=1)');
 }
 
+/* D6: the step tool scrolls calmly (no centering, no focus jumps). */
+{
+  const t = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
+  if (!/function calm\(target, anchor, focusEl\)/.test(t)) fail('D6', 'grade8/step-work.js', 'missing calm() scrolling');
+  const bad = (t.replace(/catch \(e\) \{ inp\.focus\(\); \}/g, '').match(/\b(?:inp|a)\.focus\(\)/g) || []).length;
+  if (bad) fail('D6', 'grade8/step-work.js', bad + ' plain .focus() call(s) that can jump the page (use calm() or preventScroll)');
+}
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');
