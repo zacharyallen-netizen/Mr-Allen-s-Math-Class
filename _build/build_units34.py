@@ -1,5 +1,7 @@
 """Build grade8/units3-4.html, the combined Units 3–4 page (2026-27: Units 3 and 4 are taught together).
-It reuses the cards on unit3.html and unit4.html, so rerun this after either unit page changes:
+Nov 13, 2026 (Zach): this page now holds ONLY the Units 3–4 Pre-Test and the Units 3–4 Tutorial (the shared
+"Units 3–4" section of unit3.html). Everything else stays on the separate Unit 3 and Unit 4 pages.
+Rerun after unit3.html changes:
     python3 _build/build_units34.py"""
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -29,20 +31,12 @@ def unit(u):
 i3, sh3, own3 = unit(3)
 i4, sh4, own4 = unit(4)
 shared = (sh3 or sh4)[0]
-shared = re.sub(r'<div class="section-label"[^>]*>[^<]*</div>', '<div class="section-label" id="pretest">Units 3–4 Pre-Test &amp; Review</div>', shared, count=1)
+shared = re.sub(r'<div class="section-label"[^>]*>[^<]*</div>', '<div class="section-label" id="pretest">Units 3–4 Pre-Test &amp; Tutorial</div>', shared, count=1)
 
 head = i3['head']
-head = head.replace('</head>', SH_CSS + '\n</head>', 1)
 head = re.sub(r'<title>[^<]*</title>', "<title>Units 3–4 — Equations &amp; Angles | Mr. Allen's 8th Grade Math</title>", head)
 nav = ' '.join(f'<a class="nb" href="unit{n}.html">U{n}</a>' for n in range(1, 10)).replace(
     '<a class="nb" href="unit3.html">U3</a>', '<a class="nb active" href="units3-4.html" aria-current="page">U3–4</a> <a class="nb" href="unit3.html">U3</a>')
-jump = ('<div class="topic-nav" aria-label="On this page"><a class="nb" href="#start-here">Start here</a> '
-        '<a class="nb" href="#unit3">Unit 3 · Equations</a> <a class="nb" href="#unit4">Unit 4 · Angles</a> <a class="nb" href="#pretest">Pre-Test</a></div>')
-start_here = sh_strip([('u3-notes', 'Unit 3: Notes & Practice', 'Equations. Notes first, then Practice 1 and 2.'),
-                       ('u4-notes', 'Unit 4: Notes & Practice', 'Angles. Notes first, then Practice 1 and 2.'),
-                       ('u3-homework', 'Homework', 'Unit 3 homework, then Unit 4 homework.'),
-                       ('pretest', 'Units 3–4 Pre-Test', 'Check yourself at the end, before the unit test.')]).replace('<section class="start-here"', '<section class="start-here" id="start-here"')
-
 def block(u, info, own):
     return (f'<h2 id="unit{u}" class="u34-h">{info["title"]}</h2>\n'
             f'<p class="u34-sub">{info["dates"]} · Standards: {info["stds"]} · <a href="unit{u}.html">Open the full Unit {u} page →</a></p>\n'
@@ -65,16 +59,12 @@ page = head + f'''<div class="unit-bg" aria-hidden="true" style="background-imag
   <p class="stds">Standards: {i3["stds"]} · {i4["stds"]}</p>
 </div>
 <div class="topic-nav">{nav}</div>
-{jump}
-<div class="intro"><p>This year we learn Unit 3 (linear equations) and Unit 4 (angles) together. Work through Unit 3, then Unit 4.
-Finish with the Units 3–4 pre-test and review. Each unit still has its own full page.</p></div>
-{start_here}{block(3, i3, own3)}
-{block(4, i4, own4)}
-<h2 class="u34-h">Units 3–4 Pre-Test &amp; Review</h2>
+<div class="intro"><p>This year we learn Unit 3 (equations) and Unit 4 (angles) together. Each unit has its own page:
+<a href="unit3.html">Unit 3</a> and <a href="unit4.html">Unit 4</a>. When you finish both, come back here for the
+Units 3–4 Pre-Test and the Units 3–4 Tutorial.</p></div>
 {shared}
 </div>
 <div class="site-footer">© Mr. Allen's Math Class · 8th Grade Math</div>
-<script src="unit-next.js?v=20261111a"></script>
 </body>
 </html>
 '''

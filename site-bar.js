@@ -27,6 +27,7 @@
 
   var me = document.currentScript;
   if (!me || document.getElementById("site-bar")) return;
+  if (/[?&]mini=1/.test(location.search)) return;                 // the small pop-out music player has no top bar
   var root = me.src.replace(/site-bar\.js(\?.*)?$/, "");          // site root URL
   var here = location.href.split("#")[0].split("?")[0];
   var rel  = here.indexOf(root) === 0 ? here.slice(root.length) : "";
@@ -112,6 +113,10 @@
     ".mob .ddm{position:static;box-shadow:none;background:rgba(255,255,255,.06);margin:6px 0 8px;min-width:0}" +
     ".mob nav .ddm a{color:#fff;font-size:15.5px;border-bottom:0}.mob nav .ddm a[aria-current]{background:rgba(255,255,255,.1);color:#fff}.mob nav .ddm a:hover{background:rgba(255,255,255,.1);color:#fff}.mob .ddm small{color:#AEB7C8}" +
     ".mob nav a[aria-current]{border-bottom-color:rgba(255,255,255,.1);box-shadow:inset 3px 0 0 #FFC107;padding-left:12px}" +
+    // ♪ Music (Nov 13, 2026): opens the small pop-out music player (grade8/drift.html?mini=1); it keeps playing from page to page.
+    ".mus{flex:none;display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:999px;height:34px;padding:0 13px;font:600 13.5px Inter,system-ui,sans-serif;cursor:pointer;white-space:nowrap}" +
+    ".mus:hover{border-color:#FFC107}.mus.on{border-color:#FFC107;color:#FFC107}.mus i{font-style:normal;font-size:15px}" +
+    ".t2 .mus b,.mob .mus b{display:none}.t2 .mus,.mob .mus{padding:0 11px}" +
     "@media (max-width:380px){.mark span{display:none}}" +
     "@media print{.bar{display:none}}";
 
@@ -132,6 +137,7 @@
       '<a class="mark" href="' + root + 'index.html"><b>Mr. Allen</b><span>Mathematics</span></a>' +
       '<button type="button" class="menu" aria-expanded="false" aria-controls="sb-nav">Menu</button>' +
       '<nav id="sb-nav" aria-label="Site">' + nav + "</nav>" +
+      '<button type="button" class="mus" title="Music player: opens a small window that keeps playing while you work" aria-label="Music player (opens a small window)"><i aria-hidden="true">♪</i><b>Music</b></button>' +
     "</div></div>";
 
   var bar = sr.querySelector(".bar"), btn = sr.querySelector(".menu");
@@ -143,6 +149,22 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && bar.classList.contains("open")) btn.click();
   });
+
+  // ♪ Music: open (or bring back) the small player window. If it is already open, do not reload it (that would stop the music).
+  var mus = sr.querySelector(".mus");
+  mus.addEventListener("click", function () {
+    var url = root + "grade8/drift.html?mini=1", w = null;
+    try { w = window.open("", "mathmusic", "popup,width=420,height=700"); } catch (e) {}
+    if (!w) { location.href = root + "grade8/drift.html"; return; }   // pop-ups blocked: open the full music page instead
+    var fresh = true; try { fresh = !w.location.href || w.location.href === "about:blank"; } catch (e) { fresh = false; }
+    if (fresh) w.location.href = url;
+    w.focus();
+  });
+  function musState() {
+    var on = false; try { on = Date.now() - Number(localStorage.getItem("mm-beat") || 0) < 4000; } catch (e) {}
+    mus.classList.toggle("on", on); mus.querySelector("b").textContent = on ? "Playing" : "Music";
+  }
+  musState(); setInterval(musState, 2500);
 
   // Fit the links: try full size, then tighter, then tightest; if they still do not fit, use the Menu button.
   var inEl = sr.querySelector(".in");

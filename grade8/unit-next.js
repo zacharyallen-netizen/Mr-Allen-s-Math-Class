@@ -1,4 +1,7 @@
-/* UNIT NEXT (Nov 10, 2026, Mr. Allen's request) — on unit1..9.html and units3-4.html:
+/* UNIT NEXT — on unit1..9.html.
+   Nov 13, 2026 (Zach): the big gold "Start here / Keep going / Next" button and the fold were REMOVED; the
+   "Start here: do these in order" strip at the top stays, and every item is shown. Only the Done / Started checks remain.
+   Old notes (Nov 10):
    one big "Keep going" button under the Start-here strip, and everything else folded under "All of Unit N".
    The button uses this device's progress (localStorage "fx-prog", written by student-fx.js on each student page):
      - a page opened but not finished  -> "Keep going: <that page>" (the most recent one)
@@ -51,37 +54,10 @@
       'details.un-all[open]>summary{margin-bottom:6px}@media print{.un-next,.un-note,details.un-all>summary{display:none}}';
     document.head.appendChild(st);
 
-    /* the fold */
-    var det = document.createElement('details'); det.className = 'un-all';
-    var sum = document.createElement('summary'); sum.textContent = 'All of ' + uname + ': notes, practice, homework, EOG, games and pre-test'; det.appendChild(sum);
-    var moving = [], started = false;
-    [].forEach.call(holder.children, function (el) { if (el === labels[0]) started = true; if (started && !/^(SCRIPT|STYLE|FOOTER)$/.test(el.tagName) && !el.classList.contains('site-footer')) moving.push(el); });
-    holder.insertBefore(det, labels[0]); moving.forEach(function (el) { det.appendChild(el); });
-    var OK = 'un-open:' + location.pathname; if (ls(OK) === '1' || location.hash) det.open = true;
-    det.addEventListener('toggle', function () { ls(OK, det.open ? '1' : '0'); });
-    window.addEventListener('beforeprint', function () { det.open = true; });
-
     /* checkmarks (Nov 11, 2026): finished items show "\u2713 Done", opened-but-not-finished items show "Started"; the fold shows the count */
     var nd = 0;
     items.forEach(function (it) { var p = prog[it.key]; if (!p || !(p.d || p.s)) return; if (p.d) nd++;
       var c = document.createElement('span'); c.className = 'un-ck' + (p.d ? '' : ' st'); c.textContent = p.d ? '\u2713 Done' : 'Started'; (it.ft || it.a).appendChild(c); });
-    if (nd) sum.textContent += ' \u00b7 ' + nd + ' of ' + items.length + ' done';
-
-    /* the button */
-    if (pick) {
-      var a = document.createElement('a'); a.className = 'un-next'; a.href = pick.href;
-      a.innerHTML = '<span><span class="un-k"></span><span class="un-t"></span></span><span class="un-go" aria-hidden="true">→</span>';
-      a.querySelector('.un-k').textContent = kind; a.querySelector('.un-t').textContent = pick.title;
-      var note = document.createElement('p'); note.className = 'un-note'; note.textContent = 'Your teacher may give you a different step. Everything for ' + uname + ' is in the list below.';
-      var sh = holder.querySelector('.start-here'), at = sh && sh.parentNode === holder ? sh : det;
-      holder.insertBefore(a, at); holder.insertBefore(note, at);
-    }
-
-    /* Start-here steps (and any #section link) open the fold first */
-    document.addEventListener('click', function (e) {
-      var l = e.target.closest && e.target.closest('a[href^="#"]'); if (!l) return; var t = document.getElementById(l.getAttribute('href').slice(1));
-      if (t && det.contains(t)) { det.open = true; e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); history.replaceState(null, '', l.getAttribute('href')); }
-    });
     if (location.hash) { var t0 = document.getElementById(location.hash.slice(1)); if (t0) setTimeout(function () { t0.scrollIntoView(); }, 50); }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();

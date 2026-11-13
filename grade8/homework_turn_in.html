@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Homework — Mr. Allen's Math Class</title>
+<title>Targeted Practice — Mr. Allen's Math Class</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../site.css">
 <style>
@@ -84,10 +84,10 @@
 <script src="../site-bar.js"></script>
 <div class="page-wrap">
 <a href="index.html" class="back-link" id="back">← Back to 8th Grade Math</a>
-<div class="hero"><h1 id="ttl">Homework</h1><p id="sub">Do your homework and turn it in, all on this page.</p></div>
+<div class="hero"><h1 id="ttl">Targeted Practice</h1><p id="sub">Do your Targeted Practice and turn it in, all on this page.</p></div>
 
 <div id="pickMode" hidden>
-  <div class="card pick"><label>Choose your homework<select id="pickSel"></select></label></div>
+  <div class="card pick"><label>Choose your Targeted Practice<select id="pickSel"></select></label></div>
 </div>
 
 <div id="doMode" hidden>
@@ -104,7 +104,7 @@
     </div>
     <p class="saved" id="savedNote" hidden>✓ Remembered from last time. Change it if it isn't you.</p>
   </div>
-  <div class="links"><a id="pdf" href="#" target="_blank" rel="noopener">🖨️ Print this homework (PDF)</a><a href="homework_turn_in.html">Pick a different homework</a></div>
+  <div class="links"><a id="pdf" href="#" target="_blank" rel="noopener">🖨️ Print this Targeted Practice (PDF)</a><a href="homework_turn_in.html">Pick a different one</a></div>
   <div id="pages"></div>
   <div class="done" id="done" role="status">
     <div class="big">✓ Mr. Allen got it!</div>
@@ -135,7 +135,7 @@
   var h = HW.filter(function(x){ return x.id === want; })[0];
 
   if (!h) {                                   // no assignment chosen: show the list
-    $('pickMode').hidden = false; $('sub').textContent = 'Choose your homework to open it.';
+    $('pickMode').hidden = false; $('sub').textContent = 'Choose one to open it.';
     var sel = $('pickSel'), groups = {};
     sel.innerHTML = '<option value="">Choose…</option>';
     HW.forEach(function(x){
@@ -149,8 +149,8 @@
   }
 
   // ---- one assignment ----
-  document.title = 'Homework ' + h.id + ' — ' + h.title;
-  $('ttl').textContent = 'Homework ' + h.id; $('sub').textContent = h.title;
+  document.title = 'Targeted Practice ' + h.id + ' — ' + h.title;
+  $('ttl').textContent = 'Targeted Practice ' + h.id; $('sub').textContent = h.title;
   var back = h.unit === 'E' ? '8th_grade_eog_hub.html' : 'unit' + h.unit + '.html';
   $('back').href = back; $('back').textContent = h.unit === 'E' ? '← Back to EOG Hub' : '← Back to Unit ' + h.unit;
   $('pdf').href = h.file; $('doMode').hidden = false;
@@ -163,15 +163,15 @@
       var c = crops[p[0]], w = c[3] - c[1], ht = c[4] - c[2], src = base + c[0] + '.jpg';
       out += '<section class="pg prob"><div class="pgnum">Problem ' + p[0] + ' · Score ' + p[2] + '</div>' +
         (w > 0.6 ? '<p class="zoomtip">Words too small? Tap the problem to make it bigger.</p>' : '') +
-        '<div class="cropwrap"><div class="crop' + (w > 0.6 ? ' wide' : '') + '" style="--nw:' + (w * 1020).toFixed(0) + ';--ar:' + (w * 1020 / (ht * 1320)).toFixed(4) + ';aspect-ratio:' + (w * 1020).toFixed(1) + '/' + (ht * 1320).toFixed(1) + '"><img src="' + src + '" alt="Homework ' + h.id + ', problem ' + p[0] + '"' + (i ? ' loading="lazy"' : '') +
+        '<div class="cropwrap"><div class="crop' + (w > 0.6 ? ' wide' : '') + '" style="--nw:' + (w * 1020).toFixed(0) + ';--ar:' + (w * 1020 / (ht * 1320)).toFixed(4) + ';aspect-ratio:' + (w * 1020).toFixed(1) + '/' + (ht * 1320).toFixed(1) + '"><img src="' + src + '" alt="Targeted Practice ' + h.id + ', problem ' + p[0] + '"' + (i ? ' loading="lazy"' : '') +
         ' style="width:' + (100 / w).toFixed(3) + '%;left:' + (-100 * c[1] / w).toFixed(3) + '%;top:' + (-100 * c[2] / ht).toFixed(3) + '%"></div></div>' +
-        '<details class="whole"><summary>See the whole page</summary><img data-src="' + src + '" alt="Homework ' + h.id + ', page ' + c[0] + '" width="1020" height="1320"></details>' +
+        '<details class="whole"><summary>See the whole page</summary><img data-src="' + src + '" alt="Targeted Practice ' + h.id + ', page ' + c[0] + '" width="1020" height="1320"></details>' +
         '<div class="ans"' + ineq + '><label>Your answer<input id="a' + p[0] + '" type="text" autocomplete="off" aria-label="Answer to problem ' + p[0] + '"></label></div></section>';
     });
   } else for (var pnum = 1; pnum <= h.pages; pnum++) {
     var probs = h.p.filter(function(p){ return p[1] === pnum; });
     out += '<section class="pg"><div class="pgnum">Page ' + pnum + ' of ' + h.pages + '</div>' +
-      '<img src="' + base + pnum + '.jpg" alt="Homework ' + h.id + ', page ' + pnum + '" width="1020" height="1320"' + (pnum > 1 ? ' loading="lazy"' : '') + '>';
+      '<img src="' + base + pnum + '.jpg" alt="Targeted Practice ' + h.id + ', page ' + pnum + '" width="1020" height="1320"' + (pnum > 1 ? ' loading="lazy"' : '') + '>';
     if (probs.length) {
       out += '<div class="ans"' + ineq + '><h3>Answers for page ' + pnum + '</h3>';
       probs.forEach(function(p){
@@ -282,7 +282,7 @@
     topBox = document.createElement('details'); topBox.id = 'hwTop'; topBox.appendChild(document.createElement('summary'));
     var dm = $('doMode'); dm.insertBefore(topBox, dm.firstChild);
     [dm.querySelector('.hw-steps'), dm.querySelector('.card'), dm.querySelector('.links')].forEach(function(el){ if (el) topBox.appendChild(el); });
-    var go = document.createElement('button'); go.type = 'button'; go.className = 'go'; go.textContent = 'Start my homework →'; topBox.insertBefore(go, topBox.querySelector('.links'));
+    var go = document.createElement('button'); go.type = 'button'; go.className = 'go'; go.textContent = 'Start →'; topBox.insertBefore(go, topBox.querySelector('.links'));
     go.addEventListener('click', function(){
       var name = $('nm').value.replace(/\s+/g, ' ').trim();
       if (name.length < 3 || name.indexOf(' ') < 0) { $('nm').focus(); $('nm').classList.add('blank'); return; }
@@ -351,7 +351,7 @@
     .then(function(res){
       b.disabled = false; confirmBlank = false; b.textContent = 'Send to Mr. Allen';
       if (res && res.ok) {
-        $('doneTxt').textContent = res.name + ', your Homework ' + h.id + ' was sent (' + (h.p.length - blanks.length) + ' of ' + h.p.length + ' answered).';
+        $('doneTxt').textContent = res.name + ', your Targeted Practice ' + h.id + ' was sent (' + (h.p.length - blanks.length) + ' of ' + h.p.length + ' answered).';
         // which ones to fix (Nov 11, 2026, Mr. Allen: "it does not tell me which one to correct"): name the checked answers that are
         // not right yet and give one button per problem that jumps straight to it. No answers are shown.
         var right = 0, chk = 0, mine = 0; lastMiss = [];

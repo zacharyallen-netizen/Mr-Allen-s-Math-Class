@@ -137,5 +137,23 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   }
 }
 
+/* G1–G4 (Nov 13, 2026): Targeted Practice label, no big gold button, Units 3–4 page = pre-test + tutorial, ♪ Music button. */
+{
+  const rd = f => fs.readFileSync(path.join(ROOT, f), "utf8");
+  const units = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => 'grade8/unit' + n + '.html').concat(['grade8/units3-4.html', 'grade8/8th_grade_eog_hub.html']);
+  for (const f of units) { const t = rd(f).replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
+    if (/\bHomework\b/.test(t)) fail('G1', f, 'still says "Homework" (use "Targeted Practice")'); }
+  const hw = rd('grade8/homework_turn_in.html');
+  if (/textContent = 'Homework '|<h1 id="ttl">Homework</.test(hw)) fail('G1', 'grade8/homework_turn_in.html', 'title still says "Homework"');
+  if (/un-next'|"un-next"|className = 'un-next'/.test(rd('grade8/unit-next.js').replace(/st\.textContent[^;]*;/, ''))) fail('G2', 'grade8/unit-next.js', 'still draws the big gold button');
+  if (/details\.className = 'un-all'|createElement\('details'\)/.test(rd('grade8/unit-next.js'))) fail('G2', 'grade8/unit-next.js', 'still folds the unit page');
+  const u34 = rd('grade8/units3-4.html'), links = (u34.match(/href="([^"#]+)" class="feature-card"/g) || []).map(x => x.slice(6, x.indexOf("\"", 6)));
+  if (links.join() !== 'units3-4-pretest.html,units3-4-review-tutorial.html') fail('G3', 'grade8/units3-4.html', 'should hold only the Units 3–4 pre-test and tutorial, has: ' + links.join(', '));
+  if (!/homework_turn_in\.html\?hw=3\.1/.test(rd('grade8/unit3.html')) || !/homework_turn_in\.html\?hw=4\.1/.test(rd('grade8/unit4.html'))) fail('G3', 'grade8/unit3.html / unit4.html', 'Unit 3 / Unit 4 pages must keep their own items');
+  const sb = rd('site-bar.js');
+  if (!/class="mus"/.test(sb) || !/drift\.html\?mini=1/.test(sb)) fail('G4', 'site-bar.js', 'missing the ♪ Music pop-out button');
+  if (!/MINI/.test(rd('grade8/drift.html'))) fail('G4', 'grade8/drift.html', 'missing the small player (?mini=1)');
+}
+
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
 console.log('All rule checks passed.');

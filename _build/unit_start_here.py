@@ -25,11 +25,11 @@ CSS = '''<style id="start-here-css">
 
 DEFAULT = [('notes', 'Notes', 'Learn it with the interactive notes.'),
            ('practice', 'Practice', 'Practice 1, then Practice 2.'),
-           ('homework', 'Homework', 'Do each homework after its lesson.'),
+           ('homework', 'Targeted Practice', 'Do each one after its lesson.'),
            ('pretest', 'Pre-Test', 'Check yourself at the end, before the unit test.')]
 UNIT2 = [('part1', 'Exponent Rules', 'Notes, then practice.'),
          ('part2', 'Scientific Notation', 'Notes, then practice.'),
-         ('homework', 'Homework', 'Do each homework after its lesson.'),
+         ('homework', 'Targeted Practice', 'Do each one after its lesson.'),
          ('pretest', 'Pre-Tests', 'Check yourself at the end, before the unit test.')]
 
 PRACTICE_DESC = {6: 'Practice, then More Practice & Review.', 9: 'Check each answer as you go.'}   # Nov 10, 2026

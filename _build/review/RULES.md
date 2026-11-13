@@ -50,3 +50,10 @@ E5. Printed PDFs and answer keys match the interactive page (same problems, same
 ## F. Sending work
 F1. "Send my work" / homework Send still sends name, answers and right/wrong to the Sheet.
 F2. Student names never appear in the repo.
+
+## G. Names and layout decisions (Nov 13, 2026)
+G1. Homework is called **"Targeted Practice"** everywhere students see it ("Targeted Practice 3.1 — One- and Two-Step Equations").
+    The numbers match the printed sheets. Data sent to the Sheet still says kind "homework" (Sheet tabs unchanged).
+G2. Unit pages have NO big gold "Start here / Keep going / Next" button and no fold; the "Start here: do these in order" strip stays.
+G3. Units 3 and 4 keep their own pages. The combined Units 3–4 page holds ONLY the Units 3–4 Pre-Test and the Units 3–4 Tutorial.
+G4. Every page with the top bar has the ♪ Music button (top right); it opens the small pop-out player (drift.html?mini=1).
