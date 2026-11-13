@@ -678,6 +678,9 @@
     '.sw .t-c .sw-fr>span{text-decoration:line-through;text-decoration-color:#B42318;text-decoration-thickness:2.5px}' +
     '.sw-rel{color:#1E2D4F}' +
     '.sw-sqrt>span{border-top:1.6px solid currentColor;padding:0 2px;margin-left:1px}' +
+    '.sw-ans-hid{display:none!important}.sw-prev:empty{display:none}.sw-trail:not(.sw-all) .sw-old{display:none!important}' +
+    '.sw-allbtn{display:block;background:none;border:0;padding:2px 0 6px;font:600 13.5px Inter,sans-serif;color:#1E2D4F;text-decoration:underline;cursor:pointer}' +
+    '.sw-more{margin-top:4px;font-weight:400}.sw-more>summary{cursor:pointer;font:600 13.5px Inter,sans-serif;color:#1E2D4F;text-decoration:underline}' +
     '.sw-legend{font:500 13px Inter,sans-serif;color:#5B6475;margin-top:4px}' +
     '.sw-wide{grid-column:1/-1}.sw-host .sw-open{width:100%}' +
     '@media (max-width:480px){.sw-ln,.sw-grid{font-size:18px}.sw{padding:10px}}' +
@@ -839,7 +842,7 @@
     var built = false;
     open.addEventListener('click', function () {
       box.hidden = !box.hidden; open.setAttribute('aria-expanded', String(!box.hidden));
-      open.textContent = box.hidden ? (cfg.label || 'Work it out step by step') : 'Hide step-by-step work';
+      open.textContent = box.hidden ? (cfg.label || 'Work it out step by step') : 'Hide step-by-step work'; hideAns(host, !box.hidden);
       if (!built) { built = true; var go0 = function () { cfg.setup ? setupStage() : solveStage(original); }; line ? withX(LX[0], go0) : go0(); }
     });
 
@@ -875,7 +878,7 @@
     function preview(inp, out) {
       inp.addEventListener('input', function () {
         if (!inp.value.trim()) { out.innerHTML = ''; return; }
-        try { var e = parseEq(inp.value), vv = cfg.setup && cfg.setup.any && !inp.readOnly && e.vars.length === 1 ? e.vars[0] : v; sides(e, vv); out.innerHTML = 'I read this as: <span class="sw-ln">' + eqHtml(e) + '</span>'; }
+        try { var e = parseEq(inp.value), vv = cfg.setup && cfg.setup.any && !inp.readOnly && e.vars.length === 1 ? e.vars[0] : v; sides(e, vv); out.innerHTML = ''; }
         catch (x) { out.innerHTML = '<span style="color:#9A3412">' + readErr(x, cfg.setup && cfg.setup.any ? 'the same letter' : v) + '</span>'; }
       });
     }
@@ -1054,6 +1057,7 @@
           if (i < lines.length - 1) g += '<span class="sw-row-end"></span>';
         });
         var li = el('li'); li.className = 'sw-tgw'; li.innerHTML = '<div class="sw-tg">' + g + '</div>'; trail.appendChild(li);
+        shortTrail(trail, li.firstChild, lines.length);
       }
       function drawLegend(e) {   // a small color key with only the kinds of terms on this line
         var has = {}; [e.L, e.R].forEach(function (sd) { terms(sd).forEach(function (t) { has[kindOf(t, v)] = 1; }); });
@@ -1062,7 +1066,7 @@
         if (has.pterm) out.push(chip('t-x', '#166534', '#E3F4E8', 'x-terms'));
         if (has.num) out.push(chip('t-k', '#7E22A8', '#F4E8FA', 'numbers'));
         if (has.paren) out.push(chip('t-p', '#7A5300', '#FFE58A', 'parentheses'));
-        legend.innerHTML = out.length > 1 ? 'Colors: ' + out.join(' &nbsp;') : '';
+        legend.innerHTML = ''; legend.hidden = true; void out;   // (3) no color key (Nov 13, 2026): the colors still show on the terms
       }
       function colorLine(e) { return sideHtml(e.L, v, { colors: true }) + ' <span class="sw-rel">' + relHtml(e.rel) + '</span> ' + sideHtml(e.R, v, { colors: true }); }
 
@@ -1090,7 +1094,7 @@
         var fb = el('div', 'sw-fb'); fb.setAttribute('role', 'status'); fb.setAttribute('aria-live', 'polite'); work.appendChild(fb);
         var undoRow = el('div', 'sw-acts'); work.appendChild(undoRow);
         if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'); u.addEventListener('click', function () { lines.pop(); drawTrail(); step(); }); undoRow.appendChild(u); }
-        if (lines.length > 1 || stepped) calm(mv, lastLine(trail)); stepped = true;
+        if (lines.length > 1 || stepped) calmScroll(mv, lastLine(trail)); stepped = true;
 
         function pick(m) {
           move = m; amount = null; fb.className = 'sw-fb'; fb.innerHTML = '';
@@ -1152,7 +1156,7 @@
             amtRow.appendChild(keypad(a, { amountOnly: true }));
             var run = function () { showMove(m, a.value); };
             show.addEventListener('click', run); a.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); run(); } });
-            calm(amtRow, lastLine(trail), a);
+            calmScroll(amtRow, lastLine(trail), a);
           }
         }
         function showMove(m, raw) {
@@ -1216,9 +1220,9 @@
           lab.appendChild(inp); write.appendChild(lab); write.appendChild(keypad(inp));
           var pv = el('div', 'sw-prev'); write.appendChild(pv); preview(inp, pv);
           var acts = el('div', 'sw-acts'), go = btn('Check this line', 'go'); acts.appendChild(go); write.appendChild(acts);
-          var check = function () { checkLine(inp.value); if (write.isConnected && fb.innerHTML) calm(fb, inp); };
+          var check = function () { checkLine(inp.value); if (write.isConnected && fb.innerHTML) calmScroll(fb, inp); };
           go.addEventListener('click', check); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check(); } });
-          calm(write, vis.hidden ? lastLine(trail) : vis, inp);
+          calmScroll(write, vis.hidden ? lastLine(trail) : vis, inp);
         }
         function checkLine(raw) {
           var n, exact = true;
@@ -1236,7 +1240,7 @@
             var pk = sameKey(prev), nk = sameKey(n), seen = wrongSeen[pk] = wrongSeen[pk] || {}, again = !!seen[nk]; seen[nk] = 1;
             var why = cmp.msg || (line && lineDiag(prev, n)) || (exact ? diagnose(prev, n, v) : 'That is not equal to the line before. Check your square root.');
             var mvN = (tried >= 2 || again) ? nextMove(prev, v, { positive: cfg.positive, line: line }) : null;
-            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + why + (mvN ? '' : tried >= 3 ? calm(lines.length) : '');
+            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + brief(why + (mvN ? '' : tried >= 3 ? calm(lines.length) : ''));
             if (mvN) {   // 2nd miss on this step (or a repeat): show the next good move, lined up on the equation
               var coach = '<div class="sw-coach"><p class="sw-coach-h">Here is a good next move:</p><p class="sw-note">' + mvN.label + '</p>';
               if (mvN.op) { try { coach += '<div class="sw-al">' + alignedEq(prev, v, false, mvN.op, true) + '</div>'; } catch (x) { } }
@@ -1568,7 +1572,7 @@
     var built = false, lines = [{ a: start, mv: null }], exSeen = {};
     open.addEventListener('click', function () {
       box.hidden = !box.hidden; open.setAttribute('aria-expanded', String(!box.hidden));
-      open.textContent = box.hidden ? 'Work it out step by step' : 'Hide step-by-step work';
+      open.textContent = box.hidden ? 'Work it out step by step' : 'Hide step-by-step work'; hideAns(host, !box.hidden);
       if (!built) { built = true; build(); }
     });
     var trail, work;
@@ -1601,7 +1605,7 @@
         });
       });
       work.appendChild(mv); work.appendChild(vis); work.appendChild(write); work.appendChild(fb);
-      if (lines.length > 1) calm(mv, lastLine(trail));
+      if (lines.length > 1) calmScroll(mv, lastLine(trail));
       if (cfg.sci) work.appendChild(el('p', 'sw-note', 'To type ×, use * or x. To type an exponent, use ^. Example: 6*10^8 means 6 × 10<sup>8</sup>.'));
       if (lines.length > 1) { var u = btn('Undo my last line', 'ghost'), ur = el('div', 'sw-acts'); u.addEventListener('click', function () { lines.pop(); draw(); step(); }); ur.appendChild(u); work.appendChild(ur); }
       if (lines.length === 1 && simp.ok) { fb.className = 'sw-fb tip'; fb.innerHTML = 'This is already simplified. Type it in the answer box.'; }
@@ -1624,7 +1628,7 @@
           if (!sameMono(mOld, mNew)) {   // no loops (review fix, Nov 12, 2026): a repeat says so; the 2nd miss lists the rules; the 3rd points to the page's help
             var key = html(t).replace(/\s+/g, ''), again = !!exSeen[key]; exSeen[key] = 1; ++tried;
             fb.className = 'sw-fb no';
-            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + exDiagnose(a, mNew) +
+            fb.innerHTML = (again ? '<b>You tried this same line before.</b> ' : 'Not quite. ') + brief(exDiagnose(a, mNew)) +
               (tried >= 2 || again ? '<div class="sw-coach"><p class="sw-coach-h">Do one rule at a time:</p><p class="sw-note">Multiply same bases → <b>add</b> the exponents. Divide → <b>subtract</b> (top − bottom). Power of a power → <b>multiply</b> the exponents. A power outside ( ) goes on <b>every</b> factor inside. Anything to the 0 power is 1. A negative exponent means <b>flip</b> it to the other side of the fraction bar.</p><p class="sw-note">Work the <b>numbers</b> first, then each letter.</p></div>' : '') +
               '';
             var shownT = tried >= 3 ? nextExprLine(mOld, plainTerm(a), cfg.sci) : null;
@@ -1639,9 +1643,9 @@
           lines.push({ a: t, mv: 'equal ✓' }); draw(); step();
           var nfb = work.querySelector('.sw-fb'); if (nfb && !exSimplest(t, cfg.sci).ok) { var w = exSimplest(t, cfg.sci).why; nfb.className = 'sw-fb ok'; nfb.innerHTML = praise() + (w ? ' Keep going: ' + w : ''); }
         };
-        var check2 = function () { check(); if (write.isConnected && fb.innerHTML) calm(fb, inp); };
+        var check2 = function () { check(); if (write.isConnected && fb.innerHTML) calmScroll(fb, inp); };
         go.addEventListener('click', check2); inp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') { ev.preventDefault(); check2(); } });
-        calm(write, vis.hidden ? lastLine(trail) : vis, inp);
+        calmScroll(write, vis.hidden ? lastLine(trail) : vis, inp);
       }
     }
     function finish(a) {
@@ -1708,11 +1712,11 @@
   function numAns(a) { var m = String(a).replace(/<span class="fr"><span>(.*?)<\/span><span>(.*?)<\/span><\/span>/g, '$1/$2').replace(/<[^>]+>/g, '').replace(/[−–]/g, '-').replace(/°/g, '').replace(/^\s*[a-z]\s*=\s*/i, '').trim(); if (/^-?\d+(\.\d+)?$/.test(m)) return qdec(m.replace('-', '')).n * (m[0] === '-' ? -1 : 1) / qdec(m.replace('-', '')).d; var f = m.match(/^(-?\d+)\/(\d+)$/); return f ? { n: +f[1], d: +f[2] } : null; }
   function toQ(a) { if (a == null) return null; if (a.n != null) return Q(a.n, a.d); var s = String(a); return a < 0 ? qneg(qdec(s.slice(1))) : qdec(s); }
   // When a workspace finishes, it gets much shorter. Keep its last part on screen so the page does not seem to jump.
-  function keep(n) { calm(n, lastLine(n.parentNode && n.parentNode.parentNode && n.parentNode.parentNode.querySelector('.sw-trail'))); }
+  function keep(n) { calmScroll(n, lastLine(n.parentNode && n.parentNode.parentNode && n.parentNode.parentNode.querySelector('.sw-trail'))); }
   // CALM SCROLL (Nov 13, 2026, Zach: "the screen autoscrolls too far down and it is very easy for the student to lose where they are").
   // Never center or jump. Scroll only as far as needed so `target` (what the student uses next) is fully on screen, and,
   // if it fits, keep `anchor` (the line they just worked on) on screen too. Focus never scrolls by itself.
-  function calm(target, anchor, focusEl) {
+  function calmScroll(target, anchor, focusEl) {
     if (focusEl) { try { focusEl.focus({ preventScroll: true }); } catch (e) { } }
     if (!target || typeof requestAnimationFrame === 'undefined') return;
     requestAnimationFrame(function () { requestAnimationFrame(function () {
@@ -1731,8 +1735,35 @@
   // Nov 13, 2026 (Zach: "remove the step that requires the student to enter the answer at the top, it is redundant"):
   // when the step-by-step work is finished, the answer goes into the problem's own answer box AND is checked right away
   // (a matching tap choice is tapped; a number box is checked with the page's own Check). The page does not scroll.
+  // (5) hide the problem's own answer box while the step-by-step work is open (Nov 13, 2026)
+  function ansRow(inp) { return inp ? (inp.closest('.pr-row, .np-row, .val-chk, .inrow, .ans') || inp.parentElement) : null; }
+  function hideAns(host, hide) { var inp = host && host.__swInp, r = ansRow(inp); if (!r || r.contains(host)) return; r.classList.toggle('sw-ans-hid', !!hide); }
+  // (4) short feedback: the first sentence names the mistake; the rest waits behind "Tell me more" (Nov 13, 2026)
+  function brief(h) {
+    h = String(h || ''); var depth = 0;
+    for (var i = 0; i < h.length - 1; i++) {
+      var c = h.charAt(i); if (c === '<') depth++; else if (c === '>') depth--;
+      else if (!depth && /[.!?]/.test(c) && /\s/.test(h.charAt(i + 1)) && !/\d/.test(h.charAt(i - 1) + '') ) {
+        var rest = h.slice(i + 1).replace(/^\s+/, '');
+        if (rest.replace(/<[^>]+>/g, '').trim().length < 3) return h;
+        return h.slice(0, i + 1) + ' <details class="sw-more"><summary>Tell me more</summary>' + rest + '</details>';
+      }
+    }
+    return h;
+  }
   var lastSubmit = '';
   function normA(t) { return String(t || '').toLowerCase().replace(/<[^>]+>/g, '').replace(/[−–]/g, '-').replace(/\s|\(|\)|°/g, '').replace(/^[a-d][.):]/, '').replace(/≤/g, '<=').replace(/≥/g, '>='); }
+  // (3) show only the last two lines of the work; "Show all my steps" opens the rest (Nov 13, 2026)
+  function shortTrail(trail, grid, n) {
+    var old = trail.querySelector(':scope > .sw-allbtn'); if (old) old.remove();
+    if (n <= 2) return;
+    var row = 0, cut = n - 2;
+    [].forEach.call(grid.children, function (c) { if (c.classList.contains('sw-n')) row++; if (row <= cut) c.classList.add('sw-old'); });
+    var b = el('button', 'sw-allbtn'); b.type = 'button'; var open = trail.classList.contains('sw-all');
+    b.textContent = open ? 'Hide my earlier steps' : 'Show all my steps (' + n + ' lines)';
+    b.addEventListener('click', function () { var o = trail.classList.toggle('sw-all'); b.textContent = o ? 'Hide my earlier steps' : 'Show all my steps (' + n + ' lines)'; });
+    trail.insertBefore(b, trail.firstChild);
+  }
   function fillBox(inp, text) {
     lastSubmit = '';
     inp.value = text; try { inp.dataset.swFilled = text; } catch (e) {}
@@ -1746,6 +1777,7 @@
       var want = normA(text), bare = want.replace(/^[a-z]=/, '');
       var hit = taps.filter(function (b) { var gt = b.querySelector('.gt'); return [b.getAttribute('data-t'), gt && gt.textContent, b.textContent].some(function (x) { if (!x) return false; var t = normA(x); return t === want || t === bare || t.replace(/^[a-z]=/, '') === bare; }); });
       if (hit.length === 1) { if (!/\b(sel|ok)\b/.test(hit[0].className)) hit[0].click(); return 'tap'; }
+      var rr = ansRow(inp); if (rr) rr.classList.remove('sw-ans-hid');
       return 'nomatch';
     }
     if (/homework_turn_in/.test(location.pathname)) return 'checked';          // the homework box checks itself when the work fills it
@@ -1765,7 +1797,7 @@
     D.data.secs.forEach(function (sec, si) {
       sec.probs.forEach(function (p) {
         var card = document.getElementById('s' + si + 'p' + p.n); if (!card || card.querySelector('.sw-open')) return;
-        var inp = card.querySelector('.pr-in'), host = el('div', 'sw-host'); card.appendChild(host);
+        var inp = card.querySelector('.pr-in'), host = el('div', 'sw-host'); host.__swInp = inp; card.appendChild(host);
         var ex = String(D.unit) === '2' && /^\s*(simplify|multiply|divide)\s*:/i.test(String(p.q).replace(/<[^>]+>/g, ''));
         if (p.sw) { if (mountExpr(host, { start: p.sw, sci: /×/.test(p.sw), onAnswer: function (t) { fillBox(inp, t); } })) return; }
         if (ex) {
@@ -1804,7 +1836,7 @@
     if (typeof QS === 'undefined' || !QS || !QS.forEach) return;      // eslint-disable-line no-undef
     QS.forEach(function (q) {                                          // eslint-disable-line no-undef
       var card = document.getElementById('q' + q.id), inp = document.getElementById('i' + q.id); if (!card || !inp || card.querySelector('.sw-open')) return;
-      var host = el('div', 'sw-host'), ans = card.querySelector('.ans'); (ans && ans.nextSibling ? card.insertBefore(host, ans.nextSibling) : card.appendChild(host));
+      var host = el('div', 'sw-host'), ans = card.querySelector('.ans'); host.__swInp = inp; (ans && ans.nextSibling ? card.insertBefore(host, ans.nextSibling) : card.appendChild(host));
       var start = findEq(q.expr), chk = q.chk || [];
       var fill = function (t, info) {
         if (chk[0] === 'val' || chk[0] === 'num') return fillBox(inp, info.kind === 'one' ? (info.numText || qtxt(info.x)) : t);
@@ -1845,7 +1877,7 @@
       var lab = inp.closest('label'), entry = map[id][num];
       var parts = Array.isArray(entry) ? entry : [entry], got = [];
       parts.forEach(function (c, pi) {   // an array = one workspace per part (e.g. both intercepts), answers joined
-        var host = el('div', 'sw-host'); lab.appendChild(host);
+        var host = el('div', 'sw-host'); host.__swInp = inp; lab.appendChild(host);
         if (c.title) host.appendChild(el('p', 'sw-part', '<b>' + c.title + '</b>'));
         var put = function (t) { if (parts.length === 1) return fillBox(inp, t); got[pi] = (c.tag || c.title ? (c.tag || c.title) + ': ' : '') + t; fillBox(inp, got.filter(Boolean).join('; ')); };
         var cfg = { onAnswer: function (t) { put(t); } };
@@ -1874,7 +1906,7 @@
   function forProblem(host, o) {
     var html0 = String(o.text || '').replace(/<span class="(?:np-lv|badge|lvb)[^"]*"[^>]*>[^<]*<\/span>/g, ' ');
     var plain = html0.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim().replace(/^\(?\d+[.)]\s*/, '');
-    var unit = String(o.unit || ''), ans = numAns(o.ans), inp = o.inp;
+    var unit = String(o.unit || ''), ans = numAns(o.ans), inp = o.inp; if (inp) host.__swInp = inp;
     var fill = function (t) { if (inp) fillBox(inp, t); };
     var one = function (t, info) { return info && (info.kind === 'one' || info.kind === 'ineq') && !/[a-z]\s*=/i.test(String(o.ans || '')) ? (info.numText || qtxt(info.x)) : t; };
     var w = null;

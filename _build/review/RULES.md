@@ -40,7 +40,7 @@ D3. Figures match the numbers (angles drawn to scale, acute looks acute).
 D4. No page errors in the browser console.
 D5. No emoji in headings (site look).
 D6. The step-by-step tool never jumps or centers the page (Nov 13, 2026): it scrolls only as far as needed to show the next
-    thing to use, keeping the line just worked on in view (`calm()` in step-work.js; no plain `.focus()` that scrolls).
+    thing to use, keeping the line just worked on in view (`calmScroll()` in step-work.js; no plain `.focus()` that scrolls).
 
 ## E. Math content
 E1. Every answer, key and explanation is mathematically correct.
@@ -63,3 +63,6 @@ G5. One problem on the screen (Nov 13, 2026): no "Show all problems" switch for 
     ?all=1 is for teachers/tests) and no "See the whole page" on Targeted Practice.
 G6. A finished step-by-step puts the answer in the answer box AND checks it (matching tap choice is tapped). No
     "Put this answer in the answer box" button, no scrolling to the top.
+G7. Step-by-step screens stay short (Nov 13, 2026): only the last two lines of work show ("Show all my steps" opens the
+    rest), no "Colors" key, no "I read this as" line, wrong-line feedback = one sentence + "Tell me more", and the
+    problem's own answer box is hidden while the step-by-step work is open.

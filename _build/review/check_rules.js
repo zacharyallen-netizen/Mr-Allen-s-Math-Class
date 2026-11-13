@@ -158,7 +158,7 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
 /* D6: the step tool scrolls calmly (no centering, no focus jumps). */
 {
   const t = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
-  if (!/function calm\(target, anchor, focusEl\)/.test(t)) fail('D6', 'grade8/step-work.js', 'missing calm() scrolling');
+  if (!/function calmScroll\(target, anchor, focusEl\)/.test(t)) fail('D6', 'grade8/step-work.js', 'missing calm() scrolling');
   const bad = (t.replace(/catch \(e\) \{ inp\.focus\(\); \}/g, '').match(/\b(?:inp|a)\.focus\(\)/g) || []).length;
   if (bad) fail('D6', 'grade8/step-work.js', bad + ' plain .focus() call(s) that can jump the page (use calm() or preventScroll)');
 }
@@ -172,6 +172,16 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   const sw = rd('grade8/step-work.js');
   if (/Put this answer in the answer box/.test(sw)) fail('G6', 'grade8/step-work.js', 'still asks students to put the answer in the box');
   if (!/function submitBox\(inp, text\)/.test(sw)) fail('G6', 'grade8/step-work.js', 'missing submitBox (auto check)');
+}
+
+/* G7 (Nov 13, 2026): short step-by-step screens. */
+{
+  const sw = fs.readFileSync(path.join(ROOT, 'grade8/step-work.js'), 'utf8');
+  if (!/function shortTrail\(/.test(sw)) fail('G7', 'grade8/step-work.js', 'missing the last-two-lines trail');
+  if (/'I read this as: <span class="sw-ln">' \+ eqHtml/.test(sw)) fail('G7', 'grade8/step-work.js', 'still shows "I read this as" for equations');
+  if (/'Colors: ' \+ out\.join/.test(sw)) fail('G7', 'grade8/step-work.js', 'still shows the Colors key');
+  if (!/function brief\(h\)/.test(sw) || !/function hideAns\(host, hide\)/.test(sw)) fail('G7', 'grade8/step-work.js', 'missing short feedback or hidden answer box');
+  if ((sw.match(/function calm\(/g) || []).length > 1) fail('G7', 'grade8/step-work.js', 'two functions named calm()');
 }
 
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
