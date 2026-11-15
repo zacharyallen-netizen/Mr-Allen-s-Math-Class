@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laser Vault — Angle Puzzle Maze</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#060418;--ink:#EAF0FF;--dim:#A7B0D6;--cyan:#00f0ff;--mag:#ff4dd6;--gold:#FFC107;--gold2:#E0A800;--grn:#00ff88;--red:#ff4466;--panel:rgba(14,11,40,.96);--line:rgba(160,170,255,.28)}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at 50% -10%,rgba(90,20,140,.45),transparent 60%),var(--bg);min-height:100vh}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace}
+#app{max-width:1100px;margin:0 auto;padding:14px 14px 70px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#1E2D4F;border:0;border-radius:12px;padding:12px 20px;font:800 16px/1 Inter,sans-serif;cursor:pointer;box-shadow:0 4px 0 var(--gold2)}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 var(--gold2)}
+.btn.ghost{background:transparent;color:#fff;border:2px solid var(--line);box-shadow:none}
+.btn.ghost:hover{border-color:var(--cyan)}
+.btn.big{font-size:20px;padding:16px 34px;font-family:Orbitron,sans-serif;letter-spacing:.06em}
+.btn:disabled{opacity:.45;cursor:default;filter:none}
+/* menu */
+.logo{text-align:center;margin:10px 0 4px;font:900 clamp(38px,9vw,84px)/1 Orbitron,sans-serif;letter-spacing:.05em;background:linear-gradient(180deg,#fff 0%,#9ef7ff 35%,#ff4dd6 72%,#FFC107 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(0,240,255,.35))}
+.tagline{text-align:center;color:var(--dim);font:500 16px/1.5 Inter,sans-serif;margin:0 auto 14px;max-width:600px}
+.step{font:800 12px/1 Inter,sans-serif;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin:22px 0 10px}
+.wings{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.wing{position:relative;text-align:left;background:rgba(16,12,44,.85);border:2px solid var(--line);border-radius:14px;padding:14px;color:#fff;cursor:pointer;transition:border-color .15s,transform .15s}
+.wing:hover{transform:translateY(-2px);border-color:var(--c)}
+.wing.on{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 0 22px color-mix(in srgb,var(--c) 35%,transparent)}
+.wing .t1{font:800 11px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--c);text-transform:uppercase}
+.wing .t2{font:900 19px/1.2 Orbitron,sans-serif;margin:6px 0 4px}
+.wing .t3{font:500 14px/1.4 Inter,sans-serif;color:var(--dim)}
+.wing .best{margin-top:8px;font:700 15px/1 'JetBrains Mono',monospace;color:var(--gold);min-height:15px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{flex:1;min-width:150px;background:rgba(16,12,44,.85);border:2px solid var(--line);color:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;text-align:left}
+.seg button b{display:block;font:800 16px/1.2 Orbitron,sans-serif}
+.seg button span{font:500 13px/1.35 Inter,sans-serif;color:var(--dim)}
+.seg button.on{border-color:var(--gold);box-shadow:0 0 16px rgba(255,193,7,.3)}
+.how{background:rgba(16,12,44,.7);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:#D9DEF7;font:500 15px/1.6 Inter,sans-serif;margin-top:18px}
+.how b{color:#fff}
+.how kbd{font:700 12px 'JetBrains Mono',monospace;background:#1d1850;border:1px solid var(--line);border-bottom-width:3px;border-radius:5px;padding:1px 6px;color:#fff}
+.go{text-align:center;margin-top:22px}
+/* HUD + map */
+#hud{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:rgba(10,8,32,.8);border:1px solid var(--line);border-radius:10px;padding:6px 10px;min-width:64px}
+.chip b{display:block;font:800 18px/1.1 'JetBrains Mono',monospace;color:#fff}
+.chip span{font:700 10px/1 Inter,sans-serif;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.chip.g b{color:var(--gold)}
+.ctrl{display:flex;gap:8px}
+.ib{background:rgba(10,8,32,.8);border:1px solid var(--line);color:#fff;border-radius:10px;height:40px;min-width:44px;font:700 14px Inter,sans-serif;cursor:pointer;padding:0 12px}
+.ib:hover{border-color:var(--cyan)}
+#wingTitle{font:900 18px/1.2 Orbitron,sans-serif;color:#fff;margin:0 0 2px}
+#mapWrap{position:relative;background:rgba(8,6,28,.9);border:2px solid rgba(0,240,255,.25);border-radius:16px;padding:10px;box-shadow:0 0 40px rgba(0,240,255,.08) inset}
+#map{display:block;width:100%;height:auto;max-height:68vh;touch-action:manipulation}
+#map .cell{cursor:pointer}
+#tip{margin:10px 2px 0;color:#D9DEF7;font:500 15px/1.45 Inter,sans-serif;min-height:22px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;color:var(--dim);font:600 13px/1.3 Inter,sans-serif}
+.legend i{display:inline-block;width:18px;height:8px;border-radius:3px;margin-right:6px;vertical-align:middle}
+/* puzzle */
+#pz{position:fixed;inset:0;z-index:50;background:rgba(3,2,14,.82);backdrop-filter:blur(3px);overflow:auto;padding:16px 12px 80px}
+@media (max-width:760px){#app{padding-top:64px}#pz{padding-top:62px}}
+.pzbox{max-width:1060px;margin:0 auto;background:var(--panel);border:2px solid var(--cyan);border-radius:18px;box-shadow:0 0 50px rgba(0,240,255,.18);padding:14px;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px}
+.pzbox.gold{border-color:var(--gold);box-shadow:0 0 50px rgba(255,193,7,.2)}
+.pzbox.mag{border-color:var(--mag);box-shadow:0 0 50px rgba(255,77,214,.2)}
+@media (max-width:820px){.pzbox{grid-template-columns:1fr}}
+#figWrap{align-self:start;background:#05031a;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+#fig{display:block;width:100%;height:auto}
+.ptag{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+.pill{font:800 11px/1 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;padding:5px 9px;border-radius:999px;border:1px solid currentColor}
+.pill.c{color:var(--cyan)}.pill.g{color:var(--gold)}.pill.m{color:var(--mag)}.pill.s{color:#C9D2FF}
+#ptitle{font:900 20px/1.25 Orbitron,sans-serif;margin:4px 0 6px;color:#fff}
+#pprompt{font:500 17px/1.5 Inter,sans-serif;color:#E6E9F8;margin:0 0 12px}
+#pprompt b{color:#fff}
+.ansrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 10px}
+.ansrow label{font:800 20px/1 'JetBrains Mono',monospace;color:var(--gold)}
+#ans{width:130px;font:800 26px/1 'JetBrains Mono',monospace;color:#fff;background:#0b0930;border:2px solid var(--line);border-radius:12px;padding:10px 12px;text-align:center}
+#ans:focus{outline:none;border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,240,255,.25)}
+#unit{font:800 24px/1 'JetBrains Mono',monospace;color:#fff}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:330px;margin:0 0 10px}
+.pad button{background:#120f3a;border:1px solid var(--line);color:#fff;border-radius:10px;height:44px;font:800 19px/1 'JetBrains Mono',monospace;cursor:pointer}
+.pad button:hover{border-color:var(--cyan)}
+.pad .fire{grid-column:span 4;height:52px;background:linear-gradient(90deg,#ff2d7a,#ff4dd6);border:0;font:900 18px/1 Orbitron,sans-serif;letter-spacing:.08em;box-shadow:0 0 22px rgba(255,77,214,.45)}
+.pad .fire:disabled{opacity:.5}
+#fb{border-radius:12px;padding:10px 12px;font:500 16px/1.5 Inter,sans-serif;margin:0 0 10px}
+#fb.bad{background:rgba(255,68,102,.12);border:1px solid rgba(255,68,102,.55);color:#FFE0E6}
+#fb.ok{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.5);color:#D6FFE9}
+#fb.info{background:rgba(255,193,7,.1);border:1px solid rgba(255,193,7,.45);color:#FFF1C7}
+#fb b{color:#fff}
+.helps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+.helps .btn{padding:10px 14px;font-size:14px}
+#steps{background:#F7F7F4;color:#1E2D4F;border-radius:12px;padding:12px;margin:0 0 10px;font:500 15px/1.5 Inter,sans-serif}
+#steps h4{margin:0 0 8px;font:800 15px/1.3 Inter,sans-serif;color:#1E2D4F}
+#steps .rel{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+#steps .rel button{background:#fff;border:2px solid #1E2D4F;color:#1E2D4F;border-radius:10px;padding:9px 14px;font:700 15px Inter,sans-serif;cursor:pointer}
+#steps .rel button.no{border-color:#C9CDD6;color:#8A93A6;text-decoration:line-through;cursor:default}
+#steps .rel button.yes{background:#1E2D4F;color:#fff}
+#steps .note{margin:6px 0;color:#7A2335}
+#steps .eq{font:800 20px/1.4 'JetBrains Mono',monospace;margin:6px 0}
+.leave{margin-top:6px}
+/* results */
+.screen{display:none}
+.screen.on{display:block}
+.res-title{text-align:center;font:900 clamp(28px,6vw,52px)/1.1 Orbitron,sans-serif;margin:16px 0 6px;color:#fff;text-shadow:0 0 18px rgba(0,240,255,.5)}
+.res-sub{text-align:center;color:var(--dim);margin:0 0 10px;font-size:16px}
+.stars{display:flex;justify-content:center;gap:10px;margin:8px 0 14px;font-size:56px;line-height:1}
+.stars span{color:#2b2760;transition:color .3s,transform .3s;transform:scale(.8)}
+.stars span.lit{color:var(--gold);text-shadow:0 0 18px rgba(255,193,7,.6);transform:scale(1)}
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:660px;margin:0 auto}
+.rgrid div{background:rgba(16,12,44,.85);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.rgrid b{display:block;font:800 22px/1.1 'JetBrains Mono',monospace;color:#fff}
+.rgrid span{font:700 10px/1 Inter,sans-serif;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+@media (max-width:520px){.rgrid{grid-template-columns:repeat(2,1fr)}}
+.miss{max-width:660px;margin:16px auto 0;background:rgba(16,12,44,.85);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:#E6E9F8;font:500 15px/1.6 Inter,sans-serif}
+.miss h3{margin:0 0 6px;font:800 13px/1.2 Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.miss ul{margin:0;padding-left:20px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+/* figure */
+#fig text{font-family:Inter,sans-serif;paint-order:stroke;stroke:#05031a;stroke-width:5px;stroke-linejoin:round}
+#fig .lab{font:800 20px 'JetBrains Mono',monospace;fill:#fff}
+#fig .lab.q{fill:var(--gold)}
+#fig .lab.g{fill:#BFF9FF}
+#fig .nm{font:700 17px Inter,sans-serif;fill:#9fb0ff;font-style:italic}
+@media (prefers-reduced-motion:reduce){.wing,.stars span{transition:none}}
+</style>
+</head>
+<body>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="Laser Vault" data-unit="4"></script>
+<script src="../site-bar.js"></script>
+<script src="arcade-fx.js"></script>
+<script>window.SW_NO_FX = true;</script>
+<script src="step-work.js?v=20261113e"></script>
+
+<div id="app">
+  <!-- MENU -->
+  <section class="screen on" id="menu">
+    <div class="logo">LASER VAULT</div>
+    <p class="tagline">Break into the vault. Every door is locked by a laser. Find the right angle, aim the turret, and hit the crystal to open the door.</p>
+
+    <div class="step">1 · Pick a wing</div>
+    <div class="wings" id="wings"></div>
+
+    <div class="step">2 · Pick your level</div>
+    <div class="seg" id="levels">
+      <button data-l="0" class="on"><b>Cadet</b><span>Find the angle. Numbers only.</span></button>
+      <button data-l="1"><b>Agent</b><span>Some locks use <i>x</i>. Harder angle pairs.</span></button>
+      <button data-l="2"><b>Master</b><span>Most locks use <i>x</i>. Shortcut doors use <i>x</i> twice.</span></button>
+    </div>
+
+    <div class="how">
+      <b>How to play.</b> Move through the maze with the arrow keys, or tap a room next to you. A glowing bar is a locked door. Walk into it to try the lock.
+      Each lock shows a figure drawn to scale. Find the <b>?</b> angle (or <i>x</i>), type it, and press <b>FIRE</b>. The turret turns by your angle. If you are right, the beam hits the crystal and the door opens.
+      <br><b>Gold doors</b> are harder shortcuts. <b>Pink doors</b> hide bonus crystals. The <b>Core</b> door has two locks.
+      Stuck? Use <b>Hint</b>. After two misses you can work it out <b>step by step</b>.
+    </div>
+    <div class="go"><button class="btn big" id="bStart">ENTER THE VAULT</button></div>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="play">
+    <div id="hud">
+      <div>
+        <div id="wingTitle">Wing</div>
+        <div class="chips">
+          <div class="chip"><b id="hDoors">0/0</b><span>Doors</span></div>
+          <div class="chip g"><b id="hGems">0</b><span>Crystals</span></div>
+          <div class="chip"><b id="hMiss">0</b><span>Misses</span></div>
+          <div class="chip g"><b id="hScore">0</b><span>Score</span></div>
+        </div>
+      </div>
+      <div class="ctrl" id="ctrl"><button class="ib" id="bQuit" type="button">Menu</button></div>
+    </div>
+    <div id="mapWrap"><svg id="map" role="img" aria-label="Vault map"></svg></div>
+    <p id="tip"></p>
+    <div class="legend">
+      <span><i style="background:var(--cyan)"></i>Locked door</span>
+      <span><i style="background:var(--gold)"></i>Gold shortcut (harder)</span>
+      <span><i style="background:var(--mag)"></i>Bonus crystal room</span>
+      <span><i style="background:#fff"></i>Core (two locks)</span>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="screen" id="res">
+    <div class="res-title" id="rTitle">VAULT OPEN!</div>
+    <p class="res-sub" id="rSub"></p>
+    <div class="stars" id="rStars"><span>★</span><span>★</span><span>★</span></div>
+    <div class="rgrid">
+      <div><b id="rScore">0</b><span>Score</span></div>
+      <div><b id="rDoors">0</b><span>Doors opened</span></div>
+      <div><b id="rFirst">0</b><span>First try</span></div>
+      <div><b id="rMiss">0</b><span>Misses</span></div>
+    </div>
+    <div class="miss" id="rMissBox" hidden><h3>Practice these</h3><ul id="rMissList"></ul></div>
+    <div class="row">
+      <button class="btn" id="bAgain">Play again (new maze)</button>
+      <button class="btn ghost" id="bMenu">Pick a wing</button>
+    </div>
+  </section>
+</div>
+
+<!-- PUZZLE -->
+<div id="pz" hidden>
+  <div class="pzbox" id="pzbox">
+    <div id="figWrap"><svg id="fig" viewBox="0 0 600 400" role="img" aria-label="Angle figure"></svg></div>
+    <div>
+      <div class="ptag" id="ptag"></div>
+      <div id="ptitle"></div>
+      <p id="pprompt"></p>
+      <div class="ansrow"><label for="ans" id="alab">? =</label><input id="ans" inputmode="decimal" autocomplete="off" spellcheck="false"><span id="unit">°</span></div>
+      <div class="pad" id="pad"></div>
+      <div id="fb" hidden></div>
+      <div class="helps">
+        <button class="btn ghost" id="bHint" type="button">Hint</button>
+        <button class="btn ghost" id="bStep" type="button" hidden>Step by step</button>
+        <button class="btn ghost" id="bShow" type="button" hidden>Show me</button>
+      </div>
+      <div id="steps" hidden></div>
+      <button class="btn ghost leave" id="bLeave" type="button">Back to the map</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  /* =========================================================
+     LASER VAULT (Nov 15, 2026, Mr. Allen's request): a maze of locked doors.
+     Each lock is a Unit 4 angle puzzle (NC.8.G.5): vertical angles, linear pairs,
+     parallel lines cut by a transversal, triangle sum, exterior angle.
+     The figure is drawn to scale, and the turret turns by the student's number:
+     a wrong angle really sends the beam into the wall.
+     Answers are numbers. Help: Hint any time; 1st miss names the mistake and asks
+     a question; 2nd miss opens Step by step (StepWork); 3rd miss "Show me".
+     ========================================================= */
+  var DEBUG = /[?&]debug\b/.test(location.search);
+  var $ = function (id) { return document.getElementById(id); };
+  var NS = 'http://www.w3.org/2000/svg';
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+  function sfx(n, a) { try { if (window.AFX && !AFX.muted) AFX.sfx[n](a); } catch (e) {} }
+  function fx(n) { try { if (window.AFX) AFX[n].apply(AFX, [].slice.call(arguments, 1)); } catch (e) {} }
+
+  /* ---------------- geometry (screen coords, y down; angles in math degrees, y up) ---------------- */
+  var R2D = 180 / Math.PI;
+  function dir(d) { return [Math.cos(d / R2D), -Math.sin(d / R2D)]; }
+  function add(p, v, s) { return [p[0] + v[0] * s, p[1] + v[1] * s]; }
+  function angOf(p, q) { return Math.atan2(-(q[1] - p[1]), q[0] - p[0]) * R2D; }
+  function n180(d) { d = ((d + 180) % 360 + 360) % 360 - 180; return d; }
+  function between(v, p1, p2) { var a1 = angOf(v, p1), d = n180(angOf(v, p2) - a1); return { from: a1, sense: d < 0 ? -1 : 1, val: Math.abs(d) }; }
+  function dist(p, q) { return Math.hypot(q[0] - p[0], q[1] - p[1]); }
+
+  /* ---------------- expressions with x ---------------- */
+  function ex(m, k) { return { m: m, k: k }; }
+  function exVal(e, x) { return e.m * x + e.k; }
+  function exShow(e) { return (e.m === 1 ? '' : e.m) + 'x' + (e.k ? (e.k < 0 ? ' − ' : ' + ') + Math.abs(e.k) : ''); }
+  function exAscii(e) { return (e.m === 1 ? '' : e.m) + 'x' + (e.k ? (e.k < 0 ? ' - ' : ' + ') + Math.abs(e.k) : ''); }
+  function exFor(val, x, avoid) {
+    for (var t = 0; t < 300; t++) {
+      var m = ri(2, 6); if (avoid && m === avoid) continue;
+      var k = val - m * x; if (k !== 0 && k >= -40 && k <= 60) return ex(m, k);
+    }
+    return null;
+  }
+  /* pick x and expressions for 1 or 2 angle values */
+  function exprs(vals) {
+    for (var t = 0; t < 500; t++) {
+      var x = ri(5, 34), out = [], ok = true;
+      for (var i = 0; i < vals.length && ok; i++) { var e = exFor(vals[i], x, out[0] && out[0].m); if (!e) ok = false; else out.push(e); }
+      if (ok) return { x: x, e: out };
+    }
+    return null;
+  }
+
+  /* ---------------- puzzle builders ----------------
+     Every puzzle: segs [{p,q,c}], arcs [{v,p1,p2,lab,q}], names [{p,t}], turret {v, ref, sense, ans, dirAns},
+     crystal [x,y], kind, rule ('eq' | 'supp' | 'tri' | 'ext' | 'extIn'), rel (name), given numbers. */
+  function arcSpec(v, p1, p2, lab, q) { return { v: v, p1: p1, p2: p2, lab: lab, q: !!q }; }
+
+  function mkV(ans) {
+    var P = [300, 200], R = 172, f = ri(5, 170), a = ans;
+    var pt = function (d, r) { return add(P, dir(d), r || R); };
+    var tr = between(P, pt(f + 180), pt(f + 180 + a));
+    return {
+      kind: 'V', rule: 'eq', rel: 'Vertical angles', score: 3, given: [a],
+      segs: [{ p: pt(f), q: pt(f + 180), c: 'ln' }, { p: P, q: pt(f + a), c: 'ln' }, { p: P, q: pt(f + a + 180), c: 'gd' }],
+      arcs: [arcSpec(P, pt(f), pt(f + a), 'G0')],
+      names: [], turret: { v: P, ref: tr.from, sense: tr.sense, ans: a, refPt: pt(f + 180) },
+      crystal: pt(f + a + 180, 150),
+      title: 'Crossing Beams', text: 'Two straight beams cross. Set the turret to the <b>?</b> angle.'
+    };
+  }
+  function mkL(ans) {
+    var P = [300, 215], R = 180, f = ri(-25, 25), a = 180 - ans;
+    var pt = function (d, r) { return add(P, dir(d), r || R); };
+    var tr = between(P, pt(f + a), pt(f + 180));
+    return {
+      kind: 'L', rule: 'supp', rel: 'Linear pair', score: 3, given: [a],
+      segs: [{ p: pt(f), q: pt(f + 180), c: 'ln' }, { p: P, q: pt(f + a, 175), c: 'ln' }],
+      arcs: [arcSpec(P, pt(f), pt(f + a), 'G0')],
+      names: [], turret: { v: P, ref: tr.from, sense: tr.sense, ans: ans, refPt: pt(f + a, 175) },
+      crystal: pt(f + 180, 160),
+      title: 'Straight Line', text: 'The bottom beam is one straight line. Set the turret to the <b>?</b> angle.'
+    };
+  }
+  var PREL = {
+    corr: ['Corresponding angles', 'eq', 3], altI: ['Alternate interior angles', 'eq', 3], altE: ['Alternate exterior angles', 'eq', 3],
+    ssI: ['Same-side interior angles', 'supp', 3], ssE: ['Same-side exterior angles', 'supp', 4], two: ['Corresponding angles, then a linear pair', 'supp', 4]
+  };
+  function prelOf(sA, vA, sB, vB) {
+    if (sA === sB && vA === vB) return 'corr';
+    if (sA !== sB && vA === 'd' && vB === 'u') return 'altI';
+    if (sA !== sB && vA === 'u' && vB === 'd') return 'altE';
+    if (sA === sB && vA === 'd' && vB === 'u') return 'ssI';
+    if (sA === sB && vA === 'u' && vB === 'd') return 'ssE';
+    return 'two';
+  }
+  function mkP(ans, relKey) {
+    var combos = [];
+    [1, -1].forEach(function (sA) { ['u', 'd'].forEach(function (vA) { [1, -1].forEach(function (sB) { ['u', 'd'].forEach(function (vB) {
+      if (prelOf(sA, vA, sB, vB) === relKey) combos.push([sA, vA, sB, vB]);
+    }); }); }); });
+    var c = pick(combos), sA = c[0], vA = c[1], sB = c[2], vB = c[3];
+    // the angle at position (s, v) is α when (s,v) = (+,u) or (−,d); else 180 − α
+    var isA = function (s, v) { return (s === 1 && v === 'u') || (s === -1 && v === 'd'); };
+    var al = isA(sB, vB) ? ans : 180 - ans;
+    var yA = 112, yB = 288, gap = yB - yA, dx = gap * Math.cos(al / R2D) / Math.sin(al / R2D);
+    var B = [300 - dx / 2, yB], A = [300 + dx / 2, yA], up = dir(al), dn = dir(al + 180);
+    var railPt = function (P, s) { return [s > 0 ? 575 : 25, P[1]]; };
+    var tPt = function (P, v, r) { return add(P, v === 'u' ? up : dn, r); };
+    var tTop = add(A, up, 95), tBot = add(B, dn, 95);
+    var given = isA(sA, vA) ? al : 180 - al;
+    var tr = between(B, railPt(B, sB), tPt(B, vB, 50));
+    var crystal = vB === 'u' ? add(A, up, 62) : add(B, dn, 72);
+    var r = PREL[relKey];
+    return {
+      kind: 'P', relKey: relKey, rule: r[1], rel: r[0], score: r[2], given: [given],
+      segs: [{ p: [25, yA], q: [575, yA], c: 'ln' }, { p: [25, yB], q: [575, yB], c: 'ln' }, { p: tTop, q: tBot, c: 'ln' }],
+      arcs: [arcSpec(A, railPt(A, sA), tPt(A, vA, 50), 'G0')],
+      names: [{ p: [36, yA - 12], t: 'm' }, { p: [36, yB - 12], t: 'n' }, { p: add(tTop, up, 14), t: 't' }],
+      par: [yA, yB],
+      turret: { v: B, ref: tr.from, sense: tr.sense, ans: ans, refPt: railPt(B, sB) },
+      crystal: crystal,
+      title: 'Parallel Rails', text: 'Rails <b>m</b> and <b>n</b> are parallel. Beam <b>t</b> crosses both. Set the turret to the <b>?</b> angle.'
+    };
+  }
+  /* triangle placed to fit; vertex angles A, B, C; extend = put D past B (base AB extended) */
+  function triPts(A, B, C, extend) {
+    var c = Math.sin(C / R2D), b = Math.sin(B / R2D);
+    var P = { A: [0, 0], B: [c, 0], C: [b * Math.cos(A / R2D), b * Math.sin(A / R2D)] };
+    if (extend) P.D = [c + 0.5 * c, 0];
+    var flip = Math.random() < 0.5;
+    var xs = [], ys = [];
+    Object.keys(P).forEach(function (k) { if (flip) P[k][0] = -P[k][0]; xs.push(P[k][0]); ys.push(P[k][1]); });
+    var x0 = Math.min.apply(0, xs), x1 = Math.max.apply(0, xs), y0 = Math.min.apply(0, ys), y1 = Math.max.apply(0, ys);
+    var s = Math.min(440 / (x1 - x0), 250 / (y1 - y0));
+    var cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, out = {};
+    Object.keys(P).forEach(function (k) { out[k] = [300 + (P[k][0] - cx) * s, 205 - (P[k][1] - cy) * s]; });
+    return out;
+  }
+  function vNames(T) {
+    var g = [(T.A[0] + T.B[0] + T.C[0]) / 3, (T.A[1] + T.B[1] + T.C[1]) / 3];
+    return ['A', 'B', 'C'].map(function (k) { var p = T[k], d = dist(g, p) || 1; return { p: [p[0] + (p[0] - g[0]) / d * 27, p[1] + (p[1] - g[1]) / d * 27 + 6], t: k, up: 1 }; });
+  }
+  function past(P, u, want) {   // a point beyond P along u, kept inside the figure (shorter if needed, never off the line)
+    var t = want;
+    if (u[0] > 1e-9) t = Math.min(t, (582 - P[0]) / u[0]); if (u[0] < -1e-9) t = Math.min(t, (18 - P[0]) / u[0]);
+    if (u[1] > 1e-9) t = Math.min(t, (382 - P[1]) / u[1]); if (u[1] < -1e-9) t = Math.min(t, (18 - P[1]) / u[1]);
+    return add(P, u, Math.max(0, t));
+  }
+  function mkT(ans) {
+    var rest = 180 - ans, A = ri(Math.max(35, rest - 115), Math.min(115, rest - 35)), B = rest - A;
+    var T = triPts(A, B, ans, false), tr = between(T.C, T.A, T.B);
+    var u = [(T.B[0] - T.C[0]) / dist(T.C, T.B), (T.B[1] - T.C[1]) / dist(T.C, T.B)];
+    return {
+      kind: 'T', rule: 'tri', rel: 'Triangle angle sum', score: 3, given: [A, B],
+      segs: [{ p: T.A, q: T.B, c: 'ln' }, { p: T.B, q: T.C, c: 'ln' }, { p: T.C, q: T.A, c: 'ln' }],
+      arcs: [arcSpec(T.A, T.B, T.C, 'G0'), arcSpec(T.B, T.C, T.A, 'G1')],
+      names: vNames(T), turret: { v: T.C, ref: tr.from, sense: tr.sense, ans: ans, refPt: T.A },
+      crystal: past(T.B, u, 62),
+      title: 'Prism Chamber', text: 'The turret sits at corner <b>C</b> of the triangle. Set it to the <b>?</b> angle so the beam runs along side <b>CB</b>.'
+    };
+  }
+  function mkE(ans) {   // exterior angle at B (between BD and BC) = A + C
+    var A = ri(30, ans - 30), C = ans - A, Bi = 180 - ans;
+    var T = triPts(A, Bi, C, true), tr = between(T.B, T.D, T.C);
+    var u = [(T.C[0] - T.B[0]) / dist(T.B, T.C), (T.C[1] - T.B[1]) / dist(T.B, T.C)];
+    var nm = vNames(T); nm.push({ p: [T.D[0] + (T.D[0] > T.B[0] ? 14 : -14), T.D[1] + 22], t: 'D' });
+    return {
+      kind: 'E', rule: 'ext', rel: 'Exterior angle', score: 4, given: [A, C],
+      segs: [{ p: T.A, q: T.D, c: 'ln' }, { p: T.B, q: T.C, c: 'ln' }, { p: T.C, q: T.A, c: 'ln' }],
+      arcs: [arcSpec(T.A, T.B, T.C, 'G0'), arcSpec(T.C, T.A, T.B, 'G1')],
+      names: nm, turret: { v: T.B, ref: tr.from, sense: tr.sense, ans: ans, refPt: T.D },
+      crystal: past(T.C, u, 62),
+      title: 'Outside Corner', text: 'Side <b>AB</b> is extended to <b>D</b>. The turret sits outside the triangle at <b>B</b>. Set it to the <b>?</b> angle so the beam runs along side <b>BC</b>.'
+    };
+  }
+  function mkEI(ans) {  // interior C = ext(B) − A
+    var A = ri(35, Math.min(105, 145 - ans)), Bi = 180 - A - ans, ext = A + ans;
+    var T = triPts(A, Bi, ans, true), tr = between(T.C, T.A, T.B);
+    var u = [(T.B[0] - T.C[0]) / dist(T.C, T.B), (T.B[1] - T.C[1]) / dist(T.C, T.B)];
+    var nm = vNames(T); nm.push({ p: [T.D[0] + (T.D[0] > T.B[0] ? 14 : -14), T.D[1] + 22], t: 'D' });
+    return {
+      kind: 'EI', rule: 'extIn', rel: 'Exterior angle (find a far angle)', score: 4, given: [A, ext],
+      segs: [{ p: T.A, q: T.D, c: 'ln' }, { p: T.B, q: T.C, c: 'ln' }, { p: T.C, q: T.A, c: 'ln' }],
+      arcs: [arcSpec(T.A, T.B, T.C, 'G0'), arcSpec(T.B, T.D, T.C, 'G1')],
+      names: nm, turret: { v: T.C, ref: tr.from, sense: tr.sense, ans: ans, refPt: T.A },
+      crystal: past(T.B, u, 62),
+      title: 'Far Corner', text: 'Side <b>AB</b> is extended to <b>D</b>. The angle outside at <b>B</b> is shown. Set the turret at <b>C</b> to the <b>?</b> angle so the beam runs along side <b>CB</b>.'
+    };
+  }
+
+  /* answer ranges per kind (keep figures readable) */
+  function ansFor(kind) {
+    var a;
+    do { a = ri(35, 145); } while (Math.abs(a - 90) < 9);
+    if (kind === 'T') a = ri(40, 105);
+    if (kind === 'E') a = ri(60, 145);
+    if (kind === 'EI') a = ri(40, 95);
+    return a;
+  }
+
+  /* x mode: put expressions on the figure. gold = x on two angles */
+  function addX(p, gold) {
+    var t = p.turret.ans, other = null, oi = 0;
+    if (gold) {
+      if (p.kind === 'V' || p.kind === 'L' || p.kind === 'P' || p.kind === 'T') { other = p.given[0]; oi = 0; }
+      else if (p.kind === 'E') { other = p.given[1]; oi = 1; }    // far angle C gets x
+      else { other = p.given[0]; oi = 0; }                         // EI: angle A gets x
+    }
+    var X = exprs(other == null ? [t] : [t, other]);
+    if (!X) return p;
+    p.x = { val: X.x, T: X.e[0], G: X.e[1] || null, gi: oi };
+    p.score = Math.max(p.score, gold ? 5 : 4);
+    return p;
+  }
+  /* the equation (ascii, for StepWork) and pieces: L, R as linear [a, b] in x */
+  function equation(p) {
+    var X = p.x, g = p.given;
+    var T = X ? exAscii(X.T) : 'x', TL = X ? [X.T.m, X.T.k] : [1, 0];
+    var G = function (i) { return X && X.G && X.gi === i ? { s: exAscii(X.G), l: [X.G.m, X.G.k] } : { s: String(g[i]), l: [0, g[i]] }; };
+    var s, L, R, g0 = G(0), g1 = g.length > 1 ? G(1) : null;
+    function sum() { var a = 0, b = 0; [].forEach.call(arguments, function (q) { a += q[0]; b += q[1]; }); return [a, b]; }
+    if (p.rule === 'eq') { s = T + ' = ' + g0.s; L = TL; R = g0.l; }
+    else if (p.rule === 'supp') { s = T + ' + ' + g0.s + ' = 180'; L = sum(TL, g0.l); R = [0, 180]; }
+    else if (p.rule === 'tri') { s = T + ' + ' + g0.s + ' + ' + g1.s + ' = 180'; L = sum(TL, g0.l, g1.l); R = [0, 180]; }
+    else if (p.rule === 'ext') { s = T + ' = ' + g0.s + ' + ' + g1.s; L = TL; R = sum(g0.l, g1.l); }
+    else { s = g0.s + ' + ' + T + ' = ' + g1.s; L = sum(g0.l, TL); R = g1.l; }
+    return { s: s, L: L, R: R };
+  }
+
+  /* ---------------- mistakes: name it, ask a question, never give the answer ---------------- */
+  var near = function (a, b) { return Math.abs(a - b) < 0.01; };
+  function whyAngle(p, d) {      // d = the angle the turret used
+    var g = p.given, A = p.turret.ans;
+    if (near(d, A)) return null;
+    if (p.rule === 'eq') {
+      if (near(d, 180 - A)) return 'You used <b>add to 180°</b>. Look again: is the <b>?</b> angle acute or obtuse? Is the given angle?';
+    } else if (p.rule === 'supp') {
+      if (near(d, 180 - A)) return 'You made the two angles <b>equal</b>. Is one angle acute and the other obtuse? Then what do they add up to?';
+    } else if (p.rule === 'tri') {
+      if (near(d, g[0] + g[1])) return 'You <b>added</b> the two angles. What do all three angles of a triangle add up to?';
+      if (near(d, 360 - g[0] - g[1])) return 'A triangle\'s three angles do not add to 360°. What do they add to?';
+      if (near(d, 180 - g[0]) || near(d, 180 - g[1])) return 'You used only <b>one</b> of the given angles. A triangle has three angles. Use both.';
+    } else if (p.rule === 'ext') {
+      if (near(d, 180 - g[0] - g[1])) return 'That is the angle <b>inside</b> the triangle at B. The <b>?</b> angle is outside, on the extended side. How does the outside angle compare with the two far inside angles?';
+      if (near(d, Math.abs(g[0] - g[1]))) return 'You <b>subtracted</b> the two far angles. Should the outside angle be bigger or smaller than each far angle?';
+      if (near(d, 180 - g[0]) || near(d, 180 - g[1])) return 'You used only <b>one</b> far angle. The outside angle uses both far inside angles.';
+    } else {
+      if (near(d, g[0] + g[1])) return 'You <b>added</b>. The outside angle is already the two far angles together. The <b>?</b> is one of them. Add or subtract?';
+      if (near(d, 180 - g[1])) return 'That is the inside angle at <b>B</b>, next to the outside angle. The <b>?</b> is at corner C.';
+      if (near(d, 180 - g[0] - g[1]) || near(d, 180 - g[0])) return 'The outside angle at B equals angle A plus the <b>?</b> angle. Which numbers go in that equation?';
+    }
+    return null;
+  }
+  function whyX(p, u) {
+    var X = p.x, e = equation(p), aT = X.T.m, eqWrongRel = null;
+    if (near(u, p.turret.ans) && !near(u, X.val)) return 'That number is the <b>angle</b>, not <i>x</i>. The lock wants <i>x</i>. Which <i>x</i> makes ' + exShow(X.T) + ' equal that angle?';
+    if (p.rule === 'eq' || p.rule === 'supp') {   // solve with the other rule (equal <-> add to 180)
+      var gl = X.G && X.gi === 0 ? [X.G.m, X.G.k] : [0, p.given[0]], alt = null;
+      if (p.rule === 'eq') { if (aT + gl[0]) alt = (180 - X.T.k - gl[1]) / (aT + gl[0]); }
+      else { if (aT - gl[0]) alt = (gl[1] - X.T.k) / (aT - gl[0]); }
+      if (alt != null && near(u, alt)) return p.rule === 'eq' ? 'You set them to <b>add to 180°</b>. Look again: is the <b>?</b> angle acute or obtuse? Is the other one?' : 'You set the two angles <b>equal</b>. Is one acute and one obtuse? Then what do they add up to?';
+    }
+    var a = e.L[0] - e.R[0], b = e.R[1] - e.L[1];
+    if (a) {
+      if (near(u, (e.R[1] + e.L[1]) / a) && e.L[1]) return 'Check how you moved the number. To undo <b>+</b>, subtract. To undo <b>−</b>, add. Do it to both sides.';
+      if (a !== 1 && near(u, b)) return 'Almost. You still need to <b>divide</b> by the number in front of <i>x</i>.';
+      if (e.R[0] && near(u, b / (e.L[0] + e.R[0]))) return 'There is <i>x</i> on both sides. To bring them together, <b>subtract</b> the smaller <i>x</i>-term from both sides.';
+    }
+    return null;
+  }
+
+  var HINT = {
+    V: 'The <b>?</b> angle and the given angle are across from each other where two lines cross. They are <b>vertical angles</b>, so they are equal.',
+    L: 'The <b>?</b> angle and the given angle sit side by side on one straight line. They are a <b>linear pair</b>, so they add to 180°.',
+    corr: 'These are <b>corresponding angles</b> (same spot at each crossing). With parallel lines, they are equal.',
+    altI: 'These are <b>alternate interior angles</b> (between the rails, on opposite sides of t). With parallel lines, they are equal.',
+    altE: 'These are <b>alternate exterior angles</b> (outside the rails, on opposite sides of t). With parallel lines, they are equal.',
+    ssI: 'These are <b>same-side interior angles</b> (between the rails, on the same side of t). With parallel lines, they add to 180°.',
+    ssE: 'These are <b>same-side exterior angles</b> (outside the rails, on the same side of t). With parallel lines, they add to 180°.',
+    two: 'Find the angle at the bottom crossing in the same spot as the given angle (corresponding). The <b>?</b> angle is next to it on a straight line.',
+    T: 'The three angles of a triangle add to <b>180°</b>.',
+    E: 'An <b>exterior angle</b> equals the two far inside angles added together.',
+    EI: 'The exterior angle at B equals angle A <b>plus</b> the far angle at C.'
+  };
+  var SHORT = 'Shortcut: when two lines cross, or parallel lines are cut by a transversal, two acute angles are equal, two obtuse angles are equal, and an acute and an obtuse angle add to 180°.';
+
+  /* ---------------- puzzle choice ---------------- */
+  var WINGS = [
+    { id: 'A', name: 'Crossing Beams', c: '#00f0ff', d: 'Vertical angles and linear pairs.', kinds: ['V', 'L'] },
+    { id: 'B', name: 'Parallel Rails', c: '#ff4dd6', d: 'Parallel lines cut by a transversal.', kinds: ['P'] },
+    { id: 'C', name: 'Prism Chambers', c: '#00ff88', d: 'Triangle angle sum and exterior angles.', kinds: ['T', 'E', 'EI'] },
+    { id: 'D', name: 'The Core', c: '#FFC107', d: 'Everything mixed. A bigger maze.', kinds: ['V', 'L', 'P', 'P', 'T', 'E', 'EI'] }
+  ];
+  var LEVELS = ['Cadet', 'Agent', 'Master'];
+  var PSETS = [['corr', 'altI', 'altE', 'ssI'], ['corr', 'altI', 'altE', 'ssI', 'ssE', 'two'], ['altI', 'altE', 'ssI', 'ssE', 'two', 'corr']];
+  var bag = [];
+  function nextKind(w) { if (!bag.length) bag = shuffle(w.kinds.slice()); return bag.pop(); }
+  function build(kind, lvl, type) {
+    // type: door | gem | gold | core
+    if (lvl === 0 && type !== 'gold' && kind === 'EI') kind = 'T';
+    var a = ansFor(kind), p;
+    if (kind === 'V') p = mkV(a);
+    else if (kind === 'L') p = mkL(a);
+    else if (kind === 'P') p = mkP(a, pick(PSETS[type === 'gold' ? 2 : lvl]));
+    else if (kind === 'T') p = mkT(a);
+    else if (kind === 'E') p = mkE(a);
+    else p = mkEI(a);
+    var xChance = [0, 0.5, 0.8][lvl];
+    if (type === 'gold') { if (lvl > 0) p = addX(p, lvl > 1); else p.score = Math.max(p.score, 4); }
+    else if (type === 'gem') { if (lvl > 0) p = addX(p, false); }
+    else if (Math.random() < xChance) p = addX(p, false);
+    p.type = type;
+    return p;
+  }
+
+  /* ---------------- maze ---------------- */
+  var G = null;
+  function newMaze(wi, lvl) {
+    var w = WINGS[wi], W = wi === 3 ? 7 : 6, H = wi === 3 ? 5 : 4, N = W * H;
+    var nb = function (i) { var x = i % W, y = (i - x) / W, o = []; if (x > 0) o.push(i - 1); if (x < W - 1) o.push(i + 1); if (y > 0) o.push(i - W); if (y < H - 1) o.push(i + W); return o; };
+    var key = function (a, b) { return Math.min(a, b) + '-' + Math.max(a, b); };
+    var edges = {}, adj = []; for (var i = 0; i < N; i++) adj.push([]);
+    var seen = [0], vis = {}; vis[0] = 1;
+    while (seen.length) {                               // random depth-first spanning tree
+      var c = seen[seen.length - 1], opts = nb(c).filter(function (n) { return !vis[n]; });
+      if (!opts.length) { seen.pop(); continue; }
+      var n = pick(opts); vis[n] = 1; edges[key(c, n)] = { a: c, b: n, lock: null }; adj[c].push(n); adj[n].push(c); seen.push(n);
+    }
+    var exit = N - 1, prev = {}, q = [0]; prev[0] = -1;
+    while (q.length) { var u = q.shift(); adj[u].forEach(function (v) { if (!(v in prev)) { prev[v] = u; q.push(v); } }); }
+    var path = []; for (var p = exit; p !== -1; p = prev[p]) path.unshift(p);
+    var pos = {}; path.forEach(function (c, i) { pos[c] = i; });
+    var E = path.length - 1, nL = wi === 3 ? 6 : 5, locks = {};
+    for (var j = 0; j < nL - 1; j++) { var k = Math.max(0, Math.min(E - 2, Math.round((j + 0.5) * (E - 1) / (nL - 1)))); locks[k] = 1; }
+    bag = [];
+    Object.keys(locks).forEach(function (k) { k = +k; edges[key(path[k], path[k + 1])].lock = { type: 'door', ps: [build(nextKind(w), lvl, 'door')] }; });
+    edges[key(path[E - 1], path[E])].lock = { type: 'core', ps: [build(nextKind(w), lvl, 'core'), build(nextKind(w), lvl, 'core')] };
+    // gold shortcuts: link two far-apart cells of the main path
+    var cands = [];
+    for (var a = 0; a < N; a++) nb(a).forEach(function (b) {
+      if (a < b && !edges[key(a, b)] && a in pos && b in pos && a !== exit && b !== exit) { var gain = Math.abs(pos[a] - pos[b]) - 1; if (gain >= 3) cands.push([gain, a, b]); }
+    });
+    cands.sort(function (x, y) { return y[0] - x[0]; });
+    var used = {}, golds = 0;
+    cands.forEach(function (cnd) {
+      if (golds >= 2) return; var lo = Math.min(pos[cnd[1]], pos[cnd[2]]), hi = Math.max(pos[cnd[1]], pos[cnd[2]]);
+      for (var t = lo; t <= hi; t++) if (used[t]) return;
+      for (t = lo; t <= hi; t++) used[t] = 1;
+      edges[key(cnd[1], cnd[2])] = { a: cnd[1], b: cnd[2], lock: { type: 'gold', ps: [build(nextKind(w), lvl, 'gold')] } };
+      adj[cnd[1]].push(cnd[2]); adj[cnd[2]].push(cnd[1]); golds++;
+    });
+    // bonus crystals in dead ends off the main path
+    var gems = {}, dead = [];
+    for (a = 1; a < N; a++) if (a !== exit && !(a in pos) && adj[a].length === 1) dead.push(a);
+    shuffle(dead).slice(0, 2).forEach(function (d) { gems[d] = 1; edges[key(d, adj[d][0])].lock = { type: 'gem', ps: [build(nextKind(w), lvl, 'gem')] }; });
+    var total = 0; Object.keys(edges).forEach(function (k) { if (edges[k].lock) total++; });
+    G = {
+      wi: wi, lvl: lvl, W: W, H: H, N: N, edges: edges, key: key, at: 0, exit: exit, visited: {}, gems: gems, gotGems: 0,
+      opened: 0, total: total, score: 0, misses: 0, first: 0, helped: 0, missed: {}, busy: false, done: false, cur: null
+    };
+    G.visited[0] = 1;
+    return G;
+  }
+  function edgeOf(a, b) { return G.edges[G.key(a, b)]; }
+  function canPass(a, b) { var e = edgeOf(a, b); return e && (!e.lock || e.lock.solved); }
+  function neighborsOf(i) { var x = i % G.W, y = (i - x) / G.W, o = []; if (x > 0) o.push(i - 1); if (x < G.W - 1) o.push(i + 1); if (y > 0) o.push(i - G.W); if (y < G.H - 1) o.push(i + G.W); return o; }
+  function revealed(i) {
+    if (G.visited[i]) return true;
+    return neighborsOf(i).some(function (n) { return G.visited[n] && edgeOf(n, i); });
+  }
+
+  /* ---------------- map drawing ---------------- */
+  var S = 100, LOCKC = { door: '#00f0ff', gold: '#FFC107', gem: '#ff4dd6', core: '#ffffff' };
+  function svg(tag, at, parent) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (parent) parent.appendChild(e); return e; }
+  function drawMap() {
+    var m = $('map'); m.innerHTML = ''; m.setAttribute('viewBox', '-6 -6 ' + (G.W * S + 12) + ' ' + (G.H * S + 12));
+    var defs = svg('defs', {}, m);
+    defs.innerHTML = '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+      '<radialGradient id="orb"><stop offset="0" stop-color="#fff"/><stop offset=".45" stop-color="#9ef7ff"/><stop offset="1" stop-color="#00f0ff" stop-opacity="0"/></radialGradient>';
+    for (var i = 0; i < G.N; i++) {
+      var x = (i % G.W) * S, y = Math.floor(i / G.W) * S, rv = revealed(i);
+      svg('rect', { x: x + 2, y: y + 2, width: S - 4, height: S - 4, rx: 10, class: 'cell', 'data-i': i,
+        fill: G.visited[i] ? '#1a1f52' : rv ? '#10123a' : '#07051a', stroke: rv ? 'rgba(120,140,255,.18)' : 'rgba(80,60,160,.12)' }, m);
+      if (rv && G.gems[i]) { var gx = x + S / 2, gy = y + S / 2; svg('polygon', { points: [gx, gy - 18, gx + 13, gy, gx, gy + 18, gx - 13, gy].join(' '), fill: '#ff4dd6', filter: 'url(#glow)', 'pointer-events': 'none' }, m); }
+      if (i === G.exit && rv) { var ex0 = x + S / 2, ey0 = y + S / 2; svg('circle', { cx: ex0, cy: ey0, r: 26, fill: 'none', stroke: '#FFC107', 'stroke-width': 4, filter: 'url(#glow)', 'pointer-events': 'none' }, m); svg('circle', { cx: ex0, cy: ey0, r: 11, fill: '#FFC107', 'pointer-events': 'none' }, m); svg('text', { x: ex0, y: ey0 + 46, 'text-anchor': 'middle', fill: '#FFC107', 'font-size': 13, 'font-weight': 800, 'font-family': 'Orbitron', 'pointer-events': 'none' }, m).textContent = 'CORE'; }
+    }
+    // walls + doors
+    var wall = function (x1, y1, x2, y2) { svg('line', { x1: x1, y1: y1, x2: x2, y2: y2, stroke: '#6d5cff', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: .85, 'pointer-events': 'none' }, m); };
+    for (i = 0; i < G.N; i++) {
+      x = (i % G.W) * S; y = Math.floor(i / G.W) * S;
+      if (!revealed(i)) continue;
+      [[i + 1, x + S, y, x + S, y + S, (i % G.W) < G.W - 1], [i + G.W, x, y + S, x + S, y + S, i + G.W < G.N]].forEach(function (d) {
+        var n = d[0], ok = d[5], e = ok && edgeOf(i, n);
+        if (!e) { wall(d[1], d[2], d[3], d[4]); return; }
+        if (e.lock && !e.lock.solved) {
+          var cx = (d[1] + d[3]) / 2, cy = (d[2] + d[4]) / 2, vert = d[1] === d[3], col = LOCKC[e.lock.type];
+          svg('rect', { x: vert ? cx - 5 : cx - 32, y: vert ? cy - 32 : cy - 5, width: vert ? 10 : 64, height: vert ? 64 : 10, rx: 4, fill: col, filter: 'url(#glow)', 'pointer-events': 'none' }, m);
+          svg('rect', { x: cx - 9, y: cy - 7, width: 18, height: 14, rx: 3, fill: '#0a0828', stroke: col, 'stroke-width': 2, 'pointer-events': 'none' }, m);
+          svg('path', { d: 'M' + (cx - 5) + ' ' + (cy - 7) + 'v-4a5 5 0 0 1 10 0v4', fill: 'none', stroke: col, 'stroke-width': 2, 'pointer-events': 'none' }, m);
+        }
+      });
+    }
+    wall(0, 0, G.W * S, 0); wall(0, 0, 0, G.H * S);
+    var px = (G.at % G.W) * S + S / 2, py = Math.floor(G.at / G.W) * S + S / 2;
+    svg('circle', { cx: px, cy: py, r: 30, fill: 'url(#orb)', 'pointer-events': 'none', id: 'me' }, m);
+    svg('circle', { cx: px, cy: py, r: 10, fill: '#fff', 'pointer-events': 'none' }, m);
+    $('hDoors').textContent = G.opened + '/' + G.total;
+    $('hGems').textContent = G.gotGems;
+    $('hMiss').textContent = G.misses;
+    $('hScore').textContent = G.score;
+  }
+  function tip(t) { $('tip').innerHTML = t; }
+
+  /* ---------------- moving ---------------- */
+  function tryMove(to) {
+    if (G.busy || G.done) return;
+    var e = edgeOf(G.at, to);
+    if (!e) { sfx('thud'); return; }
+    if (e.lock && !e.lock.solved) { openLock(e, to); return; }
+    G.at = to;
+    if (!G.visited[to]) { G.visited[to] = 1; sfx('whoosh'); }
+    if (G.gems[to]) { delete G.gems[to]; G.gotGems++; G.score += 150; sfx('coin'); var r = $('map').getBoundingClientRect(); fx('confetti', r.left + r.width * ((to % G.W) + .5) / G.W, r.top + r.height * (Math.floor(to / G.W) + .5) / G.H, { count: 40 }); tip('Bonus crystal! <b>+150</b>'); }
+    drawMap();
+    if (to === G.exit) finish();
+  }
+  function pathTo(t) {   // walk through open doors to a visited room
+    var prev = {}, q = [G.at]; prev[G.at] = -1;
+    while (q.length) { var u = q.shift(); if (u === t) break; neighborsOf(u).forEach(function (v) { if (!(v in prev) && canPass(u, v) && (G.visited[v] || v === t)) { prev[v] = u; q.push(v); } }); }
+    if (!(t in prev)) return null;
+    var p = []; for (var c = t; c !== G.at; c = prev[c]) p.unshift(c); return p;
+  }
+  function walk(cells) {
+    if (!cells || !cells.length) return;
+    var i = 0;
+    (function stepIt() {
+      G.busy = false; var target = cells[i++]; tryMove(target);
+      if (i < cells.length && !G.done && G.at === target && $('pz').hidden) { G.busy = true; setTimeout(stepIt, 110); }
+    })();
+  }
+  $('map').addEventListener('click', function (ev) {
+    var t = ev.target.closest && ev.target.closest('.cell'); if (!t || !G || G.busy) return;
+    var i = +t.getAttribute('data-i'); if (i === G.at) return;
+    if (neighborsOf(G.at).indexOf(i) >= 0) { tryMove(i); return; }
+    var p = pathTo(i); if (p) walk(p); else tip('You can\'t get there yet. Open a door next to you first.');
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (!G || !$('play').classList.contains('on') || !$('pz').hidden) return;
+    var x = G.at % G.W, d = { ArrowLeft: -1, a: -1, A: -1, ArrowRight: 1, d: 1, D: 1, ArrowUp: -G.W, w: -G.W, W: -G.W, ArrowDown: G.W, s: G.W, S: G.W }[ev.key];
+    if (d == null) return;
+    ev.preventDefault();
+    if ((d === -1 && x === 0) || (d === 1 && x === G.W - 1)) return;
+    var to = G.at + d; if (to < 0 || to >= G.N) return;
+    tryMove(to);
+  });
+
+  /* ---------------- the lock ---------------- */
+  var L = null;   // { e, to, i, p, miss, helped, stepOpen }
+  function openLock(e, to) {
+    var i = 0; while (e.lock.done && e.lock.done[i]) i++;
+    L = { e: e, to: to, i: i, p: e.lock.ps[i], miss: 0, helped: false, busy: false };
+    showPuzzle();
+  }
+  function showPuzzle() {
+    var p = L.p, t = L.e.lock.type, box = $('pzbox');
+    box.className = 'pzbox' + (t === 'gold' ? ' gold' : t === 'gem' ? ' mag' : '');
+    var tag = { door: ['c', 'Locked door'], gold: ['g', 'Gold shortcut'], gem: ['m', 'Bonus room'], core: ['s', 'Core lock ' + (L.i + 1) + ' of 2'] }[t];
+    $('ptag').innerHTML = '<span class="pill ' + tag[0] + '">' + tag[1] + '</span><span class="pill s">Score ' + p.score + '</span>';
+    $('ptitle').textContent = p.title;
+    var ask = p.x ? ' Find <b><i>x</i></b>. The turret will turn to <span style="white-space:nowrap">(' + exShow(p.x.T) + ')°</span>.' : '';
+    $('pprompt').innerHTML = p.text + ask;
+    $('alab').innerHTML = p.x ? '<i>x</i> =' : '? =';
+    $('unit').hidden = !!p.x;
+    $('ans').value = ''; $('fb').hidden = true; $('steps').hidden = true; $('steps').innerHTML = '';
+    $('bStep').hidden = true; $('bShow').hidden = true;
+    $('pz').hidden = false;
+    drawFig(p, null);
+    setTimeout(function () { try { $('ans').focus({ preventScroll: true }); } catch (e) {} }, 30);
+  }
+  function feedback(cls, html) { var f = $('fb'); f.className = cls; f.innerHTML = html; f.hidden = false; }
+
+  /* figure */
+  var FIG = {};
+  function arcPath(v, from, sense, val, r) {
+    var p1 = add(v, dir(from), r), p2 = add(v, dir(from + sense * val), r);
+    return 'M' + p1[0].toFixed(1) + ' ' + p1[1].toFixed(1) + 'A' + r + ' ' + r + ' 0 ' + (val > 180 ? 1 : 0) + ' ' + (sense > 0 ? 0 : 1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+  }
+  function label(p, idx) {
+    var X = p.x;
+    if (idx === 'T') return X ? '(' + exShow(X.T) + ')°' : '?';
+    if (X && X.G && X.gi === idx) return '(' + exShow(X.G) + ')°';
+    return p.given[idx] + '°';
+  }
+  function drawFig(p, shotDeg) {
+    var f = $('fig'); f.innerHTML = '';
+    var defs = svg('defs', {}, f);
+    defs.innerHTML = '<filter id="fg" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+    for (var gx = 0; gx <= 600; gx += 40) svg('line', { x1: gx, y1: 0, x2: gx, y2: 400, stroke: 'rgba(110,90,255,.07)' }, f);
+    for (var gy = 0; gy <= 400; gy += 40) svg('line', { x1: 0, y1: gy, x2: 600, y2: gy, stroke: 'rgba(110,90,255,.07)' }, f);
+    p.segs.forEach(function (s) {
+      svg('line', { x1: s.p[0], y1: s.p[1], x2: s.q[0], y2: s.q[1], stroke: s.c === 'gd' ? 'rgba(200,210,255,.55)' : '#C9D2FF', 'stroke-width': s.c === 'gd' ? 2.5 : 3.5, 'stroke-dasharray': s.c === 'gd' ? '8 7' : null, 'stroke-linecap': 'round' }, f);
+    });
+    if (p.par) p.par.forEach(function (y) {        // parallel marks
+      [470, 486].forEach(function (x) { svg('path', { d: 'M' + (x - 6) + ' ' + (y - 7) + 'L' + (x + 4) + ' ' + y + 'L' + (x - 6) + ' ' + (y + 7), fill: 'none', stroke: '#C9D2FF', 'stroke-width': 3 }, f); });
+    });
+    var boxes = [];
+    p.arcs.forEach(function (a, i) {
+      var b = between(a.v, a.p1, a.p2), r = b.val < 45 ? 44 : 34;
+      svg('path', { d: arcPath(a.v, b.from, b.sense, b.val, r), fill: 'none', stroke: '#9ef7ff', 'stroke-width': 3 }, f);
+      var lt = label(p, +a.lab.slice(1)), mid = labAt(a.v, b.from + b.sense * b.val / 2, r, lt, b.val);
+      boxes.push([mid[0], mid[1], lt.length * 6.1]);
+      svg('text', { x: mid[0], y: mid[1] + 7, 'text-anchor': 'middle', class: 'lab g' }, f).textContent = lt;
+    });
+    p.names.forEach(function (n) { var np = clampLab(n.p, 8); svg('text', { x: np[0], y: np[1], 'text-anchor': 'middle', class: 'nm' }, f).textContent = n.t; });
+    // crystal
+    var c = p.crystal;
+    FIG.crys = svg('g', { filter: 'url(#fg)' }, f);
+    svg('polygon', { points: [c[0], c[1] - 16, c[0] + 12, c[1], c[0], c[1] + 16, c[0] - 12, c[1]].join(' '), fill: '#ff4dd6', stroke: '#fff', 'stroke-width': 1.5 }, FIG.crys);
+    // turret: gold reference ray + "?" arc
+    var T = p.turret, v = T.v;
+    svg('line', { x1: v[0], y1: v[1], x2: T.refPt[0], y2: T.refPt[1], stroke: '#FFC107', 'stroke-width': 5, 'stroke-linecap': 'round', opacity: .95 }, f);
+    var qr = T.ans < 45 ? 58 : 50;
+    svg('path', { d: arcPath(v, T.ref, T.sense, T.ans, qr), fill: 'none', stroke: '#FFC107', 'stroke-width': 3, 'stroke-dasharray': '6 5' }, f);
+    var qt = label(p, 'T'), qbis = T.ref + T.sense * T.ans / 2, qm = labAt(v, qbis, qr, qt, T.ans);
+    var hit = function (m) { return boxes.some(function (bx) { return Math.abs(bx[0] - m[0]) < bx[2] + qt.length * 6.1 + 6 && Math.abs(bx[1] - m[1]) < 24; }); };
+    if (hit(qm)) {   // move the ? label so it never sits on top of a given label
+      var dd = dist(v, qm), tries = [[qbis, dd * 0.75], [qbis, dd * 1.3], [qbis, dd * 1.6], [qbis + 180, 34 + qt.length * 6.1]];
+      for (var ti = 0; ti < tries.length; ti++) { var c2 = clampLab(add(v, dir(tries[ti][0]), tries[ti][1]), qt.length * 6.1); if (!hit(c2)) { qm = c2; break; } }
+    }
+    svg('text', { x: qm[0], y: qm[1] + 7, 'text-anchor': 'middle', class: 'lab q' }, f).textContent = qt;
+    FIG.sweep = svg('path', { d: '', fill: 'none', stroke: '#ff4dd6', 'stroke-width': 4 }, f);
+    FIG.beam = svg('line', { x1: v[0], y1: v[1], x2: v[0], y2: v[1], stroke: '#ff2d7a', 'stroke-width': 5, 'stroke-linecap': 'round', filter: 'url(#fg)' }, f);
+    FIG.core = svg('line', { x1: v[0], y1: v[1], x2: v[0], y2: v[1], stroke: '#fff', 'stroke-width': 1.8, 'stroke-linecap': 'round' }, f);
+    FIG.tur = svg('g', { transform: 'translate(' + v[0] + ' ' + v[1] + ') rotate(' + (-T.ref) + ')' }, f);
+    svg('rect', { x: 0, y: -5, width: 30, height: 10, rx: 3, fill: '#2a2470', stroke: '#9ef7ff', 'stroke-width': 2 }, FIG.tur);
+    svg('circle', { cx: v[0], cy: v[1], r: 13, fill: '#1a1650', stroke: '#9ef7ff', 'stroke-width': 3 }, f);
+    svg('circle', { cx: v[0], cy: v[1], r: 4.5, fill: '#ff4dd6' }, f);
+  }
+  /* put a label just past its arc, along the bisector, far enough that the whole text clears the arc */
+  function labAt(v, bis, r, txt, val) {
+    var hw = txt.length * 6.1, u = dir(bis), d = r + 9 + hw * Math.abs(u[0]) + 14 * Math.abs(u[1]) + (txt.length > 5 ? 10 : 0);
+    var h = (val || 180) / 2, lat = hw * Math.abs(u[1]) + 11 * Math.abs(u[0]);   // keep the text inside a narrow angle
+    if (h < 80) d = Math.min(170, Math.max(d, lat / Math.tan(h / R2D) + 10));
+    return clampLab(add(v, u, d), hw);
+  }
+  function clampLab(p, hw) { return [Math.max(hw + 6, Math.min(594 - hw, p[0])), Math.max(24, Math.min(388, p[1]))]; }
+  function rayToWall(v, d) {
+    var u = dir(d), t = Infinity;
+    if (u[0] > 1e-9) t = Math.min(t, (596 - v[0]) / u[0]); if (u[0] < -1e-9) t = Math.min(t, (4 - v[0]) / u[0]);
+    if (u[1] > 1e-9) t = Math.min(t, (396 - v[1]) / u[1]); if (u[1] < -1e-9) t = Math.min(t, (4 - v[1]) / u[1]);
+    return add(v, u, t);
+  }
+  function svgToPage(pt) { var f = $('fig'), r = f.getBoundingClientRect(); return [r.left + pt[0] / 600 * r.width, r.top + pt[1] / 400 * r.height]; }
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animateShot(p, deg, hit, done) {
+    var T = p.turret, v = T.v, end = hit ? p.crystal : rayToWall(v, T.ref + T.sense * deg);
+    var t0 = performance.now(), turnMs = reduce ? 1 : 650, beamMs = reduce ? 1 : 380;
+    sfx('whoosh');
+    (function frame(now) {
+      var k = Math.min(1, (now - t0) / turnMs), e = 1 - Math.pow(1 - k, 3), a = deg * e;
+      FIG.tur.setAttribute('transform', 'translate(' + v[0] + ' ' + v[1] + ') rotate(' + (-(T.ref + T.sense * a)) + ')');
+      FIG.sweep.setAttribute('d', a > 0.5 ? arcPath(v, T.ref, T.sense, Math.min(a, 359.5), 26) : '');
+      if (k < 1) return requestAnimationFrame(frame);
+      sfx('laser'); var t1 = performance.now();
+      (function beam(n2) {
+        var k2 = Math.min(1, (n2 - t1) / beamMs), q = [v[0] + (end[0] - v[0]) * k2, v[1] + (end[1] - v[1]) * k2];
+        [FIG.beam, FIG.core].forEach(function (l) { l.setAttribute('x2', q[0]); l.setAttribute('y2', q[1]); });
+        if (k2 < 1) return requestAnimationFrame(beam);
+        var pg = svgToPage(end);
+        if (hit) { fx('boom', pg[0], pg[1], { color: '#ff4dd6', size: 1.1 }); sfx('power'); }
+        else { fx('sparks', pg[0], pg[1], { color: '#ff7a3c', count: 26 }); sfx('clang'); fx('shake', $('figWrap'), 6, 260); }
+        done();
+      })(t1);
+    })(t0);
+  }
+
+  function readAns() {
+    var s = $('ans').value.replace(/−/g, '-').replace(/°/g, '').replace(/\s+/g, '').replace(/^x=/i, '');
+    if (!/^-?\d+(\.\d+)?$/.test(s)) return null;
+    return parseFloat(s);
+  }
+  function fire(fromSteps) {
+    if (!L || L.busy) return;
+    var p = L.p, u = readAns();
+    if (u == null) { feedback('info', p.x ? 'Type a number for <i>x</i>, then press <b>FIRE</b>.' : 'Type the number of degrees, then press <b>FIRE</b>.'); return; }
+    var deg = p.x ? exVal(p.x.T, u) : u;
+    var ok = p.x ? near(u, p.x.val) : near(deg, p.turret.ans);
+    if (!ok && (deg <= 0 || deg >= 360)) {
+      feedback('bad', p.x ? 'Your <i>x</i> makes the angle ' + exShow(p.x.T).replace('x', '(' + u + ')') + ' = <b>' + deg + '°</b>. An angle here is more than 0° and less than 180°. Check your work.' : 'An angle here is more than 0° and less than 180°. Try again.');
+      return;
+    }
+    L.busy = true; $('bFire').disabled = true;
+    try { if (window.ArcadeSend) ArcadeSend.answer(ok); } catch (e) {}
+    animateShot(p, deg, ok, function () {
+      L.busy = false; $('bFire').disabled = false;
+      if (ok) return solved(fromSteps);
+      L.miss++; G.misses++; G.missed[p.rel] = (G.missed[p.rel] || 0) + 1; drawMapStats();
+      var why = p.x ? whyX(p, u) : whyAngle(p, deg);
+      var used = p.x ? 'Your <i>x</i> made the turret turn ' + exShow(p.x.T).replace('x', '(' + u + ')') + ' = <b>' + deg + '°</b>. The beam hit the wall. ' : 'The beam hit the wall. ';
+      var steer = why || (p.x ? 'Does that angle follow the rule for these two angles? Check your equation.' : 'Which rule fits these angles: equal, or add to 180°?');
+      if (L.miss === 1) feedback('bad', '<b>Not yet.</b> ' + used + steer);
+      else if (L.miss === 2) { feedback('bad', '<b>Not yet.</b> ' + used + steer + '<br>Try <b>Step by step</b> below.'); $('bStep').hidden = false; }
+      else { feedback('bad', '<b>Not yet.</b> ' + used + (why || '') + ' You can press <b>Show me</b>.'); $('bStep').hidden = false; $('bShow').hidden = false; }
+    });
+  }
+  function drawMapStats() { $('hMiss').textContent = G.misses; }
+  function solved(fromSteps) {
+    var p = L.p, e = L.e, type = e.lock.type;
+    var pts = { door: 100, core: 120, gold: 250, gem: 150 }[type];
+    if (L.miss === 0 && !L.helped) { pts += 50; G.first++; }
+    if (L.helped || fromSteps) { G.helped++; pts = Math.round(pts / 2); }
+    G.score += pts;
+    feedback('ok', '<b>Direct hit!</b> ' + p.rel + '. <b>+' + pts + '</b>');
+    e.lock.done = e.lock.done || []; e.lock.done[L.i] = true;
+    var allDone = e.lock.ps.every(function (_, i) { return e.lock.done[i]; });
+    setTimeout(function () {
+      if (!allDone) { L = { e: e, to: L.to, i: L.i + 1, p: e.lock.ps[L.i + 1], miss: 0, helped: false, busy: false }; sfx('clang'); showPuzzle(); feedback('info', 'Lock 1 is open. One more lock on the Core door.'); return; }
+      e.lock.solved = true; G.opened++; $('pz').hidden = true;
+      var to = L.to; L = null;
+      sfx('coin'); tip(type === 'gold' ? 'Shortcut open! <b>+' + pts + '</b>' : type === 'gem' ? 'The bonus room is open. Go grab the crystal.' : 'Door open. Keep going.');
+      tryMove(to);
+    }, reduce ? 300 : 900);
+  }
+
+  /* ---------------- help ---------------- */
+  $('bHint').addEventListener('click', function () {
+    if (!L) return; var p = L.p;
+    var h = HINT[p.kind === 'P' ? p.relKey : p.kind];
+    if (p.kind === 'V' || p.kind === 'L' || p.kind === 'P') h += '<br><span style="opacity:.85">' + SHORT + '</span>';
+    if (p.x) h += '<br>Write an equation with the two angles. Then solve for <i>x</i>.';
+    feedback('info', '<b>Hint.</b> ' + h);
+  });
+  $('bShow').addEventListener('click', function () {
+    if (!L) return; var p = L.p; L.helped = true;
+    $('ans').value = p.x ? p.x.val : p.turret.ans;
+    feedback('info', 'Here it is: ' + (p.x ? '<i>x</i> = <b>' + p.x.val + '</b>, so the turret turns ' + p.turret.ans + '°.' : 'the <b>?</b> angle is <b>' + p.turret.ans + '°</b>.') + ' ' + HINT[p.kind === 'P' ? p.relKey : p.kind] + ' Press <b>FIRE</b>.');
+  });
+  var RELQ = {
+    eq: [['They are equal', 1], ['They add to 180°', 0]],
+    supp: [['They are equal', 0], ['They add to 180°', 1]],
+    tri: [['All three add to 180°', 1], ['All three add to 360°', 0]],
+    ext: [['Outside angle = the two far angles added', 1], ['Outside angle + far angle = 180°', 0]],
+    extIn: [['Outside angle = angle A + the ? angle', 1], ['Outside angle + angle A = 180°', 0]]
+  };
+  var RELNO = {
+    eq: 'Look at the two angles. If both are acute (or both obtuse), they are not a pair that adds to 180°.',
+    supp: 'One angle is acute and one is obtuse, so they cannot be equal.',
+    tri: '360° is for the angles around a point. A triangle\'s angles add to 180°.',
+    ext: 'The outside angle and the inside angle next to it add to 180°. But the far angles work differently.',
+    extIn: 'The outside angle and the inside angle at B add to 180°. Angle A is a far angle.'
+  };
+  $('bStep').addEventListener('click', function () {
+    if (!L) return; var p = L.p, st = $('steps'); L.helped = true;
+    st.hidden = false;
+    st.innerHTML = '<h4>Step 1. ' + p.rel + '. What is the rule?</h4><div class="rel"></div><div class="note" hidden></div><div class="s2"></div>';
+    var row = st.querySelector('.rel'), note = st.querySelector('.note');
+    RELQ[p.rule].forEach(function (c) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = c[0];
+      b.addEventListener('click', function () {
+        if (b.classList.contains('no') || st.querySelector('.yes')) return;
+        if (!c[1]) { b.classList.add('no'); note.hidden = false; note.textContent = 'Not this one. ' + RELNO[p.rule]; return; }
+        b.classList.add('yes'); note.hidden = true; stepTwo(p, st.querySelector('.s2'));
+      });
+      row.appendChild(b);
+    });
+    st.scrollIntoView({ block: 'nearest', behavior: reduce ? 'auto' : 'smooth' });
+  });
+  function stepTwo(p, host) {
+    var e = equation(p);
+    var lead = p.x ? 'Step 2. Write the equation with the angles.' : 'Step 2. Let <i>x</i> be the <b>?</b> angle. Write the equation.';
+    host.innerHTML = '<h4>' + lead + '</h4><div class="eq">' + e.s.replace(/-/g, '−') + '</div><div class="sw-host"></div>';
+    var simple = /^x = \d+( \+ \d+)?$/.test(e.s);
+    if (simple || !window.StepWork) {
+      host.querySelector('.sw-host').innerHTML = '<p style="margin:6px 0">' + (e.s.indexOf('+') > 0 ? 'Add the two numbers.' : 'That is the angle.') + ' Type it in the box and press <b>FIRE</b>.</p>';
+      return;
+    }
+    host.querySelector('.sw-host').insertAdjacentHTML('beforeend', '<h4 style="margin-top:10px">Step 3. Solve for <i>x</i>.</h4>');
+    try {
+      StepWork.mount(host.querySelector('.sw-host'), { start: e.s, v: 'x', label: 'Solve it step by step', onAnswer: function (t, info) {
+        var xv = parseFloat(String(t).replace(/^.*=/, '').replace(/−/g, '-'));
+        if (isNaN(xv)) return;
+        $('ans').value = String(Math.round(xv * 1000) / 1000);
+        if (!p.x) feedback('info', 'You found <i>x</i> = ' + $('ans').value + '°. That is the <b>?</b> angle. Firing!');
+        setTimeout(function () { fire(true); }, 450);
+      } });
+      var o = host.querySelector('.sw-open'); if (o) o.click();
+    } catch (err) { host.querySelector('.sw-host').innerHTML += '<p>Solve the equation, type your answer and press <b>FIRE</b>.</p>'; }
+  }
+  $('bLeave').addEventListener('click', function () { if (L && L.busy) return; $('pz').hidden = true; L = null; tip('The door is still locked. Come back when you are ready.'); });
+
+  /* keypad */
+  (function () {
+    var pad = $('pad'), keys = ['7', '8', '9', '⌫', '4', '5', '6', '−', '1', '2', '3', '.', '0', 'Clear'];
+    keys.forEach(function (k) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = k; if (k === 'Clear') b.style.gridColumn = 'span 3';
+      b.addEventListener('click', function () {
+        var a = $('ans');
+        if (k === '⌫') a.value = a.value.slice(0, -1); else if (k === 'Clear') a.value = ''; else if (k === '−') a.value = a.value.charAt(0) === '-' ? a.value.slice(1) : '-' + a.value; else a.value += k;
+      });
+      pad.appendChild(b);
+    });
+    var f = document.createElement('button'); f.type = 'button'; f.className = 'fire'; f.id = 'bFire'; f.textContent = 'FIRE';
+    f.addEventListener('click', function () { fire(false); }); pad.appendChild(f);
+    $('ans').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); fire(false); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('pz').hidden) $('bLeave').click(); });
+  })();
+
+  /* ---------------- menu / flow ---------------- */
+  var sel = { w: 0, l: 0 };
+  function bestKey() { return 'lv-best'; }
+  function drawWings() {
+    var best = store(bestKey()) || {}, h = '';
+    WINGS.forEach(function (w, i) {
+      var b = [0, 1, 2].map(function (l) { var s = best[w.id + l]; return s ? LEVELS[l][0] + ' ' + '★★★'.slice(0, s) : ''; }).filter(Boolean).join('  ');
+      h += '<button type="button" class="wing' + (i === sel.w ? ' on' : '') + '" data-w="' + i + '" style="--c:' + w.c + '"><div class="t1">Wing ' + w.id + '</div><div class="t2">' + w.name + '</div><div class="t3">' + w.d + '</div><div class="best">' + b + '</div></button>';
+    });
+    $('wings').innerHTML = h;
+  }
+  $('wings').addEventListener('click', function (e) { var b = e.target.closest('.wing'); if (!b) return; sel.w = +b.dataset.w; drawWings(); sfx('coin'); });
+  $('levels').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; sel.l = +b.dataset.l; [].forEach.call($('levels').children, function (c) { c.classList.toggle('on', c === b); }); });
+  function show(id) { ['menu', 'play', 'res'].forEach(function (s) { $(s).classList.toggle('on', s === id); }); window.scrollTo(0, 0); }
+  function start() {
+    newMaze(sel.w, sel.l);
+    $('wingTitle').textContent = 'Wing ' + WINGS[sel.w].id + ' · ' + WINGS[sel.w].name + ' · ' + LEVELS[sel.l];
+    show('play'); drawMap();
+    tip('Find a path to the <b>Core</b> (bottom right). Walk into a glowing door to try its lock.');
+    sfx('power');
+  }
+  $('bStart').addEventListener('click', start);
+  $('bAgain').addEventListener('click', start);
+  $('bMenu').addEventListener('click', function () { drawWings(); show('menu'); });
+  $('bQuit').addEventListener('click', function () { if (G && !G.done && G.opened && !confirmQuit()) return; $('pz').hidden = true; L = null; drawWings(); show('menu'); });
+  function confirmQuit() { var b = $('bQuit'); if (b.dataset.sure) { delete b.dataset.sure; b.textContent = 'Menu'; return true; } b.dataset.sure = 1; b.textContent = 'Leave? Tap again'; setTimeout(function () { delete b.dataset.sure; b.textContent = 'Menu'; }, 2500); return false; }
+  (function () { if (window.AFX && AFX.soundButton) { var s = AFX.soundButton(); if (s) { s.style.cssText = ''; s.className = 'ib afx-sound'; $('ctrl').insertBefore(s, $('bQuit')); } } })();
+
+  function finish() {
+    G.done = true;
+    var stars = G.misses <= 2 && !G.helped ? 3 : (G.helped <= 1 && G.misses <= 6 ? 2 : 1);
+    var w = WINGS[G.wi], best = store(bestKey()) || {}, k = w.id + G.lvl;
+    if (!best[k] || stars > best[k]) { best[k] = stars; store(bestKey(), best); }
+    $('rTitle').textContent = 'VAULT OPEN!';
+    $('rSub').textContent = w.name + ' · ' + LEVELS[G.lvl] + (G.gotGems ? ' · ' + G.gotGems + ' bonus crystal' + (G.gotGems > 1 ? 's' : '') : '');
+    $('rScore').textContent = G.score; $('rDoors').textContent = G.opened + '/' + G.total; $('rFirst').textContent = G.first; $('rMiss').textContent = G.misses;
+    var miss = Object.keys(G.missed);
+    $('rMissBox').hidden = !miss.length;
+    $('rMissList').innerHTML = miss.map(function (m) { return '<li>' + m + ' (' + G.missed[m] + ' miss' + (G.missed[m] > 1 ? 'es' : '') + ')</li>'; }).join('');
+    var st = $('rStars').children; for (var i = 0; i < 3; i++) st[i].classList.remove('lit');
+    show('res');
+    for (i = 0; i < stars; i++) (function (j) { setTimeout(function () { st[j].classList.add('lit'); sfx('coin'); }, 300 + j * 280); })(i);
+    sfx('win'); fx('confetti', innerWidth / 2, innerHeight / 3, { count: 120 });
+    try {
+      if (window.ArcadeSend) ArcadeSend.round({ level: w.name + ' · ' + LEVELS[G.lvl], score: G.score,
+        details: G.opened + '/' + G.total + ' doors · ' + G.first + ' first try · ' + G.misses + ' misses · ' + G.helped + ' step help' + (miss.length ? ' · missed: ' + miss.join(', ') : '') });
+    } catch (e) {}
+  }
+
+  drawWings();
+  if (DEBUG) window.__LV = { get G() { return G; }, get L() { return L; }, build: build, newMaze: newMaze, equation: equation, whyAngle: whyAngle, whyX: whyX, mk: { V: mkV, L: mkL, P: mkP, T: mkT, E: mkE, EI: mkEI }, addX: addX, start: start, sel: sel, fire: fire, tryMove: tryMove, drawFig: drawFig };
+})();
+</script>
+</body>
+</html>
