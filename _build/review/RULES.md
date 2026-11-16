@@ -110,3 +110,5 @@ I9. Laser Vault tells its story: a mission briefing (agent, reach the Core), an 
 ## J. Skill Builders
 J1. Every Skill Builders lesson has a video (sbvideo.js): built from the lesson itself, original host (Digit), computer voice
     with math read in words, original music, captions always on, and a Your turn question with think time before the answer.
+J2. Winter Break Review pages: every section opens with a Quick review (rule, example, On the EOG, In Math 1); only class-level data
+    (no student names) appears on the site; the Version 2 page is labeled only "Version 2".

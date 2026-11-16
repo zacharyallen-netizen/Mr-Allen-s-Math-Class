@@ -110,13 +110,14 @@
 
   /* ---------- render ---------- */
   var html = ['<div class="hero"><h1>' + data.title + '</h1><p>' + data.sub + '</p>' +
-    '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">🖨️ Printable PDF of this practice</a>' +
-    (D.key ? ' &nbsp;·&nbsp; <a href="' + D.key + '" target="_blank" rel="noopener">✅ Answer key (PDF)</a>' : '') + '</p></div>',
+    (D.pdf ? '<p class="pr-links"><a href="' + D.pdf + '" target="_blank" rel="noopener">🖨️ Printable PDF of this practice</a>' +
+    (D.key ? ' &nbsp;·&nbsp; <a href="' + D.key + '" target="_blank" rel="noopener">✅ Answer key (PDF)</a>' : '') + '</p>' : '') + (data.intro || '') + '</div>',
     '<p class="pr-how"><b>Tap</b> your answer. If there is a box, type a <b>number</b> and press <b>Check</b>. Stuck? Tap <b>Hint</b>. After three tries you can see the answer. Do the work on paper first.</p>',
     '<div class="pr-score" aria-live="polite">Answered <span id="prScore">0</span> of <span id="prTotal">0</span></div>'];
   var total = 0, TAP = {};   // id -> { list, right, ui }: problems answered by tapping a choice (tap-answers.js). A number answer keeps its box.
   data.secs.forEach(function (sec, si) {
     html.push('<h2 class="pr-sec">' + sec.title + '</h2>');
+    if (sec.intro) html.push('<div class="pr-intro">' + sec.intro + '</div>');   // optional mini-lesson before the section's problems (winter-break-review)
     sec.probs.forEach(function (p) {
       var id = 's' + si + 'p' + p.n; total++;
       var ch = window.TapAnswers ? TapAnswers.choices(p.ans, { q: p.q, key: (D.unit || '') + id, choices: p.choices, why: p.why }) : null, rt = ch ? TapAnswers.rightOf(ch, p.ans) : null;
