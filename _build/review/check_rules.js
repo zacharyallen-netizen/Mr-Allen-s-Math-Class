@@ -239,6 +239,8 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/function makeInvaders\(/.test(ni) || !/function makeCentipede\(/.test(ni) || !/function balance\(/.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'invaders + centipede, every answer kept shootable, game sized beside the side menu');
   if (!/function floorY\(/.test(ni) || !/function obliterate\(/.test(ni) || /hurt\('The invaders reached you/.test(ni) || /death ?star/i.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'ships stay above the zig-zag line, ammo dump, original boss');
   if (!/var COACH = /.test(ik) || /Doc Louis/i.test(ik)) fail('I6', 'grade8/integer-knockout.html', 'original corner trainer with the integer rules');
+  const lvh = rd('grade8/laser-vault.html');
+  if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');
   const rr = rd('grade8/root-rocket.html');
   if (!/function good\(k, n\)/.test(rr) || !/function whyLand\(/.test(rr) || !/G\.tries >= 3/.test(rr) || !/score: G\.score/.test(rr)) fail('I8', 'grade8/root-rocket.html', 'Root Rocket: method-friendly numbers, named mistakes, 3 tries, score logged');
   if (/glint > 0 \? C\.green|val === .*answer.*C\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must look like every other target');

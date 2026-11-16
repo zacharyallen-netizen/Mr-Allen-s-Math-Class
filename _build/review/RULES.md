@@ -104,3 +104,5 @@ I5. Equation Master monsters are evil looking and attack every few seconds; Spac
     device); original dramatic music with Music: on/off. None of this changes questions, feedback, score or what is sent.
 I8. Root Rocket uses only numbers where the class 4-step estimate rounds to the true tenth, so a student who uses the
     method always gets a Perfect landing. Every wrong pair and every crash names the mistake; 3 tries per landing.
+I9. Laser Vault tells its story: a mission briefing (agent, reach the Core), an agent on the map, doors drawn as red laser
+    fences that power down when solved, an objectives list, and a guided first fence. Puzzles and scoring are unchanged.
