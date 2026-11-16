@@ -72,6 +72,7 @@ body.mini .swatches{grid-template-columns:repeat(5,1fr)}
 body.mini .swatches button{min-height:38px;font-size:0}
 body.mini .mtip{display:block}
 .mtip{display:none;margin:0;font-size:13px;color:var(--muted)}
+  .grp[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -81,7 +82,7 @@ body.mini .mtip{display:block}
   <header>
     <p class="eyebrow">Reset Room</p>
     <h1>Chill Math Music</h1>
-    <p class="lede">Lo-fi beats or calm music to help you focus. Press Play, then switch back to your work. <b style="color:#F7F7F4">Keep this tab open.</b> Closing it or leaving this page stops the music.</p>
+    <p class="lede">Lo-fi beats, calm music, trip hop or old school beats to help you focus. Press Play, then switch back to your work. <b style="color:#F7F7F4">Keep this tab open.</b> Closing it or leaving this page stops the music.</p>
     <p class="lede popwrap" style="margin-top:6px">Want it to follow you from page to page? Use the small player: <button type="button" class="popout" id="popBtn">open the small player ↗</button> (also the <b style="color:#F7F7F4">♪ Music</b> button at the top right of every page).</p>
   </header>
 
@@ -104,7 +105,7 @@ body.mini .mtip{display:block}
     <summary>Change the music</summary>
     <div class="setbody">
       <div class="grp"><p id="stL">Style</p><div class="seg" role="group" aria-labelledby="stL" id="style">
-        <button type="button" data-v="lofi">Lo-fi beats</button><button type="button" data-v="calm">Calm</button></div></div>
+        <button type="button" data-v="lofi">Lo-fi beats</button><button type="button" data-v="calm">Calm</button><button type="button" data-v="triphop">Trip hop</button><button type="button" data-v="oldschool">Old school rap</button></div></div>
       <div class="grp"><p id="mdL">Mood</p><div class="seg" role="group" aria-labelledby="mdL" id="mood">
         <button type="button" data-v="bright">Sunny</button><button type="button" data-v="cozy">Cozy</button><button type="button" data-v="deep">Late night</button><button type="button" data-v="dreamy">Dreamy</button></div></div>
       <div class="grp"><p id="pcL">Pace</p><div class="seg" role="group" aria-labelledby="pcL" id="pace">
@@ -119,6 +120,18 @@ body.mini .mtip{display:block}
         <button type="button" data-v="off">Off</button><button type="button" data-v="soft">Soft</button><button type="button" data-v="more">More</button></div></div>
       <div class="grp"><p id="rnL">Rain sounds</p><div class="seg" role="group" aria-labelledby="rnL" id="rain">
         <button type="button" data-v="off">Off</button><button type="button" data-v="soft">Soft</button><button type="button" data-v="more">More</button></div></div>
+      <div class="grp xs" data-for="triphop oldschool"><p id="hhL">Hi-hats</p><div class="seg" role="group" aria-labelledby="hhL" id="hats">
+        <button type="button" data-v="soft">Soft</button><button type="button" data-v="busy">Busy</button></div></div>
+      <div class="grp xs" data-for="triphop oldschool"><p id="scL">Record scratches</p><div class="seg" role="group" aria-labelledby="scL" id="scratch">
+        <button type="button" data-v="off">Off</button><button type="button" data-v="some">Some</button><button type="button" data-v="lots">Lots</button></div></div>
+      <div class="grp xs" data-for="triphop"><p id="strL">Strings</p><div class="seg" role="group" aria-labelledby="strL" id="strings">
+        <button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
+      <div class="grp xs" data-for="triphop"><p id="ecL">Echo</p><div class="seg" role="group" aria-labelledby="ecL" id="echo">
+        <button type="button" data-v="off">Off</button><button type="button" data-v="some">Some</button><button type="button" data-v="lots">Lots</button></div></div>
+      <div class="grp xs" data-for="oldschool"><p id="hnL">Horn stabs</p><div class="seg" role="group" aria-labelledby="hnL" id="horns">
+        <button type="button" data-v="on">On</button><button type="button" data-v="off">Off</button></div></div>
+      <div class="grp xs" data-for="oldschool"><p id="clL">Snare or clap</p><div class="seg" role="group" aria-labelledby="clL" id="clap">
+        <button type="button" data-v="snare">Snare</button><button type="button" data-v="clap">Clap</button><button type="button" data-v="both">Both</button></div></div>
       <div class="grp"><p id="tmL">Focus timer (the music fades out at the end)</p><div class="seg" role="group" aria-labelledby="tmL" id="tmin">
         <button type="button" data-v="0">No timer</button><button type="button" data-v="10">10 min</button><button type="button" data-v="20">20 min</button><button type="button" data-v="30">30 min</button></div></div>
       <div class="grp"><p id="colL">Glow colors</p><div class="swatches" role="group" aria-labelledby="colL" id="colors"></div></div>
@@ -138,7 +151,7 @@ body.mini .mtip{display:block}
   /* ---------- settings (this device only) ---------- */
   // Nov 13, 2026 (Zach): Lo-fi beats style (jazzy electric-piano chords, swing drums, round bass, record crackle, rain),
   // a 4th mood, a 4th pace, Bass / Record crackle / Rain controls, and a small pop-out player (?mini=1).
-  var DEFAULTS = { style: 'lofi', mood: 'bright', pace: '80', pulse: 'soft', melody: 'on', bassOn: 'on', vinyl: 'soft', rain: 'off', tmin: '0', color: 'night', vol: 45 };
+  var DEFAULTS = { style: 'lofi', mood: 'bright', pace: '80', pulse: 'soft', melody: 'on', bassOn: 'on', vinyl: 'soft', rain: 'off', hats: 'soft', scratch: 'some', strings: 'on', echo: 'some', horns: 'on', clap: 'snare', tmin: '0', color: 'night', vol: 45 };
   var S = Object.assign({}, DEFAULTS), saved = {};
   try { saved = JSON.parse(localStorage.getItem('drift-settings') || '{}'); } catch (e) {}
   if (saved && !saved.style) { saved.style = 'lofi'; }   // people who used the old player get the new Lo-fi style first
@@ -182,9 +195,13 @@ body.mini .mtip{display:block}
     bs.forEach(function (b) { b.addEventListener('click', function () { S[key] = b.dataset.v; mark(); save(); if (onSet) onSet(); }); });
     mark(); return mark;
   }
-  var marks = [seg($('#style'), 'style', function () { prog = null; applyAmb(); label(); }), seg($('#mood'), 'mood', function () { prog = null; label(); }),
+  var REC_PACE = { triphop: '80', oldschool: '88' };     // a good tempo for each new style (set when you switch to it)
+  function showXs() { document.querySelectorAll('.grp.xs').forEach(function (g) { g.hidden = g.dataset.for.split(' ').indexOf(S.style) < 0; }); }
+  var marks = [seg($('#style'), 'style', function () { prog = null; if (REC_PACE[S.style]) { S.pace = REC_PACE[S.style]; save(); marks.forEach(function (m) { m(); }); } showXs(); applyAmb(); label(); }), seg($('#mood'), 'mood', function () { prog = null; label(); }),
     seg($('#pace'), 'pace', label), seg($('#pulse'), 'pulse'), seg($('#melody'), 'melody'), seg($('#bassOn'), 'bassOn'),
-    seg($('#vinyl'), 'vinyl', applyAmb), seg($('#rain'), 'rain', applyAmb), seg($('#tmin'), 'tmin', setTimer)];
+    seg($('#vinyl'), 'vinyl', applyAmb), seg($('#rain'), 'rain', applyAmb), seg($('#tmin'), 'tmin', setTimer),
+    seg($('#hats'), 'hats'), seg($('#scratch'), 'scratch'), seg($('#strings'), 'strings'), seg($('#echo'), 'echo', applyEcho), seg($('#horns'), 'horns'), seg($('#clap'), 'clap')];
+  showXs();
   var sw = $('#colors');
   Object.keys(COLORS).forEach(function (k) {
     var c = COLORS[k], b = document.createElement('button'); b.type = 'button'; b.dataset.v = k; b.textContent = c.name; b.setAttribute('aria-label', c.name);
@@ -224,6 +241,10 @@ body.mini .mtip{display:block}
     keyBus = ac.createGain(); keyBus.gain.value = 0.8; var klp = ac.createBiquadFilter(); klp.type = 'lowpass'; klp.frequency.value = 2400; klp.Q.value = 0.3;
     keyBus.connect(klp); klp.connect(music); var ks = ac.createGain(); ks.gain.value = 0.5; klp.connect(ks); ks.connect(conv);
     var wl = ac.createOscillator(); wl.frequency.value = 0.35; wobble = ac.createGain(); wobble.gain.value = 7; wl.connect(wobble); wl.start();
+    // echo (Nov 16, trip hop): a dub delay that the snare, rim and bells can send into
+    echoIn = ac.createGain(); var edl = ac.createDelay(2); echoFb = ac.createGain(); var elp = ac.createBiquadFilter(); elp.type = 'lowpass'; elp.frequency.value = 1500;
+    var ehp = ac.createBiquadFilter(); ehp.type = 'highpass'; ehp.frequency.value = 300; echoIn.connect(edl); edl.connect(elp); elp.connect(ehp); ehp.connect(echoFb); echoFb.connect(edl);
+    var ew = ac.createGain(); ew.gain.value = 0.55; ehp.connect(ew); ew.connect(music); echoIn.delay = edl;
     beatBus = ac.createGain(); beatBus.gain.value = 0.8; var blp = ac.createBiquadFilter(); blp.type = 'lowpass'; blp.frequency.value = 5200; beatBus.connect(blp); blp.connect(music);
     noise = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); var d = noise.getChannelData(0); for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     // record crackle: soft hiss + random pops, looped
@@ -236,13 +257,15 @@ body.mini .mtip{display:block}
     for (var c = 0; c < 2; c++) { var rd = rb.getChannelData(c), last = 0; for (i = 0; i < rd.length; i++) { last = 0.97 * last + 0.03 * (Math.random() * 2 - 1); rd[i] = last * 6 + (Math.random() < 0.0008 ? (Math.random() - 0.5) * 0.5 : 0); } }
     var rs = ac.createBufferSource(); rs.buffer = rb; rs.loop = true; var rlp = ac.createBiquadFilter(); rlp.type = 'lowpass'; rlp.frequency.value = 2600; var rhp = ac.createBiquadFilter(); rhp.type = 'highpass'; rhp.frequency.value = 250;
     rainG = ac.createGain(); rainG.gain.value = 0; rs.connect(rhp); rhp.connect(rlp); rlp.connect(rainG); rainG.connect(out); rs.start();
-    applyVol(); return true;
+    applyVol(); applyEcho(); return true;
   }
   function impulse(sec) {
     var len = Math.floor(ac.sampleRate * sec), b = ac.createBuffer(2, len, ac.sampleRate);
     for (var c = 0; c < 2; c++) { var d = b.getChannelData(c); for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3); }
     return b;
   }
+  var echoIn, echoFb;
+  function applyEcho() { if (!ac || !echoFb) return; echoFb.gain.setTargetAtTime(({ off: 0, some: 0.38, lots: 0.6 })[S.echo] || 0, ac.currentTime, 0.2); echoIn.gain.setTargetAtTime(S.echo === 'off' ? 0 : 1, ac.currentTime, 0.1); }
   function applyVol() { if (!ac) return; out.gain.setTargetAtTime(muted ? 0 : S.vol / 100 * 0.9, ac.currentTime, 0.08); }
   function applyAmb() {
     if (!ac) return; var on = playing ? 1 : 0;
@@ -313,6 +336,8 @@ body.mini .mtip{display:block}
   function at(s, t) {                   // one sixteenth note
     var spb = 60 / Number(S.pace), bar = Math.floor(s / 16), pos = s % 16;
     if (S.style === 'lofi') return lofiAt(s, t, spb, bar, pos);
+    if (S.style === 'triphop') return tripAt(s, t, spb, bar, pos);
+    if (S.style === 'oldschool') return oldAt(s, t, spb, bar, pos);
     var prg = MOODS[S.mood], ch = prg[Math.floor(bar / 2) % prg.length];
     if (s % 32 === 0) { pad(ch[1], t, spb * 8); if (Math.random() < 0.5) arpShift = (arpShift + 1) % 3; }
     if (S.bassOn === 'on') { if (pos === 0) bass(ch[0], t, spb * 3.5); if (pos === 10 && bar % 2 === 1) bass(ch[0] + 7, t, spb * 1.4); }
@@ -360,6 +385,121 @@ body.mini .mtip{display:block}
       }
     }
   }
+  /* ---------- Nov 16, 2026 (Zach): two more styles, instrumental only ----------
+     TRIP HOP: slow half-time breakbeat, deep sub bass, dark minor Rhodes chords, string pads, echo, a lonely bell melody.
+     OLD SCHOOL RAP: boom-bap drums (kick, snare or clap, open hi-hat), a funky bassline, horn stabs, a looped
+     piano riff and record scratches. Every part has its own on/off or amount. */
+  var TRIP = {
+    bright: [[41, [52, 57, 60, 64]], [40, [50, 55, 59, 62]], [38, [53, 57, 60, 62]], [40, [50, 55, 59, 62]]],   // Fmaj7 Em7 Dm7 Em7
+    cozy:   [[38, [53, 57, 60, 64]], [38, [53, 57, 60, 64]], [46, [53, 57, 58, 62]], [45, [55, 57, 62, 64]]],   // Dm9 Dm9 Bbmaj7 A7sus
+    deep:   [[45, [55, 59, 60, 64]], [45, [55, 59, 60, 64]], [41, [52, 57, 60, 64]], [40, [50, 56, 59, 62]]],   // Am9 Am9 Fmaj7 E7
+    dreamy: [[39, [55, 58, 62, 63]], [36, [51, 55, 58, 62]], [44, [51, 55, 56, 60]], [46, [53, 55, 58, 62]]]    // Ebmaj7 Cm9 Abmaj7 Bb6
+  };
+  var OLDS = {
+    bright: [[36, [52, 58, 62]], [41, [57, 60, 63]]],          // C9  F7
+    cozy:   [[38, [53, 57, 60, 64]], [43, [53, 59, 62, 64]]],  // Dm9 G13
+    deep:   [[45, [55, 60, 64]], [38, [54, 57, 60]]],          // Am7 D7
+    dreamy: [[40, [55, 59, 62, 66]], [45, [55, 59, 61, 64]]]   // Em9 A13
+  };
+  var OS_BASS = [[0, 0, 3], [3, 0, 1], [6, 12, 1], [7, 10, 1], [10, 7, 2], [12, 0, 1], [14, 3, 1]];   // [sixteenth, semitones, length]
+  var OS_RIFF = [[2, 2], [5, 1], [9, 3], [11, 2], [13, 1]];                                         // [sixteenth, chord tone]
+  function sub(m, t, dur, a, glideTo) {          // deep sine bass with a soft slide
+    var o = ac.createOscillator(), g = ac.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(hz(m), t);
+    if (glideTo) o.frequency.exponentialRampToValueAtTime(hz(glideTo), t + dur * 0.9);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.04); g.gain.setTargetAtTime(0.0001, t + dur * 0.8, 0.12);
+    var sat = ac.createWaveShaper(), cv = new Float32Array(256); for (var i = 0; i < 256; i++) { var x = i / 128 - 1; cv[i] = Math.tanh(1.6 * x); } sat.curve = cv;
+    o.connect(sat); sat.connect(g); g.connect(music); o.start(t); o.stop(t + dur + 0.6);
+  }
+  function funkBass(m, t, dur, a) {              // short plucky saw bass through a closing filter
+    var o = ac.createOscillator(), lp = ac.createBiquadFilter(), g = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = hz(m);
+    lp.type = 'lowpass'; lp.Q.value = 6; lp.frequency.setValueAtTime(1400, t); lp.frequency.exponentialRampToValueAtTime(220, t + Math.min(0.25, dur));
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.05);
+    var s2 = ac.createOscillator(); s2.type = 'sine'; s2.frequency.value = hz(m); var g2 = ac.createGain(); g2.gain.value = 0.9; s2.connect(g2); g2.connect(g);
+    o.connect(lp); lp.connect(g); g.connect(music); o.start(t); s2.start(t); o.stop(t + dur + 0.1); s2.stop(t + dur + 0.1);
+  }
+  function hatOpen(t, a) { shaker(t, a, 6500, 0.28); }
+  function rim(t, a, echo) {
+    var o = ac.createOscillator(), g = ac.createGain(), bp = ac.createBiquadFilter(); o.type = 'square'; o.frequency.value = 1700; bp.type = 'bandpass'; bp.frequency.value = 2100; bp.Q.value = 4;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+    o.connect(bp); bp.connect(g); g.connect(beatBus); if (echo) { var s = ac.createGain(); s.gain.value = 0.6; g.connect(s); s.connect(echoIn); } o.start(t); o.stop(t + 0.07);
+  }
+  function bigSnare(t, a, echo) {                // trip hop snare: fat, with a long tail and an echo send
+    snare(t, a);
+    var n = ac.createBufferSource(); n.buffer = noise; var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3200;
+    var g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a * 0.55, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+    n.connect(lp); lp.connect(g); g.connect(beatBus); if (echo) { var sd = ac.createGain(); sd.gain.value = 0.5; g.connect(sd); sd.connect(echoIn); } n.start(t, Math.random() * 0.4); n.stop(t + 0.6);
+  }
+  function clapHit(t, a) {                        // three fast bursts = a hand clap
+    [0, 0.011, 0.023].forEach(function (d, i) {
+      var n = ac.createBufferSource(); n.buffer = noise; var bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1300; bp.Q.value = 1.4;
+      var g = ac.createGain(), len = i === 2 ? 0.16 : 0.012; g.gain.setValueAtTime(0.0001, t + d); g.gain.exponentialRampToValueAtTime(a, t + d + 0.002); g.gain.exponentialRampToValueAtTime(0.0001, t + d + len);
+      n.connect(bp); bp.connect(g); g.connect(beatBus); n.start(t + d, Math.random() * 0.7); n.stop(t + d + len + 0.02);
+    });
+  }
+  function hornStab(notes, t, dur, a) {           // brassy stab: detuned saws through a filter that opens fast and closes
+    var g = ac.createGain(), lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.Q.value = 1.2;
+    lp.frequency.setValueAtTime(600, t); lp.frequency.exponentialRampToValueAtTime(3200, t + 0.04); lp.frequency.exponentialRampToValueAtTime(900, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(a, t + 0.02); g.gain.setValueAtTime(a, t + dur * 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.08);
+    lp.connect(g); g.connect(music); var rs = ac.createGain(); rs.gain.value = 0.25; g.connect(rs); rs.connect(keyBus);
+    notes.forEach(function (m) { [-9, 9].forEach(function (c) { var o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = hz(m + 12); o.detune.value = c; o.connect(lp); o.start(t); o.stop(t + dur + 0.12); }); });
+  }
+  function scratch(t, spb, a) {                    // a "wicka-wicka": the record pushed forward and pulled back, twice
+    var n = ac.createBufferSource(); n.buffer = noise; var bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 7;
+    var g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); var o = ac.createOscillator(); o.type = 'sawtooth'; var og = ac.createGain(); og.gain.value = 0.25;
+    var step = spb / 4;
+    for (var k = 0; k < 4; k++) {
+      var t0 = t + k * step, up = k % 2 === 0;
+      bp.frequency.setValueAtTime(up ? 500 : 2600, t0); bp.frequency.exponentialRampToValueAtTime(up ? 2600 : 450, t0 + step * 0.9);
+      o.frequency.setValueAtTime(up ? 110 : 420, t0); o.frequency.exponentialRampToValueAtTime(up ? 420 : 100, t0 + step * 0.9);
+      g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(a, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + step * 0.92);
+    }
+    n.connect(bp); bp.connect(g); o.connect(og); og.connect(bp); g.connect(music);
+    n.start(t, Math.random() * 0.5); o.start(t); n.stop(t + step * 4 + 0.05); o.stop(t + step * 4 + 0.05);
+  }
+  var bellNote = 3;
+  function tripAt(s, t, spb, bar, pos) {
+    var prg = TRIP[S.mood] || TRIP.deep, ch = prg[bar % prg.length], next = prg[(bar + 1) % prg.length];
+    var lay = (pos % 4 === 2) ? spb * 0.07 : 0, tt = t + lay;          // lazy, behind-the-beat feel
+    if (pos === 0) chord(ch[1], t + 0.02, spb * 3.2, 0.05);
+    if (pos === 0 && S.strings === 'on' && bar % 2 === 0) pad(ch[1].map(function (m) { return m + 12; }), t, spb * 7.5);
+    if (S.bassOn === 'on') {
+      if (pos === 0) sub(ch[0], t, spb * 1.6, 0.28);
+      if (pos === 6) sub(ch[0], tt, spb * 0.7, 0.2);
+      if (pos === 12 && Math.random() < 0.6) sub(ch[0] + 7, tt, spb * 0.9, 0.22, next[0] + 12 > ch[0] + 7 ? next[0] : null);
+    }
+    if (S.pulse !== 'off') {
+      var full = S.pulse === 'steady', k = full ? 0.75 : 0.55, busy = S.hats === 'busy';
+      if (pos === 0 || pos === 3 || (pos === 10 && Math.random() < 0.5) || (full && pos === 7 && Math.random() < 0.3)) { kick(tt, pos === 0 ? k : k * 0.7); pulses.push(tt); }
+      if (pos === 8) { bigSnare(tt, full ? 0.28 : 0.2, S.echo !== 'off'); pulses.push(tt); }
+      if (pos === 14 && Math.random() < 0.35) rim(tt, 0.08, S.echo !== 'off');
+      if (busy ? true : pos % 2 === 0) shaker(tt, (pos % 4 === 0 ? 0.045 : 0.025) * (busy && pos % 2 ? 0.7 : 1), 8000, 0.04);
+      if (pos === 6 && bar % 2 === 1) hatOpen(tt, 0.03);
+    } else if (pos === 0 || pos === 8) pulses.push(t);
+    if (S.melody === 'on' && bar % 2 === 1 && (pos === 2 || pos === 8 || pos === 11) && Math.random() < 0.7) {
+      var sc = scaleOf(prg); bellNote = Math.max(0, Math.min(sc.length - 1, bellNote + (Math.random() < 0.5 ? -1 : 1)));
+      pluck(sc[bellNote], tt, 0.13);   // the bell goes through the delay on arpBus
+    }
+    if (S.scratch !== 'off' && pos === 12 && bar % (S.scratch === 'lots' ? 2 : 4) === 3) scratch(t, spb, 0.1);
+  }
+  function oldAt(s, t, spb, bar, pos) {
+    var prg = OLDS[S.mood] || OLDS.bright, ch = prg[bar % prg.length];
+    var swg = (pos % 2 === 1) ? spb * 0.04 : 0, tt = t + swg;
+    if (S.bassOn === 'on') OS_BASS.forEach(function (b) { if (b[0] === pos) funkBass(ch[0] + b[1], tt, spb / 4 * b[2] * 0.9, 0.22); });
+    if (S.pulse !== 'off') {
+      var full = S.pulse === 'steady', k = full ? 0.8 : 0.62, busy = S.hats === 'busy';
+      if (pos === 0 || pos === 10 || (pos === 7 && bar % 2 === 1) || (full && pos === 13 && Math.random() < 0.3)) { kick(tt, pos === 0 ? k : k * 0.8); pulses.push(tt); }
+      if (pos === 4 || pos === 12) {
+        if (S.clap !== 'clap') snare(tt, full ? 0.3 : 0.22);
+        if (S.clap !== 'snare') clapHit(tt, full ? 0.25 : 0.18);
+        pulses.push(tt);
+      }
+      if (pos === 14) hatOpen(tt, 0.05);
+      else if (busy || pos % 2 === 0) shaker(tt, (pos % 4 === 0 ? 0.07 : 0.045) * (pos % 2 ? 0.7 : 1), 7000, 0.05);
+    } else if (pos === 0 || pos === 8) pulses.push(t);
+    if (S.horns === 'on' && bar % 4 !== 2 && (pos === 0 || (pos === 6 && bar % 2 === 1) || (pos === 7 && bar % 2 === 1))) hornStab(ch[1], tt, pos === 0 ? spb * 0.45 : spb * 0.2, 0.065);
+    if (S.melody === 'on') OS_RIFF.forEach(function (r) { if (r[0] === pos && bar % 4 !== 3) keys(ch[1][r[1] % ch[1].length] + 12, tt, spb * 0.3, 0.065); });
+    if (S.scratch !== 'off' && pos === 8 && bar % (S.scratch === 'lots' ? 2 : 4) === 3) scratch(t, spb, 0.13);
+  }
   function tick() {
     if (!playing) return;
     arpBus.delay.delayTime.setValueAtTime(60 / Number(S.pace) * 0.75, ac.currentTime);
@@ -368,7 +508,8 @@ body.mini .mtip{display:block}
     pulses = pulses.filter(function (p) { return p > ac.currentTime - 2; });
     try { localStorage.setItem('mm-beat', String(Date.now())); } catch (e) {}   // lets the ♪ Music button on other pages show "Playing"
   }
-  function label() { $('#now').textContent = playing ? 'Now playing: ' + (S.style === 'lofi' ? 'Lo-fi' : 'Calm') + ' · ' + MOOD_NAME[S.mood] + ', ' + S.pace + ' beats a minute' : 'Press Play to start the music.'; }
+  var STYLE_NAME = { lofi: 'Lo-fi', calm: 'Calm', triphop: 'Trip hop', oldschool: 'Old school rap' };
+  function label() { $('#now').textContent = playing ? 'Now playing: ' + (STYLE_NAME[S.style] || 'Lo-fi') + ' · ' + MOOD_NAME[S.mood] + ', ' + S.pace + ' beats a minute' : 'Press Play to start the music.'; }
 
   /* ---------- play, pause, mute ---------- */
   var playBtn = $('#playBtn'), muteBtn = $('#muteBtn');
