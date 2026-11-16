@@ -4,7 +4,7 @@ Run from the repo root:  python3 _build/skill_builders/make_pages.py
 Bump V after changing sb.js / sbfig.js / sb.css / uN.js (browsers keep .js files for 10 minutes)."""
 import pathlib
 
-V = '20261112k'
+V = '20261116a'
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 G8 = ROOT / 'grade8'
 UNITS = [
@@ -30,7 +30,7 @@ def shell(n, title, mode):
     intro = ('One problem at a time. If a problem is tricky, the page helps you find the mistake and walks you through the steps.'
              if is_p else 'Short lessons on the core skills of this unit. Each lesson: watch a short animation, learn the big idea, '
              'walk through an example one step at a time, and check your understanding as you go.')
-    how = '' if is_p else ('<ol class="sb-how"><li><span class="n">1</span><b>Watch</b>a short animation</li><li><span class="n">2</span><b>Learn</b>the big idea and key words</li>'
+    how = '' if is_p else ('<ol class="sb-how"><li><span class="n">1</span><b>Watch</b>a short video and animation</li><li><span class="n">2</span><b>Learn</b>the big idea and key words</li>'
                            '<li><span class="n">3</span><b>Walk through</b>an example, one step at a time</li><li><span class="n">4</span><b>Check</b>your understanding</li></ol>')
     other = (f'<a href="skill-builders-unit{n}.html">Mini-Lessons<span>Go back to the lessons for Unit {n}.</span></a>' if is_p else
              f'<a href="skill-builders-unit{n}-practice.html">Practice Set →<span>Practice the Unit {n} skills, one problem at a time.</span></a>')
@@ -48,7 +48,7 @@ def shell(n, title, mode):
 <script src="step-work.js?v=20261112c"></script>
 <script src="skills/sb.js?v={V}"></script>
 <script src="skills/sbfig.js?v={V}"></script>
-<script src="skills/u{n}.js?v={V}"></script>
+<script src="skills/u{n}.js?v={V}"></script>{'' if is_p else chr(10) + '<script src="skills/sbvideo.js?v=' + V + '"></script>'}
 <script src="../brand.js"></script>
 </head>
 <body>
@@ -73,7 +73,7 @@ def shell(n, title, mode):
 
 def hub():
     cards = ''.join(f'''<div class="hub-card"><div class="u">UNIT {n}</div><h2>{t}</h2><p>{d}</p><div class="sb-std">{s}</div>
-<div class="acts"><a class="p" href="skill-builders-unit{n}.html">Mini-Lessons</a><a href="skill-builders-unit{n}-practice.html">Practice Set</a></div>
+<div class="acts"><a class="p" href="skill-builders-unit{n}.html">Mini-Lessons</a><a href="skill-builders-unit{n}-practice.html">Practice Set</a><a href="skill-builders-unit{n}.html#video">▶ Videos</a></div>
 <div class="pdfs">PDF: <a href="skills/pdf/{pdf(n, 'Lessons')}">lessons</a> · <a href="skills/pdf/{pdf(n, 'Practice')}">practice</a> · keys: <a href="skills/pdf/{pdf(n, 'Lessons', True)}">lessons</a>, <a href="skills/pdf/{pdf(n, 'Practice', True)}">practice</a></div></div>''' for n, t, d, s in UNITS)
     return f'''<!DOCTYPE html>
 <html lang="en">

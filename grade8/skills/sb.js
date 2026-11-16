@@ -109,6 +109,7 @@
     return '<svg viewBox="0 0 ' + a.w + ' ' + a.h + '" role="img" aria-label="' + (a.label || 'animation') + '" xmlns="http://www.w3.org/2000/svg" font-family="Inter,system-ui,sans-serif">' + s + '</svg>';
   }
   function prefSet(set, pfx) { var o = {}; Object.keys(set || {}).forEach(function (k) { o[pfx + k] = set[k]; }); return o; }
+  SB._applySet = applySet; SB._svgOf = svgOf; SB._prefSet = prefSet; SB._plain = plain; SB._shuffle = shuffle;   // used by sbvideo.js
   var apid = 0;
   SB.finalFrame = function (a) {          // the last picture, for printed copies
     var pfx = 'pf' + (apid++) + '-', box = el('div', 'fig', svgOf(a, pfx)), svg = box.firstChild;
@@ -380,6 +381,7 @@
       var slide = el('div', 'sb-slide'), s = S[si]; card.appendChild(slide);
       if (s.k === 'watch') {
         slide.appendChild(el('h3', '', 'Watch: ' + (L.anim.title || L.title)));
+        if (SB.video) slide.appendChild(SB.video.button(U, li));
         slide.appendChild(el('p', 'sb-std', 'Press Play. Use Back and Next to go at your own speed. Turn on Narrate to hear it.'));
         player0 = player(L.anim); slide.appendChild(player0);
       } else if (s.k === 'learn') {
