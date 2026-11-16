@@ -35,6 +35,12 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
 #ptext .q{color:var(--gold)}
 #timer{height:10px;margin:8px auto 0;width:min(100%,420px);border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
 #timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4dff9a,#ffd166 60%,#ff3d5e)}
+#talk{position:absolute;left:calc(50% + 120px);top:22%;max-width:300px;padding:10px 14px;border-radius:16px;background:#fff;color:#1a1033;font:700 16px/1.35 Inter,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.45);pointer-events:none;z-index:2}
+#talk b{color:#c2185b}
+#talk::after{content:'';position:absolute;left:-12px;top:18px;border:8px solid transparent;border-right:14px solid #fff;border-left:0}
+#talk.pop{animation:tpop .25s ease-out}
+@keyframes tpop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+@media (max-width:640px){#talk{left:8px;right:8px;top:auto;bottom:8px;max-width:none;font-size:14px;padding:8px 12px}#talk::after{left:50%;top:-12px;border:8px solid transparent;border-bottom:14px solid #fff;border-top:0}}
 #note{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:min(94%,620px);padding:9px 14px;border-radius:12px;background:rgba(40,8,20,.92);border:1px solid rgba(255,61,94,.6);font:600 16px/1.4 Inter,sans-serif;text-align:center;pointer-events:none}
 #note.good{background:rgba(6,40,24,.92);border-color:rgba(77,255,154,.6)}
 #note.info{background:rgba(40,32,6,.92);border-color:rgba(255,193,7,.6)}
@@ -99,6 +105,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
   <div id="stage">
     <canvas id="cv"></canvas>
     <div id="prob"><div id="ptext"></div><div id="timer"><i></i></div></div>
+    <div id="talk" hidden></div>
     <div id="note" hidden></div>
   </div>
   <div id="pad">
@@ -167,15 +174,15 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
 
   /* ---------------- opponents (original) ---------------- */
   var OPP = [
-    { name: 'Kid Positive', tag: 'Rookie', d: 'Adding and subtracting, −10 to 10.', c: '#4dff9a', ops: ['+', '-'], R: 10, time: 7, hit: 9,
+    { name: 'Kid Positive', scars: ['aid', 'eye'], tag: 'Rookie', d: 'Adding and subtracting, −10 to 10.', c: '#4dff9a', ops: ['+', '-'], R: 10, time: 7, hit: 9,
       skin: '#f2c49b', hair: '#6b3b1a', trunks: '#2b9dff', look: 'kid' },
-    { name: 'Minus Malone', tag: 'Contender', d: 'Adding and subtracting, −20 to 20. Lots of minus signs.', c: '#43f7ff', ops: ['+', '-', '-'], R: 20, time: 6, hit: 11,
+    { name: 'Minus Malone', scars: ['nose', 'scar', 'stub', 'ears'], tag: 'Contender', d: 'Adding and subtracting, −20 to 20. Lots of minus signs.', c: '#43f7ff', ops: ['+', '-', '-'], R: 20, time: 6, hit: 11,
       skin: '#c98a5e', hair: '#1b1b1b', trunks: '#7a2bff', look: 'stache' },
-    { name: 'The Multiplier', tag: 'Heavy hitter', d: 'Multiplying, plus some adding and subtracting.', c: '#ff9a3c', ops: ['*', '*', '+', '-'], R: 20, time: 5.5, hit: 12,
+    { name: 'The Multiplier', scars: ['ears', 'tooth', 'scar', 'scar2', 'lump'], tag: 'Heavy hitter', d: 'Multiplying, plus some adding and subtracting.', c: '#ff9a3c', ops: ['*', '*', '+', '-'], R: 20, time: 5.5, hit: 12,
       skin: '#8d5a3b', hair: '#111', trunks: '#ff6a2b', look: 'mohawk' },
-    { name: 'Count Zero', tag: 'Trickster', d: 'Dividing (watch for zero!) and multiplying.', c: '#c58bff', ops: ['/', '/', '*', '-'], R: 20, time: 5, hit: 13, zero: 0.32,
+    { name: 'Count Zero', scars: ['mono', 'eye', 'stub', 'nose'], tag: 'Trickster', d: 'Dividing (watch for zero!) and multiplying.', c: '#c58bff', ops: ['/', '/', '*', '-'], R: 20, time: 5, hit: 13, zero: 0.32,
       skin: '#e8b48f', hair: '#c9c9d6', trunks: '#3a3a4a', look: 'zero' },
-    { name: 'Max Absolute', tag: 'Champion', d: 'Everything mixed, −20 to 20. Fast and tough.', c: '#FFC107', ops: ['+', '-', '*', '/'], R: 20, time: 4.2, hit: 15, zero: 0.22,
+    { name: 'Max Absolute', scars: ['nose', 'scar', 'scar2', 'ears', 'gold', 'stub', 'lump'], tag: 'Champion', d: 'Everything mixed, −20 to 20. Fast and tough.', c: '#FFC107', ops: ['+', '-', '*', '/'], R: 20, time: 4.2, hit: 15, zero: 0.22,
       skin: '#6e4329', hair: '#2a1a10', trunks: '#d4a017', look: 'champ' }
   ];
 
@@ -245,6 +252,64 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     '/0': 'You can\'t divide by zero. It is undefined.'
   };
 
+
+  /* ---------------- trash talk (Nov 16, 2026, Zach: "talk trash, but in a math sense") ----------------
+     Playful math put-downs about the student's math, never about who they are. */
+  var TRASH = {
+    'Kid Positive': {
+      intro: ['I\'m positive I\'m winning this one!', 'First fight? I\'ll go easy... NOT!', 'I can count to 10 AND back down to −10. Can you?'],
+      taunt: ['You look like you\'d get lost on a number line.', 'My little brother adds faster than you.', 'Counting on your fingers? You\'re gonna need more fingers.'],
+      gloat: ['Wrong sign, champ!', 'Did you forget which way the number line goes?', 'That answer is below zero. Just like your chances!'],
+      slow: ['Hello? The number line is waiting!', 'I\'ve seen sloths add faster!'],
+      hurt: ['Hey! That\'s a negative for me!', 'Okay... that one added up.'],
+      down: ['Ow... I need to recount my teeth.'], up: ['Plus one more try! I\'m back!'],
+      win: 'Positively crushed! Come back when you can count backwards.', lose: 'That was a negative experience. You win.' },
+    'Minus Malone': {
+      intro: ['You look like you couldn\'t count your toes without a calculator.', 'I\'m gonna subtract you from this ring.', 'Minus Malone takes away EVERYTHING.'],
+      taunt: ['Two negatives make a positive. Two of your answers make a mess.', 'You subtract like you\'re scared of minus signs.', 'I\'ve seen better math on a cereal box.'],
+      gloat: ['Take that answer away. It\'s wrong!', 'Minus one point for you!', 'Subtracting a negative? You just got subtracted!'],
+      slow: ['Tick tock! Even a calculator would quit waiting.', 'Too slow! I took away your turn.'],
+      hurt: ['Lucky... that\'s all that was.', 'Hey! I didn\'t subtract THAT from my plans!'],
+      down: ['I... I need to borrow from the tens place...'], up: ['Back up! Now I\'m taking away your lead!'],
+      win: 'Your answers came out negative. So did your night.', lose: 'You took me down. I\'ll just subtract myself from the ring.' },
+    'The Multiplier': {
+      intro: ['I hit twice as hard. Then times that by ten.', 'My punches come in groups of twelve.', 'You look like you\'d need a calculator for 2 × 2.'],
+      taunt: ['Did you sleep through the times tables? All of them?', 'Anything times zero is zero. Just like your score.', 'You flip signs like pancakes, and you burn them too.'],
+      gloat: ['Times up! Get it? TIMES?', 'Negative times negative is positive. Your answer? Negative.', 'Multiply your effort, rookie!'],
+      slow: ['Too slow! I could do 12 × 12 twelve times.', 'Still counting by ones, huh?'],
+      hurt: ['That... does not compute.', 'Okay, that one multiplied the pain.'],
+      down: ['Recalculating... recalculating...'], up: ['Double or nothing! Let\'s go!'],
+      win: 'I multiplied your mistakes. That\'s a big number.', lose: 'You factored me out. Respect.' },
+    'Count Zero': {
+      intro: ['Go ahead. Try dividing me by zero.', 'You\'re undefined, kid. Nobody knows what you are.', 'I\'ll split you into equal parts. No remainder.'],
+      taunt: ['Your chance of winning? Zero divided by anything. Still zero.', 'I bet you think 0 ÷ 5 is 5. Heh heh.', 'Your brain has a remainder, and it\'s empty.'],
+      gloat: ['Undefined! Just like your skills!', 'Zero out of ten. Try again.', 'Divide and CONQUER! Mostly conquer.'],
+      slow: ['Stalling? I\'ve got infinite patience. You don\'t.', 'Slow as dividing by zero. It never ends.'],
+      hurt: ['Divide and... ouch.', 'That split me in half!'],
+      down: ['Divided... but not conquered...'], up: ['You can\'t divide by me! I\'m back!'],
+      win: 'Your score divided by your effort... undefined.', lose: 'Zero chance of a rematch? We\'ll see...' },
+    'Max Absolute': {
+      intro: ['Absolutely nobody beats the champ.', 'I\'m the absolute value of tough: always positive, always big.', 'You look like you\'d add two negatives and get a positive.'],
+      taunt: ['Your math is like a negative number: way below zero.', 'Even Kid Positive is laughing at you.', 'I\'ve seen better math on a broken calculator.'],
+      gloat: ['Absolutely WRONG!', 'Check your work. Then check out.', 'That\'s the absolute worst answer I\'ve ever seen!'],
+      slow: ['The champ doesn\'t wait! Too slow!', 'Need a calculator? Too bad. No calculators in my ring!'],
+      hurt: ['Lucky jab. ABSOLUTELY lucky.', 'Hmph. Not bad... for a rookie.'],
+      down: ['Impossible! That\'s... undefined!'], up: ['Absolutely not done yet!'],
+      win: 'Still the champ. Absolutely.', lose: 'You... you\'re the new champion. Absolutely amazing.' }
+  };
+  var lastSaid = {}, talkT = 0, idleT = 0, talkStart = 0;
+  function talkT0() { return talkStart; }
+  function talk(kind, force) {
+    if (!G) return;
+    var L = TRASH[G.o.name] && TRASH[G.o.name][kind]; if (!L) return;
+    if (!force && talkT > 0) return;
+    var opts = L.filter(function (x) { return x !== lastSaid[kind]; }), line = pick(opts.length ? opts : L);
+    lastSaid[kind] = line;
+    var b = $('talk'); b.innerHTML = '<b>' + G.o.name + ':</b> ' + line; b.hidden = false; b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    talkT = Math.max(2.6, line.length / 16); talkStart = talkT; idleT = 0;
+    sfx('squeak');
+  }
+
   /* ---------------- game state ---------------- */
   var G = null, sel = 0;
   function newFight(oi) {
@@ -306,6 +371,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
       G.glove = { side: side, t: 0, land: false };
       sfx('whoosh');
       note('', '<b>Whiff!</b> ' + (G.ch.why[raw === 'U' ? 'U' : v] || 'Check the sign and the operation.'), 0);
+      if (Math.random() < 0.75) talk('gloat');
       setTimeout(function () { if (G.state === 'q') counter(G.o.hit + 2 * G.round, 'counter'); }, 180);
     }
     hud();
@@ -316,6 +382,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     fx(function (A) { var r = $('cv').getBoundingClientRect(); var x = r.left + r.width / 2, y = r.top + r.height * 0.4; A.text(x + ri(-60, 60), y - 40, star ? 'STAR UPPERCUT!' : pick(['POW!', 'BAM!', 'WHAM!', 'SMACK!']), { color: star ? '#FFC107' : '#fff', size: star ? 40 : 30 }); A.sparks(x, y, { color: star ? '#FFC107' : '#fff', count: star ? 40 : 18 }); if (star && !reduce) A.shake($('stage'), 10, 300); });
     hud();
     if (G.opp <= 0) { setTimeout(oppDown, 350); return; }
+    if (Math.random() < (star ? 1 : 0.25)) talk('hurt', star);
     setTimeout(nextProblem, reduce ? 250 : 480);
   }
   function counter(dmg, why) {
@@ -329,6 +396,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
       try { if (window.ArcadeSend) ArcadeSend.answer(false); } catch (e) {}
       G.state = 'reveal';
       $('ptext').innerHTML = G.p.text + ' = <span class="q">' + fmt(G.p.ans) + '</span>';
+      talk('slow', true);
       note('info', '<b>Too slow!</b> ' + TIP[G.p.kind === '0/' || G.p.kind === '/0' ? G.p.kind : G.p.op], 2400);
     }
     hud();
@@ -349,13 +417,15 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     G.oppDowns++; G.anim = { kind: 'down', t: 0 }; G.state = 'count';
     sfx('roar');
     note('good', '<b>DOWN!</b> ' + G.o.name + ' hits the mat!', 2000);
+    if (G.oppDowns < 3) talk('down', true);
     hud();
     if (G.oppDowns >= 3) { setTimeout(function () { G.anim = { kind: 'ko', t: 0 }; fx(function (A) { A.sfx.win(); var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.4, 'K.O.!', { color: '#FFC107', size: 80 }); A.confetti(r.left + r.width / 2, r.top + r.height * 0.3, { count: 140 }); }); }, 500); setTimeout(function () { finish(true); }, 2600); return; }
-    count(function () { G.opp = 100; G.round++; G.anim = { kind: 'up', t: 0 }; ding(); note('info', 'ROUND ' + G.round + '. ' + G.o.name + ' is back up, and faster!', 1600); hud(); setTimeout(nextProblem, 900); });
+    count(function () { G.opp = 100; G.round++; G.anim = { kind: 'up', t: 0 }; ding(); talk('up', true); note('info', 'ROUND ' + G.round + '. ' + G.o.name + ' is back up, and faster!', 1600); hud(); setTimeout(nextProblem, 900); });
   }
   function youDown() {
     G.youDowns++; G.state = 'count'; G.youFall = 1;
     note('', '<b>You\'re down!</b> Get up!', 2000);
+    talk('gloat', true);
     hud();
     if (G.youDowns >= 3) { setTimeout(function () { fx(function (A) { A.sfx.lose(); }); finish(false); }, 1600); return; }
     count(function () { G.you = 70; G.youFall = 0; G.round++; ding(); note('info', 'You\'re back up! ROUND ' + G.round + '.', 1500); hud(); setTimeout(nextProblem, 900); });
@@ -387,6 +457,8 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     cx.fillStyle = '#ccd'; cx.fillRect(CW * 0.08 - 6, CH * 0.32, 12, CH * 0.32); cx.fillRect(CW * 0.92 - 6, CH * 0.32, 12, CH * 0.32);
   }
   function rr(x, y, w, h, r) { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+  function shade(hex, k) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; var f = function (v) { return Math.round(Math.max(0, Math.min(255, v * (1 + k)))); }; return 'rgb(' + f(r) + ',' + f(g) + ',' + f(b) + ')'; }
+  var TALK = { open: false };
   /* an original cartoon boxer, facing the player */
   function boxer(ctx2, o, X, Y, S, pose, t) {
     var c = ctx2, bob = Math.sin(t * 5) * 4 * S, lean = 0, hx = 0, hy = 0, gl = 0, gr = 0, squash = 1, tilt = 0, eye = 'open', drop = 0;
@@ -404,20 +476,46 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     if (o.look === 'champ') { c.fillStyle = '#d4a017'; rr(-74 * S, 84 * S, 148 * S, 26 * S, 8 * S); c.fill(); c.fillStyle = '#fff3b0'; c.beginPath(); c.ellipse(0, 97 * S, 22 * S, 14 * S, 0, 0, 6.3); c.fill(); }
     // trunks
     c.fillStyle = o.trunks; rr(-72 * S, 104 * S, 144 * S, 40 * S, 10 * S); c.fill();
-    // head
+    // head (battle-worn: lumpy ears, heavy brow, square jaw, scars; each fighter has its own damage in o.scars)
+    var sc = o.scars || [], dark = shade(o.skin, -0.28), has = function (k) { return sc.indexOf(k) >= 0; };
     c.save(); c.translate(hx, -46 * S + hy); c.rotate(tilt); c.scale(1, squash);
-    c.fillStyle = o.skin; c.beginPath(); c.ellipse(0, 0, 44 * S, 52 * S, 0, 0, 6.3); c.fill();
+    c.fillStyle = o.skin;
+    if (has('ears')) { [-1, 1].forEach(function (k) { c.beginPath(); c.arc(k * 44 * S, -4 * S, 12 * S, 0, 6.3); c.arc(k * 48 * S, 6 * S, 9 * S, 0, 6.3); c.arc(k * 42 * S, 12 * S, 8 * S, 0, 6.3); c.fill(); c.strokeStyle = dark; c.lineWidth = 2 * S; c.beginPath(); c.arc(k * 45 * S, 2 * S, 6 * S, 0, 6.3); c.stroke(); }); }
+    else { [-1, 1].forEach(function (k) { c.beginPath(); c.ellipse(k * 43 * S, 0, 8 * S, 12 * S, 0, 0, 6.3); c.fill(); }); }
+    c.beginPath(); c.ellipse(0, -6 * S, 42 * S, 46 * S, 0, 0, 6.3); c.fill();
+    rr(-40 * S, -4 * S, 80 * S, 58 * S, 22 * S); c.fill();                                  // square jaw
+    if (has('lump')) { c.beginPath(); c.arc(22 * S, -42 * S, 11 * S, 0, 6.3); c.fill(); c.fillStyle = 'rgba(120,40,90,.35)'; c.beginPath(); c.arc(22 * S, -42 * S, 7 * S, 0, 6.3); c.fill(); }
+    if (has('stub')) { c.fillStyle = 'rgba(30,25,25,.38)'; for (var sx = -30; sx <= 30; sx += 5) for (var sy = 30; sy <= 50; sy += 5) if ((sx * 7 + sy * 3) % 3) { c.beginPath(); c.arc(sx * S, (sy - (Math.abs(sx) > 24 ? 6 : 0)) * S, 1.2 * S, 0, 6.3); c.fill(); } }
     c.fillStyle = o.hair;
-    if (o.look === 'kid') { c.beginPath(); c.ellipse(0, -36 * S, 42 * S, 20 * S, 0, Math.PI, 0); c.fill(); c.fillRect(-36 * S, -40 * S, 72 * S, 10 * S); c.fillStyle = '#2b9dff'; c.fillRect(-44 * S, -30 * S, 88 * S, 9 * S); }
-    if (o.look === 'stache') { c.beginPath(); c.ellipse(0, -40 * S, 44 * S, 18 * S, 0, Math.PI, 0); c.fill(); c.beginPath(); c.ellipse(-12 * S, 20 * S, 14 * S, 6 * S, 0.2, 0, 6.3); c.ellipse(12 * S, 20 * S, 14 * S, 6 * S, -0.2, 0, 6.3); c.fill(); }
-    if (o.look === 'mohawk') { c.beginPath(); c.moveTo(-10 * S, -44 * S); c.lineTo(0, -82 * S); c.lineTo(10 * S, -44 * S); c.fill(); c.fillStyle = '#ff6a2b'; c.fillRect(-6 * S, -78 * S, 12 * S, 30 * S); }
-    if (o.look === 'zero') { c.beginPath(); c.ellipse(-32 * S, -20 * S, 14 * S, 22 * S, 0, 0, 6.3); c.ellipse(32 * S, -20 * S, 14 * S, 22 * S, 0, 0, 6.3); c.fill(); c.strokeStyle = '#222'; c.lineWidth = 3 * S; c.beginPath(); c.arc(-15 * S, -6 * S, 12 * S, 0, 6.3); c.arc(15 * S, -6 * S, 12 * S, 0, 6.3); c.stroke(); }
-    if (o.look === 'champ') { c.beginPath(); c.ellipse(0, -40 * S, 44 * S, 20 * S, 0, Math.PI, 0); c.fill(); c.fillStyle = '#FFC107'; c.beginPath(); c.moveTo(-26 * S, -52 * S); c.lineTo(-20 * S, -74 * S); c.lineTo(-8 * S, -60 * S); c.lineTo(0, -80 * S); c.lineTo(8 * S, -60 * S); c.lineTo(20 * S, -74 * S); c.lineTo(26 * S, -52 * S); c.closePath(); c.fill(); }
+    if (o.look === 'kid') { c.beginPath(); c.ellipse(0, -40 * S, 42 * S, 20 * S, 0, Math.PI, 0); c.fill(); c.fillRect(-36 * S, -44 * S, 72 * S, 10 * S); c.fillStyle = '#2b9dff'; c.fillRect(-44 * S, -34 * S, 88 * S, 9 * S); }
+    if (o.look === 'stache') { c.beginPath(); c.ellipse(0, -44 * S, 42 * S, 16 * S, 0, Math.PI, 0); c.fill(); }
+    if (o.look === 'mohawk') { c.beginPath(); c.moveTo(-10 * S, -48 * S); c.lineTo(0, -86 * S); c.lineTo(10 * S, -48 * S); c.fill(); c.fillStyle = '#ff6a2b'; c.fillRect(-6 * S, -82 * S, 12 * S, 30 * S); }
+    if (o.look === 'zero') { c.beginPath(); c.ellipse(-32 * S, -26 * S, 13 * S, 20 * S, 0, 0, 6.3); c.ellipse(32 * S, -26 * S, 13 * S, 20 * S, 0, 0, 6.3); c.fill(); }
+    if (o.look === 'champ') { c.beginPath(); c.ellipse(0, -44 * S, 42 * S, 18 * S, 0, Math.PI, 0); c.fill(); c.fillStyle = '#FFC107'; c.beginPath(); c.moveTo(-26 * S, -56 * S); c.lineTo(-20 * S, -78 * S); c.lineTo(-8 * S, -64 * S); c.lineTo(0, -84 * S); c.lineTo(8 * S, -64 * S); c.lineTo(20 * S, -78 * S); c.lineTo(26 * S, -56 * S); c.closePath(); c.fill(); }
     // face
-    c.strokeStyle = '#1a0f0a'; c.fillStyle = '#1a0f0a'; c.lineWidth = 3.5 * S; c.lineCap = 'round';
+    c.lineCap = 'round';
+    if (has('eye')) { c.fillStyle = 'rgba(90,30,110,.75)'; c.beginPath(); c.ellipse(-16 * S, -5 * S, 13 * S, 11 * S, 0, 0, 6.3); c.fill(); }
+    c.strokeStyle = dark; c.lineWidth = 7 * S;                                                     // heavy brow
+    c.beginPath(); c.moveTo(-28 * S, -18 * S); c.quadraticCurveTo(-14 * S, -26 * S, -4 * S, (eye === 'open' ? -20 : -14) * S); c.moveTo(28 * S, -18 * S); c.quadraticCurveTo(14 * S, -26 * S, 4 * S, (eye === 'open' ? -20 : -14) * S); c.stroke();
+    c.strokeStyle = '#1a0f0a'; c.fillStyle = '#1a0f0a'; c.lineWidth = 3.5 * S;
     if (eye === 'x') { [-15, 15].forEach(function (ex) { c.beginPath(); c.moveTo((ex - 6) * S, -12 * S); c.lineTo((ex + 6) * S, 0); c.moveTo((ex + 6) * S, -12 * S); c.lineTo((ex - 6) * S, 0); c.stroke(); }); }
-    else { [-15, 15].forEach(function (ex) { c.beginPath(); c.arc(ex * S, -6 * S, 4.5 * S, 0, 6.3); c.fill(); if (eye === 'mean') { c.beginPath(); c.moveTo((ex - 9 * Math.sign(ex)) * S, -20 * S); c.lineTo((ex + 7 * Math.sign(ex) * -1) * S, -14 * S); c.stroke(); } }); }
-    c.beginPath(); if (eye === 'x') c.arc(0, 24 * S, 8 * S, 0, 6.3); else if (eye === 'mean') { c.moveTo(-12 * S, 28 * S); c.lineTo(12 * S, 26 * S); } else c.arc(0, 18 * S, 12 * S, 0.2, Math.PI - 0.2); c.stroke();
+    else { [[-15, has('eye') ? 3 : 4.8], [15, 4]].forEach(function (e) { c.fillStyle = '#fff'; c.beginPath(); c.ellipse(e[0] * S, -6 * S, 7 * S, (eye === 'mean' ? 3.5 : 5) * S, 0, 0, 6.3); c.fill(); c.fillStyle = '#1a0f0a'; c.beginPath(); c.arc(e[0] * S, -6 * S, e[1] * S * (eye === 'mean' ? 0.75 : 1), 0, 6.3); c.fill(); }); }
+    // nose (broken = crooked)
+    c.fillStyle = dark;
+    if (has('nose')) { c.beginPath(); c.moveTo(-2 * S, -4 * S); c.lineTo(8 * S, 6 * S); c.lineTo(2 * S, 12 * S); c.lineTo(10 * S, 16 * S); c.lineTo(-6 * S, 18 * S); c.closePath(); c.fill(); c.strokeStyle = '#fff'; c.lineWidth = 2 * S; c.beginPath(); c.moveTo(-4 * S, 6 * S); c.lineTo(8 * S, 4 * S); c.stroke(); }
+    else { c.beginPath(); c.ellipse(0, 12 * S, 9 * S, 7 * S, 0, 0, 6.3); c.fill(); }
+    if (o.look === 'stache') { c.fillStyle = o.hair; c.beginPath(); c.ellipse(-12 * S, 23 * S, 14 * S, 6 * S, 0.2, 0, 6.3); c.ellipse(12 * S, 23 * S, 14 * S, 6 * S, -0.2, 0, 6.3); c.fill(); }
+    // mouth: open when talking or knocked silly; a snarl when winding up; a gap-tooth grin otherwise
+    var my = 34 * S;
+    if (eye === 'x' || TALK.open) { c.fillStyle = '#2a0a0a'; c.beginPath(); c.ellipse(0, my, 13 * S, (eye === 'x' ? 9 : 5 + 5 * Math.abs(Math.sin(t * 18))) * S, 0, 0, 6.3); c.fill(); }
+    else if (eye === 'mean') { c.fillStyle = '#2a0a0a'; rr(-16 * S, my - 5 * S, 32 * S, 10 * S, 4 * S); c.fill(); c.fillStyle = '#f4efe0'; for (var tx = -14; tx < 14; tx += 7) if (!(has('tooth') && tx === 0)) c.fillRect(tx * S, my - 5 * S, 5 * S, 4 * S); }
+    else { c.fillStyle = '#2a0a0a'; c.beginPath(); c.moveTo(-18 * S, my - 3 * S); c.quadraticCurveTo(0, my + 12 * S, 18 * S, my - 5 * S); c.closePath(); c.fill(); c.fillStyle = '#f4efe0'; [-12, -5, 2, 9].forEach(function (tx, i) { if (has('tooth') && i === 2) return; c.fillStyle = has('gold') && i === 1 ? '#FFC107' : '#f4efe0'; c.fillRect(tx * S, my - 3 * S, 5 * S, 4 * S); }); }
+    // scars, stitches, band-aid
+    c.strokeStyle = 'rgba(200,90,110,.9)'; c.lineWidth = 2.5 * S;
+    if (has('scar')) { c.beginPath(); c.moveTo(18 * S, -32 * S); c.lineTo(30 * S, 8 * S); c.stroke(); c.lineWidth = 1.8 * S; for (var k = 0; k < 4; k++) { var px = 20.5 + k * 3, py = -24 + k * 10; c.beginPath(); c.moveTo((px - 4) * S, py * S); c.lineTo((px + 4) * S, (py - 2) * S); c.stroke(); } }
+    if (has('scar2')) { c.lineWidth = 2.5 * S; c.beginPath(); c.moveTo(-34 * S, 14 * S); c.lineTo(-20 * S, 26 * S); c.stroke(); }
+    if (has('aid')) { c.save(); c.translate(-18 * S, -30 * S); c.rotate(-0.4); c.fillStyle = '#e9c39a'; rr(-14 * S, -5 * S, 28 * S, 10 * S, 4 * S); c.fill(); c.fillStyle = '#d6a978'; c.fillRect(-4 * S, -5 * S, 8 * S, 10 * S); c.restore(); }
+    if (has('mono')) { c.strokeStyle = '#ddd'; c.lineWidth = 2.5 * S; c.beginPath(); c.arc(15 * S, -6 * S, 11 * S, 0, 6.3); c.stroke(); c.beginPath(); c.moveTo(9 * S, -14 * S); c.lineTo(14 * S, -6 * S); c.lineTo(10 * S, 2 * S); c.stroke(); c.beginPath(); c.moveTo(26 * S, -4 * S); c.lineTo(32 * S, 30 * S); c.stroke(); }
     if (pose.kind === 'hit' || pose.kind === 'uppercut') { c.fillStyle = 'rgba(160,220,255,.9)'; [-1, 1].forEach(function (k) { c.beginPath(); c.arc(k * 52 * S, -10 * S + (pose.t * 80 * S), 5 * S, 0, 6.3); c.fill(); }); }
     c.restore();
     // gloves
@@ -453,11 +551,15 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
           }
           G.anim.t += dt; if (G.glove) { G.glove.t += dt; if (G.glove.t > 0.45) G.glove = null; }
           if (G.youHit > 0) G.youHit = Math.max(0, G.youHit - dt * 2.5);
+          if (talkT > 0) { talkT -= dt; if (talkT <= 0) $('talk').hidden = true; }
+          if (talkT > 0) { var nb = $('note'), tb = $('talk'); tb.style.bottom = matchMedia('(max-width: 640px)').matches && !nb.hidden ? (nb.offsetHeight + 16) + 'px' : ''; }
+          if (G.state === 'q') { idleT += dt; if (idleT > 11 && talkT <= 0) talk('taunt'); }
           if ((G.anim.kind === 'hit' && G.anim.t > 0.4) || (G.anim.kind === 'uppercut' && G.anim.t > 0.7) || (G.anim.kind === 'punch' && G.anim.t > 0.35) || (G.anim.kind === 'up' && G.anim.t > 0.6)) G.anim = { kind: 'idle', t: 0 };
         }
         var pose = G.anim;
         if (G.state === 'q' && pose.kind === 'idle') { var k = (G.t / G.T); if (k > 0.55) pose = { kind: 'wind', k: Math.min(1, (k - 0.55) / 0.45), t: 0 }; }
         var S = Math.min(1.35, CW / 720, CH / 400);
+        TALK.open = talkT > 0 && talkT > (talkT0() - 1.3);
         boxer(cx, G.o, CW / 2, CH * 0.5, S, pose, t);
         if (pose.kind === 'wind' && pose.k > 0.6 && Math.sin(t * 30) > 0) { cx.fillStyle = '#ffd166'; cx.font = '900 ' + Math.round(40 * S) + 'px Inter'; cx.textAlign = 'center'; cx.fillText('!', CW / 2 + 110 * S, CH * 0.5 - 110 * S); }
         player(t);
@@ -474,7 +576,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     $('opps').innerHTML = OPP.map(function (o, i) {
       return '<button type="button" class="opp' + (i === sel ? ' on' : '') + '" data-i="' + i + '" style="--c:' + o.c + '"><canvas width="240" height="170"></canvas><div class="t1">' + (i + 1) + ' · ' + o.tag + '</div><div class="t2">' + o.name + '</div><div class="t3">' + o.d + '</div><div class="bst">' + (best[i] ? 'Best: ' + best[i].toLocaleString() : '') + '</div></button>';
     }).join('');
-    [].forEach.call($('opps').querySelectorAll('canvas'), function (c, i) { var g = c.getContext('2d'); boxer(g, OPP[i], 120, 112, 0.62, { kind: 'idle', t: 0 }, 0); });
+    [].forEach.call($('opps').querySelectorAll('canvas'), function (c, i) { var g = c.getContext('2d'); TALK.open = false; boxer(g, OPP[i], 120, 112, 0.62, { kind: 'idle', t: 0 }, 0); });
   }
   $('opps').addEventListener('click', function (e) { var b = e.target.closest('.opp'); if (!b) return; sel = +b.dataset.i; drawOpps(); sfx('coin'); });
   function startFight(i) {
@@ -483,6 +585,7 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     $('ptext').innerHTML = 'ROUND 1'; $('note').hidden = true;
     ding();
     fx(function (A) { var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.45, G.o.name.toUpperCase(), { color: G.o.c, size: 34 }); setTimeout(function () { A.text(r.left + r.width / 2, r.top + r.height * 0.45, 'FIGHT!', { color: '#fff', size: 64 }); }, 900); });
+    talkT = 0; $('talk').hidden = true; setTimeout(function () { talk('intro', true); }, 300);
     setTimeout(nextProblem, 1500);
   }
   $('bFight').addEventListener('click', function () { startFight(sel); });
@@ -494,7 +597,9 @@ html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:I
     var best = store('ik-best') || {}; if (won) G.score += 1000 + 200 * (3 - G.youDowns);
     if (!best[G.oi] || G.score > best[G.oi]) { best[G.oi] = G.score; store('ik-best', best); }
     $('eTitle').textContent = won ? 'K.O.!' : 'DOWN AND OUT';
-    $('eSub').textContent = won ? 'You knocked out ' + G.o.name + '!' + (G.oi === OPP.length - 1 ? ' You are the Integer Champion!' : '') : G.o.name + ' wins this time. Rematch?';
+    var tr = TRASH[G.o.name] || {};
+    $('eSub').textContent = (won ? 'You knocked out ' + G.o.name + '!' + (G.oi === OPP.length - 1 ? ' You are the Integer Champion!' : '') : G.o.name + ' wins this time. Rematch?') + (tr[won ? 'lose' : 'win'] ? '  ' + G.o.name + ': "' + tr[won ? 'lose' : 'win'] + '"' : '');
+    $('talk').hidden = true;
     $('eScore').textContent = G.score.toLocaleString(); $('eRight').textContent = G.first + '/' + G.asked;
     var avg = G.times.length ? G.times.reduce(function (a, b) { return a + b; }, 0) / G.times.length : 0;
     $('eFast').textContent = avg.toFixed(1); $('eBest').textContent = G.best;
