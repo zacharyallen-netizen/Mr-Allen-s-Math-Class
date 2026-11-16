@@ -102,3 +102,5 @@ I5. Equation Master monsters are evil looking and attack every few seconds; Spac
     presses an answer button. Unblocked attacks and wrong steps hurt the hero (knocked down at 0, gets back up); the beast
     roars, grunts and wails; death = slow motion, cut in two, goo, eyeballs; 6 weapons unlock by beasts defeated (saved per
     device); original dramatic music with Music: on/off. None of this changes questions, feedback, score or what is sent.
+I8. Root Rocket uses only numbers where the class 4-step estimate rounds to the true tenth, so a student who uses the
+    method always gets a Perfect landing. Every wrong pair and every crash names the mistake; 3 tries per landing.

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Root Rocket — Land on the Square Root</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#FFC107;--gold2:#E0A800;--red:#ff4d6a;--grn:#4dff9a;--cyan:#43f7ff;--ink:#fff;--panel:rgba(8,10,30,.9);--line:rgba(255,255,255,.18);--top:0px}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:#050719;color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow:hidden}
+#app{position:fixed;top:var(--top);left:var(--pad,0px);right:0;bottom:0;display:flex;flex-direction:column}
+#hud{display:flex;gap:14px;align-items:center;justify-content:space-between;padding:8px 14px;background:linear-gradient(180deg,rgba(0,0,0,.7),rgba(0,0,0,.15));flex-wrap:wrap}
+#hud .t{font:900 15px/1 Orbitron,sans-serif;color:var(--gold);letter-spacing:.06em}
+#hud .st{display:flex;gap:16px;font:800 14px 'JetBrains Mono',monospace;align-items:center}
+#hud .st b{color:var(--gold)}
+#hud button{font:800 12px Inter,sans-serif;background:transparent;color:#fff;border:1.5px solid var(--line);border-radius:8px;padding:5px 10px;cursor:pointer}
+#dots{display:flex;gap:4px}
+#dots i{width:10px;height:10px;border-radius:50%;border:2px solid #667;display:inline-block}
+#dots i.p{background:var(--gold);border-color:var(--gold)}
+#dots i.g{background:#7fd6ff;border-color:#7fd6ff}
+#dots i.r{background:#c58cff;border-color:#c58cff}
+#dots i.x{background:#ff4d6a;border-color:#ff4d6a}
+#dots i.now{border-color:#fff;box-shadow:0 0 8px #fff}
+#stage{position:relative;flex:1;min-height:220px}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:ew-resize}
+#ask{position:absolute;left:50%;top:12px;transform:translateX(-50%);text-align:center;width:min(94%,680px);pointer-events:none}
+#ask .q{display:inline-block;padding:8px 18px;border-radius:14px;background:rgba(6,8,26,.85);border:2px solid rgba(255,255,255,.22);font:800 clamp(18px,3.4vw,26px)/1.25 Inter,sans-serif}
+#ask .q .rt{font:800 1.15em 'JetBrains Mono',monospace;color:var(--gold)}
+#ask .sub{margin-top:6px;font:700 14px/1.3 Inter,sans-serif;color:#cfd6ff;text-shadow:0 1px 4px #000}
+#pad{background:var(--panel);border-top:2px solid var(--line);padding:10px 12px 14px;min-height:118px}
+.row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}
+.ch{font:800 clamp(17px,2.6vw,22px) 'JetBrains Mono',monospace;min-width:150px;padding:12px 16px;border-radius:12px;border:2px solid #3b4680;background:#141a44;color:#fff;cursor:pointer;position:relative}
+.ch:hover{border-color:var(--gold)}
+.ch .k{position:absolute;left:7px;top:4px;font:800 10px Inter,sans-serif;color:#8a93c9}
+.ch.no{opacity:.45;text-decoration:line-through;border-color:#ff4d6a;cursor:default}
+.nudge{font:900 24px Inter,sans-serif;width:56px;height:56px;border-radius:50%;border:2px solid #3b4680;background:#141a44;color:#fff;cursor:pointer}
+#read{font:800 clamp(26px,5vw,38px) 'JetBrains Mono',monospace;color:var(--gold);min-width:150px;text-align:center}
+#read small{display:block;font:700 12px Inter,sans-serif;color:#aab3e6}
+.go{font:900 18px Orbitron,sans-serif;letter-spacing:.08em;padding:14px 26px;border-radius:14px;border:0;background:linear-gradient(180deg,#FFD54F,#E0A800);color:#1E2D4F;cursor:pointer;box-shadow:0 4px 0 #8a6500}
+.go:active{transform:translateY(2px);box-shadow:0 2px 0 #8a6500}
+.ghost{font:800 14px Inter,sans-serif;padding:10px 16px;border-radius:12px;border:2px solid #6f7ac0;background:transparent;color:#dfe4ff;cursor:pointer}
+#note{margin-top:8px;text-align:center;font:700 15px/1.4 Inter,sans-serif;min-height:20px}
+#note.why{color:#ffe08a}
+#note.ok{color:var(--grn)}
+#fc{margin:8px auto 0;max-width:640px;background:#0b1236;border:2px solid #2c3a8a;border-radius:12px;padding:8px 12px;font:700 14px/1.55 Inter,sans-serif}
+#fc .h{font:900 12px Orbitron,sans-serif;color:var(--cyan);letter-spacing:.1em;margin-bottom:2px}
+#fc .s{display:flex;gap:8px}
+#fc .s b{color:var(--gold);min-width:18px}
+#fc .m{font-family:'JetBrains Mono',monospace;color:#fff}
+#over{position:fixed;inset:0;left:var(--pad,0px);top:var(--top);z-index:20;background:radial-gradient(ellipse at 50% 0%,rgba(67,247,255,.18),transparent 60%),rgba(4,5,18,.95);overflow:auto;padding:18px 14px 70px}
+.card{max-width:720px;margin:0 auto;background:#0d1234;border:2px solid #26306e;border-radius:18px;padding:20px}
+.card h1{font:900 clamp(26px,5vw,40px)/1.1 Orbitron,sans-serif;color:var(--gold);margin:0 0 6px;letter-spacing:.04em}
+.card h2{font:900 16px Orbitron,sans-serif;color:var(--cyan);margin:16px 0 6px;letter-spacing:.06em}
+.card p,.card li{font:600 16px/1.5 Inter,sans-serif;color:#e4e8ff}
+.lv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:8px}
+.lv button{text-align:left;padding:12px 14px;border-radius:14px;border:2px solid #3b4680;background:#141a44;color:#fff;cursor:pointer}
+.lv button:hover{border-color:var(--gold)}
+.lv b{display:block;font:900 16px Orbitron,sans-serif;color:var(--gold)}
+.lv span{font:600 13px/1.35 Inter,sans-serif;color:#cfd6ff}
+.lv em{display:block;font:800 12px 'JetBrains Mono',monospace;color:#7fd6ff;font-style:normal;margin-top:4px}
+.big{font:900 46px 'JetBrains Mono',monospace;color:var(--gold);text-align:center;margin:6px 0}
+table.log{width:100%;border-collapse:collapse;margin-top:6px;font:700 14px Inter,sans-serif}
+table.log td{padding:5px 6px;border-bottom:1px solid #222a5c}
+table.log td.m{font-family:'JetBrains Mono',monospace}
+a.back{color:#9fb0ff;font:700 14px Inter,sans-serif}
+@media (max-width:760px){#pad{min-height:150px}.ch{min-width:130px;padding:10px 12px}.nudge{width:50px;height:50px}#hud .t{display:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<script src="../arcade-send.js" data-game="Root Rocket" data-unit="1"></script>
+<script src="../site-bar.js"></script>
+<script src="arcade-fx.js?v=20261111a"></script>
+
+<div id="app">
+  <div id="hud">
+    <div class="t">ROOT ROCKET</div>
+    <div class="st"><span>Landing <b id="hN">1</b>/10</span><span id="dots"></span><span>Score <b id="hS">0</b></span></div>
+    <div class="st"><button id="sndB" type="button">Sound: on</button><button id="quitB" type="button">Levels</button></div>
+  </div>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="ask"><div class="q" id="askQ"></div><div class="sub" id="askS"></div></div>
+  </div>
+  <div id="pad">
+    <div id="pick" class="row"></div>
+    <div id="aim" class="row" hidden>
+      <button class="nudge" id="lt" type="button" aria-label="Move left 0.1">◀</button>
+      <div id="read">6.5<small>landing spot</small></div>
+      <button class="nudge" id="rt" type="button" aria-label="Move right 0.1">▶</button>
+      <button class="go" id="land" type="button">LAND</button>
+      <button class="ghost" id="hintB" type="button">Hint</button>
+    </div>
+    <div id="after" class="row" hidden><button class="go" id="nextB" type="button">NEXT LANDING</button></div>
+    <div id="note"></div>
+    <div id="fc" hidden></div>
+  </div>
+</div>
+
+<div id="over">
+  <div class="card" id="startCard">
+    <h1>ROOT ROCKET</h1>
+    <p>Your rocket must land on the pad at a square root. The pad is hidden on the number line. Use your estimate to land on it.</p>
+    <ol>
+      <li><b>Trap it:</b> tap the two whole numbers the root is between.</li>
+      <li><b>Aim:</b> drag the rocket (or use ◀ ▶) to your estimate to the nearest tenth.</li>
+      <li><b>Land!</b> Right on the tenth = <b>Perfect landing</b>. One tenth off = good. Too far = crash, and you try again.</li>
+    </ol>
+    <p>Stuck? Press <b>Hint</b>. The flight computer uses the 4-step estimate:<br>
+      <span style="font-family:'JetBrains Mono',monospace;color:#FFC107">√n ≈ lower root + (n − lower²) ÷ (upper² − lower²)</span></p>
+    <h2>PICK A MISSION</h2>
+    <div class="lv" id="lvBox"></div>
+    <p style="margin-top:16px"><a class="back" href="arcade.html">← Back to the Arcade</a></p>
+  </div>
+  <div class="card" id="endCard" hidden></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  /* Root Rocket (Nov 16, 2026, Zach: gamify Estimating Square Roots).
+     A landing = (1) tap the two whole numbers the root is between, (2) set the estimate to the tenth, (3) land.
+     The only n used are ones where the 4-step estimate (lower root + (n − lower²) ÷ (upper² − lower²)) rounds to the
+     same tenth as the true root, so the class method always gives a Perfect landing.
+     Scoring: Perfect 100, Good (0.1 off) 60, Rough (0.2 off) 25; farther = crash, try again (3 tries; then the
+     flight computer lands it, 0 points). Try 2 ×0.6, try 3 ×0.3. +20 for the right whole numbers on the first tap,
+     streak bonus for Perfect landings in a row, up to +20 for a quick landing.
+     Logs every landing try (ArcadeSend.answer) and one round per mission (with a score, for the High Scores board). */
+  var $ = function (id) { return document.getElementById(id); };
+  var DBG = /[?&]debug/.test(location.search);
+
+  /* ---------- math ---------- */
+  function compute(k, n) {
+    var root = k === 2 ? Math.sqrt(n) : Math.cbrt(n);
+    var lo = Math.floor(root + 1e-9), hi = lo + 1, loP = Math.pow(lo, k), hiP = Math.pow(hi, k);
+    var num = n - loP, den = hiP - loP, fd = num / den, est = lo + fd;
+    return { k: k, n: n, sym: k === 2 ? '√' : '∛', pw: k === 2 ? '²' : '³', word: k === 2 ? 'square' : 'cube',
+      lo: lo, hi: hi, loP: loP, hiP: hiP, num: num, den: den, fd: fd, est: est, T: Math.round(est * 10) / 10, actual: root };
+  }
+  function good(k, n) {
+    var c = compute(k, n); if (c.num === 0) return false;
+    return Math.round(c.est * 10) === Math.round(c.actual * 10);
+  }
+  function pool(k, a, b) { var out = []; for (var n = a; n <= b; n++) if (good(k, n)) out.push(n); return out; }
+  var SQ99 = pool(2, 2, 99), SQ225 = pool(2, 2, 225), CU216 = pool(3, 2, 216);
+  var LEVELS = [
+    { id: 'cadet', name: 'Cadet', desc: 'Square roots of numbers under 100.', make: function () { return pickN(SQ99, 2, 10); } },
+    { id: 'pilot', name: 'Pilot', desc: 'Square roots up to √225.', make: function () { return pickN(SQ225.filter(function (n) { return n > 20; }), 2, 10); } },
+    { id: 'commander', name: 'Commander', desc: 'Square roots AND cube roots (∛). Uses perfect cubes.', make: function () {
+      var a = pickN(SQ225.filter(function (n) { return n > 20; }), 2, 5), b = pickN(CU216, 3, 5), all = a.concat(b);
+      return shuffle(all);
+    } }
+  ];
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pickN(list, k, m) {
+    /* m different numbers, no two with the same pair of whole numbers back to back */
+    var s = shuffle(list.slice()), out = [], used = {};
+    for (var i = 0; i < s.length && out.length < m; i++) {
+      var c = compute(k, s[i]); if (used[c.lo] && Object.keys(used).length < 6) continue;
+      used[c.lo] = 1; out.push(c);
+    }
+    for (i = 0; out.length < m && i < s.length; i++) if (!out.some(function (c) { return c.n === s[i]; })) out.push(compute(k, s[i]));
+    return out;
+  }
+  function f1(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+
+  /* the two-whole-numbers question: right pair + common mistakes */
+  function pairChoices(c) {
+    var list = [], why = {};
+    function add(a, b, w) { var t = a + ' and ' + b; if (a < 0 || list.indexOf(t) >= 0) return; list.push(t); why[t] = w; }
+    add(c.lo, c.hi, '');
+    add(c.loP, c.hiP, 'Those are the perfect ' + c.word + 's around ' + c.n + '. Take their ' + c.word + ' roots: ' + c.sym + c.loP + ' = ' + c.lo + ' and ' + c.sym + c.hiP + ' = ' + c.hi + '.');
+    var h = Math.floor(c.n / c.k);
+    if (h !== c.lo && h !== c.hi && h > 0) add(h, h + 1, c.k === 2 ? 'Half of ' + c.n + ' is not its square root. A square root times ITSELF makes ' + c.n + '.' : 'A cube root is not ' + c.n + ' ÷ 3. A cube root times itself times itself makes ' + c.n + '.');
+    var lo2 = c.lo + 1, up = Math.pow(lo2, c.k);
+    add(lo2, lo2 + 1, 'Check: ' + lo2 + c.pw + ' = ' + up + ', which is bigger than ' + c.n + '. The root must be smaller.');
+    var dn = c.lo - 1;
+    if (dn >= 1) add(dn, dn + 1, 'Check: ' + (dn + 1) + c.pw + ' = ' + Math.pow(dn + 1, c.k) + ', which is less than ' + c.n + '. The root is bigger than ' + (dn + 1) + '.');
+    if (list.length < 4) add(c.lo + 2, c.lo + 3, 'Check: ' + (c.lo + 2) + c.pw + ' = ' + Math.pow(c.lo + 2, c.k) + ', which is too big.');
+    var right = list[0];
+    list = shuffle(list.slice(0, 4));
+    return { list: list, right: right, why: why };
+  }
+
+  /* what a wrong landing gives away */
+  function whyLand(c, e) {
+    var T = c.T, d = Math.round((e - T) * 10);
+    var closeLo = (c.n - c.loP) < (c.hiP - c.n);
+    var raw = Math.round((c.lo + c.num / 10) * 10) / 10;
+    if (raw !== T && Math.abs(e - raw) < 1e-9 && c.num < 10)
+      return 'It looks like you used ' + c.n + ' − ' + c.loP + ' = ' + c.num + ' as the tenths. Divide by the gap instead: ' + c.num + ' ÷ ' + c.den + '.';
+    var mir = Math.round((c.hi - (T - c.lo)) * 10) / 10;
+    if (mir !== T && Math.abs(e - mir) < 1e-9)
+      return 'You measured from the wrong end. Start at ' + c.lo + ' and go up ' + c.num + ' ÷ ' + c.den + ' of the way.';
+    if (closeLo && e > c.lo + 0.5 + 1e-9) return c.n + ' is closer to ' + c.loP + ' than to ' + c.hiP + ', so ' + c.sym + c.n + ' is closer to ' + c.lo + '.';
+    if (!closeLo && e < c.lo + 0.5 - 1e-9) return c.n + ' is closer to ' + c.hiP + ' than to ' + c.loP + ', so ' + c.sym + c.n + ' is closer to ' + c.hi + '.';
+    if (d < 0) return 'Too low. ' + c.n + ' is ' + c.num + ' of the ' + c.den + ' steps from ' + c.loP + ' to ' + c.hiP + '. How far is that from ' + c.lo + '?';
+    return 'Too high. ' + c.n + ' is only ' + c.num + ' of the ' + c.den + ' steps from ' + c.loP + ' to ' + c.hiP + '. Find ' + c.num + ' ÷ ' + c.den + '.';
+  }
+
+  /* ---------- state ---------- */
+  var G = null, BEST = {};
+  try { BEST = JSON.parse(localStorage.getItem('rr-best') || '{}') || {}; } catch (e) { BEST = {}; }
+  var MOONS = ['Zorbit', 'Pell-9', 'Quarra', 'Vexo', 'Lumin', 'Kestra', 'Nebbi', 'Orrin', 'Tallu', 'Mirro', 'Dace', 'Sorra', 'Glimm', 'Hexa', 'Ombi'];
+
+  function startMission(lv) {
+    var L = LEVELS.filter(function (x) { return x.id === lv; })[0] || LEVELS[0];
+    var probs = L.make().slice(0, 10), moons = shuffle(MOONS.slice());
+    G = { L: L, probs: probs, i: 0, score: 0, streak: 0, results: [], hints: 0, moons: moons, rightFirst: 0 };
+    $('over').hidden = true;
+    buildDots(); load();
+  }
+  function cur() { return G.probs[G.i]; }
+
+  function load() {
+    var c = cur();
+    G.st = 'pick'; G.tries = 0; G.pairMiss = 0; G.hintLv = 0; G.t0 = Date.now();
+    G.e = null; G.land = null; G.wreck = null; G.pad = false;
+    G.moon = G.moons[G.i % G.moons.length];
+    G.sx = null; G.vis = 0; G.auto = false;
+    G.pc = pairChoices(c);
+    $('askQ').innerHTML = 'Land on <span class="rt">' + c.sym + c.n + '</span>';
+    $('askS').textContent = 'Moon ' + G.moon + ' · First, trap it: between which two whole numbers?';
+    var box = $('pick'); box.innerHTML = '';
+    G.pc.list.forEach(function (t, i) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'ch'; b.dataset.t = t;
+      b.innerHTML = '<span class="k">' + (i + 1) + '</span>' + t;
+      b.onclick = function () { pickPair(b); };
+      box.appendChild(b);
+    });
+    var h = document.createElement('button'); h.type = 'button'; h.className = 'ghost'; h.textContent = 'Hint';
+    h.onclick = function () { note('Hint: list the perfect ' + c.word + 's (' + (c.k === 2 ? '1, 4, 9, 16, 25, 36, 49, 64, 81, 100…' : '1, 8, 27, 64, 125, 216') + '). Find the two that ' + c.n + ' sits between. Then take their ' + c.word + ' roots.', 'why'); G.hints++; };
+    box.appendChild(h);
+    show('pick'); note(''); $('fc').hidden = true; hud();
+  }
+  function show(which) { ['pick', 'aim', 'after'].forEach(function (id) { $(id).hidden = id !== which; }); }
+  function note(t, cls) { var n = $('note'); n.textContent = t; n.className = cls || ''; }
+
+  function pickPair(b) {
+    if (G.st !== 'pick' || b.classList.contains('no')) return;
+    var c = cur(), t = b.dataset.t;
+    if (t === G.pc.right) {
+      sfx('coin');
+      if (G.pairMiss === 0) { G.score += 20; G.rightFirst++; flyText('+20', '#7fd6ff'); }
+      G.st = 'aim'; G.e = c.lo + Math.round(Math.random() * 8 + 1) / 10;
+      $('askS').textContent = c.loP + ' < ' + c.n + ' < ' + c.hiP + ', so ' + c.sym + c.n + ' is between ' + c.lo + ' and ' + c.hi + '. Now drag the rocket to your estimate.';
+      show('aim'); note(''); readout(); hud();
+    } else {
+      G.pairMiss++; b.classList.add('no'); sfx('thud');
+      note('Not yet. ' + G.pc.why[t], 'why');
+      try { if (window.ArcadeSend) ArcadeSend.answer(false); } catch (e) {}
+      if (G.pairMiss >= 2) {
+        Array.prototype.forEach.call(document.querySelectorAll('#pick .ch'), function (x) { if (x.dataset.t !== G.pc.right) x.classList.add('no'); });
+        note('Not yet. ' + G.pc.why[t] + ' The right pair is ' + G.pc.right + '. Tap it.', 'why');
+      }
+    }
+  }
+
+  function readout() { $('read').innerHTML = f1(G.e) + '<small>landing spot</small>'; }
+  function setE(v) {
+    if (G.st !== 'aim') return;
+    var c = cur(); v = Math.max(c.lo, Math.min(c.hi, Math.round(v * 10) / 10));
+    if (v !== G.e) { G.e = v; tick(); readout(); }
+  }
+
+  function hint() {
+    if (G.st !== 'aim') return;
+    G.hintLv = Math.min(3, G.hintLv + 1); G.hints++;
+    flight(G.hintLv, false);
+  }
+  function flight(upto, all) {
+    var c = cur(), s = [];
+    s.push('Trap it: <span class="m">' + c.loP + ' &lt; ' + c.n + ' &lt; ' + c.hiP + '</span> → between <b>' + c.lo + '</b> and <b>' + c.hi + '</b>.');
+    s.push('Build the fraction: <span class="m">(' + c.n + ' − ' + c.loP + ') ÷ (' + c.hiP + ' − ' + c.loP + ') = ' + c.num + ' ÷ ' + c.den + '</span>');
+    s.push('Divide: <span class="m">' + c.num + ' ÷ ' + c.den + ' ≈ ' + c.fd.toFixed(2) + '</span>');
+    s.push('Add &amp; round: <span class="m">' + c.lo + ' + ' + c.fd.toFixed(2) + ' = ' + c.est.toFixed(2) + ' → ' + c.T.toFixed(1) + '</span>');
+    var n = all ? 4 : Math.min(upto + 1, 3);
+    var h = '<div class="h">FLIGHT COMPUTER</div>';
+    for (var i = 0; i < n; i++) h += '<div class="s"><b>' + (i + 1) + '</b><span>' + s[i] + '</span></div>';
+    if (!all) h += '<div class="s" style="color:#aab3e6"><b></b><span>' + (n < 3 ? 'Press Hint again for the next step.' : 'You do the last step: add it to ' + c.lo + ' and round to the tenth.') + '</span></div>';
+    else h += '<div class="s" style="color:#aab3e6"><b></b><span>Calculator check: ' + c.sym + c.n + ' = ' + c.actual.toFixed(3) + '…</span></div>';
+    $('fc').innerHTML = h; $('fc').hidden = false;
+  }
+
+  function doLand() {
+    if (!G || G.st !== 'aim') return;
+    var c = cur(); G.tries++;
+    G.st = 'fly'; G.land = { t0: performance.now(), dur: 1500, x: G.e };
+    $('aim').querySelectorAll('button').forEach(function (b) { b.disabled = true; });
+    thrust(1.5);
+  }
+  function touchdown() {
+    var c = cur(), d = Math.round(Math.abs(G.e - c.T) * 10), mult = [1, 0.6, 0.3][G.tries - 1] || 0.3;
+    $('aim').querySelectorAll('button').forEach(function (b) { b.disabled = false; });
+    var p = toScreen(G.e), sc = 0, kind;
+    try { if (window.ArcadeSend) ArcadeSend.answer(d === 0); } catch (e) {}
+    if (d <= 2) {
+      kind = d === 0 ? 'p' : d === 1 ? 'g' : 'r';
+      sc = Math.round([100, 60, 25][d] * mult);
+      if (d === 0) { G.streak++; if (G.streak > 1) sc += Math.min(50, (G.streak - 1) * 10); } else G.streak = 0;
+      var secs = (Date.now() - G.t0) / 1000; if (G.tries === 1 && d === 0 && secs < 25) sc += Math.round(20 * (1 - secs / 25));
+      G.score += sc; G.pad = true; G.st = 'done';
+      G.results.push({ c: c, e: G.e, kind: kind, tries: G.tries, sc: sc });
+      if (d === 0) {
+        sfx('win'); fx('confetti', p.x, p.y - 30); flyText('PERFECT LANDING! +' + sc, '#FFC107');
+        note('Perfect! ' + c.sym + c.n + ' ≈ ' + c.T.toFixed(1) + '. Right on the pad.', 'ok');
+      } else if (d === 1) {
+        sfx('coin'); fx('sparks', p.x, p.y); flyText('GOOD LANDING +' + sc, '#7fd6ff');
+        note('Close! You landed at ' + f1(G.e) + '. The pad was at ' + c.T.toFixed(1) + '. ' + whyLand(c, G.e), 'why');
+      } else {
+        sfx('thud'); shake(); flyText('ROUGH LANDING +' + sc, '#c58cff');
+        note('Bumpy! You landed at ' + f1(G.e) + '. The pad was at ' + c.T.toFixed(1) + '. ' + whyLand(c, G.e), 'why');
+      }
+      flight(4, true); show('after'); $('nextB').focus(); hud();
+      return;
+    }
+    // crash
+    G.streak = 0; G.wreck = { x: G.e, t0: performance.now() };
+    sfx('boom'); fx('boom', p.x, p.y); shake();
+    if (G.tries >= 3) {
+      G.st = 'auto'; G.pad = true;
+      note('Crash at ' + f1(G.e) + '. ' + whyLand(c, G.e) + ' Watch the flight computer land it at ' + c.T.toFixed(1) + '.', 'why');
+      flight(4, true);
+      setTimeout(function () {
+        if (!G || G.st !== 'auto') return;
+        G.wreck = null; G.e = c.T; G.st = 'fly'; G.auto = true; G.land = { t0: performance.now(), dur: 1500, x: c.T }; thrust(1.5);
+      }, 1700);
+      return;
+    }
+    G.st = 'crash';
+    note('Crash! You landed at ' + f1(G.e) + '. ' + whyLand(c, G.e) + ' Try ' + (G.tries + 1) + ' of 3: a new rocket is coming.', 'why');
+    if (G.tries === 2 && G.hintLv < 2) { G.hintLv = 2; flight(2, false); }
+    setTimeout(function () { if (G && G.st === 'crash') { G.wreck = null; G.st = 'aim'; G.vis = 0; } }, 1600);
+  }
+  function autoDone() {
+    var c = cur(); G.st = 'done'; G.auto = false;
+    G.results.push({ c: c, e: G.e, kind: 'x', tries: 3, sc: 0 });
+    sfx('coin'); flyText('AUTOPILOT', '#ff8a9a');
+    show('after'); $('nextB').focus(); hud();
+  }
+  function next() {
+    if (!G || G.st !== 'done') return;
+    G.i++; if (G.i >= G.probs.length) return endMission();
+    load();
+  }
+
+  function endMission() {
+    G.st = 'end';
+    var per = G.results.filter(function (r) { return r.kind === 'p'; }).length;
+    var key = G.L.id, best = BEST[key] || 0, nb = G.score > best;
+    if (nb) { BEST[key] = G.score; try { localStorage.setItem('rr-best', JSON.stringify(BEST)); } catch (e) {} }
+    var missed = G.results.filter(function (r) { return r.kind !== 'p'; }).map(function (r) { return r.c.sym + r.c.n + ' ≈ ' + r.c.T.toFixed(1) + ' (landed ' + f1(r.e) + ')'; });
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: G.L.name, score: G.score, details: per + '/10 perfect · ' + G.rightFirst + '/10 trapped first try · hints ' + G.hints + (missed.length ? ' · off: ' + missed.slice(0, 8).join('; ') : '') }); } catch (e) {}
+    var rows = G.results.map(function (r, i) {
+      var lab = { p: 'Perfect', g: 'Good', r: 'Rough', x: 'Autopilot' }[r.kind];
+      return '<tr><td>' + (i + 1) + '</td><td class="m">' + r.c.sym + r.c.n + ' ≈ ' + r.c.T.toFixed(1) + '</td><td class="m">landed ' + f1(r.e) + '</td><td>' + lab + (r.tries > 1 ? ' (try ' + r.tries + ')' : '') + '</td><td class="m">+' + r.sc + '</td></tr>';
+    }).join('');
+    var ec = $('endCard');
+    ec.innerHTML = '<h1>MISSION COMPLETE</h1><p>' + G.L.name + ' mission · ' + per + ' of 10 perfect landings</p>' +
+      '<div class="big">' + G.score + '</div><p style="text-align:center">' + (nb ? 'New best score!' : 'Best: ' + best) + '</p>' +
+      '<table class="log">' + rows + '</table>' +
+      '<div class="row" style="margin-top:16px"><button class="go" id="againB" type="button">FLY AGAIN</button><button class="ghost" id="lvB" type="button">Change mission</button></div>' +
+      '<p style="margin-top:14px"><a class="back" href="arcade.html">← Back to the Arcade</a></p>';
+    $('startCard').hidden = true; ec.hidden = false; $('over').hidden = false;
+    $('againB').onclick = function () { startMission(G.L.id); };
+    $('lvB').onclick = levels;
+    if (per >= 7) { sfx('win'); fx('confetti', innerWidth / 2, innerHeight / 3); }
+  }
+  function levels() {
+    $('endCard').hidden = true; $('startCard').hidden = false; $('over').hidden = false; if (G) G.st = 'menu';
+    var box = $('lvBox'); box.innerHTML = '';
+    LEVELS.forEach(function (L) {
+      var b = document.createElement('button'); b.type = 'button';
+      b.innerHTML = '<b>' + L.name + '</b><span>' + L.desc + '</span><em>Best: ' + (BEST[L.id] || 0) + '</em>';
+      b.onclick = function () { startMission(L.id); };
+      box.appendChild(b);
+    });
+  }
+
+  function buildDots() { var d = $('dots'); d.innerHTML = ''; for (var i = 0; i < 10; i++) d.appendChild(document.createElement('i')); }
+  function hud() {
+    if (!G) return;
+    $('hN').textContent = Math.min(10, G.i + 1); $('hS').textContent = G.score;
+    var ds = $('dots').children;
+    for (var i = 0; i < ds.length; i++) { var r = G.results[i]; ds[i].className = (r ? r.kind : '') + (i === G.i && !r ? ' now' : ''); }
+  }
+
+  /* ---------- sound ---------- */
+  var AC = null;
+  function ac() { try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {} return AC; }
+  function muted() { return !!(window.AFX && AFX.muted); }
+  function sfx(n) { if (muted()) return; try { if (window.AFX && AFX.sfx[n]) AFX.sfx[n](); } catch (e) {} }
+  function tick() {
+    var ctx = ac(); if (!ctx || muted()) return;
+    var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime, c = cur();
+    o.type = 'square'; o.frequency.value = 500 + (G.e - c.lo) * 600;
+    g.gain.setValueAtTime(0.035, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 0.06);
+  }
+  function thrust(dur) {
+    var ctx = ac(); if (!ctx || muted()) return;
+    var len = Math.floor(ctx.sampleRate * dur), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+    for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    var s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain(), t = ctx.currentTime;
+    s.buffer = buf; f.type = 'lowpass'; f.frequency.setValueAtTime(900, t); f.frequency.linearRampToValueAtTime(300, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.22, t + 0.15); g.gain.setValueAtTime(0.22, t + dur * 0.75); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+    s.connect(f).connect(g).connect(ctx.destination); s.start(t); s.stop(t + dur);
+  }
+  function sndLabel() { $('sndB').textContent = 'Sound: ' + (muted() ? 'off' : 'on'); }
+  $('sndB').onclick = function () { if (window.AFX) { AFX.muted = !AFX.muted; try { localStorage.setItem('afx-muted', AFX.muted ? '1' : '0'); } catch (e) {} } sndLabel(); };
+
+  /* ---------- effects ---------- */
+  function cvRect() { return cv.getBoundingClientRect(); }
+  function fx(kind, x, y) { var r = cvRect(); try { if (window.AFX) AFX[kind](r.left + x, r.top + y, kind === 'boom' ? { size: 1.2 } : {}); } catch (e) {} }
+  function flyText(t, col) { var r = cvRect(), p = G && G.e != null ? toScreen(G.e) : { x: CW / 2, y: CH / 2 }; try { if (window.AFX) AFX.text(r.left + Math.max(170, Math.min(CW - 170, p.x)), r.top + Math.max(60, p.y - 110), t, { color: col, size: 30 }); } catch (e) {} }
+  function shake() { try { if (window.AFX) AFX.shake($('stage'), 10, 380); } catch (e) {} }
+
+  /* ---------- drawing ---------- */
+  var cv = $('cv'), cx = cv.getContext('2d'), CW = 0, CH = 0, stars = [], craters = [];
+  function size() {
+    var de = document.documentElement, pad = parseFloat(getComputedStyle(de).paddingLeft) || 0;
+    de.style.setProperty('--pad', pad + 'px');
+    de.style.setProperty('--top', (document.getElementById('sb-nav') ? 56 : (matchMedia('(max-width: 760px)').matches ? 58 : 0)) + 'px');
+    var r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+    CW = r.width; CH = r.height; cv.width = Math.round(CW * dpr); cv.height = Math.round(CH * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    stars = []; for (var i = 0; i < 160; i++) stars.push({ x: Math.random(), y: Math.random() * 0.75, r: Math.random() * 1.6 + 0.3, p: Math.random() * 6 });
+    craters = []; for (i = 0; i < 14; i++) craters.push({ x: Math.random(), y: 0.2 + Math.random() * 0.75, r: 8 + Math.random() * 26 });
+  }
+  function ground() { return CH - Math.max(70, CH * 0.24); }
+  function x0() { return Math.max(40, CW * 0.08); }
+  function x1() { return CW - Math.max(40, CW * 0.08); }
+  function toScreen(v) {
+    var c = cur(); var a = x0(), b = x1();
+    var x = (G && G.st !== 'pick') ? a + (b - a) * (v - c.lo) : CW / 2;
+    return { x: x, y: ground() };
+  }
+  function fromScreen(px) { var c = cur(), a = x0(), b = x1(); return c.lo + (px - a) / (b - a); }
+
+  function rocket(x, y, tilt, flame, t) {
+    cx.save(); cx.translate(x, y); cx.rotate(tilt || 0);
+    if (flame > 0) {
+      var fl = 26 + flame * 34 + Math.sin(t * 40) * 6;
+      var gr = cx.createLinearGradient(0, 0, 0, fl);
+      gr.addColorStop(0, '#fff6c8'); gr.addColorStop(0.35, '#FFC107'); gr.addColorStop(1, 'rgba(255,61,40,0)');
+      cx.fillStyle = gr; cx.beginPath(); cx.moveTo(-11, 0); cx.quadraticCurveTo(0, fl * 1.1, 11, 0); cx.fill();
+    }
+    // legs
+    cx.strokeStyle = '#9aa6d6'; cx.lineWidth = 3;
+    cx.beginPath(); cx.moveTo(-12, -14); cx.lineTo(-22, 0); cx.moveTo(12, -14); cx.lineTo(22, 0); cx.stroke();
+    cx.fillStyle = '#9aa6d6'; cx.fillRect(-27, -2, 10, 3); cx.fillRect(17, -2, 10, 3);
+    // fins
+    cx.fillStyle = '#ff4d6a';
+    cx.beginPath(); cx.moveTo(-13, -30); cx.lineTo(-24, -6); cx.lineTo(-13, -10); cx.fill();
+    cx.beginPath(); cx.moveTo(13, -30); cx.lineTo(24, -6); cx.lineTo(13, -10); cx.fill();
+    // body
+    var bg = cx.createLinearGradient(-14, 0, 14, 0); bg.addColorStop(0, '#c9d2f0'); bg.addColorStop(0.45, '#ffffff'); bg.addColorStop(1, '#aab4dc');
+    cx.fillStyle = bg; cx.strokeStyle = '#1E2D4F'; cx.lineWidth = 2;
+    cx.beginPath(); cx.moveTo(-13, -6); cx.lineTo(-13, -48); cx.quadraticCurveTo(0, -84, 13, -48); cx.lineTo(13, -6); cx.closePath(); cx.fill(); cx.stroke();
+    cx.fillStyle = '#ff4d6a'; cx.beginPath(); cx.moveTo(-10, -58); cx.quadraticCurveTo(0, -84, 10, -58); cx.closePath(); cx.fill();
+    // window
+    cx.fillStyle = '#43f7ff'; cx.strokeStyle = '#1E2D4F'; cx.lineWidth = 2.5; cx.beginPath(); cx.arc(0, -36, 6.5, 0, 7); cx.fill(); cx.stroke();
+    cx.fillStyle = 'rgba(255,255,255,.8)'; cx.beginPath(); cx.arc(-2, -38, 2, 0, 7); cx.fill();
+    // nozzle
+    cx.fillStyle = '#4a5590'; cx.fillRect(-8, -7, 16, 7);
+    cx.restore();
+  }
+
+  function draw(t) {
+    if (!CW) return;
+    var c = G && G.probs ? cur() : null, gy = ground();
+    // sky
+    var sk = cx.createLinearGradient(0, 0, 0, gy); sk.addColorStop(0, '#04061a'); sk.addColorStop(1, '#1a1650');
+    cx.fillStyle = sk; cx.fillRect(0, 0, CW, CH);
+    stars.forEach(function (s) { cx.globalAlpha = 0.5 + 0.5 * Math.sin(t * 1.5 + s.p); cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s.x * CW, s.y * gy, s.r, 0, 7); cx.fill(); });
+    cx.globalAlpha = 1;
+    // ringed planet
+    var px = CW * 0.84, py = gy * 0.28, pr = Math.min(70, CW * 0.07);
+    var pg = cx.createRadialGradient(px - pr * 0.4, py - pr * 0.4, 4, px, py, pr); pg.addColorStop(0, '#ffb3de'); pg.addColorStop(1, '#6d2b8f');
+    cx.fillStyle = pg; cx.beginPath(); cx.arc(px, py, pr, 0, 7); cx.fill();
+    cx.strokeStyle = 'rgba(255,214,120,.65)'; cx.lineWidth = 4; cx.beginPath(); cx.ellipse(px, py, pr * 1.7, pr * 0.42, -0.3, 0, 7); cx.stroke();
+    // surface
+    var gg = cx.createLinearGradient(0, gy, 0, CH); gg.addColorStop(0, '#5b5f7e'); gg.addColorStop(1, '#2a2c44');
+    cx.fillStyle = gg; cx.beginPath(); cx.moveTo(0, gy + 8);
+    for (var i = 0; i <= 24; i++) cx.lineTo(CW * i / 24, gy + 8 + Math.sin(i * 1.7) * 4);
+    cx.lineTo(CW, CH); cx.lineTo(0, CH); cx.fill();
+    craters.forEach(function (k) { cx.fillStyle = 'rgba(20,20,40,.35)'; cx.beginPath(); cx.ellipse(k.x * CW, gy + 18 + k.y * (CH - gy - 20), k.r, k.r * 0.35, 0, 0, 7); cx.fill(); });
+    if (!c) return;
+
+    // number line strip
+    var a = x0(), b = x1(), ly = gy + 22, labeled = G.st !== 'pick';
+    cx.strokeStyle = '#fff'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(a - 24, ly); cx.lineTo(b + 24, ly); cx.stroke();
+    for (i = 0; i <= 10; i++) {
+      var x = a + (b - a) * i / 10, mj = i === 0 || i === 10, h = mj ? 14 : (i === 5 ? 10 : 7);
+      cx.strokeStyle = mj ? '#fff' : 'rgba(255,255,255,.7)'; cx.lineWidth = mj ? 3 : 1.5;
+      cx.beginPath(); cx.moveTo(x, ly - h); cx.lineTo(x, ly + h); cx.stroke();
+      if (labeled && !mj && CW > 520) { cx.fillStyle = 'rgba(255,255,255,.55)'; cx.font = '700 11px JetBrains Mono, monospace'; cx.textAlign = 'center'; cx.fillText(c.lo + '.' + i, x, ly + 26); }
+    }
+    cx.textAlign = 'center';
+    cx.font = '800 22px JetBrains Mono, monospace'; cx.fillStyle = '#fff';
+    cx.fillText(labeled ? c.lo : '?', a, ly + (CW > 520 ? 46 : 36)); cx.fillText(labeled ? c.hi : '?', b, ly + (CW > 520 ? 46 : 36));
+    if (labeled) {
+      cx.font = '800 14px JetBrains Mono, monospace'; cx.fillStyle = '#ffb347';
+      cx.fillText(c.sym + c.loP, a, gy - 6); cx.fillText(c.sym + c.hiP, b, gy - 6);
+    }
+    // the pad (hidden until landing)
+    if (G.pad) {
+      var pxp = a + (b - a) * (c.actual - c.lo);
+      cx.fillStyle = '#FFC107'; cx.fillRect(pxp - 28, gy - 2, 56, 6);
+      cx.fillStyle = '#1E2D4F'; cx.fillRect(pxp - 28, gy + 4, 56, 4);
+      for (i = -1; i <= 1; i += 2) { cx.fillStyle = (Math.sin(t * 8) > 0) ? '#4dff9a' : '#0c6'; cx.beginPath(); cx.arc(pxp + i * 30, gy - 4, 4, 0, 7); cx.fill(); }
+      cx.font = '800 15px JetBrains Mono, monospace'; cx.fillStyle = '#FFC107';
+      cx.fillText(c.sym + c.n + ' ≈ ' + c.T.toFixed(1), pxp, gy - 92 > 70 ? gy - 98 : 70);
+      cx.strokeStyle = 'rgba(255,193,7,.5)'; cx.setLineDash([4, 4]); cx.lineWidth = 1.5; cx.beginPath(); cx.moveTo(pxp, gy - 90); cx.lineTo(pxp, ly); cx.stroke(); cx.setLineDash([]);
+    }
+    // rocket
+    var hover = Math.max(110, gy * 0.45);
+    if (G.st === 'pick') {
+      rocket(CW / 2, gy - hover - 10 + Math.sin(t * 2) * 6, 0, 0.4, t);
+    } else if (G.wreck) {
+      var wx = toScreen(G.wreck.x).x, age = (performance.now() - G.wreck.t0) / 1000;
+      cx.fillStyle = '#333'; cx.globalAlpha = Math.max(0, 1 - age / 1.6);
+      for (i = 0; i < 6; i++) { cx.fillRect(wx - 20 + i * 8, gy - 6 - (i % 2) * 5, 7, 5); }
+      cx.globalAlpha = Math.max(0, 0.6 - age / 2.6); cx.fillStyle = '#8890b0';
+      for (i = 0; i < 5; i++) { cx.beginPath(); cx.arc(wx - 10 + i * 6, gy - 18 - age * 40 - i * 8, 10 + age * 10, 0, 7); cx.fill(); }
+      cx.globalAlpha = 1;
+    } else {
+      var target = toScreen(G.e).x;
+      if (G.st === 'aim') { G.vis = Math.min(1, (G.vis || 0) + 0.05); G.sx = G.sx == null ? target : G.sx + (target - G.sx) * 0.3; }
+      var sx = G.sx == null ? target : G.sx, sy, flame = 0.4, tilt = 0;
+      if (G.st === 'aim' || G.st === 'crash' || G.st === 'auto') {
+        var drop = (1 - (G.vis || 1)) * 120;
+        sy = gy - hover + Math.sin(t * 2.2) * 5 - drop; tilt = Math.max(-0.25, Math.min(0.25, (target - sx) * 0.01));
+        // shadow + aim line
+        cx.strokeStyle = 'rgba(67,247,255,.55)'; cx.setLineDash([6, 6]); cx.lineWidth = 2; cx.beginPath(); cx.moveTo(sx, sy + 6); cx.lineTo(sx, ly); cx.stroke(); cx.setLineDash([]);
+        cx.fillStyle = 'rgba(67,247,255,.9)'; cx.beginPath(); cx.moveTo(sx, ly - 4); cx.lineTo(sx - 8, ly - 16); cx.lineTo(sx + 8, ly - 16); cx.fill();
+      } else if (G.st === 'fly') {
+        G.sx = sx = sx + (target - sx) * 0.35;
+        var k = Math.min(1, (performance.now() - G.land.t0) / G.land.dur), e2 = 1 - Math.pow(1 - k, 2.4);
+        sy = gy - hover + (hover) * e2; flame = 1.2 - k * 0.6;
+        if (Math.random() < 0.6) dust.push({ x: sx + (Math.random() - 0.5) * 16, y: sy + 10, vx: (Math.random() - 0.5) * 30, vy: 60, a: 0.6 });
+        if (k >= 1) { G.sx = sx; if (G.auto) { G.st = 'land'; autoDone(); } else { G.st = 'land'; touchdown(); } for (i = 0; i < 18; i++) dust.push({ x: sx, y: gy, vx: (Math.random() - 0.5) * 200, vy: -Math.random() * 60, a: 0.7 }); }
+      } else {
+        G.sx = sx = target; sy = gy; flame = 0;
+        var last = G.results[G.results.length - 1]; if (last && last.kind === 'r') tilt = 0.18;
+      }
+      rocket(sx, sy, tilt, flame, t);
+    }
+    // dust
+    for (i = dust.length - 1; i >= 0; i--) {
+      var d = dust[i]; d.x += d.vx / 60; d.y += d.vy / 60; d.vy -= 1.5; d.a -= 0.012;
+      if (d.a <= 0) { dust.splice(i, 1); continue; }
+      cx.fillStyle = 'rgba(200,205,230,' + d.a + ')'; cx.beginPath(); cx.arc(d.x, Math.min(d.y, gy + 6), 5, 0, 7); cx.fill();
+    }
+  }
+  var dust = [];
+  function loop(ms) { draw(ms / 1000); requestAnimationFrame(loop); }
+
+  /* ---------- input ---------- */
+  var drag = false;
+  cv.addEventListener('pointerdown', function (e) { if (!G || G.st !== 'aim') return; drag = true; try { cv.setPointerCapture(e.pointerId); } catch (x) {} ac(); setE(fromScreen(e.clientX - cvRect().left)); });
+  cv.addEventListener('pointermove', function (e) { if (drag) setE(fromScreen(e.clientX - cvRect().left)); });
+  cv.addEventListener('pointerup', function () { drag = false; });
+  cv.addEventListener('pointercancel', function () { drag = false; });
+  $('lt').onclick = function () { ac(); setE(G.e - 0.1); };
+  $('rt').onclick = function () { ac(); setE(G.e + 0.1); };
+  $('land').onclick = function () { ac(); doLand(); };
+  $('hintB').onclick = hint;
+  $('nextB').onclick = next;
+  $('quitB').onclick = levels;
+  document.addEventListener('keydown', function (e) {
+    if (!G || $('over').hidden === false) return;
+    var k = e.key;
+    if (G.st === 'pick' && /^[1-4]$/.test(k)) { var b = document.querySelectorAll('#pick .ch')[+k - 1]; if (b) { e.preventDefault(); pickPair(b); } return; }
+    if (G.st === 'aim') {
+      if (k === 'ArrowLeft' || k === 'a' || k === 'A') { e.preventDefault(); setE(G.e - 0.1); }
+      else if (k === 'ArrowRight' || k === 'd' || k === 'D') { e.preventDefault(); setE(G.e + 0.1); }
+      else if (k === ' ' || k === 'Enter') { e.preventDefault(); doLand(); }
+      return;
+    }
+    if (G.st === 'done' && (k === 'Enter' || k === ' ')) { e.preventDefault(); next(); }
+  });
+
+  addEventListener('resize', size);
+  setInterval(function () { var p = (parseFloat(getComputedStyle(document.documentElement).paddingLeft) || 0) + 'px'; if (document.documentElement.style.getPropertyValue('--pad') !== p) size(); }, 500);
+  size(); sndLabel(); levels(); requestAnimationFrame(loop);
+  if (DBG) window.__RR = { compute: compute, good: good, pools: { SQ99: SQ99, SQ225: SQ225, CU216: CU216 }, pairChoices: pairChoices, whyLand: whyLand, start: startMission, get G() { return G; }, setE: setE, land: doLand, next: next };
+})();
+</script>
+</body>
+</html>
