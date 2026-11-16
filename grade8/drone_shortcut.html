@@ -615,11 +615,46 @@ function mapGeom(grid,W){
   const gw=u*(x1-x0),gh=u*(y1-y0);
   return {u,gw,gh,padL,padT,Wd:padL+gw+padR,Ht:padT+gh+padB,X:x=>padL+(x-x0)*u,Y:y=>padT+(y1-y)*u};
 }
+/* city scenery (Nov 16, 2026, Zach: "houses, trees... nothing that would make reading the grid difficult"):
+   small, faint pictures in the MIDDLE of some blocks, under the grid lines; never in a block that touches
+   A or a drop-off point; the same picture every redraw (seeded by the map) */
+function scenery(o,X,Y,u){
+  if(u<16||o.noScenery)return '';
+  const [x0,x1,y0,y1]=o.grid,pts=[o.A].concat(o.offers||[]).filter(Boolean);
+  let seed=(x0*7+x1*13+y0*17+y1*19+(o.A?o.A.x*31+o.A.y*37:0)+999)>>>0;
+  const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  const sz=Math.min(u*0.62,26);let s='<g opacity=".55" aria-hidden="true">';
+  for(let cx=x0;cx<x1;cx++)for(let cy=y0;cy<y1;cy++){
+    const r=rnd(),k=rnd();
+    if(r>0.2)continue;
+    if(pts.some(p=>Math.abs(p.x-(cx+0.5))<=1.01&&Math.abs(p.y-(cy+0.5))<=1.01))continue;
+    if(cx===-1||cx===0&&x0<0||cy===-1||cy===0&&y0<0)continue;           // keep the axes clear
+    const mx=X(cx+0.5),my=Y(cy+0.5),h=sz/2;
+    if(k<0.38){                                                       // house
+      const col=['#F2B6A0','#B9D3F0','#F5D98B','#CDB8E8'][Math.floor(rnd()*4)];
+      s+='<rect x="'+(mx-h*0.75).toFixed(1)+'" y="'+(my-h*0.1).toFixed(1)+'" width="'+(h*1.5).toFixed(1)+'" height="'+(h*0.95).toFixed(1)+'" fill="'+col+'" rx="1.5"/>';
+      s+='<path d="M'+(mx-h*0.95).toFixed(1)+' '+(my-h*0.05).toFixed(1)+' L'+mx.toFixed(1)+' '+(my-h*0.85).toFixed(1)+' L'+(mx+h*0.95).toFixed(1)+' '+(my-h*0.05).toFixed(1)+'Z" fill="#C46A55"/>';
+      s+='<rect x="'+(mx-h*0.15).toFixed(1)+'" y="'+(my+h*0.35).toFixed(1)+'" width="'+(h*0.3).toFixed(1)+'" height="'+(h*0.5).toFixed(1)+'" fill="#8A5A44"/>';
+    }else if(k<0.72){                                                 // round tree
+      s+='<rect x="'+(mx-h*0.09).toFixed(1)+'" y="'+(my+h*0.1).toFixed(1)+'" width="'+(h*0.18).toFixed(1)+'" height="'+(h*0.75).toFixed(1)+'" fill="#9A7350"/>';
+      s+='<circle cx="'+mx.toFixed(1)+'" cy="'+(my-h*0.2).toFixed(1)+'" r="'+(h*0.6).toFixed(1)+'" fill="#8FCB8C"/>';
+      s+='<circle cx="'+(mx+h*0.25).toFixed(1)+'" cy="'+(my-h*0.05).toFixed(1)+'" r="'+(h*0.38).toFixed(1)+'" fill="#7DBA7A"/>';
+    }else if(k<0.88){                                                 // pine tree
+      s+='<path d="M'+mx.toFixed(1)+' '+(my-h*0.9).toFixed(1)+' L'+(mx+h*0.6).toFixed(1)+' '+(my+h*0.45).toFixed(1)+' L'+(mx-h*0.6).toFixed(1)+' '+(my+h*0.45).toFixed(1)+'Z" fill="#6FAF7E"/>';
+      s+='<rect x="'+(mx-h*0.08).toFixed(1)+'" y="'+(my+h*0.45).toFixed(1)+'" width="'+(h*0.16).toFixed(1)+'" height="'+(h*0.35).toFixed(1)+'" fill="#9A7350"/>';
+    }else{                                                            // little pond
+      s+='<ellipse cx="'+mx.toFixed(1)+'" cy="'+my.toFixed(1)+'" rx="'+(h*0.85).toFixed(1)+'" ry="'+(h*0.5).toFixed(1)+'" fill="#B7DDF2"/>';
+      s+='<path d="M'+(mx-h*0.35).toFixed(1)+' '+my.toFixed(1)+' q'+(h*0.18).toFixed(1)+' '+(-h*0.15).toFixed(1)+' '+(h*0.35).toFixed(1)+' 0" stroke="#fff" stroke-width="1.2" fill="none"/>';
+    }
+  }
+  return s+'</g>';
+}
 function drawMap(o){
   const [x0,x1,y0,y1]=o.grid,g=mapGeom(o.grid,o.W),{u,gw,gh,padL,padT,Wd,Ht,X,Y}=g;
   const step=u>=27?1:2;
   let s='<svg viewBox="0 0 '+Wd.toFixed(1)+' '+Ht.toFixed(1)+'" width="'+Wd.toFixed(0)+'" role="img" aria-label="'+esc(o.aria||'City grid')+'">';
   s+='<rect x="'+padL+'" y="'+padT+'" width="'+gw.toFixed(1)+'" height="'+gh.toFixed(1)+'" fill="#FBFBFC"/>';
+  s+=scenery(o,X,Y,u);
   for(let x=x0;x<=x1;x++){const c=x===0?C.ink:(x%5===0?'#D3D8E0':'#E6E8ED');s+='<line x1="'+X(x).toFixed(1)+'" y1="'+padT+'" x2="'+X(x).toFixed(1)+'" y2="'+(padT+gh).toFixed(1)+'" stroke="'+c+'" stroke-width="'+(x===0?1.6:1)+'"/>';}
   for(let y=y0;y<=y1;y++){const c=y===0?C.ink:(y%5===0?'#D3D8E0':'#E6E8ED');s+='<line x1="'+padL+'" y1="'+Y(y).toFixed(1)+'" x2="'+(padL+gw).toFixed(1)+'" y2="'+Y(y).toFixed(1)+'" stroke="'+c+'" stroke-width="'+(y===0?1.6:1)+'"/>';}
   for(let x=x0;x<=x1;x++)if(x%step===0)s+=txt(X(x),padT+gh+17,M(x),{fs:11,anchor:'middle',fill:C.muted,fw:500,halo:false});
