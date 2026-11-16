@@ -92,6 +92,8 @@ I4. Neon Integer Assault (rebuilt Nov 16, 2026, Zach: "a mashup of Space Invader
     target carries a number; a right answer looks like every other target (no green glow, no tell). A wrong hit does not
     destroy the target and it fires back. Every open answer is always on a shootable target. Original art only
     (no sprites or names copied). The game sizes itself to the space beside the side menu.
+    Nov 16: few ships (1–2 rows, 4–6 columns); they never come below the zig-zag line (45% down) and zig-zag there.
+    The Ammo dump power (OBLITERATE) never counts a wrong hit. The boss is original (no Death Star or other film designs).
 I6. Integer Knockout trash talk is playful and about the student's MATH only (signs, facts, speed, zero), never about who they are
     (looks, family, intelligence as a person). Boxers are original and battle-worn; nothing from Punch-Out!!.
 I5. Equation Master monsters are evil looking and attack every few seconds; Space (or the Block button) blocks. Space never

@@ -235,6 +235,8 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   const ni = rd('grade8/neon-integer-assault.html');
   if (/box\.correct \? colors\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must not glow green');
   if (!/function makeInvaders\(/.test(ni) || !/function makeCentipede\(/.test(ni) || !/function balance\(/.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'invaders + centipede, every answer kept shootable, game sized beside the side menu');
+  if (!/function floorY\(/.test(ni) || !/function obliterate\(/.test(ni) || /hurt\('The invaders reached you/.test(ni) || /death ?star/i.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'ships stay above the zig-zag line, ammo dump, original boss');
+  if (!/var COACH = /.test(ik) || /Doc Louis/i.test(ik)) fail('I6', 'grade8/integer-knockout.html', 'original corner trainer with the integer rules');
   if (/glint > 0 \? C\.green|val === .*answer.*C\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must look like every other target');
 }
 

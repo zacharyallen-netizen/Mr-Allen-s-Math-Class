@@ -28,7 +28,7 @@
   .stat strong { display:block; font:800 19px/1.2 'JetBrains Mono', monospace; }
   #hearts { color:var(--gold); letter-spacing:1px; }
   .hb { height:34px; padding:0 10px; border:1px solid var(--line); border-radius:10px; background:var(--panel); color:#fff; font:700 13px Inter, sans-serif; cursor:pointer; }
-  #commander { position:fixed; left:calc(var(--nia-pad,0px) + 12px); bottom:10px; z-index:5; padding:6px 12px; border-radius:10px; background:var(--panel); border:1px solid var(--line); font:600 14px/1.3 Inter, sans-serif; color:#dfe7ff; pointer-events:none; max-width:min(560px,70vw); }
+  #commander { position:fixed; left:calc(var(--nia-pad,0px) + (100vw - var(--nia-pad,0px)) / 2); transform:translateX(-50%); bottom:10px; z-index:5; padding:6px 12px; border-radius:10px; background:var(--panel); border:1px solid var(--line); font:600 14px/1.3 Inter, sans-serif; color:#dfe7ff; pointer-events:none; max-width:min(560px,70vw); }
   #touchbar { position:fixed; right:12px; bottom:10px; z-index:6; display:none; gap:8px; }
   #touchbar button { width:64px; height:56px; border-radius:14px; border:1px solid var(--line); background:rgba(14,18,48,.85); color:#fff; font:800 22px Inter, sans-serif; }
   #touchbar #tFire { width:84px; background:linear-gradient(180deg,#ff4fd8,#c3279f); border:0; font-size:15px; letter-spacing:.06em; }
@@ -88,7 +88,8 @@
       <b>Shoot only the numbers that answer an equation.</b> A right hit destroys it and solves the equation.
       A wrong hit does not hurt it, and it <b>fires back</b>.<br>
       Move: <b>← →</b> or <b>A D</b> (or drag). Fire: <b>Space</b> (or tap). Pause: <b>P</b> or <b>Esc</b>.
-      Dodge the bombs and do not let the centipede reach your ship.
+      Dodge the bombs and do not let the centipede reach your ship.<br>
+      Shoot the <b>AMMO</b> crate when it floats by: for 5 seconds, any ship you hit goes down. Watch for the giant <b>Number Fortress</b>.
     </div>
     <div class="rule-grid">
       <div class="rule"><b>Invaders</b><span>They march side to side and step down. They drop bombs.</span></div>
@@ -180,7 +181,7 @@
     running: false, paused: false, won: false, level: 1, score: 0, hearts: 5, hits: 0, right: 0,
     streak: 0, best: 0, equations: [], history: [], nextId: 1, over: 0, inv: 0, fireCd: 0,
     ship: { x: 400, tx: null, vx: 0 }, keys: {}, invaders: null, centi: [], mush: {}, bullets: [], bombs: [],
-    saucer: null, saucerT: 18, parts: [], floats: [], respawnInv: 0, respawnCen: 0, balanceT: 0, waveT: 0, t: 0
+    saucer: null, saucerT: 18, boss: null, bossT: 20, bossDone: false, ammo: null, ammoT: 14, obl: 0, parts: [], floats: [], respawnInv: 0, respawnCen: 0, balanceT: 0, waveT: 0, t: 0
   };
   const CS = 44;                                     // centipede / mushroom grid
   const shipY = () => H - (matchMedia('(pointer: coarse)').matches ? 104 : 46);
@@ -212,15 +213,19 @@
   ];
   const ROWC = [C.pink, C.cyan, C.green];
   function makeInvaders() {
-    const rows = S.level <= 2 ? 2 : 3;
-    const sx = clamp(Math.floor((W - 40) / 9), 62, 84), cols = clamp(Math.floor((W - 60) / sx), 4, 9);
+    const rows = S.level <= 2 ? 1 : 2;                               // Nov 16: fewer ships
+    const sx = clamp(Math.floor((W - 40) / 7), 66, 96), cols = clamp(Math.floor((W - 60) / sx), 4, 6);
     const list = [];
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) list.push({ r, c, alive: true, val: 0, flash: 0, wrong: 0, glint: 0, kind: 'inv' });
-    S.invaders = { list, rows, cols, sx, sy: 56, ox: (W - cols * sx) / 2, oy: fieldTop() + 34, dir: 1 };
+    S.invaders = { list, rows, cols, sx, sy: 56, ox: (W - cols * sx) / 2, oy: fieldTop() + 34, dir: 1, zig: false };
   }
-  function invPos(v) { const I = S.invaders; return { x: I.ox + v.c * I.sx + I.sx / 2, y: I.oy + v.r * I.sy + 22 }; }
+  function invPos(v) { const I = S.invaders; if (I.zig) return { x: v.x, y: v.y }; return { x: I.ox + v.c * I.sx + I.sx / 2, y: I.oy + v.r * I.sy + 22 }; }
+  /* Nov 16: invaders never come lower than this line; there they break formation and zig-zag around */
+  function floorY() { return fieldTop() + (shipY() - fieldTop()) * 0.45; }
+  function startZig() { const I = S.invaders; I.list.forEach((v) => { const p = invPos(v); v.x = p.x; v.y = p.y; v.vx = (Math.random() < 0.5 ? -1 : 1) * ri(50, 90); v.vy = ri(-40, 40); v.turn = Math.random(); }); I.zig = true; say('The invaders broke formation!'); }
   function exposedInv() {
     if (!S.invaders) return [];
+    if (S.invaders.zig) return S.invaders.list.filter((v) => v.alive);
     const best = {};
     S.invaders.list.forEach((v) => { if (v.alive && (!best[v.c] || v.r > best[v.c].r)) best[v.c] = v; });
     return Object.values(best);
@@ -276,6 +281,7 @@
     return 999;
   }
   function targets() { return [...(S.invaders ? S.invaders.list.filter((v) => v.alive) : []), ...S.centi]; }
+  function extras() { return [S.saucer, S.boss].filter(Boolean); }
   function shootable() { return [...exposedInv(), ...S.centi.filter((s) => s.x > 10 && s.x < W - 10)]; }
   function setVal(t, v) { if (t.val !== v) { t.val = v; t.glint = 1; } }
   function balance(initial) {
@@ -314,7 +320,7 @@
       S.history.push({ id: e.id, wave: e.wave, text: e.text, answer: e.answer, solved: false, misses: 0, confusions: [] });
     }
     makeInvaders(); makeMushrooms(); makeCentipede();
-    S.bullets = []; S.bombs = []; S.saucer = null; S.saucerT = ri(14, 22);
+    S.bullets = []; S.bombs = []; S.saucer = null; S.saucerT = ri(14, 22); S.boss = null; S.bossDone = false; S.bossT = ri(12, 24); S.ammo = null; S.ammoT = ri(10, 18); S.obl = 0;
     drawEquations(); measureTop(); balance(true);
     say('Wave ' + S.level + '. ' + (S.level === 1 ? 'Adding and subtracting.' : S.level < 4 ? 'Now with multiplying.' : 'Now with dividing too.'));
     fx((A) => { const q = fxAt(W / 2, H * 0.45); A.text(q[0], q[1], 'WAVE ' + S.level, { color: C.cyan, size: 44 }); });
@@ -341,15 +347,17 @@
   }
   function hitTarget(t, x, y) {
     const open = openEqs(), eq = open.find((e) => e.answer === t.val);
+    if (!eq && S.obl > 0) { obliterate(t, x, y); return; }
     S.hits++;
     try { if (window.ArcadeSend) ArcadeSend.answer(!!eq); } catch (e) {}
     if (eq) {
       eq.solved = true; eq.flash = 1;
       const h = S.history.find((q) => q.id === eq.id); if (h) { h.solved = true; h.misses = eq.misses; h.confusions = eq.confusions.slice(); }
       S.right++; S.streak++; S.best = Math.max(S.best, S.streak);
-      const mult = Math.min(5, 1 + Math.floor((S.streak - 1) / 3)), pts = (t.kind === 'ufo' ? 300 : 120) * mult + S.level * 15;
+      const mult = Math.min(5, 1 + Math.floor((S.streak - 1) / 3)), pts = (t.kind === 'boss' ? 500 : t.kind === 'ufo' ? 300 : 120) * mult + S.level * 15;
       S.score += pts;
-      if (t.kind === 'inv') t.alive = false;
+      if (t.kind === 'boss') { S.boss = null; fx((A) => { const q = fxAt(x, y); A.boom(q[0], q[1], { color: C.gold, size: 2.4 }); A.sfx.boom(1.6); A.shake(canvas, 12, 400); A.text(q[0], q[1] - 50, 'FORTRESS DOWN!', { color: C.gold, size: 40 }); }); }
+      else if (t.kind === 'inv') t.alive = false;
       else if (t.kind === 'seg') {
         const i = S.centi.indexOf(t); S.centi.splice(i, 1);
         if (S.centi[i]) S.centi[i].head = true;              // the piece behind becomes a new head
@@ -369,11 +377,22 @@
       const meant = open.find((e) => e.mistakes.includes(t.val));
       if (meant) { meant.misses++; if (meant.confusions.length < 4 && !meant.confusions.includes(fmt(t.val))) meant.confusions.push(fmt(t.val)); const h = S.history.find((q) => q.id === meant.id); if (h) { h.misses = meant.misses; h.confusions = meant.confusions.slice(); } }
       S.bombs.push({ x, y: y + 14, v: 260 + S.level * 30, back: true });
+      if (t.kind === 'boss') { S.bombs.push({ x: x - 26, y: y + 30, v: 240, back: true }); S.bombs.push({ x: x + 26, y: y + 30, v: 240, back: true }); }
       float('✗ ' + fmt(t.val), x, y - 8, C.red);
       say(meant ? fmt(t.val) + ' is a common mistake for ' + meant.text + '. Check the sign and the operation.' : fmt(t.val) + ' does not answer any equation. It fired back!');
       sfx('clang'); tone(140, 0.12, 'sawtooth', 0.03);
     }
     hud();
+  }
+  function obliterate(t, x, y) {      // ammo-dump power: any ship goes down; no math is checked, nothing is logged
+    if (t.kind === 'boss') S.boss = null;
+    else if (t.kind === 'inv') t.alive = false;
+    else if (t.kind === 'seg') { const i = S.centi.indexOf(t); S.centi.splice(i, 1); if (S.centi[i]) S.centi[i].head = true; const c = Math.floor(t.x / CS); if (t.row < bottomRow()) S.mush[mk(c, t.row)] = { hp: 3 }; }
+    else S.saucer = null;
+    S.score += t.kind === 'boss' ? 300 : 40;
+    burst(x, y, C.gold, 22); float('+' + (t.kind === 'boss' ? 300 : 40), x, y, C.gold);
+    fx((A) => { const q = fxAt(x, y); A.boom(q[0], q[1], { color: C.gold, size: t.kind === 'boss' ? 2.2 : 1 }); A.sfx.boom(0.8); });
+    balance(false); hud();
   }
   function completeWave() {
     S.score += 250 * S.level;
@@ -403,11 +422,23 @@
       if (!alive.length) { if (S.respawnInv <= 0) S.respawnInv = 1.5; }
       else {
         const frac = alive.length / I.list.length, speed = (22 + S.level * 9) * (1 + (1 - frac) * 1.3);
-        I.ox += I.dir * speed * dt;
+        if (I.zig) {     // zig-zag around the upper part of the room
+          const top = fieldTop() + 24, bot = floorY(), zs = 1 + S.level * 0.12;
+          alive.forEach((v) => {
+            v.turn -= dt; if (v.turn <= 0) { v.turn = 0.5 + Math.random() * 0.9; v.vx = (Math.random() < 0.5 ? -1 : 1) * ri(50, 100); v.vy = ri(-55, 55); }
+            v.x += v.vx * zs * dt; v.y += v.vy * zs * dt;
+            if (v.x < 30) { v.x = 30; v.vx = Math.abs(v.vx); } if (v.x > W - 30) { v.x = W - 30; v.vx = -Math.abs(v.vx); }
+            if (v.y < top) { v.y = top; v.vy = Math.abs(v.vy); } if (v.y > bot) { v.y = bot; v.vy = -Math.abs(v.vy); }
+          });
+          for (let i = 0; i < alive.length; i++) for (let j = i + 1; j < alive.length; j++) {   // keep them from stacking up
+            const A = alive[i], B = alive[j], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy) || 1;
+            if (d < 78) { const k = (78 - d) / 2 / d; A.x -= dx * k; A.y -= dy * k; B.x += dx * k; B.y += dy * k; }
+          }
+        } else I.ox += I.dir * speed * dt;
         let minX = Infinity, maxX = -Infinity, maxY = 0;
         alive.forEach((v) => { const p = invPos(v); minX = Math.min(minX, p.x - I.sx * 0.4); maxX = Math.max(maxX, p.x + I.sx * 0.4); maxY = Math.max(maxY, p.y); });
-        if ((I.dir > 0 && maxX > W - 6) || (I.dir < 0 && minX < 6)) { I.dir *= -1; I.oy += 16; }
-        if (maxY > shipY() - 40) { hurt('The invaders reached you!'); I.oy = fieldTop() + 34; }
+        if (!I.zig && ((I.dir > 0 && maxX > W - 6) || (I.dir < 0 && minX < 6))) { I.dir *= -1; I.oy += 16; }
+        if (!I.zig && maxY > floorY()) startZig();
         marchT -= dt;
         if (marchT <= 0) { tone(MARCH[marchI++ % 4], 0.09, 'triangle', 0.05); marchT = clamp(0.62 - (1 - frac) * 0.35 - S.level * 0.04, 0.16, 0.7); }
         // bombs
@@ -431,10 +462,24 @@
       S.saucerT = ri(16, 26); sfx('whoosh');
     }
     if (S.saucer) { S.saucer.x += S.saucer.dir * 150 * dt; if (S.saucer.x < -60 || S.saucer.x > W + 60) S.saucer = null; }
+    // ammo dump (Nov 16): shoot it for 5 seconds of OBLITERATE (any ship goes down)
+    S.ammoT -= dt; if (S.obl > 0) S.obl -= dt;
+    if (!S.ammo && S.ammoT <= 0 && S.obl <= 0) { const d = Math.random() < 0.5 ? 1 : -1; S.ammo = { x: d > 0 ? -40 : W + 40, y: floorY() + 40, dir: d }; S.ammoT = ri(22, 34); sfx('whoosh'); say('An AMMO DUMP! Shoot it!'); }
+    if (S.ammo) { S.ammo.x += S.ammo.dir * 120 * dt; S.ammo.y += Math.sin(S.t * 3) * 0.4; if (S.ammo.x < -60 || S.ammo.x > W + 60) S.ammo = null; }
+    // the fortress (Nov 16): one big boss ship crosses once per wave
+    S.bossT -= dt;
+    if (!S.boss && !S.bossDone && S.bossT <= 0 && openEqs().length) {
+      const o = openEqs(), d = Math.random() < 0.5 ? 1 : -1;
+      S.boss = { x: d > 0 ? -70 : W + 70, y: fieldTop() + 70, dir: d, val: Math.random() < 0.6 ? pick(o).answer : decoy(), kind: 'boss', wrong: 0, flash: 0, glint: 0, spin: 0 };
+      S.bossDone = true; sfx('roar'); say('The NUMBER FORTRESS is crossing!');
+    }
+    if (S.boss) { const B = S.boss; B.x += B.dir * 60 * dt; B.spin += dt; if (Math.random() < dt * 0.8) S.bombs.push({ x: B.x + ri(-30, 30), y: B.y + 40, v: 200 + S.level * 20 }); if (B.x < -90 || B.x > W + 90) S.boss = null; }
     // bullets
     S.bullets.forEach((b) => { b.y -= 900 * dt; });
     S.bullets = S.bullets.filter((b) => {
       if (b.y < fieldTop()) return false;
+      if (S.ammo && Math.abs(b.x - S.ammo.x) < 30 && Math.abs(b.y - S.ammo.y) < 20) { const a = S.ammo; S.ammo = null; S.obl = 5; burst(a.x, a.y, C.gold, 30); fx((A) => { const q = fxAt(a.x, a.y); A.boom(q[0], q[1], { color: C.gold, size: 1.4 }); A.sfx.power(); A.text(q[0], q[1] - 30, 'OBLITERATE!', { color: C.gold, size: 40 }); }); say('OBLITERATE! For 5 seconds, any ship you hit goes down!'); return false; }
+      if (S.boss && Math.abs(b.x - S.boss.x) < 46 && Math.abs(b.y - S.boss.y) < 44) { hitTarget(S.boss, S.boss.x, S.boss.y); return false; }
       if (S.saucer && Math.abs(b.x - S.saucer.x) < 34 && Math.abs(b.y - S.saucer.y) < 16) { hitTarget(S.saucer, b.x, b.y); return false; }
       for (const s of S.centi) { const p = segPos(s); if ((b.x - p.x) ** 2 + (b.y - p.y) ** 2 < 21 * 21) { hitTarget(s, p.x, p.y); return false; } }
       if (I) for (const v of I.list) { if (!v.alive) continue; const p = invPos(v); if (Math.abs(b.x - p.x) < I.sx * 0.42 && Math.abs(b.y - p.y) < 22) { hitTarget(v, p.x, p.y); return false; } }
@@ -450,7 +495,7 @@
       return true;
     });
     // little extras
-    targets().forEach((t) => { if (t.wrong > 0) t.wrong -= dt; if (t.glint > 0) t.glint -= dt * 1.5; });
+    targets().concat(extras()).forEach((t) => { if (t.wrong > 0) t.wrong -= dt; if (t.glint > 0) t.glint -= dt * 1.5; });
     S.parts.forEach((p) => { p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 300 * dt; p.life -= dt * 1.6; });
     S.parts = S.parts.filter((p) => p.life > 0);
     S.floats.forEach((f) => { f.y -= 40 * dt; f.life -= dt; });
@@ -534,7 +579,7 @@
   function drawShip() {
     const x = S.ship.x, y = shipY();
     if (S.inv > 0 && Math.floor(S.t * 14) % 2) return;
-    ctx.save(); const col = S.over > 0 ? C.pink : C.cyan; glow(col, 18);
+    ctx.save(); const col = S.obl > 0 ? C.gold : S.over > 0 ? C.pink : C.cyan; glow(col, 18);
     ctx.fillStyle = '#0b1638'; ctx.strokeStyle = col; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(x, y - 24); ctx.lineTo(x + 10, y - 6); ctx.lineTo(x + 26, y + 6); ctx.lineTo(x + 26, y + 14); ctx.lineTo(x - 26, y + 14); ctx.lineTo(x - 26, y + 6); ctx.lineTo(x - 10, y - 6); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.fillStyle = col; ctx.fillRect(x - 3, y - 30, 6, 10);
@@ -542,7 +587,7 @@
     ctx.restore();
   }
   function drawShots() {
-    S.bullets.forEach((b) => { ctx.save(); const col = S.over > 0 ? C.pink : C.cyan; glow(col, 14); ctx.fillStyle = col; ctx.fillRect(b.x - 2, b.y - 14, 4, 18); ctx.restore(); });
+    S.bullets.forEach((b) => { ctx.save(); const col = S.obl > 0 ? C.gold : S.over > 0 ? C.pink : C.cyan; glow(col, 14); ctx.fillStyle = col; const w = S.obl > 0 ? 8 : 4; ctx.fillRect(b.x - w / 2, b.y - 14, w, 18); ctx.restore(); });
     S.bombs.forEach((b) => { ctx.save(); glow(C.red, 12); ctx.strokeStyle = b.back ? C.gold : C.red; ctx.lineWidth = 3; ctx.beginPath(); for (let i = 0; i < 4; i++) ctx.lineTo(b.x + (i % 2 ? 4 : -4), b.y - 14 + i * 5); ctx.stroke(); ctx.restore(); });
   }
   function drawParts() {
@@ -556,8 +601,36 @@
     ctx.fillStyle = '#fff'; ctx.font = '900 44px Orbitron, sans-serif'; ctx.textAlign = 'center'; ctx.fillText('PAUSED', W / 2, H / 2);
     ctx.font = '600 16px Inter, sans-serif'; ctx.fillText('Press P, Esc or Pause to keep playing', W / 2, H / 2 + 34);
   }
+  /* the Number Fortress: an original boss ship (a spinning hexagon ring around a glowing core) */
+  function drawBoss() {
+    const B = S.boss; if (!B) return;
+    ctx.save(); ctx.translate(B.x, B.y); glow(B.wrong > 0 ? C.red : C.gold, 22);
+    for (let k = 0; k < 2; k++) {
+      ctx.save(); ctx.rotate((k ? -1 : 1) * B.spin * (0.6 + k * 0.5));
+      ctx.strokeStyle = k ? C.pink : C.gold; ctx.lineWidth = k ? 4 : 6; ctx.beginPath();
+      const R = k ? 32 : 46;
+      for (let i = 0; i <= 6; i++) { const a = i * Math.PI / 3; ctx[i ? 'lineTo' : 'moveTo'](Math.cos(a) * R, Math.sin(a) * R); }
+      ctx.stroke();
+      for (let i = 0; i < 6; i++) { const a = i * Math.PI / 3 + Math.PI / 6; ctx.fillStyle = k ? C.pink : C.gold; ctx.fillRect(Math.cos(a) * (R + 4) - 4, Math.sin(a) * (R + 4) - 4, 8, 8); }
+      ctx.restore();
+    }
+    ctx.fillStyle = '#1a0f2e'; ctx.beginPath(); ctx.arc(0, 0, 24, 0, 6.283); ctx.fill();
+    ctx.strokeStyle = C.cyan; ctx.lineWidth = 3; ctx.stroke();
+    for (let i = 0; i < 3; i++) { const a = B.spin * 2 + i * 2.094; ctx.fillStyle = C.cyan; ctx.beginPath(); ctx.arc(Math.cos(a) * 62, Math.sin(a) * 20, 5, 0, 6.283); ctx.fill(); }
+    ctx.restore();
+    numText(B.val, B.x + (B.wrong > 0 ? Math.sin(S.t * 60) * 3 : 0), B.y + 1, 17, '#fff');
+  }
+  function drawAmmo() {
+    const a = S.ammo; if (!a) return;
+    ctx.save(); ctx.translate(a.x, a.y); glow(C.gold, 16);
+    ctx.fillStyle = '#5a3d0a'; ctx.strokeStyle = C.gold; ctx.lineWidth = 3; ctx.fillRect(-28, -16, 56, 32); ctx.strokeRect(-28, -16, 56, 32);
+    ctx.beginPath(); ctx.moveTo(-28, -16); ctx.lineTo(28, 16); ctx.moveTo(28, -16); ctx.lineTo(-28, 16); ctx.globalAlpha = 0.35; ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = C.gold; ctx.font = '900 12px Orbitron, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('AMMO', 0, 1);
+    ctx.restore();
+  }
   function render() {
-    drawBg(); drawMush(); drawInvaders(); drawCentipede(); drawSaucer(); drawShots(); drawShip(); drawParts();
+    drawBg(); drawMush(); drawInvaders(); drawCentipede(); drawSaucer(); drawBoss(); drawAmmo(); drawShots(); drawShip(); drawParts();
+    if (S.obl > 0) { ctx.fillStyle = 'rgba(255,209,102,' + (0.06 + 0.05 * Math.sin(S.t * 14)) + ')'; ctx.fillRect(0, 0, W, H); ctx.font = '900 28px Orbitron, sans-serif'; ctx.textAlign = 'center'; ctx.fillStyle = C.gold; ctx.fillText('OBLITERATE  ' + Math.ceil(S.obl), W / 2, shipY() - 70); }
     if (S.over > 0) { ctx.fillStyle = 'rgba(255,79,216,' + (0.05 + 0.04 * Math.sin(S.t * 10)) + ')'; ctx.fillRect(0, 0, W, H); }
     if (S.paused) drawPause();
   }
