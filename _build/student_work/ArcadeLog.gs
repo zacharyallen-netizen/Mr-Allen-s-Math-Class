@@ -85,3 +85,44 @@ function setupArcadeSheet() {
   rm.getRange('A1').setFontWeight('bold').setFontSize(13); rm.setColumnWidth(1, 900); rm.getRange('A:A').setWrap(true);
   return 'Arcade sheet ready.';
 }
+
+
+/* ───────────────────────────────────────────────────────────────
+   ARCADE LEADERBOARD (Nov 16, 2026, Zach: top 5 scores for each game on
+   the Arcade page; ignore any entry without a full student name).
+   The Arcade page asks:  <web app URL>?leaders=1&callback=fn
+   Only rows with a score and a FULL name (first and last, letters only,
+   2+ letters each) count. Each student's best score per game; top 5.
+   Names leave the sheet as "First L." only (the website is public).
+   Cached for 5 minutes.
+   ─────────────────────────────────────────────────────────────── */
+function fullName_(s) {
+  var w = String(s || '').replace(/\s+/g, ' ').trim().split(' ');
+  if (w.length < 2) return null;
+  for (var i = 0; i < w.length; i++) if (!/^[A-Za-z][A-Za-z'\-]+$/.test(w[i])) return null;
+  var cap = function (x) { return x.charAt(0).toUpperCase() + x.slice(1).toLowerCase(); };
+  return { key: w.join(' ').toLowerCase(), show: cap(w[0]) + ' ' + w[w.length - 1].charAt(0).toUpperCase() + '.' };
+}
+function arcadeLeaders_() {
+  var cache = CacheService.getScriptCache(), hit = cache.get('arcade-leaders');
+  if (hit) return hit;
+  var sh = arcadeSessions_(), n = sh.getLastRow(), best = {}, games = {};
+  if (n > 1) {
+    sh.getRange(2, 1, n - 1, 9).getValues().forEach(function (r) {
+      var game = String(r[3] || '').trim(), sc = r[8], who = fullName_(r[1]);
+      if (!game || !who || sc === '' || sc === null || isNaN(Number(sc)) || Number(sc) <= 0) return;
+      var k = game + '|' + who.key;
+      if (!best[k] || Number(sc) > best[k].score) best[k] = { game: game, name: who.show, score: Number(sc) };
+    });
+  }
+  Object.keys(best).forEach(function (k) { var b = best[k]; (games[b.game] = games[b.game] || []).push({ name: b.name, score: b.score }); });
+  Object.keys(games).forEach(function (g) { games[g] = games[g].sort(function (a, b) { return b.score - a.score; }).slice(0, 5); });
+  var out = JSON.stringify({ ok: true, updated: new Date().toISOString(), games: games });
+  try { cache.put('arcade-leaders', out, 300); } catch (e) {}
+  return out;
+}
+function leadersOut_(p) {
+  var s = arcadeLeaders_(), cb = String(p.callback || '');
+  if (/^[A-Za-z_$][\w$.]{0,40}$/.test(cb)) return ContentService.createTextOutput(cb + '(' + s + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(s).setMimeType(ContentService.MimeType.JSON);
+}

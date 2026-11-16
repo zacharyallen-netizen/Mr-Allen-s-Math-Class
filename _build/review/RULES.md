@@ -96,6 +96,8 @@ I4. Neon Integer Assault (rebuilt Nov 16, 2026, Zach: "a mashup of Space Invader
     The Ammo dump power (OBLITERATE) never counts a wrong hit. The boss is original (no Death Star or other film designs).
 I6. Integer Knockout trash talk is playful and about the student's MATH only (signs, facts, speed, zero), never about who they are
     (looks, family, intelligence as a person). Boxers are original and battle-worn; nothing from Punch-Out!!.
+I7. Arcade High Scores: only entries with a full first and last name count, and the public page shows first name + last
+    initial only (never full names, periods or anything else from the sheet).
 I5. Equation Master monsters are evil looking and attack every few seconds; Space (or the Block button) blocks. Space never
     presses an answer button. Unblocked attacks and wrong steps hurt the hero (knocked down at 0, gets back up); the beast
     roars, grunts and wails; death = slow motion, cut in two, goo, eyeballs; 6 weapons unlock by beasts defeated (saved per

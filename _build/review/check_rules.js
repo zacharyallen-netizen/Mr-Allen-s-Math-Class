@@ -232,6 +232,8 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/e\.code !== 'Space'/.test(ea) || !/var WEAPONS = /.test(ea) || !/var MUS = /.test(ea) || !/function gore\(/.test(ea) || !/keyup/.test(ea)) fail('I5', 'grade8/equation-arena.js', 'Space to block (never picks an answer), weapons, music, slow-motion death');
   const ik = rd('grade8/integer-knockout.html');
   if (!/var TRASH = /.test(ik) || /Little Mac|Glass Joe|Punch-Out|Bald Bull|King Hippo|Soda Popinski|Mr\. Sandman|Doc Louis/i.test(ik.replace(/\/\*[\s\S]*?\*\//g, ''))) fail('I6', 'grade8/integer-knockout.html', 'math trash talk, nothing from a real boxing game');
+  const al = rd('_build/student_work/ArcadeLog.gs'), ar = rd('grade8/arcade.html');
+  if (!/function fullName_\(/.test(al) || !/show: cap\(w\[0\]\) \+ ' ' \+ w\[w\.length - 1\]\.charAt\(0\)/.test(al) || !/id="lbRow"/.test(ar)) fail('I7', 'grade8/arcade.html', 'high scores: full names only, shown as First L.');
   const ni = rd('grade8/neon-integer-assault.html');
   if (/box\.correct \? colors\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must not glow green');
   if (!/function makeInvaders\(/.test(ni) || !/function makeCentipede\(/.test(ni) || !/function balance\(/.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'invaders + centipede, every answer kept shootable, game sized beside the side menu');

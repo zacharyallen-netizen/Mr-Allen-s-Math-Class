@@ -50,6 +50,25 @@
   .card[style*="#ff3860" i] .tag{color:#FF8095}
   .card[style*="#ff4dd6" i] .tag{color:#FF85E3}
 
+
+  /* ===== Leaderboard (Nov 16, 2026): top 5 per game from the Arcade Results sheet ===== */
+  .lb{margin-top:18px;background:linear-gradient(180deg,#101d3d,#0b1530);border:3px solid var(--gold);border-radius:14px;padding:16px 16px 12px;box-shadow:0 0 30px rgba(255,193,7,.12)}
+  .lb-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+  .lb-top h2{font-family:'Press Start 2P',monospace;font-size:1em;color:var(--gold);text-shadow:2px 2px 0 var(--mag)}
+  .lb-top p{font-size:.82em;color:var(--dim);margin-left:auto}
+  .lb-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;scroll-snap-type:x proximity}
+  .lb-row::-webkit-scrollbar{height:8px}.lb-row::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:4px}
+  .lb-card{flex:0 0 220px;scroll-snap-align:start;background:rgba(0,0,0,.25);border:2px solid var(--bdr);border-radius:10px;padding:10px 12px;text-decoration:none;color:inherit}
+  .lb-card:hover{border-color:var(--cyan)}
+  .lb-card h3{font-family:'Arvo',serif;font-size:.92em;color:#fff;margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lb-card ol{list-style:none;margin:0;padding:0}
+  .lb-card li{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:.88em;border-top:1px dashed rgba(255,255,255,.08)}
+  .lb-card li:first-child{border-top:0}
+  .lb-card .rk{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 .62em 'Press Start 2P',monospace;background:#22325a;color:#cfd8f6}
+  .lb-card li:nth-child(1) .rk{background:#FFC107;color:#1E2D4F}.lb-card li:nth-child(2) .rk{background:#cfd6e4;color:#1E2D4F}.lb-card li:nth-child(3) .rk{background:#d08a4a;color:#1E2D4F}
+  .lb-card .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lb-card .sc{font-family:'Press Start 2P',monospace;font-size:.62em;color:var(--grn)}
+  .lb-msg{color:var(--dim);font-size:.9em;padding:8px 2px}
   .footer-note{text-align:center;margin-top:40px;padding:16px;color:var(--dim);font-size:.85em;border-top:1px solid var(--bdr)}
 </style>
 </head>
@@ -65,6 +84,13 @@
       <span>UNITS 1–8 + EOG REVIEW</span>
       <span>PLAY ANYTIME</span>
     </div>
+  </div>
+
+
+  <!-- ============ LEADERBOARD (Nov 16, 2026) ============ -->
+  <div class="lb" id="lb">
+    <div class="lb-top"><h2>HIGH SCORES</h2><p>Top 5 for each game. Names show as first name and last initial.<br>To get on the board, type your full first and last name when a game asks.</p></div>
+    <div class="lb-row" id="lbRow"><div class="lb-msg">Loading high scores…</div></div>
   </div>
 
   <!-- ============ STORY / ADVENTURE GAMES ============ -->
@@ -244,5 +270,41 @@
 </div>
 
 
+
+<script src="../tracker-config.js"></script>
+<script>
+/* Arcade leaderboard: asks the Student Work web app (?leaders=1) for the top 5 per game.
+   The script only sends first name + last initial, and only for full names. */
+(function () {
+  var row = document.getElementById('lbRow');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function msg(t) { row.innerHTML = '<div class="lb-msg">' + t + '</div>'; }
+  // the cards on this page, in page order, so boards follow the same order and link to the game
+  var cards = [].slice.call(document.querySelectorAll('a.card')).map(function (a) { var h = a.querySelector('h3'); return { name: h ? h.textContent.trim() : '', href: a.getAttribute('href') }; });
+  function norm(s) { return String(s).toLowerCase().replace(/&amp;/g, '&').replace(/[^a-z0-9]/g, ''); }
+  window.__arcadeLeaders = function (d) {
+    clearTimeout(timer);
+    if (!d || !d.ok || !d.games) return msg('High scores are not available right now.');
+    var names = Object.keys(d.games);
+    if (!names.length) return msg('No high scores yet. Play a game with your full name to be the first!');
+    names.sort(function (a, b) {
+      var ia = cards.findIndex(function (c) { return norm(c.name) === norm(a); }), ib = cards.findIndex(function (c) { return norm(c.name) === norm(b); });
+      return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+    });
+    row.innerHTML = names.map(function (g) {
+      var c = cards.find(function (x) { return norm(x.name) === norm(g); });
+      return '<a class="lb-card"' + (c ? ' href="' + esc(c.href) + '"' : '') + '><h3 title="' + esc(g) + '">' + esc(g) + '</h3><ol>' +
+        d.games[g].map(function (r, i) { return '<li><span class="rk">' + (i + 1) + '</span><span class="nm">' + esc(r.name) + '</span><span class="sc">' + Number(r.score).toLocaleString() + '</span></li>'; }).join('') + '</ol></a>';
+    }).join('');
+  };
+  var cfg = window.TRACKER_CONFIG || {}, timer;
+  if (!cfg.ENDPOINT) return msg('High scores are not set up yet.');
+  var s = document.createElement('script');
+  s.src = cfg.ENDPOINT + (cfg.ENDPOINT.indexOf('?') < 0 ? '?' : '&') + 'leaders=1&callback=__arcadeLeaders&t=' + Math.floor(Date.now() / 60000);
+  s.onerror = function () { msg('High scores are not available right now.'); };
+  timer = setTimeout(function () { if (/Loading/.test(row.textContent)) msg('High scores are not available right now.'); }, 12000);
+  document.body.appendChild(s);
+})();
+</script>
 </body>
 </html>

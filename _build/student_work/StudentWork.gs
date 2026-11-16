@@ -50,7 +50,9 @@ function setup() {
   return rows.length + ' students copied';
 }
 
-function doGet() {
+function doGet(e) {
+  var p = (e && e.parameter) || {};
+  if (p.leaders) return leadersOut_(p);                      // Arcade leaderboard (ArcadeLog.gs, Nov 16, 2026)
   return ContentService.createTextOutput('Student Work receiver is running. The website posts here.');
 }
 
