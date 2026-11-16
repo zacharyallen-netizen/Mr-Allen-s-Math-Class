@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Integer Knockout — Integer Operations Boxing</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#FFC107;--gold2:#E0A800;--red:#ff3d5e;--grn:#4dff9a;--cyan:#43f7ff;--ink:#fff;--panel:rgba(10,8,30,.82);--line:rgba(255,255,255,.18);--top:0px}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
+[hidden]{display:none!important}
+html,body{margin:0;height:100%;background:#07051a;color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow:hidden}
+#app{position:fixed;top:var(--top);left:var(--pad,0px);right:0;bottom:0;display:flex;flex-direction:column}
+/* HUD */
+#hud{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding:8px 12px;background:linear-gradient(180deg,rgba(0,0,0,.65),rgba(0,0,0,.2))}
+.bar{display:flex;flex-direction:column;gap:3px}
+.bar.r{align-items:flex-end}
+.bar .nm{font:900 14px/1 Orbitron,sans-serif;letter-spacing:.04em}
+.hp{width:100%;max-width:340px;height:16px;border:2px solid #fff;border-radius:4px;background:#2a0a14;overflow:hidden;position:relative}
+.hp i{position:absolute;top:0;bottom:0;left:0;width:100%;background:linear-gradient(180deg,#7dffb5,#1fd16a);transition:width .25s}
+.bar.r .hp i{left:auto;right:0;background:linear-gradient(180deg,#ff9a8a,#ff3d5e)}
+.pips{display:flex;gap:4px;font:800 11px Inter,sans-serif;color:#aab}
+.pips b{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid #aab}
+.pips b.on{background:var(--gold);border-color:var(--gold)}
+#mid{text-align:center}
+#round{font:900 13px/1 Orbitron,sans-serif;color:var(--gold);letter-spacing:.08em}
+#score{font:800 20px/1.2 'JetBrains Mono',monospace}
+#stars{font-size:18px;letter-spacing:2px;color:#333a;min-height:20px}
+#stars span.on{color:var(--gold);text-shadow:0 0 10px rgba(255,193,7,.8)}
+/* stage */
+#stage{position:relative;flex:1;min-height:200px}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+#prob{position:absolute;left:50%;top:10px;transform:translateX(-50%);text-align:center;pointer-events:none;width:min(92%,640px)}
+#ptext{display:inline-block;padding:8px 18px;border-radius:14px;background:rgba(8,6,24,.82);border:2px solid rgba(255,255,255,.25);font:800 clamp(28px,6vw,52px)/1.1 'JetBrains Mono',monospace;white-space:nowrap;box-shadow:0 6px 24px rgba(0,0,0,.4)}
+#ptext .q{color:var(--gold)}
+#timer{height:10px;margin:8px auto 0;width:min(100%,420px);border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+#timer i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#4dff9a,#ffd166 60%,#ff3d5e)}
+#note{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);width:min(94%,620px);padding:9px 14px;border-radius:12px;background:rgba(40,8,20,.92);border:1px solid rgba(255,61,94,.6);font:600 16px/1.4 Inter,sans-serif;text-align:center;pointer-events:none}
+#note.good{background:rgba(6,40,24,.92);border-color:rgba(77,255,154,.6)}
+#note.info{background:rgba(40,32,6,.92);border-color:rgba(255,193,7,.6)}
+/* punches */
+#pad{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:8px;padding:10px 12px calc(48px + env(safe-area-inset-bottom));background:linear-gradient(0deg,rgba(0,0,0,.7),rgba(0,0,0,.25))}
+.pb{position:relative;min-height:78px;border-radius:14px;border:2px solid rgba(255,255,255,.28);background:linear-gradient(180deg,#1d1846,#120e30);color:#fff;cursor:pointer;padding:6px 8px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;touch-action:manipulation}
+.pb:hover{border-color:var(--cyan)}
+.pb:active{transform:translateY(2px)}
+.pb .k{position:absolute;left:8px;top:6px;font:800 11px 'JetBrains Mono',monospace;color:#9aa3d6;border:1px solid #5a5f99;border-radius:4px;padding:0 4px}
+.pb .pn{font:800 10px/1 Inter,sans-serif;letter-spacing:.14em;color:#9aa3d6;text-transform:uppercase}
+.pb .v{font:800 clamp(22px,4.4vw,34px)/1.05 'JetBrains Mono',monospace}
+.pb .v.w{font-size:clamp(16px,3vw,22px)}
+.pb.no{opacity:.35;cursor:default;text-decoration:line-through;border-color:#ff3d5e}
+.pb.yes{border-color:var(--grn);box-shadow:0 0 18px rgba(77,255,154,.6)}
+#star{min-width:96px;border-radius:14px;border:2px solid var(--gold);background:linear-gradient(180deg,#3a2c05,#1c1503);color:var(--gold);font:900 13px/1.2 Orbitron,sans-serif;cursor:pointer;padding:6px}
+#star:disabled{opacity:.35;cursor:default;border-color:#665}
+#star.armed{background:var(--gold);color:#1E2D4F;box-shadow:0 0 22px rgba(255,193,7,.8)}
+@media (max-width:640px){#pad{grid-template-columns:1fr 1fr}#star{grid-column:span 2;min-height:44px}.pb{min-height:66px}#hud{grid-template-columns:1fr 1fr}#mid{grid-column:span 2;order:-1;display:flex;gap:14px;justify-content:center;align-items:center}}
+/* menu / end */
+#over{position:fixed;inset:0;left:var(--pad,0px);top:var(--top);z-index:20;background:radial-gradient(ellipse at 50% 0%,rgba(255,61,94,.25),transparent 60%),rgba(5,4,18,.94);overflow:auto;padding:18px 14px 70px}
+.card{max-width:900px;margin:0 auto;text-align:center}
+.logo{font:900 clamp(36px,8vw,78px)/1 Orbitron,sans-serif;letter-spacing:.04em;margin:8px 0 2px;background:linear-gradient(180deg,#fff 10%,#ffd166 45%,#ff3d5e 90%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 #3a0d18)}
+.sub{color:#cdd3f3;font-size:16px;margin:4px auto 12px;max-width:640px;line-height:1.5}
+.how{text-align:left;background:#fff8e1;border:2px solid var(--gold);border-radius:12px;padding:12px 16px;margin:10px auto;max-width:680px;color:#333;font-size:15px;line-height:1.55}
+.how b{color:#1E2D4F}
+.how kbd{font:700 12px 'JetBrains Mono',monospace;background:#fff;border:1px solid #bbb;border-bottom-width:3px;border-radius:5px;padding:0 5px;color:#1E2D4F}
+.opps{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:14px 0}
+.opp{background:rgba(20,16,50,.9);border:2px solid var(--line);border-radius:14px;padding:8px;color:#fff;cursor:pointer;text-align:center}
+.opp:hover,.opp.on{border-color:var(--c)}
+.opp.on{box-shadow:0 0 18px color-mix(in srgb,var(--c) 45%,transparent)}
+.opp canvas{width:100%;height:auto;display:block;border-radius:10px;background:radial-gradient(circle at 50% 40%,#2a2160,#0c0a22)}
+.opp .t1{font:800 10px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--c);text-transform:uppercase;margin-top:6px}
+.opp .t2{font:900 15px/1.2 Orbitron,sans-serif;margin:3px 0}
+.opp .t3{font:500 12.5px/1.35 Inter,sans-serif;color:#b8bfe6}
+.opp .bst{font:800 12px 'JetBrains Mono',monospace;color:var(--gold);min-height:14px;margin-top:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;background:var(--gold);color:#1E2D4F;border:0;border-radius:12px;padding:14px 30px;font:900 18px Orbitron,sans-serif;letter-spacing:.06em;cursor:pointer;box-shadow:0 4px 0 var(--gold2);margin:6px}
+.btn.ghost{background:transparent;color:#fff;border:2px solid var(--line);box-shadow:none;font-family:Inter,sans-serif;font-weight:800}
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:640px;margin:10px auto}
+.rgrid div{background:rgba(20,16,50,.9);border:1px solid var(--line);border-radius:12px;padding:10px}
+.rgrid b{display:block;font:800 22px 'JetBrains Mono',monospace}
+.rgrid span{font:800 10px Inter,sans-serif;letter-spacing:.12em;color:#9aa3d6;text-transform:uppercase}
+@media (max-width:520px){.rgrid{grid-template-columns:1fr 1fr}}
+.miss{max-width:640px;margin:12px auto;text-align:left;background:rgba(20,16,50,.9);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font:500 15px/1.6 Inter,sans-serif}
+.miss h3{margin:0 0 4px;font:800 12px Inter,sans-serif;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+.miss li{font-family:'JetBrains Mono',monospace}
+#ctl{display:flex;gap:6px;justify-content:center;margin-top:3px}
+#ctl button{background:rgba(8,6,24,.8);border:1px solid var(--line);color:#fff;border-radius:8px;height:26px;padding:0 8px;font:700 12px Inter,sans-serif;cursor:pointer}
+</style>
+</head>
+<body>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="Integer Knockout" data-unit="F"></script>
+<script src="../site-bar.js"></script>
+<script src="arcade-fx.js?v=20261111a"></script>
+
+<div id="app">
+  <div id="hud">
+    <div class="bar"><div class="nm" style="color:#7dffb5">YOU</div><div class="hp" id="hpYou"><i></i></div><div class="pips" id="pipsYou">DOWNS <b></b><b></b><b></b></div></div>
+    <div id="mid"><div id="round">ROUND 1</div><div id="score">0</div><div id="stars"><span>★</span><span>★</span><span>★</span></div><div id="ctl"><button id="pauseBtn" type="button">Pause</button></div></div>
+    <div class="bar r"><div class="nm" id="oppName" style="color:#ff9a8a">OPPONENT</div><div class="hp" id="hpOpp"><i></i></div><div class="pips" id="pipsOpp">DOWNS <b></b><b></b><b></b></div></div>
+  </div>
+  <div id="stage">
+    <canvas id="cv"></canvas>
+    <div id="prob"><div id="ptext"></div><div id="timer"><i></i></div></div>
+    <div id="note" hidden></div>
+  </div>
+  <div id="pad">
+    <button class="pb" data-i="0" type="button"><span class="k">1</span><span class="pn">Left jab</span><span class="v"></span></button>
+    <button class="pb" data-i="1" type="button"><span class="k">2</span><span class="pn">Right jab</span><span class="v"></span></button>
+    <button class="pb" data-i="2" type="button"><span class="k">3</span><span class="pn">Left hook</span><span class="v"></span></button>
+    <button class="pb" data-i="3" type="button"><span class="k">4</span><span class="pn">Right hook</span><span class="v"></span></button>
+    <button id="star" type="button" disabled>★ STAR<br>UPPERCUT</button>
+  </div>
+</div>
+
+<div id="over">
+  <div class="card" id="menu">
+    <div class="logo">INTEGER KNOCKOUT</div>
+    <p class="sub">Step into the ring. Every punch is an answer. Answer fast and right to land your punch before your opponent swings.</p>
+    <div class="how">
+      <b>How to fight.</b> A problem pops up over the ring (numbers from −20 to 20). Four punch buttons show four answers.
+      <b>Throw the punch with the right answer</b>: tap it or press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd>.
+      The bar under the problem is your opponent winding up. Too slow, or the wrong answer, and you get hit.<br>
+      3 right in a row earns a <b>★ Star</b>. Press <kbd>Space</kbd> (or ★) to load it. Your next right answer is a huge uppercut.<br>
+      Knock your opponent down 3 times to win. Watch out for <b>÷ 0</b>: it is <b>Undefined</b>. But 0 ÷ a number is 0.
+    </div>
+    <div class="opps" id="opps"></div>
+    <button class="btn" id="bFight">FIGHT!</button>
+  </div>
+  <div class="card" id="end" hidden>
+    <div class="logo" id="eTitle">K.O.!</div>
+    <p class="sub" id="eSub"></p>
+    <div class="rgrid">
+      <div><b id="eScore">0</b><span>Score</span></div>
+      <div><b id="eRight">0</b><span>Right first try</span></div>
+      <div><b id="eFast">0</b><span>Avg seconds</span></div>
+      <div><b id="eBest">0</b><span>Best combo</span></div>
+    </div>
+    <div class="miss" id="eMiss" hidden><h3>Practice these</h3><ul id="eList"></ul></div>
+    <button class="btn" id="bNext">NEXT FIGHT</button>
+    <button class="btn ghost" id="bAgain">Rematch</button>
+    <button class="btn ghost" id="bPick">Pick an opponent</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  /* =====================================================================
+     INTEGER KNOCKOUT (Nov 16, 2026, Zach: a fast, active game on operations with
+     numbers −20 to 20, "like the old Mike Tyson video game"). An original arcade
+     boxing game: no names, characters or art from any real game.
+     - Problems: + − × ÷ with numbers −20 to 20. Division never has a remainder.
+       0 ÷ n = 0 and n ÷ 0 = Undefined are included.
+     - 4 tap choices = 4 punches (keys 1-4). Wrong choices are common mistakes,
+       and each one says what the mistake is. A wrong choice can't be tapped twice.
+     - Logs every punch (ArcadeSend.answer) and one round per fight.
+     ===================================================================== */
+  var $ = function (id) { return document.getElementById(id); };
+  var DEBUG = /[?&]debug\b/.test(location.search);
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function fmt(n) { return n === 'U' ? 'Undefined' : (n < 0 ? '−' + Math.abs(n) : String(n)); }
+  function par(n) { return n < 0 ? '(' + fmt(n) + ')' : String(n); }
+  function sfx(n, a) { try { if (window.AFX && !AFX.muted) AFX.sfx[n](a); } catch (e) {} }
+  function fx(fn) { try { if (window.AFX) fn(AFX); } catch (e) {} }
+  function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem(k) || 'null'); localStorage.setItem(k, JSON.stringify(v)); } catch (e) { return null; } }
+
+  /* ---------------- opponents (original) ---------------- */
+  var OPP = [
+    { name: 'Kid Positive', tag: 'Rookie', d: 'Adding and subtracting, −10 to 10.', c: '#4dff9a', ops: ['+', '-'], R: 10, time: 7, hit: 9,
+      skin: '#f2c49b', hair: '#6b3b1a', trunks: '#2b9dff', look: 'kid' },
+    { name: 'Minus Malone', tag: 'Contender', d: 'Adding and subtracting, −20 to 20. Lots of minus signs.', c: '#43f7ff', ops: ['+', '-', '-'], R: 20, time: 6, hit: 11,
+      skin: '#c98a5e', hair: '#1b1b1b', trunks: '#7a2bff', look: 'stache' },
+    { name: 'The Multiplier', tag: 'Heavy hitter', d: 'Multiplying, plus some adding and subtracting.', c: '#ff9a3c', ops: ['*', '*', '+', '-'], R: 20, time: 5.5, hit: 12,
+      skin: '#8d5a3b', hair: '#111', trunks: '#ff6a2b', look: 'mohawk' },
+    { name: 'Count Zero', tag: 'Trickster', d: 'Dividing (watch for zero!) and multiplying.', c: '#c58bff', ops: ['/', '/', '*', '-'], R: 20, time: 5, hit: 13, zero: 0.32,
+      skin: '#e8b48f', hair: '#c9c9d6', trunks: '#3a3a4a', look: 'zero' },
+    { name: 'Max Absolute', tag: 'Champion', d: 'Everything mixed, −20 to 20. Fast and tough.', c: '#FFC107', ops: ['+', '-', '*', '/'], R: 20, time: 4.2, hit: 15, zero: 0.22,
+      skin: '#6e4329', hair: '#2a1a10', trunks: '#d4a017', look: 'champ' }
+  ];
+
+  /* ---------------- problems ---------------- */
+  function gen(o) {
+    for (var g = 0; g < 400; g++) {
+      var op = pick(o.ops), R = o.R, a, b, ans, kind = op;
+      if (op === '+' || op === '-') {
+        a = ri(-R, R); b = ri(-R, R);
+        if (op === '-' && Math.random() < 0.45 && b > 0) b = -b;          // practice subtracting negatives
+        if (a === 0 && b === 0) continue;
+        ans = op === '+' ? a + b : a - b;
+      } else if (op === '*') {
+        a = ri(-R, R); b = ri(-10, 10);
+        if (Math.random() < 0.5) { var t = a; a = b; b = t; }
+        if (Math.abs(a * b) > 120 || (a === 0 && b === 0)) continue;
+        if ((Math.abs(a) <= 1 || Math.abs(b) <= 1) && Math.random() < 0.7) continue;   // not too many ×0 / ×1
+        ans = a * b;
+      } else {
+        var z = Math.random();
+        if (z < (o.zero || 0.12) / 2) { a = 0; b = ri(1, 12) * (Math.random() < 0.5 ? -1 : 1); ans = 0; kind = '0/'; }
+        else if (z < (o.zero || 0.12)) { a = ri(1, 20) * (Math.random() < 0.5 ? -1 : 1); b = 0; ans = 'U'; kind = '/0'; }
+        else {
+          b = ri(2, 10) * (Math.random() < 0.5 ? -1 : 1);
+          var qs = []; for (var q = -20; q <= 20; q++) if (q !== 0 && Math.abs(q * b) <= 20) qs.push(q);
+          if (!qs.length) continue;
+          var qq = pick(qs); a = qq * b; ans = qq;                           // no remainders, dividend in −20..20
+        }
+      }
+      return { a: a, b: b, op: op, kind: kind, ans: ans, text: par(a) + ' ' + { '+': '+', '-': '−', '*': '×', '/': '÷' }[op] + ' ' + par(b) };
+    }
+    return { a: 3, b: -4, op: '+', kind: '+', ans: -1, text: '3 + (−4)' };
+  }
+  /* wrong choices = common mistakes, each with a note that names it */
+  function choices(p) {
+    var a = p.a, b = p.b, s = p.ans, out = [], why = {};
+    function add(v, w) { if (v === s || out.indexOf(v) >= 0 || (v !== 'U' && (!isFinite(v) || Math.abs(v) > 400))) return; out.push(v); why[v] = w; }
+    var SIGN = { '+': (a < 0) === (b < 0) ? 'Sign mistake. Two negatives add to a bigger negative. Two positives add to a positive.' : 'Sign mistake. Different signs: subtract the sizes and keep the sign of the number farther from 0.',
+      '-': 'Sign mistake. Change subtracting to adding the opposite: a − b = a + (−b).',
+      '*': 'Sign mistake. Same signs give a positive. Different signs give a negative.',
+      '/': 'Sign mistake. Same signs give a positive. Different signs give a negative.' };
+    if (p.kind === '/0') {
+      add(0, 'You can\'t split into 0 groups. Dividing BY zero is undefined.');
+      add(a, 'That would be ' + par(a) + ' ÷ 1. Dividing by zero is undefined.');
+      add(-a, 'Dividing by zero does not give a number. It is undefined.');
+    } else if (p.kind === '0/') {
+      add('U', '0 ÷ a number is 0. Only dividing BY zero is undefined.');
+      add(b, 'Zero split into ' + b + ' groups is still 0.');
+      add(-b, 'Zero split into groups is still 0.');
+    } else {
+      if (s !== 0) add(-s, SIGN[p.op]);
+      if (p.op === '+') { add(a - b, 'You subtracted. This problem adds.'); add((a < 0) !== (b < 0) ? Math.abs(a) + Math.abs(b) : -(Math.abs(a) + Math.abs(b)) , (a < 0) !== (b < 0) ? 'Different signs: subtract the sizes, don\'t add them.' : SIGN['+']); add(b - a, 'You subtracted the first number. This problem adds.'); }
+      if (p.op === '-') { add(a + b, b < 0 ? 'Subtracting a negative means ADD the opposite: − (−' + Math.abs(b) + ') becomes + ' + Math.abs(b) + '.' : 'You added. Subtracting ' + b + ' means adding −' + b + '.'); add(b - a, 'Order matters in subtracting. Start with the first number.'); add(-(a + b), 'Change it to adding the opposite, then use the adding rules.'); }
+      if (p.op === '*') { add(a + b, 'You added. This problem multiplies.'); add(s + (a === 0 || b === 0 ? 1 : (Math.abs(a) > Math.abs(b) ? a : b)), 'Check your fact. Count by ' + Math.abs(b) + 's.'); add(Math.abs(s) === s ? s - Math.abs(b || 2) : s + Math.abs(b || 2), 'Check your multiplication fact.'); }
+      if (p.op === '/') { add(a * b <= 400 && a * b >= -400 ? a * b : s * 2, 'You multiplied. This problem divides.'); add(s + (s > 0 ? 1 : -1), 'Check: the answer × ' + par(b) + ' should give ' + par(a) + '.'); add(b === 0 ? 2 : -s - 1, 'Check: the answer × ' + par(b) + ' should give ' + par(a) + '.'); }
+    }
+    for (var g = 0; out.length < 3 && g < 60; g++) { var r = (s === 'U' ? ri(-20, 20) : s + ri(-6, 6)); add(r, p.op === '/' || p.op === '*' ? 'Check your fact family: ' + (p.op === '/' ? 'the answer × ' + par(b) + ' should give ' + par(a) + '.' : 'think of equal groups.') : 'Use a number line. Start at ' + par(a) + '.'); }
+    var list = shuffle([s].concat(shuffle(out).slice(0, 3)));
+    return { list: list, why: why };
+  }
+  var TIP = {
+    '+': 'Same signs: add and keep the sign. Different signs: subtract the sizes and keep the sign of the number farther from 0.',
+    '-': 'Change subtracting to adding the opposite. Then use the adding rules.',
+    '*': 'Multiply the numbers. Same signs → positive. Different signs → negative.',
+    '/': 'Divide the numbers. Same signs → positive. Different signs → negative.',
+    '0/': 'Zero split into any number of groups is 0.',
+    '/0': 'You can\'t divide by zero. It is undefined.'
+  };
+
+  /* ---------------- game state ---------------- */
+  var G = null, sel = 0;
+  function newFight(oi) {
+    var o = OPP[oi];
+    G = { oi: oi, o: o, you: 100, opp: 100, youDowns: 0, oppDowns: 0, round: 1, score: 0, stars: 0, armed: false,
+      streak: 0, best: 0, first: 0, asked: 0, tries: 0, times: [], missed: [], p: null, ch: null, t: 0, T: o.time,
+      state: 'intro', anim: { kind: 'idle', t: 0 }, glove: null, paused: false, over: false, wrongNow: 0 };
+    $('oppName').textContent = o.name.toUpperCase(); $('oppName').style.color = o.c;
+    hud();
+  }
+  function hud() {
+    $('hpYou').firstElementChild.style.width = Math.max(0, G.you) + '%';
+    $('hpOpp').firstElementChild.style.width = Math.max(0, G.opp) + '%';
+    [].forEach.call($('pipsYou').querySelectorAll('b'), function (b, i) { b.classList.toggle('on', i < G.youDowns); });
+    [].forEach.call($('pipsOpp').querySelectorAll('b'), function (b, i) { b.classList.toggle('on', i < G.oppDowns); });
+    $('round').textContent = 'ROUND ' + G.round; $('score').textContent = G.score.toLocaleString();
+    [].forEach.call($('stars').children, function (s, i) { s.classList.toggle('on', i < G.stars); });
+    $('star').disabled = !G.stars || G.armed; $('star').classList.toggle('armed', G.armed);
+    $('star').innerHTML = G.armed ? '★ LOADED!<br>answer right' : '★ STAR<br>UPPERCUT';
+  }
+  function note(cls, html, ms) {
+    var n = $('note'); n.className = cls || ''; n.innerHTML = html; n.hidden = false;
+    clearTimeout(note.t); if (ms) note.t = setTimeout(function () { n.hidden = true; }, ms);
+  }
+  function nextProblem() {
+    if (G.over) return;
+    var p, g = 0;
+    do { p = gen(G.o); } while (G.p && p.text === G.p.text && g++ < 20);
+    G.p = p; G.ch = choices(p); G.t = 0; G.wrongNow = 0; G.asked++; G.state = 'q';
+    G.T = Math.max(2.6, G.o.time - (G.round - 1) * 0.35);
+    $('ptext').innerHTML = p.text + ' = <span class="q">?</span>';
+    [].forEach.call(document.querySelectorAll('.pb'), function (bt, i) {
+      var v = G.ch.list[i]; bt.dataset.v = v; bt.classList.remove('no', 'yes'); bt.disabled = false;
+      var el = bt.querySelector('.v'); el.textContent = fmt(v); el.classList.toggle('w', v === 'U');
+    });
+  }
+  function punch(i) {
+    if (!G || G.state !== 'q' || G.paused) return;
+    var bt = document.querySelectorAll('.pb')[i]; if (!bt || bt.classList.contains('no')) return;
+    var raw = bt.dataset.v, v = raw === 'U' ? 'U' : Number(raw), ok = v === G.p.ans;
+    G.tries++;
+    try { if (window.ArcadeSend) ArcadeSend.answer(ok); } catch (e) {}
+    var side = i % 2 === 0 ? -1 : 1;
+    if (ok) {
+      if (!G.wrongNow) { G.first++; G.streak++; G.best = Math.max(G.best, G.streak); if (G.streak % 3 === 0 && G.stars < 3) { G.stars++; note('info', '★ You earned a Star! Press <b>Space</b> or ★ to load it.', 1800); sfx('power'); } }
+      G.times.push(G.t);
+      bt.classList.add('yes');
+      var speed = Math.max(0, 1 - G.t / G.T), dmg = Math.round(11 + 7 * speed), star = G.armed;
+      if (star) { dmg = Math.round(dmg * 2.6); G.armed = false; G.stars--; }
+      G.opp = Math.max(0, G.opp - dmg); G.score += Math.round((100 + 120 * speed) * (star ? 2 : 1) * (1 + Math.min(4, Math.floor(G.streak / 3)) * 0.25));
+      G.state = 'hit'; G.glove = { side: star ? 0 : side, t: 0, star: star, land: true };
+      setTimeout(function () { landHit(dmg, star); }, 150);
+      $('ptext').innerHTML = G.p.text + ' = <span class="q" style="color:#4dff9a">' + fmt(G.p.ans) + '</span>';
+      if (!G.wrongNow) $('note').hidden = true;
+    } else {
+      G.wrongNow++; G.streak = 0; bt.classList.add('no'); bt.disabled = true;
+      if (G.armed) { G.armed = false; G.stars--; }
+      if (G.wrongNow === 1) G.missed.push(G.p);
+      G.glove = { side: side, t: 0, land: false };
+      sfx('whoosh');
+      note('', '<b>Whiff!</b> ' + (G.ch.why[raw === 'U' ? 'U' : v] || 'Check the sign and the operation.'), 0);
+      setTimeout(function () { if (G.state === 'q') counter(G.o.hit + 2 * G.round, 'counter'); }, 180);
+    }
+    hud();
+  }
+  function landHit(dmg, star) {
+    G.anim = { kind: star ? 'uppercut' : 'hit', t: 0 };
+    sfx(star ? 'boom' : 'thud', star ? 1.2 : 0.8);
+    fx(function (A) { var r = $('cv').getBoundingClientRect(); var x = r.left + r.width / 2, y = r.top + r.height * 0.4; A.text(x + ri(-60, 60), y - 40, star ? 'STAR UPPERCUT!' : pick(['POW!', 'BAM!', 'WHAM!', 'SMACK!']), { color: star ? '#FFC107' : '#fff', size: star ? 40 : 30 }); A.sparks(x, y, { color: star ? '#FFC107' : '#fff', count: star ? 40 : 18 }); if (star && !reduce) A.shake($('stage'), 10, 300); });
+    hud();
+    if (G.opp <= 0) { setTimeout(oppDown, 350); return; }
+    setTimeout(nextProblem, reduce ? 250 : 480);
+  }
+  function counter(dmg, why) {
+    if (G.over) return;
+    G.you = Math.max(0, G.you - dmg);
+    G.anim = { kind: 'punch', t: 0 }; G.youHit = 1;
+    sfx('boom', 0.7);
+    fx(function (A) { if (!reduce) A.flash('#ff3d5e', 0.25); var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.7, '−' + dmg, { color: '#ff3d5e', size: 28 }); if (!reduce) A.shake($('stage'), 8, 250); });
+    if (why === 'slow') {
+      G.streak = 0; if (!G.wrongNow) G.missed.push(G.p);
+      try { if (window.ArcadeSend) ArcadeSend.answer(false); } catch (e) {}
+      G.state = 'reveal';
+      $('ptext').innerHTML = G.p.text + ' = <span class="q">' + fmt(G.p.ans) + '</span>';
+      note('info', '<b>Too slow!</b> ' + TIP[G.p.kind === '0/' || G.p.kind === '/0' ? G.p.kind : G.p.op], 2400);
+    }
+    hud();
+    if (G.you <= 0) { G.state = 'count'; setTimeout(youDown, 400); return; }
+    if (why === 'slow') setTimeout(nextProblem, 1500);
+    else G.t = Math.max(0, G.t - 0.6);   // a little time back after a counter
+  }
+  function count(cb, who) {
+    G.state = 'count'; var n = 0;
+    (function tick() {
+      n++; fx(function (A) { var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.45, String(n), { color: '#fff', size: 64 }); });
+      sfx('clang');
+      if (n < 3) setTimeout(tick, reduce ? 350 : 600); else setTimeout(cb, reduce ? 300 : 650);
+    })();
+    void who;
+  }
+  function oppDown() {
+    G.oppDowns++; G.anim = { kind: 'down', t: 0 }; G.state = 'count';
+    sfx('roar');
+    note('good', '<b>DOWN!</b> ' + G.o.name + ' hits the mat!', 2000);
+    hud();
+    if (G.oppDowns >= 3) { setTimeout(function () { G.anim = { kind: 'ko', t: 0 }; fx(function (A) { A.sfx.win(); var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.4, 'K.O.!', { color: '#FFC107', size: 80 }); A.confetti(r.left + r.width / 2, r.top + r.height * 0.3, { count: 140 }); }); }, 500); setTimeout(function () { finish(true); }, 2600); return; }
+    count(function () { G.opp = 100; G.round++; G.anim = { kind: 'up', t: 0 }; ding(); note('info', 'ROUND ' + G.round + '. ' + G.o.name + ' is back up, and faster!', 1600); hud(); setTimeout(nextProblem, 900); });
+  }
+  function youDown() {
+    G.youDowns++; G.state = 'count'; G.youFall = 1;
+    note('', '<b>You\'re down!</b> Get up!', 2000);
+    hud();
+    if (G.youDowns >= 3) { setTimeout(function () { fx(function (A) { A.sfx.lose(); }); finish(false); }, 1600); return; }
+    count(function () { G.you = 70; G.youFall = 0; G.round++; ding(); note('info', 'You\'re back up! ROUND ' + G.round + '.', 1500); hud(); setTimeout(nextProblem, 900); });
+  }
+  function ding() { var ctx = audioCtx(); if (!ctx || (window.AFX && AFX.muted)) return; [1318, 1318].forEach(function (f, i) { var o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + i * 0.28; o.type = 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0.12, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.9); o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + 1); }); }
+  var AC = null; function audioCtx() { try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch (e) {} return AC; }
+
+  function armStar() { if (!G || !G.stars || G.armed || G.state !== 'q') return; G.armed = true; sfx('power'); hud(); }
+
+  /* ---------------- drawing ---------------- */
+  var cv = $('cv'), cx = cv.getContext('2d'), CW = 0, CH = 0, crowd = [];
+  function size() {
+    var de = document.documentElement, pad = parseFloat(getComputedStyle(de).paddingLeft) || 0;
+    de.style.setProperty('--pad', pad + 'px');
+    de.style.setProperty('--top', (document.getElementById('sb-nav') ? 56 : (matchMedia('(max-width: 760px)').matches ? 58 : 0)) + 'px');
+    var r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1);
+    CW = r.width; CH = r.height; cv.width = Math.round(CW * dpr); cv.height = Math.round(CH * dpr); cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    crowd = []; for (var i = 0; i < 140; i++) crowd.push({ x: Math.random(), y: Math.random() * 0.32, h: Math.random() * 360, f: Math.random() });
+  }
+  function ring(t) {
+    var g = cx.createLinearGradient(0, 0, 0, CH); g.addColorStop(0, '#120c2e'); g.addColorStop(0.55, '#1b1240'); g.addColorStop(1, '#0a0820');
+    cx.fillStyle = g; cx.fillRect(0, 0, CW, CH);
+    crowd.forEach(function (c) { cx.fillStyle = 'hsla(' + c.h + ',40%,' + (25 + 10 * Math.sin(t * 3 + c.f * 9)) + '%,.9)'; cx.beginPath(); cx.arc(c.x * CW, c.y * CH + 6 + Math.sin(t * 4 + c.f * 20) * 2, 6, 0, 6.3); cx.fill(); if (Math.random() < 0.004) { cx.fillStyle = 'rgba(255,255,255,.95)'; cx.beginPath(); cx.arc(c.x * CW, c.y * CH, 9, 0, 6.3); cx.fill(); } });
+    var sp = cx.createRadialGradient(CW / 2, CH * 0.45, 10, CW / 2, CH * 0.45, CH * 0.8); sp.addColorStop(0, 'rgba(255,240,200,.18)'); sp.addColorStop(1, 'rgba(255,240,200,0)'); cx.fillStyle = sp; cx.fillRect(0, 0, CW, CH);
+    // canvas floor
+    cx.fillStyle = '#2b3a78'; cx.beginPath(); cx.moveTo(CW * 0.1, CH * 0.62); cx.lineTo(CW * 0.9, CH * 0.62); cx.lineTo(CW * 1.1, CH); cx.lineTo(-CW * 0.1, CH); cx.closePath(); cx.fill();
+    // ropes
+    ['#ff3d5e', '#fff', '#43a0ff'].forEach(function (c, i) { cx.strokeStyle = c; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(CW * 0.08, CH * (0.36 + i * 0.08)); cx.lineTo(CW * 0.92, CH * (0.36 + i * 0.08)); cx.stroke(); });
+    cx.fillStyle = '#ccd'; cx.fillRect(CW * 0.08 - 6, CH * 0.32, 12, CH * 0.32); cx.fillRect(CW * 0.92 - 6, CH * 0.32, 12, CH * 0.32);
+  }
+  function rr(x, y, w, h, r) { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+  /* an original cartoon boxer, facing the player */
+  function boxer(ctx2, o, X, Y, S, pose, t) {
+    var c = ctx2, bob = Math.sin(t * 5) * 4 * S, lean = 0, hx = 0, hy = 0, gl = 0, gr = 0, squash = 1, tilt = 0, eye = 'open', drop = 0;
+    if (pose.kind === 'wind') { lean = -6 * S * pose.k; gr = -40 * S * pose.k; eye = 'mean'; }
+    if (pose.kind === 'punch') { var k = Math.sin(Math.min(1, pose.t / 0.25) * Math.PI); gr = 140 * S * k; lean = 14 * S * k; eye = 'mean'; }
+    if (pose.kind === 'hit' || pose.kind === 'uppercut') { var h = Math.max(0, 1 - pose.t / (pose.kind === 'uppercut' ? 0.7 : 0.4)); hx = (pose.kind === 'uppercut' ? 0 : 18) * S * h * (Math.sin(t * 40) > 0 ? 1 : -1); hy = (pose.kind === 'uppercut' ? -40 : -6) * S * h; tilt = (pose.kind === 'uppercut' ? -0.35 : 0.2) * h; eye = h > 0.1 ? 'x' : 'open'; squash = 1 - 0.08 * h; }
+    if (pose.kind === 'down' || pose.kind === 'ko') { var d = Math.min(1, pose.t / 0.6); drop = 120 * S * d; tilt = -0.6 * d; eye = 'x'; bob = 0; }
+    if (pose.kind === 'up') { var u = Math.max(0, 1 - pose.t / 0.6); drop = 120 * S * u; tilt = -0.6 * u; }
+    c.save(); c.translate(X, Y + bob + drop); c.rotate(tilt * 0.4);
+    // torso
+    c.fillStyle = o.skin; rr(-70 * S, -10 * S, 140 * S, 120 * S, 40 * S); c.fill();
+    c.fillStyle = 'rgba(0,0,0,.12)'; c.fillRect(-2 * S, 20 * S, 4 * S, 60 * S);
+    if (o.look === 'multi' || o.look === 'mohawk') { c.fillStyle = '#ff6a2b'; rr(-60 * S, 0, 120 * S, 100 * S, 30 * S); c.fill(); c.fillStyle = '#fff'; c.font = '900 ' + 44 * S + 'px Inter'; c.textAlign = 'center'; c.fillText('×', 0, 66 * S); }
+    if (o.look === 'zero') { c.fillStyle = '#3a3a4a'; rr(-60 * S, 0, 120 * S, 100 * S, 30 * S); c.fill(); c.strokeStyle = '#c58bff'; c.lineWidth = 7 * S; c.beginPath(); c.ellipse(0, 48 * S, 18 * S, 26 * S, 0, 0, 6.3); c.stroke(); }
+    if (o.look === 'champ') { c.fillStyle = '#d4a017'; rr(-74 * S, 84 * S, 148 * S, 26 * S, 8 * S); c.fill(); c.fillStyle = '#fff3b0'; c.beginPath(); c.ellipse(0, 97 * S, 22 * S, 14 * S, 0, 0, 6.3); c.fill(); }
+    // trunks
+    c.fillStyle = o.trunks; rr(-72 * S, 104 * S, 144 * S, 40 * S, 10 * S); c.fill();
+    // head
+    c.save(); c.translate(hx, -46 * S + hy); c.rotate(tilt); c.scale(1, squash);
+    c.fillStyle = o.skin; c.beginPath(); c.ellipse(0, 0, 44 * S, 52 * S, 0, 0, 6.3); c.fill();
+    c.fillStyle = o.hair;
+    if (o.look === 'kid') { c.beginPath(); c.ellipse(0, -36 * S, 42 * S, 20 * S, 0, Math.PI, 0); c.fill(); c.fillRect(-36 * S, -40 * S, 72 * S, 10 * S); c.fillStyle = '#2b9dff'; c.fillRect(-44 * S, -30 * S, 88 * S, 9 * S); }
+    if (o.look === 'stache') { c.beginPath(); c.ellipse(0, -40 * S, 44 * S, 18 * S, 0, Math.PI, 0); c.fill(); c.beginPath(); c.ellipse(-12 * S, 20 * S, 14 * S, 6 * S, 0.2, 0, 6.3); c.ellipse(12 * S, 20 * S, 14 * S, 6 * S, -0.2, 0, 6.3); c.fill(); }
+    if (o.look === 'mohawk') { c.beginPath(); c.moveTo(-10 * S, -44 * S); c.lineTo(0, -82 * S); c.lineTo(10 * S, -44 * S); c.fill(); c.fillStyle = '#ff6a2b'; c.fillRect(-6 * S, -78 * S, 12 * S, 30 * S); }
+    if (o.look === 'zero') { c.beginPath(); c.ellipse(-32 * S, -20 * S, 14 * S, 22 * S, 0, 0, 6.3); c.ellipse(32 * S, -20 * S, 14 * S, 22 * S, 0, 0, 6.3); c.fill(); c.strokeStyle = '#222'; c.lineWidth = 3 * S; c.beginPath(); c.arc(-15 * S, -6 * S, 12 * S, 0, 6.3); c.arc(15 * S, -6 * S, 12 * S, 0, 6.3); c.stroke(); }
+    if (o.look === 'champ') { c.beginPath(); c.ellipse(0, -40 * S, 44 * S, 20 * S, 0, Math.PI, 0); c.fill(); c.fillStyle = '#FFC107'; c.beginPath(); c.moveTo(-26 * S, -52 * S); c.lineTo(-20 * S, -74 * S); c.lineTo(-8 * S, -60 * S); c.lineTo(0, -80 * S); c.lineTo(8 * S, -60 * S); c.lineTo(20 * S, -74 * S); c.lineTo(26 * S, -52 * S); c.closePath(); c.fill(); }
+    // face
+    c.strokeStyle = '#1a0f0a'; c.fillStyle = '#1a0f0a'; c.lineWidth = 3.5 * S; c.lineCap = 'round';
+    if (eye === 'x') { [-15, 15].forEach(function (ex) { c.beginPath(); c.moveTo((ex - 6) * S, -12 * S); c.lineTo((ex + 6) * S, 0); c.moveTo((ex + 6) * S, -12 * S); c.lineTo((ex - 6) * S, 0); c.stroke(); }); }
+    else { [-15, 15].forEach(function (ex) { c.beginPath(); c.arc(ex * S, -6 * S, 4.5 * S, 0, 6.3); c.fill(); if (eye === 'mean') { c.beginPath(); c.moveTo((ex - 9 * Math.sign(ex)) * S, -20 * S); c.lineTo((ex + 7 * Math.sign(ex) * -1) * S, -14 * S); c.stroke(); } }); }
+    c.beginPath(); if (eye === 'x') c.arc(0, 24 * S, 8 * S, 0, 6.3); else if (eye === 'mean') { c.moveTo(-12 * S, 28 * S); c.lineTo(12 * S, 26 * S); } else c.arc(0, 18 * S, 12 * S, 0.2, Math.PI - 0.2); c.stroke();
+    if (pose.kind === 'hit' || pose.kind === 'uppercut') { c.fillStyle = 'rgba(160,220,255,.9)'; [-1, 1].forEach(function (k) { c.beginPath(); c.arc(k * 52 * S, -10 * S + (pose.t * 80 * S), 5 * S, 0, 6.3); c.fill(); }); }
+    c.restore();
+    // gloves
+    function glove(x, y, sc) { c.fillStyle = '#e8243c'; c.beginPath(); c.ellipse(x, y, 30 * S * sc, 34 * S * sc, 0, 0, 6.3); c.fill(); c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.ellipse(x - 8 * S * sc, y - 12 * S * sc, 9 * S * sc, 6 * S * sc, -0.5, 0, 6.3); c.fill(); c.fillStyle = '#fff'; c.fillRect(x - 22 * S * sc, y + 22 * S * sc, 44 * S * sc, 8 * S * sc); }
+    var gs = 1 + Math.max(0, gr) / (140 * S) * 1.4;
+    glove(-62 * S + gl, 18 * S + lean, 1);
+    glove(62 * S - Math.max(0, gr) * 0.45, 18 * S - Math.max(0, gr) * 0.25 + (gr < 0 ? -gr * 0.3 : 0), gs);
+    c.restore();
+  }
+  function player(t) {
+    var X = CW / 2, Y = CH * 1.02, S = Math.max(0.4, Math.min(1.1, CW / 900, CH / 500)), fall = G && G.youFall ? 60 * S : 0;
+    cx.save(); cx.globalAlpha = 0.8; cx.translate(X, Y + fall);
+    cx.strokeStyle = '#4dff9a'; cx.lineWidth = 3; cx.fillStyle = 'rgba(10,40,26,.35)';
+    cx.beginPath(); cx.ellipse(0, -30 * S, 130 * S, 70 * S, 0, Math.PI, 0); cx.fill(); cx.stroke();          // shoulders
+    cx.beginPath(); cx.ellipse(0, -96 * S, 40 * S, 46 * S, 0, 0, 6.3); cx.fill(); cx.stroke();              // head (back)
+    var gL = 0, gR = 0, star = false;
+    if (G && G.glove) { var k = Math.sin(Math.min(1, G.glove.t / 0.22) * Math.PI); star = G.glove.star; if (G.glove.side <= 0) gL = k; if (G.glove.side >= 0) gR = k; }
+    function g(x, k, s) { var y = -70 * S - k * CH * 0.38, sc = 1 - k * 0.45; cx.fillStyle = star && k > 0 ? '#FFC107' : 'rgba(77,255,154,.5)'; cx.beginPath(); cx.ellipse(x * (1 - k * 0.55), y, 36 * S * sc, 40 * S * sc, 0, 0, 6.3); cx.fill(); cx.stroke(); void s; }
+    g(-120 * S, gL); g(120 * S, gR);
+    cx.restore();
+    if (G && G.youHit > 0) { cx.fillStyle = 'rgba(255,61,94,' + (G.youHit * 0.35) + ')'; cx.fillRect(0, 0, CW, CH); }
+  }
+  var last = 0;
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000 || 0); last = now, t = now / 1000;
+    if (CW) {
+      ring(t);
+      if (G) {
+        if (!G.paused) {
+          if (G.state === 'q') {
+            G.t += dt;
+            if (G.t >= G.T) { G.state = 'swing'; counter(G.o.hit + 4 + 2 * G.round, 'slow'); }
+          }
+          G.anim.t += dt; if (G.glove) { G.glove.t += dt; if (G.glove.t > 0.45) G.glove = null; }
+          if (G.youHit > 0) G.youHit = Math.max(0, G.youHit - dt * 2.5);
+          if ((G.anim.kind === 'hit' && G.anim.t > 0.4) || (G.anim.kind === 'uppercut' && G.anim.t > 0.7) || (G.anim.kind === 'punch' && G.anim.t > 0.35) || (G.anim.kind === 'up' && G.anim.t > 0.6)) G.anim = { kind: 'idle', t: 0 };
+        }
+        var pose = G.anim;
+        if (G.state === 'q' && pose.kind === 'idle') { var k = (G.t / G.T); if (k > 0.55) pose = { kind: 'wind', k: Math.min(1, (k - 0.55) / 0.45), t: 0 }; }
+        var S = Math.min(1.35, CW / 720, CH / 400);
+        boxer(cx, G.o, CW / 2, CH * 0.5, S, pose, t);
+        if (pose.kind === 'wind' && pose.k > 0.6 && Math.sin(t * 30) > 0) { cx.fillStyle = '#ffd166'; cx.font = '900 ' + Math.round(40 * S) + 'px Inter'; cx.textAlign = 'center'; cx.fillText('!', CW / 2 + 110 * S, CH * 0.5 - 110 * S); }
+        player(t);
+        $('timer').firstElementChild.style.width = (G.state === 'q' ? Math.max(0, 100 * (1 - G.t / G.T)) : 0) + '%';
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+  var t = 0;
+
+  /* ---------------- flow ---------------- */
+  function drawOpps() {
+    var best = store('ik-best') || {};
+    $('opps').innerHTML = OPP.map(function (o, i) {
+      return '<button type="button" class="opp' + (i === sel ? ' on' : '') + '" data-i="' + i + '" style="--c:' + o.c + '"><canvas width="240" height="170"></canvas><div class="t1">' + (i + 1) + ' · ' + o.tag + '</div><div class="t2">' + o.name + '</div><div class="t3">' + o.d + '</div><div class="bst">' + (best[i] ? 'Best: ' + best[i].toLocaleString() : '') + '</div></button>';
+    }).join('');
+    [].forEach.call($('opps').querySelectorAll('canvas'), function (c, i) { var g = c.getContext('2d'); boxer(g, OPP[i], 120, 112, 0.62, { kind: 'idle', t: 0 }, 0); });
+  }
+  $('opps').addEventListener('click', function (e) { var b = e.target.closest('.opp'); if (!b) return; sel = +b.dataset.i; drawOpps(); sfx('coin'); });
+  function startFight(i) {
+    sel = i; audioCtx();
+    $('over').hidden = true; size(); newFight(i);
+    $('ptext').innerHTML = 'ROUND 1'; $('note').hidden = true;
+    ding();
+    fx(function (A) { var r = $('cv').getBoundingClientRect(); A.text(r.left + r.width / 2, r.top + r.height * 0.45, G.o.name.toUpperCase(), { color: G.o.c, size: 34 }); setTimeout(function () { A.text(r.left + r.width / 2, r.top + r.height * 0.45, 'FIGHT!', { color: '#fff', size: 64 }); }, 900); });
+    setTimeout(nextProblem, 1500);
+  }
+  $('bFight').addEventListener('click', function () { startFight(sel); });
+  $('bAgain').addEventListener('click', function () { startFight(G.oi); });
+  $('bNext').addEventListener('click', function () { startFight(Math.min(OPP.length - 1, G.oi + 1)); });
+  $('bPick').addEventListener('click', function () { $('end').hidden = true; $('menu').hidden = false; drawOpps(); });
+  function finish(won) {
+    G.over = true; G.state = 'done';
+    var best = store('ik-best') || {}; if (won) G.score += 1000 + 200 * (3 - G.youDowns);
+    if (!best[G.oi] || G.score > best[G.oi]) { best[G.oi] = G.score; store('ik-best', best); }
+    $('eTitle').textContent = won ? 'K.O.!' : 'DOWN AND OUT';
+    $('eSub').textContent = won ? 'You knocked out ' + G.o.name + '!' + (G.oi === OPP.length - 1 ? ' You are the Integer Champion!' : '') : G.o.name + ' wins this time. Rematch?';
+    $('eScore').textContent = G.score.toLocaleString(); $('eRight').textContent = G.first + '/' + G.asked;
+    var avg = G.times.length ? G.times.reduce(function (a, b) { return a + b; }, 0) / G.times.length : 0;
+    $('eFast').textContent = avg.toFixed(1); $('eBest').textContent = G.best;
+    var seen = {}, list = G.missed.filter(function (p) { if (seen[p.text]) return false; seen[p.text] = 1; return true; });
+    $('eMiss').hidden = !list.length;
+    $('eList').innerHTML = list.slice(0, 10).map(function (p) { return '<li>' + p.text + ' = ' + fmt(p.ans) + '</li>'; }).join('');
+    $('bNext').hidden = !won || G.oi === OPP.length - 1;
+    $('menu').hidden = true; $('end').hidden = false; $('over').hidden = false;
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: G.o.name, score: G.score, details: (won ? 'Won by K.O.' : 'Lost') + ' · ' + G.first + '/' + G.asked + ' right first try · avg ' + avg.toFixed(1) + ' s' + (list.length ? ' · missed: ' + list.slice(0, 8).map(function (p) { return p.text + ' = ' + fmt(p.ans); }).join('; ') : '') }); } catch (e) {}
+  }
+  function togglePause() { if (!G || G.over) return; G.paused = !G.paused; $('pauseBtn').textContent = G.paused ? 'Play' : 'Pause'; note('info', G.paused ? 'Paused. Press P or Play.' : '', G.paused ? 0 : 1); }
+
+  /* ---------------- input ---------------- */
+  [].forEach.call(document.querySelectorAll('.pb'), function (b) { b.addEventListener('pointerdown', function (e) { e.preventDefault(); punch(+b.dataset.i); }); b.addEventListener('click', function (e) { if (e.detail === 0) punch(+b.dataset.i); }); });
+  $('star').addEventListener('click', armStar);
+  $('pauseBtn').addEventListener('click', togglePause);
+  var KEYS = { '1': 0, '2': 1, '3': 2, '4': 3, d: 0, f: 1, j: 2, k: 3 };
+  addEventListener('keydown', function (e) {
+    if (!$('over').hidden) return;
+    var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (k in KEYS) { e.preventDefault(); punch(KEYS[k]); }
+    else if (e.code === 'Space') { e.preventDefault(); armStar(); }
+    else if (k === 'p' || e.key === 'Escape') togglePause();
+  });
+  document.addEventListener('visibilitychange', function () { if (document.hidden && G && !G.paused && !G.over) togglePause(); });
+  (function () { if (window.AFX && AFX.soundButton) { var s = AFX.soundButton(); if (s) { s.style.cssText = ''; $('ctl').appendChild(s); } } })();
+  addEventListener('resize', size);
+  setInterval(function () { var p = (parseFloat(getComputedStyle(document.documentElement).paddingLeft) || 0) + 'px'; if (document.documentElement.style.getPropertyValue('--pad') !== p) size(); }, 500);
+  drawOpps(); size(); requestAnimationFrame(frame);
+  if (DEBUG) window.__IK = { OPP: OPP, gen: gen, choices: choices, get G() { return G; }, punch: punch, startFight: startFight };
+})();
+</script>
+</body>
+</html>

@@ -87,9 +87,11 @@ I1. Equation Master: the equation work is on the LEFT and the fight on the RIGHT
     nothing is copied from a real game: no names, characters, logos or catchphrases.
 I2. Zero Pair Run is called "Tiles for Miles" everywhere students see it (file name unchanged).
 I3. Squeaky Cheeks: the other guests are fancy and polite (monocles, top hats, pearls; "I say!", *titters*); only the player is gassy.
-I4. Neon Integer Assault "next level" look (synthwave grid, wave boss whose shield = open equations, laser trails, shatter,
-    OVERDRIVE at 6 in a row) is looks only; the game sizes itself to the space beside the side menu.
-    The boxes with right answers look like every other box (no green glow).
+I4. Neon Integer Assault (rebuilt Nov 16, 2026, Zach: "a mashup of Space Invaders and Centipede"): the ship at the bottom
+    shoots invaders (they march and step down, drop bombs) and a number centipede that winds through mushrooms. Every
+    target carries a number; a right answer looks like every other target (no green glow, no tell). A wrong hit does not
+    destroy the target and it fires back. Every open answer is always on a shootable target. Original art only
+    (no sprites or names copied). The game sizes itself to the space beside the side menu.
 I5. Equation Master monsters are evil looking and attack every few seconds; Space (or the Block button) blocks. Space never
     presses an answer button. Unblocked attacks and wrong steps hurt the hero (knocked down at 0, gets back up); the beast
     roars, grunts and wails; death = slow motion, cut in two, goo, eyeballs; 6 weapons unlock by beasts defeated (saved per

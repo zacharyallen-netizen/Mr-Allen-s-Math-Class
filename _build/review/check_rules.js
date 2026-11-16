@@ -232,7 +232,8 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/e\.code !== 'Space'/.test(ea) || !/var WEAPONS = /.test(ea) || !/var MUS = /.test(ea) || !/function gore\(/.test(ea) || !/keyup/.test(ea)) fail('I5', 'grade8/equation-arena.js', 'Space to block (never picks an answer), weapons, music, slow-motion death');
   const ni = rd('grade8/neon-integer-assault.html');
   if (/box\.correct \? colors\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must not glow green');
-  if (!/const NX = /.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'next-level look + game sized beside the side menu');
+  if (!/function makeInvaders\(/.test(ni) || !/function makeCentipede\(/.test(ni) || !/function balance\(/.test(ni) || !/function GW\(\)/.test(ni) || /window\.innerWidth/.test(ni.slice(ni.indexOf('const canvas')))) fail('I4', 'grade8/neon-integer-assault.html', 'invaders + centipede, every answer kept shootable, game sized beside the side menu');
+  if (/glint > 0 \? C\.green|val === .*answer.*C\.green/.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'right answers must look like every other target');
 }
 
 if (fails.length) { console.log(fails.length + ' rule check(s) FAILED:\n' + fails.join('\n')); process.exit(1); }
