@@ -244,7 +244,7 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   for (let n = 1; n <= 8; n++) if (!/skills\/sbvideo\.js/.test(rd('grade8/skill-builders-unit' + n + '.html'))) fail('J1', 'grade8/skill-builders-unit' + n + '.html', 'loads the lesson videos');
   { const t = rd('ticker.js'), g = rd('_build/student_work/ArcadeLog.gs'), sb = rd('site-bar.js');
     if (!/SHOW = /.test(t) || /practice|pretest|eog\b/.test((t.match(/var SHOW = [^;]*/) || [''])[0]) || !/ticker\.js/.test(sb)) fail('J3', 'ticker.js', 'hub pages only, loaded by site-bar.js');
-    if (!/Hide from ticker/.test(g) || !/fullName_\(who\)/.test(g) || !/Math\.min\(60/.test(g)) fail('J3', 'ArcadeLog.gs', 'full names, hide list, capped minutes'); }
+    if (!/Hide from ticker/.test(g) || !/who_\(who\)/.test(g) || !/who_\(r\[1\]\)/.test(g) || !/getSheetByName\('Roster'\)/.test(g) || !/Math\.min\(60/.test(g)) fail('J3', 'ArcadeLog.gs', 'roster names only, hide list, capped minutes'); }
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');

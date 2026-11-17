@@ -103,13 +103,49 @@ function fullName_(s) {
   var cap = function (x) { return x.charAt(0).toUpperCase() + x.slice(1).toLowerCase(); };
   return { key: w.join(' ').toLowerCase(), show: cap(w[0]) + ' ' + w[w.length - 1].charAt(0).toUpperCase() + '.' };
 }
+/* Nov 17, 2026 (Zach: "a safeguard to make sure students do not enter anything offensive"): a name shows on the
+   High Scores boards and the Top Students line ONLY if it matches a student on the Roster tab of the Student Work
+   sheet (Student, or a name in "Also typed as"). The roster's spelling is what shows, as "First L.". Anything else
+   (made-up, rude or misspelled names, the teacher) never appears. Misspelled real names: add the spelling to
+   "Also typed as". If the Roster tab is empty, full names are used, and a short word list blocks rude ones. */
+var ROSTER_ = null;
+function rosterMap_() {
+  if (ROSTER_) return ROSTER_;
+  ROSTER_ = { n: 0, map: {} };
+  try {
+    var sh = SpreadsheetApp.openById(WORK_ID).getSheetByName('Roster'), n = sh ? sh.getLastRow() : 0;
+    if (n > 1) sh.getRange(2, 1, n - 1, 3).getValues().forEach(function (r) {
+      var real = String(r[0] || '').replace(/\s+/g, ' ').trim(); if (!real) return;
+      ROSTER_.n++;
+      [real].concat(String(r[2] || '').split(',')).forEach(function (a) { var k = norm_(a); if (k.length >= 3) ROSTER_.map[k] = real; });
+    });
+  } catch (e) {}
+  return ROSTER_;
+}
+var BAD_ = ['YXNz', 'YnV0dA', 'ZnVjaw', 'c2hpdA', 'Yml0Y2g', 'ZGFtbg', 'ZGljaw', 'Y29jaw', 'cHVzcw', 'cGVuaXM', 'dmFnaW4', 'Ym9vYg',
+            'dGl0cw', 'c2V4', 'cG9vcA', 'cGVl', 'ZmFydA', 'aG9l', 'c2x1dA', 'd2hvcmU', 'Y3JhcA', 'aGVsbA', 'bmln', 'ZmFn', 'cmV0YXJk',
+            'aGl0bGVy', 'bmF6aQ', 'a2lsbA', 'ZGllZA', 'ZHVtYg', 'c3R1cGlk', 'aWRpb3Q', 'bG9zZXI', 'dWdseQ', 'ZmF0'];   // base64 so the list is not readable on the public site
+var BADW_ = null;
+function bad_(name) {
+  if (!BADW_) BADW_ = BAD_.map(function (b) { return Utilities.newBlob(Utilities.base64Decode(b + '==='.slice((b.length + 3) % 4))).getDataAsString(); });
+  return String(name || '').toLowerCase().split(/[^a-z]+/).some(function (w) {
+    return w && BADW_.some(function (b) { return w === b || (b.length >= 4 && w.indexOf(b) === 0); });
+  });
+}
+function who_(typed) {
+  var r = rosterMap_();
+  if (r.n) { var real = r.map[norm_(typed)]; return real ? fullName_(real) : null; }
+  var f = fullName_(typed);
+  return f && !bad_(typed) ? f : null;
+}
+
 function arcadeLeaders_() {
   var cache = CacheService.getScriptCache(), hit = cache.get('arcade-leaders');
   if (hit) return hit;
   var sh = arcadeSessions_(), n = sh.getLastRow(), best = {}, games = {};
   if (n > 1) {
     sh.getRange(2, 1, n - 1, 9).getValues().forEach(function (r) {
-      var game = String(r[3] || '').trim(), sc = r[8], who = fullName_(r[1]);
+      var game = String(r[3] || '').trim(), sc = r[8], who = who_(r[1]);
       if (!game || !who || sc === '' || sc === null || isNaN(Number(sc)) || Number(sc) <= 0) return;
       var k = game + '|' + who.key;
       if (!best[k] || Number(sc) > best[k].score) best[k] = { game: game, name: who.show, score: Number(sc) };
@@ -139,8 +175,8 @@ function leadersOut_(p) {
                         tutorial / pre-test pages sent (one per page per day)
                         + Arcade rounds finished (up to 20 per play)
                         + Fluency Lab tests finished
-   Only full names count (first and last); names leave the sheet as
-   "First L.". To keep a student off the ticker, type their name on the
+   Only students on the Roster tab count (see who_ above); names leave the
+   sheet as "First L.". To keep a student off the ticker, type their name on the
    "Hide from ticker" tab of the Student Work sheet. Cached 10 minutes.
    Run  setupTicker  once to make that tab (it is also made the first time
    the ticker runs).
@@ -154,7 +190,7 @@ function hideList_() {
     sh.setFrozenRows(1); sh.setColumnWidth(1, 220);
   }
   var out = {}, n = sh.getLastRow();
-  if (n > 1) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { var w = fullName_(r[0]); if (w) out[w.key] = 1; });
+  if (n > 1) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { var w = who_(r[0]) || fullName_(r[0]); if (w) out[w.key] = 1; });
   return out;
 }
 function tickerData_() {
@@ -164,7 +200,7 @@ function tickerData_() {
   var hide = hideList_(), P = {};                                          // P[key] = {show, wt, wd, yt, yd}
   function add(when, who, mins, done) {
     when = when instanceof Date ? when : new Date(when); if (isNaN(when) || when < yr) return;
-    var w = fullName_(who); if (!w || hide[w.key]) return;
+    var w = who_(who); if (!w || hide[w.key]) return;
     var p = P[w.key] || (P[w.key] = { show: w.show, wt: 0, wd: 0, yt: 0, yd: 0 });
     p.yt += mins; p.yd += done; if (when >= wk) { p.wt += mins; p.wd += done; }
   }
