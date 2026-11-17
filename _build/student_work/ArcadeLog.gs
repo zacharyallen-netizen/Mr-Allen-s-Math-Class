@@ -173,12 +173,13 @@ function tickerData_() {
           return n > 1 ? sh.getRange(2, 1, n - 1, cols).getValues() : []; } catch (e) { return []; }
   }
   var seen = {};
+  function m1(r) { return /^M1\b/.test(String(r[3])) || /Math 1/.test(String(r[4])); }   // Math 1 work is not on the 8th grade line
   function once(r, page) { var d = r[0] instanceof Date ? r[0] : new Date(r[0]); var k = String(r[1]).toLowerCase() + '|' + page + '|' + d.toDateString(); if (seen[k]) return 0; seen[k] = 1; return 1; }
   rows(WORK_ID, 'Homework', 5).forEach(function (r) { add(r[0], r[1], 0, once(r, 'HW ' + r[4])); });
   ['Notes Practice', 'Tutorials'].forEach(function (t) {
-    rows(WORK_ID, t, 12).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
+    rows(WORK_ID, t, 12).forEach(function (r) { if (!m1(r)) add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
   });
-  rows(PRETEST_ID, 'Pre-Tests', 12).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
+  rows(PRETEST_ID, 'Pre-Tests', 12).forEach(function (r) { if (!m1(r)) add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
   rows(ARCADE_ID, 'Sessions', 7).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[5]) || 0), Math.min(20, Number(r[6]) || 0)); });
   rows(FLUENCY_ID, 'Scores', 2).forEach(function (r) { add(r[0], r[1], 0, 1); });
   function top(f) {
