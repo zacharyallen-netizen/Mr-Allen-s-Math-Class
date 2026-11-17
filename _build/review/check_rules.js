@@ -245,6 +245,10 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   { const t = rd('ticker.js'), g = rd('_build/student_work/ArcadeLog.gs'), sb = rd('site-bar.js');
     if (!/SHOW = /.test(t) || /practice|pretest|eog\b/.test((t.match(/var SHOW = [^;]*/) || [''])[0]) || !/ticker\.js/.test(sb)) fail('J3', 'ticker.js', 'hub pages only, loaded by site-bar.js');
     if (!/Hide from ticker/.test(g) || !/who_\(who\)/.test(g) || !/who_\(r\[1\]\)/.test(g) || !/getSheetByName\('Roster'\)/.test(g) || !/Math\.min\(60/.test(g)) fail('J3', 'ArcadeLog.gs', 'roster names only, hide list, capped minutes'); }
+  { const v = rd('site-video.js');
+    if (!/tour: \{/.test(v) || !/trackers: \{/.test(v) || !/stv-cap/.test(v) || !/images\/trackers\//.test(v) || /speechSynthesis/.test(v) === false) fail('J4', 'site-video.js', 'tour + trackers videos with voice and captions');
+    if (!/data-site-video="tour"/.test(rd('index.html')) || !/site-video\.js/.test(rd('index.html'))) fail('J4', 'index.html', 'website tour video');
+    if (!/data-site-video="trackers"/.test(rd('grade8/grading.html')) || !/site-video\.js/.test(rd('grade8/grading.html'))) fail('J4', 'grade8/grading.html', 'tracker video in Your tracker'); }
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');

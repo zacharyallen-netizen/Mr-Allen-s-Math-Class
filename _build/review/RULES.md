@@ -115,3 +115,6 @@ J2. Winter Break Review pages: every section opens with a Quick review (rule, ex
 J3. Top Students ticker + High Scores (Nov 17, 2026): a name shows only if it matches the Roster tab (Student or "Also typed as"),
     as "First L." from the roster spelling (no roster: full names minus a rude-word list); the "Hide from ticker" tab removes a
     student; minutes count only active work (capped per play/page); it shows only on the 8th grade hub pages, never on tests, practice or games.
+J4. Site videos (site-video.js, Nov 17, 2026): the website tour (home page) and the student folder / I Can Tracker video
+    (Grading & Standards #trackers) are on-page videos with Digit, voice, music and captions always on; screenshots come only from
+    the site itself or the blank tracker samples (never real student folders, names or scores).
