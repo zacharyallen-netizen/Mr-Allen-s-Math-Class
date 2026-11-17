@@ -1024,6 +1024,7 @@ function startGame() {
 
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game-screen').style.display = 'block';
+  clearInterval(advTimer); advTimer = null;
   document.getElementById('results-panel').classList.remove('show');
   document.getElementById('sc-level').textContent = levelNames[selectedLevel];
 
@@ -1219,6 +1220,37 @@ function showResults() {
     '<div class="stat"><div class="s-label">Steps</div><div class="s-val">' + totalSteps + '</div></div>' +
     '<div class="stat"><div class="s-label">Level</div><div class="s-val">' + levelNames[selectedLevel] + '</div></div>' +
     '<div class="stat"><div class="s-label">Rating</div><div class="s-val">' + grade + '</div></div>';
+  autoAdvance();
+}
+
+// Nov 17, 2026 (Zach): finishing a level moves on to the next one by itself
+// (Apprentice → Journeyman → Master → Mixed). A short countdown shows first;
+// "Start now" skips it and "Stay here" stops it.
+var advTimer = null;
+function autoAdvance() {
+  clearInterval(advTimer);
+  var h = document.querySelector('#results-panel h2');
+  var box = document.getElementById('next-level');
+  if (!box) {
+    box = document.createElement('div'); box.id = 'next-level';
+    box.style.cssText = 'margin:16px auto 0;padding:14px 16px;border-radius:10px;background:rgba(255,193,7,0.14);border:2px solid var(--gold);max-width:460px';
+    var stats = document.getElementById('final-stats'); stats.parentNode.insertBefore(box, stats.nextSibling);
+  }
+  if (selectedLevel >= 3) {
+    if (h) h.textContent = '🏆 All levels complete!';
+    box.innerHTML = '<strong>You beat every level.</strong> Play again to beat your score.';
+    return;
+  }
+  var next = selectedLevel + 1, left = 6;
+  if (h) h.textContent = '⚔️ ' + levelNames[selectedLevel] + ' complete!';
+  box.innerHTML = '<div style="font-family:Arvo,serif;color:var(--navy);font-size:1.05em">Next level: <strong>' + levelNames[next] + '</strong> starts in <span id="adv-n">' + left + '</span>…</div>' +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px">' +
+    '<button class="btn btn-gold" id="adv-go">▶ Start ' + levelNames[next] + ' now</button>' +
+    '<button class="btn btn-navy" id="adv-stay">Stay here</button></div>';
+  function go() { clearInterval(advTimer); advTimer = null; var el = document.getElementById('lvl-' + next); if (el) selectLevel(next, el); else selectedLevel = next; window.scrollTo(0, 0); startGame(); }
+  document.getElementById('adv-go').onclick = go;
+  document.getElementById('adv-stay').onclick = function () { clearInterval(advTimer); advTimer = null; box.innerHTML = 'Ready when you are. <button class="btn btn-gold" id="adv-go2" style="margin-left:8px">▶ Start ' + levelNames[next] + '</button>'; document.getElementById('adv-go2').onclick = go; };
+  advTimer = setInterval(function () { left--; var n = document.getElementById('adv-n'); if (n) n.textContent = left; if (left <= 0) go(); }, 1000);
 }
 
 function showFeedback(type, msg) {
