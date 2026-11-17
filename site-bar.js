@@ -72,6 +72,9 @@
     document.head.appendChild(st);
   }
 
+  // Nov 17, 2026: Top Students ticker on the 8th grade hub pages (ticker.js decides where it shows)
+  try { var tk = document.createElement("script"); tk.src = root + "ticker.js?v=20261117a"; document.head.appendChild(tk); } catch (e) {}
+
   // Nov 13, 2026 (Zach: "lets try that as the menu for everyone"): the side menu (side-nav.js) is the menu on every page.
   // ?nav=top brings the old top bar back on that browser only (for checking); ?nav=side undoes it.
   try {

@@ -126,3 +126,73 @@ function leadersOut_(p) {
   if (/^[A-Za-z_$][\w$.]{0,40}$/.test(cb)) return ContentService.createTextOutput(cb + '(' + s + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
   return ContentService.createTextOutput(s).setMimeType(ContentService.MimeType.JSON);
 }
+
+/* ───────────────────────────────────────────────────────────────
+   TOP STUDENTS TICKER (Nov 17, 2026, Zach: "students that spent the most
+   time or achieved the most in the current week and ... the entire year").
+   The website asks:  <web app URL>?ticker=1&callback=fn
+   For THIS WEEK (since Monday) and THIS YEAR (since Aug 1), top 5 by:
+     • Most time      = minutes in Arcade games (up to 60 per play) +
+                        minutes working on practice, notes, tutorials and
+                        pre-tests (sent with Send my work, up to 60 each)
+     • Most activities = Targeted Practice turned in + practice / notes /
+                        tutorial / pre-test pages sent (one per page per day)
+                        + Arcade rounds finished (up to 20 per play)
+                        + Fluency Lab tests finished
+   Only full names count (first and last); names leave the sheet as
+   "First L.". To keep a student off the ticker, type their name on the
+   "Hide from ticker" tab of the Student Work sheet. Cached 10 minutes.
+   Run  setupTicker  once to make that tab (it is also made the first time
+   the ticker runs).
+   ─────────────────────────────────────────────────────────────── */
+function setupTicker() { hideList_(); CacheService.getScriptCache().remove('ticker'); return 'Ticker ready: ' + tickerData_(); }
+function hideList_() {
+  var ss = SpreadsheetApp.openById(WORK_ID), sh = ss.getSheetByName('Hide from ticker');
+  if (!sh) {
+    sh = ss.insertSheet('Hide from ticker');
+    sh.getRange(1, 1, 1, 2).setValues([['Name (first and last)', 'Students typed here never show on the website ticker.']]).setFontWeight('bold');
+    sh.setFrozenRows(1); sh.setColumnWidth(1, 220);
+  }
+  var out = {}, n = sh.getLastRow();
+  if (n > 1) sh.getRange(2, 1, n - 1, 1).getValues().forEach(function (r) { var w = fullName_(r[0]); if (w) out[w.key] = 1; });
+  return out;
+}
+function tickerData_() {
+  var now = new Date(), wk = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  wk.setDate(wk.getDate() - ((wk.getDay() + 6) % 7));                     // Monday 12:00 am
+  var yr = new Date(now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1, 7, 1);   // Aug 1
+  var hide = hideList_(), P = {};                                          // P[key] = {show, wt, wd, yt, yd}
+  function add(when, who, mins, done) {
+    when = when instanceof Date ? when : new Date(when); if (isNaN(when) || when < yr) return;
+    var w = fullName_(who); if (!w || hide[w.key]) return;
+    var p = P[w.key] || (P[w.key] = { show: w.show, wt: 0, wd: 0, yt: 0, yd: 0 });
+    p.yt += mins; p.yd += done; if (when >= wk) { p.wt += mins; p.wd += done; }
+  }
+  function rows(id, tab, cols) {
+    try { var sh = SpreadsheetApp.openById(id).getSheetByName(tab), n = sh ? sh.getLastRow() : 0;
+          return n > 1 ? sh.getRange(2, 1, n - 1, cols).getValues() : []; } catch (e) { return []; }
+  }
+  var seen = {};
+  function once(r, page) { var d = r[0] instanceof Date ? r[0] : new Date(r[0]); var k = String(r[1]).toLowerCase() + '|' + page + '|' + d.toDateString(); if (seen[k]) return 0; seen[k] = 1; return 1; }
+  rows(WORK_ID, 'Homework', 5).forEach(function (r) { add(r[0], r[1], 0, once(r, 'HW ' + r[4])); });
+  ['Notes Practice', 'Tutorials'].forEach(function (t) {
+    rows(WORK_ID, t, 12).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
+  });
+  rows(PRETEST_ID, 'Pre-Tests', 12).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[11]) || 0), once(r, r[4])); });
+  rows(ARCADE_ID, 'Sessions', 7).forEach(function (r) { add(r[0], r[1], Math.min(60, Number(r[5]) || 0), Math.min(20, Number(r[6]) || 0)); });
+  rows(FLUENCY_ID, 'Scores', 2).forEach(function (r) { add(r[0], r[1], 0, 1); });
+  function top(f) {
+    return Object.keys(P).map(function (k) { return P[k]; }).filter(function (p) { return p[f] > 0; })
+      .sort(function (a, b) { return b[f] - a[f]; }).slice(0, 5)
+      .map(function (p) { return { name: p.show, v: Math.round(p[f]) }; });
+  }
+  return JSON.stringify({ ok: true, updated: now.toISOString(),
+    week: { time: top('wt'), done: top('wd') }, year: { time: top('yt'), done: top('yd') } });
+}
+function tickerOut_(p) {
+  var cache = CacheService.getScriptCache(), s = cache.get('ticker');
+  if (!s) { s = tickerData_(); try { cache.put('ticker', s, 600); } catch (e) {} }
+  var cb = String(p.callback || '');
+  if (/^[A-Za-z_$][\w$.]{0,40}$/.test(cb)) return ContentService.createTextOutput(cb + '(' + s + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
+  return ContentService.createTextOutput(s).setMimeType(ContentService.MimeType.JSON);
+}

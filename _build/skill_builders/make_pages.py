@@ -44,7 +44,7 @@ def shell(n, title, mode):
 {FONTS}
 <link rel="stylesheet" href="skills/sb.css?v={V}">
 <script src="../tracker-config.js"></script>
-<script src="../score-send.js?v=20261113a"></script>
+<script src="../score-send.js?v=20261117a"></script>
 <script src="step-work.js?v=20261112c"></script>
 <script src="skills/sb.js?v={V}"></script>
 <script src="skills/sbfig.js?v={V}"></script>

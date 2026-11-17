@@ -51,6 +51,12 @@
   function T() { return THEMES[(S.opts && S.opts.theme) === 'dark' ? 'dark' : 'light']; }
   function noun(n) { var w = (S.opts && S.opts.noun) || 'question'; return n === 1 ? w : w + 's'; }
 
+  // Nov 17, 2026: active working time on this page (tab showing AND a key, tap or scroll in the last 90 seconds),
+  // sent with Send my work for the Top Students ticker. Leaving a page open does not count.
+  var ACT = { ms: 0, sent: 0, last: Date.now() };
+  ['keydown', 'pointerdown', 'input', 'wheel', 'touchstart'].forEach(function (ev) { document.addEventListener(ev, function () { ACT.last = Date.now(); }, { passive: true, capture: true }); });
+  setInterval(function () { if (!document.hidden && Date.now() - ACT.last < 90000) ACT.ms += 5000; }, 5000);
+
   var S = {
     opts: null, items: {}, order: [], session: newSession(), wasRevealed: false, box: null,
 
@@ -203,14 +209,15 @@
           url: location.pathname.split('/').slice(-2).join('/'),
           name: name, session: S.session, revealed: S.wasRevealed,
           items: S.order.map(function (k) { return S.items[k]; }),
-          skipped: sk.list.slice(0, 60), total: sk.total
+          skipped: sk.list.slice(0, 60), total: sk.total,
+          minutes: Math.round((ACT.ms - ACT.sent) / 6000) / 10     // active minutes since the last send (Top Students ticker)
         })
       })
       .then(function (r) { return r.json(); })
       .then(function (res) {
         S.sending = false;
         if (res && res.ok) {
-          S.sentSig = c.sig; S.sentOnce = true;
+          S.sentSig = c.sig; S.sentOnce = true; ACT.sent = ACT.ms;
           btn.disabled = false; btn.style.opacity = '1'; btn.textContent = 'Sent ✓';
           msg('Got it, ' + res.name + '. Mr. Allen has your work (' + c.n + ' ' + noun(c.n) + (sk.list.length ? ', ' + sk.list.length + ' skipped' : '') + '). If you keep working, you can send again.', 'ok');
         } else {

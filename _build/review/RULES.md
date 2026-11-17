@@ -112,3 +112,5 @@ J1. Every Skill Builders lesson has a video (sbvideo.js): built from the lesson 
     with math read in words, original music, captions always on, and a Your turn question with think time before the answer.
 J2. Winter Break Review pages: every section opens with a Quick review (rule, example, On the EOG, In Math 1); only class-level data
     (no student names) appears on the site; the Version 2 page is labeled only "Version 2".
+J3. Top Students ticker (Nov 17, 2026): names leave the sheet only as "First L." and only for full names; the "Hide from ticker" tab removes a
+    student; minutes count only active work (capped per play/page); it shows only on the 8th grade hub pages, never on tests, practice or games.

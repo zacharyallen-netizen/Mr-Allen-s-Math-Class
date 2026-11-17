@@ -27,6 +27,10 @@
  *  student saves): one row per student per page. When the student opens the page on any Chromebook and types the
  *  same name, the work comes back. You do not need to do anything with this tab.
  *
+ *  Nov 17, 2026: TOP STUDENTS TICKER. The website shows a scrolling line with the students who spent the most time and
+ *  finished the most activities this week and this year (code in ArcadeLog.gs). Notes Practice / Tutorials / Pre-Tests
+ *  rows get a "Minutes working" column. To keep a student off the ticker, type their name on the "Hide from ticker" tab.
+ *
  *  Later changes to this script: Deploy → Manage deployments → pencil →
  *  Version: New version → Deploy. That keeps the same URL.
  * ════════════════════════════════════════════════════════════════════
@@ -53,6 +57,7 @@ function setup() {
 function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.leaders) return leadersOut_(p);                      // Arcade leaderboard (ArcadeLog.gs, Nov 16, 2026)
+  if (p.ticker) return tickerOut_(p);                        // Top Students ticker (ArcadeLog.gs, Nov 17, 2026)
   return ContentService.createTextOutput('Student Work receiver is running. The website posts here.');
 }
 
@@ -138,9 +143,13 @@ function evidence_(d, name, kind) {
     // Not counted as wrong. Blank = the page did not report skips.
     var sk = Array.isArray(d.skipped) ? d.skipped.slice(0, 60).map(function (x) { return String(x).slice(0, 60); }) : null;
     header_(sub, 11, 'Skipped (not answered)');
+    // Nov 17, 2026: active minutes on the page since the last send (for the Top Students ticker; capped at 60)
+    header_(sub, 12, 'Minutes working');
+    var mins = Math.max(0, Math.min(60, Number(d.minutes) || 0));
     sub.appendRow([now, name, period, unit, page, items.length, right, right / items.length, shown,
                    miss.length ? clip_(miss.length + ' missed: ' + miss.join(' | '), 900) : 'none',
-                   sk === null ? '' : sk.length ? clip_(sk.length + ' skipped: ' + sk.join(' | '), 900) : 'none']);
+                   sk === null ? '' : sk.length ? clip_(sk.length + ' skipped: ' + sk.join(' | '), 900) : 'none',
+                   Math.round(mins * 10) / 10]);
     sub.getRange(sub.getLastRow(), 8).setNumberFormat('0%');
     var rs = ss.getSheetByName('Responses');
     rs.getRange(rs.getLastRow() + 1, 1, resp.length, resp[0].length).setValues(resp);

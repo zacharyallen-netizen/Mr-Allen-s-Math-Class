@@ -195,7 +195,7 @@ def page(fn, title, sub, secs, label, intro):
 <script src="tap-answers.js?v=20261111a"></script>
 <script src="practice/practice-engine.js?v={V}"></script>
 <script src="../tracker-config.js"></script>
-<script src="../score-send.js?v=20261113a"></script>
+<script src="../score-send.js?v=20261117a"></script>
 <script> ScoreSend.setup({{ kind:'practice', unit:'WB', page:'{label}', mount:'#ss-mount', std:'NC.8.EE.7', band:3 }}); </script>
 </body>
 </html>
