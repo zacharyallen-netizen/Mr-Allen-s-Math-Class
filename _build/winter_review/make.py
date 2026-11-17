@@ -169,9 +169,10 @@ CSS = '''<style>
 .wb-sb a{font-weight:700}.wb-top{font:15px/1.5 Inter,sans-serif;margin:8px 0 0}.wb-top a{font-weight:700}
 </style>'''
 
-def page(fn, title, sub, secs, label, intro):
+def page(fn, title, sub, secs, label, intro, pdf):
+    # printable copy + key made from this page by _build/winter_review/pdfs.js (Nov 17, 2026)
     data = {'title': title, 'sub': sub, 'intro': intro, 'secs': secs}
-    P = {'unit': 'WB', 'data': data}
+    P = {'unit': 'WB', 'pdf': f'winter-review/{pdf}.pdf', 'key': f'winter-review/{pdf}_AnswerKey.pdf', 'data': data}
     html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -207,6 +208,6 @@ TOP = ('<p class="wb-top">You are building the <b>foundation for Math 1</b>. Eve
        'Do one section a day. Read the yellow Quick review first, then do the problems. When you finish, tap <b>Send my work</b>. '
        'Warm up with the <a href="Fluency-Lab-Package/fluency-lab/index.html">Fluency Lab</a> and reward yourself in the <a href="arcade.html">Math Arcade</a>!</p>')
 page('winter-break-review.html', 'Winter Break Review', 'Units 1–4: real numbers, exponents, scientific notation, equations, inequalities and angles. Built from our NC Check-In results.', SECS,
-     'Winter Break Review', TOP)
+     'Winter Break Review', TOP, 'Winter_Break_Review')
 page('winter-break-review-v2.html', 'Winter Break Review — Version 2', 'Units 1–4, one skill at a time. Each section has a review box and a link to a short Skill Builders video.', SECS2,
-     'Winter Break Review — Version 2', TOP)
+     'Winter Break Review — Version 2', TOP, 'Winter_Break_Review_Version2')
