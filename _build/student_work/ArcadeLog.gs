@@ -181,7 +181,13 @@ function leadersOut_(p) {
    Run  setupTicker  once to make that tab (it is also made the first time
    the ticker runs).
    ─────────────────────────────────────────────────────────────── */
-function setupTicker() { hideList_(); CacheService.getScriptCache().remove('ticker'); return 'Ticker ready: ' + tickerData_(); }
+function setupTicker() {   // Run this in the editor: it clears the saved copies and prints the names that will show
+  hideList_(); CacheService.getScriptCache().removeAll(['ticker', 'arcade-leaders']);
+  var d = JSON.parse(tickerData_()), names = {};
+  ['week', 'year'].forEach(function (k) { d[k].time.concat(d[k].done).forEach(function (x) { names[x.name] = 1; }); });
+  var msg = 'Roster students: ' + rosterMap_().n + '. Names the Top Students line will show: ' + (Object.keys(names).join(', ') || '(none yet)');
+  Logger.log(msg); return msg;
+}
 function hideList_() {
   var ss = SpreadsheetApp.openById(WORK_ID), sh = ss.getSheetByName('Hide from ticker');
   if (!sh) {
