@@ -123,3 +123,6 @@ J3. Top Students ticker + High Scores (Nov 17, 2026): a name shows only if it ma
 J4. Site videos (site-video.js, Nov 17, 2026): the website tour (home page) and the student folder / I Can Tracker video
     (Grading & Standards #trackers) are on-page videos with Digit, voice, music and captions always on; screenshots come only from
     the site itself or the blank tracker samples (never real student folders, names or scores).
+J5. Vocab Flashcards & Blitz (grade8/vocab-flashcards.html, built by _build/vocab_game.py from vocabulary.html, Nov 18, 2026):
+    every glossary word is a card; the Blitz never shows the word inside its own definition (mask); a wrong tap names the word
+    that was tapped and what it means; points only on the first try. Winter Break pages have a Print it bar at the TOP.

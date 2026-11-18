@@ -252,6 +252,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     if (!/tour: \{/.test(v) || !/trackers: \{/.test(v) || !/stv-cap/.test(v) || !/images\/trackers\//.test(v) || /speechSynthesis/.test(v) === false) fail('J4', 'site-video.js', 'tour + trackers videos with voice and captions');
     if (!/data-site-video="tour"/.test(rd('index.html')) || !/site-video\.js/.test(rd('index.html'))) fail('J4', 'index.html', 'website tour video');
     if (!/data-site-video="trackers"/.test(rd('grade8/grading.html')) || !/site-video\.js/.test(rd('grade8/grading.html'))) fail('J4', 'grade8/grading.html', 'tracker video in Your tracker'); }
+  { const vf = rd('grade8/vocab-flashcards.html'), vc = (rd('grade8/vocabulary.html').match(/class="vcard"/g) || []).length;
+    if (!/function mask\(/.test(vf) || (vf.match(/"t": ?"/g) || []).length !== vc || !/vocab-flashcards\.html/.test(rd('grade8/vocabulary.html'))) fail('J5', 'grade8/vocab-flashcards.html', 'every glossary word, masked Blitz prompts, linked from the glossary (rerun _build/vocab_game.py)'); }
+  for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) if (!/wb-print/.test(rd(f))) fail('J5', f, 'Print it bar at the top');
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');
