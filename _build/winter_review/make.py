@@ -166,12 +166,18 @@ CSS = '''<style>
 .wb-box{background:#FFFBEA;border:1px solid #F2D27A;border-left:5px solid #FFC107;border-radius:10px;padding:10px 14px;margin:0 0 14px;font:15px/1.5 Inter,sans-serif;color:#1B2333}
 .wb-box summary{font-weight:700;cursor:pointer;color:#1E2D4F}.wb-box p{margin:8px 0}
 .wb-eog{background:#EEF3FE;border-radius:8px;padding:6px 10px}.wb-m1{background:#E7F5EC;border-radius:8px;padding:6px 10px}
+/* Nov 18, 2026 (Zach could not find the Version 2 PDF: student-fx folds .pdf links into 'Printables' at the bottom):
+   a print bar at the TOP made of buttons, which student-fx leaves in place */
+.wb-print{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0 0;font:600 14px Inter,sans-serif;color:#1E2D4F}
+.wb-print button{font:600 14px Inter,sans-serif;border:1.5px solid #1E2D4F;background:#fff;color:#1E2D4F;border-radius:8px;padding:6px 12px;cursor:pointer}.wb-print button:hover{background:#FFF3C4}
 .wb-sb a{font-weight:700}.wb-top{font:15px/1.5 Inter,sans-serif;margin:8px 0 0}.wb-top a{font-weight:700}
 </style>'''
 
 def page(fn, title, sub, secs, label, intro, pdf):
     # printable copy + key made from this page by _build/winter_review/pdfs.js (Nov 17, 2026)
-    data = {'title': title, 'sub': sub, 'intro': intro, 'secs': secs}
+    bar = ('<div class="wb-print">Print it: <button type="button" onclick="window.open(\'winter-review/' + pdf + '.pdf\')">🖨️ Printable PDF</button>'
+           '<button type="button" onclick="window.open(\'winter-review/' + pdf + '_AnswerKey.pdf\')">✅ Answer key</button></div>')
+    data = {'title': title, 'sub': sub, 'intro': intro + bar, 'secs': secs}
     P = {'unit': 'WB', 'pdf': f'winter-review/{pdf}.pdf', 'key': f'winter-review/{pdf}_AnswerKey.pdf', 'data': data}
     html = f'''<!DOCTYPE html>
 <html lang="en">

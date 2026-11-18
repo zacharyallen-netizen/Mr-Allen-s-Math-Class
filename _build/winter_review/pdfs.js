@@ -26,7 +26,7 @@ const JOBS = [['winter-break-review.html', 'winter-review/Winter_Break_Review'],
         '.pr-card{padding:8px 12px!important;margin:0 0 8px!important;box-shadow:none!important;border:1px solid #D5DAE3!important}.pr-sec{margin:12px 0 8px!important}.wb-box{margin:0 0 8px!important;padding:6px 12px!important}.wb-box p{margin:4px 0!important}' +
         '.pr-hd,.pr-head{margin-bottom:2px!important}hr{margin:8px 0!important}</style>');
       // Nov 17, 2026 (Zach): the PDFs keep ONLY the problems and room for work: no Quick review boxes, no intro text
-      document.querySelectorAll('.wb-box,.wb-top,.hero > p').forEach(e => e.remove());
+      document.querySelectorAll('.wb-box,.wb-top,.wb-print,.hero > p').forEach(e => e.remove());
       // top paragraph: the paper version
       const top = document.querySelector('.wb-top');
       if (top) top.innerHTML = 'You are building the <b>foundation for Math 1</b>. Every skill here comes back next year, so make it strong now. ' +
