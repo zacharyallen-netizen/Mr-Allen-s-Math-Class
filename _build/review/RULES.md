@@ -112,6 +112,10 @@ I10. Equation Master can't be won by mashing buttons (Nov 18, 2026): a wrong mov
     only after a short read (2 s, 1.2 s after a miss); points only for first-try moves; under 70% first-try the level replays;
     under 50% is sent with score 0 (off the High Scores). Champion + Inequalities levels come from _build/equation_master_levels.py
     (every line checked with exact fractions). Monster trash talk is cartoon and math-flavored, never about a real student.
+I11. Nitro Numbers (Nov 18, 2026): the Integer Expressway track (and the Grand Prix mix) asks + − × ÷ with −20 to 20, never
+    0 as a number in the problem, and ÷ always comes out even (no remainder). Wrong gates are sign mistakes with a note. Rival
+    cars and the blaster only ADD points: ammo comes from right answers, and rivals never change right/wrong, stars or accuracy.
+    The road bends and rolls, but it is always straight under the ship; reduced motion = a straight road.
 ## J. Skill Builders
 J1. Every Skill Builders lesson has a video (sbvideo.js): built from the lesson itself, original host (Digit), computer voice
     with math read in words, original music, captions always on, and a Your turn question with think time before the answer.
