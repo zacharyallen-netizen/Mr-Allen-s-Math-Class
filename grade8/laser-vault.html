@@ -175,6 +175,7 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(90,20,140,.45),transpar
 <script src="../arcade-send.js" data-game="Laser Vault" data-unit="4"></script>
 <script src="../site-bar.js"></script>
 <script src="arcade-fx.js"></script>
+<script src="laser-vault-finale.js?v=20261118a"></script>
 <script>window.SW_NO_FX = true;</script>
 <script src="step-work.js?v=20261113e"></script>
 
@@ -1132,9 +1133,17 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(90,20,140,.45),transpar
     $('rMissBox').hidden = !miss.length;
     $('rMissList').innerHTML = miss.map(function (m) { return '<li>' + m + ' (' + G.missed[m] + ' miss' + (G.missed[m] > 1 ? 'es' : '') + ')</li>'; }).join('');
     var st = $('rStars').children; for (var i = 0; i < 3; i++) st[i].classList.remove('lit');
-    show('res');
-    for (i = 0; i < stars; i++) (function (j) { setTimeout(function () { st[j].classList.add('lit'); sfx('coin'); }, 300 + j * 280); })(i);
-    sfx('win'); fx('confetti', innerWidth / 2, innerHeight / 3, { count: 120 });
+    function results() {
+      show('res');
+      for (var j = 0; j < stars; j++) (function (j) { setTimeout(function () { st[j].classList.add('lit'); sfx('coin'); }, 300 + j * 280); })(j);
+      sfx('win'); fx('confetti', innerWidth / 2, innerHeight / 3, { count: 120 });
+    }
+    // Nov 18, 2026 (students asked): a short movie first. Wing D = the full Core story; Wings A–C = a short "wing cleared".
+    if (window.LVFinale) {
+      var nx = WINGS[G.wi + 1];
+      LVFinale.play({ full: G.wi === 3, wingName: 'Wing ' + w.id + ' · ' + w.name, next: nx ? 'Wing ' + nx.id + ' · ' + nx.name : '',
+        level: LEVELS[G.lvl], score: G.score, stars: stars, gems: G.gotGems }, results);
+    } else results();
     try {
       if (window.ArcadeSend) ArcadeSend.round({ level: w.name + ' · ' + LEVELS[G.lvl], score: G.score,
         details: G.opened + '/' + G.total + ' doors · ' + G.first + ' first try · ' + G.misses + ' misses · ' + G.helped + ' step help' + (miss.length ? ' · missed: ' + miss.join(', ') : '') });
@@ -1142,7 +1151,7 @@ body{background:radial-gradient(ellipse at 50% -10%,rgba(90,20,140,.45),transpar
   }
 
   drawWings();
-  if (DEBUG) window.__LV = { get G() { return G; }, get L() { return L; }, build: build, newMaze: newMaze, equation: equation, whyAngle: whyAngle, whyX: whyX, mk: { V: mkV, L: mkL, P: mkP, T: mkT, E: mkE, EI: mkEI }, addX: addX, start: start, sel: sel, fire: fire, tryMove: tryMove, drawFig: drawFig };
+  if (DEBUG) window.__LV = { get G() { return G; }, get L() { return L; }, build: build, newMaze: newMaze, equation: equation, whyAngle: whyAngle, whyX: whyX, mk: { V: mkV, L: mkL, P: mkP, T: mkT, E: mkE, EI: mkEI }, addX: addX, start: start, finish: finish, sel: sel, fire: fire, tryMove: tryMove, drawFig: drawFig };
 })();
 </script>
 </body>
