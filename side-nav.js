@@ -38,7 +38,7 @@
   var X = function (t, h, n) { return { t: t, h: h, n: n }; };
   var S = [
     { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page has the notes, practice, Targeted Practice and pre-test in order, plus games for that unit.',
-      links: [{ t: 'This unit', h: 'grade8/index.html', tu: 1 }, X('8th Grade home', 'grade8/index.html')].concat(U.map(function (u) { return X(u[1], 'grade8/' + u[0], u[2]); }))
+      links: [{ t: 'This unit', h: 'grade8/index.html', tu: 1 }, { t: 'Ask Digit', dg: 1 }, X('8th Grade home', 'grade8/index.html')].concat(U.map(function (u) { return X(u[1], 'grade8/' + u[0], u[2]); }))
         .concat([X('Anchor Charts', 'grade8/anchor_charts.html', 'one chart for each unit'), X('Formula Sheet', 'grade8/formulas.html'), X('Vocabulary', 'grade8/vocabulary.html', 'key words for every unit'),
           X('Interactive Tools', 'grade8/tools.html'), X('Materials Index', 'grade8/materials_index.html', 'every PDF and answer key'),
           X('Math in Science', 'grade8/math-science/index.html'), X('Math in Financial Literacy', 'grade8/math-finlit/index.html')]),
@@ -50,7 +50,7 @@
         X('NC Check-Ins / Benchmarks', 'grade8/benchmarks.html'), X('EOG Prep', 'grade8/8th_grade_eog_hub.html', 'review, practice, study guide')],
       sec: ['grade8/skill', 'grade8/vocab-flash', 'grade8/Fluency-Lab', 'grade8/graphing', 'grade8/winter', 'grade8/benchmark', 'grade8/checkin', 'grade8/8th_grade_eog', 'grade8/eog', 'grade8/q1_benchmark'] },
     { id: 'gr', icon: 'star', label: 'Progress', title: 'My Progress', desc: 'How grades work: the 1–5 scale, your I Can Tracker, the I Can targets, and how to raise a score.',
-      links: [X('Grading & Standards', 'grade8/grading.html'), X('Video: your folder and I Can Tracker', 'grade8/grading.html#video-trackers', '2 minutes with Digit'),
+      links: [{ t: 'Ask Digit', dg: 1 }, X('Grading & Standards', 'grade8/grading.html'), X('Video: your folder and I Can Tracker', 'grade8/grading.html#video-trackers', '2 minutes with Digit'),
         X('Durable Skills', 'grade8/durable-skills.html', 'perseverance, teamwork, self-control')], sec: ['grade8/grading', 'grade8/targets/', 'grade8/durable'] },
     { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
       links: [X('Math Arcade', 'grade8/arcade.html', 'every math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
@@ -97,7 +97,7 @@
     '.srch input:focus{border-color:#E0A800;box-shadow:0 0 0 3px rgba(255,193,7,.25)}.res{max-height:52vh;overflow:auto}.res:empty{display:none}' +
     '.res a{display:block;text-decoration:none;color:#1E2D4F;padding:9px 10px;border-radius:10px;margin:4px 0;font:600 14.5px Inter,sans-serif;border:1px solid #E3E5EA}.res a:hover,.res a:focus{border-color:#E0A800;background:#FFFBEB}' +
     '.res a small{display:block;font:500 12.5px Inter,sans-serif;color:#6B7280;margin-top:2px}.res a em{font-style:normal;font:700 10.5px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A6100;margin-left:6px}.res p{margin:8px 4px;font:500 14px Inter,sans-serif;color:#6B7280}' +
-    '.sb a.tu{border-color:#FFC107;background:#FFF6D6}' +
+    '.sb a.tu{border-color:#FFC107;background:#FFF6D6}' + '.sb a.dg[hidden]{display:none}' +
     '@media (max-width:760px){.rail{display:none}.mob{display:inline-flex}}' +
     '@media print{.rail,.mob,.drawer,.scrim{display:none!important}}';
   var rail = '<div class="rail"><button type="button" class="logo" data-open="" aria-label="Open the menu">MA<small>MENU</small></button><button type="button" class="sbtn" aria-label="Search the site">' + svg(I.search) + '<span>Search</span></button>' +
@@ -108,6 +108,7 @@
       return '<div class="sec' + (s.id === cur ? ' cur' : '') + '" data-id="' + s.id + '"><button type="button" class="sh" aria-expanded="false">' + '<span class="ic">' + svg(I[s.icon]) + '</span><span class="tx">' + esc(s.title) + '</span><span class="chev">' + svg(I.chev, 16) + '</span></button>' +
         '<div class="sb" hidden><p>' + esc(s.desc) + '</p>' + s.links.map(function (l) {
           if (l.music) return '<button type="button" class="lk mus2">' + esc(l.t) + (l.n ? '<small>' + esc(l.n) + '</small>' : '') + '</button>';
+          if (l.dg) return '<a class="dg" hidden target="_blank" rel="noopener" href="#">\uD83E\uDD16 Ask Digit<small>what should I work on next?</small></a>';
           if (l.tu) return '<a class="tu" href="' + url(l.h) + '">★ This unit<small>the unit we are working on now</small></a>';
           return '<a href="' + url(l.h) + '"' + (l.nt ? ' target="_blank" rel="noopener"' : '') + (l.h === rel ? ' aria-current="page"' : '') + '>' + esc(l.t) + (l.n ? '<small>' + esc(l.n) + '</small>' : '') + '</a>';
         }).join('') + '</div></div>';
@@ -133,7 +134,9 @@
 
   // "This unit" (site-config.js): load it if the page did not, then point the gold link at the unit
   var UN = { 1: 'unit1.html', 2: 'unit2.html', 3: 'unit3.html', 4: 'unit4.html', 5: 'unit5.html', 6: 'unit6.html', 7: 'unit7.html', 8: 'unit8.html', 9: 'unit9.html' };
-  function setTU() { var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; } }
+  function setTU() { var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; }
+    var du = String((window.SITE_CONFIG || {}).digitUrl || '');            // Ask Digit (Digit.gs): only a script.google.com address
+    if (/^https:\/\/script\.google\.com\//.test(du)) sr.querySelectorAll('a.dg').forEach(function (d) { d.href = du + '?digit=1' + (n ? '&u=' + n : ''); d.hidden = false; }); }
   if (window.SITE_CONFIG) setTU(); else { var cs = document.createElement('script'); cs.src = root + 'site-config.js'; cs.onload = setTU; document.head.appendChild(cs); }
 
   // Search (search-index.js, loaded the first time the box is used)

@@ -95,7 +95,7 @@
     var nv = (/[?&]nav=(side|top)\b/.exec(location.search) || [])[1];
     if (nv) localStorage.setItem("nav-style", nv);
     if (localStorage.getItem("nav-style") !== "top") {
-      var sn = document.createElement("script"); sn.src = root + "side-nav.js?v=20261113a"; document.head.appendChild(sn); return;
+      var sn = document.createElement("script"); sn.src = root + "side-nav.js?v=20261118b"; document.head.appendChild(sn); return;
     }
   } catch (e) {}
   var host = document.createElement("div");
