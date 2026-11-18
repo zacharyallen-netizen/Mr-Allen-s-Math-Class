@@ -234,6 +234,10 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     { const nn = rd('grade8/nitro-numbers.html');
       if (!/function genInt\(\)/.test(nn) || !/a=b\*q;ans=q;/.test(nn) || !/id:'I',tag:'Integers'/.test(nn) || !/genInt,genSquare,genCube/.test(nn)) fail('I11', 'grade8/nitro-numbers.html', 'integer operations track, even division, in the mix');
       if (!/function fire\(\)/.test(nn) || !/R\.ammo\+\+/.test(nn) || !/var grow=RM\?0:/.test(nn)) fail('I11', 'grade8/nitro-numbers.html', 'rivals + ammo from right answers; straight road for reduced motion'); }
+    { const sv = rd('grade8/skills/sbvideo.js'), ap = rd('arcade-pass.js'), as = rd('arcade-send.js');
+      if (!/u\.rate = 0\.8\d/.test(sv) || !/wait: true/.test(sv) || /count: 5/.test(sv) || !/var VTXT = /.test(sv) || !/function same\(/.test(sv)) fail('J6', 'grade8/skills/sbvideo.js', 'gentle voice, Your turn waits, easy words, no repeats');
+      if (!/PER = 3, MIN = 5/.test(sv) || !/ArcadePass/.test(ap) || !/arcade-pass\.js/.test(as)) fail('J6', 'arcade-pass.js', '3 videos = 5 minutes of Arcade time, shown on the Arcade and games');
+      for (let n = 1; n <= 8; n++) for (const f of ['grade8/skill-builders-unit' + n + '.html', 'grade8/skill-builders-unit' + n + '-practice.html']) if (!/skills\/sbcalc\.js/.test(rd(f))) fail('J6', f, 'basic calculator on every Skill Builder page'); }
     if (!/var TAUNT = /.test(ea) || /hp = Math\.max\(0, hp - 1\); pips\(\); if \(hp === 0 && beastAlive\) gore\(false\)/.test(ea)) fail('I10', 'grade8/equation-arena.js', 'trash talk; a wrong move costs the beast nothing'); }
   if (!/e\.code !== 'Space'/.test(ea) || !/var WEAPONS = /.test(ea) || !/var MUS = /.test(ea) || !/function gore\(/.test(ea) || !/keyup/.test(ea)) fail('I5', 'grade8/equation-arena.js', 'Space to block (never picks an answer), weapons, music, slow-motion death');
   const ik = rd('grade8/integer-knockout.html');
@@ -246,7 +250,7 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   if (!/function floorY\(/.test(ni) || !/function obliterate\(/.test(ni) || /hurt\('The invaders reached you/.test(ni) || /death ?star/i.test(ni)) fail('I4', 'grade8/neon-integer-assault.html', 'ships stay above the zig-zag line, ammo dump, original boss');
   if (!/var COACH = /.test(ik) || /Doc Louis/i.test(ik)) fail('I6', 'grade8/integer-knockout.html', 'original corner trainer with the integer rules');
   const sv = rd('grade8/skills/sbvideo.js');
-  if (!/var HOOK = /.test(sv) || !/SB\.say = say/.test(sv) || !/count: 5/.test(sv)) fail('J1', 'grade8/skills/sbvideo.js', 'lesson videos: hook, voice in words, think time');
+  if (!/var HOOK = /.test(sv) || !/SB\.say = say/.test(sv) || !/wait: true/.test(sv)) fail('J1', 'grade8/skills/sbvideo.js', 'lesson videos: hook, voice in words, think time');
   for (let n = 1; n <= 8; n++) if (!/skills\/sbvideo\.js/.test(rd('grade8/skill-builders-unit' + n + '.html'))) fail('J1', 'grade8/skill-builders-unit' + n + '.html', 'loads the lesson videos');
   { const t = rd('ticker.js'), g = rd('_build/student_work/ArcadeLog.gs'), sb = rd('site-bar.js');
     if (!/SHOW = /.test(t) || /practice|pretest|eog\b/.test((t.match(/var SHOW = [^;]*/) || [''])[0]) || !/ticker\.js/.test(sb)) fail('J3', 'ticker.js', 'hub pages only, loaded by site-bar.js');

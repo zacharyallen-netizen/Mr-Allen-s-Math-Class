@@ -4,7 +4,7 @@ Run from the repo root:  python3 _build/skill_builders/make_pages.py
 Bump V after changing sb.js / sbfig.js / sb.css / uN.js (browsers keep .js files for 10 minutes)."""
 import pathlib
 
-V = '20261116a'
+V = '20261118a'
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 G8 = ROOT / 'grade8'
 UNITS = [
@@ -48,7 +48,8 @@ def shell(n, title, mode):
 <script src="step-work.js?v=20261112c"></script>
 <script src="skills/sb.js?v={V}"></script>
 <script src="skills/sbfig.js?v={V}"></script>
-<script src="skills/u{n}.js?v={V}"></script>{'' if is_p else chr(10) + '<script src="skills/sbvideo.js?v=' + V + '"></script>'}
+<script src="skills/u{n}.js?v={V}"></script>
+<script src="skills/sbcalc.js?v={V}"></script>{'' if is_p else chr(10) + '<script src="skills/sbvideo.js?v=' + V + '"></script>'}
 <script src="../brand.js"></script>
 </head>
 <body>

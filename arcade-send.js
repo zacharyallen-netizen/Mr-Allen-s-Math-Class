@@ -18,6 +18,10 @@
    ─────────────────────────────────────────────────────────────── */
 (function () {
   if (window.ArcadeSend) return;
+  (function () {   // Arcade Pass timer (arcade-pass.js, Nov 18, 2026): earned by watching Skill Builder videos
+    if (window.ArcadePass) return; var me = document.currentScript, sc = document.createElement('script');
+    sc.src = (me && me.src ? me.src.replace(/arcade-send\.js.*$/, '') : '../') + 'arcade-pass.js?v=20261118a'; document.head.appendChild(sc);
+  })();
   function cfg() { return window.TRACKER_CONFIG || {}; }   // read late: some pages load tracker-config.js after this file
   var NAME_KEY = 'fluencyLabStudentName', HIDE_KEY = 'arcadeSendMin';
   var me = document.currentScript || {};

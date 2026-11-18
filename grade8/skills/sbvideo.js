@@ -23,39 +23,78 @@
     '1b': 'A decimal that repeats forever can hide a simple fraction. Let’s find it with the 9’s rule!',
     '1c': 'What number times itself makes 49? Today we undo squares and cubes.',
     '1d': '√20 is not a whole number. But we can get really close. Let’s estimate!',
-    '2a': 'Exponents are a shortcut for multiplying the same number again and again.',
+    '2a': 'Do you want a fast way to write 2 × 2 × 2 × 2 × 2? Meet exponents!',
     '2b': 'Multiplying powers with the same base? There is a speedy trick. Let’s learn it!',
     '2c': 'Powers of powers, zero, and negative exponents look scary. But they follow simple rules.',
     '2d': 'How do scientists write giant numbers and tiny numbers? Scientific notation!',
-    '2e': 'Let’s multiply and divide huge numbers without a calculator.',
+    '2e': 'Huge numbers can be easy to multiply. Let’s see how!',
     '3a': 'An equation is like a balance. Whatever you do to one side, you do to the other.',
     '3b': 'Before we solve, we clean up. Let’s distribute and combine like terms!',
     '3c': 'x on both sides? No problem. We gather the x’s on one side.',
     '3d': 'Some equations have one answer. Some have none. Some have infinitely many!',
     '3e': 'Inequalities have lots of answers. Let’s solve them and show them on a number line.',
     '4a': 'When lines cross, angles team up. Let’s meet the angle pairs!',
-    '4b': 'Two parallel lines and one line across them make eight angles, but only two sizes!',
+    '4b': 'Two parallel lines and one line across them make eight angles. But there are only two sizes!',
     '4c': 'Every triangle keeps a secret: its three angles always add to 180°.',
     '4d': 'Step outside the triangle. The outside angle has a shortcut!',
     '5a': 'Right triangles have a superpower: a² + b² = c².',
     '5b': 'Know the two legs? Let’s find the long side, the hypotenuse!',
-    '5c': 'Know the hypotenuse and one leg? Let’s find the missing leg.',
+    '5c': 'One side of the right triangle is missing. We can find it!',
     '5d': 'Is that triangle really a right triangle? Let’s test it!',
     '5e': 'How far apart are two points? Draw a right triangle and find out!',
     '6a': 'A function is a rule machine. Put in an input, and you get exactly one output.',
-    '6b': 'How steep is that line? Slope tells us: rise over run!',
+    '6b': 'Some hills are steep. Some are flat. Lines are like that too!',
     '6c': 'Every line has a recipe: y = mx + b. Let’s find m and b.',
     '6d': 'Where does it start, and how fast does it change? Let’s read a real story.',
     '6e': 'Two lines, one meeting point. That point solves the system!',
     '7a': 'Dots on a graph can tell a story. Let’s read scatter plots!',
     '7b': 'Draw one line through the dots and you can make predictions!',
     '7c': 'A two-way table sorts people two ways at once. Let’s read it like a pro.',
-    '8a': 'A translation is a slide. Every point moves the same way.',
+    '8a': 'Let’s slide shapes across the grid!',
     '8b': 'A reflection is a flip, like a mirror image.',
-    '8c': 'A rotation is a turn around the origin. Let’s spin!',
+    '8c': 'Ready to spin? Let’s turn points around the center of the graph!',
     '8d': 'A dilation makes a shape bigger or smaller, but it keeps the same shape.'
   };
-  var OUTRO = ['Nice work!', 'You’ve got this!', 'Awesome job!', 'Way to go!', 'Math power: unlocked!'];
+  var OUTRO = ['Nice work!', 'You’ve got this!', 'Awesome job!', 'Way to go!', 'You worked hard on that!'];
+  /* Nov 18, 2026 (Zach: warm, gentle, never rushed; 3rd–5th grade words; no repeats). A different hello and goodbye
+     for each lesson, so back-to-back videos do not sound the same. */
+  var GREET = ['Hi, I’m Digit!', 'Hello, friend! Digit here.', 'Welcome back! It’s Digit.', 'Hi there! It’s me, Digit.', 'Hello again!'];
+  var NEXTUP = ['When you are ready, try the Check questions.', 'Next, try the Check questions. Take your time.', 'Try the Check questions next. You can do it!'];
+  /* Easier words for the video only (the lesson screens and PDFs keep their own text). Long sentences were split so
+     each one has about 15 words or fewer. key = lesson id: big / can / anim {frame index: caption}. */
+  var VTXT = {
+    '1a': { big: 'A <b>rational</b> number can be written as a <b>fraction</b>. Its decimal <b>stops</b> or <b>repeats</b>. An <b>irrational</b> number’s decimal <b>never stops and never repeats</b>. Two examples are π and √2.',
+            anim: { 1: '<b>Rational</b> numbers can be written as a fraction. Some are ½, 0.75 and 0.333…', 2: 'The <b>integers</b> live inside the rationals. They are whole numbers, their negatives and 0, like −5.' } },
+    '1d': { big: 'Is the number under the √ a perfect square? If not, find the <b>perfect squares just below and just above</b> it. The root is <b>between</b> their roots. To compare numbers, write them all as <b>decimals</b> first.',
+            can: 'estimate a square root and put numbers in order.' },
+    '2b': { anim: { 4: 'Shortcut: same base and multiplying? <b>Add the exponents</b>. When you divide, subtract them.' } },
+    '3a': { big: 'To <b>solve</b> an equation, get <b>x alone</b>. Undo each step with its <b>opposite</b>. Do it to <b>both sides</b>. That keeps the equation balanced.',
+            can: 'solve one- and two-step equations and check your answer.' },
+    '3b': { can: 'distribute and combine like terms before you solve.' },
+    '3c': { big: 'Is x on <b>both sides</b>? First move the x-terms to one side. Subtract the smaller x-term from both sides. Then solve the two-step equation that is left.',
+            can: 'solve an equation with x on both sides.' },
+    '3e': { big: 'Solve an inequality just like an equation. There is <b>one special rule</b>. When you <b>multiply or divide by a negative number, flip the sign</b>. Then graph it on a number line.',
+            can: 'solve an inequality and graph it. Flip the sign only when you multiply or divide by a negative.' },
+    '4a': { big: 'Some angles come in pairs with rules. <b>Complementary</b> angles add to <b>90°</b>. <b>Supplementary</b> angles add to <b>180°</b>. <b>Vertical</b> angles sit across from each other where two lines cross. They are <b>equal</b>.',
+            anim: { 3: 'Angles side by side on a straight line add to <b>180°</b>. They are supplementary. 180 − 50 = <b>130°</b>.', 4: '<b>Complementary</b> angles fill a corner. They add to <b>90°</b>. Tip: <b>C</b>omplementary = <b>C</b>orner. <b>S</b>upplementary = <b>S</b>traight.' } },
+    '4b': { big: 'A transversal is a line that crosses two <b>parallel</b> lines. It makes 8 angles. Each angle is <b>equal</b> to another angle, or <b>adds with it to 180°</b>. Corresponding, alternate and vertical angles are <b>equal</b>. Same-side interior angles add to <b>180°</b>.',
+            anim: { 2: '<b>Alternate interior angles</b> are between the lines, on opposite sides. ∠3 and ∠6 are a pair. They are <b>equal</b>.', 4: 'Quick check: each angle is <b>70°</b> or <b>110°</b>. Small angles match small angles.' } },
+    '5a': { can: 'find the legs and the hypotenuse, and write a² + b² = c².' },
+    '5c': { big: 'Is a <b>leg missing</b>? Square the two sides you know. <b>Subtract</b> the small square from the big one. Then take the <b>square root</b>.' },
+    '5e': { big: 'To find the distance between two points, draw a right triangle. The <b>across</b> change is one leg. The <b>up and down</b> change is the other leg. The <b>distance</b> is the hypotenuse.' },
+    '6a': { big: 'A <b>function</b> is a rule. <b>Each input (x) has exactly one output (y)</b>. f(4) means the output when you put in 4.',
+            can: 'tell if a relation is a function, and find f(x).' },
+    '6c': { big: 'A line can be written <span class="m">y = mx + b</span>. <b>m</b> is the slope. It tells how much y changes when x goes up 1. <b>b</b> is the y-intercept. It is y when x = 0, where the line crosses the y-axis.',
+            can: 'find m and b, and write y = mx + b.' },
+    '6d': { big: 'In a real-world line, the <b>slope is the rate</b>, like dollars per mile. The <b>y-intercept is the start value</b>. It is the amount when x = 0, like a fee.' },
+    '7a': { big: 'A <b>scatter plot</b> shows data as dots. Tell three things about it. <b>Direction</b>: up is positive, down is negative. <b>Strength</b>: dots close to a line are strong. <b>Outliers</b>: dots far from the rest.' },
+    '7b': { anim: { 1: 'Draw a <b>line of best fit</b>. It is a straight line through the middle of the dots. About as many dots are above it as below.' } },
+    '7c': { anim: { 0: 'A <b>two-way table</b> sorts the same 40 students two ways. Boy or girl? Likes dogs or not?' } }
+  };
+  function vt(L, k) { var o = VTXT[L.id]; return o && o[k] != null ? o[k] : L[k]; }
+  /* words of a sentence (numbers and math symbols count) — two sentences that share most words are a repeat */
+  function words(t) { return (strip(t).toLowerCase().match(/[a-z]+|[0-9.]+|[²³⁰¹⁴⁵⁶⁷⁸⁹⁻√∛°=<>≤≥+−×÷]/g) || []).filter(function (w) { return !/^(the|a|an|and|is|are|to|of|it|its|so|that|this|you|in|on)$/.test(w); }); }
+  function same(a, b) { if (a.length < 4 || b.length < 4) return false; var A = {}, n = 0, u = {}; a.forEach(function (w) { A[w] = 1; u[w] = 1; }); b.forEach(function (w) { if (A[w] && !u['@' + w]) { n++; u['@' + w] = 1; } u[w] = 1; }); return n / Object.keys(u).filter(function (k) { return k[0] !== '@'; }).length >= 0.7; }
   var CHAP = { intro: 'Intro', idea: 'Big idea', anim: 'Watch', walk: 'Example', warn: 'Watch out', turn: 'Your turn', wrap: 'Wrap up' };
 
   /* ---------- reading math out loud ---------- */
@@ -138,6 +177,10 @@
     '.sbv-prog button{flex:1;height:30px;border:0;border-radius:6px;background:rgba(255,255,255,.12);color:#cfd8f5;font:700 11px Inter,sans-serif;cursor:pointer;position:relative;overflow:hidden;padding:0 4px;white-space:nowrap;text-overflow:ellipsis}' +
     '.sbv-prog button i{position:absolute;left:0;top:0;bottom:0;background:rgba(255,193,7,.45);width:0;transition:width .3s}' +
     '.sbv-prog button span{position:relative}.sbv-prog button.on{color:#fff;outline:2px solid #FFC107}' +
+    '.sbv-ready{align-self:center;margin-top:auto;border:0;border-radius:calc(var(--u)*1.2);background:#FFC107;color:#1E2D4F;font:800 calc(var(--u)*2.2) Inter,sans-serif;padding:calc(var(--u)*1) calc(var(--u)*2.6);cursor:pointer;box-shadow:0 calc(var(--u)*.4) 0 #E0A800}' +
+    '.sbv-pass{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,10,24,.6);z-index:5}.sbv-pass>div{background:#FFFDF7;border:calc(var(--u)*.4) solid #FFC107;border-radius:calc(var(--u)*2);padding:calc(var(--u)*2.4) calc(var(--u)*3);text-align:center;max-width:70%;font:600 calc(var(--u)*2) Inter,sans-serif;color:#1E2D4F}' +
+    '.sbv-pass h3{margin:0 0 calc(var(--u)*.8);font:800 calc(var(--u)*3.4) "Source Serif 4",Georgia,serif}.sbv-pass .tk{font-size:calc(var(--u)*6)}.sbv-pass button{margin:calc(var(--u)*1.2) calc(var(--u)*.6) 0;border:0;border-radius:calc(var(--u)*1);padding:calc(var(--u)*1) calc(var(--u)*2);font:800 calc(var(--u)*2) Inter,sans-serif;cursor:pointer;background:#1E2D4F;color:#fff}.sbv-pass button.g{background:#FFC107;color:#1E2D4F}' +
+    '.sbv-toward{font:700 calc(var(--u)*1.7) Inter,sans-serif;color:#8A6100;margin-top:auto}' +
     '.sbv-conf{position:absolute;width:calc(var(--u)*1.1);height:calc(var(--u)*1.6);top:-5%;animation:sbvfall linear forwards}' +
     '@keyframes sbvfall{to{transform:translateY(calc(var(--u)*65)) rotate(720deg)}}' +
     /* Digit (the host) */
@@ -191,14 +234,14 @@
     var s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain(); s.buffer = NB; f.type = 'highpass'; f.frequency.value = hp;
     g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + len); s.connect(f).connect(g).connect(MG); s.start(t); s.stop(t + len + 0.02);
   }
-  function kick(t) { var o = AC.createOscillator(), g = AC.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.18); g.gain.setValueAtTime(0.5, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28); o.connect(g).connect(MG); o.start(t); o.stop(t + 0.3); }
+  function kick(t) { var o = AC.createOscillator(), g = AC.createGain(); o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(45, t + 0.18); g.gain.setValueAtTime(0.28, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28); o.connect(g).connect(MG); o.start(t); o.stop(t + 0.3); }
   function sched() {
-    var spb = 60 / 104 / 2;   // eighth notes at 104 bpm
+    var spb = 60 / 86 / 2;    // eighth notes at 86 bpm (calm, Nov 18, 2026)
     while (NEXT < AC.currentTime + 0.25) {
       var t = NEXT, s = STEP % 64, bar = Math.floor(s / 16) % 4, e = s % 16, c = CH[bar];
       if (e % 8 === 0 || e === 11) kick(t);
-      if (e % 8 === 4) { noise(t, 0.16, 0.22, 1500); note(t, 190, 0.08, 'triangle', 0.08); }
-      if (e % 2 === 0) noise(t, 0.04, 0.05, 7000);
+      if (e % 8 === 4) { noise(t, 0.16, 0.08, 1500); note(t, 190, 0.08, 'triangle', 0.05); }
+      if (e % 4 === 0) noise(t, 0.04, 0.025, 7000);
       if (e % 4 === 0 || e === 14) note(t, hz(BASS[bar] + (e === 14 ? 7 : 0)), 0.3, 'triangle', 0.22, 0.32);
       note(t, hz(c[ARP[e % 8]] + 12), 0.2, 'sine', 0.07, 0.25);
       note(t, hz(c[ARP[e % 8]] + 24), 0.1, 'sine', 0.018, 0.12);
@@ -210,10 +253,10 @@
     if (!ctx()) return;
     var t = AC.currentTime;
     MG.gain.cancelScheduledValues(t); MG.gain.setValueAtTime(MG.gain.value, t);
-    if (on) { MG.gain.linearRampToValueAtTime(0.42 * DUCK, t + 0.4); if (!MT) { NEXT = AC.currentTime + 0.05; MT = setInterval(sched, 60); sched(); } }
+    if (on) { MG.gain.linearRampToValueAtTime(0.26 * DUCK, t + 0.4); if (!MT) { NEXT = AC.currentTime + 0.05; MT = setInterval(sched, 60); sched(); } }
     else { MG.gain.linearRampToValueAtTime(0, t + 0.3); clearInterval(MT); MT = null; }
   }
-  function duck(talking) { DUCK = talking ? 0.32 : 1; if (MT && AC) { var t = AC.currentTime; MG.gain.cancelScheduledValues(t); MG.gain.setValueAtTime(MG.gain.value, t); MG.gain.linearRampToValueAtTime(0.42 * DUCK, t + 0.25); } }
+  function duck(talking) { DUCK = talking ? 0.22 : 1; if (MT && AC) { var t = AC.currentTime; MG.gain.cancelScheduledValues(t); MG.gain.setValueAtTime(MG.gain.value, t); MG.gain.linearRampToValueAtTime(0.26 * DUCK, t + 0.25); } }
   function blip(kind) {
     if (!S.music || !ctx()) return; var t = AC.currentTime + 0.01;
     if (kind === 'ding') { [1047, 1319, 1568].forEach(function (f, i) { note(t + i * 0.07, f, 0.3, 'sine', 0.12, 0.5); }); }
@@ -226,7 +269,7 @@
   function pickVoice() {
     try {
       var vs = speechSynthesis.getVoices().filter(function (v) { return /^en(-|_)?/i.test(v.lang); });
-      VOICE = vs.filter(function (v) { return /Google US English|Samantha|Aria|Jenny|Natural/i.test(v.name); })[0] || vs.filter(function (v) { return /en-US/i.test(v.lang); })[0] || vs[0] || null;
+      VOICE = vs.filter(function (v) { return /Jenny|Aria|Ava|Natural/i.test(v.name) && /en-US/i.test(v.lang); })[0] || vs.filter(function (v) { return /Samantha|Google US English/i.test(v.name); })[0] || vs.filter(function (v) { return /en-US/i.test(v.lang); })[0] || vs[0] || null;
     } catch (e) {}
   }
   if ('speechSynthesis' in window) { pickVoice(); try { speechSynthesis.onvoiceschanged = pickVoice; } catch (e) {} }
@@ -236,29 +279,32 @@
   function beatsOf(U, li) {
     var L = U.lessons[li], B = [], n = U.n + '.' + (li + 1);
     function add(scene, cap, extra) { var b = extra || {}; b.scene = scene; b.cap = cap; B.push(b); return b; }
-    add('intro', 'Hey, it’s <b>Digit</b>! ' + (HOOK[L.id] || 'Let’s learn ' + L.title + '!'), { pose: 'wave bounce' });
-    sentences(plain(L.big)).length && (function () {
-      var d = document.createElement('div'); d.innerHTML = L.big;
-      var parts = sentencesHtml(L.big);
-      parts.forEach(function (p, i) { add('idea', p, { pose: i ? 'point' : 'point bounce' }); });
-    })();
-    if (L.anim && L.anim.frames) L.anim.frames.forEach(function (f, i) { add('anim', f.cap || '', { frame: i, pose: 'point' }); });
+    var said = [];      // sentences already spoken in this video: a repeat is shown, not said again
+    function fresh(html) {
+      return sentencesHtml(html).filter(function (p) { var w = words(p); if (said.some(function (x) { return same(w, x); })) return false; said.push(w); return true; }).join(' ');
+    }
+    add('intro', GREET[li % GREET.length] + ' ' + (HOOK[L.id] || 'Today we learn ' + L.title + '.'), { pose: 'wave bounce' });
+    said.push(words(HOOK[L.id] || ''));
+    var big = vt(L, 'big'), vanim = (VTXT[L.id] || {}).anim || {};
+    if (sentences(plain(big)).length) sentencesHtml(big).forEach(function (p, i) { var f = fresh(p); if (f) add('idea', f, { pose: i ? 'point' : 'point bounce' }); });
+    if (L.anim && L.anim.frames) L.anim.frames.forEach(function (f, i) { var c = vanim[i] != null ? vanim[i] : (f.cap || ''); add('anim', fresh(c), { frame: i, pose: 'point', board: c }); });
     if (L.walk) {
-      add('walk', 'Let’s try one together: <b>' + L.walk.prob + '</b>', { step: -1, pose: 'think' });
+      var pr = String(L.walk.prob);
+      add('walk', 'Let’s try one together. <b>' + pr + '</b>' + (/[.!?]\s*$/.test(strip(pr)) ? '' : '.'), { step: -1, pose: 'think' });
       L.walk.steps.forEach(function (s, i) {
         var right = s.ch && s.ch[0]; right = typeof right === 'string' ? right : (right && right[0]) || '';
         add('walk', s.q + ' ' + right + (/[.!?]$/.test(strip(right)) ? '' : '.'), { step: i, pose: i % 2 ? 'point' : 'think' });
       });
     }
-    if (L.watch) add('warn', '<b>Watch out!</b> ' + L.watch, { pose: 'warn' });
+    if (L.watch) { var wt = fresh(L.watch); add('warn', '<b>Be careful!</b> ' + (wt || L.watch), { pose: 'warn' }); }
     var q = (L.checks || [])[0];
     if (q) {
       add('turn', 'Your turn! ' + q.q + (q.ch ? ' Pick an answer.' : ''), { pose: 'think', q: q });
-      add('turn', 'Pause and think…', { pose: 'think', q: q, count: 5 });
+      add('turn', 'Take your time. You can use the calculator. Tap “Show me” when you are ready.', { pose: 'think', q: q, wait: true });
       var ans = q.ch ? (typeof q.ch[0] === 'string' ? q.ch[0] : q.ch[0][0]) : String(q.show || q.ans) + (q.unit || '');
-      add('turn', 'The answer is <b>' + ans + '</b>. ' + (q.ok || ''), { pose: 'dance', q: q, reveal: true });
+      add('turn', 'The answer is: <b>' + ans + '</b>. ' + (q.ok || ''), { pose: 'dance', q: q, reveal: true });
     }
-    add('wrap', OUTRO[li % OUTRO.length] + ' You can now ' + (L.can || 'use this skill.') + ' Next, try the Check questions in this lesson.', { pose: 'dance', conf: true });
+    add('wrap', OUTRO[li % OUTRO.length] + ' Now you can ' + (vt(L, 'can') || 'use this skill.') + ' ' + NEXTUP[li % NEXTUP.length], { pose: 'dance', conf: true });
     B.forEach(function (b) { b.lesson = L; b.U = U; b.li = li; b.num = n; });
     return B;
   }
@@ -323,7 +369,7 @@
     size(); load(U, li);
   }
   function load(U, li) {
-    stop(); B = beatsOf(U, li); k = 0; scene = ''; sel.value = String(li);
+    stop(); B = beatsOf(U, li); k = 0; scene = ''; sel.value = String(li); PLAYED = {};
     titleH.textContent = 'Video · ' + U.n + '.' + (li + 1) + ' ' + U.lessons[li].title;
     var ch = [], seen = {}; B.forEach(function (b, i) { if (!seen[b.scene]) { seen[b.scene] = 1; ch.push({ s: b.scene, i: i }); } });
     prog.innerHTML = ch.map(function (c) { return '<button type="button" data-i="' + c.i + '" data-s="' + c.s + '"><i></i><span>' + CHAP[c.s] + '</span></button>'; }).join('');
@@ -340,17 +386,22 @@
   function stop() { playing = false; token++; clearTimeout(T); try { speechSynthesis.cancel(); } catch (e) {} musicOn(false); if (host) host.classList.remove('talk'); if (ov) labels(); }
   function jump(i) { var was = playing; token++; clearTimeout(T); try { speechSynthesis.cancel(); } catch (e) {} if (host) host.classList.remove('talk'); if (B[i] && B[k] && B[i].scene !== B[k].scene) scene = ''; if (i < k) scene = ''; k = i; if (was) run(i); else render(i); }
 
-  function est(t) { return Math.max(2600, t.length * 62 + 700); }
+  function est(t) { return Math.max(3200, t.length * 72 + 1200); }   // gentle reading pace when there is no voice
   function run(i) {
-    var my = ++token; k = i; render(i);
+    var my = ++token; k = i; render(i); PLAYED[i] = 1;
     var b = B[i], text = b.say || sayHtml(b.cap);
-    var after = function (extra) { if (my !== token) return; T = setTimeout(function () { if (my !== token) return; if (k + 1 < B.length) run(k + 1); else { B.done = true; playing = false; musicOn(false); labels(); } }, extra); };
-    if (b.count) {   // think time: count down with the music
-      var c = b.count; (function tick() { if (my !== token) return; var e = stage.querySelector('.sbv-count'); if (e) e.textContent = c; blip('tick'); if (c-- > 1) T = setTimeout(tick, 1000); else after(900); })();
+    var after = function (extra) { if (my !== token) return; T = setTimeout(function () { if (my !== token) return; if (k + 1 < B.length) run(k + 1); else { B.done = true; playing = false; musicOn(false); labels(); finished(); } }, extra); };
+    if (b.wait) {    // think time: the video waits for the student (no countdown, no rush)
+      var go = function () { if (my !== token) return; var w = stage.querySelector('.sbv-ready'); if (w) w.remove(); musicOn(S.music); run(k + 1); };
+      var btn = el('button', 'sbv-ready', 'Show me the answer'); btn.type = 'button'; btn.addEventListener('click', go);
+      var sc0 = stage.querySelector('.sbv-board'); if (sc0) sc0.appendChild(btn);
+      if (S.voice && 'speechSynthesis' in window && text) speakAll(sentences(text), my, function () {}, est(text) * 2.5 + 3000);
+      musicOn(false);
       return;
     }
+    if (!text) { host.classList.remove('talk'); T = setTimeout(function () { after(0); }, 2600); return; }   // a picture with nothing new to say
     var t0 = Date.now();   // a beat never goes by faster than reading speed (some devices finish speech at once when they have no voice)
-    if (S.voice && 'speechSynthesis' in window) speakAll(sentences(text), my, function () { after(Math.max(550, est(text) * 0.75 - (Date.now() - t0))); }, est(text) * 2.2 + 3000);
+    if (S.voice && 'speechSynthesis' in window) speakAll(sentences(text), my, function () { after(Math.max(1100, est(text) * 0.7 - (Date.now() - t0))); }, est(text) * 2.6 + 3000);
     else { host.classList.add('talk'); T = setTimeout(function () { if (my !== token) return; host.classList.remove('talk'); after(300); }, est(text)); }
   }
   function speakAll(list, my, done, limit) {
@@ -359,8 +410,8 @@
     function next() {
       if (my !== token) { clearTimeout(guard); return; }
       if (i >= list.length) return fin();
-      var u = new SpeechSynthesisUtterance(list[i++]); u.rate = 0.97; u.pitch = 1.08; u.lang = 'en-US'; if (VOICE) u.voice = VOICE;
-      u.onend = function () { setTimeout(next, 120); }; u.onerror = function () { setTimeout(next, 120); };
+      var u = new SpeechSynthesisUtterance(list[i++]); u.rate = 0.86; u.pitch = 1; u.volume = 0.85; u.lang = 'en-US'; if (VOICE) u.voice = VOICE;   // softer, slower, warm
+      u.onend = function () { setTimeout(next, 480); }; u.onerror = function () { setTimeout(next, 480); };
       try { speechSynthesis.speak(u); } catch (e) { fin(); }
     }
     duck(true); host.classList.add('talk');
@@ -374,7 +425,7 @@
     var sc = stage.querySelector('.sbv-scene');
     host.className = 'sbv-host ' + (b.pose || '');
     host.style.transform = b.scene === 'intro' || b.scene === 'wrap' ? 'translateX(8%) scale(1.15)' : 'none';
-    cap.innerHTML = '<span>' + (b.count ? 'Pause and think. What is your answer?' : b.cap) + '</span>';
+    cap.innerHTML = '<span>' + (b.cap || b.board || '') + '</span>';
     var fresh = b.scene !== scene;
     if (fresh) { scene = b.scene; sc.innerHTML = ''; blip('whoosh'); }
     if (b.scene === 'intro') {
@@ -421,7 +472,7 @@
       if (b.reveal) blip('ding');
     } else if (b.scene === 'wrap') {
       if (fresh) {
-        sc.innerHTML = '<div class="sbv-board pop"><div class="k">Wrap up</div><h3>You can now…</h3><div class="big">' + (L.can || '') + '</div>' + (L.recap ? '<ol class="wl">' + L.recap.map(function (r) { return '<li>' + (typeof r === 'string' ? r : (r.ln || r.eq || '')) + '</li>'; }).join('') + '</ol>' : '') + '</div>';
+        sc.innerHTML = '<div class="sbv-board pop"><div class="k">Wrap up</div><h3>Now you can…</h3><div class="big">' + (vt(L, 'can') || '') + '</div>' + (L.recap ? '<ol class="wl">' + L.recap.map(function (r) { return '<li>' + (typeof r === 'string' ? r : (r.ln || r.eq || '')) + '</li>'; }).join('') + '</ol>' : '') + (watched().indexOf(L.id) < 0 ? '<div class="sbv-toward">' + towardText() + '</div>' : '') + '</div>';
         if (!matchMedia('(prefers-reduced-motion: reduce)').matches) for (var c = 0; c < 40; c++) { var f = el('i', 'sbv-conf'); f.style.left = Math.random() * 100 + '%'; f.style.background = ['#FFC107', '#9ef7ff', '#ff8fa3', '#7CFC9A', '#fff'][c % 5]; f.style.animationDuration = (2 + Math.random() * 2.5) + 's'; f.style.animationDelay = Math.random() * 1.2 + 's'; sc.appendChild(f); }
         blip('ding');
       }
@@ -436,10 +487,44 @@
     ov.querySelector('[data-a=back]').disabled = i <= 0; ov.querySelector('[data-a=next]').disabled = i >= B.length - 1;
   }
 
+  /* ---------- Arcade Pass (Nov 18, 2026, Zach: finishing a set of videos earns Arcade time) ----------
+     Every 3 different videos watched to the end (most of the video actually played) = 5 minutes (arcade-pass.js).
+     The list of watched videos is kept on this Chromebook (localStorage sbv-watched). */
+  var PLAYED = {}, PER = 3, MIN = 5;
+  function watched() { try { return JSON.parse(store('sbv-watched') || '[]'); } catch (e) { return []; } }
+  function toward() { var n = watched().length % PER; return PER - n; }
+  function towardText() { var t = toward(); return '🎟️ Watch ' + t + ' more video' + (t > 1 ? 's' : '') + ' to earn ' + MIN + ' minutes of Arcade time.'; }
+  function passJs(cb) {
+    if (window.ArcadePass) return cb();
+    var sc = document.createElement('script'); sc.src = '../arcade-pass.js?v=20261118a'; sc.onload = cb; sc.onerror = cb; document.head.appendChild(sc);
+  }
+  function finished() {
+    var L = B[0] && B[0].lesson; if (!L) return;
+    var n = B.length, got = Object.keys(PLAYED).length; if (got < Math.ceil(n * 0.7)) return;   // skipped through: does not count
+    var w = watched(); if (w.indexOf(L.id) >= 0) return;
+    w.push(L.id); store('sbv-watched', JSON.stringify(w));
+    var tw = stage.querySelector('.sbv-toward');
+    if (w.length % PER) { if (tw) tw.textContent = towardText(); return; }
+    if (tw) tw.remove();
+    passJs(function () {
+      if (window.ArcadePass) ArcadePass.add(MIN);
+      var nm = (store('fluencyLabStudentName') || '').split(' ')[0];
+      var p = el('div', 'sbv-pass', '<div><div class="tk">🎟️</div><h3>Arcade Pass!</h3><p>' + (nm ? 'Great job, ' + nm.replace(/[<>&]/g, '') + '! ' : 'Great job! ') +
+        'You watched ' + PER + ' videos. You earned <b>' + MIN + ' minutes</b> of Arcade time.</p>' +
+        '<button type="button" class="g" data-p="go">Start my Arcade time</button><button type="button" data-p="later">Save it for later</button></div>');
+      stage.appendChild(p); blip('ding');
+      p.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.dataset.p === 'go') { window.open('arcade.html?pass=start', '_blank'); }
+        p.remove();
+      });
+    });
+  }
+
   /* ---------- entry points ---------- */
   SB.video = {
     button: function (U, li) {
-      var b = el('button', 'sbv-open', '<span class="pl">▶</span><span>Watch the video<small>About 2 minutes · Digit explains it with voice and music. Captions are on.</small></span>');
+      var b = el('button', 'sbv-open', '<span class="pl">▶</span><span>Watch the video<small>About 3 minutes · Digit explains it, nice and slow. Captions are on. Every 3 videos earn Arcade time!</small></span>');
       b.type = 'button'; b.addEventListener('click', function () { open(U, li); });
       return b;
     },
@@ -454,5 +539,5 @@
   }
   addEventListener('hashchange', fromHash);
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(fromHash, 50); }); else setTimeout(fromHash, 50);
-  if (DBG) window.__SBV = { get B() { return B; }, get k() { return k; }, S: S, jump: jump, render: function (i) { render(i); }, beatsOf: beatsOf, say: say, sayHtml: sayHtml, stop: stop };
+  if (DBG) window.__SBV = { finished: finished, watched: watched, get PLAYED() { return PLAYED; }, get B() { return B; }, get k() { return k; }, S: S, jump: jump, render: function (i) { render(i); }, beatsOf: beatsOf, say: say, sayHtml: sayHtml, stop: stop };
 })();

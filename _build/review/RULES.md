@@ -130,6 +130,11 @@ J4. Site videos (site-video.js, Nov 17, 2026): the website tour (home page) and 
 J5. Vocab Flashcards & Blitz (grade8/vocab-flashcards.html, built by _build/vocab_game.py from vocabulary.html, Nov 18, 2026):
     every glossary word is a card; the Blitz never shows the word inside its own definition (mask); a wrong tap names the word
     that was tapped and what it means; points only on the first try. Winter Break pages have a Print it bar at the TOP.
+J6. Skill Builders videos are warm and unhurried (Nov 18, 2026): soft, slower voice (rate about 0.86, pauses between
+    sentences), calm music, and the "Your turn" question WAITS for the student ("Show me the answer"); no countdown. Video
+    words stay at a 3rd–5th grade level (short sentences, about 15 words or fewer; easier wording lives in VTXT in sbvideo.js),
+    and a sentence already said in a video is not said again. Every Skill Builder page has the basic calculator (sbcalc.js).
+    Every 3 different videos watched to the end = 5 minutes of Arcade time (arcade-pass.js, honor system, never locks).
 
 ## K. Finding things (Nov 18, 2026 site rebuild)
 K1. Students can find everything: the 8th Grade home starts with "Start here today" (This unit from site-config.js, Get help
