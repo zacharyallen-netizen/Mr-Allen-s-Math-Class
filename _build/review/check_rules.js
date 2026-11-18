@@ -259,6 +259,11 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     for (const id of ['today', 'learn', 'practice-review', 'my-progress', 'take-a-break']) if (!new RegExp('id="' + id + '"').test(home)) fail('K1', 'grade8/index.html', 'Start here today + the four groups (' + id + ')');
     if (!/site-config\.js/.test(home) || !/thisUnit:\s*\d/.test(cfg)) fail('K1', 'site-config.js', 'thisUnit drives the This unit button');
     for (const t of ["title: 'Learn'", "title: 'Practice & Review'", "title: 'My Progress'", "title: 'Take a Break'", 'class="srch"']) if (sn.indexOf(t) < 0) fail('K1', 'side-nav.js', 'same four groups + search (' + t + ')');
+    { const dg = rd('_build/student_work/Digit.gs'), sw = rd('_build/student_work/StudentWork.gs');
+      if (!/getActiveUser\(\)/.test(dg) || !/teacher = owner && email === owner/.test(dg) || !/if \(teacher\) \{\s*if \(!p\.student\)/.test(dg)) fail('K2', 'Digit.gs', 'student only from the signed-in account; &student= only for the owner');
+      if (!/digitEsc_/.test(dg) || /appendRow|setValue|insertSheet/.test(dg)) fail('K2', 'Digit.gs', 'escape sheet values; never write');
+      if (!/p\.digit\) return digitPage_/.test(sw)) fail('K2', 'StudentWork.gs', 'doGet sends ?digit=1 to Digit.gs');
+      if (!/script\\\.google\\\.com/.test(home)) fail('K2', 'grade8/index.html', 'Ask Digit link only for a script.google.com address'); }
     for (let n = 1; n <= 9; n++) if (!/<!--unit-extras-->/.test(rd('grade8/unit' + n + '.html'))) fail('K1', 'grade8/unit' + n + '.html', 'Also for this unit row (python3 _build/unit_extras.py)');
     if (!/window\.SITE_SEARCH = /.test(si) || si.indexOf('vocab-flashcards.html') < 0) fail('K1', 'search-index.js', 'rebuild with python3 _build/search_index.py');
     const homeLinks = (home.match(/href="([^"#]+)/g) || []).map(h => h.slice(6)); for (const h of ['anchor_charts.html', 'vocab-flashcards.html', 'skill-builders.html', 'arcade.html', 'reset-room.html', 'grading.html', 'benchmarks.html', '8th_grade_eog_hub.html', 'materials_index.html', 'winter-break-review-v2.html']) if (homeLinks.indexOf(h) < 0) fail('K1', 'grade8/index.html', 'missing card ' + h); }

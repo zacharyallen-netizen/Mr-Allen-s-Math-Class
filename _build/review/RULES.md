@@ -134,3 +134,7 @@ K1. Students can find everything: the 8th Grade home starts with "Start here tod
     unit" row (games, anchor chart, Skill Builders, vocab); PDFs and answer keys sit in a Print it bar right under the
     page title (never folded away at the bottom); new cards carry data-new and get a NEW badge for 14 days. No old card or
     page link is removed from the home page.
+K2. Ask Digit (_build/student_work/Digit.gs, Nov 18, 2026): a student sees ONLY their own work. The student comes from the
+    signed-in school account (Session.getActiveUser) matched to the Student Folders email or the Roster; a name in the
+    address (&student=) works only for the script owner (teacher preview). Every sheet value on the page is escaped; the
+    page writes nothing. The website button stays hidden until site-config.js digitUrl is a script.google.com address.

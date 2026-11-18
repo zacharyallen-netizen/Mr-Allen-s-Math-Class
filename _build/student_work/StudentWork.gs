@@ -58,6 +58,7 @@ function doGet(e) {
   var p = (e && e.parameter) || {};
   if (p.leaders) return leadersOut_(p);                      // Arcade leaderboard (ArcadeLog.gs, Nov 16, 2026)
   if (p.ticker) return tickerOut_(p);                        // Top Students ticker (ArcadeLog.gs, Nov 17, 2026)
+  if (p.digit) return digitPage_(p);                          // Ask Digit (Digit.gs, Nov 18, 2026): signed-in student's own suggestions
   return ContentService.createTextOutput('Student Work receiver is running. The website posts here.');
 }
 
