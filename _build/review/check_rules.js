@@ -229,6 +229,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
   const sq = rd('grade8/squeaky-cheeks.html');
   if (/'burp'|'achoo'/.test(sq) || !/acc:/.test(sq)) fail('I3', 'grade8/squeaky-cheeks.html', 'background guests are polite and fancy (no burps/sneezes)');
   if (!/id="ar-bb"/.test(ea) || !/'ROUND ' \+/.test(ea) || /FATALITY|FINISH HIM|FLAWLESS|Kombat/i.test(ea.replace(/\/\*[\s\S]*?\*\//g, ''))) fail('I1', 'grade8/equation-arena.js', 'fighting-game look (health bars, ROUND / FIGHT) with nothing copied from a real game');
+  { const em = rd('grade8/equation_master.html');
+    if (!/var THINK_MS = /.test(em) || !/PASS_PCT = 70/.test(em) || !/function lockFor\(/.test(em) || /Still show transformation after wrong answer/.test(em) || !/champion: \[/.test(em) || !/inequalities: \[/.test(em) || !/LEVEL_ORDER = \[0, 1, 2, 4, 5, 3\]/.test(em)) fail('I10', 'grade8/equation_master.html', 'no mashing: retry, think time, 70% gate, new levels');
+    if (!/var TAUNT = /.test(ea) || /hp = Math\.max\(0, hp - 1\); pips\(\); if \(hp === 0 && beastAlive\) gore\(false\)/.test(ea)) fail('I10', 'grade8/equation-arena.js', 'trash talk; a wrong move costs the beast nothing'); }
   if (!/e\.code !== 'Space'/.test(ea) || !/var WEAPONS = /.test(ea) || !/var MUS = /.test(ea) || !/function gore\(/.test(ea) || !/keyup/.test(ea)) fail('I5', 'grade8/equation-arena.js', 'Space to block (never picks an answer), weapons, music, slow-motion death');
   const ik = rd('grade8/integer-knockout.html');
   if (!/var TRASH = /.test(ik) || /Little Mac|Glass Joe|Punch-Out|Bald Bull|King Hippo|Soda Popinski|Mr\. Sandman|Doc Louis/i.test(ik.replace(/\/\*[\s\S]*?\*\//g, ''))) fail('I6', 'grade8/integer-knockout.html', 'math trash talk, nothing from a real boxing game');

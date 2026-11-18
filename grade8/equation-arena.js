@@ -24,6 +24,9 @@
    It only WATCHES the game: it wraps loadProblem / handleChoice / showResults and never changes a question, a choice,
    the feedback text, the score or what is sent. The hero and the beasts are original drawings made here (inline SVG).
    Uses arcade-fx.js (AFX) for sparks, shake and sounds when it is loaded. Reduced motion: no lunges or shakes. */
+/* Nov 18, 2026 (Zach: students were button-mashing): a wrong move no longer costs the beast health (the game waits for the
+   right move), the beasts TRASH TALK in a speech bubble (talk(): intro, gloat on a wrong move, hurt, block, dying, knock),
+   and HARM covers the new Champion (4) and Inequalities (5) levels. */
 (function () {
   "use strict";
   if (typeof window.handleChoice !== 'function' || typeof window.loadProblem !== 'function') return;
@@ -34,6 +37,10 @@
 
   var css = document.createElement('style');
   css.textContent =
+    '.arena .taunt{position:absolute;right:4%;top:17%;max-width:52%;background:#fffbe9;color:#2a0d05;border:3px solid #000;border-radius:14px;padding:7px 11px;font:800 clamp(11px,1.5vw,14px)/1.3 Inter,system-ui,sans-serif;box-shadow:3px 3px 0 #000;z-index:3;pointer-events:none;opacity:0;transform:scale(.6) rotate(2deg);transform-origin:80% 100%;transition:opacity .2s,transform .25s cubic-bezier(.3,1.6,.5,1)}' +
+    '.arena .taunt.on{opacity:1;transform:scale(1) rotate(-1deg)}' +
+    '.arena .taunt:after{content:"";position:absolute;right:28%;bottom:-13px;border:7px solid transparent;border-top:8px solid #000}' +
+    '@media (max-width:880px){.arena .taunt{top:12%;max-width:62%}}' +
     '.em-split{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:20px;align-items:start;max-width:1400px;margin:0 auto}' +
     '.em-work{min-width:0}.em-fight{position:sticky;top:12px;min-width:0}' +
     '@media (max-width:880px){.em-split{grid-template-columns:1fr;gap:10px}.em-fight{order:-1;top:0;z-index:5}.em-fight .arena svg{max-height:190px}}' +
@@ -225,6 +232,7 @@
       [].forEach.call(svg.querySelectorAll('#ar-beast .eglow'), function (g) { try { g.animate([{ opacity: .15 }, { opacity: .5 }, { opacity: .15 }], { duration: 900, iterations: Infinity }); } catch (e) {} });
       var bbb = svg.querySelector('#ar-beast .bb'); if (bbb) try { bbb.animate([{ transform: 'translateY(0) scale(1,1)' }, { transform: 'translateY(2px) scale(1.03,.97)' }, { transform: 'translateY(0) scale(1,1)' }], { duration: 700, iterations: Infinity }); } catch (e) {} }
     planAttack(2600);
+    setTimeout(function () { if (beastAlive) talk('intro'); }, RM ? 300 : 1900);
   }
   function strike(last) {
     if (!box) return; var hero = el('ar-hero'), sword = el('ar-sword'), beast = el('ar-beast'), slash = el('ar-slash');
@@ -239,7 +247,8 @@
       var W = curW();
       fx(function (A) { A.sfx.clang(); A.sparks(p[0], p[1], { color: berserk ? '#ff7a3c' : W.spark, count: berserk ? 30 : 18, speed: 420 }); if (berserk) A.shake(box, 7, 260); });
       weaponHit(W, beast);
-      if (last) { gore(true); return; }
+      if (last) { talk('dying'); gore(true); return; }
+      if (Math.random() < .45) talk('hurt');
       if (false) {
         say('K.O.!', '#ff3b1f'); if (!wrongs) setTimeout(function () { say('PERFECT!', '#ffe36b'); }, RM ? 0 : 1100);
         if (!RM) try { svg.animate([{ filter: 'saturate(1)' }, { filter: 'saturate(0) brightness(1.4)', offset: .1 }, { filter: 'saturate(.3)', offset: .6 }, { filter: 'saturate(1)' }], { duration: 1400 }); } catch (e) {}
@@ -263,8 +272,9 @@
     if (!box) return; var beast = el('ar-beast'), hero = el('ar-hero'); rage.classList.remove('on'); cancelAttack();
     wrongs++;
     if (beast && beastAlive) maul(HARM[lvl()].wrong, 'heavy');
-    /* the step is still shown after a miss (as before), so the beast still loses that point */
-    setTimeout(function () { hp = Math.max(0, hp - 1); pips(); if (hp === 0 && beastAlive) gore(false); else planAttack(3600); }, 1100);
+    /* Nov 18, 2026: a wrong move no longer moves the game on, so the beast loses NOTHING. It gloats instead. */
+    talk('gloat');
+    setTimeout(function () { planAttack(3600); }, 1100);
   }
 
   /* ---------------- sounds (original Web Audio, follow the Sound on/off button) ---------------- */
@@ -397,8 +407,48 @@
   var HARM = [ { wrong: 30, claw: 12, gap: [11000, 15000], wind: 1300 },   /* Apprentice */
                { wrong: 35, claw: 15, gap: [9000, 12500], wind: 1150 },    /* Journeyman */
                { wrong: 40, claw: 18, gap: [7000, 10500], wind: 1000 },    /* Master */
-               { wrong: 40, claw: 18, gap: [7000, 10500], wind: 1000 } ];  /* Mixed */
-  function lvl() { return Math.max(0, Math.min(3, window.selectedLevel || 0)); }
+               { wrong: 40, claw: 18, gap: [7000, 10500], wind: 1000 },    /* Mixed */
+               { wrong: 40, claw: 18, gap: [7000, 10500], wind: 1000 },    /* Champion (Nov 18, 2026) */
+               { wrong: 40, claw: 18, gap: [7000, 10500], wind: 1000 } ];  /* Inequalities (Nov 18, 2026) */
+  function lvl() { return Math.max(0, Math.min(5, window.selectedLevel || 0)); }
+
+  /* ---------------- trash talk (Nov 18, 2026, Zach: "have the monsters talk trash, ex: 'I will enjoy feasting upon your
+     inferior brains puny human'"). Cartoon-villain, PG, math-flavored; a speech bubble by the beast. Never about a real
+     student, never about how they look: only the math and the "puny human" hero. ---------------- */
+  var TAUNT = {
+    intro: ['I will enjoy feasting upon your inferior brain, puny human!', 'Your equations are weak. Your variables tremble before me!',
+      'I have eaten heroes who could not divide by negatives. Delicious.', 'Come closer. I want to watch you forget to distribute.',
+      'Puny human! Even your x cannot escape me!', 'I smell fear... and fractions you cannot simplify.',
+      'Another mathling for my collection. How tasty.', 'Your inverse operations are no match for my claws!',
+      'I will SUBTRACT you from this temple!', 'Show me your work, human... so I can laugh at it.',
+      'Balance both sides? HA! I will balance you on my fork!', 'Your brain looks crunchy. Let us see if it can solve for x.'],
+    gloat: ['HA! That move was a feast for my belly!', 'Wrong! Your brain smells extra crunchy now.',
+      'Did you just do that to ONE side only? Pathetic!', 'Mmm... the sweet taste of a sign error.',
+      'Your teacher would weep at that move!', 'Keep guessing, little snack. I LOVE guessers.',
+      'Is that your best? My pet slime solves better than that!', 'Wrong move! Even my third eye is rolling.',
+      'Your answer is undefined... and so is your future!', 'Read the equation, human! Oh wait, you cannot. HA!',
+      'Button mashing? Delicious. Keep going.', 'You call that an inverse operation? I call it lunch.'],
+    gloatIneq: ['You forgot to FLIP the sign! Now I flip YOU!', 'Open circle, closed circle... your brain is an EMPTY circle!',
+      'Less than? Greater than? You are LESS than a snack!', 'Divide by a negative and forget to flip? My favorite flavor!'],
+    hurt: ['ARGH! Lucky step, human!', 'You... you balanced both sides?! Impossible!', 'My goo! You spilled my precious goo!',
+      'Grr... that was a correct inverse operation.', 'Hmph. A worthy move... for a snack.', 'Stop isolating the variable! It HURTS!',
+      'No! Not the order of operations!', 'You did it to BOTH sides?! Curse you!'],
+    block: ['You blocked me?! Your shield is irrational!', 'Lucky parry, tiny mortal.', 'Grr! Next time I eat your homework AND you!'],
+    dying: ['Nooo... defeated... by a middle schooler...', 'My... equation... is... solved...', 'Impossible... you checked your work...',
+      'x... equals... my DOOM...', 'Tell my mother... I could not balance it...', 'I should have... studied... inverse operations...'],
+    knock: ['Stay down, puny human! Your brain is MINE!', 'Snack time! And YOU are the snack!', 'Get up and try again... if you dare!']
+  };
+  var lastTalk = {}, talkT = 0;
+  function talk(kind0) {
+    if (!box) return;
+    var list = TAUNT[kind0], k2 = kind0;
+    if (kind0 === 'gloat' && (lvl() === 5 || /[<>≤≥]/.test(((window.problems || [])[window.probIdx] || {}).startEq || '')) && Math.random() < .6) { list = TAUNT.gloatIneq; k2 = 'gloatIneq'; }
+    var line = pick(list); if (list.length > 1) while (line === lastTalk[k2]) line = pick(list); lastTalk[k2] = line;
+    var b = box.querySelector('.taunt');
+    if (!b) { b = document.createElement('div'); b.className = 'taunt'; b.setAttribute('aria-live', 'polite'); box.appendChild(b); }
+    b.textContent = '“' + line + '”'; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
+    clearTimeout(talkT); talkT = setTimeout(function () { b.classList.remove('on'); }, kind0 === 'dying' ? 3200 : 3600);
+  }
   var beastAlive = false, atkT = 0, hitT = 0, winding = false, blocked = false;
   function active() { var gs = document.getElementById('game-screen'); return !!(box && beastAlive && gs && gs.style.display !== 'none' && !document.hidden); }
   function cancelAttack() { clearTimeout(atkT); clearTimeout(hitT); winding = false; if (box) { box.querySelector('.warnx').classList.remove('on'); box.querySelector('.blk').classList.remove('warn'); } MUS.heat(0); }
@@ -428,6 +478,7 @@
     box.querySelector('.warnx').classList.remove('on'); box.querySelector('.blk').classList.remove('warn');
     var beast = el('ar-beast');
     anim(beast, [{ transform: 'translate(480px,150px) scale(1.12)' }, { transform: 'translate(260px,150px)', offset: .35 }, { transform: 'translate(300px,150px) rotate(-10deg)', offset: .5 }, { transform: 'translate(450px,150px)' }], 700);
+    if (Math.random() < .5) talk('block');
     setTimeout(function () { var p = at(hero); say(pick(['BLOCKED!', 'DENIED!', 'NOT TODAY!', 'PARRY!']), '#9ec5ff'); fx(function (A) { A.sfx.clang(); A.sparks(p[0] + 20, p[1] - 30, { color: '#e6f2ff', count: 26, speed: 460 }); A.shake(box, 5, 200); }); freeze(); SND.grunt(); }, RM ? 0 : 240);
     planAttack();
   }
@@ -448,7 +499,7 @@
   }
   function knockdown() {
     var hero = el('ar-hero'); cancelAttack();
-    say('HERO DOWN!', '#ff3b1f'); fx(function (A) { A.sfx.lose(); });
+    say('HERO DOWN!', '#ff3b1f'); fx(function (A) { A.sfx.lose(); }); talk('knock');
     if (!RM && hero && hero.animate) hero.animate([{ transform: 'translate(150px,150px) rotate(0deg)' }, { transform: 'translate(120px,150px) rotate(-80deg)', offset: .25 }, { transform: 'translate(120px,150px) rotate(-80deg)', offset: .75 }, { transform: 'translate(150px,150px) rotate(0deg)' }], { duration: 2000 });
     setTimeout(function () { heroHP = 60; bars(); say('GET UP!', '#ffe36b'); fx(function (A) { A.sfx.power(); }); planAttack(4000); }, RM ? 200 : 1700);
   }

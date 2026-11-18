@@ -107,6 +107,11 @@ I8. Root Rocket uses only numbers where the class 4-step estimate rounds to the 
 I9. Laser Vault tells its story: a mission briefing (agent, reach the Core), an agent on the map, doors drawn as red laser
     fences that power down when solved, an objectives list, and a guided first fence. Puzzles and scoring are unchanged.
 
+I10. Equation Master can't be won by mashing buttons (Nov 18, 2026): a wrong move is crossed out with a note that names the
+    mistake and the student must pick again (after 2 misses the right move glows, but they still tap it); the buttons unlock
+    only after a short read (2 s, 1.2 s after a miss); points only for first-try moves; under 70% first-try the level replays;
+    under 50% is sent with score 0 (off the High Scores). Champion + Inequalities levels come from _build/equation_master_levels.py
+    (every line checked with exact fractions). Monster trash talk is cartoon and math-flavored, never about a real student.
 ## J. Skill Builders
 J1. Every Skill Builders lesson has a video (sbvideo.js): built from the lesson itself, original host (Digit), computer voice
     with math read in words, original music, captions always on, and a Your turn question with think time before the answer.
