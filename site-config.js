@@ -5,5 +5,5 @@
    ASK DIGIT (Nov 18, 2026): the web app address of the "Ask Digit" deployment (Digit.gs). Empty = the button stays hidden. */
 window.SITE_CONFIG = {
   thisUnit: 3,
-  digitUrl: ''
+  digitUrl: 'https://script.google.com/a/macros/icimagine.org/s/AKfycbyoaC9rZ911nuPjM-HipHBPgsYrzZPH3Y1A4InIMFnZF_2jYI8feT-a6dPVjIw_1YRDAA/exec'
 };
