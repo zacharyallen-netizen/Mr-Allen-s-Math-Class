@@ -41,7 +41,8 @@
     '.fx-tpanel{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:#fff;border:1px solid #E3E5EA;border-radius:10px;padding:12px;margin-top:4px}' +
     '.fx-tpanel a{display:inline-block!important;color:#1E2D4F!important;background:#F1F3F7!important;border:1px solid #D5D9E0!important;border-radius:8px!important;padding:6px 12px!important;font:600 13px Inter,system-ui,sans-serif!important;text-decoration:none!important;box-shadow:none!important;margin:0!important}' +
     '.fx-tpanel .modebar,.fx-tpanel .pr-links{margin:0!important;border:0!important;padding:0!important;background:none!important;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}' +
-    '@media print{.fx-foot,.fx-toast,.fx-read{display:none!important}}';
+    '.fx-tpanel.fx-print{justify-content:flex-start;align-items:center;background:#FFFBEA;border-color:#F2D27A;margin:10px 0 14px;padding:8px 12px}.fx-plab{font:700 13.5px Inter,system-ui,sans-serif;color:#1E2D4F;margin-right:2px}' +
+    '@media print{.fx-foot,.fx-toast,.fx-read,.fx-print{display:none!important}}';
   function addCss() { var st = document.createElement('style'); st.id = 'fx-css'; st.textContent = css; document.head.appendChild(st); }
 
   /* ---------- sound (Web Audio, made on the first tap) ---------- */
@@ -233,7 +234,7 @@
     if (cm) items.push(cm.closest('.modebar') || cm);
     [].forEach.call(document.querySelectorAll('.pr-links'), function (e) { items.push(e); });
     [].forEach.call(document.querySelectorAll('a[href$=".pdf"],a[href*=".pdf?"],a[href*=".pdf#"]'), function (a) {
-      if (a.closest(SKIP) || a.closest('.site-footer,body > footer,.pr-links,.fx-foot,.modebar')) return; items.push(a); });
+      if (a.closest(SKIP) || a.closest('.site-footer,body > footer,.pr-links,.fx-foot,.modebar,.unit-extras,.wb-print')) return; items.push(a); });
     if (!items.length) return null;
     var panel = document.createElement('div'); panel.className = 'fx-tpanel'; panel.hidden = true;
     items.forEach(function (e) {
@@ -353,11 +354,22 @@
     function show() { sb.textContent = FX.soundOn() ? '🔊 Sound: on' : '🔇 Sound: off'; sb.setAttribute('aria-pressed', FX.soundOn()); }
     sb.addEventListener('click', function () { ls('fx-sound', FX.soundOn() ? 'off' : 'on'); show(); if (FX.soundOn()) FX.play('ok'); });
     show(); f.appendChild(sb); FX.footEl = f;
+    /* Nov 18, 2026 site rebuild (Zach: students could not find the PDFs): the PDFs / answer keys / Class mode are no longer
+       folded into "Printables" at the bottom; they sit in an open "Print it" bar right under the page title. */
     var panel = teacher();
     if (panel) {
-      var tb = document.createElement('button'); tb.type = 'button'; tb.textContent = 'Printables ▾'; tb.setAttribute('aria-expanded', 'false');
-      tb.addEventListener('click', function () { panel.hidden = !panel.hidden; tb.setAttribute('aria-expanded', !panel.hidden); tb.textContent = 'Printables ' + (panel.hidden ? '▾' : '▴'); });
-      f.appendChild(tb); f.appendChild(panel);
+      panel.hidden = false; panel.classList.add('fx-print');
+      var lab = document.createElement('span'); lab.className = 'fx-plab'; lab.textContent = '🖨️ Print it:'; panel.insertBefore(lab, panel.firstChild);
+      if (!panel.querySelector('a[href*=".pdf"],.pr-links a')) lab.textContent = 'For teachers:';
+      var vis = function (sel) { return [].filter.call(document.querySelectorAll(sel), function (h) { return !h.closest(SKIP) && !h.closest('.fx-tpanel') && h.offsetParent !== null && h.getBoundingClientRect().top + scrollY < 800; }); };
+      var place = function () {      // pages that draw themselves later (Skill Builders) get the bar once their title is there
+        var sbh = document.querySelector('header.sb-head');   // Skill Builders banner (a <header>, which SKIP leaves out)
+        var h1 = vis('h1')[0] || (sbh && sbh.offsetParent !== null ? sbh : null) || vis('h2')[0];
+        var at = h1 && (h1.closest('.hero,.page-hdr,.pr-head,.pr-header,header,.top,.hdr,.sb-hero,.sb-head') || h1);
+        if (at && at.parentNode) { at.parentNode.insertBefore(panel, at.nextSibling); return true; }
+        if (!panel.parentNode) f.appendChild(panel); return false;
+      };
+      if (!place()) setTimeout(function () { if (!place()) setTimeout(place, 1500); }, 600);
     }
     var sf = document.querySelector('.site-footer, body > footer'); if (sf) sf.parentNode.insertBefore(f, sf); else document.body.appendChild(f);
   }

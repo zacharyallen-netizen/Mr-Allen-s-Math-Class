@@ -6,16 +6,57 @@
 <title>8th Grade Math — Mr. Allen's Math Class</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../site.css">
+<!-- Nov 18, 2026 site rebuild (Zach: students knowing what is available and where to find it):
+     "Start here today" (3 big choices), "What's new", then FOUR groups that match the side menu:
+     Learn · Practice & Review · My Progress · Take a Break. Every card from the old page is still here.
+     The big "This unit" button reads site-config.js (thisUnit). A card with data-new="YYYY-MM-DD" gets a
+     NEW badge for 14 days (site-bar.js) and shows in "What's new". -->
+<style>
+.today{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 18px}
+.today a{display:flex;flex-direction:column;gap:6px;text-decoration:none;border-radius:16px;padding:18px 18px 16px;min-height:150px;position:relative;transition:transform .12s,box-shadow .12s;box-shadow:0 4px 0 rgba(15,26,51,.25)}
+.today a:hover{transform:translateY(-2px);box-shadow:0 7px 0 rgba(15,26,51,.25)}
+.today .k{font:700 12px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;opacity:.85}
+.today .t{font:600 22px/1.2 "Source Serif 4",Georgia,serif}
+.today .d{font:500 14.5px/1.4 Inter,sans-serif;opacity:.92}
+.today .go{margin-top:auto;font:700 14px Inter,sans-serif}
+.today .unit{background:#1E2D4F;color:#fff}.today .unit .t,.today .unit .go{color:#FFC107}
+.today .help{background:#FFC107;color:#1E2D4F}
+.today .brk{background:#fff;color:#1E2D4F;border:2px solid #1E2D4F}
+.today .ic{font-size:26px;line-height:1}
+.today-sub{display:flex;flex-wrap:wrap;gap:8px;margin:-4px 0 6px;font:500 14px Inter,sans-serif;color:#5B6475}
+.today-sub a{color:#1E2D4F;font-weight:600}
+.whatsnew{margin:16px 0 0;background:#FFFBEA;border:1px solid #F2D27A;border-radius:12px;padding:10px 14px;font:500 14.5px/1.5 Inter,sans-serif;color:#1E2D4F}
+.whatsnew b{margin-right:6px}.whatsnew a{display:inline-block;color:#1E2D4F;font-weight:600;margin:0 14px 2px 0}
+.group-intro{margin:-6px 0 14px;color:#5B6475;font:500 15px/1.45 Inter,sans-serif;max-width:70ch}
+.sub-label{font:700 13px Inter,sans-serif;color:#1E2D4F;margin:22px 0 10px}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0}
+.jump a{font:600 13.5px Inter,sans-serif;color:#1E2D4F;text-decoration:none;background:#fff;border:1px solid #D5DAE3;border-radius:999px;padding:7px 14px}
+.jump a:hover{border-color:#E0A800;background:#FFF6D6}
+.section-label.big{font:600 24px/1.2 "Source Serif 4",Georgia,serif;color:#1E2D4F;letter-spacing:0;text-transform:none;margin-top:46px}
+.section-label.big .n{font:700 12px Inter,sans-serif;color:#8A6100;background:#FFF3C4;border-radius:999px;padding:3px 9px;letter-spacing:.04em}
+@media (max-width:820px){.today{grid-template-columns:1fr}.today a{min-height:0}}
+</style>
 </head>
 <body>
+<script src="../site-config.js"></script>
 <script src="../site-bar.js"></script>
 
 <div class="page-wrap wide">
-<div class="hero"><h1>8th Grade Math</h1><p>Interactive guided notes, printable packets, self-checking practice, and games for every unit.</p></div>
+<div class="hero"><h1>8th Grade Math</h1><p>Notes, practice, Targeted Practice and games for every unit. Not sure where to go? Start with one of the three big buttons.</p></div>
 
-<a href="../class-information.html" class="feature-card"><div class="fi">📋</div><div><div class="ft">Class Information</div><div class="fd">Syllabus, Google Classroom links, and family resources</div></div></a>
+<div class="section-label" id="today">Start here today</div>
+<div class="today">
+  <a class="unit" id="this-unit" href="units3-4.html"><span class="ic">📘</span><span class="k">This unit</span><span class="t" id="tu-t">Units 3–4</span><span class="d" id="tu-d">Notes, practice, Targeted Practice and the pre-test, in order.</span><span class="go">Go to this unit →</span></a>
+  <a class="help" href="#practice-review"><span class="ic">🧩</span><span class="k">Get help with a skill</span><span class="t">Practice &amp; Review</span><span class="d">Short lessons and videos, vocab flashcards, and practice for the Check-Ins and the EOG.</span><span class="go">See what helps →</span></a>
+  <a class="brk" href="#take-a-break"><span class="ic">🎮</span><span class="k">Done with your work?</span><span class="t">Take a Break</span><span class="d">Math Arcade games, the Reset Room and chill music for work time.</span><span class="go">Take a break →</span></a>
+</div>
+<div class="today-sub">Check your grades: <a href="grading.html">My Progress</a> · New here? <a href="../index.html#video-tour">Watch the 2-minute website tour</a> · <a href="../class-information.html">Class Information</a></div>
+<div class="whatsnew" id="whatsnew" hidden><b>✨ What's new:</b><span id="wn-list"></span></div>
+<div class="jump" aria-label="Jump to a group"><a href="#learn">📘 Learn</a><a href="#practice-review">🧩 Practice &amp; Review</a><a href="#my-progress">📏 My Progress</a><a href="#take-a-break">🎮 Take a Break</a></div>
 
-<div class="section-label">The 9 Units</div>
+<!-- ============ 1. LEARN ============ -->
+<div class="section-label big" id="learn">📘 Learn</div>
+<p class="group-intro">Each unit page has the notes, practice, Targeted Practice and pre-test, in the order to do them, plus games and extras for that unit.</p>
 <div class="units-grid">
 <a href="unit1.html" class="unit-card"><div class="unit-num">UNIT 1</div><div class="unit-icon">🔢</div><div class="unit-card-title">Real Numbers</div><div class="unit-desc">Rational vs. irrational, square &amp; cube roots, and estimating roots.</div><div class="unit-std">NC.8.NS.1–2 · NC.8.EE.2</div></a>
 <a href="unit2.html" class="unit-card"><div class="unit-num">UNIT 2</div><div class="unit-icon">⚡</div><div class="unit-card-title">Exponents &amp; Scientific Notation</div><div class="unit-desc">Exponent properties and operations in scientific notation.</div><div class="unit-std">NC.8.EE.1, 3–4</div></a>
@@ -28,53 +69,77 @@
 <a href="unit8.html" class="unit-card"><div class="unit-num">UNIT 8</div><div class="unit-icon">🔄</div><div class="unit-card-title">Transformations</div><div class="unit-desc">Translations, reflections, rotations, and dilations.</div><div class="unit-std">NC.8.G.2–4</div></a>
 <a href="unit9.html" class="unit-card"><div class="unit-num">UNIT 9</div><div class="unit-icon">🧊</div><div class="unit-card-title">Volume</div><div class="unit-desc">Cylinders, cones, and spheres in real-world problems.</div><div class="unit-std">NC.8.G.9</div></a>
 </div>
-
-<div class="section-label" id="winter">Winter Break Review</div>
-<a href="winter-break-review.html" class="feature-card"><div class="fi">❄️</div><div><div class="ft">Winter Break Review</div><div class="fd">Units 1–4 review built from our NC Check-In results: 7 short sections, each with a quick review, practice and how it shows up on the EOG. One section a day.</div></div><span class="kind">Interactive</span></a>
-<a href="winter-break-review-v2.html" class="feature-card"><div class="fi">❄️</div><div><div class="ft">Winter Break Review — Version 2</div><div class="fd">The same 7 topics, one skill at a time, with a review box and a short Skill Builders video for each section.</div></div><span class="kind">Interactive</span></a>
-
-<div class="section-label">Skill Builders</div>
-<a href="skill-builders.html" class="feature-card"><div class="fi">🧩</div><div><div class="ft">Skill Builders: Mini-Lessons &amp; Practice</div><div class="fd">Short lessons on the core skills of Units 1–8. Watch a short animation, walk through an example one step at a time, then practice with help that points out the mistake.</div></div></a>
-
-<div class="section-label">Grading &amp; Standards</div>
-<a href="grading.html" class="feature-card"><div class="fi">📏</div><div><div class="ft">Grading &amp; Standards</div><div class="fd">How grades work: standards-based grading, the 1–5 scale, the decaying average, your I Can Tracker, the I can targets and durable skills.</div></div></a>
-
-<div class="section-label" id="benchmarks">NC Check-Ins / Benchmarks</div>
-<div class="units-grid">
-<a href="benchmarks.html" class="unit-card"><div class="unit-num">ALL BENCHMARKS</div><div class="unit-icon">✅</div><div class="unit-card-title">NC Check-Ins / Benchmarks</div><div class="unit-desc">The NC Check-In reviews (Version 1 and Version 2) and the Functions &amp; Transformations tutorial, all on one page.</div><div class="unit-std">NC Check-In</div></a>
-</div>
-
-<div class="section-label">EOG Test Prep</div>
-<div class="units-grid">
-<a href="8th_grade_eog_hub.html" class="unit-card"><div class="unit-icon">🎯</div><div class="unit-card-title">EOG Prep Hub</div><div class="unit-desc">Everything for the NC End-of-Grade test in one place: review, practice, study guide and strategies.</div></a>
-</div>
-
-<div class="section-label">Reference &amp; Skills</div>
+<div class="sub-label">Look it up</div>
 <div class="units-grid">
 <a href="anchor_charts.html" class="unit-card"><div class="unit-icon">📌</div><div class="unit-card-title">Anchor Charts</div><div class="unit-desc">One front-and-back chart for each unit. View or download the PDFs.</div></a>
 <a href="formulas.html" class="unit-card"><div class="unit-icon">🧾</div><div class="unit-card-title">Formula Sheet</div><div class="unit-desc">Every formula you need, all in one place.</div></a>
 <a href="vocabulary.html" class="unit-card"><div class="unit-icon">🔤</div><div class="unit-card-title">Vocabulary</div><div class="unit-desc">Key math terms for every unit.</div></a>
-<a href="vocab-flashcards.html" class="unit-card"><div class="unit-icon">📇</div><div class="unit-card-title">Vocab Flashcards &amp; Blitz</div><div class="unit-desc">Flip flashcards, then race the Vocab Blitz to beat your best score.</div></a>
 <a href="tools.html" class="unit-card"><div class="unit-icon">🧰</div><div class="unit-card-title">Interactive Tools</div><div class="unit-desc">Calculators and visual tools for exploring math.</div></a>
-<a href="graphing.html" class="unit-card"><div class="unit-icon">📉</div><div class="unit-card-title">Graphing Practice</div><div class="unit-desc">Sharpen your coordinate-plane graphing skills.</div></a>
 <a href="materials_index.html" class="unit-card"><div class="unit-icon">🗂️</div><div class="unit-card-title">Materials Index</div><div class="unit-desc">Every note, practice page, pre-test, and answer key in one list.</div></a>
 </div>
-
-<div class="section-label">Math Connections</div>
+<div class="sub-label">Math in the real world</div>
 <a href="math-science/index.html" class="feature-card"><div class="fi">🔬</div><div><div class="ft">Math in Science</div><div class="fd">Short tutorials and assignments where 8th grade math explains science: atoms, outbreaks, food webs, fault lines, water quality, climate and solar power. Plus games and labs.</div></div></a>
 <a href="math-finlit/index.html" class="feature-card"><div class="fi">💵</div><div><div class="ft">Math in Financial Literacy</div><div class="fd">Short tutorials and assignments on budgets, credit, interest, loans, saving and careers, with games for practice.</div></div></a>
 
-<div class="section-label">Fluency Lab</div>
-<a href="Fluency-Lab-Package/fluency-lab/index.html" class="feature-card"><div class="fi">🧠</div><div><div class="ft">Enter the Fluency Lab</div><div class="fd">Build core math skills to automatic — 8 skills from multiplication to expressions, each with adaptive practice and a self-checking quiz.</div></div></a>
+<!-- ============ 2. PRACTICE & REVIEW ============ -->
+<div class="section-label big" id="practice-review">🧩 Practice &amp; Review</div>
+<p class="group-intro">Stuck on a skill, or getting ready for a test? Start here.</p>
+<div class="sub-label">Get help with a skill</div>
+<div class="units-grid">
+<a href="skill-builders.html" class="unit-card"><div class="unit-icon">🧩</div><div class="unit-card-title">Skill Builders</div><div class="unit-desc">Short lessons and videos on the core skills of Units 1–8. Watch, walk through an example, then practice with help.</div></a>
+<a href="vocab-flashcards.html" class="unit-card" data-new="2026-11-18"><div class="unit-icon">📇</div><div class="unit-card-title">Vocab Flashcards &amp; Blitz</div><div class="unit-desc">Flip flashcards, then race the Vocab Blitz to beat your best score.</div></a>
+<a href="Fluency-Lab-Package/fluency-lab/index.html" class="unit-card"><div class="unit-icon">🧠</div><div class="unit-card-title">Fluency Lab</div><div class="unit-desc">Build core math skills to automatic: 8 skills from multiplication to expressions, each with adaptive practice and a self-checking quiz.</div></a>
+<a href="graphing.html" class="unit-card"><div class="unit-icon">📉</div><div class="unit-card-title">Graphing Practice</div><div class="unit-desc">Sharpen your coordinate-plane graphing skills.</div></a>
+</div>
+<div class="sub-label" id="winter">Winter Break Review</div>
+<a href="winter-break-review.html" class="feature-card" data-new="2026-11-16"><div class="fi">❄️</div><div><div class="ft">Winter Break Review</div><div class="fd">Units 1–4 review built from our NC Check-In results: 7 short sections, each with a quick review, practice and how it shows up on the EOG. One section a day.</div></div><span class="kind">Interactive</span></a>
+<a href="winter-break-review-v2.html" class="feature-card" data-new="2026-11-16"><div class="fi">❄️</div><div><div class="ft">Winter Break Review — Version 2</div><div class="fd">The same 7 topics, one skill at a time, with a review box and a short Skill Builders video for each section.</div></div><span class="kind">Interactive</span></a>
+<div class="sub-label" id="benchmarks">Get ready for tests</div>
+<div class="units-grid">
+<a href="benchmarks.html" class="unit-card"><div class="unit-num">NC CHECK-INS</div><div class="unit-icon">✅</div><div class="unit-card-title">NC Check-Ins / Benchmarks</div><div class="unit-desc">The NC Check-In reviews (Version 1 and Version 2) and the Functions &amp; Transformations tutorial, all on one page.</div><div class="unit-std">NC Check-In</div></a>
+<a href="8th_grade_eog_hub.html" class="unit-card"><div class="unit-num">EOG</div><div class="unit-icon">🎯</div><div class="unit-card-title">EOG Prep Hub</div><div class="unit-desc">Everything for the NC End-of-Grade test in one place: review, practice, study guide and strategies.</div></a>
+</div>
 
-<div class="section-label">The Arcade</div>
-<a href="arcade.html" class="feature-card"><div class="fi">🎮</div><div><div class="ft">Enter the Arcade</div><div class="fd">Every math game on the site — integers, exponents, slope, transformations, and more.</div></div></a>
+<!-- ============ 3. MY PROGRESS ============ -->
+<div class="section-label big" id="my-progress">📏 My Progress</div>
+<p class="group-intro">How your grade works, your I Can Tracker, and how to raise a score.</p>
+<a href="grading.html" class="feature-card"><div class="fi">📏</div><div><div class="ft">Grading &amp; Standards</div><div class="fd">How grades work: standards-based grading, the 1–5 scale, the decaying average, your I Can Tracker, the I can targets and durable skills.</div></div></a>
+<a href="grading.html#video-trackers" class="feature-card"><div class="fi">▶️</div><div><div class="ft">Video: your student folder and I Can Tracker</div><div class="fd">2 minutes with Digit: what is in your folder, what your scores mean, and how to raise a score.</div></div><span class="kind">Video</span></a>
+<a href="durable-skills.html" class="feature-card"><div class="fi">🌱</div><div><div class="ft">Durable Skills</div><div class="fd">Perseverance, working with others and self-control: what they look like and a quick self-check.</div></div></a>
+<a href="../class-information.html" class="feature-card"><div class="fi">📋</div><div><div class="ft">Class Information</div><div class="fd">Syllabus, Google Classroom links, and family resources</div></div></a>
 
-<div class="section-label">Reset Room &amp; Music</div>
+<!-- ============ 4. TAKE A BREAK ============ -->
+<div class="section-label big" id="take-a-break">🎮 Take a Break</div>
+<p class="group-intro">Finished your work? These still build your math skills.</p>
+<a href="arcade.html" class="feature-card"><div class="fi">🎮</div><div><div class="ft">Enter the Arcade</div><div class="fd">Every math game on the site — integers, exponents, equations, angles, slope, transformations, and more.</div></div></a>
 <a href="reset-room.html" class="feature-card"><div class="fi">🌊</div><div><div class="ft">Reset Room</div><div class="fd">Calm-down activities: tap the water, breathe, and reset before you get back to work.</div></div></a>
 <a href="drift.html" class="feature-card" target="_blank" rel="noopener"><div class="fi">🎧</div><div><div class="ft">Chill Math Music</div><div class="fd">Focus music for work time. Opens in a new tab.</div></div></a>
 
 </div>
 <div class="site-footer">© Mr. Allen's Math Class · 8th Grade Math</div>
+<script>
+/* "This unit" button (site-config.js) + "What's new" (cards with data-new in the last 14 days) */
+(function () {
+  var U = { 1: ['unit1.html', 'Unit 1 · Real Numbers'], 2: ['unit2.html', 'Unit 2 · Exponents & Scientific Notation'], 3: ['unit3.html', 'Unit 3 · Linear Equations'],
+    4: ['unit4.html', 'Unit 4 · Angles & Geometry'], 5: ['unit5.html', 'Unit 5 · Pythagorean Theorem'], 6: ['unit6.html', 'Unit 6 · Functions, Slope & Systems'],
+    7: ['unit7.html', 'Unit 7 · Data Analysis'], 8: ['unit8.html', 'Unit 8 · Transformations'], 9: ['unit9.html', 'Unit 9 · Volume'] };
+  var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, u = U[n];
+  if (u) { var a = document.getElementById('this-unit'); a.href = u[0]; document.getElementById('tu-t').textContent = u[1]; }
+  var now = Date.now(), items = [];
+  [].forEach.call(document.querySelectorAll('[data-new]'), function (c) {
+    var d = Date.parse(c.getAttribute('data-new') + 'T12:00:00'); if (!(now - d < 14 * 864e5)) return;
+    var t = c.querySelector('.ft,.unit-card-title'); items.push({ d: d, h: c.getAttribute('href'), t: t ? t.textContent : '' });
+  });
+  /* new things that live on other pages (add a line here; it drops off after 14 days) */
+  [['2026-11-18', 'equation_master.html', 'Equation Master: Champion + Inequalities levels'], ['2026-11-16', 'integer-knockout.html', 'Integer Knockout'],
+   ['2026-11-16', 'root-rocket.html', 'Root Rocket'], ['2026-11-17', 'grading.html#video-trackers', 'Tracker video']].forEach(function (e) {
+    var d = Date.parse(e[0] + 'T12:00:00'); if (now - d < 14 * 864e5) items.push({ d: d, h: e[1], t: e[2] }); });
+  if (items.length) {
+    items.sort(function (a, b) { return b.d - a.d; });
+    document.getElementById('wn-list').innerHTML = items.map(function (i) { return '<a href="' + i.h + '">' + i.t.replace(/[<&]/g, '') + '</a>'; }).join('');
+    document.getElementById('whatsnew').hidden = false;
+  }
+})();
+</script>
 </body>
 </html>

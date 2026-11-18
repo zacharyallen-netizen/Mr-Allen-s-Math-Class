@@ -101,7 +101,9 @@ var CARDS = [{"u": "u1", "t": "Rational Number", "d": "A number that CAN be writ
   function pop(t) { var p = $('#pop'); p.textContent = t; try { p.animate([{ opacity: 0, transform: 'translate(-50%,-30%) scale(.6)' }, { opacity: 1, transform: 'translate(-50%,-50%) scale(1.1)', offset: .3 }, { opacity: 0, transform: 'translate(-50%,-80%) scale(1)' }], { duration: 900 }); } catch (e) {} }
   function AS(fn) { try { if (window.ArcadeSend) fn(window.ArcadeSend); } catch (e) {} }
 
-  var unit = get('vocab-unit', 'all'), mode = 'cards', known = get('vocab-known', {});
+  var qu = (location.search.match(/[?&]unit=(u[1-8]|vol|all)\b/) || [])[1];   // ?unit=u3 from a unit page (Nov 18, 2026)
+  var unit = qu || get('vocab-unit', 'all'), mode = /[?&]mode=blitz/.test(location.search) ? 'blitz' : 'cards', known = get('vocab-known', {});
+  if (mode === 'blitz') [].forEach.call(document.querySelectorAll('.tabs button'), function (x) { x.classList.toggle('on', x.dataset.m === 'blitz'); });
   function pool() { return CARDS.filter(function (c) { return unit === 'all' || c.u === unit; }); }
 
   /* unit chips */

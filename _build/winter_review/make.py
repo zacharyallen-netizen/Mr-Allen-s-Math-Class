@@ -177,7 +177,7 @@ def page(fn, title, sub, secs, label, intro, pdf):
     # printable copy + key made from this page by _build/winter_review/pdfs.js (Nov 17, 2026)
     bar = ('<div class="wb-print">Print it: <button type="button" onclick="window.open(\'winter-review/' + pdf + '.pdf\')">🖨️ Printable PDF</button>'
            '<button type="button" onclick="window.open(\'winter-review/' + pdf + '_AnswerKey.pdf\')">✅ Answer key</button></div>')
-    data = {'title': title, 'sub': sub, 'intro': intro + bar, 'secs': secs}
+    data = {'title': title, 'sub': sub, 'intro': intro, 'secs': secs}   # (Nov 18: the site-wide Print it bar from student-fx.js replaced the page's own bar)
     P = {'unit': 'WB', 'pdf': f'winter-review/{pdf}.pdf', 'key': f'winter-review/{pdf}_AnswerKey.pdf', 'data': data}
     html = f'''<!DOCTYPE html>
 <html lang="en">

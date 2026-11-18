@@ -126,3 +126,11 @@ J4. Site videos (site-video.js, Nov 17, 2026): the website tour (home page) and 
 J5. Vocab Flashcards & Blitz (grade8/vocab-flashcards.html, built by _build/vocab_game.py from vocabulary.html, Nov 18, 2026):
     every glossary word is a card; the Blitz never shows the word inside its own definition (mask); a wrong tap names the word
     that was tapped and what it means; points only on the first try. Winter Break pages have a Print it bar at the TOP.
+
+## K. Finding things (Nov 18, 2026 site rebuild)
+K1. Students can find everything: the 8th Grade home starts with "Start here today" (This unit from site-config.js, Get help
+    with a skill, Take a break) and "What's new", then the same FOUR groups as the side menu (Learn · Practice & Review ·
+    My Progress · Take a Break); the side menu has a Search box (search-index.js); every unit page has an "Also for this
+    unit" row (games, anchor chart, Skill Builders, vocab); PDFs and answer keys sit in a Print it bar right under the
+    page title (never folded away at the bottom); new cards carry data-new and get a NEW badge for 14 days. No old card or
+    page link is removed from the home page.

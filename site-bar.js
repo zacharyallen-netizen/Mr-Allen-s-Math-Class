@@ -72,6 +72,20 @@
     document.head.appendChild(st);
   }
 
+  // Nov 18, 2026 site rebuild: a gold NEW badge on any card with data-new="YYYY-MM-DD" for 14 days after that date
+  function newBadges() {
+    var now = Date.now(), any = false;
+    [].forEach.call(document.querySelectorAll("[data-new]"), function (c) {
+      var d = Date.parse(c.getAttribute("data-new") + "T12:00:00"); if (!(now - d >= 0 && now - d < 14 * 864e5) || c.querySelector(".nb-new")) return;
+      var b = document.createElement("span"); b.className = "nb-new"; b.textContent = "NEW";
+      var t = c.querySelector(".unit-card-title,.ft,h3") || c; t.appendChild(b); any = true;
+    });
+    if (any && !document.getElementById("nb-new-css")) { var st = document.createElement("style"); st.id = "nb-new-css";
+      st.textContent = ".nb-new{display:inline-block;margin-left:8px;vertical-align:middle;font:800 10.5px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;color:#1E2D4F;background:#FFC107;border-radius:999px;padding:4px 8px;box-shadow:0 2px 0 #E0A800}@media print{.nb-new{display:none}}";
+      document.head.appendChild(st); }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", newBadges); else newBadges();
+
   // Nov 17, 2026: Top Students ticker on the 8th grade hub pages (ticker.js decides where it shows)
   try { var tk = document.createElement("script"); tk.src = root + "ticker.js?v=20261117a"; document.head.appendChild(tk); } catch (e) {}
 

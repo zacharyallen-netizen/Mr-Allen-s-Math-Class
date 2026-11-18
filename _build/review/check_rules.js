@@ -254,7 +254,14 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     if (!/data-site-video="trackers"/.test(rd('grade8/grading.html')) || !/site-video\.js/.test(rd('grade8/grading.html'))) fail('J4', 'grade8/grading.html', 'tracker video in Your tracker'); }
   { const vf = rd('grade8/vocab-flashcards.html'), vc = (rd('grade8/vocabulary.html').match(/class="vcard"/g) || []).length;
     if (!/function mask\(/.test(vf) || (vf.match(/"t": ?"/g) || []).length !== vc || !/vocab-flashcards\.html/.test(rd('grade8/vocabulary.html'))) fail('J5', 'grade8/vocab-flashcards.html', 'every glossary word, masked Blitz prompts, linked from the glossary (rerun _build/vocab_game.py)'); }
-  for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) if (!/wb-print/.test(rd(f))) fail('J5', f, 'Print it bar at the top');
+  { const fx = rd('student-fx.js'), home = rd('grade8/index.html'), sn = rd('side-nav.js'), cfg = rd('site-config.js'), si = rd('search-index.js');
+    if (!/fx-print/.test(fx) || /'Printables ▾'/.test(fx)) fail('K1', 'student-fx.js', 'PDF / answer key buttons in a Print it bar at the TOP, not folded at the bottom');
+    for (const id of ['today', 'learn', 'practice-review', 'my-progress', 'take-a-break']) if (!new RegExp('id="' + id + '"').test(home)) fail('K1', 'grade8/index.html', 'Start here today + the four groups (' + id + ')');
+    if (!/site-config\.js/.test(home) || !/thisUnit:\s*\d/.test(cfg)) fail('K1', 'site-config.js', 'thisUnit drives the This unit button');
+    for (const t of ["title: 'Learn'", "title: 'Practice & Review'", "title: 'My Progress'", "title: 'Take a Break'", 'class="srch"']) if (sn.indexOf(t) < 0) fail('K1', 'side-nav.js', 'same four groups + search (' + t + ')');
+    for (let n = 1; n <= 9; n++) if (!/<!--unit-extras-->/.test(rd('grade8/unit' + n + '.html'))) fail('K1', 'grade8/unit' + n + '.html', 'Also for this unit row (python3 _build/unit_extras.py)');
+    if (!/window\.SITE_SEARCH = /.test(si) || si.indexOf('vocab-flashcards.html') < 0) fail('K1', 'search-index.js', 'rebuild with python3 _build/search_index.py');
+    const homeLinks = (home.match(/href="([^"#]+)/g) || []).map(h => h.slice(6)); for (const h of ['anchor_charts.html', 'vocab-flashcards.html', 'skill-builders.html', 'arcade.html', 'reset-room.html', 'grading.html', 'benchmarks.html', '8th_grade_eog_hub.html', 'materials_index.html', 'winter-break-review-v2.html']) if (homeLinks.indexOf(h) < 0) fail('K1', 'grade8/index.html', 'missing card ' + h); }
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');

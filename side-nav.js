@@ -24,26 +24,42 @@
     flag: 'M5 21V4M5 4h11l-2 4 2 4H5',
     info: 'M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM12 11v6M12 7h.01',
     note: 'M9 18V5l12-2v13M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM21 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
+    puzzle: 'M10 3h4v3a2 2 0 1 0 4 0V3h3v7h-3a2 2 0 1 0 0 4h3v7h-7v-3a2 2 0 1 0-4 0v3H3v-7h3a2 2 0 1 0 0-4H3V3z',
+    search: 'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM21 21l-5-5',
     menu: 'M4 6h16M4 12h16M4 18h16', close: 'M6 6l12 12M18 6L6 18', chev: 'M9 6l6 6-6 6'
   };
   var U = [['unit1.html', 'Unit 1', 'Real Numbers'], ['unit2.html', 'Unit 2', 'Exponents & Scientific Notation'], ['unit3.html', 'Unit 3', 'Linear Equations'],
     ['unit4.html', 'Unit 4', 'Angles & Geometry'], ['units3-4.html', 'Units 3–4', 'Pre-Test & Tutorial'], ['unit5.html', 'Unit 5', 'Pythagorean Theorem'],
     ['unit6.html', 'Unit 6', 'Functions, Slope & Systems'], ['unit7.html', 'Unit 7', 'Data Analysis'], ['unit8.html', 'Unit 8', 'Transformations'], ['unit9.html', 'Unit 9', 'Volume']];
+  /* Nov 18, 2026 site rebuild (Zach: students knowing what is available and where to find it): the same FOUR groups
+     as the 8th Grade home page (Learn · Practice & Review · My Progress · Take a Break), then Math 1, Calculators and
+     Class Info. "This unit" comes from site-config.js (thisUnit). A search box at the top of the drawer searches
+     search-index.js (built by _build/search_index.py). */
+  var X = function (t, h, n) { return { t: t, h: h, n: n }; };
   var S = [
-    { id: 'g8', icon: 'book', label: '8th Grade', title: '8th Grade Math', desc: 'Your units. Each unit has notes, practice, Targeted Practice and a pre-test, in the order to do them.',
-      links: [{ t: '8th Grade home', h: 'grade8/index.html' }].concat(U.map(function (u) { return { t: u[1], n: u[2], h: 'grade8/' + u[0] }; }))
-        .concat([{ t: 'Skill Builders', n: 'short lessons on core skills', h: 'grade8/skill-builders.html' }]), sec: ['grade8/unit', 'grade8/units', 'grade8/index.html', 'grade8/skill', 'grade8/homework_turn_in'] },
-    { id: 'm1', icon: 'm1', label: 'Math 1', title: 'NC Math 1', desc: 'For students in NC Math 1. Your teacher gives you the password.', links: [{ t: 'NC Math 1 home', h: 'math1/index.html' }], sec: ['math1/'] },
-    { id: 'gr', icon: 'star', label: 'Grades', title: 'Grading & Standards', desc: 'How grades work: the 1–5 scale, what each score means, your I Can tracker and the I Can targets.',
-      links: [{ t: 'Grading & Standards', h: 'grade8/grading.html' }, { t: 'Durable Skills', n: 'perseverance, teamwork, self-control', h: 'grade8/durable-skills.html' }], sec: ['grade8/grading', 'grade8/targets/', 'grade8/durable'] },
-    { id: 'ar', icon: 'game', label: 'Arcade', title: 'Math Arcade', desc: 'Math games for integers, exponents, slope, angles and more. Play to practice.', links: [{ t: 'Enter the Arcade', h: 'grade8/arcade.html' }], sec: ['grade8/arcade'] },
-    { id: 'rr', icon: 'wave', label: 'Reset', title: 'Reset Room & Music', desc: 'Take a short break, breathe, and get ready to work. Or play calm music while you work.',
-      links: [{ t: 'Reset Room', n: 'calm-down activities', h: 'grade8/reset-room.html' }, { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }], sec: ['grade8/reset-room', 'grade8/ripples', 'grade8/drift'] },
+    { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page has the notes, practice, Targeted Practice and pre-test in order, plus games for that unit.',
+      links: [{ t: 'This unit', h: 'grade8/index.html', tu: 1 }, X('8th Grade home', 'grade8/index.html')].concat(U.map(function (u) { return X(u[1], 'grade8/' + u[0], u[2]); }))
+        .concat([X('Anchor Charts', 'grade8/anchor_charts.html', 'one chart for each unit'), X('Formula Sheet', 'grade8/formulas.html'), X('Vocabulary', 'grade8/vocabulary.html', 'key words for every unit'),
+          X('Interactive Tools', 'grade8/tools.html'), X('Materials Index', 'grade8/materials_index.html', 'every PDF and answer key'),
+          X('Math in Science', 'grade8/math-science/index.html'), X('Math in Financial Literacy', 'grade8/math-finlit/index.html')]),
+      sec: ['grade8/unit', 'grade8/units', 'grade8/index.html', 'grade8/homework_turn_in', 'grade8/anchor', 'grade8/formulas', 'grade8/vocabulary.html', 'grade8/tools', 'grade8/materials_index', 'grade8/math-science', 'grade8/math-finlit', 'grade8/volume'] },
+    { id: 'pr', icon: 'puzzle', label: 'Practice', title: 'Practice & Review', desc: 'Stuck on a skill, or getting ready for a test? Short lessons, flashcards and test practice.',
+      links: [X('Skill Builders', 'grade8/skill-builders.html', 'short lessons and videos'), X('Vocab Flashcards & Blitz', 'grade8/vocab-flashcards.html', 'learn the words, then race the Blitz'),
+        X('Fluency Lab', 'grade8/Fluency-Lab-Package/fluency-lab/index.html', 'math facts to automatic'), X('Graphing Practice', 'grade8/graphing.html'),
+        X('Winter Break Review', 'grade8/winter-break-review.html'), X('Winter Break Review — Version 2', 'grade8/winter-break-review-v2.html'),
+        X('NC Check-Ins / Benchmarks', 'grade8/benchmarks.html'), X('EOG Prep', 'grade8/8th_grade_eog_hub.html', 'review, practice, study guide')],
+      sec: ['grade8/skill', 'grade8/vocab-flash', 'grade8/Fluency-Lab', 'grade8/graphing', 'grade8/winter', 'grade8/benchmark', 'grade8/checkin', 'grade8/8th_grade_eog', 'grade8/eog', 'grade8/q1_benchmark'] },
+    { id: 'gr', icon: 'star', label: 'Progress', title: 'My Progress', desc: 'How grades work: the 1–5 scale, your I Can Tracker, the I Can targets, and how to raise a score.',
+      links: [X('Grading & Standards', 'grade8/grading.html'), X('Video: your folder and I Can Tracker', 'grade8/grading.html#video-trackers', '2 minutes with Digit'),
+        X('Durable Skills', 'grade8/durable-skills.html', 'perseverance, teamwork, self-control')], sec: ['grade8/grading', 'grade8/targets/', 'grade8/durable'] },
+    { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
+      links: [X('Math Arcade', 'grade8/arcade.html', 'every math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
+      sec: ['grade8/arcade', 'grade8/reset-room', 'grade8/ripples', 'grade8/drift'] },
+    { id: 'm1', icon: 'm1', label: 'Math 1', title: 'NC Math 1', desc: 'For students in NC Math 1. Your teacher gives you the password.', links: [X('NC Math 1 home', 'math1/index.html')], sec: ['math1/'] },
     { id: 'ca', icon: 'calc', label: 'Calculators', title: 'Calculators', desc: 'Use these only when the problem says "Calculator OK".',
       links: [{ t: 'Desmos Scientific Calculator', n: 'new tab ↗', h: 'https://www.desmos.com/scientific', nt: 1 }, { t: 'Desmos Graphing Calculator', n: 'new tab ↗', h: 'https://www.desmos.com/calculator', nt: 1 }] },
-    { id: 'eo', icon: 'flag', label: 'Test Prep', title: 'Check-Ins & EOG Prep', desc: 'Practice for the NC Check-Ins and the End-of-Grade test.',
-      links: [{ t: 'NC Check-Ins / Benchmarks', h: 'grade8/benchmarks.html' }, { t: 'EOG Prep', n: 'review, practice, study guide', h: 'grade8/8th_grade_eog_hub.html' }], sec: ['grade8/benchmark', 'grade8/checkin', 'grade8/8th_grade_eog', 'grade8/eog'] },
-    { id: 'ci', icon: 'info', label: 'Class Info', title: 'Class Info', desc: 'Syllabus, Google Classroom links and family resources.', links: [{ t: 'Class Information', h: 'class-information.html' }], sec: ['class-information'] }
+    { id: 'ci', icon: 'info', label: 'Class Info', title: 'Class Info', desc: 'Syllabus, Google Classroom links and family resources. New here? Watch the website tour.',
+      links: [X('Class Information', 'class-information.html'), X('Website tour video', 'index.html#video-tour', '2 minutes with Digit'), X('Home page', 'index.html')], sec: ['class-information'] }
   ];
   var cur = null, best = 0;
   S.forEach(function (s) { (s.links || []).forEach(function (l) { if (l.h === rel) { cur = s.id; best = 999; } }); });
@@ -77,16 +93,22 @@
     '.sb a:hover,.sb .lk:hover{border-color:#E0A800;background:#FFFBEB}.sb a[aria-current]{border-color:#FFC107;box-shadow:inset 3px 0 0 #FFC107}.sb small{display:block;font-weight:500;color:#6B7280;font-size:12.5px;margin-top:1px}' +
     '.mob{display:none;position:fixed;left:10px;top:10px;z-index:2147483000;background:#1E2D4F;color:#fff;border:0;border-radius:10px;height:42px;padding:0 14px;font:600 14px Inter,sans-serif;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(15,23,42,.25);cursor:pointer}' +
     'button:focus-visible,a:focus-visible{outline:2px solid #FFC107;outline-offset:2px}' +
+    '.srch{padding:10px 12px 4px;border-bottom:1px solid #EEF0F4}.srch input{width:100%;font:500 15px Inter,sans-serif;padding:10px 12px;border:1.5px solid #C9D1E3;border-radius:10px;color:#1E2D4F;outline:none}' +
+    '.srch input:focus{border-color:#E0A800;box-shadow:0 0 0 3px rgba(255,193,7,.25)}.res{max-height:52vh;overflow:auto}.res:empty{display:none}' +
+    '.res a{display:block;text-decoration:none;color:#1E2D4F;padding:9px 10px;border-radius:10px;margin:4px 0;font:600 14.5px Inter,sans-serif;border:1px solid #E3E5EA}.res a:hover,.res a:focus{border-color:#E0A800;background:#FFFBEB}' +
+    '.res a small{display:block;font:500 12.5px Inter,sans-serif;color:#6B7280;margin-top:2px}.res a em{font-style:normal;font:700 10.5px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#8A6100;margin-left:6px}.res p{margin:8px 4px;font:500 14px Inter,sans-serif;color:#6B7280}' +
+    '.sb a.tu{border-color:#FFC107;background:#FFF6D6}' +
     '@media (max-width:760px){.rail{display:none}.mob{display:inline-flex}}' +
     '@media print{.rail,.mob,.drawer,.scrim{display:none!important}}';
-  var rail = '<div class="rail"><button type="button" class="logo" data-open="" aria-label="Open the menu">MA<small>MENU</small></button>' +
+  var rail = '<div class="rail"><button type="button" class="logo" data-open="" aria-label="Open the menu">MA<small>MENU</small></button><button type="button" class="sbtn" aria-label="Search the site">' + svg(I.search) + '<span>Search</span></button>' +
     S.map(function (s) { return '<button type="button" data-open="' + s.id + '" class="' + (s.id === cur ? 'cur' : '') + '" aria-label="' + esc(s.title) + '">' + svg(I[s.icon]) + '<span>' + esc(s.label) + '</span></button>'; }).join('') +
     '<span class="sp"></span><button type="button" class="mus" aria-label="Music player">' + svg(I.note) + '<span>Music</span></button></div>';
-  var drawer = '<div class="scrim" hidden></div><div class="drawer" hidden role="dialog" aria-label="Menu"><div class="dh"><div><b>Mr. Allen</b><span>Mathematics</span></div><button type="button" class="x" aria-label="Close the menu">' + svg(I.close, 18) + '</button></div><div class="list">' +
+  var drawer = '<div class="scrim" hidden></div><div class="drawer" hidden role="dialog" aria-label="Menu"><div class="dh"><div><b>Mr. Allen</b><span>Mathematics</span></div><button type="button" class="x" aria-label="Close the menu">' + svg(I.close, 18) + '</button></div><div class="srch"><input type="search" placeholder="Search: slope, exponents, games…" aria-label="Search the site"><div class="res" role="list"></div></div><div class="list">' +
     S.map(function (s) {
       return '<div class="sec' + (s.id === cur ? ' cur' : '') + '" data-id="' + s.id + '"><button type="button" class="sh" aria-expanded="false">' + '<span class="ic">' + svg(I[s.icon]) + '</span><span class="tx">' + esc(s.title) + '</span><span class="chev">' + svg(I.chev, 16) + '</span></button>' +
         '<div class="sb" hidden><p>' + esc(s.desc) + '</p>' + s.links.map(function (l) {
           if (l.music) return '<button type="button" class="lk mus2">' + esc(l.t) + (l.n ? '<small>' + esc(l.n) + '</small>' : '') + '</button>';
+          if (l.tu) return '<a class="tu" href="' + url(l.h) + '">★ This unit<small>the unit we are working on now</small></a>';
           return '<a href="' + url(l.h) + '"' + (l.nt ? ' target="_blank" rel="noopener"' : '') + (l.h === rel ? ' aria-current="page"' : '') + '>' + esc(l.t) + (l.n ? '<small>' + esc(l.n) + '</small>' : '') + '</a>';
         }).join('') + '</div></div>';
     }).join('') + '</div></div>';
@@ -108,6 +130,35 @@
   [].forEach.call(sr.querySelectorAll('.sh'), function (b) { b.addEventListener('click', function () { var s = b.parentNode, on = !s.classList.contains('open'); openSec(on ? s.getAttribute('data-id') : ''); }); });
   $('.x').addEventListener('click', close); sc.addEventListener('click', close);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !dr.hidden) close(); });
+
+  // "This unit" (site-config.js): load it if the page did not, then point the gold link at the unit
+  var UN = { 1: 'unit1.html', 2: 'unit2.html', 3: 'unit3.html', 4: 'unit4.html', 5: 'unit5.html', 6: 'unit6.html', 7: 'unit7.html', 8: 'unit8.html', 9: 'unit9.html' };
+  function setTU() { var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; } }
+  if (window.SITE_CONFIG) setTU(); else { var cs = document.createElement('script'); cs.src = root + 'site-config.js'; cs.onload = setTU; document.head.appendChild(cs); }
+
+  // Search (search-index.js, loaded the first time the box is used)
+  var sIn = sr.querySelector('.srch input'), sRes = sr.querySelector('.res'), IDX = null, waiting = false;
+  function loadIdx(cb) {
+    if (IDX) return cb(); if (window.SITE_SEARCH) { IDX = window.SITE_SEARCH; return cb(); }
+    if (waiting) return; waiting = true; var sc2 = document.createElement('script'); sc2.src = root + 'search-index.js?v=' + (window.__SNV || '20261118a');
+    sc2.onload = function () { IDX = window.SITE_SEARCH || []; waiting = false; cb(); }; document.head.appendChild(sc2);
+  }
+  function norm(t) { return String(t).toLowerCase().replace(/[^a-z0-9√π ]+/g, ' '); }
+  function find() {
+    var q = norm(sIn.value).trim(); if (!q) { sRes.innerHTML = ''; return; }
+    var words = q.split(/\s+/).filter(Boolean);
+    var hits = IDX.map(function (r) {
+      var T = norm(r[0]), D = norm(r[1] + ' ' + (r[3] || '')), sc = 0;
+      for (var i = 0; i < words.length; i++) { var w = words[i], st = w.replace(/s$/, ''); if (T.indexOf(st) >= 0) sc += T.indexOf(st) === 0 ? 4 : 3; else if (D.indexOf(st) >= 0) sc += 1; else return null; }
+      if (r[4] === 'PDF' || r[4] === 'Answer key') sc -= 1.5;
+      return { r: r, sc: sc };
+    }).filter(Boolean).sort(function (a, b) { return b.sc - a.sc || a.r[0].length - b.r[0].length; }).slice(0, 12);
+    sRes.innerHTML = hits.length ? hits.map(function (h) { var r = h.r; return '<a role="listitem" href="' + url(r[2]) + '">' + esc(r[0]) + (r[4] ? '<em>' + esc(r[4]) + '</em>' : '') + '<small>' + esc(r[1]) + '</small></a>'; }).join('')
+      : '<p>No matches. Try a shorter word, like “slope” or “angle”.</p>';
+  }
+  sIn.addEventListener('input', function () { loadIdx(find); });
+  sIn.addEventListener('keydown', function (e) { if (e.key === 'Enter') { var a = sRes.querySelector('a'); if (a) location.href = a.href; } });
+  sr.querySelector('.sbtn').addEventListener('click', function () { open(cur); setTimeout(function () { sIn.focus(); }, 30); });
 
   // ♪ Music: the same small pop-out player as the top bar
   function music() {
