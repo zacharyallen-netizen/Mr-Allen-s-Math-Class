@@ -25,7 +25,7 @@ ANCHOR = {1: 'Unit1_Real_Number_System_Anchor_Chart', 2: 'Unit2_Exponents_Scient
 for v in ANCHOR.values(): assert os.path.exists(os.path.join(G8, 'anchor-charts', v + '.pdf')), v
 
 CSS = ('<style id="unit-extras-css">.unit-extras{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0 4px;font:500 14px Inter,sans-serif;color:#1E2D4F}'
-       '.unit-extras b{font:700 13px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#5B6475;margin-right:4px}'
+       '.unit-extras b{font:700 13px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#C9D2E3;margin-right:4px}'
        '.unit-extras a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:#1E2D4F;background:#fff;border:1px solid #D5DAE3;border-radius:999px;padding:6px 12px;font:600 13.5px Inter,sans-serif}'
        '.unit-extras a:hover{border-color:#E0A800;background:#FFF6D6}.unit-extras a.g{border-color:#C9B6F2;background:#F7F3FF}'
        '@media print{.unit-extras{display:none}}</style>')

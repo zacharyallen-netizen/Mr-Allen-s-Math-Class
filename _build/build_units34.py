@@ -30,7 +30,7 @@ def unit(u):
 i3, sh3, own3 = unit(3)
 i4, sh4, own4 = unit(4)
 shared = (sh3 or sh4)[0]
-shared = re.sub(r'<div class="section-label"[^>]*>[^<]*</div>', '<div class="section-label" id="pretest">Units 3–4 Pre-Test &amp; Tutorial</div>', shared, count=1)
+shared = re.sub(r'<div class="section-label"[^>]*>.*?</div>', '<div class="section-label" id="pretest">Units 3–4 Pre-Test &amp; Tutorial</div>', shared, count=1)
 
 head = i3['head']
 head = re.sub(r'<title>[^<]*</title>', "<title>Units 3–4 — Equations &amp; Angles | Mr. Allen's 8th Grade Math</title>", head)

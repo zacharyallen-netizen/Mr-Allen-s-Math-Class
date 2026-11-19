@@ -37,7 +37,7 @@
      search-index.js (built by _build/search_index.py). */
   var X = function (t, h, n) { return { t: t, h: h, n: n }; };
   var S = [
-    { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page has the notes, practice, Targeted Practice and pre-test in order, plus games for that unit.',
+    { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page starts with a Quick Check, then the notes, practice, Targeted Practice (homework) and pre-test in order, plus games for that unit.',
       links: [{ t: 'This unit', h: 'grade8/index.html', tu: 1 }, { t: 'Ask Digit', dg: 1 }, X('8th Grade home', 'grade8/index.html')].concat(U.map(function (u) { return X(u[1], 'grade8/' + u[0], u[2]); }))
         .concat([X('Anchor Charts', 'grade8/anchor_charts.html', 'one chart for each unit'), X('Formula Sheet', 'grade8/formulas.html'), X('Vocabulary', 'grade8/vocabulary.html', 'key words for every unit'),
           X('Interactive Tools', 'grade8/tools.html'), X('Materials Index', 'grade8/materials_index.html', 'every PDF and answer key'),
@@ -47,11 +47,11 @@
       links: [X('Skill Builders', 'grade8/skill-builders.html', 'short lessons and videos'), X('Vocab Flashcards & Blitz', 'grade8/vocab-flashcards.html', 'learn the words, then race the Blitz'),
         X('Fluency Lab', 'grade8/Fluency-Lab-Package/fluency-lab/index.html', 'math facts to automatic'), X('Graphing Practice', 'grade8/graphing.html'),
         X('Winter Break Review', 'grade8/winter-break-review.html'), X('Winter Break Review — Version 2', 'grade8/winter-break-review-v2.html'),
-        X('NC Check-Ins / Benchmarks', 'grade8/benchmarks.html'), X('EOG Prep', 'grade8/8th_grade_eog_hub.html', 'review, practice, study guide')],
+        X('NC Check-Ins / Benchmarks', 'grade8/benchmarks.html', 'state practice tests'), X('EOG Prep', 'grade8/8th_grade_eog_hub.html', 'the end-of-year state test')],
       sec: ['grade8/skill', 'grade8/vocab-flash', 'grade8/Fluency-Lab', 'grade8/graphing', 'grade8/winter', 'grade8/benchmark', 'grade8/checkin', 'grade8/8th_grade_eog', 'grade8/eog', 'grade8/q1_benchmark'] },
     { id: 'gr', icon: 'star', label: 'Progress', title: 'My Progress', desc: 'How grades work: the 1–5 scale, your I Can Tracker, the I Can targets, and how to raise a score.',
       links: [{ t: 'Ask Digit', dg: 1 }, X('Grading & Standards', 'grade8/grading.html'), X('Video: your folder and I Can Tracker', 'grade8/grading.html#video-trackers', '2 minutes with Digit'),
-        X('Durable Skills', 'grade8/durable-skills.html', 'perseverance, teamwork, self-control')], sec: ['grade8/grading', 'grade8/targets/', 'grade8/durable'] },
+        X('Durable Skills', 'grade8/durable-skills.html', 'good work habits')], sec: ['grade8/grading', 'grade8/targets/', 'grade8/durable'] },
     { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
       links: [X('Math Arcade', 'grade8/arcade.html', 'every math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
       sec: ['grade8/arcade', 'grade8/reset-room', 'grade8/ripples', 'grade8/drift'] },

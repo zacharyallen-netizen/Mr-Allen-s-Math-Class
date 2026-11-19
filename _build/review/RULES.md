@@ -147,3 +147,12 @@ K2. Ask Digit (_build/student_work/Digit.gs, Nov 18, 2026): a student sees ONLY 
     signed-in school account (Session.getActiveUser) matched to the Student Folders email or the Roster; a name in the
     address (&student=) works only for the script owner (teacher preview). Every sheet value on the page is escaped; the
     page writes nothing. The website button stays hidden until site-config.js digitUrl is a script.google.com address.
+K3. Doors and unit paths (Nov 19, 2026; Zach approved the plan "four big doors ... a picture or icon for each door and section",
+    "keep things in sequence but allow students to move through different parts", plain meanings in parentheses, one way to get around):
+    the 8th Grade home is the gold "This unit" bar + FOUR picture doors (Learn · Practice & Review · My Progress · Take a Break);
+    a door opens its group below (#learn etc. open it too, so menu links work); the old jump-chip row is gone; What's new is one line.
+    Every card is still on the home page (inside its group). Every unit page starts with a Quick Check (unitN-screener.html:
+    5 questions on skills from earlier grades, Hint, named mistakes, 3 tries, "Ready" / "Warm up on these first" with practice
+    links, Send my work) and has an "In this unit" row of numbered jump links in page order (_build/unit_path.py); nothing is
+    locked or reordered. Section labels carry an icon; class terms get a plain meaning in parentheses: Targeted Practice
+    (homework), Pre-Test (practice test to get ready for the unit test), EOG Practice (practice for the end-of-year state test).

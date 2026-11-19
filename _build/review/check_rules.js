@@ -274,6 +274,17 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     for (let n = 1; n <= 9; n++) if (!/<!--unit-extras-->/.test(rd('grade8/unit' + n + '.html'))) fail('K1', 'grade8/unit' + n + '.html', 'Also for this unit row (python3 _build/unit_extras.py)');
     if (!/window\.SITE_SEARCH = /.test(si) || si.indexOf('vocab-flashcards.html') < 0) fail('K1', 'search-index.js', 'rebuild with python3 _build/search_index.py');
     const homeLinks = (home.match(/href="([^"#]+)/g) || []).map(h => h.slice(6)); for (const h of ['anchor_charts.html', 'vocab-flashcards.html', 'skill-builders.html', 'arcade.html', 'reset-room.html', 'grading.html', 'benchmarks.html', '8th_grade_eog_hub.html', 'materials_index.html', 'winter-break-review-v2.html']) if (homeLinks.indexOf(h) < 0) fail('K1', 'grade8/index.html', 'missing card ' + h); }
+  { const home = rd('grade8/index.html');   /* K3: doors + unit paths + Quick Checks */
+    if ((home.match(/class="door [^"]*" href="#[^"]+" data-door=/g) || []).length !== 4 || !/id="this-unit"/.test(home) || /class="jump"/.test(home)) fail('K3', 'grade8/index.html', 'gold This unit bar + four picture doors, no jump chips');
+    for (const id of ['learn', 'practice-review', 'my-progress', 'take-a-break']) if (!new RegExp('<section class="door-panel" id="' + id + '"').test(home)) fail('K3', 'grade8/index.html', 'door panel ' + id);
+    for (let n = 1; n <= 9; n++) { const u = rd('grade8/unit' + n + '.html');
+      if (!/<!--unit-path--><nav class="unit-path"/.test(u) || !new RegExp('href="unit' + n + '-screener.html"').test(u) || !/id="screener"/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'Quick Check + In this unit row (python3 _build/unit_path.py)');
+      if (!/Targeted Practice <span class="plain">\(homework\)<\/span>/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'plain meaning for Targeted Practice');
+      const sc = rd('grade8/unit' + n + '-screener.html'); const m = sc.match(/window\.SCREENER = (\{.*\});<\/script>/);
+      if (!m) { fail('K3', 'grade8/unit' + n + '-screener.html', 'missing (python3 _build/screener/make.py)'); continue; }
+      const D = JSON.parse(m[1]);
+      if (D.qs.length !== 5 || D.qs.some(q => !q.hint || !q.review || !q.review.h || q.wrong.length !== 3 || q.wrong.some(w => !w.why))) fail('K3', 'grade8/unit' + n + '-screener.html', '5 questions, each with a hint, a review link and a note on every wrong choice');
+      if (!/score-send\.js/.test(sc)) fail('K3', 'grade8/unit' + n + '-screener.html', 'Send my work'); } }
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');
