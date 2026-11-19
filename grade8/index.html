@@ -221,6 +221,13 @@
     if (w && /^https:\/\/script\.google\.com\//.test(url)) { w.querySelector('a').href = url + '?digit=1' + (n ? '&u=' + n : '');   /* the Digit box below shows it; the small link stays hidden */
       var b = document.getElementById('digit-ask'); if (b) { b.querySelector('a.dgo').href = w.querySelector('a').href; b.hidden = false; } } })();
   if (u) { var a = document.getElementById('this-unit'); a.href = u[0]; document.getElementById('tu-t').textContent = u[1]; }
+  var T = ((window.SITE_CONFIG || {}).together || []).map(Number);        // units taught at the same time (site-config.js)
+  if (T.length > 1 && T.indexOf(n) > -1) {
+    document.getElementById('this-unit').href = 'units' + T.join('-') + '.html';
+    document.getElementById('tu-t').textContent = 'Units ' + T.join(' & ') + ' · we are working on both at the same time';
+    var li = document.querySelector('#learn .group-intro');
+    if (li) li.insertAdjacentHTML('afterbegin', '<b>Right now we are working on Units ' + T.join(' and ') + ' at the same time.</b> Their pre-test and tutorial are on the Units ' + T.join('–') + ' page. ');
+  }
   var now = Date.now(), items = [];
   [].forEach.call(document.querySelectorAll('[data-new]'), function (c) {
     var d = Date.parse(c.getAttribute('data-new') + 'T12:00:00'); if (!(now - d < 14 * 864e5)) return;

@@ -135,6 +135,10 @@
   // "This unit" (site-config.js): load it if the page did not, then point the gold link at the unit
   var UN = { 1: 'unit1.html', 2: 'unit2.html', 3: 'unit3.html', 4: 'unit4.html', 5: 'unit5.html', 6: 'unit6.html', 7: 'unit7.html', 8: 'unit8.html', 9: 'unit9.html' };
   function setTU() { var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; }
+    var T = ((window.SITE_CONFIG || {}).together || []).map(Number);       // units taught at the same time (site-config.js)
+    if (a && T.length > 1 && T.indexOf(n) > -1) { a.href = root + 'grade8/units' + T.join('-') + '.html';
+      a.firstChild.textContent = '★ This unit: Units ' + T.join(' & '); a.querySelector('small').textContent = 'we are working on both at the same time';
+      var lp = sr.querySelector('.sec[data-id="le"] .sb p'); if (lp && !lp.querySelector('b')) lp.insertAdjacentHTML('afterbegin', '<b>Right now we are working on Units ' + T.join(' and ') + ' at the same time.</b> '); }
     var du = String((window.SITE_CONFIG || {}).digitUrl || '');            // Ask Digit (Digit.gs): only a script.google.com address
     if (/^https:\/\/script\.google\.com\//.test(du)) sr.querySelectorAll('a.dg').forEach(function (d) { d.href = du + '?digit=1' + (n ? '&u=' + n : ''); d.hidden = false; }); }
   if (window.SITE_CONFIG) setTU(); else { var cs = document.createElement('script'); cs.src = root + 'site-config.js'; cs.onload = setTU; document.head.appendChild(cs); }

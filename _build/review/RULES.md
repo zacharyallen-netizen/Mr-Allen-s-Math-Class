@@ -157,3 +157,7 @@ K3. Doors and unit paths (Nov 19, 2026; Zach approved the plan "four big doors .
     Same day Zach REMOVED the Quick Checks from the unit pages ("lets remove them"; he wants to come back to a pre-diagnostic
     later). The pages (grade8/unitN-screener.html) and _build/screener/make.py stay in the repo, unlinked; QUICK_CHECK in
     _build/unit_path.py puts them back.
+K4. Units taught together (Nov 19, 2026, Zach: "students are working on Unit 3 and 4 at the same time. Make sure that is noted
+    in the learn menu"): site-config.js `together: [3, 4]`; while thisUnit is one of them the side menu's Learn section and the
+    8th Grade home (gold bar + Learn intro) say so, and "This unit" opens units3-4.html. On units3-4.html the other activities
+    come AFTER the Pre-Test & Tutorial, in "More for Units 3–4", grouped, each group with a "Best use" line (_build/unit_extras.py).

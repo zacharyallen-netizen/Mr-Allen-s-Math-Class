@@ -286,6 +286,9 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
       const D = JSON.parse(m[1]);
       if (D.qs.length !== 5 || D.qs.some(q => !q.hint || !q.review || !q.review.h || q.wrong.length !== 3 || q.wrong.some(w => !w.why))) fail('K3', 'grade8/unit' + n + '-screener.html', '5 questions, each with a hint, a review link and a note on every wrong choice');
       if (!/score-send\.js/.test(sc)) fail('K3', 'grade8/unit' + n + '-screener.html', 'Send my work'); } }
+  { const u = rd('grade8/units3-4.html'), i = u.indexOf('id="pretest"'), j = u.indexOf('<!--units34-more-->');   /* K4 */
+    if (i < 0 || j < i || /<!--unit-extras-->/.test(u) || (u.match(/class="mx-best"/g) || []).length < 4) fail('K4', 'grade8/units3-4.html', 'activities after the Pre-Test & Tutorial, each group with Best use (python3 _build/unit_extras.py)');
+    if (!/together:\s*\[/.test(rd('site-config.js')) || !/SITE_CONFIG \|\| \{\}\)\.together/.test(rd('side-nav.js')) || !/SITE_CONFIG \|\| \{\}\)\.together/.test(rd('grade8/index.html'))) fail('K4', 'site-config.js', 'together setting read by side-nav.js and the 8th Grade home'); }
   for (const f of ['grade8/winter-break-review.html', 'grade8/winter-break-review-v2.html']) { const w = rd(f); if (!/"intro":/.test(w) || (w.match(/wb-box/g) || []).length < 7 || /\bEC\b/.test(w)) fail('J2', f, 'Quick review boxes, no EC label'); }
   const lvh = rd('grade8/laser-vault.html');
   if (!/id="brief"/.test(lvh) || !/function fence\(/.test(lvh) || !/function drawObj\(/.test(lvh) || !/lv-tut/.test(lvh) || !/AGENT_MAP/.test(lvh)) fail('I9', 'grade8/laser-vault.html', 'briefing, agent, laser fences, objectives, guided first fence');
