@@ -11,6 +11,7 @@ Nothing is locked or reordered. units3-4.html gets the plain meanings and icons 
 Safe to rerun; run it LAST, after unit_start_here.py, unit_extras.py and build_units34.py:   python3 _build/unit_path.py
 """
 import os, re, html
+QUICK_CHECK = False   # Nov 19, 2026: Zach removed the Quick Checks from the unit pages ("lets remove them ... come back to the idea of a pre-diagnostic later"). True puts them back.
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 G8 = os.path.join(ROOT, 'grade8')
 
@@ -72,7 +73,7 @@ def process(fn, unit):
     s = re.sub(r' <span class="plain">\(.*?\)</span>', '', s)
     s = re.sub(r'(<div class="section-label"[^>]*?) data-ic="[^"]*"', r'\1', s)
     s = re.sub(r'(<div class="section-label"[^>]*?) data-pid="[^"]*"', r'\1', s)
-    if unit:   # Quick Check section before the first section
+    if unit and QUICK_CHECK:   # Quick Check section before the first section
         blk = ('<!--unit-screener--><div class="section-label" id="screener">Quick Check</div>'
                f'<a href="unit{unit}-screener.html" class="feature-card"><div class="fi">🔎</div><div><div class="ft">Unit {unit} Quick Check</div>'
                '<div class="fd">5 quick questions on skills you need for this unit. See what is ready and what to warm up on first.</div></div>'

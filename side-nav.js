@@ -37,7 +37,7 @@
      search-index.js (built by _build/search_index.py). */
   var X = function (t, h, n) { return { t: t, h: h, n: n }; };
   var S = [
-    { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page starts with a Quick Check, then the notes, practice, Targeted Practice (homework) and pre-test in order, plus games for that unit.',
+    { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your units. Each unit page has the notes, practice, Targeted Practice (homework) and pre-test in order, plus games for that unit.',
       links: [{ t: 'This unit', h: 'grade8/index.html', tu: 1 }, { t: 'Ask Digit', dg: 1 }, X('8th Grade home', 'grade8/index.html')].concat(U.map(function (u) { return X(u[1], 'grade8/' + u[0], u[2]); }))
         .concat([X('Anchor Charts', 'grade8/anchor_charts.html', 'one chart for each unit'), X('Formula Sheet', 'grade8/formulas.html'), X('Vocabulary', 'grade8/vocabulary.html', 'key words for every unit'),
           X('Interactive Tools', 'grade8/tools.html'), X('Materials Index', 'grade8/materials_index.html', 'every PDF and answer key'),

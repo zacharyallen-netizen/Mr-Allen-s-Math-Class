@@ -278,7 +278,8 @@ const fail = (rule, where, what) => fails.push(`${rule}  ${where}: ${what}`);
     if ((home.match(/class="door [^"]*" href="#[^"]+" data-door=/g) || []).length !== 4 || !/id="this-unit"/.test(home) || /class="jump"/.test(home)) fail('K3', 'grade8/index.html', 'gold This unit bar + four picture doors, no jump chips');
     for (const id of ['learn', 'practice-review', 'my-progress', 'take-a-break']) if (!new RegExp('<section class="door-panel" id="' + id + '"').test(home)) fail('K3', 'grade8/index.html', 'door panel ' + id);
     for (let n = 1; n <= 9; n++) { const u = rd('grade8/unit' + n + '.html');
-      if (!/<!--unit-path--><nav class="unit-path"/.test(u) || !new RegExp('href="unit' + n + '-screener.html"').test(u) || !/id="screener"/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'Quick Check + In this unit row (python3 _build/unit_path.py)');
+      if (!/<!--unit-path--><nav class="unit-path"/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'In this unit row (python3 _build/unit_path.py)');
+      if (/-screener\.html/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'Quick Checks were removed (Nov 19, 2026); keep them off unless Zach asks');
       if (!/Targeted Practice <span class="plain">\(homework\)<\/span>/.test(u)) fail('K3', 'grade8/unit' + n + '.html', 'plain meaning for Targeted Practice');
       const sc = rd('grade8/unit' + n + '-screener.html'); const m = sc.match(/window\.SCREENER = (\{.*\});<\/script>/);
       if (!m) { fail('K3', 'grade8/unit' + n + '-screener.html', 'missing (python3 _build/screener/make.py)'); continue; }
