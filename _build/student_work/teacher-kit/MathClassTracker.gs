@@ -17,7 +17,7 @@
  *  What the website can ask for:
  *    • <web app URL>?leaders=1   → Arcade High Scores (top 5 per game, "First L." only)
  *
- *  SETUP (about 10 minutes) — full steps with pictures of each menu are in the guide.
+ *  SETUP (about 10 minutes) — full steps are in the guide.
  *   1. Make a new Google Sheet. Extensions → Apps Script.
  *   2. Delete what is there, paste this whole file, click Save.
  *   3. Change CLASS_CODE below to your own short code (letters, numbers, dashes). Save.
