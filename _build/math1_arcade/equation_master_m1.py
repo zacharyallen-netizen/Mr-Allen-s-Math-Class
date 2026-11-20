@@ -637,7 +637,7 @@ h = re.sub(r'(<h1[^>]*>)(.*?)(</h1>)', lambda m: m.group(1) + m.group(2).replace
 rep('Solve equations step-by-step — choose the right move at each stage! · Unit 3 · NC.8.EE.7', 'Solve step by step: choose the right move at each stage! · Math 1 Unit 1 · NC.M1.A-REI.1, A-REI.3, A-CED.1, A-CED.4')
 # show each step's own question (Justify It shows the next line there); the solved message as plain text
 rep("  lockFor(THINK_MS, 'Read the equation first…');", "  var cl = document.querySelector('.choices-label'); if (cl) cl.textContent = step.prompt || \"What's the next step?\";\n  lockFor(THINK_MS, 'Read the equation first…');")
-rep("showFeedback('ok', '🎉 Solved! The answer is ' + oc.result);", "showFeedback('ok', '🎉 Solved! The answer is ' + oc.result.replace(/<span class='fr'><span>(\\d+)<\\/span><span>(\\d+)<\\/span><\\/span>/g, '$1/$2').replace(/<[^>]+>/g, ''));")
+if "Solved! The answer is ' + oc.result);" in h: rep("showFeedback('ok', '🎉 Solved! The answer is ' + oc.result);", "showFeedback('ok', '🎉 Solved! The answer is ' + oc.result.replace(/<span class='fr'><span>(\\d+)<\\/span><span>(\\d+)<\\/span><\\/span>/g, '$1/$2').replace(/<\\/?[a-z][^>]*>/gi, ''));")
 h = h.replace('<!-- START SCREEN -->', '<!-- START SCREEN (Math 1 copy, built by _build/math1_arcade/equation_master_m1.py from grade8/equation_master.html) -->', 1)
 open(OUT, 'w', encoding='utf-8').write(h)
 n = {k: len(v) for k, v in LEVELS.items()}
