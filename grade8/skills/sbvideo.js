@@ -91,7 +91,7 @@
     '7b': { anim: { 1: 'Draw a <b>line of best fit</b>. It is a straight line through the middle of the dots. About as many dots are above it as below.' } },
     '7c': { anim: { 0: 'A <b>two-way table</b> sorts the same 40 students two ways. Boy or girl? Likes dogs or not?' } }
   };
-  function vt(L, k) { var o = VTXT[L.id]; return o && o[k] != null ? o[k] : L[k]; }
+  function vt(L, k) { var o = VTXT[L.id] || L.vtxt; return o && o[k] != null ? o[k] : L[k]; }
   /* words of a sentence (numbers and math symbols count) — two sentences that share most words are a repeat */
   function words(t) { return (strip(t).toLowerCase().match(/[a-z]+|[0-9.]+|[²³⁰¹⁴⁵⁶⁷⁸⁹⁻√∛°=<>≤≥+−×÷]/g) || []).filter(function (w) { return !/^(the|a|an|and|is|are|to|of|it|its|so|that|this|you|in|on)$/.test(w); }); }
   function same(a, b) { if (a.length < 4 || b.length < 4) return false; var A = {}, n = 0, u = {}; a.forEach(function (w) { A[w] = 1; u[w] = 1; }); b.forEach(function (w) { if (A[w] && !u['@' + w]) { n++; u['@' + w] = 1; } u[w] = 1; }); return n / Object.keys(u).filter(function (k) { return k[0] !== '@'; }).length >= 0.7; }
@@ -283,9 +283,9 @@
     function fresh(html) {
       return sentencesHtml(html).filter(function (p) { var w = words(p); if (said.some(function (x) { return same(w, x); })) return false; said.push(w); return true; }).join(' ');
     }
-    add('intro', GREET[li % GREET.length] + ' ' + (HOOK[L.id] || 'Today we learn ' + L.title + '.'), { pose: 'wave bounce' });
-    said.push(words(HOOK[L.id] || ''));
-    var big = vt(L, 'big'), vanim = (VTXT[L.id] || {}).anim || {};
+    add('intro', GREET[li % GREET.length] + ' ' + ((HOOK[L.id] || L.hook) || 'Today we learn ' + L.title + '.'), { pose: 'wave bounce' });
+    said.push(words((HOOK[L.id] || L.hook) || ''));
+    var big = vt(L, 'big'), vanim = (VTXT[L.id] || L.vtxt || {}).anim || {};
     if (sentences(plain(big)).length) sentencesHtml(big).forEach(function (p, i) { var f = fresh(p); if (f) add('idea', f, { pose: i ? 'point' : 'point bounce' }); });
     if (L.anim && L.anim.frames) L.anim.frames.forEach(function (f, i) { var c = vanim[i] != null ? vanim[i] : (f.cap || ''); add('anim', fresh(c), { frame: i, pose: 'point', board: c }); });
     if (L.walk) {

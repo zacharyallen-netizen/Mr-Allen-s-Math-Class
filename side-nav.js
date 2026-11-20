@@ -61,6 +61,27 @@
     { id: 'ci', icon: 'info', label: 'Class Info', title: 'Class Info', desc: 'Syllabus, Google Classroom links and family resources. New here? Watch the website tour.',
       links: [X('Class Information', 'class-information.html'), X('Website tour video', 'index.html#video-tour', '2 minutes with Digit'), X('Home page', 'index.html')], sec: ['class-information'] }
   ];
+  /* 7th grade (Nov 20, 2026 draft): on grade7/ pages the first four groups point to the 7th grade pages,
+     and the menu takes the 7th grade colors (coffee + amber). 8th grade pages are unchanged. */
+  var G7 = /^grade7\//.test(rel);
+  if (G7) {
+    var U7 = [['unit1.html', 'Unit 1', 'Rational Numbers'], ['unit2.html', 'Unit 2', 'Expressions'], ['unit3.html', 'Unit 3', 'Equations & Inequalities'],
+      ['unit4.html', 'Unit 4', 'Proportional Relationships'], ['unit5.html', 'Unit 5', 'Percents'], ['unit6.html', 'Unit 6', 'Scale Drawings, Angles & Triangles'],
+      ['unit7.html', 'Unit 7', 'Circles, Area & Volume'], ['unit8.html', 'Unit 8', 'Statistics'], ['unit9.html', 'Unit 9', 'Probability']];
+    S.splice(0, 4,
+      { id: 'le', icon: 'book', label: 'Learn', title: 'Learn', desc: 'Your 7th grade units. Each unit page has the guided notes, practice, Skill Builders and games for that unit.',
+        links: [{ t: 'This unit', h: 'grade7/index.html', tu: 1 }, X('7th Grade home', 'grade7/index.html')].concat(U7.map(function (u) { return X(u[1], 'grade7/' + u[0], u[2]); }))
+          .concat([X('Vocabulary', 'grade7/vocabulary.html', 'key words for every unit'), X('Formula Sheet', 'grade7/formulas.html')]),
+        sec: ['grade7/unit', 'grade7/index.html', 'grade7/vocabulary', 'grade7/formulas'] },
+      { id: 'pr', icon: 'puzzle', label: 'Practice', title: 'Practice & Review', desc: 'Stuck on a skill? Short lessons and videos with Digit, and math facts practice.',
+        links: [X('Skill Builders', 'grade7/skill-builders.html', 'short lessons and videos'), X('Fluency Lab', 'grade8/Fluency-Lab-Package/fluency-lab/index.html', 'math facts to automatic')],
+        sec: ['grade7/skill'] },
+      { id: 'gr', icon: 'star', label: 'Progress', title: 'My Progress', desc: 'Good work habits and class information.',
+        links: [X('Durable Skills', 'grade8/durable-skills.html', 'good work habits'), X('Class Information', 'class-information.html')], sec: [] },
+      { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
+        links: [X('7th Grade Arcade', 'grade7/arcade.html', 'every 7th grade math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
+        sec: ['grade7/arcade', 'grade7/market', 'grade7/canyon', 'grade7/lantern'] });
+  }
   var cur = null, best = 0;
   S.forEach(function (s) { (s.links || []).forEach(function (l) { if (l.h === rel) { cur = s.id; best = 999; } }); });
   if (!cur) S.forEach(function (s) { (s.sec || []).forEach(function (p) { if (rel.indexOf(p) === 0 && p.length > best) { best = p.length; cur = s.id; } }); });
@@ -100,6 +121,7 @@
     '.sb a.tu{border-color:#FFC107;background:#FFF6D6}' + '.sb a.dg[hidden]{display:none}' +
     '@media (max-width:760px){.rail{display:none}.mob{display:inline-flex}}' +
     '@media print{.rail,.mob,.drawer,.scrim{display:none!important}}';
+  if (G7) css = css.replace(/#1E2D4F/g, '#3E2414').replace(/#FFC107/g, '#F2B13C').replace(/#E0A800/g, '#D98E1C').replace(/#EEF1F6/g, '#F6E7C8').replace(/#FFF6D6/g, '#FCEBC8').replace(/#FFFBEB/g, '#FFF8EB').replace(/#AEB7C8/g, '#D9C6AE').replace(/#D9DEE8/g, '#EADCC8').replace(/#8A6100/g, '#8A4B0F');
   var rail = '<div class="rail"><button type="button" class="logo" data-open="" aria-label="Open the menu">MA<small>MENU</small></button><button type="button" class="sbtn" aria-label="Search the site">' + svg(I.search) + '<span>Search</span></button>' +
     S.map(function (s) { return '<button type="button" data-open="' + s.id + '" class="' + (s.id === cur ? 'cur' : '') + '" aria-label="' + esc(s.title) + '">' + svg(I[s.icon]) + '<span>' + esc(s.label) + '</span></button>'; }).join('') +
     '<span class="sp"></span><button type="button" class="mus" aria-label="Music player">' + svg(I.note) + '<span>Music</span></button></div>';
@@ -134,7 +156,8 @@
 
   // "This unit" (site-config.js): load it if the page did not, then point the gold link at the unit
   var UN = { 1: 'unit1.html', 2: 'unit2.html', 3: 'unit3.html', 4: 'unit4.html', 5: 'unit5.html', 6: 'unit6.html', 7: 'unit7.html', 8: 'unit8.html', 9: 'unit9.html' };
-  function setTU() { var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; }
+  function setTU() { if (G7) { var n7 = +((window.SITE_CONFIG || {}).thisUnit7) || 1, a7 = sr.querySelector('a.tu'); if (a7 && UN[n7]) { a7.href = root + 'grade7/' + UN[n7]; a7.firstChild.textContent = '★ This unit: Unit ' + n7; } return; }
+    var n = +((window.SITE_CONFIG || {}).thisUnit) || 0, a = sr.querySelector('a.tu'); if (a && UN[n]) { a.href = root + 'grade8/' + UN[n]; a.firstChild.textContent = '★ This unit: Unit ' + n; }
     var T = ((window.SITE_CONFIG || {}).together || []).map(Number);       // units taught at the same time (site-config.js)
     if (a && T.length > 1 && T.indexOf(n) > -1) { a.href = root + 'grade8/units' + T.join('-') + '.html';
       a.firstChild.textContent = '★ This unit: Units ' + T.join(' & '); a.querySelector('small').textContent = 'we are working on both at the same time';

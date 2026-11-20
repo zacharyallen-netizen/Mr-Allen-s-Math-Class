@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Canyon Surveyor | 7th Grade Math Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../math1/arcade/m1-arcade.css?v=20261119a">
+<link rel="stylesheet" href="games/g7-game.css?v=20261120a">
+<script src="../math1/arcade/m1-arcade.js?v=20261119a"></script>
+<script src="games/g7-game.js?v=20261120a"></script>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="Canyon Surveyor" data-unit="7 Units 6-7"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← 7th Grade Arcade</a>
+    <h1>Canyon Surveyor</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipLv">Pick a level</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip">Streak <b id="streak">0</b></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="gg-main">
+    <div class="gg-scene" id="scene"></div>
+    <div class="gg-side">
+      <div class="gg-bar"><div class="row"><span id="cLv">Bridge planks</span><span id="cNum"></span></div><div class="gg-dots" id="dots"></div></div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Canyon Surveyor</h2>
+    <p>You are the surveyor for a new rope bridge across Red Rock Canyon. Every right answer measures one more plank. Measure all 10 and the bridge is ready to cross!</p>
+    <div class="m1-how">
+      <div><b>1. Read the job</b>Scale maps, angles, circles, area and volume.</div>
+      <div><b>2. Tap an answer</b>A wrong tap tells you the mistake. Try again.</div>
+      <div><b>3. Build the bridge</b>First-try answers earn a gold plank.</div>
+    </div>
+    <div class="m1-levels" id="levels"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Start surveying →</button>
+      <span style="color:var(--dim);font-size:.85rem">Keys 1–4 tap answers. Every level is open.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+<script>
+(function () {
+  var R = M1.rint, P = M1.pick, r2 = G7G.r2, n = M1.n;
+  function C(right, wrongs, fill) {
+    function T(w) { var t = String(w[0]).trim(); return { h: t, k: t, why: w[1] }; }
+    return M1.choices({ h: right, k: right }, wrongs.map(T), (fill || []).map(T));
+  }
+  var MAKE = {
+    scale: function () {
+      var s = P([2, 3, 4, 5, 10, 20, 25]), d = P([2, 3, 4, 6, 7, 8, 1.5, 2.5]), real = r2(s * d);
+      return { kind: 'scale to real', p: 'On the canyon map, 1 cm = ' + s + ' m. The gap is ' + n(d) + ' cm on the map. How wide is the real gap?',
+        ch: C(n(real) + ' m', [[n(r2(s + d)) + ' m', 'You added. Each 1 cm is ' + s + ' m, so multiply.'], [n(r2(d / s)) + ' m', 'From map to real, MULTIPLY by the scale.'], [n(r2(s / d)) + ' m', 'Multiply the map length by the scale.']], [[n(real + s) + ' m', 'Count again: ' + n(d) + ' groups of ' + s + '.']]),
+        hint: n(d) + ' cm × ' + s + ' m for each cm.', steps: n(d) + ' × ' + s + ' = ' + n(real) + ' m' };
+    },
+    back: function () {
+      var s = P([2, 4, 5, 10]), d = R(2, 9), real = s * d;
+      return { kind: 'real to scale', p: 'Scale: 1 cm = ' + s + ' m. A real cliff is ' + real + ' m tall. How tall is it on the drawing?',
+        ch: C(d + ' cm', [[real * s + ' cm', 'From real to drawing, DIVIDE by the scale.'], [(real - s) + ' cm', 'You subtracted. How many groups of ' + s + ' are in ' + real + '?'], [real + ' cm', 'The drawing is smaller than the real cliff. Divide.']]),
+        hint: real + ' ÷ ' + s, steps: real + ' ÷ ' + s + ' = ' + d + ' cm' };
+    },
+    comp: function () {
+      var a = R(12, 78), sup = Math.random() < 0.5, T = sup ? 180 : 90; if (sup) a = R(25, 160);
+      return { kind: sup ? 'supplement' : 'complement', p: 'Two angles are ' + (sup ? 'supplementary' : 'complementary') + '. One is ' + a + '°. Find the other.',
+        ch: C((T - a) + '°', [[((sup ? 90 : 180) - a) + '°', (sup ? 'Supplementary' : 'Complementary') + ' angles add to ' + T + '°, not ' + (sup ? 90 : 180) + '°.'], [(T + a) + '°', 'Subtract from ' + T + ', do not add.'], [a + '°', 'Only vertical angles are equal. These two add to ' + T + '°.']].filter(function (w) { return parseInt(w[0]) > 0; }), [[(T - a + 10) + '°', 'Check: the two angles must add to exactly ' + T + '°.']]),
+        hint: (sup ? 'Supplementary' : 'Complementary') + ' angles add to ' + T + '°.', steps: T + ' − ' + a + ' = ' + (T - a) + '°' };
+    },
+    vert: function () {
+      var a = R(25, 155);
+      return { kind: 'vertical angles', p: 'Two straight trails cross. One angle is ' + a + '°. What is the angle straight across from it?',
+        ch: C(a + '°', [[(180 - a) + '°', 'That angle is NEXT to it on a line. The one across is equal.'], [(90 - a > 0 ? 90 - a : 360 - a) + '°', 'Vertical angles are equal. Nothing to subtract.'], [(2 * a) + '°', 'Vertical angles are equal, not double.']]),
+        hint: 'Angles across from each other (vertical angles) are equal.', steps: 'Vertical angles are equal: ' + a + '°' };
+    },
+    tri: function () {
+      var a = R(30, 80), b = R(30, 150 - a), c = 180 - a - b;
+      return { kind: 'triangle sum', p: 'A triangle of rope has angles ' + a + '° and ' + b + '°. What is the third angle?',
+        ch: C(c + '°', [[(a + b) + '°', 'That is the two angles added. Subtract from 180.'], [(360 - a - b) + '°', 'A triangle adds to 180°, not 360°.'], [Math.abs(90 - a - b) + '°', 'A triangle adds to 180°, not 90°.']].filter(function (w) { return w[0] !== c + '°'; })),
+        hint: 'The three angles add to 180°.', steps: '180 − ' + a + ' − ' + b + ' = ' + c + '°' };
+    },
+    circ: function () {
+      var r = R(2, 10), C1 = r2(3.14 * 2 * r);
+      return { kind: 'circumference', p: 'A round water tank has radius ' + r + ' m. What is its circumference? Use 3.14.',
+        ch: C(n(C1) + ' m', [[n(r2(3.14 * r)) + ' m', 'You used the radius as the diameter. d = 2r = ' + 2 * r + '.'], [n(r2(3.14 * r * r)) + ' m', 'That is the AREA formula (πr²).'], [n(2 * r) + ' m', 'That is the diameter. Multiply by π.']]),
+        hint: 'C = 2πr = 2 × 3.14 × ' + r, steps: '2 × 3.14 × ' + r + ' = ' + n(C1) + ' m' };
+    },
+    area: function () {
+      var r = R(2, 10), A = r2(3.14 * r * r);
+      return { kind: 'circle area', p: 'A round campsite has radius ' + r + ' ft. What is its area? Use 3.14.',
+        ch: C(n(A) + ' ft²', [[n(r2(3.14 * 2 * r)) + ' ft²', 'That is the circumference. Area = πr².'], [n(r2(3.14 * 4 * r * r)) + ' ft²', 'You squared the diameter. Use the radius.']], [[n(r2(3.14 * r)) + ' ft²', 'r² means r × r. Square the radius first.']]),
+        hint: 'A = 3.14 × ' + r + ' × ' + r, steps: '3.14 × ' + r * r + ' = ' + n(A) + ' ft²' };
+    },
+    vol: function () {
+      var l = R(3, 9), w = R(2, 6), h = R(2, 8), V = l * w * h;
+      return { kind: 'volume', p: 'A supply crate is ' + l + ' ft by ' + w + ' ft by ' + h + ' ft. What is its volume?',
+        ch: C(V + ' ft³', [[(l + w + h) + ' ft³', 'You added. Volume multiplies: l × w × h.'], [l * w + ' ft³', 'That is only the base. Multiply by the height too.'], [2 * (l * w + l * h + w * h) + ' ft³', 'That is the surface area. Volume = l × w × h.']]),
+        hint: 'V = l × w × h', steps: l + ' × ' + w + ' × ' + h + ' = ' + V + ' ft³' };
+    },
+    triA: function () {
+      var b = R(3, 12) * 2, h = R(3, 12), A = b * h / 2;
+      return { kind: 'triangle area', p: 'A triangle-shaped flag has base ' + b + ' in and height ' + h + ' in. What is its area?',
+        ch: C(A + ' in²', [[b * h + ' in²', 'You forgot the ½. A triangle is half a rectangle.'], [(b + h) + ' in²', 'You added. A = ½ × b × h.'], [b * h * 2 + ' in²', 'Multiply by ½, not 2.']]),
+        hint: 'A = ½ × base × height', steps: '½ × ' + b + ' × ' + h + ' = ' + A + ' in²' };
+    },
+    sa: function () {
+      var a = R(2, 6), S = 6 * a * a;
+      return { kind: 'surface area', p: 'A cube-shaped tent box has edges of ' + a + ' ft. What is its surface area?',
+        ch: C(S + ' ft²', [[a * a * a + ' ft²', 'That is the volume. Surface area adds the 6 faces.'], [a * a + ' ft²', 'That is ONE face. A cube has 6.'], [4 * a * a + ' ft²', 'Count the top and bottom too: 6 faces.']]),
+        hint: '6 faces, each ' + a + ' × ' + a + '.', steps: '6 × ' + a * a + ' = ' + S + ' ft²' };
+    }
+  };
+  var LEVELS = [
+    { id: 'scale', unit: 6, name: 'Leg 1: Read the Map', what: 'Scale drawings: map to real, real to map', kinds: ['scale', 'back', 'scale', 'back', 'scale', 'scale', 'back', 'scale', 'back', 'scale'] },
+    { id: 'ang', unit: 6, name: 'Leg 2: Angles on the Trail', what: 'Complementary, supplementary, vertical angles, triangles', kinds: ['comp', 'vert', 'tri', 'comp', 'vert', 'tri', 'comp', 'tri', 'vert', 'comp'] },
+    { id: 'circ', unit: 7, name: 'Leg 3: Camp and Supplies', what: 'Circumference, circle area, area, surface area, volume', kinds: ['circ', 'area', 'vol', 'triA', 'sa', 'circ', 'area', 'vol', 'triA', 'sa'] },
+    { id: 'mix', unit: 7, name: 'Leg 4: The Whole Canyon', what: 'Everything, mixed together', kinds: ['scale', 'comp', 'circ', 'vol', 'tri', 'back', 'area', 'vert', 'triA', 'sa'] }
+  ];
+  /* ---------- the canyon (original SVG art) ---------- */
+  var host = document.getElementById('scene');
+  function base() {
+    var s = '<svg viewBox="0 0 640 440" role="img" aria-label="A canyon with an unfinished rope bridge">';
+    s += '<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6B76A"/><stop offset=".6" stop-color="#F3D29A"/><stop offset="1" stop-color="#F8E7C4"/></linearGradient>';
+    s += '<linearGradient id="rk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8642A"/><stop offset="1" stop-color="#7A3A16"/></linearGradient></defs>';
+    s += '<rect width="640" height="440" fill="url(#sk)"/><circle cx="520" cy="90" r="40" fill="#FFF0C2"/>';
+    s += '<path d="M0 200 L60 170 L110 190 L180 160 L220 180 V440 H0Z" fill="#A9552A" opacity=".55"/><path d="M420 175 L480 150 L540 170 L600 140 L640 160 V440 H420Z" fill="#A9552A" opacity=".55"/>';
+    s += '<path d="M0 230 H170 L190 260 L175 300 L200 360 L180 440 H0Z" fill="url(#rk)"/><path d="M470 230 H640 V440 H460 L480 380 L455 320 L478 270Z" fill="url(#rk)"/>';
+    for (var i = 0; i < 6; i++) s += '<path d="M' + (10 + i * 25) + ' ' + (260 + i * 25) + ' h' + (120 - i * 6) + '" stroke="#5A2A10" stroke-width="2" opacity=".35"/><path d="M' + (500 + i * 4) + ' ' + (262 + i * 25) + ' h' + (120 - i * 8) + '" stroke="#5A2A10" stroke-width="2" opacity=".35"/>';
+    s += '<path d="M200 440 Q320 400 455 440" fill="#6FA8A0" opacity=".8"/>';
+    s += '<path d="M168 214 Q320 280 472 214" fill="none" stroke="#5A3520" stroke-width="3"/><path d="M168 238 Q320 300 472 238" fill="none" stroke="#5A3520" stroke-width="3" id="rope2"/>';
+    s += '<rect x="160" y="200" width="10" height="40" fill="#5A3520"/><rect x="470" y="200" width="10" height="40" fill="#5A3520"/>';
+    s += '<g id="planks"></g><g id="hiker" opacity="0"></g><g id="flag"></g></svg>';
+    host.innerHTML = s;
+  }
+  function plankY(x) { var t = (x - 168) / (472 - 168); return 238 + 4 * 62 * t * (1 - t) * 0.77; }
+  function plank(k, first) {
+    var x = 176 + k * 29.5, y = plankY(x + 13);
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'pop');
+    g.innerHTML = '<rect x="' + x + '" y="' + (y - 4) + '" width="26" height="10" rx="2" fill="' + (first ? '#F2B13C' : '#B9864F') + '" stroke="#5A3520" stroke-width="1.5"/>' +
+      '<line x1="' + (x + 13) + '" y1="' + (y - 4) + '" x2="' + (x + 13) + '" y2="' + (y - 26 + Math.abs(k - 4.5) * 2) + '" stroke="#5A3520" stroke-width="1.2"/>';
+    document.getElementById('planks').appendChild(g);
+  }
+  function finale(done) {
+    var h = document.getElementById('hiker');
+    h.innerHTML = '<circle cx="0" cy="-30" r="8" fill="#E8B98A"/><rect x="-8" y="-22" width="16" height="22" rx="5" fill="#2F7A6E"/><rect x="-11" y="-20" width="7" height="14" rx="2" fill="#B4541C"/>';
+    h.setAttribute('opacity', '1'); var t0 = performance.now(), dur = M1.RM ? 10 : 2600;
+    (function step(t) {
+      var p = Math.min(1, (t - t0) / dur), x = 150 + p * 340, y = x < 168 || x > 472 ? 232 : plankY(x) - 4;
+      h.setAttribute('transform', 'translate(' + x + ',' + y + ')');
+      if (p < 1) requestAnimationFrame(step);
+      else { document.getElementById('flag').innerHTML = '<g class="pop"><line x1="560" y1="230" x2="560" y2="170" stroke="#3E2414" stroke-width="3"/><path d="M560 170 l40 12 -40 12z" fill="#F2B13C"/></g>'; M1.sfx.win(); setTimeout(done, 1200); }
+    })(t0);
+  }
+  G7G.run({ key: 'cs', levels: LEVELS, make: function (k) { return MAKE[k](); }, finaleText: 'The bridge is done. Time to cross!', doneTitle: 'Bridge complete!',
+    scene: { reset: base, add: plank, finale: finale } });
+})();
+</script>
+</body>
+</html>

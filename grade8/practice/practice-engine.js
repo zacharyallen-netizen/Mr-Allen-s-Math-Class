@@ -130,7 +130,7 @@
         '<button class="pr-btn pr-check" type="button"' + (TAP[id] ? ' hidden' : '') + '>Check</button>' +
         '<button class="pr-btn pr-ghost pr-hint" type="button">Hint</button>' +
         '<button class="pr-btn pr-ghost pr-show" type="button" hidden>Show answer</button></div>' +
-        '<div class="pr-fb" role="status" aria-live="polite"></div><div class="pr-hintbox" hidden>💡 ' + sec.hint + '</div></div>');
+        '<div class="pr-fb" role="status" aria-live="polite"></div><div class="pr-hintbox" hidden>💡 ' + (p.hint || sec.hint) + '</div></div>');
     });
   });
   html.push('<div class="pr-tips"><b>Typing a number:</b> fractions with / (1/9 or 2 1/3), negatives with - (-4), decimals with a point (6.5).</div>');
