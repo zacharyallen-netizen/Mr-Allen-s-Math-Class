@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Stations | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261119a">
+<style>
+/* Number Stations (Nov 19, 2026): Math 1 Unit 4 sequences on a night-time metro map. Original art. */
+.ns-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.ns-mapbox { background: #050a18; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,.45); }
+.ns-mapbox svg { display: block; width: 100%; height: auto; }
+.ns-mapbox.shake { animation: nsShake .45s; }
+@keyframes nsShake { 20% { transform: translateX(-6px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+.ns-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 10px; }
+.ns-board { background: linear-gradient(#141414, #0b0b0b); border: 2px solid #2b2b2b; border-radius: 14px; padding: 12px 14px; box-shadow: inset 0 0 0 1px #000, 0 6px 22px rgba(0,0,0,.5); }
+.ns-bh { display: flex; align-items: center; gap: 8px; font: 700 .78rem 'JetBrains Mono', monospace; letter-spacing: 1.5px; color: #ffcf4a; text-transform: uppercase; }
+.ns-bh .dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+.ns-bh .sp { flex: 1; }
+.ns-flaps { display: flex; flex-wrap: wrap; gap: 10px 14px; margin: 12px 0 6px; min-height: 46px; align-items: center; }
+.ns-term { display: inline-flex; gap: 3px; }
+.fl { display: inline-grid; place-items: center; width: 26px; height: 40px; background: linear-gradient(#262626 50%, #1c1c1c 50%); color: #ffd35a;
+  font: 700 1.35rem 'JetBrains Mono', monospace; border-radius: 4px; position: relative; box-shadow: inset 0 1px 0 #3a3a3a, 0 2px 2px #000; }
+.fl::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: #000; }
+.fl.flip { animation: flFlip .08s linear; }
+@keyframes flFlip { 50% { transform: scaleY(.15); } }
+.fl.q { color: #fff; background: linear-gradient(#5b4300 50%, #4a3600 50%); animation: flPulse 1.2s ease-in-out infinite; }
+@keyframes flPulse { 50% { box-shadow: 0 0 16px rgba(255,193,7,.8); } }
+.ns-comma { color: #6b6b6b; font: 700 1.2rem 'JetBrains Mono', monospace; align-self: flex-end; }
+.ns-bf { font: 600 .8rem 'JetBrains Mono', monospace; color: #8a8a8a; letter-spacing: 1px; display: flex; gap: 10px; flex-wrap: wrap; }
+.ns-bf b { color: #ffcf4a; }
+.ns-ride { background: var(--panel); border: 1px dashed var(--line); border-radius: 16px; padding: 18px; text-align: center; color: var(--dim); font-size: 1.05rem; }
+.ns-ride b { color: var(--gold); }
+.ns-cars { display: flex; gap: 4px; align-items: center; }
+.ns-cars i { width: 16px; height: 9px; border-radius: 3px; background: #3b4a7a; display: inline-block; }
+.ns-cars i.on { background: var(--gold); box-shadow: 0 0 8px rgba(255,193,7,.7); }
+.m1-lv .sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.ns-legend { font-size: .85rem; color: var(--dim); margin-top: 6px; }
+@media (max-width: 900px) { .ns-main { grid-template-columns: 1fr; } .ns-side { position: static; } .fl { width: 22px; height: 34px; font-size: 1.1rem; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261119a"></script>
+<script src="arcade/ns-questions.js?v=20261119a"></script>
+<script src="../arcade-send.js" data-game="Number Stations" data-unit="M1 Unit 4"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← Math 1 Arcade</a>
+    <h1>Number Stations</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipLine">Pick a line</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip ns-cars" id="cars" title="Train cars = answers right on the first try in a row"></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="ns-main">
+    <div class="ns-mapbox" id="mapbox"><svg id="map" viewBox="0 0 1000 620" role="img" aria-label="Metro map"></svg></div>
+    <div class="ns-side">
+      <div class="ns-board" aria-live="polite">
+        <div class="ns-bh"><span class="dot" id="bDot"></span><span id="bLine">Number Stations</span><span class="sp"></span><span id="bStop"></span></div>
+        <div class="ns-flaps" id="flaps"></div>
+        <div class="ns-bf"><span>NEXT STOP: <b id="bNext">?</b></span><span>ON TIME</span></div>
+      </div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Number Stations</h2>
+    <p>The city's metro is dark. Every metro line is a <b>sequence</b>, and every station is a <b>term</b>. Solve the pattern to power up the next station and keep your train moving. Light up all five lines to bring the city back to life.</p>
+    <div class="m1-how">
+      <div><b>1. Read the board</b>The departure board shows the terms. The ? is the station you need.</div>
+      <div><b>2. Tap your answer</b>A wrong answer tells you the mistake. You get 3 tries and a Hint.</div>
+      <div><b>3. Grow your train</b>Each first-try answer adds a train car and bonus points.</div>
+    </div>
+    <div class="m1-levels" id="lines"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Board the train →</button>
+      <span class="ns-legend">Keys 1–4 tap answers. Nothing is locked: ride any line.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+
+<script>
+(function () {
+  var NS = 'http://www.w3.org/2000/svg';
+  var LINES = [
+    { id: 'green', name: 'Green Line', sub: 'Arithmetic Avenue', color: '#35e08a', d: 'M70 110 H330 L420 200 H930',
+      what: 'Arithmetic: next term, d, and a<sub>n</sub>', kinds: ['aNext', 'aNext', 'aD', 'aNext', 'aD', 'aN', 'aN', 'aN'] },
+    { id: 'gold', name: 'Gold Line', sub: 'Geometric Gateway', color: '#ffc107', d: 'M70 540 H260 L420 380 H680 L800 260 H940',
+      what: 'Geometric: next term, r, and a<sub>n</sub>', kinds: ['gNext', 'gNext', 'gR', 'gNextF', 'gR', 'gN', 'gNext', 'gN'] },
+    { id: 'blue', name: 'Blue Line', sub: 'Formula Freeway', color: '#4fb6ff', d: 'M160 40 V250 L260 350 V590',
+      what: 'Which kind? Explicit and recursive formulas', kinds: ['classify', 'fA1', 'fArith', 'fRecA', 'fGeo', 'classify', 'fArithS', 'fRecG'] },
+    { id: 'red', name: 'Red Line', sub: 'Express Line', color: '#ff5d73', d: 'M560 40 V280 L640 360 V590',
+      what: 'Jump far ahead, find the station number, word problems', kinds: ['eBig', 'eCtxA', 'eFindN', 'eBig', 'eCtxG', 'eFindN', 'gN', 'eBig'] },
+    { id: 'purple', name: 'Purple Line', sub: 'Series Loop (bonus)', color: '#c084fc', d: 'M40 300 H760 L860 400 H960 V590',
+      what: 'Bonus: a series adds up the terms', kinds: ['sArith', 'sGeo', 'sArith', 'sFormula', 'sArith', 'sGeo', 'sFormula', 'sArith'] }
+  ];
+  var STOPS = 8, svg = document.getElementById('map'), qHost = document.getElementById('q');
+  var saved = {}; try { saved = JSON.parse(M1.get('ns-best') || '{}'); } catch (e) {}
+  var G = { li: 0, i: 0, score: 0, streak: 0, best: 0, first: 0, moving: false, missed: [] };
+  document.getElementById('sndHere').appendChild(M1.soundButton());
+
+  /* ---------- the map ---------- */
+  function mk(t, a, parent) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; }
+  var defs = mk('defs', {});
+  defs.innerHTML = '<filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#0e1a36" stroke-width="1"/></pattern>' +
+    '<radialGradient id="halo"><stop offset="0" stop-color="#ffd35a" stop-opacity=".55"/><stop offset="1" stop-color="#ffd35a" stop-opacity="0"/></radialGradient>';
+  mk('rect', { x: 0, y: 0, width: 1000, height: 620, fill: '#060c1d' });
+  mk('rect', { x: 0, y: 0, width: 1000, height: 620, fill: 'url(#grid)' });
+  // river, parks, blocks with windows (the city)
+  mk('path', { d: 'M735 0 C700 140 880 230 830 350 S690 520 770 620', fill: 'none', stroke: '#0c2347', 'stroke-width': 46 });
+  mk('path', { d: 'M735 0 C700 140 880 230 830 350 S690 520 770 620', fill: 'none', stroke: '#11305e', 'stroke-width': 22, opacity: .7 });
+  mk('rect', { x: 30, y: 370, width: 160, height: 110, rx: 30, fill: '#0b2418' });
+  mk('rect', { x: 860, y: 30, width: 120, height: 90, rx: 26, fill: '#0b2418' });
+  var city = mk('g', { id: 'city' });
+  for (var bx = 0; bx < 46; bx++) {
+    var x = 20 + Math.random() * 950, y = 20 + Math.random() * 580, w = 26 + Math.random() * 40, h = 18 + Math.random() * 34;
+    if (x > 690 && x < 880 && y > 0) continue;
+    var b = mk('rect', { x: x, y: y, width: w, height: h, rx: 3, fill: '#0b1530', stroke: '#101f44' }, city);
+    for (var wi = 0; wi < 4; wi++) mk('rect', { x: x + 4 + Math.random() * (w - 8), y: y + 4 + Math.random() * (h - 8), width: 3, height: 3, fill: '#ffd35a', opacity: 0, class: 'win' }, city);
+  }
+  // lines
+  LINES.forEach(function (L) {
+    L.g = mk('g', { class: 'line' });
+    L.base = mk('path', { d: L.d, fill: 'none', stroke: L.color, 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', opacity: .18 }, L.g);
+    L.lit = mk('path', { d: L.d, fill: 'none', stroke: L.color, 'stroke-width': 9, 'stroke-linecap': 'round', 'stroke-linejoin': 'round', filter: 'url(#glow)' }, L.g);
+    L.len = L.base.getTotalLength();
+    L.lit.style.strokeDasharray = L.len + ' ' + L.len;
+    L.lit.style.strokeDashoffset = L.len;
+    L.pos = []; for (var i = 0; i <= STOPS; i++) L.pos.push(L.len * i / STOPS);
+    var p0 = L.base.getPointAtLength(0);
+    var tag = mk('g', { transform: 'translate(' + p0.x + ',' + p0.y + ')' }, L.g);
+    mk('rect', { x: -9, y: -9, width: 18, height: 18, rx: 4, fill: '#060c1d', stroke: L.color, 'stroke-width': 3 }, tag);
+    L.st = [];
+    for (i = 1; i <= STOPS; i++) {
+      var p = L.base.getPointAtLength(L.pos[i]);
+      L.st.push({ c: mk('circle', { cx: p.x, cy: p.y, r: 8, fill: '#060c1d', stroke: L.color, 'stroke-width': 3, opacity: .45 }, L.g), p: p });
+    }
+    if (saved[L.id] && saved[L.id].stars) lightWhole(L, true);
+  });
+  var labels = mk('g', {}), halo = mk('circle', { r: 30, fill: 'url(#halo)', opacity: 0 });
+  var train = mk('g', { id: 'train', opacity: 0 }), ghosts = mk('g', {});
+
+  function norm(L, l) {
+    var a = L.base.getPointAtLength(Math.max(0, l - 2)), b = L.base.getPointAtLength(Math.min(L.len, l + 2));
+    var tx = b.x - a.x, ty = b.y - a.y, m = Math.hypot(tx, ty) || 1; tx /= m; ty /= m;
+    var nx = -ty, ny = tx; if (ny > 0 || (Math.abs(ny) < .1 && nx < 0)) { nx = -nx; ny = -ny; }
+    return { ang: Math.atan2(ty, tx) * 180 / Math.PI, nx: nx, ny: ny };
+  }
+  function lightWhole(L, quiet) {
+    L.lit.style.transition = quiet ? 'none' : 'stroke-dashoffset 1.6s ease-in-out';
+    L.lit.style.strokeDashoffset = 0;
+    L.st.forEach(function (s) { s.c.setAttribute('fill', L.color); s.c.setAttribute('opacity', 1); });
+    cityLights();
+  }
+  function cityLights() {
+    var done = LINES.filter(function (L) { return saved[L.id] && saved[L.id].stars; }).length;
+    var wins = city.querySelectorAll('.win');
+    wins.forEach(function (w, k) { w.setAttribute('opacity', k % 5 < done ? (0.5 + Math.random() * 0.5) : 0); });
+  }
+
+  /* ---------- the train ---------- */
+  var cars = [];
+  function buildTrain(L) {
+    train.innerHTML = ''; cars = [];
+    var loco = mk('g', {}, train);
+    mk('rect', { x: -17, y: -8, width: 34, height: 16, rx: 7, fill: L.color, stroke: '#fff', 'stroke-width': 1.5 }, loco);
+    mk('rect', { x: 6, y: -5, width: 8, height: 10, rx: 2, fill: '#0a1430' }, loco);
+    mk('circle', { cx: 17, cy: 0, r: 3, fill: '#fff8c4', filter: 'url(#glow)' }, loco);
+    cars.push(loco);
+    for (var k = 0; k < 5; k++) {
+      var c = mk('g', { opacity: 0 }, train);
+      mk('rect', { x: -12, y: -7, width: 24, height: 14, rx: 4, fill: '#24335f', stroke: L.color, 'stroke-width': 1.5 }, c);
+      mk('rect', { x: -8, y: -3, width: 4, height: 6, fill: '#ffd35a' }, c); mk('rect', { x: -1, y: -3, width: 4, height: 6, fill: '#ffd35a' }, c); mk('rect', { x: 6, y: -3, width: 3, height: 6, fill: '#ffd35a' }, c);
+      cars.push(c);
+    }
+    train.setAttribute('opacity', 1);
+  }
+  var trainL = 0;
+  function placeTrain(L, l) {
+    trainL = l;
+    cars.forEach(function (c, k) {
+      var at = Math.max(0, l - k * 29), p = L.base.getPointAtLength(at), a = norm(L, at).ang;
+      c.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ') rotate(' + a + ')');
+    });
+  }
+  function showCars() {
+    var on = Math.min(G.streak, 5);
+    cars.forEach(function (c, k) { if (k) c.setAttribute('opacity', k <= on ? 1 : 0); });
+    var h = ''; for (var k = 0; k < 5; k++) h += '<i class="' + (k < on ? 'on' : '') + '"></i>';
+    document.getElementById('cars').innerHTML = 'Cars ' + h;
+  }
+  function moveTrain(L, to, done) {
+    var from = trainL, t0 = performance.now(), dur = M1.RM ? 10 : 1500;
+    M1.sfx.whoosh();
+    (function step(now) {
+      var u = Math.min(1, (now - t0) / dur), e = u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      placeTrain(L, from + (to - from) * e);
+      if (u < 1) requestAnimationFrame(step); else done();
+    })(t0);
+  }
+  // little trains keep riding the lines you finished
+  var ghostList = [];
+  function buildGhosts() {
+    ghosts.innerHTML = ''; ghostList = [];
+    LINES.forEach(function (L, k) {
+      if (k === G.li || !(saved[L.id] && saved[L.id].stars)) return;
+      var g = mk('g', {}, ghosts); mk('rect', { x: -9, y: -5, width: 18, height: 10, rx: 4, fill: L.color, opacity: .9 }, g);
+      ghostList.push({ L: L, g: g, l: Math.random() * L.len, v: 0.6 + Math.random() * 0.4 });
+    });
+  }
+  (function ghostLoop() {
+    ghostList.forEach(function (o) {
+      o.l += o.v; if (o.l > o.L.len || o.l < 0) { o.v = -o.v; o.l = Math.max(0, Math.min(o.L.len, o.l)); }
+      var p = o.L.base.getPointAtLength(o.l); o.g.setAttribute('transform', 'translate(' + p.x + ',' + p.y + ') rotate(' + norm(o.L, o.l).ang + ')');
+    });
+    requestAnimationFrame(ghostLoop);
+  })();
+
+  /* ---------- departure board (split-flap) ---------- */
+  var FL = '0123456789−';
+  function board(q) {
+    var L = LINES[G.li], f = document.getElementById('flaps'); f.innerHTML = '';
+    document.getElementById('bDot').style.background = L.color; document.getElementById('bDot').style.color = L.color;
+    document.getElementById('bLine').textContent = L.name + ' · ' + L.sub;
+    document.getElementById('bStop').textContent = 'Stop ' + (G.i + 1) + ' / ' + STOPS;
+    document.getElementById('bNext').textContent = 'Station ' + (G.i + 1);
+    var items = q.seq ? q.seq.map(M1.n).concat(['?']) : [{ classify: 'WHICH KIND', fA1: 'FORMULA', eCtxA: 'RIDERS', eCtxG: 'LANTERNS', sFormula: 'SERIES' }[q.kind] || 'FORMULA'];
+    items.forEach(function (s, k) {
+      var g = document.createElement('span'); g.className = 'ns-term';
+      s.split('').forEach(function (ch, j) {
+        var c = document.createElement('span'); c.className = 'fl' + (s === '?' ? ' q' : ''); g.appendChild(c);
+        if (s === '?' || M1.RM || ch === ',') { c.textContent = ch; return; }
+        var spins = 4 + k * 2 + j + Math.floor(Math.random() * 4), m = 0;
+        (function spin() { c.classList.remove('flip'); void c.offsetWidth; c.classList.add('flip'); c.textContent = m < spins ? FL[Math.floor(Math.random() * FL.length)] : ch; if (m++ < spins) setTimeout(spin, 45); else if (k === 0 && j === 0) M1.sfx.tap(); })();
+      });
+      f.appendChild(g);
+      if (k < items.length - 1 && q.seq) { var cm = document.createElement('span'); cm.className = 'ns-comma'; cm.textContent = ','; f.appendChild(cm); }
+    });
+  }
+
+  /* ---------- game flow ---------- */
+  function setScore() { document.getElementById('score').textContent = G.score.toLocaleString(); }
+  function start(li) {
+    var L = LINES[li];
+    G = { li: li, i: 0, score: 0, streak: 0, best: 0, first: 0, moving: false, missed: [] };
+    LINES.forEach(function (o, k) { o.g.style.opacity = k === li ? 1 : .55; if (!(saved[o.id] && saved[o.id].stars)) { o.lit.style.transition = 'none'; o.lit.style.strokeDashoffset = o.len; o.st.forEach(function (s) { s.c.setAttribute('fill', '#060c1d'); s.c.setAttribute('opacity', .45); }); } });
+    L.lit.style.transition = 'none'; L.lit.style.strokeDashoffset = L.len;
+    L.st.forEach(function (s) { s.c.setAttribute('fill', '#060c1d'); s.c.setAttribute('opacity', 1); s.c.setAttribute('r', 8); });
+    svg.appendChild(L.g); svg.appendChild(labels); svg.appendChild(halo); svg.appendChild(ghosts); svg.appendChild(train);
+    labels.innerHTML = '';
+    document.getElementById('chipLine').innerHTML = '<span style="color:' + L.color + '">●</span> ' + L.name;
+    buildTrain(L); placeTrain(L, 0); buildGhosts(); showCars(); setScore();
+    document.getElementById('startOv').hidden = true; document.getElementById('endOv').hidden = true;
+    M1.sfx.horn();
+    stop();
+  }
+  function stop() {
+    var L = LINES[G.li], q = NSQ.make(L.kinds[G.i]), s = L.st[G.i];
+    halo.setAttribute('cx', s.p.x); halo.setAttribute('cy', s.p.y); halo.setAttribute('opacity', 1);
+    s.c.setAttribute('r', 11);
+    board(q);
+    M1.ask(qHost, q, {
+      onMiss: function (c, tries) {
+        G.streak = 0; showCars();
+        var mb = document.getElementById('mapbox'); mb.classList.remove('shake'); void mb.offsetWidth; mb.classList.add('shake');
+        s.c.setAttribute('stroke', '#ff3b5c'); setTimeout(function () { s.c.setAttribute('stroke', L.color); }, 700);
+        if (tries === 1) G.missed.push(q.kind);
+      },
+      onRight: function (r) {
+        var pts = M1.points(r, G.streak);
+        if (r.first) { G.streak++; G.first++; G.best = Math.max(G.best, G.streak); } else G.streak = 0;
+        G.score += pts; setScore(); showCars();
+        if (pts) M1.toast('+' + pts + (G.streak >= 3 && r.first ? ' · ' + G.streak + ' in a row!' : ''));
+        setTimeout(function () { depart(q); }, 900);
+      }
+    });
+  }
+  function depart(q) {
+    var L = LINES[G.li], s = L.st[G.i];
+    qHost.innerHTML = '<div class="ns-ride">Riding to <b>Station ' + (G.i + 1) + '</b>…</div>';
+    halo.setAttribute('opacity', 0);
+    L.lit.style.transition = M1.RM ? 'none' : 'stroke-dashoffset 1.5s ease-in-out';
+    L.lit.style.strokeDashoffset = L.len - L.pos[G.i + 1];
+    moveTrain(L, L.pos[G.i + 1], function () {
+      s.c.setAttribute('fill', L.color); s.c.setAttribute('r', 9);
+      var nm = norm(L, L.pos[G.i + 1]);
+      var tx = mk('text', { x: s.p.x + nm.nx * 30, y: s.p.y + nm.ny * 30 + 5, 'text-anchor': 'middle', fill: '#fff', 'font-family': 'JetBrains Mono, monospace', 'font-size': 15, 'font-weight': 700, stroke: '#060c1d', 'stroke-width': 4, 'paint-order': 'stroke' }, labels);
+      tx.textContent = q.label;
+      M1.sfx.ding();
+      G.i++;
+      if (G.i >= STOPS) lineDone(); else stop();
+    });
+  }
+  function lineDone() {
+    var L = LINES[G.li], stars = G.first >= 7 ? 3 : G.first >= 5 ? 2 : 1, old = saved[L.id] || {};
+    saved[L.id] = { stars: Math.max(stars, old.stars || 0), score: Math.max(G.score, old.score || 0) };
+    M1.put('ns-best', JSON.stringify(saved));
+    lightWhole(L); M1.sfx.win(); buildGhosts();
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: L.name + ' (' + L.sub + ')', score: G.score, details: G.first + '/8 first try · best streak ' + G.best + (G.missed.length ? ' · missed: ' + G.missed.join(', ') : '') }); } catch (e) {}
+    var next = LINES.findIndex(function (o, k) { return k > G.li && !(saved[o.id] && saved[o.id].stars); });
+    if (next < 0) next = (G.li + 1) % LINES.length;
+    var all = LINES.every(function (o) { return saved[o.id] && saved[o.id].stars; });
+    setTimeout(function () {
+      document.getElementById('endCard').innerHTML =
+        '<h2>' + L.name + ' is powered up!</h2><p>' + (all ? 'Every line in the city is glowing. You brought the whole metro back to life!' : 'Another part of the city has its lights back on. Little trains will keep riding this line.') + '</p>' +
+        '<div class="m1-stats"><div><b>' + G.score.toLocaleString() + '</b><span>points</span></div><div><b>' + G.first + '/8</b><span>first try</span></div><div><b>' + G.best + '</b><span>best streak</span></div><div><b>' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</b><span>stars</span></div></div>' +
+        (G.first < 5 ? '<p>Tip: open the Unit 4 notes, then ride this line again. You can do it.</p>' : '') +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="m1-go" type="button" id="nextLine">Ride the ' + LINES[next].name + ' →</button><button class="m1-btn" type="button" id="again">Ride this line again</button><button class="m1-btn" type="button" id="pickLine">All lines</button></div>';
+      document.getElementById('endOv').hidden = false;
+      document.getElementById('nextLine').onclick = function () { start(next); };
+      document.getElementById('again').onclick = function () { start(G.li); };
+      document.getElementById('pickLine').onclick = function () { document.getElementById('endOv').hidden = true; picker(); };
+      document.getElementById('nextLine').focus();
+    }, M1.RM ? 200 : 1700);
+  }
+
+  /* ---------- line picker ---------- */
+  var pickIdx = 0;
+  function picker() {
+    var host = document.getElementById('lines'); host.innerHTML = '';
+    pickIdx = Math.max(0, LINES.findIndex(function (o) { return !(saved[o.id] && saved[o.id].stars); }));
+    LINES.forEach(function (L, k) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'm1-lv' + (k === pickIdx ? ' on' : '');
+      var sv = saved[L.id];
+      b.innerHTML = '<b><span class="sw" style="background:' + L.color + '"></span>' + L.name + '</b><small>' + L.sub + ' · ' + L.what + '</small><span class="st">' + (sv ? '★'.repeat(sv.stars) + '☆'.repeat(3 - sv.stars) + ' · best ' + sv.score.toLocaleString() : 'Not ridden yet') + '</span>';
+      b.onclick = function () { pickIdx = k; host.querySelectorAll('.m1-lv').forEach(function (x, j) { x.classList.toggle('on', j === k); }); };
+      b.ondblclick = function () { start(k); };
+      host.appendChild(b);
+    });
+    document.getElementById('startOv').hidden = false;
+  }
+  document.getElementById('goBtn').onclick = function () { start(pickIdx); };
+  document.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !document.getElementById('startOv').hidden && e.target.tagName !== 'BUTTON') start(pickIdx); });
+  picker(); cityLights(); buildGhosts();
+  if (/[?&]debug/.test(location.search)) window.__NS = { G: function () { return G; }, start: start, LINES: LINES, finish: function () { G.first = 8; G.i = STOPS; lineDone(); } };
+})();
+</script>
+</body>
+</html>

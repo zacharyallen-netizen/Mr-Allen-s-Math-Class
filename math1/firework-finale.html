@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Firework Finale | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261119a">
+<style>
+/* Firework Finale (Nov 19, 2026): Math 1 Unit 7 key features of parabolas. Every firework flies on y = a(x − h)² + k. Original art. */
+.ff-main { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.ff-sky { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 10px 40px rgba(0,0,0,.5); background: #030616; }
+.ff-sky canvas { display: block; width: 100%; aspect-ratio: 16 / 11; }
+.ff-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 10px; }
+.ff-console { background: linear-gradient(135deg, #1a1236, #0e1530); border: 1px solid #3a2f6e; border-radius: 14px; padding: 12px 14px; }
+.ff-console .row { display: flex; justify-content: space-between; font: 700 .78rem 'JetBrains Mono', monospace; letter-spacing: 1.5px; color: #ff9bd2; text-transform: uppercase; }
+.ff-shells { display: flex; gap: 6px; margin-top: 10px; }
+.ff-shells i { flex: 1; height: 10px; border-radius: 5px; background: #2a2552; }
+.ff-shells i.done { background: linear-gradient(90deg, #ffc107, #ff5fa2); box-shadow: 0 0 8px rgba(255,95,162,.6); }
+.ff-shells i.now { background: #6b5bd6; animation: m1glow 1.2s infinite; }
+.ff-wait { background: var(--panel); border: 1px dashed var(--line); border-radius: 16px; padding: 18px; text-align: center; color: var(--dim); font-size: 1.05rem; }
+.ff-wait b { color: var(--gold); }
+.ff-legend { position: absolute; left: 10px; bottom: 8px; font: 600 .75rem 'JetBrains Mono', monospace; color: #8b97c9; background: rgba(3,6,22,.6); padding: 3px 8px; border-radius: 8px; }
+@media (max-width: 600px) { .ff-legend { display: none; } }
+@media (max-width: 900px) { .ff-main { grid-template-columns: 1fr; } .ff-side { position: static; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261119a"></script>
+<script src="arcade/ff-questions.js?v=20261119a"></script>
+<script src="../arcade-send.js" data-game="Firework Finale" data-unit="M1 Unit 7"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← Math 1 Arcade</a>
+    <h1>Firework Finale</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipShow">Pick a show</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip">Streak <b id="streak">0</b></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="ff-main">
+    <div class="ff-sky"><canvas id="sky" aria-label="Night sky with a coordinate grid"></canvas><div class="ff-legend">ground = x-axis (y = 0)</div></div>
+    <div class="ff-side">
+      <div class="ff-console">
+        <div class="row"><span id="cShow">Launch console</span><span id="cNum"></span></div>
+        <div class="ff-shells" id="shells"></div>
+      </div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Firework Finale</h2>
+    <p>You are the show designer. Every firework flies on a parabola, <b>y = a(x − h)² + k</b>, and bursts at the very top: the <b>vertex</b>. Read each equation, aim the shell, and build a sky full of fireworks for the grand finale.</p>
+    <div class="m1-how">
+      <div><b>1. Read the equation</b>Vertex form, factored form or standard form. Each one shows you something.</div>
+      <div><b>2. Aim</b>Tap the vertex, zeros, axis or height. A wrong aim fizzles, and you see why.</div>
+      <div><b>3. Grand finale</b>After 8 fireworks, every one you launched lights the sky at once.</div>
+    </div>
+    <div class="m1-levels" id="shows"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Start the show →</button>
+      <span class="ns-legend" style="color:var(--dim);font-size:.85rem">Keys 1–4 tap answers. Every show is open.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+
+<script>
+(function () {
+  var SHOWS = [
+    { id: 'v', name: 'Show 1: Vertex Form', what: 'y = a(x − h)² + k: vertex, highest point, axis of symmetry', kinds: ['vV', 'vMax', 'vAxis', 'vV', 'vMax', 'vV', 'vAxis', 'vV'] },
+    { id: 'f', name: 'Show 2: Factored Form', what: 'y = a(x − p)(x − q): zeros, axis, vertex', kinds: ['fZ', 'fAxis', 'fZ', 'fV', 'fAxis', 'fZ', 'fV', 'fV'] },
+    { id: 's', name: 'Show 3: Standard Form', what: 'y = ax² + bx + c: x = −b ÷ (2a), vertex, y-intercept, maximum', kinds: ['sAxis', 'sY', 'sAxis', 'sV', 'sMax', 'sV', 'sAxis', 'sMax'] },
+    { id: 'm', name: 'Show 4: Grand Mix', what: 'All three forms, mixed together', kinds: ['vV', 'fZ', 'sAxis', 'fV', 'vMax', 'sV', 'fAxis', 'sMax'] }
+  ];
+  var COLORS = ['#ffc107', '#ff5fa2', '#4fd8ff', '#7dff9b', '#c084fc', '#ff8a3d', '#ffffff', '#ffe066'];
+  var saved = {}; try { saved = JSON.parse(M1.get('ff-best') || '{}'); } catch (e) {}
+  var G = { si: 0, i: 0, score: 0, streak: 0, best: 0, first: 0, missed: [], done: [] };
+  document.getElementById('sndHere').appendChild(M1.soundButton());
+  var qHost = document.getElementById('q');
+
+  /* ---------- the sky ---------- */
+  var cv = document.getElementById('sky'), cx = cv.getContext('2d'), W = 0, H = 0, DPR = 1;
+  var X0 = -10, X1 = 10, Y0 = -1.6, Y1 = 12;
+  function size() { DPR = Math.min(2, window.devicePixelRatio || 1); var r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * DPR; cv.height = H * DPR; cx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+  window.addEventListener('resize', size);
+  function sx(x) { return (x - X0) / (X1 - X0) * W; }
+  function sy(y) { return H - (y - Y0) / (Y1 - Y0) * H; }
+  var stars = []; for (var i = 0; i < 140; i++) stars.push({ x: Math.random(), y: Math.random() * 0.8, r: Math.random() * 1.3 + 0.2, t: Math.random() * 6 });
+  var sky = []; for (i = 0; i < 26; i++) sky.push({ x: i / 26, w: 1 / 26 + Math.random() * 0.02, h: 0.02 + Math.random() * 0.05, win: Math.random() });
+  var parts = [], shells = [], marks = [], paths = [], flash = 0;
+
+  function f(F, x) { return F.a * (x - F.h) * (x - F.h) + F.k; }
+  function zeroL(F) { return F.h - Math.sqrt(-F.k / F.a); }
+  function drawBG(t) {
+    var g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#02030d'); g.addColorStop(.6, '#0a0f2e'); g.addColorStop(1, '#1a1440');
+    cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    stars.forEach(function (s) { cx.globalAlpha = .35 + .35 * Math.sin(t / 700 + s.t); cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s.x * W, s.y * H, s.r, 0, 7); cx.fill(); });
+    cx.globalAlpha = 1;
+    // moon
+    cx.fillStyle = '#f6f1d5'; cx.beginPath(); cx.arc(W * .9, H * .1, Math.max(10, W * .025), 0, 7); cx.fill();
+    cx.fillStyle = '#0a0f2e'; cx.beginPath(); cx.arc(W * .9 + W * .012, H * .1 - 4, Math.max(10, W * .025), 0, 7); cx.fill();
+    // skyline on the horizon (low, so it never hides the grid)
+    sky.forEach(function (b) { var bx = b.x * W, bw = b.w * W, bh = b.h * H; cx.fillStyle = 'rgba(14,12,40,.9)'; cx.fillRect(bx, sy(0) - bh, bw, bh);
+      cx.fillStyle = 'rgba(255,211,90,.45)'; for (var k = 0; k < 4; k++) if ((b.win * 10 + k) % 3 < 1.2) cx.fillRect(bx + 3 + k * bw / 4, sy(0) - bh + 5, 2, 3); });
+    // ground (below the x-axis)
+    var gg = cx.createLinearGradient(0, sy(0), 0, H); gg.addColorStop(0, '#120f2e'); gg.addColorStop(1, '#05040f');
+    cx.fillStyle = gg; cx.fillRect(0, sy(0), W, H - sy(0));
+    // grid
+    cx.lineWidth = 1;
+    for (var x = X0; x <= X1; x++) { cx.strokeStyle = x === 0 ? 'rgba(160,180,255,.5)' : 'rgba(120,140,220,.13)'; cx.beginPath(); cx.moveTo(sx(x), sy(Y1)); cx.lineTo(sx(x), sy(0)); cx.stroke(); }
+    for (var y = 1; y <= Y1; y++) { cx.strokeStyle = 'rgba(120,140,220,.13)'; cx.beginPath(); cx.moveTo(0, sy(y)); cx.lineTo(W, sy(y)); cx.stroke(); }
+    cx.strokeStyle = 'rgba(255,193,7,.8)'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, sy(0)); cx.lineTo(W, sy(0)); cx.stroke();
+    cx.fillStyle = 'rgba(200,210,255,.85)'; cx.font = '600 ' + Math.max(10, W / 80) + 'px JetBrains Mono, monospace'; cx.textAlign = 'center';
+    for (x = X0 + 2; x < X1; x += 2) cx.fillText(M1.n(x), sx(x), sy(0) + 16);
+    cx.textAlign = 'right'; for (y = 2; y < Y1; y += 2) cx.fillText(y, sx(0) - 5, sy(y) + 4);
+  }
+  function curve(F, color, alpha, dash, from, to) {
+    cx.save(); cx.globalAlpha = alpha; cx.strokeStyle = color; cx.lineWidth = 2; cx.setLineDash(dash || []);
+    cx.beginPath(); var first = true;
+    for (var x = from; x <= to + 1e-9; x += 0.05) { var y = f(F, x); if (y < -0.2) { first = true; continue; } if (first) { cx.moveTo(sx(x), sy(y)); first = false; } else cx.lineTo(sx(x), sy(y)); }
+    cx.stroke(); cx.restore();
+  }
+  function dot(x, y, r, c) { cx.fillStyle = c; cx.beginPath(); cx.arc(sx(x), sy(y), r, 0, 7); cx.fill(); }
+  function label(x, y, s, c, dy) { cx.font = '700 ' + Math.max(11, W / 66) + 'px JetBrains Mono, monospace'; cx.textAlign = 'center'; cx.lineWidth = 4; cx.strokeStyle = '#02030d'; cx.strokeText(s, sx(x), sy(y) + (dy || -12)); cx.fillStyle = c; cx.fillText(s, sx(x), sy(y) + (dy || -12)); }
+  function burst(x, y, color, big) {
+    var N = M1.RM ? 30 : big ? 160 : 110, sp = big ? 5.2 : 4;
+    for (var k = 0; k < N; k++) { var a = Math.random() * 6.283, v = sp * (0.35 + Math.random() * 0.75);
+      parts.push({ x: sx(x), y: sy(y), vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, c: Math.random() < .2 ? '#fff' : color, d: 0.010 + Math.random() * 0.012, s: 1.4 + Math.random() * 1.6 }); }
+    flash = big ? .35 : .18;
+  }
+  function puff(x, y) { for (var k = 0; k < 26; k++) { var a = Math.random() * 6.283, v = Math.random() * 1.2; parts.push({ x: sx(x), y: sy(y), vx: Math.cos(a) * v, vy: Math.sin(a) * v - .3, life: 1, c: '#7b7f99', d: 0.02, s: 2 + Math.random() * 3, smoke: 1 }); } }
+  // a shell flies along the parabola from the left zero to the vertex, then bursts
+  function launch(F, color, done, big) {
+    var xs = Math.max(X0, zeroL(F)), t0 = performance.now(), dur = M1.RM ? 30 : 1300;
+    shells.push({ F: F, color: color, xs: xs, t0: t0, dur: dur, done: done, big: big });
+    if (!big) M1.sfx.whoosh();
+  }
+  // a dud flies in an arc from a ground point to (x, y) and fizzles
+  function dud(x0, x, y, done) { shells.push({ dud: true, x0: x0, x: x, y: y, t0: performance.now(), dur: M1.RM ? 30 : 900, done: done }); M1.sfx.whoosh(); }
+
+  var current = null;
+  function frame(t) {
+    if (!W) size();
+    drawBG(t);
+    paths.forEach(function (p) { curve(p.F, p.color, .35, [5, 6], X0, X1); dot(p.F.h, p.F.k, 3, p.color); });
+    if (current && current.show) {
+      var F = current.F, S = current.show;
+      curve(F, current.color, .9, [], X0, X1);
+      dot(F.h, F.k, 5, '#fff'); label(F.h, F.k, '(' + M1.n(F.h) + ', ' + M1.n(F.k) + ')', '#fff');
+      if (S.x != null) { cx.save(); cx.setLineDash([6, 6]); cx.strokeStyle = '#ffc107'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(sx(S.x), sy(Y1)); cx.lineTo(sx(S.x), sy(0)); cx.stroke(); cx.restore(); label(S.x, Y1 - .6, 'x = ' + M1.n(S.x), '#ffc107', 4); }
+      if (S.y != null) { cx.save(); cx.setLineDash([6, 6]); cx.strokeStyle = '#ffc107'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(sx(X0), sy(S.y)); cx.lineTo(sx(F.h), sy(S.y)); cx.stroke(); cx.restore(); label(X0 + 1.6, S.y, 'max = ' + M1.n(S.y), '#ffc107'); }
+      if (S.zs) S.zs.forEach(function (z) { dot(z, 0, 6, '#ffc107'); label(z, 0, M1.n(z), '#ffc107', 30); });
+      if (S.pt && (S.pt[0] !== F.h || S.pt[1] !== F.k)) { dot(S.pt[0], S.pt[1], 6, '#ffc107'); label(S.pt[0], S.pt[1], '(' + M1.n(S.pt[0]) + ', ' + M1.n(S.pt[1]) + ')', '#ffc107', 22); }
+    }
+    // launch tube at the left zero of the current firework
+    if (current && !current.show) { var xl = Math.max(X0 + .3, zeroL(current.F)); cx.fillStyle = '#ffc107'; cx.fillRect(sx(xl) - 5, sy(0) - 14, 10, 14); cx.fillStyle = '#7a5c00'; cx.fillRect(sx(xl) - 5, sy(0) - 14, 10, 3); }
+    // wrong aims (fade out)
+    marks = marks.filter(function (m) { return t - m.t < 5500; });
+    marks.forEach(function (m) {
+      var al = Math.min(1, (5500 - (t - m.t)) / 1200); cx.save(); cx.globalAlpha = al; cx.strokeStyle = '#ff5d73'; cx.fillStyle = '#ff5d73'; cx.lineWidth = 2.5; cx.setLineDash([6, 5]);
+      var a = m.at;
+      if (a.pt) { var px = sx(a.pt[0]), py = sy(Math.max(Y0 + .3, Math.min(Y1 - .3, a.pt[1]))); cx.setLineDash([]); cx.beginPath(); cx.moveTo(px - 8, py - 8); cx.lineTo(px + 8, py + 8); cx.moveTo(px + 8, py - 8); cx.lineTo(px - 8, py + 8); cx.stroke(); cx.restore(); cx.save(); cx.globalAlpha = al; label(a.pt[0], Math.max(Y0 + .3, Math.min(Y1 - .3, a.pt[1])), 'your aim', '#ff8b9b', 22); }
+      if (a.y != null) { var yy = Math.max(Y0 + .2, Math.min(Y1 - .2, a.y)); cx.beginPath(); cx.moveTo(0, sy(yy)); cx.lineTo(W, sy(yy)); cx.stroke(); cx.restore(); cx.save(); cx.globalAlpha = al; label(X1 - 2, yy, 'your height ' + M1.n(a.y), '#ff8b9b'); }
+      if (a.x != null) { cx.beginPath(); cx.moveTo(sx(a.x), 0); cx.lineTo(sx(a.x), sy(0)); cx.stroke(); cx.restore(); cx.save(); cx.globalAlpha = al; label(a.x, Y1 - 1.4, 'x = ' + M1.n(a.x) + '?', '#ff8b9b', 4); }
+      if (a.zs) { cx.setLineDash([]); a.zs.forEach(function (z) { var zx = sx(z), zy = sy(0); cx.beginPath(); cx.moveTo(zx - 7, zy - 7); cx.lineTo(zx + 7, zy + 7); cx.moveTo(zx + 7, zy - 7); cx.lineTo(zx - 7, zy + 7); cx.stroke(); }); }
+      cx.restore();
+    });
+    // shells
+    shells = shells.filter(function (s) {
+      var u = Math.min(1, (t - s.t0) / s.dur), e = 1 - Math.pow(1 - u, 2.2), x, y;
+      if (s.dud) { x = s.x0 + (s.x - s.x0) * u; y = Math.max(0, s.y) * (1 - Math.pow(1 - u, 2)); }
+      else { x = s.xs + (s.F.h - s.xs) * e; y = f(s.F, x); }
+      for (var k = 0; k < 3; k++) parts.push({ x: sx(x) + (Math.random() - .5) * 3, y: sy(y) + Math.random() * 4, vx: (Math.random() - .5) * .5, vy: Math.random() * .6, life: .7, c: s.dud ? '#999' : '#ffd36b', d: 0.04, s: 1.6 });
+      dot(x, y, 3.5, s.dud ? '#bbb' : '#fff');
+      if (u >= 1) {
+        if (s.dud) { puff(x, y); } else { burst(s.F.h, s.F.k, s.color, s.big); if (!s.big || Math.random() < .5) { M1.sfx.boom(); M1.sfx.crackle(); } }
+        if (s.done) s.done(); return false;
+      }
+      return true;
+    });
+    // particles
+    cx.globalCompositeOperation = 'lighter';
+    parts = parts.filter(function (p) {
+      p.x += p.vx; p.y += p.vy; p.vy += p.smoke ? -0.01 : 0.045; p.vx *= .985; p.vy *= .985; p.life -= p.d;
+      if (p.life <= 0) return false;
+      cx.globalAlpha = Math.max(0, p.life) * (p.smoke ? .35 : 1); cx.fillStyle = p.c; cx.beginPath(); cx.arc(p.x, p.y, p.s * (p.smoke ? (2 - p.life) : 1), 0, 7); cx.fill();
+      return true;
+    });
+    cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+    if (flash > 0) { cx.fillStyle = 'rgba(255,240,200,' + flash * .35 + ')'; cx.fillRect(0, 0, W, H); flash -= .02; }
+    requestAnimationFrame(frame);
+  }
+  size(); requestAnimationFrame(frame);
+
+  /* ---------- game flow ---------- */
+  function hud() {
+    document.getElementById('score').textContent = G.score.toLocaleString(); document.getElementById('streak').textContent = G.streak;
+    var h = ''; for (var k = 0; k < 8; k++) h += '<i class="' + (k < G.i ? 'done' : k === G.i ? 'now' : '') + '"></i>';
+    document.getElementById('shells').innerHTML = h; document.getElementById('cNum').textContent = 'Firework ' + Math.min(8, G.i + 1) + ' / 8';
+  }
+  function start(si) {
+    G = { si: si, i: 0, score: 0, streak: 0, best: 0, first: 0, missed: [], done: [] };
+    paths = []; marks = []; current = null;
+    document.getElementById('chipShow').textContent = SHOWS[si].name.split(':')[0];
+    document.getElementById('cShow').textContent = SHOWS[si].name;
+    document.getElementById('startOv').hidden = true; document.getElementById('endOv').hidden = true;
+    hud(); next();
+  }
+  function next() {
+    var S = SHOWS[G.si], q = FFQ.make(S.kinds[G.i]), color = COLORS[G.i % COLORS.length];
+    current = { F: q.f, color: color, show: null, q: q };
+    hud();
+    M1.ask(qHost, q, {
+      onMiss: function (c, tries) {
+        G.streak = 0; hud(); if (tries === 1) G.missed.push(q.kind);
+        marks.push({ at: c.at, t: performance.now() });
+        var a = c.at, x0 = Math.max(X0 + .3, zeroL(q.f));
+        if (a.pt) dud(x0, Math.max(X0, Math.min(X1, a.pt[0])), Math.min(Y1 - .5, a.pt[1]));
+        else if (a.y != null) dud(x0, q.f.h, Math.min(Y1 - .5, a.y));
+      },
+      onRight: function (r) {
+        var pts = M1.points(r, G.streak);
+        if (r.first) { G.streak++; G.first++; G.best = Math.max(G.best, G.streak); } else G.streak = 0;
+        G.score += pts; hud();
+        if (pts) M1.toast('+' + pts + (G.streak >= 3 && r.first ? ' · ' + G.streak + ' in a row!' : ''));
+        qHost.innerHTML = '<div class="ff-wait">Launching firework ' + (G.i + 1) + '… <b>watch the sky</b></div>';
+        marks = [];
+        launch(q.f, color, function () {
+          current.show = q.target;
+          G.done.push({ F: q.f, color: color });
+          setTimeout(function () {
+            paths.push({ F: q.f, color: color }); current = null; G.i++;
+            if (G.i >= 8) finale(); else next();
+          }, M1.RM ? 600 : 2600);
+        });
+      }
+    });
+  }
+  function finale() {
+    hud(); qHost.innerHTML = '<div class="ff-wait"><b>GRAND FINALE!</b> Every firework you aimed, all at once.</div>';
+    M1.toast('GRAND FINALE!');
+    var k = 0;
+    G.done.forEach(function (d, j) { setTimeout(function () { launch(d.F, d.color, function () { if (++k === G.done.length) setTimeout(endCard, 1600); }, true); if (j % 2 === 0) M1.sfx.whoosh(); }, j * 260); });
+    setTimeout(function () { for (var z = 0; z < 6; z++) (function (z) { setTimeout(function () { burst(-8 + Math.random() * 16, 6 + Math.random() * 5, COLORS[z], true); M1.sfx.boom(); }, z * 220); })(z); }, G.done.length * 260 + 1500);
+  }
+  function endCard() {
+    var S = SHOWS[G.si], stars = G.first >= 7 ? 3 : G.first >= 5 ? 2 : 1, old = saved[S.id] || {};
+    saved[S.id] = { stars: Math.max(stars, old.stars || 0), score: Math.max(G.score, old.score || 0) }; M1.put('ff-best', JSON.stringify(saved));
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: S.name, score: G.score, details: G.first + '/8 first try · best streak ' + G.best + (G.missed.length ? ' · missed: ' + G.missed.join(', ') : '') }); } catch (e) {}
+    M1.sfx.win();
+    var nx = (G.si + 1) % SHOWS.length;
+    document.getElementById('endCard').innerHTML = '<h2>What a show!</h2><p>' + S.name + ' is complete. Every burst was right at a vertex.</p>' +
+      '<div class="m1-stats"><div><b>' + G.score.toLocaleString() + '</b><span>points</span></div><div><b>' + G.first + '/8</b><span>first try</span></div><div><b>' + G.best + '</b><span>best streak</span></div><div><b>' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</b><span>stars</span></div></div>' +
+      (G.first < 5 ? '<p>Tip: look back at the Unit 7 notes on key features, then run this show again.</p>' : '') +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="m1-go" id="nx" type="button">' + SHOWS[nx].name + ' →</button><button class="m1-btn" id="ag" type="button">Run this show again</button><button class="m1-btn" id="pk" type="button">All shows</button></div>';
+    document.getElementById('endOv').hidden = false;
+    document.getElementById('nx').onclick = function () { start(nx); }; document.getElementById('ag').onclick = function () { start(G.si); };
+    document.getElementById('pk').onclick = function () { document.getElementById('endOv').hidden = true; picker(); };
+  }
+  var pickIdx = 0;
+  function picker() {
+    var host = document.getElementById('shows'); host.innerHTML = '';
+    SHOWS.forEach(function (S, k) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'm1-lv' + (k === pickIdx ? ' on' : ''); var sv = saved[S.id];
+      b.innerHTML = '<b>' + S.name + '</b><small>' + S.what + '</small><span class="st">' + (sv ? '★'.repeat(sv.stars) + '☆'.repeat(3 - sv.stars) + ' · best ' + sv.score.toLocaleString() : 'Not played yet') + '</span>';
+      b.onclick = function () { pickIdx = k; host.querySelectorAll('.m1-lv').forEach(function (x, j) { x.classList.toggle('on', j === k); }); };
+      b.ondblclick = function () { start(k); };
+      host.appendChild(b);
+    });
+    document.getElementById('startOv').hidden = false;
+  }
+  document.getElementById('goBtn').onclick = function () { start(pickIdx); };
+  picker();
+  // a few practice bursts behind the start screen
+  [[-5, 7], [0, 9], [5, 6]].forEach(function (p, j) { setTimeout(function () { burst(p[0], p[1], COLORS[j], false); }, 400 + j * 700); });
+  if (/[?&]debug/.test(location.search)) window.__FF = { G: function () { return G; }, start: start, finale: function () { for (var j = G.done.length; j < 8; j++) G.done.push({ F: FFQ.make('vV').f, color: COLORS[j] }); G.i = 8; finale(); } };
+})();
+</script>
+</body>
+</html>

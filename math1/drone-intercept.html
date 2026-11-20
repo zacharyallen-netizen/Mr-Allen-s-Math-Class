@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drone Intercept | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261119a">
+<style>
+/* Drone Intercept (Nov 19, 2026): Math 1 Unit 3 systems of linear equations on a radar screen. Original art. */
+.di-main { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.di-radar { position: relative; border-radius: 18px; overflow: hidden; border: 1px solid #1d5a55; box-shadow: 0 0 0 1px #000, 0 10px 40px rgba(0,0,0,.5), inset 0 0 60px rgba(0,255,200,.06); background: #02110f; max-width: 640px; }
+.di-radar canvas { display: block; width: 100%; aspect-ratio: 1 / 1; }
+.di-side { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 10px; }
+.di-hud { background: linear-gradient(135deg, #062420, #0b1a2e); border: 1px solid #1d5a55; border-radius: 14px; padding: 12px 14px; font: 700 .78rem 'JetBrains Mono', monospace; letter-spacing: 1.5px; color: #5cffd0; text-transform: uppercase; }
+.di-hud .row { display: flex; justify-content: space-between; }
+.di-pips { display: flex; gap: 6px; margin-top: 10px; }
+.di-pips i { flex: 1; height: 10px; border-radius: 5px; background: #12302c; }
+.di-pips i.done { background: #34e3b0; box-shadow: 0 0 8px rgba(52,227,176,.6); }
+.di-pips i.now { background: #1f7b67; animation: m1glow 1.2s infinite; }
+.di-wait { background: var(--panel); border: 1px dashed var(--line); border-radius: 16px; padding: 18px; text-align: center; color: var(--dim); font-size: 1.05rem; }
+.di-wait b { color: #5cffd0; }
+.di-key { display: flex; gap: 14px; flex-wrap: wrap; font-size: .85rem; color: var(--dim); margin-top: 8px; }
+.di-key span::before { content: ''; display: inline-block; width: 18px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; background: var(--c); }
+.m1q-p .big:nth-of-type(1) { color: #7fe6ff; }
+.m1q-p .big:nth-of-type(2) { color: #ff9fcb; }
+@media (max-width: 900px) { .di-main { grid-template-columns: 1fr; } .di-side { position: static; } .di-radar { max-width: none; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261119a"></script>
+<script src="arcade/di-questions.js?v=20261119a"></script>
+<script src="../arcade-send.js" data-game="Drone Intercept" data-unit="M1 Unit 3"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← Math 1 Arcade</a>
+    <h1>Drone Intercept</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipSec">Pick a sector</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip">Streak <b id="streak">0</b></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="di-main">
+    <div>
+      <div class="di-radar"><canvas id="radar" aria-label="Radar screen with a coordinate grid"></canvas></div>
+      <div class="di-key"><span style="--c:#4fd8ff">Drone 1 = first equation</span><span style="--c:#ff5fa2">Drone 2 = second equation</span><span style="--c:#ffc107">your net</span></div>
+    </div>
+    <div class="di-side">
+      <div class="di-hud"><div class="row"><span id="hSec">Air control</span><span id="hNum"></span></div><div class="di-pips" id="pips"></div></div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Drone Intercept</h2>
+    <p>Two runaway delivery drones are flying straight paths over the city. Each path is a line, and each line has an equation. Find where the two paths <b>cross</b> (the solution of the system) and fire your net to catch both drones at once.</p>
+    <div class="m1-how">
+      <div><b>1. Read the signals</b>Each drone sends its path as an equation. Drone 1 is blue, drone 2 is pink.</div>
+      <div><b>2. Solve the system</b>Graph, substitute or eliminate. Tap the point where they cross.</div>
+      <div><b>3. Fire the net</b>Right point: both drones caught. Wrong point: the net misses and tells you why.</div>
+    </div>
+    <div class="m1-levels" id="secs"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Start the mission →</button>
+      <span style="color:var(--dim);font-size:.85rem">Keys 1–4 tap answers. Every sector is open.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+
+<script>
+(function () {
+  var SECS = [
+    { id: 'g', name: 'Sector 1: Radar', what: 'Read where the paths cross on the graph', kinds: ['graph', 'graph', 'graph', 'graph', 'graph', 'graph', 'graph', 'graph'] },
+    { id: 's', name: 'Sector 2: Substitution', what: 'y = mx + b paths: set them equal or substitute', kinds: ['subst', 'subst', 'subst2', 'subst', 'subst2', 'word', 'subst2', 'subst'] },
+    { id: 'e', name: 'Sector 3: Elimination', what: 'Standard form: add or subtract to cancel a variable', kinds: ['elim', 'elim', 'elim', 'count', 'elim', 'elim', 'word', 'elim'] },
+    { id: 'x', name: 'Sector 4: Strange Signals', what: 'One, none or infinitely many solutions, mixed with all methods', kinds: ['count', 'subst', 'count', 'elim', 'count', 'subst2', 'count', 'word'] }
+  ];
+  var C1 = '#4fd8ff', C2 = '#ff5fa2', NET = '#ffc107';
+  var saved = {}; try { saved = JSON.parse(M1.get('di-best') || '{}'); } catch (e) {}
+  var G = { si: 0, i: 0, score: 0, streak: 0, best: 0, first: 0, missed: [] };
+  document.getElementById('sndHere').appendChild(M1.soundButton());
+  var qHost = document.getElementById('q');
+
+  /* ---------- radar ---------- */
+  var cv = document.getElementById('radar'), cx = cv.getContext('2d'), W = 0, H = 0, DPR = 1;
+  var V = { x0: -10, x1: 10, y0: -10, y1: 10, sx: 1, sy: 1, radar: true };
+  function size() { DPR = Math.min(2, window.devicePixelRatio || 1); var r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * DPR; cv.height = H * DPR; cx.setTransform(DPR, 0, 0, DPR, 0, 0); }
+  window.addEventListener('resize', size);
+  var PAD = 0.06;
+  function px(x) { return W * PAD + (x - V.x0) / (V.x1 - V.x0) * W * (1 - 2 * PAD); }
+  function py(y) { return H - H * PAD - (y - V.y0) / (V.y1 - V.y0) * H * (1 - 2 * PAD); }
+  function setView(q) {
+    if (q.kind === 'word') {
+      var t = q.pt[0], h = q.pt[1], ty = Math.max(10, Math.ceil(h * 1.4 / 10) * 10), tx = Math.max(10, Math.ceil(t * 1.6 / 2) * 2);
+      V = { x0: 0, x1: tx, y0: 0, y1: ty, sx: tx <= 12 ? 1 : 2, sy: ty / 10, radar: false, xl: 'minutes', yl: 'height (m)' };
+    } else V = { x0: -10, x1: 10, y0: -10, y1: 10, sx: 1, sy: 1, radar: true };
+  }
+  // the part of a line that is inside the view: [xa, xb]
+  function clip(L) {
+    var xa = V.x0, xb = V.x1;
+    if (Math.abs(L.m) > 1e-9) { var ya = (V.y0 - L.b) / L.m, yb = (V.y1 - L.b) / L.m; var lo = Math.min(ya, yb), hi = Math.max(ya, yb); xa = Math.max(xa, lo); xb = Math.min(xb, hi); }
+    return [xa, xb];
+  }
+  var sweep = 0, parts = [], S = null; // S = the current scene
+  function drawBG(t) {
+    var g = cx.createRadialGradient(W / 2, H / 2, 10, W / 2, H / 2, W * .75); g.addColorStop(0, '#04231e'); g.addColorStop(1, '#010807');
+    cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    cx.lineWidth = 1;
+    for (var x = V.x0; x <= V.x1 + 1e-9; x += V.sx) { cx.strokeStyle = Math.abs(x) < 1e-9 ? 'rgba(92,255,208,.55)' : 'rgba(92,255,208,.10)'; cx.beginPath(); cx.moveTo(px(x), py(V.y0)); cx.lineTo(px(x), py(V.y1)); cx.stroke(); }
+    for (var y = V.y0; y <= V.y1 + 1e-9; y += V.sy) { cx.strokeStyle = Math.abs(y) < 1e-9 ? 'rgba(92,255,208,.55)' : 'rgba(92,255,208,.10)'; cx.beginPath(); cx.moveTo(px(V.x0), py(y)); cx.lineTo(px(V.x1), py(y)); cx.stroke(); }
+    cx.fillStyle = 'rgba(140,255,220,.75)'; cx.font = '600 ' + Math.max(10, W / 52) + 'px JetBrains Mono, monospace';
+    var ox = V.radar ? 0 : V.x0, oy = V.radar ? 0 : V.y0, stepX = V.radar ? 2 : V.sx * (V.x1 > 12 ? 2 : 2), stepY = V.radar ? 2 : V.sy * 2;
+    cx.textAlign = 'center'; for (x = V.x0 + stepX; x < V.x1; x += stepX) if (Math.abs(x) > 1e-9) cx.fillText(M1.n(x), px(x), py(oy) + 15);
+    cx.textAlign = 'right'; for (y = V.y0 + stepY; y < V.y1; y += stepY) if (Math.abs(y) > 1e-9) cx.fillText(M1.n(y), px(ox) - 4, py(y) + 4);
+    if (!V.radar) { cx.textAlign = 'right'; cx.fillText(V.xl + ' →', px(V.x1), py(0) - 6); cx.textAlign = 'left'; cx.fillText('↑ ' + V.yl, px(0) + 6, py(V.y1) + 4); }
+    if (V.radar) {
+      cx.strokeStyle = 'rgba(92,255,208,.16)'; for (var r = 1; r <= 3; r++) { cx.beginPath(); cx.arc(W / 2, H / 2, r * W * .16, 0, 7); cx.stroke(); }
+      sweep = t / 1400;
+      cx.save(); cx.translate(W / 2, H / 2); cx.rotate(sweep);
+      var sg = cx.createLinearGradient(0, 0, W * .6, 0); sg.addColorStop(0, 'rgba(92,255,208,.35)'); sg.addColorStop(1, 'rgba(92,255,208,0)');
+      cx.fillStyle = sg; cx.beginPath(); cx.moveTo(0, 0); cx.arc(0, 0, W * .72, -0.32, 0); cx.closePath(); cx.fill(); cx.restore();
+    }
+  }
+  function line(L, color, alpha, dash, w) {
+    var c = clip(L); if (c[0] >= c[1]) return;
+    cx.save(); cx.globalAlpha = alpha; cx.strokeStyle = color; cx.lineWidth = w || 2.5; cx.setLineDash(dash || []); cx.shadowColor = color; cx.shadowBlur = 8;
+    cx.beginPath(); cx.moveTo(px(c[0]), py(L.y(c[0]))); cx.lineTo(px(c[1]), py(L.y(c[1]))); cx.stroke(); cx.restore();
+  }
+  function drone(x, y, color, t, caught) {
+    var X = px(x), Y = py(y), s = Math.max(9, W / 48);
+    cx.save(); cx.translate(X, Y); cx.shadowColor = color; cx.shadowBlur = 14;
+    cx.strokeStyle = color; cx.lineWidth = 2.5; cx.beginPath(); cx.moveTo(-s, -s); cx.lineTo(s, s); cx.moveTo(s, -s); cx.lineTo(-s, s); cx.stroke();
+    [[-1, -1], [1, -1], [1, 1], [-1, 1]].forEach(function (d) { cx.beginPath(); cx.ellipse(d[0] * s, d[1] * s, s * .55, s * .2 + Math.abs(Math.sin(t / 30 + d[0])) * s * .2, 0, 0, 7); cx.stroke(); });
+    cx.fillStyle = '#031513'; cx.beginPath(); cx.arc(0, 0, s * .45, 0, 7); cx.fill(); cx.stroke();
+    cx.fillStyle = (Math.floor(t / 300) % 2) ? '#ff3b3b' : color; cx.beginPath(); cx.arc(0, 0, s * .18, 0, 7); cx.fill();
+    cx.restore();
+  }
+  function netAt(x, y, r, color, alpha) {
+    var X = px(x), Y = py(y); cx.save(); cx.globalAlpha = alpha; cx.strokeStyle = color; cx.lineWidth = 1.6; cx.shadowColor = color; cx.shadowBlur = 10;
+    cx.beginPath(); cx.arc(X, Y, r, 0, 7); cx.stroke();
+    for (var k = 0; k < 8; k++) { var a = k * Math.PI / 8; cx.beginPath(); cx.moveTo(X + Math.cos(a) * r, Y + Math.sin(a) * r); cx.lineTo(X - Math.cos(a) * r, Y - Math.sin(a) * r); cx.stroke(); }
+    cx.beginPath(); cx.arc(X, Y, r * .55, 0, 7); cx.stroke(); cx.restore();
+  }
+  function label(x, y, s, c, dy) { cx.font = '700 ' + Math.max(11, W / 44) + 'px JetBrains Mono, monospace'; cx.textAlign = 'center'; cx.lineWidth = 4; cx.strokeStyle = '#01100d'; cx.strokeText(s, px(x), py(y) + (dy || -16)); cx.fillStyle = c; cx.fillText(s, px(x), py(y) + (dy || -16)); }
+  function spark(x, y, c, N) { for (var k = 0; k < (M1.RM ? 12 : N); k++) { var a = Math.random() * 6.283, v = 1 + Math.random() * 4; parts.push({ x: px(x), y: py(y), vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, c: c, d: .02 + Math.random() * .02 }); } }
+
+  function ease(u) { return u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2; }
+  function frame(t) {
+    if (!W) size();
+    drawBG(t);
+    if (S) {
+      var q = S.q;
+      if (q.show || S.reveal) { line(q.L1, C1, .9, S.reveal ? [] : [8, 7]); line(q.L2, C2, .9, S.reveal ? [] : [8, 7]); }
+      // drones: idle at their entry points, or flying
+      var d1 = S.d1, d2 = S.d2, u = S.fly ? Math.min(1, (t - S.fly.t0) / S.fly.dur) : 0, e = ease(u);
+      function pos(d) { var x = d.from + (d.to - d.from) * (S.fly ? e : 0) + (S.fly ? 0 : Math.sin(t / 500 + d.ph) * .25); return [x, d.L.y(x)]; }
+      var p1 = pos(d1), p2 = pos(d2);
+      if (!(S.caught)) { drone(p1[0], p1[1], C1, t); drone(p2[0], p2[1], C2, t); }
+      // net
+      if (S.net) {
+        var nu = Math.min(1, (t - S.net.t0) / S.net.dur), ne = ease(nu), bx = (V.x0 + V.x1) / 2, by = V.y0;
+        var nx = bx + (S.net.x - bx) * ne, ny = by + (S.net.y - by) * ne;
+        if (nu < 1) { cx.fillStyle = NET; cx.beginPath(); cx.arc(px(nx), py(ny), 5, 0, 7); cx.fill(); parts.push({ x: px(nx), y: py(ny), vx: 0, vy: 0, life: .6, c: NET, d: .05 }); }
+        else { var open = Math.min(1, (t - S.net.t0 - S.net.dur) / 300), col = S.net.good ? NET : '#ff5d73'; netAt(S.net.x, S.net.y, 8 + open * Math.max(18, W / 22), col, S.net.good ? 1 : Math.max(0, 1 - (t - S.net.t0 - S.net.dur) / 2600));
+          if (!S.net.good) label(S.net.x, S.net.y, 'MISS', '#ff8b9b', -28); }
+      }
+      if (S.caught) { drone(S.caught[0] - .25, S.caught[1], C1, t); drone(S.caught[0] + .25, S.caught[1], C2, t); if (Number.isInteger(S.caught[0]) && Number.isInteger(S.caught[1])) label(S.caught[0], S.caught[1], '(' + M1.n(S.caught[0]) + ', ' + M1.n(S.caught[1]) + ')', '#fff', -34); }
+      if (S.msg) label((V.x0 + V.x1) / 2, V.y1 - (V.y1 - V.y0) * .08, S.msg, S.msgC || '#5cffd0', 0);
+      if (S.fly && u >= 1 && S.fly.done) { var f = S.fly.done; S.fly.done = null; f(); }
+    }
+    parts = parts.filter(function (p) { p.x += p.vx; p.y += p.vy; p.vx *= .96; p.vy *= .96; p.life -= p.d; if (p.life <= 0) return false; cx.globalAlpha = p.life; cx.fillStyle = p.c; cx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); return true; });
+    cx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  size(); requestAnimationFrame(frame);
+
+  /* ---------- scenes ---------- */
+  function scene(q) {
+    setView(q);
+    var c1 = clip(q.L1), c2 = clip(q.L2);
+    S = { q: q, d1: { L: q.L1, from: c1[0] + .4, to: c1[0] + .4, ph: 0 }, d2: { L: q.L2, from: c2[1] - .4, to: c2[1] - .4, ph: 2 } };
+    if (V.radar && q.kind !== 'count') {   // start well away from the crossing so the drones do not give it away
+      S.d1.from = S.d1.to = c1[0] + .4; S.d2.from = S.d2.to = c2[1] - .4;
+    }
+  }
+  function fireNet(x, y, good, done) { S.net = { x: x, y: y, t0: performance.now(), dur: M1.RM ? 20 : 650, good: good }; M1.sfx.net(); if (done) setTimeout(done, M1.RM ? 50 : 700); }
+  function catchAt(x, y, done) {
+    S.d1.to = x; S.d2.to = x; S.fly = { t0: performance.now(), dur: M1.RM ? 20 : 1200, done: function () {
+      S.caught = [x, y]; S.reveal = true; spark(x, y, NET, 60); spark(x, y, '#fff', 30); S.msg = 'INTERCEPTED!'; S.msgC = NET; M1.sfx.boom(); setTimeout(done, M1.RM ? 300 : 1800); } };
+    fireNet(x, y, true);
+  }
+  function flyBy(type, done) {   // count questions: parallel or same path
+    var c1 = clip(S.q.L1), c2 = clip(S.q.L2); S.reveal = true;
+    S.d1.from = c1[0] + .4; S.d1.to = c1[1] - .4; S.d2.from = c2[0] + .4; S.d2.to = c2[1] - .4;
+    if (type === 2) { S.d2.from = c1[0] + 1.6; S.d2.to = c1[1] + .8; }
+    S.msg = type === 1 ? 'PARALLEL: they never meet' : 'SAME PATH: every point is shared'; S.msgC = NET;
+    S.fly = { t0: performance.now(), dur: M1.RM ? 20 : 2400, done: function () { setTimeout(done, M1.RM ? 200 : 900); } };
+    M1.sfx.whoosh();
+  }
+
+  /* ---------- game flow ---------- */
+  function hud() {
+    document.getElementById('score').textContent = G.score.toLocaleString(); document.getElementById('streak').textContent = G.streak;
+    var h = ''; for (var k = 0; k < 8; k++) h += '<i class="' + (k < G.i ? 'done' : k === G.i ? 'now' : '') + '"></i>';
+    document.getElementById('pips').innerHTML = h; document.getElementById('hNum').textContent = 'Pair ' + Math.min(8, G.i + 1) + ' / 8';
+  }
+  function start(si) {
+    G = { si: si, i: 0, score: 0, streak: 0, best: 0, first: 0, missed: [] };
+    document.getElementById('chipSec').textContent = SECS[si].name.split(':')[0];
+    document.getElementById('hSec').textContent = SECS[si].name;
+    document.getElementById('startOv').hidden = true; document.getElementById('endOv').hidden = true;
+    hud(); next();
+  }
+  function next() {
+    var q = DIQ.make(SECS[G.si].kinds[G.i]); scene(q); hud();
+    M1.ask(qHost, q, {
+      onMiss: function (c, tries) {
+        G.streak = 0; hud(); if (tries === 1) G.missed.push(q.kind);
+        if (c.at && c.at[0] >= V.x0 && c.at[0] <= V.x1 && c.at[1] >= V.y0 && c.at[1] <= V.y1) fireNet(c.at[0], c.at[1], false);
+        else { S.msg = 'NO LOCK'; S.msgC = '#ff8b9b'; setTimeout(function () { if (S && S.msg === 'NO LOCK') S.msg = ''; }, 1500); }
+      },
+      onRight: function (r) {
+        var pts = M1.points(r, G.streak);
+        if (r.first) { G.streak++; G.first++; G.best = Math.max(G.best, G.streak); } else G.streak = 0;
+        G.score += pts; hud();
+        if (pts) M1.toast('+' + pts + (G.streak >= 3 && r.first ? ' · ' + G.streak + ' in a row!' : ''));
+        qHost.innerHTML = '<div class="di-wait">Net away… <b>watch the radar</b></div>';
+        S.net = null; S.msg = '';
+        var after = function () { G.i++; if (G.i >= 8) endCard(); else next(); };
+        if (q.kind === 'count' && q.type !== 0) flyBy(q.type, after);
+        else if (q.pt && q.pt[0] >= V.x0 && q.pt[0] <= V.x1 && q.pt[1] >= V.y0 && q.pt[1] <= V.y1) catchAt(q.pt[0], q.pt[1], after);
+        else { S.reveal = true; S.msg = 'They cross off the screen: one solution'; S.msgC = NET; setTimeout(after, M1.RM ? 300 : 2200); }
+      }
+    });
+  }
+  function endCard() {
+    var Z = SECS[G.si], stars = G.first >= 7 ? 3 : G.first >= 5 ? 2 : 1, old = saved[Z.id] || {};
+    saved[Z.id] = { stars: Math.max(stars, old.stars || 0), score: Math.max(G.score, old.score || 0) }; M1.put('di-best', JSON.stringify(saved));
+    try { if (window.ArcadeSend) ArcadeSend.round({ level: Z.name, score: G.score, details: G.first + '/8 first try · best streak ' + G.best + (G.missed.length ? ' · missed: ' + G.missed.join(', ') : '') }); } catch (e) {}
+    M1.sfx.win(); hud();
+    var nx = (G.si + 1) % SECS.length;
+    document.getElementById('endCard').innerHTML = '<h2>Sector secure!</h2><p>' + Z.name + ' is clear. Every runaway drone is in a net.</p>' +
+      '<div class="m1-stats"><div><b>' + G.score.toLocaleString() + '</b><span>points</span></div><div><b>' + G.first + '/8</b><span>first try</span></div><div><b>' + G.best + '</b><span>best streak</span></div><div><b>' + '★'.repeat(stars) + '☆'.repeat(3 - stars) + '</b><span>stars</span></div></div>' +
+      (G.first < 5 ? '<p>Tip: look back at the Unit 3 notes on substitution and elimination, then fly this sector again.</p>' : '') +
+      '<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="m1-go" id="nx" type="button">' + SECS[nx].name + ' →</button><button class="m1-btn" id="ag" type="button">Fly this sector again</button><button class="m1-btn" id="pk" type="button">All sectors</button></div>';
+    document.getElementById('endOv').hidden = false;
+    document.getElementById('nx').onclick = function () { start(nx); }; document.getElementById('ag').onclick = function () { start(G.si); };
+    document.getElementById('pk').onclick = function () { document.getElementById('endOv').hidden = true; picker(); };
+  }
+  var pickIdx = 0;
+  function picker() {
+    var host = document.getElementById('secs'); host.innerHTML = '';
+    SECS.forEach(function (Z, k) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'm1-lv' + (k === pickIdx ? ' on' : ''); var sv = saved[Z.id];
+      b.innerHTML = '<b>' + Z.name + '</b><small>' + Z.what + '</small><span class="st">' + (sv ? '★'.repeat(sv.stars) + '☆'.repeat(3 - sv.stars) + ' · best ' + sv.score.toLocaleString() : 'Not flown yet') + '</span>';
+      b.onclick = function () { pickIdx = k; host.querySelectorAll('.m1-lv').forEach(function (x, j) { x.classList.toggle('on', j === k); }); };
+      b.ondblclick = function () { start(k); };
+      host.appendChild(b);
+    });
+    document.getElementById('startOv').hidden = false;
+  }
+  document.getElementById('goBtn').onclick = function () { start(pickIdx); };
+  scene(DIQ.make('graph')); picker();
+  if (/[?&]debug/.test(location.search)) window.__DI = { G: function () { return G; }, start: start, S: function () { return S; } };
+})();
+</script>
+</body>
+</html>
