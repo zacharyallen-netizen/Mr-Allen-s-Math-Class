@@ -13,6 +13,8 @@ GAMES = [
          desc='Use zero pairs to add and subtract integers with tiles, then use them to solve equations.'),
     dict(name='Squeaky Cheeks', href=G8 + 'squeaky-cheeks.html', icon='💨', units=[1], tag='Integer & fraction fluency', carry=1,
          desc='Answer integer and fraction problems to build up gas, then clear the room. Five rooms.'),
+    dict(name='Neon Integer Assault', href=G8 + 'neon-integer-assault.html', icon='👾', units=[1, 3], tag='Integers + equations', carry=1,
+         desc='Blast invaders and a centipede. Every target carries a number: hit the one that solves the equation.'),
     dict(name='Equation Master', href=G8 + 'equation_master.html', icon='⚔️', units=[3], tag='Equations', carry=1,
          desc='Solve equations one move at a time. Start with the Apprentice and Journeyman levels (one- and two-step).'),
     dict(name='Market Day', href='market-day.html', icon='🧺', units=[4, 5], tag='NEW · Units 4–5',
@@ -119,6 +121,8 @@ def home_page(US):
     h.append('</div>\n<div class="sub-label">Look it up</div>\n<div class="units-grid">\n')
     h.append(card('vocabulary.html', '🔤', 'Vocabulary', 'Key math words for every 7th grade unit, with short meanings.'))
     h.append(card('formulas.html', '🧾', 'Formula Sheet', 'Circles, area, surface area, volume, percent and probability, all in one place.'))
+    h.append('</div>\n<div class="sub-label">Look ahead</div>\n<div class="units-grid">\n')
+    h.append(card(G8 + 'index.html', '🧭', '8th Grade Math <span class="plain">(next year)</span>', 'Want to look ahead or review? The 8th grade units, Skill Builders and games are open to you too.'))
     h.append('</div>\n</section>\n')
     # PRACTICE & REVIEW
     h.append('<section class="door-panel" id="practice-review" aria-label="Practice &amp; Review">\n<div class="section-label big"><span class="pn-art">%s</span>Practice &amp; Review</div>\n' % DOOR_ART['practice-review'])

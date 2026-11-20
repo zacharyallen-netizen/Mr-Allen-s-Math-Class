@@ -64,6 +64,7 @@
   /* 7th grade (Nov 20, 2026 draft): on grade7/ pages the first four groups point to the 7th grade pages,
      and the menu takes the 7th grade colors (coffee + amber). 8th grade pages are unchanged. */
   var G7 = /^grade7\//.test(rel);
+  function keep(a) { return G7 ? a.filter(function (r) { return String(r[2] || '').indexOf('math1/') !== 0; }) : a; }   // 7th grade search leaves out Math 1
   if (G7) {
     var U7 = [['unit1.html', 'Unit 1', 'Rational Numbers'], ['unit2.html', 'Unit 2', 'Expressions'], ['unit3.html', 'Unit 3', 'Equations & Inequalities'],
       ['unit4.html', 'Unit 4', 'Proportional Relationships'], ['unit5.html', 'Unit 5', 'Percents'], ['unit6.html', 'Unit 6', 'Scale Drawings, Angles & Triangles'],
@@ -81,6 +82,10 @@
       { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
         links: [X('7th Grade Arcade', 'grade7/arcade.html', 'every 7th grade math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
         sec: ['grade7/arcade', 'grade7/market', 'grade7/canyon', 'grade7/lantern'] });
+    /* Zach (Nov 20, 2026): 7th grade can open the 8th grade site, but the 7th grade menu does not show Math 1. */
+    S = S.filter(function (s) { return s.id !== 'm1'; });
+    S.splice(4, 0, { id: 'g8', icon: 'book', label: '8th Grade', title: '8th Grade Math', desc: 'Want to look ahead or review? The 8th grade units and games are open to you too.',
+      links: [X('8th Grade home', 'grade8/index.html'), X('8th Grade Arcade', 'grade8/arcade.html', 'every 8th grade math game'), X('8th Grade Skill Builders', 'grade8/skill-builders.html', 'short lessons and videos')], sec: [] });
   }
   var cur = null, best = 0;
   S.forEach(function (s) { (s.links || []).forEach(function (l) { if (l.h === rel) { cur = s.id; best = 999; } }); });
@@ -169,9 +174,9 @@
   // Search (search-index.js, loaded the first time the box is used)
   var sIn = sr.querySelector('.srch input'), sRes = sr.querySelector('.res'), IDX = null, waiting = false;
   function loadIdx(cb) {
-    if (IDX) return cb(); if (window.SITE_SEARCH) { IDX = window.SITE_SEARCH; return cb(); }
+    if (IDX) return cb(); if (window.SITE_SEARCH) { IDX = keep(window.SITE_SEARCH); return cb(); }
     if (waiting) return; waiting = true; var sc2 = document.createElement('script'); sc2.src = root + 'search-index.js?v=' + (window.__SNV || '20261118a');
-    sc2.onload = function () { IDX = window.SITE_SEARCH || []; waiting = false; cb(); }; document.head.appendChild(sc2);
+    sc2.onload = function () { IDX = keep(window.SITE_SEARCH || []); waiting = false; cb(); }; document.head.appendChild(sc2);
   }
   function norm(t) { return String(t).toLowerCase().replace(/[^a-z0-9√π ]+/g, ' '); }
   function find() {
