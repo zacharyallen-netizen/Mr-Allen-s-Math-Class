@@ -248,10 +248,53 @@ body{margin:0;font-family:Inter,system-ui,sans-serif;color:var(--cream);font-siz
 .card .go{margin-top:auto;padding-top:6px;font:800 14px Inter,sans-serif;color:var(--gold)}
 .note{margin-top:34px;background:rgba(255,244,223,.06);border:1px dashed var(--bdr);border-radius:12px;padding:12px 16px;color:var(--dim);font-size:15px}
 .note b{color:var(--cream)}
+.lb{margin-top:26px;background:linear-gradient(180deg,#3A2414,#2A180C);border:3px solid var(--gold);border-radius:16px;padding:16px 16px 12px}
+.lb[hidden]{display:none}
+.lb-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.lb-top h2{margin:0;font:600 24px "Source Serif 4",Georgia,serif;color:var(--gold)}.lb-top p{margin:0 0 0 auto;font-size:14px;color:var(--dim)}
+.lb-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px}
+.lb-card{flex:0 0 220px;background:rgba(0,0,0,.25);border:2px solid var(--bdr);border-radius:12px;padding:10px 12px;text-decoration:none;color:inherit}
+.lb-card:hover{border-color:var(--gold)}.lb-card h3{margin:0 0 6px;font:600 17px "Source Serif 4",Georgia,serif;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-card ol{list-style:none;margin:0;padding:0}.lb-card li{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:15px;border-top:1px dashed rgba(255,255,255,.1)}
+.lb-card li:first-child{border-top:0}.lb-card .rk{flex:0 0 22px;height:22px;border-radius:50%;display:grid;place-items:center;font:700 12px Inter,sans-serif;background:#5E3B1F;color:#fff}
+.lb-card li:nth-child(1) .rk{background:var(--gold);color:#3E2414}.lb-card .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-card .sc{font:600 14px "JetBrains Mono",monospace;color:var(--sage)}.lb-msg{color:var(--dim);font-size:15px;padding:6px 2px}
 .foot{text-align:center;color:#8F7556;font-size:13px;margin-top:40px}
 @media (prefers-reduced-motion:reduce){.card{transition:none}}
 </style>
 '''
+
+LB_JS = """<script>
+/* High Scores: asks the 7th grade teacher's Sheet (?leaders=1, MathClassTracker script) for the top 5 per game.
+   Hidden until tracker-config.js has a 7th grade ENDPOINT. */
+(function () {
+  var cfg = window.TRACKER_CONFIG || {}, box = document.getElementById('lb'), row = document.getElementById('lbRow'), timer;
+  if (!cfg.ENDPOINT || !box) return;
+  box.hidden = false;
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function msg(t) { row.innerHTML = '<div class="lb-msg">' + t + '</div>'; }
+  var cards = [].slice.call(document.querySelectorAll('a.card')).map(function (a) { var h = a.querySelector('h3'); return { name: h ? h.textContent.trim() : '', href: a.getAttribute('href') }; });
+  function norm(s) { return String(s).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  function idx(g) { for (var i = 0; i < cards.length; i++) if (norm(cards[i].name) === norm(g)) return i; return 999; }
+  window.__arcadeLeaders = function (d) {
+    clearTimeout(timer);
+    if (!d || !d.ok || !d.games) return msg('High scores are not available right now.');
+    var names = Object.keys(d.games).sort(function (a, b) { return idx(a) - idx(b); });
+    if (!names.length) return msg('No high scores yet. Play a game with your full name to be the first!');
+    row.innerHTML = names.map(function (g) {
+      var c = cards[idx(g)];
+      return '<a class="lb-card"' + (c ? ' href="' + esc(c.href) + '"' : '') + '><h3 title="' + esc(g) + '">' + esc(g) + '</h3><ol>' +
+        d.games[g].map(function (r, i) { return '<li><span class="rk">' + (i + 1) + '</span><span class="nm">' + esc(r.name) + '</span><span class="sc">' + Number(r.score).toLocaleString() + '</span></li>'; }).join('') + '</ol></a>';
+    }).join('');
+  };
+  var s = document.createElement('script');
+  s.src = cfg.ENDPOINT + (cfg.ENDPOINT.indexOf('?') < 0 ? '?' : '&') + 'leaders=1&callback=__arcadeLeaders&t=' + Math.floor(Date.now() / 60000);
+  s.onerror = function () { msg('High scores are not available right now.'); };
+  timer = setTimeout(function () { if (/Loading/.test(row.textContent)) msg('High scores are not available right now.'); }, 12000);
+  document.body.appendChild(s);
+})();
+</script>
+"""
 
 def arcade_page():
     new = [g for g in GAMES if not g.get('carry')]; old = [g for g in GAMES if g.get('carry')]
@@ -263,6 +306,8 @@ def arcade_page():
     h.append('<a class="back" href="index.html">← Back to 7th Grade Math</a>\n<div class="hdr"><h1>THE 7TH GRADE ARCADE</h1>'
              '<p>Finished your work? Every game here still builds your math. Pick a game, read each question, and go for 3 stars.</p>'
              '<div class="tags"><span>%d games + Fluency Lab</span><span>Units 1–9</span><span>Play anytime</span></div></div>\n' % len(GAMES))
+    h.append('<div class="lb" id="lb" hidden><div class="lb-top"><h2>High Scores</h2><p>Top 5 for each new 7th grade game. Names show as first name and last initial.</p></div>'
+             '<div class="lb-row" id="lbRow"><div class="lb-msg">Loading high scores…</div></div></div>\n')
     h.append('<div class="section"><div class="sh"><h2>New 7th grade games</h2><p>Ratios, percents, geometry, statistics and probability</p></div><div class="grid">\n')
     h.extend(c(g, g['tag'], ' new') for g in new)
     h.append('</div></div>\n<div class="section"><div class="sh"><h2>Fluency games</h2><p>Integers, facts and equations to automatic</p></div><div class="grid">\n')
@@ -270,7 +315,7 @@ def arcade_page():
     h.append(c(dict(href=FLUENCY_LAB, icon='🧠', name='Fluency Lab', desc='Short timed drills: multiplying, dividing, fractions, decimals, integers and expressions. Beat your own best.'), 'Every unit'))
     h.append('</div></div>\n<p class="note"><b>Earned Arcade time?</b> Watch 3 Skill Builder videos to the end and you get 5 minutes. Press <b>Start</b> on the gold chip when you are ready. '
              'The fluency games open in the 8th grade Arcade, so the menu may say 8th grade while you play. Use the back button to come back here.</p>\n')
-    h.append('<div class="foot">© Mr. Allen\'s Math Class · 7th Grade Math</div>\n</div>\n<script src="../tracker-config.js"></script>\n<script src="../arcade-pass.js?v=20261118a"></script>\n</body>\n</html>\n')
+    h.append('<div class="foot">© Mr. Allen\'s Math Class · 7th Grade Math</div>\n</div>\n<script src="../tracker-config.js"></script>\n<script src="../arcade-pass.js?v=20261118a"></script>\n' + LB_JS + '</body>\n</html>\n')
     write('arcade.html', ''.join(h))
 
 # ------------------------------------------------------------------ formula sheet (Nov 20, 2026)
