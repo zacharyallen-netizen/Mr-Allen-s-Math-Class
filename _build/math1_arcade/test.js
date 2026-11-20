@@ -5,7 +5,7 @@ const fs = require('fs'), vm = require('vm'), path = require('path');
 const R = path.join(__dirname, '../../math1/arcade/');
 const ctx = { console, Math, Number, String, Date, setTimeout, clearTimeout };
 ctx.window = ctx; vm.createContext(ctx);
-for (const f of ['m1-arcade.js', 'ns-questions.js', 'di-questions.js', 'ff-questions.js'])
+for (const f of ['m1-arcade.js', 'ns-questions.js', 'di-questions.js', 'ff-questions.js', 'fn-questions.js', 'dd-questions.js', 'fg-questions.js', 'is-questions.js'])
   if (fs.existsSync(R + f)) vm.runInContext(fs.readFileSync(R + f, 'utf8'), ctx, { filename: f });
 let bad = 0, total = 0;
 function fail(k, msg, q) { if (bad++ < 25) console.log('FAIL', k, msg, q ? JSON.stringify(q.ch.map(c => [c.h, c.ok])) : ''); }
@@ -40,6 +40,7 @@ if (ctx.NSQ) for (const k of Object.keys(ctx.NSQ.MAKERS)) for (let i = 0; i < 30
   if (k === 'classify') { const d1 = s[1] - s[0], d2 = s[2] - s[1], d3 = s[3] - s[2], r1 = s[1] / s[0], r2 = s[2] / s[1], r3 = s[3] / s[2];
     const t = (d1 === d2 && d2 === d3) ? 0 : (r1 === r2 && r2 === r3) ? 1 : 2; if (t !== q.ans) fail(k, 'classify', q); }
 }
+for (const G of ['FNQ', 'DDQ', 'FGQ', 'ISQ']) if (ctx[G]) for (const k of Object.keys(ctx[G].MAKERS)) for (let i = 0; i < 3000; i++) { const q = ctx[G].make(k), r = common(G, k, q); if (r && ctx[G].verify) { const e = ctx[G].verify(q); if (e) fail(k, e, q); } }
 if (ctx.DIQ) for (const k of Object.keys(ctx.DIQ.MAKERS)) for (let i = 0; i < 3000; i++) { const q = ctx.DIQ.make(k), r = common('di', k, q); if (r && ctx.DIQ.verify) { const e = ctx.DIQ.verify(q); if (e) fail(k, e, q); } }
 function evalEq(eq, x) {   // the equation exactly as students see it, turned back into math
   let s = eq.replace(/^y = /, '').replace(/<sup>2<\/sup>/g, '^2').replace(/\u2212/g, '-').replace(/\u00bd/g, '0.5');

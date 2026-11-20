@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Factor Forge | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261120a">
+<style>
+/* Factor Forge (Nov 20, 2026): Math 1 Unit 6. The box method is a glowing mold on an anvil. A tapped factoring is poured into
+   the mold: every cell is multiplied out, and the cells that do not match the problem glow red. Right answers forge a piece
+   of gear for the rack. Original art. */
+.g-main { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.g-scene { border-radius: 18px; overflow: hidden; border: 1px solid #5a3218; background: #120a06; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.g-scene canvas { display: block; width: 100%; aspect-ratio: 16 / 11; }
+.g-side { position: sticky; top: 10px; }
+@media (max-width: 900px) { .g-main { grid-template-columns: 1fr; } .g-side { position: static; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261120a"></script>
+<script src="arcade/m1-game.js?v=20261120a"></script>
+<script src="arcade/fg-questions.js?v=20261120a"></script>
+<script src="../arcade-send.js" data-game="Factor Forge" data-unit="M1 Unit 6"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top"><a class="m1-back" href="arcade.html">← Math 1 Arcade</a><h1>Factor Forge</h1><span class="sp"></span><span id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></span></div>
+  <div class="g-main">
+    <div class="g-scene"><canvas id="cv" aria-label="A forge with a box-method mold on an anvil"></canvas></div>
+    <div class="g-side"><div id="q"></div></div>
+  </div>
+</div>
+<script>
+(function () {
+  var cv = document.getElementById('cv'), cx = cv.getContext('2d'), W = 0, H = 0;
+  function size() { var d = Math.min(2, devicePixelRatio || 1), r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+  addEventListener('resize', size);
+  var S = { q: null, pour: null, parts: [], rack: [], hammer: 0, glow: 0 };
+  var GEAR = ['sword', 'shield', 'axe', 'helm', 'sword', 'shield', 'hammer', 'crown'];
+  var plain = function (h) { return String(h).replace(/<sup>(\d)<\/sup>/g, function (m, d) { return '²³⁴'.charAt(+d - 2) || d; }).replace(/<[^>]+>/g, ''); };
+  function tp(c, k) { var a = Math.abs(c), v = k === 0 ? '' : k === 1 ? 'x' : k === 2 ? 'x²' : 'x³'; return (c < 0 ? '−' : '') + (a === 1 && k ? '' : M1.n(a)) + v; }
+  function F(px, w) { return (w || 700) + ' ' + Math.round(px) + 'px JetBrains Mono, monospace'; }
+
+  function bg(t) {
+    var g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1c120c'); g.addColorStop(1, '#0c0705'); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    // stone blocks
+    cx.strokeStyle = 'rgba(0,0,0,.35)'; cx.lineWidth = 2; for (var y = 0; y < H * .72; y += 34) for (var x = (y / 34) % 2 ? -30 : 0; x < W; x += 60) cx.strokeRect(x, y, 60, 34);
+    // furnace glow (left)
+    var fl = .75 + Math.sin(t / 120) * .08 + Math.sin(t / 47) * .05 + S.glow * .4;
+    var fg = cx.createRadialGradient(W * .08, H * .62, 5, W * .08, H * .62, W * .32); fg.addColorStop(0, 'rgba(255,170,60,' + .6 * fl + ')'); fg.addColorStop(1, 'rgba(255,90,20,0)');
+    cx.fillStyle = fg; cx.fillRect(0, 0, W, H);
+    cx.fillStyle = '#2a1a12'; cx.beginPath(); cx.arc(W * .08, H * .66, W * .085, Math.PI, 0); cx.lineTo(W * .165, H * .8); cx.lineTo(W * -.005, H * .8); cx.fill();
+    for (var k = 0; k < 6; k++) { cx.fillStyle = ['#ffcf5a', '#ff8a2a', '#ff5a1f'][k % 3]; cx.beginPath(); var fx = W * (.03 + k * .02), fh = H * (.05 + Math.abs(Math.sin(t / 90 + k)) * .05); cx.moveTo(fx - 8, H * .76); cx.quadraticCurveTo(fx, H * .76 - fh * 2, fx + 8, H * .76); cx.fill(); }
+    if (Math.random() < .3) S.parts.push({ x: W * (.03 + Math.random() * .1), y: H * .7, vx: (Math.random() - .3) * .6, vy: -1 - Math.random() * 1.5, l: 1, c: '#ffb347', g: -.005 });
+    // floor + anvil
+    cx.fillStyle = '#0a0604'; cx.fillRect(0, H * .8, W, H * .2);
+    var ax = W * .5, ay = H * .86; cx.fillStyle = '#3b3f48'; cx.beginPath(); cx.moveTo(ax - W * .2, ay - H * .06); cx.lineTo(ax + W * .16, ay - H * .06); cx.quadraticCurveTo(ax + W * .25, ay - H * .06, ax + W * .27, ay - H * .1); cx.lineTo(ax + W * .14, ay - H * .1); cx.lineTo(ax - W * .2, ay - H * .1); cx.fill();
+    cx.fillStyle = '#2b2e35'; cx.fillRect(ax - W * .08, ay - H * .06, W * .14, H * .07); cx.fillRect(ax - W * .13, ay, W * .24, H * .04);
+  }
+  function rack(t) {
+    var rx = W * .86, ry = H * .1, sh = H * .08;
+    cx.fillStyle = '#3a2416'; cx.fillRect(rx - 6, ry - 10, W * .12, 6); cx.fillRect(rx - 6, ry + sh * 4 - 4, W * .12, 6);
+    S.rack.forEach(function (g, i) { var x = rx + (i % 2) * W * .055 + 10, y = ry + Math.floor(i / 2) * sh + sh * .45; item(g, x, y, Math.max(10, W / 55), t); });
+  }
+  function item(k, x, y, s, t) {
+    cx.save(); cx.translate(x, y); var gold = cx.createLinearGradient(-s, -s, s, s); gold.addColorStop(0, '#fff2a8'); gold.addColorStop(1, '#d99a00');
+    cx.fillStyle = gold; cx.strokeStyle = '#7a5200'; cx.lineWidth = 1.5; cx.shadowColor = '#ffc107'; cx.shadowBlur = 8;
+    if (k === 'sword') { cx.rotate(-.6); cx.fillRect(-s * .12, -s * 1.3, s * .24, s * 1.8); cx.fillRect(-s * .5, s * .45, s, s * .15); cx.fillRect(-s * .08, s * .6, s * .16, s * .4); }
+    else if (k === 'shield') { cx.beginPath(); cx.moveTo(0, -s); cx.lineTo(s * .8, -s * .6); cx.lineTo(s * .6, s * .5); cx.lineTo(0, s); cx.lineTo(-s * .6, s * .5); cx.lineTo(-s * .8, -s * .6); cx.closePath(); cx.fill(); cx.stroke(); }
+    else if (k === 'axe') { cx.rotate(-.5); cx.fillRect(-s * .08, -s, s * .16, s * 2); cx.beginPath(); cx.moveTo(s * .08, -s * .9); cx.quadraticCurveTo(s * .9, -s * .5, s * .08, 0); cx.fill(); }
+    else if (k === 'helm') { cx.beginPath(); cx.arc(0, 0, s * .8, Math.PI, 0); cx.lineTo(s * .8, s * .5); cx.lineTo(-s * .8, s * .5); cx.fill(); cx.fillStyle = '#3a2416'; cx.fillRect(-s * .5, -s * .05, s, s * .15); }
+    else if (k === 'hammer') { cx.rotate(-.5); cx.fillRect(-s * .08, -s * .4, s * .16, s * 1.5); cx.fillRect(-s * .5, -s * .8, s, s * .45); }
+    else { cx.beginPath(); cx.moveTo(-s * .8, s * .4); cx.lineTo(-s * .8, -s * .4); cx.lineTo(-s * .4, 0); cx.lineTo(0, -s * .6); cx.lineTo(s * .4, 0); cx.lineTo(s * .8, -s * .4); cx.lineTo(s * .8, s * .4); cx.closePath(); cx.fill(); }
+    cx.restore();
+  }
+  /* ---------- the mold (box method) ---------- */
+  function mold(t) {
+    var q = S.q; if (!q) return;
+    var mx = W * .5, top = H * .1;
+    var tgt = q.rep.target ? plain(FGQ.ps(q.rep.target)) : q.rep.text;
+    if (q.rep.t !== 'box') tgt = '';   // the tablet shows it
+    cx.textAlign = 'center'; cx.font = F(Math.max(16, Math.min(W / 22, W * .62 / (tgt.length * .6)))); cx.fillStyle = '#ffe9b0'; cx.shadowColor = '#ff8a2a'; cx.shadowBlur = 16; cx.fillText(tgt, mx, top + 10); cx.shadowBlur = 0;
+    cx.font = F(Math.max(10, W / 70), 600); cx.fillStyle = 'rgba(255,220,170,.6)'; cx.fillText(q.rep.t === 'box' ? (q.rep.multiply ? 'MULTIPLY IN THE MOLD' : 'FIND THE FACTORS THAT MAKE THIS') : 'RUNE TABLET', mx, top + 34);
+    if (q.rep.t !== 'box') {   // a stone tablet for solve / formula questions
+      var tw = W * .42, th = H * .3; cx.fillStyle = '#3a3330'; cx.strokeStyle = S.glow > 0 ? 'rgba(255,193,7,' + S.glow + ')' : '#5a4e48'; cx.lineWidth = 3; rr(mx - tw / 2, H * .3, tw, th, 16); cx.fill(); cx.stroke();
+      cx.font = F(Math.max(14, Math.min(W / 30, tw / (q.rep.text.length * .62)))); cx.fillStyle = S.glow > 0 ? '#ffe9b0' : '#c9bfb8'; cx.fillText(q.rep.text, mx, H * .3 + th / 2 + 6);
+      return;
+    }
+    var f = S.pour ? S.pour.f : q.rep.multiply ? q.rep.f : null, rows = f ? f[0].length : 2, cols = f ? f[1].length : 2;
+    var cw = Math.min(W * .17, H * .15) * (cols === 2 ? 1 : 1.2), ch = H * .12, gx = mx - cw * cols / 2 + W * .03, gy = H * .32;
+    var target = q.rep.target, cells = [], bad = {};
+    if (f) {
+      var got = {};
+      f[0].forEach(function (a, i) { f[1].forEach(function (b, j) { var c = a[0] * b[0], k = a[1] + b[1]; cells.push({ i: i, j: j, c: c, k: k }); got[k] = (got[k] || 0) + c; }); });
+      for (var k = 0; k <= 4; k++) if ((got[k] || 0) !== (target[k] || 0)) bad[k] = 1;
+    }
+    var fillU = S.pour ? Math.min(1, (t - S.pour.t0) / 700) : 0;
+    // side labels
+    cx.font = F(Math.max(13, W / 46)); cx.fillStyle = '#ffd27a';
+    for (var r = 0; r < rows; r++) cx.fillText(f ? tp(f[0][r][0], f[0][r][1]) : '?', gx - W * .05, gy + ch * r + ch * .58);
+    for (var c = 0; c < cols; c++) cx.fillText(f ? tp(f[1][c][0], f[1][c][1]) : '?', gx + cw * c + cw / 2, gy - 10);
+    for (r = 0; r < rows; r++) for (c = 0; c < cols; c++) {
+      var x = gx + cw * c, y = gy + ch * r, cell = cells.filter(function (z) { return z.i === r && z.j === c; })[0];
+      cx.fillStyle = '#2a1a12'; cx.fillRect(x, y, cw, ch);
+      if (cell && (S.pour || q.rep.multiply)) {
+        var isBad = S.pour && !S.pour.good && bad[cell.k], col = isBad ? 'rgba(255,70,90,' : 'rgba(255,170,40,';
+        if (S.pour) { cx.fillStyle = col + (.55 * fillU) + ')'; cx.fillRect(x, y + ch * (1 - fillU), cw, ch * fillU); }
+        if (S.pour && fillU > .6 || (!S.pour && q.rep.multiply && false)) { cx.fillStyle = isBad ? '#ffd6dd' : '#fff4d6'; cx.font = F(Math.max(12, W / 50)); cx.fillText(tp(cell.c, cell.k), x + cw / 2, y + ch * .6); }
+      }
+      cx.strokeStyle = '#ff9a3c'; cx.lineWidth = 2.5; cx.shadowColor = '#ff8a2a'; cx.shadowBlur = 10; cx.strokeRect(x, y, cw, ch); cx.shadowBlur = 0;
+    }
+    if (S.pour && fillU >= 1) {   // what the poured factors make
+      var made = {}; cells.forEach(function (z) { made[z.k] = (made[z.k] || 0) + z.c; });
+      var parts = []; for (k = 4; k >= 0; k--) if (made[k]) parts.push({ k: k, s: tp(made[k], k) });
+      cx.font = F(Math.max(13, W / 44)); var line = 'makes  ' + parts.map(function (p, i) { return (i && p.s.charAt(0) !== '−' ? '+ ' : '') + p.s.replace('−', i ? '− ' : '−'); }).join(' ');
+      cx.fillStyle = S.pour.good ? '#9dffb0' : '#ff9fb0'; cx.fillText(line + (S.pour.good ? '  ✓' : '  ✗'), mx, gy + ch * rows + H * .07);
+    }
+  }
+  function rr(x, y, w, h, r) { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+  function hammerDraw() {
+    if (S.hammer <= 0) return; var a = Math.sin(S.hammer * Math.PI) * 1.2, hx = W * .66, hy = H * .5;
+    cx.save(); cx.translate(hx, hy); cx.rotate(-a); cx.fillStyle = '#6b4a2a'; cx.fillRect(-4, -H * .02, 8, H * .22); cx.fillStyle = '#9aa3b2'; cx.fillRect(-W * .04, -H * .06, W * .08, H * .06); cx.restore();
+    S.hammer -= .03;
+  }
+  function frame(t) {
+    if (!W) size(); bg(t); rack(t); mold(t); hammerDraw();
+    if (S.glow > 0) S.glow -= .01;
+    cx.globalCompositeOperation = 'lighter';
+    S.parts = S.parts.filter(function (p) { p.x += p.vx; p.y += p.vy; p.vy += p.g == null ? .12 : p.g; p.l -= .02; if (p.l <= 0) return false; cx.globalAlpha = p.l; cx.fillStyle = p.c; cx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); return true; });
+    cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  size(); requestAnimationFrame(frame);
+  function sparks(N) { for (var k = 0; k < (M1.RM ? 15 : N); k++) { var a = -Math.PI * Math.random(), v = 2 + Math.random() * 6; S.parts.push({ x: W * .55, y: H * .7, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 1, c: Math.random() < .5 ? '#ffd27a' : '#ff8a2a' }); } }
+
+  M1.game({
+    key: 'fg-best', title: 'Factor Forge', go: 'Light the forge →',
+    intro: 'Welcome to the forge. Every polynomial is metal waiting to be shaped. The glowing <b>box-method mold</b> on the anvil multiplies out whatever you pour in. Pick the right factors and the mold glows gold. Pick wrong ones and you see exactly which cells do not match. Forge 8 pieces of gear to fill your rack.',
+    how: [['1. Read the metal', 'The polynomial (or equation) glows above the anvil.'], ['2. Pour your answer', 'Your factors fill the mold. Red cells show what does not match.'], ['3. Fill the rack', 'Each right answer forges a sword, shield, axe or crown.']],
+    levels: [
+      { id: 'b1', name: 'Bench 1: Multiply & Combine', what: 'Add and subtract polynomials, multiply binomials, GCF', kinds: ['addSub', 'mulBin', 'gcf', 'mulBin', 'addSub', 'gcf', 'mulBin', 'addSub'] },
+      { id: 'b2', name: 'Bench 2: Factor (a = 1)', what: 'x² + bx + c: two numbers that multiply and add', kinds: ['fac1', 'fac1', 'gcf', 'fac1', 'fac1', 'gcf', 'fac1', 'fac1'] },
+      { id: 'b3', name: 'Bench 3: a > 1 & Squares', what: 'ax² + bx + c and difference of squares', kinds: ['facA', 'dos', 'facA', 'fac1', 'dos', 'facA', 'dos', 'facA'] },
+      { id: 'b4', name: 'Bench 4: Solve', what: 'Zero product property, factor to solve, square roots', kinds: ['zeros', 'solveFac', 'sqrtSolve', 'zeros', 'solveFac', 'sqrtSolve', 'solveFac', 'zeros'] },
+      { id: 'b5', name: 'Bench 5: Formula & Square', what: 'Completing the square, discriminant, quadratic formula', kinds: ['complete', 'discrim', 'quadForm', 'complete', 'discrim', 'quadForm', 'discrim', 'quadForm'] },
+      { id: 'b6', name: 'Master Smith: Mixed', what: 'A bit of everything', kinds: ['mulBin', 'fac1', 'facA', 'dos', 'solveFac', 'complete', 'discrim', 'quadForm'] }
+    ],
+    make: FGQ.make, word: { item: 'Piece', done: 'The rack is full!', wait: 'Hammering…' }, notes: ['unit6-notes.html', 'the Unit 6 notes'],
+    scene: {
+      level: function () { S.rack = []; },
+      question: function (q) { S.q = q; S.pour = null; },
+      miss: function (q, c) {
+        if (c.at && c.at.f && q.rep.t === 'box') { S.pour = { f: c.at.f, good: false, t0: performance.now() }; }
+        M1.sfx.bad();
+      },
+      right: function (q, r, G, done) {
+        var c = q.ch.filter(function (z) { return z.ok; })[0];
+        if (q.rep.t === 'box') S.pour = { f: c.at && c.at.f ? c.at.f : q.rep.f, good: true, t0: performance.now() };
+        S.glow = 1;
+        setTimeout(function () { S.hammer = 1; setTimeout(function () { sparks(70); M1.sfx.boom(); S.rack.push(GEAR[S.rack.length % GEAR.length]); }, 250); setTimeout(done, M1.RM ? 100 : 1500); }, M1.RM ? 50 : 750);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

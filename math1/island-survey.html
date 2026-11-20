@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Island Survey | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261120a">
+<style>
+/* Island Survey (Nov 20, 2026): Math 1 Unit 8 coordinate geometry on a treasure-map island. Every right answer builds
+   something on the map: a camp, a zip line, a fence, a road, a field. A wrong answer is marked in red. Original art. */
+.g-main { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.g-scene { border-radius: 18px; overflow: hidden; border: 1px solid #6b5426; background: #0b3a5a; box-shadow: 0 10px 40px rgba(0,0,0,.5); max-width: 680px; }
+.g-scene canvas { display: block; width: 100%; aspect-ratio: 1 / 1; }
+.g-side { position: sticky; top: 10px; }
+@media (max-width: 900px) { .g-main { grid-template-columns: 1fr; } .g-side { position: static; } .g-scene { max-width: none; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261120a"></script>
+<script src="arcade/m1-game.js?v=20261120a"></script>
+<script src="arcade/is-questions.js?v=20261120a"></script>
+<script src="../arcade-send.js" data-game="Island Survey" data-unit="M1 Unit 8"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top"><a class="m1-back" href="arcade.html">← Math 1 Arcade</a><h1>Island Survey</h1><span class="sp"></span><span id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></span></div>
+  <div class="g-main">
+    <div class="g-scene"><canvas id="cv" aria-label="Treasure map of an island on a coordinate grid"></canvas></div>
+    <div class="g-side"><div id="q"></div></div>
+  </div>
+</div>
+<script>
+(function () {
+  var cv = document.getElementById('cv'), cx = cv.getContext('2d'), W = 0, H = 0;
+  function size() { var d = Math.min(2, devicePixelRatio || 1), r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+  addEventListener('resize', size);
+  var S = { q: null, done: false, miss: [], built: [], parts: [], t0: 0 };
+  var PAD = .055;
+  function X(v) { return W * PAD + (v + 10) / 20 * W * (1 - 2 * PAD); }
+  function Y(v) { return H - H * PAD - (v + 10) / 20 * H * (1 - 2 * PAD); }
+  var U = function () { return W * (1 - 2 * PAD) / 20; };
+  var isle = []; for (var i = 0; i < 48; i++) { var a = i / 48 * 6.283, r = 8.6 + Math.sin(a * 3) * .7 + Math.sin(a * 5 + 1) * .45 + Math.cos(a * 2) * .5; isle.push([Math.cos(a) * r, Math.sin(a) * r * .95]); }
+  var palms = [[-7, 6], [6.5, -6], [7, 5.5], [-6, -6.5], [1, 7.6]];
+
+  function bg(t) {
+    cx.fillStyle = '#0b4a6e'; cx.fillRect(0, 0, W, H);
+    cx.strokeStyle = 'rgba(180,230,255,.18)'; cx.lineWidth = 1.5;
+    for (var k = 0; k < 14; k++) { var y = (k * 53 + t / 40) % H; cx.beginPath(); for (var x = 0; x <= W; x += 10) cx.lineTo(x, y + Math.sin(x / 30 + k) * 3); cx.stroke(); }
+    // island
+    function blob(s, col) { cx.fillStyle = col; cx.beginPath(); isle.forEach(function (p, i) { var px = X(p[0] * s), py = Y(p[1] * s); i ? cx.lineTo(px, py) : cx.moveTo(px, py); }); cx.closePath(); cx.fill(); }
+    blob(1.06, '#e7d39a'); blob(.94, '#d9c27e'); blob(.82, '#7fb069'); blob(.6, '#6a9c58');
+    palms.forEach(function (p) { var px = X(p[0]), py = Y(p[1]), s = U() * .5; cx.strokeStyle = '#7a5a2a'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(px, py + s); cx.quadraticCurveTo(px + s * .3, py, px, py - s * .3); cx.stroke();
+      cx.fillStyle = '#2f7a3a'; for (var k = 0; k < 5; k++) { cx.beginPath(); cx.ellipse(px + Math.cos(k * 1.26) * s * .5, py - s * .3 + Math.sin(k * 1.26) * s * .25, s * .55, s * .16, k * 1.26, 0, 7); cx.fill(); } });
+    // grid
+    for (var g = -10; g <= 10; g++) { cx.strokeStyle = g === 0 ? 'rgba(60,40,10,.75)' : 'rgba(60,40,10,.18)'; cx.lineWidth = g === 0 ? 1.8 : 1; cx.beginPath(); cx.moveTo(X(g), Y(-10)); cx.lineTo(X(g), Y(10)); cx.stroke(); cx.beginPath(); cx.moveTo(X(-10), Y(g)); cx.lineTo(X(10), Y(g)); cx.stroke(); }
+    cx.font = '600 ' + Math.max(9, W / 64) + 'px JetBrains Mono, monospace'; cx.fillStyle = 'rgba(40,25,5,.85)'; cx.textAlign = 'center';
+    for (g = -8; g <= 8; g += 2) if (g) { cx.fillText(M1.n(g), X(g), Y(0) + 14); cx.textAlign = 'right'; cx.fillText(M1.n(g), X(0) - 4, Y(g) + 4); cx.textAlign = 'center'; }
+    // compass
+    var cx0 = W * .92, cy0 = H * .08; cx.fillStyle = 'rgba(255,240,200,.85)'; cx.beginPath(); cx.moveTo(cx0, cy0 - 18); cx.lineTo(cx0 + 6, cy0); cx.lineTo(cx0, cy0 + 18); cx.lineTo(cx0 - 6, cy0); cx.fill(); cx.fillStyle = '#5a3a10'; cx.font = '700 11px Inter, sans-serif'; cx.fillText('N', cx0, cy0 - 21);
+  }
+  function icon(p) {
+    var x = X(p.x), y = Y(p.y), s = Math.max(9, U() * .55);
+    cx.save(); cx.translate(x, y);
+    if (p.icon === 'tent') { cx.fillStyle = '#e8743b'; cx.beginPath(); cx.moveTo(-s, s * .6); cx.lineTo(0, -s); cx.lineTo(s, s * .6); cx.fill(); }
+    else if (p.icon === 'tower') { cx.fillStyle = '#f2f2f2'; cx.fillRect(-s * .35, -s, s * .7, s * 1.6); cx.fillStyle = '#d33'; cx.fillRect(-s * .35, -s * .4, s * .7, s * .3); cx.fillStyle = '#ffd54a'; cx.fillRect(-s * .3, -s * 1.25, s * .6, s * .3); }
+    else if (p.icon === 'chest') { cx.fillStyle = '#8a5a22'; cx.fillRect(-s * .8, -s * .5, s * 1.6, s); cx.fillStyle = '#ffd54a'; cx.fillRect(-s * .8, -s * .1, s * 1.6, s * .15); }
+    else if (p.icon === 'tree') { cx.fillStyle = '#2f7a3a'; cx.beginPath(); cx.arc(0, -s * .3, s * .7, 0, 7); cx.fill(); }
+    else { cx.strokeStyle = '#3a2a10'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(0, s * .6); cx.lineTo(0, -s); cx.stroke(); cx.fillStyle = '#d33'; cx.beginPath(); cx.moveTo(0, -s); cx.lineTo(s, -s * .7); cx.lineTo(0, -s * .4); cx.fill(); }
+    cx.restore();
+    cx.fillStyle = '#1b1206'; cx.beginPath(); cx.arc(x, y, 3.5, 0, 7); cx.fill();
+    cx.font = '800 ' + Math.max(12, U() * .75) + 'px Inter, sans-serif'; cx.lineWidth = 4; cx.strokeStyle = 'rgba(255,248,225,.9)'; cx.textAlign = 'left'; cx.strokeText(p.l, x + 7, y - 7); cx.fillStyle = '#1b1206'; cx.fillText(p.l, x + 7, y - 7);
+  }
+  function road(L, col, dash, w) { cx.save(); cx.strokeStyle = col; cx.lineWidth = w || 6; cx.setLineDash(dash || []); cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(X(-10), Y(L.m * -10 + L.b)); cx.lineTo(X(10), Y(L.m * 10 + L.b)); cx.stroke(); cx.restore(); }
+  function frame(t) {
+    if (!W) size(); bg(t);
+    var q = S.q;
+    if (q) {
+      var R = q.rep, pts = R.pts;
+      cx.save(); cx.beginPath(); cx.rect(X(-10), Y(10), X(10) - X(-10), Y(-10) - Y(10)); cx.clip();
+      if (R.line) road(R.line, 'rgba(90,80,70,.85)', [], 7);
+      if (S.done && R.show.line) { var u = Math.min(1, (t - S.t0) / 900); cx.globalAlpha = u; road(R.show.line, '#ffc107', [], 6); cx.globalAlpha = 1; }
+      if (S.done && (R.show.poly || R.show.poly4)) { cx.fillStyle = R.show.poly4 ? 'rgba(120,200,90,.55)' : 'rgba(255,193,7,.35)'; cx.beginPath(); pts.forEach(function (p, i) { i ? cx.lineTo(X(p.x), Y(p.y)) : cx.moveTo(X(p.x), Y(p.y)); }); cx.closePath(); cx.fill(); }
+      cx.restore();
+      (R.segs || []).forEach(function (s) { cx.save(); cx.strokeStyle = '#5a3a10'; cx.setLineDash([7, 6]); cx.lineWidth = 2.5; cx.beginPath(); cx.moveTo(X(pts[s[0]].x), Y(pts[s[0]].y)); cx.lineTo(X(pts[s[1]].x), Y(pts[s[1]].y)); cx.stroke(); cx.restore(); });
+      if (R.poly) { cx.strokeStyle = S.done ? '#8a5a22' : 'rgba(90,58,16,.7)'; cx.lineWidth = S.done ? 4 : 2; cx.beginPath(); pts.forEach(function (p, i) { i ? cx.lineTo(X(p.x), Y(p.y)) : cx.moveTo(X(p.x), Y(p.y)); }); cx.closePath(); cx.stroke(); }
+      if (S.done && R.show.seg) { var a = R.show.seg[0], b = R.show.seg[1], uu = Math.min(1, (t - S.t0) / 800);
+        cx.save(); cx.setLineDash([5, 5]); cx.strokeStyle = 'rgba(40,25,5,.6)'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(X(a[0]), Y(a[1])); cx.lineTo(X(b[0]), Y(a[1])); cx.lineTo(X(b[0]), Y(b[1])); cx.stroke(); cx.restore();
+        cx.strokeStyle = '#ffc107'; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(X(a[0]), Y(a[1])); cx.lineTo(X(a[0] + (b[0] - a[0]) * uu), Y(a[1] + (b[1] - a[1]) * uu)); cx.stroke(); }
+      if (S.done && R.show.ra) { var B = pts[1], A2 = pts[0], C2 = pts[2], s = .9; var ua = [A2.x - B.x, A2.y - B.y], ub = [C2.x - B.x, C2.y - B.y], la = Math.hypot(ua[0], ua[1]), lb = Math.hypot(ub[0], ub[1]);
+        ua = [ua[0] / la * s, ua[1] / la * s]; ub = [ub[0] / lb * s, ub[1] / lb * s]; cx.strokeStyle = '#ffc107'; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(X(B.x + ua[0]), Y(B.y + ua[1])); cx.lineTo(X(B.x + ua[0] + ub[0]), Y(B.y + ua[1] + ub[1])); cx.lineTo(X(B.x + ub[0]), Y(B.y + ub[1])); cx.stroke(); }
+      pts.forEach(icon);
+      if (S.done && R.show.pt) { icon({ x: R.show.pt[0], y: R.show.pt[1], l: R.show.l, icon: 'flag' }); var pu = (t - S.t0) / 600 % 1; cx.strokeStyle = 'rgba(255,193,7,' + (1 - pu) + ')'; cx.lineWidth = 3; cx.beginPath(); cx.arc(X(R.show.pt[0]), Y(R.show.pt[1]), 6 + pu * 22, 0, 7); cx.stroke(); }
+      S.miss.forEach(function (m) {
+        var al = Math.max(0, 1 - (t - m.t) / 6000); if (!al) return; cx.save(); cx.globalAlpha = al;
+        if (m.at.pt) { var mx = X(m.at.pt[0]), my = Y(m.at.pt[1]); cx.strokeStyle = '#e0233c'; cx.lineWidth = 4; cx.beginPath(); cx.moveTo(mx - 9, my - 9); cx.lineTo(mx + 9, my + 9); cx.moveTo(mx + 9, my - 9); cx.lineTo(mx - 9, my + 9); cx.stroke();
+          cx.font = '700 12px Inter, sans-serif'; cx.fillStyle = '#b0102a'; cx.textAlign = 'center'; cx.fillText('your mark', mx, my + 22); }
+        if (m.at.line) { cx.beginPath(); cx.rect(X(-10), Y(10), X(10) - X(-10), Y(-10) - Y(10)); cx.clip(); road(m.at.line, '#e0233c', [10, 8], 3); }
+        cx.restore();
+      });
+    }
+    cx.globalCompositeOperation = 'lighter';
+    S.parts = S.parts.filter(function (p) { p.x += p.vx; p.y += p.vy; p.vy += .08; p.l -= .02; if (p.l <= 0) return false; cx.globalAlpha = p.l; cx.fillStyle = p.c; cx.fillRect(p.x - 2, p.y - 2, 4, 4); return true; });
+    cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  size(); requestAnimationFrame(frame);
+  function confetti(x, y) { for (var k = 0; k < (M1.RM ? 12 : 60); k++) { var a = Math.random() * 6.28, v = 1 + Math.random() * 4; S.parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, l: 1, c: ['#ffc107', '#ff5fa2', '#4fd8ff', '#7dff9b'][k % 4] }); } }
+
+  M1.game({
+    key: 'is-best', title: 'Island Survey', go: 'Start surveying →',
+    intro: 'You are the surveyor for a brand-new island park. The whole island sits on a coordinate grid. Find midpoints for camps, measure zip lines, fence off land, and lay out roads that are parallel or perpendicular. Every right answer builds something on the map.',
+    how: [['1. Read the map', 'The landmarks and their coordinates are on the grid.'], ['2. Survey it', 'Pick the answer. A wrong mark shows up in red so you can see where it lands.'], ['3. Build the park', 'Right answers build camps, zip lines, fences and roads.']],
+    levels: [
+      { id: 's1', name: 'Survey 1: Midpoints & Partitions', what: 'Midpoint, missing endpoint, a point that splits a segment in a ratio', kinds: ['mid', 'endpoint', 'mid', 'partition', 'endpoint', 'mid', 'partition', 'endpoint'] },
+      { id: 's2', name: 'Survey 2: Distance', what: 'Distance formula, perimeter and area on the grid', kinds: ['dist', 'dist', 'perim', 'area', 'dist', 'perim', 'area', 'dist'] },
+      { id: 's3', name: 'Survey 3: Roads', what: 'Parallel and perpendicular slopes and equations', kinds: ['slopePP', 'slopePP', 'eqPP', 'slopePP', 'eqPP', 'eqPP', 'slopePP', 'eqPP'] },
+      { id: 's4', name: 'Survey 4: Shapes', what: 'Prove right angles; classify quadrilaterals', kinds: ['rightTri', 'classify', 'rightTri', 'classify', 'classify', 'rightTri', 'classify', 'rightTri'] },
+      { id: 's5', name: 'Grand Survey: Mixed', what: 'A bit of everything', kinds: ['mid', 'dist', 'eqPP', 'classify', 'partition', 'area', 'slopePP', 'rightTri'] }
+    ],
+    make: ISQ.make, word: { item: 'Site', done: 'The park is built!', wait: 'Building…' }, notes: ['unit8-notes.html', 'the Unit 8 notes'],
+    scene: {
+      question: function (q) { S.q = q; S.done = false; S.miss = []; },
+      miss: function (q, c) { if (c.at) S.miss.push({ at: c.at, t: performance.now() }); },
+      right: function (q, r, G, done) { S.done = true; S.t0 = performance.now(); S.miss = []; M1.sfx.chime(); var sp = q.rep.show.pt || (q.rep.pts[0] ? [q.rep.pts[0].x, q.rep.pts[0].y] : [0, 0]); confetti(X(sp[0]), Y(sp[1])); setTimeout(done, M1.RM ? 200 : 1700); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

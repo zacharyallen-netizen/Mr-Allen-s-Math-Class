@@ -27,10 +27,11 @@
   /* Build 4 choices: right + the first 3 distinct wrong ones (by their key). Fillers keep 4 when mistakes collide. */
   function choices(right, wrongs, fillers) {
     var seen = {}, out = [{ h: right.h, ok: true, why: right.why || '', k: String(right.k), at: right.at }];
-    seen[right.k] = 1;
+    seen[right.k] = 1; seen['h:' + String(right.h).replace(/<[^>]+>/g, '')] = 1;
     (wrongs || []).concat(fillers || []).forEach(function (w) {
-      if (out.length >= 4 || w == null || seen[w.k]) return;
-      seen[w.k] = 1; out.push({ h: w.h, ok: false, why: w.why, k: w.k, at: w.at });
+      var tx = 'h:' + String(w && w.h).replace(/<[^>]+>/g, '');
+      if (out.length >= 4 || w == null || seen[w.k] || seen[tx]) return;
+      seen[w.k] = 1; seen[tx] = 1; out.push({ h: w.h, ok: false, why: w.why, k: w.k, at: w.at });
     });
     return out;
   }
@@ -84,11 +85,15 @@
   }
 
   /* ---------- the question card ---------- */
+  // tidy math text: 1x → x, −1x → −x (never touches 11x or 2.1x)
+  function tidy(s) { return s == null ? s : String(s).replace(/(^|[^\d.])1(x|y|t|h|m|w|n)(?![\w])/g, '$1$2'); }
   var live = null;
   function ask(host, q, cb) {
     cb = cb || {};
+    q.p = tidy(q.p); q.hint = tidy(q.hint); q.steps = tidy(q.steps); q.yes = tidy(q.yes);
+    q.ch.forEach(function (c) { c.h = tidy(c.h); c.why = tidy(c.why); });
     if (live) live.off();
-    var ch = shuffle(q.ch), tries = 0, done = false, t0 = Date.now();
+    var ch = shuffle(q.ch), tries = 0, done = false, t0 = Date.now(); ch.forEach(function (c, i) { c.idx = i; });
     host.innerHTML = '';
     var box = el('div', 'm1q');
     box.innerHTML = '<div class="m1q-p">' + q.p + '</div>';
@@ -97,7 +102,7 @@
     var btns = ch.map(function (c, i) {
       var b = el('button', 'm1q-b'); b.type = 'button';
       b.innerHTML = '<span class="m1q-k">' + (i + 1) + '</span><span class="m1q-t">' + c.h + '</span>';
-      b.disabled = true; b.onclick = function () { tapc(i); }; if (DEBUG) b.setAttribute('data-ok', c.ok ? '1' : '0'); grid.appendChild(b); return b;
+      b.disabled = true; b.onclick = function () { tapc(i); }; var tx = c.h.replace(/<[^>]+>/g, ''); if (tx.length > 22 && /[a-z]{4}/i.test(tx)) b.classList.add('wordy'); if (DEBUG) b.setAttribute('data-ok', c.ok ? '1' : '0'); grid.appendChild(b); return b;
     });
     var hb = el('button', 'm1-btn'); hb.type = 'button'; hb.textContent = '💡 Hint'; hb.onclick = function () { showHint(); };
     var rb = el('button', 'm1-btn'); rb.type = 'button'; rb.textContent = '🔊 Read it'; rb.onclick = function () { say(words(box.querySelector('.m1q-p')) + '. Choices: ' + ch.map(function (c, i) { var d = document.createElement('div'); d.innerHTML = c.h; return (i + 1) + ', ' + words(d); }).join('. ')); };
@@ -120,7 +125,7 @@
         note.className = 'm1q-note good'; note.innerHTML = '<b>' + pick(tries ? ['Correct!', 'You got it!', 'That is it!'] : ['Correct!', 'Nice work!', 'Right on!', 'Exactly!']) + '</b> ' + (q.yes || '');
         if (tries === 0) try { if (window.ArcadeSend) ArcadeSend.answer(true); } catch (e) {}
         off();
-        if (cb.onRight) cb.onRight({ tries: tries, first: tries === 0, ms: Date.now() - t0, revealed: tries >= 3 });
+        if (cb.onRight) cb.onRight({ tries: tries, first: tries === 0, ms: Date.now() - t0, revealed: tries >= 3, idx: i, n: ch.length });
         return;
       }
       tries++; btns[i].classList.add('x'); btns[i].disabled = true; sfx.bad();

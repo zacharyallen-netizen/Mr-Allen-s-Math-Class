@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  // Math 1 lite gate — mild deterrent only (pages remain public).
+  try{
+    if(sessionStorage.getItem('m1ok')==='1') return;
+    var here = window.location.pathname.split('/').pop() || 'index.html';
+    sessionStorage.setItem('m1dest', here + window.location.search + window.location.hash);
+  }catch(e){}
+  window.location.replace('gate.html');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Function Invaders | Math 1 Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="arcade/m1-arcade.css?v=20261120a">
+<style>
+/* Function Invaders (Nov 20, 2026): Math 1 Unit 2. Borrows from the 8th grade UFO Blaster (shoot the answer) and
+   Neon Integer Assault (invaders, turret, laser trails). A hologram in the middle shows the function: graph, table,
+   mapping diagram, ordered pairs or rule. Each UFO carries one answer number (1–4 = the buttons). Original art. */
+.g-main { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(330px, 1fr); gap: 16px; align-items: start; }
+.g-scene { border-radius: 18px; overflow: hidden; border: 1px solid #3a2a6e; background: #05030f; box-shadow: 0 10px 40px rgba(0,0,0,.5); }
+.g-scene canvas { display: block; width: 100%; aspect-ratio: 16 / 12; }
+.g-side { position: sticky; top: 10px; }
+@media (max-width: 900px) { .g-main { grid-template-columns: 1fr; } .g-side { position: static; } }
+</style>
+<script src="arcade/m1-arcade.js?v=20261120a"></script>
+<script src="arcade/m1-game.js?v=20261120a"></script>
+<script src="arcade/fn-questions.js?v=20261120a"></script>
+<script src="../arcade-send.js" data-game="Function Invaders" data-unit="M1 Unit 2"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top"><a class="m1-back" href="arcade.html">← Math 1 Arcade</a><h1>Function Invaders</h1><span class="sp"></span><span id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></span></div>
+  <div class="g-main">
+    <div class="g-scene"><canvas id="cv" aria-label="Space scene with a hologram of the function"></canvas></div>
+    <div class="g-side"><div id="q"></div></div>
+  </div>
+</div>
+<script>
+(function () {
+  var cv = document.getElementById('cv'), cx = cv.getContext('2d'), W = 0, H = 0;
+  function size() { var d = Math.min(2, devicePixelRatio || 1), r = cv.getBoundingClientRect(); W = r.width; H = r.height; cv.width = W * d; cv.height = H * d; cx.setTransform(d, 0, 0, d, 0, 0); }
+  addEventListener('resize', size);
+  var stars = []; for (var i = 0; i < 120; i++) stars.push([Math.random(), Math.random(), Math.random() * 1.4 + .2, Math.random() * 6]);
+  var S = { q: null, ufos: [], parts: [], beams: [], shield: 0, hit: 0 };
+  var COL = ['#4fd8ff', '#ff5fa2', '#7dff9b', '#ffc107'];
+
+  function ufoX(i, n) { return W * (0.5 + (i - (n - 1) / 2) * 0.2); }
+  function setUfos(n) { S.ufos = []; for (var i = 0; i < n; i++) S.ufos.push({ i: i, x: ufoX(i, n), y: -40, ty: H * 0.11, alive: true, dodge: 0, c: COL[i % 4] }); }
+  function drawUfo(u, t) {
+    var x = u.x + Math.sin(t / 600 + u.i) * 6 + (u.dodge > 0 ? Math.sin(u.dodge * 30) * 10 : 0), y = u.y + Math.sin(t / 400 + u.i * 2) * 3, s = Math.max(16, W / 34);
+    cx.save(); cx.translate(x, y); cx.shadowColor = u.c; cx.shadowBlur = 16;
+    cx.fillStyle = 'rgba(160,220,255,.35)'; cx.beginPath(); cx.ellipse(0, -s * .35, s * .55, s * .45, 0, Math.PI, 0); cx.fill();
+    cx.fillStyle = '#1a1840'; cx.strokeStyle = u.c; cx.lineWidth = 2.5; cx.beginPath(); cx.ellipse(0, 0, s * 1.2, s * .42, 0, 0, 7); cx.fill(); cx.stroke();
+    for (var k = -2; k <= 2; k++) { cx.fillStyle = (Math.floor(t / 200) + k) % 3 ? u.c : '#fff'; cx.beginPath(); cx.arc(k * s * .45, s * .05, 2.5, 0, 7); cx.fill(); }
+    cx.shadowBlur = 0; cx.fillStyle = '#fff'; cx.font = '700 ' + Math.round(s * .8) + 'px JetBrains Mono, monospace'; cx.textAlign = 'center'; cx.fillText(u.i + 1, 0, s * 1.25);
+    cx.restore(); u.px = x; u.py = y;
+  }
+  /* ---------- the hologram: the function itself ---------- */
+  function holo(rep, t) {
+    var bx = W * .17, by = H * .27, bw = W * .66, bh = H * .55;
+    var g = cx.createLinearGradient(0, by, 0, by + bh); g.addColorStop(0, 'rgba(79,216,255,.08)'); g.addColorStop(1, 'rgba(192,132,252,.10)');
+    cx.fillStyle = g; cx.strokeStyle = 'rgba(79,216,255,.45)'; cx.lineWidth = 1.5; rr(bx, by, bw, bh, 14); cx.fill(); cx.stroke();
+    cx.fillStyle = 'rgba(79,216,255,.05)'; for (var y = by + ((t / 40) % 6); y < by + bh; y += 6) cx.fillRect(bx, y, bw, 1);
+    if (!rep) return;
+    var F = function (px) { return '600 ' + Math.round(px) + 'px JetBrains Mono, monospace'; };
+    if (rep.t === 'graph') {
+      var sz = Math.min(bw, bh) - 24, gx = bx + (bw - sz) / 2, gy = by + 12, U = sz / 18;
+      var X = function (v) { return gx + (v + 9) * U; }, Y = function (v) { return gy + (9 - v) * U; };
+      for (var k = -8; k <= 8; k++) { cx.strokeStyle = k === 0 ? 'rgba(200,230,255,.8)' : 'rgba(120,170,255,.16)'; cx.lineWidth = k === 0 ? 1.6 : 1; cx.beginPath(); cx.moveTo(X(k), Y(-8.6)); cx.lineTo(X(k), Y(8.6)); cx.stroke(); cx.beginPath(); cx.moveTo(X(-8.6), Y(k)); cx.lineTo(X(8.6), Y(k)); cx.stroke(); }
+      cx.fillStyle = 'rgba(200,220,255,.75)'; cx.font = F(Math.max(9, U * .6)); cx.textAlign = 'center';
+      for (k = -8; k <= 8; k += 2) if (k) { cx.fillText(M1.n(k), X(k), Y(0) + U * .8); cx.textAlign = 'right'; cx.fillText(M1.n(k), X(0) - 3, Y(k) + 4); cx.textAlign = 'center'; }
+      cx.fillText('x', X(8.6), Y(0) - 5); cx.fillText('y', X(0) + 9, Y(8.6) + 4);
+      (rep.lines || []).forEach(function (L) {
+        var a = L.x0 != null ? L.x0 : -8.6, b = L.x1 != null ? L.x1 : 8.6;
+        // clip to the grid
+        var lo = a, hi = b; if (L.m) { var e1 = (8.6 - L.b) / L.m, e2 = (-8.6 - L.b) / L.m; lo = Math.max(a, Math.min(e1, e2)); hi = Math.min(b, Math.max(e1, e2)); }
+        cx.strokeStyle = '#ffc107'; cx.lineWidth = 3; cx.shadowColor = '#ffc107'; cx.shadowBlur = 8; cx.beginPath(); cx.moveTo(X(lo), Y(L.m * lo + L.b)); cx.lineTo(X(hi), Y(L.m * hi + L.b)); cx.stroke(); cx.shadowBlur = 0;
+        if (L.x0 != null) [[L.x0, L.c0], [L.x1, L.c1]].forEach(function (e) { cx.beginPath(); cx.arc(X(e[0]), Y(L.m * e[0] + L.b), 5.5, 0, 7); cx.fillStyle = e[1] ? '#ffc107' : '#05030f'; cx.fill(); cx.strokeStyle = '#ffc107'; cx.lineWidth = 2.5; cx.stroke(); });
+      });
+      (rep.pts || []).forEach(function (p) { cx.fillStyle = '#ff5fa2'; cx.shadowColor = '#ff5fa2'; cx.shadowBlur = 10; cx.beginPath(); cx.arc(X(p[0]), Y(p[1]), 5.5, 0, 7); cx.fill(); cx.shadowBlur = 0; });
+    } else if (rep.t === 'table') {
+      var nC = rep.xs.length + 1, cw = Math.min(bw / nC, 90), ch = Math.min(56, bh / 3.2), tx = bx + (bw - cw * nC) / 2, ty = by + bh / 2 - ch;
+      cx.font = F(Math.max(13, ch * .38)); cx.textAlign = 'center';
+      [['x'].concat(rep.xs), [rep.fx ? 'f(x)' : 'y'].concat(rep.ys)].forEach(function (row, r) {
+        row.forEach(function (v, c) { cx.fillStyle = c === 0 ? 'rgba(79,216,255,.25)' : 'rgba(10,14,40,.7)'; cx.fillRect(tx + c * cw, ty + r * ch, cw - 2, ch - 2); cx.fillStyle = c === 0 ? '#bfefff' : '#fff'; cx.fillText(typeof v === 'number' ? M1.n(v) : v, tx + c * cw + cw / 2 - 1, ty + r * ch + ch * .64); });
+      });
+    } else if (rep.t === 'map') {
+      var ox1 = bx + bw * .28, ox2 = bx + bw * .72, oy = by + bh / 2, rw = bw * .14, rh = bh * .42;
+      cx.strokeStyle = 'rgba(200,230,255,.8)'; cx.lineWidth = 2; cx.beginPath(); cx.ellipse(ox1, oy, rw, rh, 0, 0, 7); cx.stroke(); cx.beginPath(); cx.ellipse(ox2, oy, rw, rh, 0, 0, 7); cx.stroke();
+      cx.fillStyle = '#bfefff'; cx.font = '600 13px Inter, sans-serif'; cx.textAlign = 'center'; cx.fillText('Input (x)', ox1, oy - rh - 8); cx.fillText('Output (y)', ox2, oy - rh - 8);
+      var py = function (k, m) { return oy - rh * .7 + (m > 1 ? k * (rh * 1.4) / (m - 1) : rh * .7); };
+      cx.font = F(Math.max(14, bh * .07));
+      rep.arrows.forEach(function (a) { var y1 = py(a[0], rep.ins.length), y2 = py(a[1], rep.outs.length); cx.strokeStyle = '#ffc107'; cx.lineWidth = 2; cx.beginPath(); cx.moveTo(ox1 + 18, y1); cx.lineTo(ox2 - 22, y2); cx.stroke();
+        var ang = Math.atan2(y2 - y1, ox2 - 22 - ox1 - 18), ex = ox2 - 22, ey = y2, ca = Math.cos(ang), sa = Math.sin(ang);
+        cx.fillStyle = '#ffc107'; cx.beginPath(); cx.moveTo(ex, ey); cx.lineTo(ex - ca * 11 - sa * 5, ey - sa * 11 + ca * 5); cx.lineTo(ex - ca * 11 + sa * 5, ey - sa * 11 - ca * 5); cx.fill(); });
+      cx.fillStyle = '#fff'; rep.ins.forEach(function (v, k) { cx.fillText(M1.n(v), ox1, py(k, rep.ins.length) + 6); }); rep.outs.forEach(function (v, k) { cx.fillText(M1.n(v), ox2, py(k, rep.outs.length) + 6); });
+    } else {
+      var txt = rep.t === 'pairs' ? '{ ' + rep.pairs.map(function (p) { return '(' + M1.n(p[0]) + ', ' + M1.n(p[1]) + ')'; }).join(', ') + ' }' : rep.text;
+      var fs = Math.max(13, Math.min(bh * .14, bw / (txt.length * .62))); cx.font = F(fs); cx.textAlign = 'center'; cx.fillStyle = '#fff'; cx.shadowColor = '#4fd8ff'; cx.shadowBlur = 12; cx.fillText(txt, bx + bw / 2, by + bh / 2 + fs * .35); cx.shadowBlur = 0;
+    }
+  }
+  function rr(x, y, w, h, r) { cx.beginPath(); cx.moveTo(x + r, y); cx.arcTo(x + w, y, x + w, y + h, r); cx.arcTo(x + w, y + h, x, y + h, r); cx.arcTo(x, y + h, x, y, r); cx.arcTo(x, y, x + w, y, r); cx.closePath(); }
+  function boom(x, y, c, N) { for (var k = 0; k < (M1.RM ? 15 : N); k++) { var a = Math.random() * 6.28, v = 1 + Math.random() * 5; S.parts.push({ x: x, y: y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, l: 1, c: Math.random() < .3 ? '#fff' : c }); } }
+  function frame(t) {
+    if (!W) size();
+    var g = cx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#05030f'); g.addColorStop(1, '#1a0f3a'); cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+    stars.forEach(function (s) { cx.globalAlpha = .3 + .4 * Math.sin(t / 700 + s[3]); cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(s[0] * W, s[1] * H, s[2], 0, 7); cx.fill(); }); cx.globalAlpha = 1;
+    // city + shield
+    cx.fillStyle = '#0d0a26'; for (var b = 0; b < 18; b++) { var bw = W / 18, bh = H * (.04 + ((b * 37) % 7) / 100); cx.fillRect(b * bw, H - bh, bw - 2, bh); }
+    var sh = S.hit > 0 ? 'rgba(255,93,115,' + (S.hit * .6) + ')' : 'rgba(79,216,255,.18)';
+    cx.strokeStyle = sh; cx.lineWidth = 3; cx.beginPath(); cx.ellipse(W / 2, H + H * .02, W * .6, H * .14, 0, Math.PI, 0); cx.stroke(); S.hit = Math.max(0, S.hit - .02);
+    // turret
+    var tx = W / 2, ty = H - H * .05; cx.fillStyle = '#2a2a5a'; cx.beginPath(); cx.arc(tx, ty, 18, Math.PI, 0); cx.fill(); cx.strokeStyle = '#ffc107'; cx.lineWidth = 6; cx.beginPath(); cx.moveTo(tx, ty - 8); cx.lineTo(tx + Math.cos(S.aim || -1.57) * 30, ty - 8 + Math.sin(S.aim || -1.57) * 30); cx.stroke();
+    holo(S.q && S.q.rep, t);
+    S.ufos.forEach(function (u) { if (!u.alive) return; u.y += (u.ty - u.y) * .06; if (u.dodge > 0) u.dodge -= .02; drawUfo(u, t); });
+    S.beams = S.beams.filter(function (bm) { bm.l -= .05; if (bm.l <= 0) return false; cx.strokeStyle = bm.c; cx.globalAlpha = bm.l; cx.lineWidth = 4; cx.shadowColor = bm.c; cx.shadowBlur = 14; cx.beginPath(); cx.moveTo(bm.x0, bm.y0); cx.lineTo(bm.x1, bm.y1); cx.stroke(); cx.shadowBlur = 0; cx.globalAlpha = 1; return true; });
+    cx.globalCompositeOperation = 'lighter';
+    S.parts = S.parts.filter(function (p) { p.x += p.vx; p.y += p.vy; p.vy += .05; p.l -= .02; if (p.l <= 0) return false; cx.globalAlpha = p.l; cx.fillStyle = p.c; cx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); return true; });
+    cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = 1;
+    requestAnimationFrame(frame);
+  }
+  size(); requestAnimationFrame(frame);
+  function fire(u, good) { var tx = W / 2, ty = H - H * .05; S.aim = Math.atan2(u.py - ty, u.px - tx); S.beams.push({ x0: tx, y0: ty - 8, x1: u.px, y1: u.py, l: 1, c: good ? '#7dff9b' : '#ff5d73' }); M1.sfx.whoosh(); }
+
+  M1.game({
+    key: 'fi-best', title: 'Function Invaders', go: 'Defend the city →',
+    intro: 'UFOs are beaming down function signals. The hologram shows the function: a graph, a table, a mapping diagram or a rule. Each UFO carries one answer. Read the function, pick the right answer, and your turret blasts that UFO.',
+    how: [['1. Read the hologram', 'It shows the function. The question is on the right.'], ['2. Pick an answer', 'UFO 1–4 matches answer 1–4. A wrong UFO shields and tells you the mistake.'], ['3. Clear the wave', '8 UFO squads per wave. Answer on the first try for bonus points.']],
+    levels: [
+      { id: 'w1', name: 'Wave 1: Function or Not?', what: 'Mapping diagrams, tables, ordered pairs, graphs', kinds: ['ismap', 'istable', 'ispairs', 'isgraph', 'ismap', 'istable', 'isgraph', 'ispairs'] },
+      { id: 'w2', name: 'Wave 2: Function Notation', what: 'f(3) from a rule, table or graph; solve f(x) = k', kinds: ['evalEq', 'evalTable', 'evalGraph', 'evalEq', 'solveFx', 'evalGraph', 'evalTable', 'solveFx'] },
+      { id: 'w3', name: 'Wave 3: Key Features', what: 'Intercepts, slope, increasing or decreasing', kinds: ['yInt', 'xInt', 'slope', 'incDec', 'yInt', 'slope', 'xInt', 'incDec'] },
+      { id: 'w4', name: 'Wave 4: Domain & Range', what: 'x-values used and y-values used, open and closed ends', kinds: ['domain', 'range', 'domPts', 'domain', 'range', 'domPts', 'domain', 'range'] },
+      { id: 'w5', name: 'Wave 5: Rate of Change', what: 'Average rate of change; what changing m or b does', kinds: ['aroc', 'params', 'aroc', 'slope', 'params', 'aroc', 'params', 'aroc'] },
+      { id: 'w6', name: 'Mothership: Mixed', what: 'A bit of everything', kinds: ['ismap', 'evalEq', 'yInt', 'domain', 'aroc', 'evalGraph', 'params', 'range'] }
+    ],
+    make: FNQ.make, word: { item: 'Squad', done: 'Wave cleared!', wait: 'Target locked…' }, notes: ['unit2-notes.html', 'the Unit 2 notes'],
+    scene: {
+      question: function (q) { S.q = q; setUfos(q.ch.length); },
+      miss: function (q, c) { var u = S.ufos[c.idx]; if (!u) return; fire(u, false); u.dodge = 1; S.hit = 1; boom(u.px, u.py + 20, '#ff5d73', 12); },
+      right: function (q, r, G, done) {
+        var u = S.ufos[r.idx]; fire(u, true);
+        setTimeout(function () { u.alive = false; boom(u.px, u.py, u.c, 90); M1.sfx.boom();
+          S.ufos.forEach(function (o) { if (o.alive) o.ty = -80; }); setTimeout(done, M1.RM ? 100 : 1100); }, 180);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

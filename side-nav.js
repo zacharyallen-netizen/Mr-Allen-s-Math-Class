@@ -55,7 +55,7 @@
     { id: 'ar', icon: 'game', label: 'Break', title: 'Take a Break', desc: 'Finished your work? Math games, a calm-down room and focus music.',
       links: [X('Math Arcade', 'grade8/arcade.html', 'every math game'), X('Reset Room', 'grade8/reset-room.html', 'calm-down activities'), { t: 'Chill Math Music', n: 'small player that keeps playing', music: true }],
       sec: ['grade8/arcade', 'grade8/reset-room', 'grade8/ripples', 'grade8/drift'] },
-    { id: 'm1', icon: 'm1', label: 'Math 1', title: 'NC Math 1', desc: 'For students in NC Math 1. Your teacher gives you the password.', links: [X('NC Math 1 home', 'math1/index.html'), X('Math 1 Arcade', 'math1/arcade.html', 'games: sequences, systems, parabolas')], sec: ['math1/'] },
+    { id: 'm1', icon: 'm1', label: 'Math 1', title: 'NC Math 1', desc: 'For students in NC Math 1. Your teacher gives you the password.', links: [X('NC Math 1 home', 'math1/index.html'), X('Math 1 Arcade', 'math1/arcade.html', 'a game for every Math 1 unit')], sec: ['math1/'] },
     { id: 'ca', icon: 'calc', label: 'Calculators', title: 'Calculators', desc: 'Use these only when the problem says "Calculator OK".',
       links: [{ t: 'Desmos Scientific Calculator', n: 'new tab ↗', h: 'https://www.desmos.com/scientific', nt: 1 }, { t: 'Desmos Graphing Calculator', n: 'new tab ↗', h: 'https://www.desmos.com/calculator', nt: 1 }] },
     { id: 'ci', icon: 'info', label: 'Class Info', title: 'Class Info', desc: 'Syllabus, Google Classroom links and family resources. New here? Watch the website tour.',
