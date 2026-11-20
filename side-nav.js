@@ -63,7 +63,11 @@
   ];
   /* 7th grade (Nov 20, 2026 draft): on grade7/ pages the first four groups point to the 7th grade pages,
      and the menu takes the 7th grade colors (coffee + amber). 8th grade pages are unchanged. */
-  var G7 = /^grade7\//.test(rel);
+  function isG7() {   // same test as tracker-config.js (SITE_G7): a 7th grade page, ?g=7, or a borrowed 8th grade page opened from 7th grade
+    if (/^grade7\//.test(rel) || /[?&]g=7(&|$)/.test(location.search)) return true;
+    try { return /^grade8\//.test(rel) && !/^grade8\/(index\.html|arcade\.html)?$/.test(rel) && sessionStorage.getItem('site-g7') === '1'; } catch (e) { return false; }
+  }
+  var G7 = isG7();
   function keep(a) { return G7 ? a.filter(function (r) { return String(r[2] || '').indexOf('math1/') !== 0; }) : a; }   // 7th grade search leaves out Math 1
   if (G7) {
     var U7 = [['unit1.html', 'Unit 1', 'Rational Numbers'], ['unit2.html', 'Unit 2', 'Expressions'], ['unit3.html', 'Unit 3', 'Equations & Inequalities'],
@@ -75,7 +79,7 @@
           .concat([X('Vocabulary', 'grade7/vocabulary.html', 'key words for every unit'), X('Formula Sheet', 'grade7/formulas.html')]),
         sec: ['grade7/unit', 'grade7/index.html', 'grade7/vocabulary', 'grade7/formulas'] },
       { id: 'pr', icon: 'puzzle', label: 'Practice', title: 'Practice & Review', desc: 'Stuck on a skill? Short lessons and videos with Digit, and math facts practice.',
-        links: [X('Skill Builders', 'grade7/skill-builders.html', 'short lessons and videos'), X('Fluency Lab', 'grade8/Fluency-Lab-Package/fluency-lab/index.html', 'math facts to automatic')],
+        links: [X('Skill Builders', 'grade7/skill-builders.html', 'short lessons and videos'), X('Fluency Lab', 'grade8/Fluency-Lab-Package/fluency-lab/index.html?g=7', 'math facts to automatic')],
         sec: ['grade7/skill'] },
       { id: 'gr', icon: 'star', label: 'Progress', title: 'My Progress', desc: 'Good work habits and class information.',
         links: [X('Durable Skills', 'grade8/durable-skills.html', 'good work habits'), X('Class Information', 'class-information.html')], sec: [] },

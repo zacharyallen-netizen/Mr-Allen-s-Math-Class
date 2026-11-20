@@ -5,17 +5,17 @@ from build import write, head, FONTS, V, OUT
 G8 = '../grade8/'
 # Games on the 7th grade site. Fluency games carry over from 8th grade (same files); the rest are new 7th grade games.
 GAMES = [
-    dict(name='Integer Knockout', href=G8 + 'integer-knockout.html', icon='🥊', units=[1], tag='Integer fluency', carry=1,
+    dict(name='Integer Knockout', href=G8 + 'integer-knockout.html?g=7', icon='🥊', units=[1], tag='Integer fluency', carry=1,
          desc='Arcade boxing. Every punch is an answer: add, subtract, multiply and divide integers from −20 to 20.'),
-    dict(name='Nitro Numbers', href=G8 + 'nitro-numbers.html', icon='🏎️', units=[1], tag='Facts fluency', carry=1,
+    dict(name='Nitro Numbers', href=G8 + 'nitro-numbers.html?g=7', icon='🏎️', units=[1], tag='Facts fluency', carry=1,
          desc='Hover racer. Steer through the gate with the right answer: times tables and the Integer Expressway track.'),
-    dict(name='Tiles for Miles', href=G8 + 'zero-pair-run.html', icon='🧊', units=[1, 3], tag='Integers + zero pairs', carry=1,
+    dict(name='Tiles for Miles', href=G8 + 'zero-pair-run.html?g=7', icon='🧊', units=[1, 3], tag='Integers + zero pairs', carry=1,
          desc='Use zero pairs to add and subtract integers with tiles, then use them to solve equations.'),
-    dict(name='Squeaky Cheeks', href=G8 + 'squeaky-cheeks.html', icon='💨', units=[1], tag='Integer & fraction fluency', carry=1,
+    dict(name='Squeaky Cheeks', href=G8 + 'squeaky-cheeks.html?g=7', icon='💨', units=[1], tag='Integer & fraction fluency', carry=1,
          desc='Answer integer and fraction problems to build up gas, then clear the room. Five rooms.'),
-    dict(name='Neon Integer Assault', href=G8 + 'neon-integer-assault.html', icon='👾', units=[1, 3], tag='Integers + equations', carry=1,
+    dict(name='Neon Integer Assault', href=G8 + 'neon-integer-assault.html?g=7', icon='👾', units=[1, 3], tag='Integers + equations', carry=1,
          desc='Blast invaders and a centipede. Every target carries a number: hit the one that solves the equation.'),
-    dict(name='Equation Master', href=G8 + 'equation_master.html', icon='⚔️', units=[3], tag='Equations', carry=1,
+    dict(name='Equation Master', href=G8 + 'equation_master.html?g=7', icon='⚔️', units=[3], tag='Equations', carry=1,
          desc='Solve equations one move at a time. Start with the Apprentice and Journeyman levels (one- and two-step).'),
     dict(name='Market Day', href='market-day.html', icon='🧺', units=[4, 5], tag='NEW · Units 4–5',
          desc='Run a farmers market stall. Find unit rates, pick the better buy, and work out sales, tax and tips.'),
@@ -24,7 +24,7 @@ GAMES = [
     dict(name='Lantern Festival', href='lantern-festival.html', icon='🏮', units=[8, 9], tag='NEW · Units 8–9',
          desc='Light the lanterns. Find probabilities, run spinner and dice experiments, and read data from samples.'),
 ]
-FLUENCY_LAB = G8 + 'Fluency-Lab-Package/fluency-lab/index.html'
+FLUENCY_LAB = G8 + 'Fluency-Lab-Package/fluency-lab/index.html?g=7'
 
 DOOR_ART = {
  'learn': '<svg viewBox="0 0 160 110" aria-hidden="true"><ellipse cx="80" cy="100" rx="58" ry="6" fill="#3E2414" opacity=".12"/><path d="M80 30 C62 20 38 20 20 26 V92 C38 86 62 86 80 96 Z" fill="#fff" stroke="#3E2414" stroke-width="3" stroke-linejoin="round"/><path d="M80 30 C98 20 122 20 140 26 V92 C122 86 98 86 80 96 Z" fill="#FCEBC8" stroke="#3E2414" stroke-width="3" stroke-linejoin="round"/><path d="M80 30 V96" stroke="#3E2414" stroke-width="3"/><path d="M32 42 H66 M32 54 H62 M32 66 H66 M32 78 H56" stroke="#B9A48C" stroke-width="3" stroke-linecap="round"/><text x="110" y="62" text-anchor="middle" font-family="JetBrains Mono,monospace" font-weight="700" font-size="19" fill="#3E2414">−¾</text><path d="M94 74 H126" stroke="#D98E1C" stroke-width="3" stroke-linecap="round"/><circle cx="132" cy="14" r="9" fill="#F2B13C" stroke="#3E2414" stroke-width="2.5"/></svg>',
