@@ -119,10 +119,11 @@
         done = true; q.classList.add('solved'); fb.className = 'np-fb ok'; fb.textContent = msg;
       }
       var genList = null, qtxt = prompt ? prompt.innerHTML : '', ans0 = ans ? ans.split('|')[0] : '';
+      var ownWhy = null; try { ownWhy = JSON.parse(q.getAttribute('data-why') || 'null'); } catch (e) {}   // a box can name the mistake of each wrong choice itself (7th grade notes, Nov 20, 2026)
       function miss(el, picked) {
         var tw = window.NotesTwin && NotesTwin.get(id), TA = window.TapAnswers;
         // name the mistake (Mr. Allen, Nov 11, 2026): the tapped choice's own note, or what a wrong number gives away
-        var wy = !TA ? '' : picked != null ? ((genList && TA.why(genList, picked)) || TA.miss(ans0, qtxt)) : TA.numWhy(el ? el.value : '', ans0, qtxt);
+        var wy = picked != null && ownWhy && ownWhy[picked] ? ownWhy[picked] : !TA ? '' : picked != null ? ((genList && TA.why(genList, picked)) || TA.miss(ans0, qtxt)) : TA.numWhy(el ? el.value : '', ans0, qtxt);
         if (tw && tries === 2) {                  // 3rd wrong (Nov 13, 2026: students asked for 3 tries; was 2nd) → show the answer, then one similar problem (notes-flow.js). The 1st wrong only names the mistake (review fix, Nov 12, 2026)
           tries++; rec(false); done = true;
           fb.className = 'np-fb no'; fb.textContent = 'Not quite. ' + (wy ? wy + ' ' : '') + 'The answer is ' + show + '.' + (sol ? ' Read the steps below.' : '');

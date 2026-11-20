@@ -521,7 +521,7 @@
     var n = +root.dataset.unit, mode = root.dataset.mode, U = SB.units[n]; if (!U) return;
     SB.std = U.std0 || '';
     if (PAPER) { document.body.classList.add('paper'); [].forEach.call(document.querySelectorAll('.noprint'), function (e) { e.remove(); }); (mode === 'practice' ? paperPractice : paperLessons)(root, U); SB.ready = true; return; }
-    if (window.ScoreSend) ScoreSend.setup({ kind: 'practice', unit: String(n), page: 'Skill Builders · Unit ' + n + (mode === 'practice' ? ' · Practice Set' : ' · Mini-Lessons'), mount: '#send', std: U.std0, band: 3, noun: mode === 'practice' ? 'problem' : 'question' });
+    if (window.ScoreSend) ScoreSend.setup({ kind: 'practice', unit: U.sendUnit || String(n), page: (U.pagePre || '') + 'Skill Builders · Unit ' + n + (mode === 'practice' ? ' · Practice Set' : ' · Mini-Lessons'), mount: '#send', std: U.std0, band: 3, noun: mode === 'practice' ? 'problem' : 'question' });
     (mode === 'practice' ? practicePage : lessonsPage)(root, U);
     SB.ready = true;
   }

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Day | 7th Grade Math Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../math1/arcade/m1-arcade.css?v=20261119a">
+<link rel="stylesheet" href="games/g7-game.css?v=20261120a">
+<script src="../math1/arcade/m1-arcade.js?v=20261119a"></script>
+<script src="games/g7-game.js?v=20261120a"></script>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="Market Day" data-unit="7 Units 4-5"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← 7th Grade Arcade</a>
+    <h1>Market Day</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipLv">Pick a level</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip">Streak <b id="streak">0</b></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="gg-main">
+    <div class="gg-scene" id="scene"></div>
+    <div class="gg-side">
+      <div class="gg-bar"><div class="row"><span id="cLv">Market stall</span><span id="cNum"></span></div><div class="gg-dots" id="dots"></div></div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Market Day</h2>
+    <p>You run a stall at the Saturday farmers market. Shoppers ask about prices, deals and sales. Every right answer fills a basket on your stall. Fill all 10 and the market opens!</p>
+    <div class="m1-how">
+      <div><b>1. Read the question</b>Unit rates, better buys, y = kx, sales, tax and tips.</div>
+      <div><b>2. Tap an answer</b>A wrong tap tells you the mistake. Try again.</div>
+      <div><b>3. Fill the stall</b>First-try answers earn a gold star basket.</div>
+    </div>
+    <div class="m1-levels" id="levels"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Open the stall →</button>
+      <span style="color:var(--dim);font-size:.85rem">Keys 1–4 tap answers. Every level is open.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+<script>
+(function () {
+  var R = M1.rint, P = M1.pick, fr = G7G.fr, $ = G7G.money, r2 = G7G.r2;
+  function C(right, why, wrongs, fill) {   // right text; wrongs [[text, why]]
+    function T(w) { var t = String(w[0]).trim(); return { h: t, k: t, why: w[1] }; }
+    return M1.choices({ h: right, k: right }, wrongs.map(T), (fill || []).map(T));
+  }
+  var FRUIT = [['apples', 'lb'], ['peaches', 'lb'], ['tomatoes', 'lb'], ['honey', 'jar'], ['corn', 'ear'], ['eggs', 'dozen']];
+  var MAKE = {
+    unit: function () {   // price per unit
+      var f = P(FRUIT), r = P([1.5, 2, 2.5, 3, 4, 1.25]), n = R(2, 8), cost = r2(r * n);
+      return { kind: 'unit rate', p: n + ' ' + f[1] + (n > 1 && f[1] !== 'lb' ? 's' : '') + ' of ' + f[0] + ' cost ' + $(cost) + '. What is the price per ' + f[1] + '?',
+        ch: C($(r), '', [[$(r2(n / cost)), 'That is ' + f[1] + 's per dollar (upside down). Divide dollars by ' + f[1] + 's.'], [$(r2(cost * n)), 'You multiplied. A unit rate DIVIDES the cost by the amount.'], [$(r2(cost - n)), 'You subtracted. Divide the cost by the amount.']], [[$(r + 1), 'Check: ' + n + ' × that price is not ' + $(cost) + '.']]),
+        hint: 'Price per ' + f[1] + ' = cost ÷ number of ' + f[1] + 's.', steps: $(cost) + ' ÷ ' + n + ' = ' + $(r) };
+    },
+    buy: function () {    // better buy
+      var a = R(3, 6), b = a * 2, pa = P([2, 2.5, 3, 4]), pb = r2(pa * 2 + P([-1, -0.5, 0.5, 1]));
+      var ua = pa / a, ub = pb / b, best = ua < ub ? 'A' : 'B';
+      return { kind: 'better buy', p: 'Pack A: ' + a + ' muffins for ' + $(pa) + '. Pack B: ' + b + ' muffins for ' + $(pb) + '. Which is the better buy?',
+        ch: C('Pack ' + best, '', [['Pack ' + (best === 'A' ? 'B' : 'A'), 'Find the price for ONE muffin in each pack: ' + $(r2(ua)) + ' vs ' + $(r2(ub)) + '. Lower is better.'], ['The bigger pack, always', 'Bigger is not always cheaper. Compare the price per muffin.'], ['They cost the same', 'Divide each price by its number of muffins. Are they equal?']]),
+        hint: 'Find price ÷ muffins for each pack.', steps: 'A: ' + $(pa) + ' ÷ ' + a + ' ≈ ' + $(r2(ua)) + '. B: ' + $(pb) + ' ÷ ' + b + ' ≈ ' + $(r2(ub)) + '. Pack ' + best + ' costs less per muffin.' };
+    },
+    frac: function () {   // rate with fractions
+      var T = P([[1, 2, 1, 4, '2'], [3, 4, 1, 2, '3/2'], [2, 3, 1, 6, '4'], [1, 3, 1, 2, '2/3'], [3, 8, 3, 4, '1/2'], [5, 6, 1, 3, '5/2']]);
+      var right = T[4], up = fr(T[1] * T[2], T[0] * T[3]), mul = fr(T[0] * T[2], T[1] * T[3]);
+      var ws = [[up, 'That is hours per pound (upside down). Pounds go on top.'], [mul, 'You multiplied the fractions. A rate divides: (' + T[0] + '/' + T[1] + ') ÷ (' + T[2] + '/' + T[3] + ').']].filter(function (w) { return w[0] !== right; });
+      return { kind: 'fraction rate', p: 'Ana picks ' + T[0] + '/' + T[1] + ' pound of berries in ' + T[2] + '/' + T[3] + ' hour. How many pounds per hour?',
+        ch: C(right, '', ws, [[fr(T[0] + T[2], T[1] + T[3]), 'You added tops and bottoms. Divide by multiplying by the reciprocal.'], [String(T[0] * T[3]), 'Multiply by the reciprocal, then simplify the whole fraction.']]),
+        hint: 'Pounds ÷ hours. Flip the second fraction and multiply.', steps: '(' + T[0] + '/' + T[1] + ') × (' + T[3] + '/' + T[2] + ') = ' + right + ' pounds per hour' };
+    },
+    k: function () {      // constant from a table
+      var k = P([2, 3, 4, 5, 6, 1.5, 2.5]), xs = [R(1, 3), R(4, 6), R(7, 9)];
+      var tbl = xs.map(function (x) { return '(' + x + ', ' + M1.n(r2(k * x)) + ')'; }).join(', ');
+      return { kind: 'constant k', p: 'Pounds (x) and cost (y) are proportional: ' + tbl + '. What is k in y = kx?',
+        ch: C(M1.n(k), '', [[M1.n(r2(1 / k)), 'That is x ÷ y. k is y ÷ x.'], [M1.n(xs[0]), 'That is an x-value. Divide y by x.'], [M1.n(r2(k * xs[0] - xs[0])), 'You subtracted. k = y ÷ x.']], [[M1.n(k + 1), 'Check: ' + (k + 1) + ' × ' + xs[0] + ' is not ' + M1.n(r2(k * xs[0])) + '.']]),
+        hint: 'k = y ÷ x. Try the first pair.', steps: M1.n(r2(k * xs[0])) + ' ÷ ' + xs[0] + ' = ' + M1.n(k) + ', so y = ' + M1.n(k) + 'x' };
+    },
+    kuse: function () {   // use y = kx
+      var k = P([3, 4, 6, 2.5, 1.5]), x = R(4, 12);
+      return { kind: 'use y = kx', p: 'Honey costs y = ' + M1.n(k) + 'x dollars for x jars. How much do ' + x + ' jars cost?',
+        ch: C($(r2(k * x)), '', [[$(r2(k + x)), 'You added. ' + M1.n(k) + 'x means ' + M1.n(k) + ' TIMES x.'], [$(r2(x / k)), 'Multiply k by x, do not divide.'], [$(k), 'That is the price of 1 jar.']]),
+        hint: 'Put ' + x + ' in for x: ' + M1.n(k) + ' × ' + x + '.', steps: M1.n(k) + ' × ' + x + ' = ' + $(r2(k * x)) };
+    },
+    isprop: function () {
+      var k = R(2, 5), yes = Math.random() < 0.5, b = yes ? 0 : R(1, 4);
+      var pts = [1, 2, 3].map(function (x) { return '(' + x + ', ' + (k * x + b) + ')'; }).join(', ');
+      return { kind: 'proportional?', p: 'Is this table proportional? ' + pts,
+        ch: C(yes ? 'Yes: y ÷ x is always ' + k : 'No: y ÷ x changes', '', yes ? [['No: y ÷ x changes', 'Divide each y by its x: they are all ' + k + '.'], ['Yes: y goes up by the same amount', 'Going up by the same amount is not enough. Check y ÷ x.']] : [['Yes: y ÷ x is always ' + (k + b), 'Check every row: ' + (2 * k + b) + ' ÷ 2 is not ' + (k + b) + '.'], ['Yes: y goes up by the same amount', 'Going up by the same amount is not enough. Check y ÷ x in every row.']]),
+        hint: 'Divide y by x in every pair.', steps: [1, 2, 3].map(function (x) { return (k * x + b) + ' ÷ ' + x + ' = ' + M1.n(r2((k * x + b) / x)); }).join(', ') };
+    },
+    pct: function () {
+      var p = P([10, 20, 25, 30, 40, 50, 75]), w = P([20, 40, 60, 80, 120]);
+      var a = r2(p / 100 * w);
+      return { kind: 'percent of', p: 'What is ' + p + '% of ' + w + '?',
+        ch: C(M1.n(a), '', [[M1.n(r2(p * w)), 'Change ' + p + '% to a decimal first: ' + (p / 100) + '.'], [M1.n(r2(w - a)), 'That is ' + (100 - p) + '% of ' + w + '.'], [M1.n(r2(w / p)), 'Multiply by the percent as a decimal, do not divide.']], [[M1.n(a + 2), 'Check: ' + (p / 100) + ' × ' + w + '.']]),
+        hint: p + '% = ' + (p / 100) + '. Multiply by ' + w + '.', steps: (p / 100) + ' × ' + w + ' = ' + M1.n(a) };
+    },
+    sale: function () {
+      var p = P([10, 20, 25, 30, 40]), w = P([20, 40, 50, 60, 80]), off = r2(p / 100 * w);
+      return { kind: 'discount', p: 'A basket that costs ' + $(w) + ' is ' + p + '% off. What is the sale price?',
+        ch: C($(r2(w - off)), '', [[$(off), 'That is how much you SAVE. Take it off the price.'], [$(r2(w + off)), 'A discount takes money OFF. You added.'], [$(r2(w - p)), 'You took off $' + p + ', not ' + p + '%.']]),
+        hint: 'You pay ' + (100 - p) + '%: ' + ((100 - p) / 100) + ' × ' + w + '.', steps: ((100 - p) / 100) + ' × ' + w + ' = ' + $(r2(w - off)) };
+    },
+    tax: function () {
+      var t = P([5, 6, 8, 10]), w = P([10, 20, 25, 50]), tx = r2(t / 100 * w);
+      return { kind: 'tax', p: 'A ' + $(w) + ' flower pot has ' + t + '% sales tax. What is the total?',
+        ch: C($(r2(w + tx)), '', [[$(tx), 'That is only the tax. Add it to the price.'], [$(r2(w + t)), 'You added $' + t + ', not ' + t + '%.'], [$(r2(w - tx)), 'Tax ADDS to the price.']]),
+        hint: 'Total = ' + (1 + t / 100) + ' × ' + w + '.', steps: (1 + t / 100) + ' × ' + w + ' = ' + $(r2(w + tx)) };
+    },
+    tip: function () {
+      var t = P([15, 20]), w = P([20, 30, 40, 60]), tp = r2(t / 100 * w);
+      return { kind: 'tip', p: 'Lunch at the food truck costs ' + $(w) + '. You leave a ' + t + '% tip. How much is the tip?',
+        ch: C($(tp), '', [[$(r2(w + tp)), 'That is the total. The question asks for the tip.'], [$(t), 'You used $' + t + ', not ' + t + '%.'], [$(r2(w * t / 10)), 'Move the decimal point 2 places: ' + t + '% = ' + (t / 100) + '.']]),
+        hint: t + '% of ' + w + ' = ' + (t / 100) + ' × ' + w + '.', steps: (t / 100) + ' × ' + w + ' = ' + $(tp) };
+    }
+  };
+  var LEVELS = [
+    { id: 'rates', unit: 4, name: 'Stall 1: Unit Rates', what: 'Price per pound, better buys, rates with fractions', kinds: ['unit', 'buy', 'unit', 'frac', 'buy', 'unit', 'frac', 'buy', 'frac', 'unit'] },
+    { id: 'prop', unit: 4, name: 'Stall 2: Proportions', what: 'Find k, use y = kx, is it proportional?', kinds: ['k', 'kuse', 'isprop', 'k', 'kuse', 'isprop', 'k', 'kuse', 'isprop', 'kuse'] },
+    { id: 'pct', unit: 5, name: 'Stall 3: Sales and Tax', what: 'Percent of a number, discounts, tax and tips', kinds: ['pct', 'sale', 'tax', 'tip', 'pct', 'sale', 'tax', 'tip', 'sale', 'pct'] },
+    { id: 'mix', unit: 5, name: 'Stall 4: Busy Saturday', what: 'Everything, mixed together', kinds: ['unit', 'k', 'sale', 'frac', 'tax', 'kuse', 'buy', 'tip', 'isprop', 'pct'] }
+  ];
+  function make(kind) { return MAKE[kind](); }
+
+  /* ---------- the stall (original SVG art) ---------- */
+  var GOODS = ['#C8642A', '#F2B13C', '#B4541C', '#8FB04A', '#E0702A', '#F6D28C', '#9C3D1A', '#D98E1C', '#6B8A2A', '#E85D3A'];
+  var host = document.getElementById('scene');
+  function base() {
+    var s = '<svg viewBox="0 0 640 440" role="img" aria-label="A farmers market stall with 10 empty basket spots">';
+    s += '<defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F9D58C"/><stop offset="1" stop-color="#F3B562"/></linearGradient></defs>';
+    s += '<rect width="640" height="440" fill="url(#sk)"/><circle cx="560" cy="70" r="38" fill="#FFF2C7" opacity=".9"/>';
+    s += '<path d="M0 300 Q120 250 240 290 T480 280 T640 290 V440 H0Z" fill="#C98B4A" opacity=".55"/>';
+    s += '<rect x="0" y="360" width="640" height="80" fill="#8A5A2B"/>';
+    // awning
+    for (var i = 0; i < 8; i++) s += '<path d="M' + (60 + i * 65) + ' 70 h65 v40 q-32.5 22 -65 0z" fill="' + (i % 2 ? '#FBF1E2' : '#B4541C') + '"/>';
+    s += '<rect x="60" y="60" width="520" height="14" rx="4" fill="#5A3520"/><rect x="70" y="110" width="12" height="250" fill="#5A3520"/><rect x="558" y="110" width="12" height="250" fill="#5A3520"/>';
+    s += '<rect x="60" y="250" width="520" height="22" rx="5" fill="#6A4526"/><rect x="80" y="272" width="480" height="88" fill="#7A5230"/>';
+    s += '<text x="320" y="320" text-anchor="middle" font-family="Source Serif 4, Georgia, serif" font-size="30" fill="#FBF1E2" font-weight="600" id="sign">MARKET DAY</text>';
+    for (var k = 0; k < 10; k++) { var x = 95 + (k % 5) * 92, y = k < 5 ? 150 : 205; s += '<ellipse cx="' + (x + 30) + '" cy="' + (y + 40) + '" rx="34" ry="6" fill="#000" opacity=".12"/><g id="slot' + k + '"></g>'; }
+    s += '<g id="crowd"></g><g id="conf"></g></svg>';
+    host.innerHTML = s;
+  }
+  function basket(k, first) {
+    var x = 95 + (k % 5) * 92, y = k < 5 ? 150 : 205, c = GOODS[k], s = '<g class="pop">';
+    for (var j = 0; j < 5; j++) s += '<circle cx="' + (x + 14 + (j % 3) * 16) + '" cy="' + (y + 12 - Math.floor(j / 3) * 10) + '" r="10" fill="' + c + '" stroke="#5A3520" stroke-width="1"/>';
+    s += '<path d="M' + x + ' ' + (y + 14) + ' h60 l-7 28 h-46z" fill="#C8955A" stroke="#5A3520" stroke-width="2"/>';
+    for (var l = 0; l < 3; l++) s += '<line x1="' + (x + 4) + '" y1="' + (y + 22 + l * 7) + '" x2="' + (x + 56) + '" y2="' + (y + 22 + l * 7) + '" stroke="#8A5A2B" stroke-width="1.2"/>';
+    if (first) s += '<path d="M' + (x + 52) + ' ' + (y - 8) + ' l4 8 9 1 -7 6 2 9 -8 -5 -8 5 2 -9 -7 -6 9 -1z" fill="#F2B13C" stroke="#8A4B0F" stroke-width="1"/>';
+    document.getElementById('slot' + k).innerHTML = s + '</g>';
+  }
+  function finale(done) {
+    var c = document.getElementById('crowd'), s = '';
+    var cols = ['#3E2414', '#6A3A18', '#8A4B0F', '#2F7A6E', '#7A3E6E', '#B4541C'];
+    for (var i = 0; i < 6; i++) { var x = 40 + i * 110; s += '<g class="pop" style="animation-delay:' + (i * 0.15) + 's"><circle cx="' + x + '" cy="372" r="13" fill="#E8B98A"/><rect x="' + (x - 14) + '" y="386" width="28" height="44" rx="10" fill="' + cols[i] + '"/></g>'; }
+    c.innerHTML = s; document.getElementById('sign').textContent = 'SOLD OUT!';
+    var f = ''; for (var j = 0; j < 40; j++) f += '<rect x="' + M1.rint(0, 630) + '" y="' + M1.rint(-40, 120) + '" width="7" height="12" fill="' + GOODS[j % 10] + '" class="pop" style="animation-delay:' + (j * 0.03) + 's"/>';
+    document.getElementById('conf').innerHTML = f; M1.sfx.win();
+    setTimeout(done, M1.RM ? 600 : 2200);
+  }
+  G7G.run({ key: 'md', levels: LEVELS, make: make, finaleText: 'The stall is full. The market is open!', doneTitle: 'Sold out!',
+    scene: { reset: base, add: basket, finale: finale } });
+})();
+</script>
+</body>
+</html>

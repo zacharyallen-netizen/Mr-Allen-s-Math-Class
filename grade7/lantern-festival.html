@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lantern Festival | 7th Grade Math Arcade</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../math1/arcade/m1-arcade.css?v=20261119a">
+<link rel="stylesheet" href="games/g7-game.css?v=20261120a">
+<script src="../math1/arcade/m1-arcade.js?v=20261119a"></script>
+<script src="games/g7-game.js?v=20261120a"></script>
+<script src="../tracker-config.js"></script>
+<script src="../arcade-send.js" data-game="Lantern Festival" data-unit="7 Units 8-9"></script>
+</head>
+<body>
+<script src="../site-bar.js"></script>
+<div class="m1-wrap">
+  <div class="m1-top">
+    <a class="m1-back" href="arcade.html">← 7th Grade Arcade</a>
+    <h1>Lantern Festival</h1>
+    <span class="sp"></span>
+    <span class="m1-chip" id="chipLv">Pick a level</span>
+    <span class="m1-chip">Score <b id="score">0</b></span>
+    <span class="m1-chip">Streak <b id="streak">0</b></span>
+    <span id="sndHere"></span>
+  </div>
+  <div class="gg-main">
+    <div class="gg-scene" id="scene"></div>
+    <div class="gg-side">
+      <div class="gg-bar"><div class="row"><span id="cLv">Lanterns</span><span id="cNum"></span></div><div class="gg-dots" id="dots"></div></div>
+      <div id="q"></div>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="startOv">
+  <div class="m1-card">
+    <h2>Lantern Festival</h2>
+    <p>Tonight is the Lantern Festival. Every right answer lights a paper lantern and sends it into the sky. Light all 10 for the big finale!</p>
+    <div class="m1-how">
+      <div><b>1. Read the question</b>Samples, mean and median, probability and compound events.</div>
+      <div><b>2. Tap an answer</b>A wrong tap tells you the mistake. Try again.</div>
+      <div><b>3. Light the sky</b>First-try answers glow gold.</div>
+    </div>
+    <div class="m1-levels" id="levels"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <button class="m1-go" id="goBtn" type="button">Light the first lantern →</button>
+      <span style="color:var(--dim);font-size:.85rem">Keys 1–4 tap answers. Every level is open.</span>
+    </div>
+  </div>
+</div>
+<div class="m1-over" id="endOv" hidden><div class="m1-card" id="endCard"></div></div>
+<script>
+(function () {
+  var R = M1.rint, P = M1.pick, r2 = G7G.r2, n = M1.n, fr = G7G.fr;
+  function C(right, wrongs, fill) {
+    function T(w) { var t = String(w[0]).trim(); return { h: t, k: t, why: w[1] }; }
+    return M1.choices({ h: right, k: right }, wrongs.map(T), (fill || []).map(T));
+  }
+  function sorted(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+  var THINGS = ['red lanterns', 'star lanterns', 'fish lanterns', 'moon lanterns'];
+  var BIAS = [
+    ['Which sample is best to find the favorite festival food of everyone in town?', '200 people picked at random from the town list', [['200 people in line at the dumpling stand', 'They are waiting for dumplings, so they lean toward dumplings.'], ['10 of your friends', 'Too small, and friends are often alike.'], ['People who answer an online poll', 'People who choose to answer are often different from everyone else.']]],
+    ['Which sample is random?', 'Draw 50 ticket numbers from a hat with every ticket', [['The first 50 people at the gate', 'Early people may be alike. Not everyone had the same chance.'], ['50 people at the music stage', 'They lean toward music fans.'], ['The 50 people who shout the loudest', 'Not everyone had the same chance to be picked.']]],
+    ['A survey about bedtimes asks only people at the late-night fireworks. Why is it biased?', 'People at a late show probably stay up later than most', [['The sample is too big', 'Size is not the problem. WHO was asked is.'], ['Bedtimes can not be surveyed', 'They can, with a fair sample.'], ['It is not biased', 'Think about who goes to a late-night show.']]]
+  ];
+  var MAKE = {
+    predict: function () {
+      var s = P([20, 25, 40, 50]), a = R(2, s / 2 - 1), N = s * P([10, 20, 30, 40]), ans = a * N / s, t = P(THINGS);
+      return { kind: 'predict', p: 'In a random sample of ' + s + ' festival lanterns, ' + a + ' are ' + t + '. About how many of the ' + N.toLocaleString() + ' lanterns are ' + t + '?',
+        ch: C(n(ans), [[n(a), 'That is the count in the SAMPLE. Scale it up to all ' + N + '.'], [n(a * N), 'Use the fraction ' + a + '/' + s + ' of ' + N + '. You did not divide by ' + s + '.'], [n(N - ans), 'That is the number that are NOT ' + t + '.']]),
+        hint: 'Sample fraction ' + a + '/' + s + ', times ' + N + '.', steps: N + ' ÷ ' + s + ' = ' + N / s + ', and ' + a + ' × ' + N / s + ' = ' + n(ans) };
+    },
+    bias: function () {
+      var B = P(BIAS);
+      return { kind: 'random sample', p: B[0], ch: C(B[1], B[2]), hint: 'Random means everyone has the same chance. Biased leans one way.', steps: B[1] + '.' };
+    },
+    mean: function () {
+      var m = R(4, 12), d = [R(-4, 4), R(-4, 4), R(-4, 4), R(-4, 4)]; d.push(-d[0] - d[1] - d[2] - d[3]);
+      var a = d.map(function (x) { return m + x; }); if (a.some(function (x) { return x < 0; })) return MAKE.mean();
+      var sum = 5 * m, med = sorted(a)[2];
+      return { kind: 'mean', p: 'Lanterns lit by 5 helpers: ' + a.join(', ') + '. What is the mean?',
+        ch: C(n(m), [[n(sum), 'That is the sum. Divide by 5.'], [n(med) + ' ', 'That is the median. The mean shares the total evenly.'], [n(Math.max.apply(0, a) - Math.min.apply(0, a)) + '  ', 'That is the range. Add, then divide by 5.']].filter(function (w) { return w[0].trim() !== String(m); }), [[n(m + 1), 'Check: add all 5, then divide by 5.'], [n(m - 1), 'Check: add all 5, then divide by 5.']]),
+        hint: 'Add all 5 numbers, then divide by 5.', steps: a.join(' + ') + ' = ' + sum + ', and ' + sum + ' ÷ 5 = ' + m };
+    },
+    median: function () {
+      var a = []; while (a.length < 5) { var v = R(1, 20); if (a.indexOf(v) < 0) a.push(v); }
+      var s = sorted(a), med = s[2], mid = a[2];
+      if (mid === med) { var t = a[2]; a[2] = a[0]; a[0] = t; mid = a[2]; if (mid === med) return MAKE.median(); }
+      return { kind: 'median', p: 'Minutes each lantern floated: ' + a.join(', ') + '. What is the median?',
+        ch: C(n(med), [[n(mid) + ' ', 'That is the middle of the list as written. Put the numbers in ORDER first.'], [n(s[4] - s[0]) + '  ', 'That is the range.'], [n(a.reduce(function (x, y) { return x + y; }, 0)) + '   ', 'That is the sum. The median is the middle number in order.']].filter(function (w) { return w[0].trim() !== String(med); }), [[n(med + 1), 'Put them in order and find the middle one.']]),
+        hint: 'Put them in order, smallest to biggest. The median is in the middle.', steps: 'In order: ' + s.join(', ') + '. Middle: ' + med };
+    },
+    range: function () {
+      var a = []; while (a.length < 5) { var v = R(2, 30); if (a.indexOf(v) < 0) a.push(v); }
+      var s = sorted(a), rg = s[4] - s[0];
+      return { kind: 'range', p: 'Heights of 5 lanterns (in meters): ' + a.join(', ') + '. What is the range?',
+        ch: C(n(rg), [[n(s[4]), 'That is the biggest value. Subtract the smallest.'], [n(a[a.length - 1] - a[0]) + ' ', 'Use the BIGGEST and SMALLEST, not the first and last.'], [n(s[4] + s[0]), 'Subtract, do not add.']].filter(function (w) { return w[0].trim() !== String(rg); }), [[n(rg + 2), 'Range = biggest − smallest.']]),
+        hint: 'Range = biggest − smallest.', steps: s[4] + ' − ' + s[0] + ' = ' + rg };
+    },
+    prob: function () {
+      var r = R(1, 6), b = R(1, 6), g = R(1, 6), T = r + b + g, cols = [['red', r], ['blue', b], ['gold', g]], c = P(cols);
+      return { kind: 'probability', p: 'A bag of paper lanterns has ' + r + ' red, ' + b + ' blue and ' + g + ' gold. You pick one without looking. What is P(' + c[0] + ')?',
+        ch: C(fr(c[1], T), [[fr(c[1], T - c[1]) + ' ', 'Divide by ALL the lanterns (' + T + '), not just the others.'], [fr(T, c[1]) + '  ', 'That is upside down. The ' + c[0] + ' ones go on top.'], [String(c[1]) + '   ', 'That is the count. Probability is count ÷ total.']].filter(function (w) { return w[0].trim() !== fr(c[1], T); })),
+        hint: 'P = ' + c[0] + ' ÷ all lanterns.', steps: c[1] + ' ÷ ' + T + ' = ' + fr(c[1], T) };
+    },
+    notp: function () {
+      var p = P([0.1, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6, 0.7, 0.85]), q = r2(1 - p);
+      return { kind: 'P(not)', p: 'P(it rains tonight) = ' + p + '. What is P(no rain)?',
+        ch: C(n(q), [[n(p) + ' ', 'That is P(rain). No rain is everything else.'], [n(r2(1 + p)), 'Subtract from 1. A probability can not be more than 1.'], [n(r2(100 - p)), 'Use 1 for certain, not 100.']].filter(function (w) { return w[0].trim() !== n(q); }), [[n(0.5), 'Rain and no rain are not equally likely here.']]),
+        hint: 'P(not A) = 1 − P(A).', steps: '1 − ' + p + ' = ' + n(q) };
+    },
+    count: function () {
+      var a = R(2, 6), b = R(2, 6), c = P([['lantern colors', 'shapes'], ['snacks', 'drinks'], ['shirts', 'hats']]);
+      return { kind: 'count outcomes', p: 'You pick 1 of ' + a + ' ' + c[0] + ' and 1 of ' + b + ' ' + c[1] + '. How many different pairs can you make?',
+        ch: C(String(a * b), [[String(a + b) + ' ', 'Add only when you pick ONE thing. For pairs, multiply.'], [String(Math.max(a, b)) + '  ', 'Each ' + c[0].replace(/s$/, '') + ' goes with every ' + c[1].replace(/s$/, '') + '. Multiply.'], [String(a * b * 2) + '   ', 'Multiply ' + a + ' × ' + b + ' only once.']].filter(function (w) { return w[0].trim() !== String(a * b); }), [[String(a * b + 1), 'Make a table: ' + a + ' rows and ' + b + ' columns.']]),
+        hint: 'Multiply the choices.', steps: a + ' × ' + b + ' = ' + a * b };
+    },
+    comp: function () {
+      var T = P([
+        ['Flip a coin and roll a number cube. What is P(heads and a 6)?', '1/12', [['1/8', 'There are 2 × 6 = 12 outcomes, not 2 + 6.'], ['1/6', 'The coin must also be heads.'], ['2/12', 'Only ONE outcome is heads AND 6.']]],
+        ['Flip 2 coins. What is P(both tails)?', '1/4', [['1/2', 'That is for one coin. Both must be tails.'], ['1/3', 'There are 4 outcomes: HH, HT, TH, TT.'], ['2/4', 'Only TT works.']]],
+        ['Flip 3 coins. What is P(all heads)?', '1/8', [['1/3', 'There are 2 × 2 × 2 = 8 outcomes.'], ['1/6', 'Multiply 2 × 2 × 2, do not add.'], ['3/8', 'Only HHH works.']]],
+        ['Roll two number cubes. What is P(both show 1)?', '1/36', [['1/12', 'There are 6 × 6 = 36 outcomes.'], ['2/36', 'Only (1, 1) works.'], ['1/6', 'That is for one cube.']]],
+        ['Spin a 4-part spinner (A, B, C, D) and flip a coin. What is P(A and heads)?', '1/8', [['1/6', 'Multiply 4 × 2 = 8 outcomes, do not add.'], ['1/4', 'The coin must also be heads.'], ['2/8', 'Only A-heads works.']]]
+      ]);
+      return { kind: 'compound', p: T[0], ch: C(T[1], T[2]), hint: 'Count all the outcomes (multiply). How many are the one you want?', steps: 'P = ' + T[1] };
+    }
+  };
+  var LEVELS = [
+    { id: 'samp', unit: 8, name: 'Night 1: Samples', what: 'Random samples and predictions', kinds: ['predict', 'bias', 'predict', 'bias', 'predict', 'predict', 'bias', 'predict', 'bias', 'predict'] },
+    { id: 'cen', unit: 8, name: 'Night 2: Center and Spread', what: 'Mean, median and range', kinds: ['mean', 'median', 'range', 'mean', 'median', 'range', 'mean', 'median', 'range', 'mean'] },
+    { id: 'prob', unit: 9, name: 'Night 3: Chances', what: 'Probability, P(not), compound events', kinds: ['prob', 'notp', 'count', 'comp', 'prob', 'notp', 'count', 'comp', 'prob', 'comp'] },
+    { id: 'mix', unit: 9, name: 'Night 4: The Big Festival', what: 'Everything, mixed together', kinds: ['predict', 'mean', 'prob', 'bias', 'median', 'count', 'range', 'notp', 'comp', 'predict'] }
+  ];
+  /* ---------- the night sky (original SVG art) ---------- */
+  var host = document.getElementById('scene'), LX = [90, 150, 210, 270, 330, 390, 450, 510, 560, 120];
+  function base() {
+    var s = '<svg viewBox="0 0 640 440" role="img" aria-label="A night sky over a river town, ready for lanterns">';
+    s += '<defs><linearGradient id="nt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#140B1E"/><stop offset=".7" stop-color="#3A1E22"/><stop offset="1" stop-color="#6A3A18"/></linearGradient>';
+    s += '<radialGradient id="glow"><stop offset="0" stop-color="#FFE7A6" stop-opacity=".9"/><stop offset="1" stop-color="#F2B13C" stop-opacity="0"/></radialGradient></defs>';
+    s += '<rect width="640" height="440" fill="url(#nt)"/>';
+    for (var i = 0; i < 70; i++) s += '<circle cx="' + ((i * 97) % 640) + '" cy="' + ((i * 53) % 260) + '" r="' + (i % 3 ? 1 : 1.6) + '" fill="#FBF1E2" opacity=".7"/>';
+    s += '<circle cx="80" cy="70" r="26" fill="#FBEFD0"/>';
+    s += '<path d="M0 330 L40 300 L70 320 L110 290 L150 315 L200 285 L250 310 L300 280 L350 305 L400 285 L450 310 L500 290 L550 312 L600 292 L640 310 V440 H0Z" fill="#24140C"/>';
+    for (var j = 0; j < 14; j++) s += '<rect x="' + (20 + j * 45) + '" y="' + (318 + (j % 3) * 6) + '" width="5" height="7" fill="#F2B13C" opacity=".55"/>';
+    s += '<rect x="0" y="380" width="640" height="60" fill="#2C190D"/><path d="M0 395 Q160 385 320 395 T640 395" stroke="#F2B13C" stroke-width="1.5" opacity=".25" fill="none"/>';
+    s += '<g id="lans"></g></svg>';
+    host.innerHTML = s;
+  }
+  function lantern(k, first) {
+    var x = LX[k], y = 250 - (k % 3) * 55 - (k > 6 ? 40 : 0), c = first ? '#F2B13C' : '#E07A3A';
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'pop lan');
+    g.innerHTML = '<circle cx="' + x + '" cy="' + y + '" r="34" fill="url(#glow)"/><path d="M' + (x - 13) + ' ' + (y - 16) + ' h26 l5 30 h-36z" fill="' + c + '" stroke="#8A4B0F" stroke-width="1.5"/><rect x="' + (x - 9) + '" y="' + (y + 14) + '" width="18" height="4" fill="#5A3520"/>';
+    document.getElementById('lans').appendChild(g);
+  }
+  function finale(done) {
+    var all = document.querySelectorAll('#lans .lan'), t0 = performance.now(), dur = M1.RM ? 10 : 2800;
+    (function step(t) {
+      var p = Math.min(1, (t - t0) / dur);
+      all.forEach(function (g, i) { g.setAttribute('transform', 'translate(' + (Math.sin(p * 6 + i) * 8) + ',' + (-p * (160 + i * 12)) + ')'); g.style.opacity = String(1 - p * 0.6); });
+      if (p < 1) requestAnimationFrame(step); else { M1.sfx.win(); setTimeout(done, 700); }
+    })(t0);
+    M1.sfx.chime();
+  }
+  G7G.run({ key: 'lf', levels: LEVELS, make: function (k) { return MAKE[k](); }, finaleText: 'All 10 lanterns are lit. Watch them rise!', doneTitle: 'What a festival!',
+    scene: { reset: base, add: lantern, finale: finale } });
+})();
+</script>
+</body>
+</html>
