@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Squeaky Cheeks: Class Cup (5th Grade)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 5th grade CLASS CUP copy of Mr. Allen's Squeaky Cheeks (grade8/squeaky-cheeks.html, Nov 2026).
+   Topics: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.MD.4-5 (volume).
+   One self-contained file: no student names, no outside scripts. The class leaderboard works only when this file runs
+   inside the teacher's Google Apps Script web app (google.script.run); anywhere else it is a practice copy.
+   Layout: pixel room (canvas, left) + "gas station" math panel (right); stacks on phones.
+   Look: chunky low-res pixels, warm cartoon colors, stink green as the signature. */
+:root{
+  --bg:#1d1a2e; --panel:#2b2742; --panel2:#352f52; --edge:#4a4370; --ink:#fff6e8; --muted:#bdb3d9;
+  --stink:#9be15d; --stink-d:#5ea83a; --cheek:#ff7aa2; --bean:#e8a44a; --sky:#7cc4ff; --bad:#ff8f7a;
+  --f-pix:'Press Start 2P','Courier New',monospace;
+  --f-body:'Fredoka','Trebuchet MS',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.4;
+  background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.05) 1px,transparent 0);background-size:14px 14px}
+button{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-block:12px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+a.back{color:var(--sky);text-decoration:none;font-size:14px;font-weight:600}
+.logo{font-family:var(--f-pix);font-size:clamp(14px,2.4vw,20px);color:var(--stink);text-shadow:3px 3px 0 #2d5a1c;letter-spacing:.02em}
+.logo span{color:var(--cheek);text-shadow:3px 3px 0 #7a2945}
+.top .sp{flex:1}
+.btn{font-weight:600;font-size:15px;border-radius:10px;border:2px solid var(--edge);background:var(--panel2);padding:9px 14px;cursor:pointer;min-height:42px;box-shadow:0 3px 0 #15121f}
+.btn:hover{filter:brightness(1.12)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #15121f}
+.btn:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:default;transform:none}
+.btn.go{background:var(--stink);color:#1d2b10;border-color:#d3ffb0}
+.game{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+.stage{position:relative;border:4px solid #0f0d18;border-radius:6px;background:#0f0d18;box-shadow:0 6px 0 #0f0d18}
+#room{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges;cursor:pointer;aspect-ratio:320/200}
+.roombar{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:14px;color:var(--muted)}
+.roombar b{color:var(--ink)}
+.goal{flex:1 1 220px;min-width:0}
+.goalbar{height:12px;border:2px solid #0f0d18;background:#2a2540;border-radius:3px;overflow:hidden;margin-top:4px}
+.goalbar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--stink) 0 8px,var(--stink-d) 8px 10px);transition:width .4s}
+
+/* panel */
+.panel{background:var(--panel);border:2px solid var(--edge);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.ph{font-family:var(--f-pix);font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.prob{font-weight:600;font-size:34px;text-align:center;display:flex;align-items:center;justify-content:center;gap:.28em;flex-wrap:wrap;min-height:1.5em;line-height:1.1;font-variant-numeric:tabular-nums}
+.prob .op{color:var(--bean)}
+.prob .eq{color:var(--muted)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;line-height:1;font-size:.85em}
+.fr .n{padding:0 .12em .08em}.fr .d{padding:.08em .12em 0;border-top:.07em solid currentColor;min-width:1.1em}
+.answer{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap}
+.box{font:600 28px var(--f-body);width:4em;text-align:center;padding:6px 4px;border-radius:10px;border:2px solid var(--edge);background:#1b1829;color:var(--ink);font-variant-numeric:tabular-nums}
+.box.sm{width:2.3em;font-size:24px}
+.box:focus{border-color:var(--sky);outline:none}
+.fbox{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.fbox .bar{width:100%;height:3px;background:var(--ink);border-radius:2px}
+.mixed{display:inline-flex;align-items:center;gap:6px}
+.fb{text-align:center;font-weight:600;min-height:1.4em;font-size:16px}
+.fb.ok{color:var(--stink)}.fb.bad{color:var(--bad)}
+.bonus{border:2px dashed var(--bean);border-radius:10px;padding:10px;text-align:center;display:flex;flex-direction:column;gap:8px;background:rgba(232,164,74,.08)}
+.bonus .bt{color:var(--bean);font-weight:600;font-size:14px}
+.keys{font-size:12.5px;color:var(--muted);text-align:center}
+.keys kbd{font:600 11px var(--f-body);background:var(--panel2);border:1px solid var(--edge);border-radius:4px;padding:1px 5px;color:var(--ink)}
+.meter{display:flex;align-items:center;gap:10px}
+.pips{display:flex;gap:5px;flex:1}
+.pips i{flex:1;height:18px;border-radius:3px;background:#1b1829;border:2px solid var(--edge)}
+.pips i.on{background:var(--stink);border-color:#d3ffb0;box-shadow:0 0 10px rgba(155,225,93,.5)}
+.gas{font-family:var(--f-pix);font-size:11px;white-space:nowrap}
+.gas b{color:var(--stink)}
+.toot{font-family:var(--f-pix);font-size:16px;padding:14px;background:var(--cheek);color:#3a0f1f;border-color:#ffc2d5;letter-spacing:.04em}
+.toot.ready{animation:wiggle .9s ease-in-out infinite}
+.beans{font-family:var(--f-pix);font-size:11px;color:var(--bean)}
+.shop{display:flex;flex-direction:column;gap:6px}
+.fart{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;text-align:left;padding:8px 10px;border-radius:10px;border:2px solid var(--edge);background:#231f37;cursor:pointer}
+.fart .fn{font-weight:700;font-size:15px}
+.fart .fd{grid-column:1;font-size:12.5px;color:var(--muted)}
+.fart .fc{grid-row:1/3;grid-column:2;font-family:var(--f-pix);font-size:9px;text-align:right;line-height:1.7}
+.fart[aria-pressed="true"]{border-color:var(--stink);background:#2b3a22}
+.fart.locked .fn{color:var(--muted)}
+.fart.cant{opacity:.55;cursor:default}
+
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(14,11,24,.82);overflow:auto;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{width:min(820px,100%);background:var(--panel);border:4px solid #0f0d18;border-radius:12px;box-shadow:0 8px 0 #0f0d18;padding:24px;display:flex;flex-direction:column;gap:16px}
+.card h1,.card h2{font-family:var(--f-pix);margin:0;line-height:1.35}
+.card h1{font-size:clamp(22px,5vw,36px);color:var(--stink);text-shadow:4px 4px 0 #2d5a1c}
+.card h1 span{color:var(--cheek);text-shadow:4px 4px 0 #7a2945}
+.card h2{font-size:clamp(16px,3.4vw,22px);color:var(--stink)}
+.card p{margin:0;color:var(--muted);max-width:64ch}
+.card p b{color:var(--ink)}
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.rm{text-align:left;padding:12px;border-radius:10px;border:2px solid var(--edge);background:#231f37;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.rm b{font-size:16px}
+.rm span{font-size:13px;color:var(--muted)}
+.rm .lv{font-family:var(--f-pix);font-size:9px;color:var(--bean)}
+.rm[aria-pressed="true"]{border-color:var(--stink);background:#2b3a22}
+.rm[disabled]{opacity:.45;cursor:default}
+.rm .done{color:var(--stink);font-size:12px;font-weight:600}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.howto div{background:#231f37;border-radius:10px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.howto b{display:block;color:var(--ink);font-size:15px}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stats div{background:#231f37;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--muted)}
+.stats b{display:block;font-family:var(--f-pix);font-size:16px;color:var(--ink);margin-bottom:4px}
+
+/* 5th grade additions */
+.prob .ptxt{font-size:17px;font-weight:500;line-height:1.4;text-align:left;display:block}
+.prob .ptxt b{color:var(--ink)}
+.prob .ptxt .fr{font-size:.95em;vertical-align:middle;margin:0 .1em}
+.prob .gold{color:#ffd36b}.prob .blue{color:#9ad0ff}
+.prob.small{font-size:17px;justify-content:flex-start}
+.mx{display:inline-flex;align-items:center;gap:.08em}
+#fig{display:flex;justify-content:center}
+#fig .fig{width:100%;max-width:300px;height:auto;background:#1b1829;border-radius:10px;border:2px solid var(--edge)}
+.unit{font-size:15px;color:var(--muted);font-weight:600}
+.box.sm.whole{width:2em}
+.alab{font-size:11px;color:var(--muted);text-align:center;margin-top:-6px}
+.choices{display:flex;flex-direction:column;gap:8px;width:100%}
+.ch{font-weight:600;font-size:16px;text-align:left;padding:10px 12px;border-radius:10px;border:2px solid var(--edge);background:#231f37;cursor:pointer;min-height:44px}
+.ch kbd{font:600 11px var(--f-body);background:var(--panel2);border:1px solid var(--edge);border-radius:4px;padding:1px 6px;margin-right:8px}
+.ch:hover{border-color:var(--sky)}
+.ch.no{opacity:.45;text-decoration:line-through}
+.ch.yes{border-color:var(--stink);background:#2b3a22}
+.fb .note{display:block;color:var(--ink);font-weight:500;font-size:14.5px;margin-top:4px}
+.fb .ans{display:block;color:var(--muted);font-weight:500;font-size:14.5px;margin-top:4px}
+/* class cup */
+.cup{display:flex;align-items:center;gap:10px;background:var(--panel);border:2px solid var(--edge);border-radius:12px;padding:6px 10px;font-size:13px;flex:1 1 360px;min-width:0}
+.cup .ct{font-family:var(--f-pix);font-size:9px;color:var(--bean);white-space:nowrap}
+.cup .tug{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.cup .names{display:flex;justify-content:space-between;gap:8px;font-weight:600}
+.cup .names b{font-family:var(--f-pix);font-size:10px}
+.cup .bar{height:10px;border-radius:5px;background:#7cc4ff;overflow:hidden;border:2px solid #0f0d18}
+.cup .bar i{display:block;height:100%;background:var(--cheek);transition:width .6s}
+.cup .me{font-size:12px;color:var(--muted);white-space:nowrap}
+.cup button{font:600 12px var(--f-body);color:var(--sky);background:none;border:0;cursor:pointer;padding:2px;text-decoration:underline}
+.c0{color:var(--cheek)}.c1{color:#7cc4ff}
+.homes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.home{font-family:var(--f-pix);font-size:15px;padding:22px 12px;border-radius:12px;border:3px solid var(--edge);background:#231f37;cursor:pointer;line-height:1.5}
+.home:hover,.home:focus-visible{border-color:var(--stink);outline:none}
+.home small{display:block;font-family:var(--f-body);font-size:13px;color:var(--muted);margin-top:6px}
+.bigcup{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bigcup div{background:#231f37;border-radius:12px;padding:16px;text-align:center}
+.bigcup b{display:block;font-family:var(--f-pix);font-size:clamp(22px,6vw,56px);margin:8px 0}
+.bigcup span{font-size:clamp(14px,2.2vw,22px);font-weight:600}
+.bigcup em{display:block;font-style:normal;color:var(--muted);font-size:14px}
+.std{font-size:12px;color:var(--muted)}
+body.boardmode .wrap,body.boardmode #title,body.boardmode #won,body.boardmode #homeroom{display:none!important}
+
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-2deg) scale(1.02)}75%{transform:rotate(2deg) scale(1.02)}}
+@media (max-width:900px){.game{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    
+    <div class="logo">Squeaky <span>Cheeks</span></div>
+    <div class="cup" id="cup" hidden></div>
+    <div class="sp"></div>
+    <button class="btn" id="bSound" type="button">Sound on</button>
+    <button class="btn" id="bRooms" type="button">Rooms</button>
+  </div>
+
+  <div class="game">
+    <div>
+      <div class="stage"><canvas id="room" width="1280" height="800" aria-label="The room. Click or tap a spot to walk there."></canvas></div>
+      <div class="roombar">
+        <div class="goal"><span id="goalTxt"></span><div class="goalbar"><i id="goalFill"></i></div></div>
+        <div id="roomName"></div>
+      </div>
+    </div>
+
+    <aside class="panel" aria-label="Math and toots">
+      <div class="ph" id="lvlTxt">Level 1</div>
+      <div class="prob" id="prob" aria-live="polite"></div>
+      <div id="fig"></div>
+      <div class="answer" id="answer"></div>
+      <div class="fb" id="fb" aria-live="polite"></div>
+      <div class="bonus" id="bonus" hidden><div class="bt" id="bonusT"></div><div class="answer" id="bonusA"></div></div>
+      <div class="keys" id="keys"></div>
+      <div>
+        <div class="ph" style="margin-bottom:6px">Gas meter · 5 right = 1 toot</div>
+        <div class="meter"><div class="pips" id="pips"></div><div class="gas">GAS <b id="gasN">0</b></div></div>
+      </div>
+      <button class="btn toot" id="bToot" type="button" disabled>TOOT! (T)</button>
+      <div class="row" style="justify-content:space-between"><span class="ph">Toot menu</span><span class="beans" id="beans">0 beans</span></div>
+      <div class="shop" id="shop"></div>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay" id="title">
+  <div class="card">
+    <h1>Squeaky <span>Cheeks</span></h1>
+    <p>You are in a crowded room. You would like it <b>less</b> crowded. Answer math problems to build up gas. Then walk over to a group of people and let one rip. Clear out enough people to win the room.</p>
+    <div id="titleCup"></div>
+    <div class="howto">
+      <div><b>1. Answer</b>Use the picture to help. Type the answer and press Enter. 5 right fills your gas meter.</div>
+      <div><b>2. Walk</b>Click or tap a spot in the room to walk there.</div>
+      <div><b>3. Toot</b>Press the T key or the TOOT button. Get close to groups for a bigger stink.</div>
+      <div><b>4. Upgrade</b>Every right answer earns beans. Spend beans on stronger toots.</div>
+    </div>
+    <p>A wrong answer gives a sad little <b>pfft</b>, tells you what went wrong, and that problem comes back later. Fractions can be typed as a fraction (like 7/4) or a mixed number (like 1 3/4). Any equal fraction counts.</p>
+    <p class="std">Pick any room. Rooms 1–2: volume (NC.5.MD.4, NC.5.MD.5). Rooms 3–5: multiplying fractions and area (NC.5.NF.4).</p>
+    <div class="rooms" id="roomList"></div>
+    <div class="row"><button class="btn go" id="bStart" type="button">Enter the room</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="homeroom" hidden>
+  <div class="card">
+    <h2>Which homeroom are you in?</h2>
+    <p>Every right answer earns <b>1 point</b> for your homeroom. Clearing a room earns <b>10 bonus points</b>. Only class totals are kept. Your name is never saved.</p>
+    <div class="homes" id="homeList"></div>
+  </div>
+</div>
+
+<div class="overlay" id="board" hidden>
+  <div class="card" style="width:min(1100px,100%)">
+    <h1>Class <span>Cup</span></h1>
+    <div class="bigcup" id="boardCup"></div>
+    <p id="boardNote">Updates by itself every 15 seconds.</p>
+  </div>
+</div>
+
+<div class="overlay" id="won" hidden>
+  <div class="card">
+    <h2 id="wonH"></h2>
+    <p id="wonP"></p>
+    <div class="stats" id="wonStats"></div>
+    <div class="row"><button class="btn go" id="bNextRoom" type="button">Next room</button><button class="btn" id="bReplay" type="button">Play this room again</button><button class="btn" id="bWonRooms" type="button">All rooms</button></div>
+  </div>
+</div>
+
+<script>
+/*Q5-START*/
+/* 5th grade question bank: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems)
+   and NC.5.MD.4 / NC.5.MD.5 (volume of rectangular prisms). Every problem shows a model (NC: "models must always be used").
+   Limits from the NCDPI unpacking: fraction x whole denominators 2,3,4,5,6,8,10,12; fraction x fraction (and area models)
+   denominators 2,3,4; volume edges whole numbers; composite = two prisms, one-digit dimensions. */
+const Q5=(function(){
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+/* a numerator for denominator b in simplest form (2/4 -> never) */
+const rnum=b=>{let a;do{a=1+Math.floor(Math.random()*(b-1))}while(gcdQ(a,b)!==1);return a};
+function gcdQ(a,b){while(b){[a,b]=[b,a%b]}return a}
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a||1};
+const red=(n,d)=>{const g=gcd(n,d);return [n/g,d/g]};
+const eqv=(a,b)=>a[0]*b[1]===b[0]*a[1];
+const frH=(n,d)=>`<span class="fr"><span class="n">${n}</span><span class="d">${d}</span></span>`;
+/* value [N,D] -> nice HTML: whole, fraction or mixed number (simplest form) */
+function valH(N,D){const [n,d]=red(N,D);if(d===1)return String(n);if(n<d)return frH(n,d);return `<span class="mx">${Math.floor(n/d)}${frH(n%d,d)}</span>`}
+function valT(N,D){const [n,d]=red(N,D);if(d===1)return String(n);if(n<d)return n+'/'+d;return Math.floor(n/d)+' '+(n%d)+'/'+d}
+/* a side length like 1 1/2 -> {n:3,d:2} shown as "1 1/2" */
+const NAMES=['Ava','Mateo','Jada','Liam','Sofia','Malik','Chloe','Diego','Nia','Owen','Zoe','Eli'];
+
+/* ---------------- figures (SVG strings) ---------------- */
+const C={ink:'#fff6e8',muted:'#bdb3d9',line:'#0f0d18',top:['#a8e47a','#ffe08a','#9ad0ff'],left:['#5ea83a','#d1a43a','#3f87c4'],right:['#7cc54f','#e8bf55','#5ea6e0'],shade:'#9be15d',shade2:'#ff7aa2',empty:'#231f37',grid:'#4a4370'};
+function svg(w,h,body,label){return `<svg class="fig" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label||'Model'}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`}
+function txt(x,y,s,o){o=o||{};return `<text x="${x}" y="${y}" fill="${o.c||C.ink}" font-size="${o.fs||14}" font-weight="${o.fw||600}" text-anchor="${o.a||'middle'}" font-family="Fredoka,Trebuchet MS,sans-serif">${s}</text>`}
+/* isometric unit cubes. cubes = [{x,y,z,c}], c = color index. labels: [{p1:[x,y,z],p2:[x,y,z],t,side}] */
+function voxels(cubes,labels,label){
+  const set=new Set(cubes.map(q=>q.x+','+q.y+','+q.z));const has=(x,y,z)=>set.has(x+','+y+','+z);
+  let maxX=0,maxY=0,maxZ=0;cubes.forEach(q=>{maxX=Math.max(maxX,q.x+1);maxY=Math.max(maxY,q.y+1);maxZ=Math.max(maxZ,q.z+1)});
+  const W=300,H=190,cs=.866;
+  const spanX=(maxX+maxY)*cs,spanY=(maxX+maxY)*.5+maxZ;
+  const s=Math.min(22,(W-70)/spanX,(H-44)/spanY);
+  const P=(x,y,z)=>[(x-y)*cs*s,(x+y)*.5*s-z*s];
+  /* center */
+  const minSX=-maxY*cs*s,maxSX=maxX*cs*s,minSY=-maxZ*s,maxSY=(maxX+maxY)*.5*s;
+  const ox=W/2-(minSX+maxSX)/2,oy=(H-6)/2-(minSY+maxSY)/2;
+  const pt=(x,y,z)=>{const p=P(x,y,z);return (p[0]+ox).toFixed(1)+','+(p[1]+oy).toFixed(1)};
+  const poly=(pts,f)=>`<polygon points="${pts.map(p=>pt(...p)).join(' ')}" fill="${f}" stroke="${C.line}" stroke-width="1.1" stroke-linejoin="round"/>`;
+  const order=cubes.slice().sort((a,b)=>(a.x+a.y+a.z)-(b.x+b.y+b.z)||a.z-b.z);
+  let out='';
+  for(const q of order){const {x,y,z}=q,c=q.c||0;
+    if(!has(x,y,z+1))out+=poly([[x,y,z+1],[x+1,y,z+1],[x+1,y+1,z+1],[x,y+1,z+1]],C.top[c]);
+    if(!has(x+1,y,z))out+=poly([[x+1,y,z],[x+1,y+1,z],[x+1,y+1,z+1],[x+1,y,z+1]],C.right[c]);
+    if(!has(x,y+1,z))out+=poly([[x,y+1,z],[x+1,y+1,z],[x+1,y+1,z+1],[x,y+1,z+1]],C.left[c]);
+  }
+  for(const L of (labels||[])){const a=P(...L.p1),b=P(...L.p2);let mx=(a[0]+b[0])/2+ox,my=(a[1]+b[1])/2+oy;
+    const off=L.side==='r'?[14,12]:L.side==='l'?[-14,12]:L.side==='h'?[8,0]:[0,0];
+    out+=txt((mx+off[0]).toFixed(1),(my+off[1]+4).toFixed(1),L.t,{a:L.side==='h'?'start':'middle'})}
+  return svg(W,H,out,label);
+}
+function boxFig(l,w,h,u,opt){opt=opt||{};const cubes=[];
+  for(let x=0;x<l;x++)for(let y=0;y<w;y++)for(let z=0;z<h;z++)cubes.push({x,y,z,c:0});
+  const lab=[];if(!opt.noLabels){
+    lab.push({p1:[0,w,0],p2:[l,w,0],t:opt.lT||(l+' '+u),side:'l'});   /* bottom-left edge = length */
+    lab.push({p1:[l,0,0],p2:[l,w,0],t:opt.wT||(w+' '+u),side:'r'});   /* bottom-right edge = width */
+    lab.push({p1:[l,0,0],p2:[l,0,h],t:opt.hT||(h+' '+u),side:'h'});   /* right vertical edge = height */
+  }
+  return voxels(cubes,lab,opt.label||`A box ${l} by ${w} by ${h} made of unit cubes`);
+}
+/* fraction area model: rectangle P x Q (fractions as [n,d]) on a grid of whole units, each unit cut into dp columns and dq rows */
+function areaFig(p,q,opt){opt=opt||{};
+  const [pn,pd]=p,[qn,qd]=q,ux=Math.ceil(pn/pd),uy=Math.ceil(qn/qd);
+  const W=300,H=180,padL=46,padT=26,cell=Math.min((W-padL-14)/Math.max(ux,1),(H-padT-14)/Math.max(uy,1),110);
+  let out='';const X=v=>padL+v*cell,Y=v=>padT+v*cell;
+  out+=`<rect x="${X(0)}" y="${Y(0)}" width="${ux*cell}" height="${uy*cell}" fill="${C.empty}"/>`;
+  out+=`<rect x="${X(0)}" y="${Y(0)}" width="${(pn/pd*cell).toFixed(2)}" height="${(qn/qd*cell).toFixed(2)}" fill="${C.shade}" opacity=".9"/>`;
+  for(let i=0;i<=ux*pd;i++){const x=X(i/pd);out+=`<line x1="${x.toFixed(2)}" y1="${Y(0)}" x2="${x.toFixed(2)}" y2="${Y(uy)}" stroke="${i%pd===0?C.ink:C.grid}" stroke-width="${i%pd===0?2:1}"${i%pd===0?'':' stroke-dasharray="3 3"'}/>`}
+  for(let j=0;j<=uy*qd;j++){const y=Y(j/qd);out+=`<line x1="${X(0)}" y1="${y.toFixed(2)}" x2="${X(ux)}" y2="${y.toFixed(2)}" stroke="${j%qd===0?C.ink:C.grid}" stroke-width="${j%qd===0?2:1}"${j%qd===0?'':' stroke-dasharray="3 3"'}/>`}
+  out+=`<rect x="${X(0)}" y="${Y(0)}" width="${(pn/pd*cell).toFixed(2)}" height="${(qn/qd*cell).toFixed(2)}" fill="none" stroke="#d6ff9e" stroke-width="3"/>`;
+  out+=txt((X(0)+pn/pd*cell/2).toFixed(1),Y(0)-8,opt.pT||valT(pn,pd)+(opt.u?' '+opt.u:''));
+  out+=txt(X(0)-6,(Y(0)+qn/qd*cell/2+5).toFixed(1),opt.qT||valT(qn,qd)+(opt.u?' '+opt.u:''),{a:'end'});
+  if(ux===1&&uy===1)out+=txt(X(1)-4,Y(1)+14,'1 whole = 1 by 1',{fs:11,c:C.muted,a:'end'});
+  return svg(W,H+4,out,opt.label||'Area model');
+}
+/* n groups of a/b: n bars, each cut into b parts, a shaded */
+function groupsFig(n,a,b){const W=300,rowH=Math.min(24,150/n),gap=Math.min(6,rowH*.25),H=n*(rowH+gap)+8,x0=56,bw=W-x0-10;
+  let out='';for(let r=0;r<n;r++){const y=4+r*(rowH+gap);out+=txt(x0-8,y+rowH*.72,`${a}/${b}`,{a:'end',fs:Math.min(14,rowH*.7)});
+    for(let k=0;k<b;k++){out+=`<rect x="${(x0+k*bw/b).toFixed(1)}" y="${y}" width="${(bw/b).toFixed(1)}" height="${rowH-1}" fill="${k<a?C.shade:C.empty}" stroke="${C.line}" stroke-width="1.2"/>`}}
+  return svg(W,H,out,`${n} bars, each with ${a} of ${b} parts shaded`);
+}
+/* a/b of N: one tape of length N cut into b equal parts, a shaded */
+function tapeFig(a,b,N,u){const W=300,H=78,x0=10,bw=W-20,y=30;let out='';
+  out+=`<path d="M${x0} 22 v-6 h${bw} v6" fill="none" stroke="${C.muted}" stroke-width="2"/>`+txt(W/2,13,N+(u?' '+u:''));
+  for(let k=0;k<b;k++)out+=`<rect x="${(x0+k*bw/b).toFixed(1)}" y="${y}" width="${(bw/b).toFixed(1)}" height="26" fill="${k<a?C.shade:C.empty}" stroke="${C.line}" stroke-width="1.2"/>`;
+  const sw=a*bw/b;out+=`<path d="M${x0} 62 v6 h${sw.toFixed(1)} v-6" fill="none" stroke="#d6ff9e" stroke-width="2"/>`+txt((x0+sw/2).toFixed(1),76,'?',{c:'#d6ff9e'});
+  return svg(W,H+4,out,`A tape of ${N} cut into ${b} equal parts with ${a} shaded`);
+}
+/* number line 0..3 with the scale factor marked */
+function lineFig(fn,fd){const W=300,H=60,x0=16,x1=W-16,max=Math.max(2,Math.ceil(fn/fd+.01)),X=v=>x0+(x1-x0)*v/max;let out='';
+  out+=`<line x1="${x0}" y1="30" x2="${x1}" y2="30" stroke="${C.ink}" stroke-width="2"/>`;
+  for(let v=0;v<=max;v++)out+=`<line x1="${X(v)}" y1="22" x2="${X(v)}" y2="38" stroke="${C.ink}" stroke-width="2"/>`+txt(X(v),54,v,{fs:13,c:v===1?'#ffe08a':C.ink});
+  out+=`<rect x="${X(1)-1.5}" y="16" width="3" height="28" fill="#ffe08a"/>`;
+  const x=X(fn/fd);out+=`<circle cx="${x.toFixed(1)}" cy="30" r="7" fill="${C.shade2}" stroke="${C.line}" stroke-width="2"/>`+txt(x.toFixed(1),13,valT(fn,fd),{c:C.shade2});
+  return svg(W,H,out,`Number line from 0 to ${max} with ${valT(fn,fd)} marked`);
+}
+
+/* ---------------- problem builders ---------------- */
+/* kinds: num (whole number box), frac (whole + fraction boxes, any equal value), choice (tap) */
+function mk(o){o.key=o.key||o.text;
+  /* a note is only for a WRONG answer: a mistake value that equals the right answer is ignored */
+  if(o.why&&o.kind!=='choice'){const w0=o.why,A=o.kind==='frac'?o.ans:[o.ans,1];o.why=g=>eqv(g,A)?'':w0(g)}
+  return o}
+function noteFrom(list,g){for(const m of list){if(m.v!=null&&eqv(g,Array.isArray(m.v)?m.v:[m.v,1]))return m.t}return ''}
+
+/* ----- volume ----- */
+const UNITS=[['cm','cubic cm'],['in','cubic in'],['ft','cubic ft'],['m','cubic m']];
+function volCount(){const l=ri(2,4),w=ri(2,3),h=ri(1,3),V=l*w*h;
+  return mk({kind:'num',std:'NC.5.MD.4',key:`vc${l}${w}${h}`,ans:V,unit:'cubes',
+    html:`<span class="ptxt">How many unit cubes make this box?</span>`,text:`count cubes ${l}x${w}x${h}`,
+    fig:boxFig(l,w,h,'',{noLabels:true}),show:`${l} × ${w} × ${h} = ${V} cubes`,
+    why:g=>noteFrom([{v:l*w,t:`That is one layer. There are ${h} layers.`},{v:l+w+h,t:'You added the edges. Count one layer, then multiply by the layers.'},{v:l*h,t:'That is just the front. The box goes back too.'},{v:w*h,t:'That is just one side. Count the cubes in one layer first.'}],g)})}
+function volBox(){const l=ri(2,8),w=ri(2,6),h=ri(2,7),[u,cu]=pick(UNITS),V=l*w*h;
+  return mk({kind:'num',std:'NC.5.MD.5',key:`vb${l}${w}${h}`,ans:V,unit:cu,
+    html:`<span class="ptxt">Find the volume of the box.</span>`,text:`volume ${l}x${w}x${h}`,
+    fig:boxFig(l,w,h,u),show:`${l} × ${w} × ${h} = ${V} ${cu}`,
+    why:g=>noteFrom([{v:l+w+h,t:'You added the edges. Volume = length × width × height.'},{v:l*w,t:'That is the area of the base. Multiply by the height too.'},{v:l*h,t:'You used only two edges. Multiply all three.'},{v:w*h,t:'You used only two edges. Multiply all three.'},{v:2*(l*w+l*h+w*h),t:'That counts the outside faces. Volume counts the cubes inside.'}],g)})}
+function volBase(){const l=ri(2,9),w=ri(2,6),h=ri(2,9),B=l*w,[u,cu]=pick(UNITS),V=B*h;
+  return mk({kind:'num',std:'NC.5.MD.5',key:`vB${B}${h}`,ans:V,unit:cu,
+    html:`<span class="ptxt">The base of this box has an area of <b>${B} square ${u}</b>. The height is <b>${h} ${u}</b>. What is the volume?</span>`,text:`base ${B} height ${h}`,
+    fig:boxFig(l,w,h,u,{lT:' ',wT:' ',label:`A box with a base area of ${B} and a height of ${h}`}),show:`${B} × ${h} = ${V} ${cu}`,
+    why:g=>noteFrom([{v:B+h,t:'You added. Volume = base area × height.'},{v:B,t:'That is just the base (one layer). Multiply by the height.'}],g)})}
+function volMissing(){const l=ri(2,9),w=ri(2,6),h=ri(2,9),[u,cu]=pick(UNITS),V=l*w*h;
+  return mk({kind:'num',std:'NC.5.MD.5',key:`vm${l}${w}${h}`,ans:h,unit:u,
+    html:`<span class="ptxt">This box has a volume of <b>${V} ${cu}</b>. What is the height?</span>`,text:`missing h V=${V} l=${l} w=${w}`,
+    fig:boxFig(l,w,h,u,{hT:'?'}),show:`${l} × ${w} = ${l*w}, and ${V} ÷ ${l*w} = ${h} ${u}`,
+    why:g=>noteFrom([{v:l*w,t:`${l} × ${w} = ${l*w} is the base. Now ask: ${l*w} × ? = ${V}.`},{v:V/l,t:`You divided by ${l} only. Divide by the whole base, ${l} × ${w}.`},{v:V/w,t:`You divided by ${w} only. Divide by the whole base, ${l} × ${w}.`},{v:V-l-w,t:'You subtracted. Use division: volume ÷ base area.'},{v:V*l*w,t:'You multiplied. To find a missing edge, divide.'}],g)})}
+function volComposite(){
+  for(let k=0;k<100;k++){let w=ri(2,3),a1=ri(2,4),a2=ri(1,3),h1=ri(1,5),h2=ri(1,5);if(h1===h2||a1+a2>7)continue;
+    /* the taller box goes in back (left) so the shorter one is not hidden */
+    if(h1<h2){[a1,a2]=[a2,a1];[h1,h2]=[h2,h1]}
+    const cubes=[];for(let x=0;x<a1+a2;x++)for(let y=0;y<w;y++){const h=x<a1?h1:h2;for(let z=0;z<h;z++)cubes.push({x,y,z,c:x<a1?1:2})}
+    const V1=a1*w*h1,V2=a2*w*h2,V=V1+V2;
+    const fig=voxels(cubes,[],`A figure made of a gold box ${a1} by ${w} by ${h1} and a blue box ${a2} by ${w} by ${h2}`);
+    return mk({kind:'num',std:'NC.5.MD.5',key:`vC${a1}${a2}${w}${h1}${h2}`,ans:V,unit:'cubic units',
+      html:`<span class="ptxt">This figure is two boxes put together.<br><b class="gold">Gold box:</b> ${a1} × ${w} × ${h1}. <b class="blue">Blue box:</b> ${a2} × ${w} × ${h2}.<br>What is the total volume?</span>`,
+      text:`composite ${a1}x${w}x${h1} + ${a2}x${w}x${h2}`,fig,show:`${V1} + ${V2} = ${V} cubic units`,
+      why:g=>noteFrom([{v:V1,t:'That is only the gold box. Find the blue box too, then add.'},{v:V2,t:'That is only the blue box. Find the gold box too, then add.'},{v:V1*V2,t:'Find each box, then ADD the two volumes.'},{v:(a1+a2)*w*Math.max(h1,h2),t:'That fills in the empty corner too. Find each box, then add.'}],g)})}
+}
+
+/* ----- fraction x whole number (denominators 2,3,4,5,6,8,10,12) ----- */
+const DW=[2,3,4,5,6,8,10,12];
+function wholeTimesFrac(){for(let k=0;k<50;k++){const n=ri(2,6),b=pick(DW),a=rnum(b);if(n*b>60)continue;
+  const ans=[n*a,b];
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`wf${n}${a}${b}`,ans,
+    html:`<span>${n}</span><span class="op">×</span>${frH(a,b)}<span class="eq">=</span>`,text:`${n} x ${a}/${b}`,
+    fig:groupsFig(n,a,b),show:`${n} × ${frH(a,b)} = ${frH(n*a,b)}${valH(...ans)!==frH(n*a,b)?' = '+valH(...ans):''}`,
+    why:g=>noteFrom([{v:[a,b],t:`That equals ${a}/${b}. You multiplied the top AND bottom by ${n}. Multiply only the top: ${n} × ${a}.`},{v:[a,n*b],t:`You multiplied the bottom. The parts stay ${b}ths. Multiply the top: ${n} × ${a}.`},{v:[n+a,b],t:`You added ${n}. Multiply: ${n} groups of ${a}/${b}.`}],g)})}}
+function fracOfWhole(){const b=pick([2,3,4,5,6,8,10,12]),a=rnum(b);let N=b*ri(1,Math.max(1,Math.floor(36/b)));if(Math.random()<.3)N=ri(2,9);
+  const ans=[a*N,b];
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`fw${a}${b}${N}`,ans,
+    html:`${frH(a,b)}<span class="op">×</span><span>${N}</span><span class="eq">=</span>`,text:`${a}/${b} x ${N}`,
+    fig:tapeFig(a,b,N),show:`${frH(a,b)} × ${N} = ${frH(a*N,b)}${valH(...ans)!==frH(a*N,b)?' = '+valH(...ans):''}`,
+    why:g=>noteFrom([{v:[N,b],t:`That is 1/${b} of ${N}. You need ${a} of those parts.`},{v:[a,b*N],t:`You multiplied the bottom. Multiply the top: ${a} × ${N}.`},{v:[a*N,1],t:`Don’t forget to divide by ${b}. ${a} × ${N} = ${a*N}, then ÷ ${b}.`},{v:[N*b,a],t:'Upside down! Multiply the top, keep the bottom.'}],g)})}
+const WSTORY=[
+  (n,a,b,nm)=>[`${nm} uses ${frH(a,b)} cup of milk for each batch of pancakes. How many cups for <b>${n}</b> batches?`,'cups'],
+  (n,a,b,nm)=>[`Each lap around the track is ${frH(a,b)} mile. ${nm} runs <b>${n}</b> laps. How many miles is that?`,'miles'],
+  (n,a,b,nm)=>[`A water bottle holds ${frH(a,b)} liter. How many liters are in <b>${n}</b> bottles?`,'liters'],
+  (n,a,b,nm)=>[`${nm} reads for ${frH(a,b)} hour each day. How many hours in <b>${n}</b> days?`,'hours']];
+const OSTORY=[
+  (a,b,N,nm)=>[`There are <b>${N}</b> students in the club. ${frH(a,b)} of them ride the bus. How many students ride the bus?`,'students',1],
+  (a,b,N,nm)=>[`A trail is <b>${N}</b> miles long. ${nm} hiked ${frH(a,b)} of the trail. How many miles did ${nm} hike?`,'miles',0],
+  (a,b,N,nm)=>[`${nm} has <b>${N}</b> feet of ribbon and uses ${frH(a,b)} of it. How many feet are used?`,'feet',0],
+  (a,b,N,nm)=>[`A bag has <b>${N}</b> apples. ${frH(a,b)} of them are green. How many apples are green?`,'apples',1]];
+function wordWhole(){const nm=pick(NAMES);
+  if(Math.random()<.5){const n=ri(2,6),b=pick([2,3,4,5,6,8,10]),a=rnum(b);const [q,u]=pick(WSTORY)(n,a,b,nm);const ans=[n*a,b];
+    return mk({kind:'frac',std:'NC.5.NF.4',key:`ww${n}${a}${b}${u}`,ans,unit:u,html:`<span class="ptxt">${q}</span>`,text:`story ${n} x ${a}/${b}`,
+      fig:groupsFig(n,a,b),show:`${n} × ${frH(a,b)} = ${valH(...ans)} ${u}`,
+      why:g=>noteFrom([{v:[a,b],t:`That is just one. Multiply by ${n}: ${n} × ${a}/${b}.`},{v:[a,n*b],t:`Multiply the top: ${n} × ${a}. The bottom stays ${b}.`},{v:[n+a,b],t:'You added. This is groups of a fraction, so multiply.'}],g)})}
+  const S=pick(OSTORY),b=pick([2,3,4,5,6,8]),a=rnum(b);let N;
+  const probe=S(1,2,2,nm);N=probe[2]?b*ri(2,Math.max(2,Math.floor(40/b))):(Math.random()<.5?b*ri(1,4):ri(2,9));
+  const [q,u]=S(a,b,N,nm);const ans=[a*N,b];
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`wo${a}${b}${N}${u}`,ans,unit:u,html:`<span class="ptxt">${q}</span>`,text:`story ${a}/${b} of ${N}`,
+    fig:tapeFig(a,b,N,u),show:`${frH(a,b)} × ${N} = ${valH(...ans)} ${u}`,
+    why:g=>noteFrom([{v:[N,b],t:`That is 1/${b} of ${N}. You need ${a} of those parts.`},{v:[a*N,1],t:`Divide by ${b} too: ${a} × ${N} ÷ ${b}.`},{v:[N-a,1],t:'You subtracted. “Of” means multiply.'}],g)})}
+
+/* ----- fraction x fraction + area (denominators 2,3,4) ----- */
+const D3=[2,3,4];
+function fracFracCore(){const b=pick(D3),d=pick(D3);return [rnum(b),b,rnum(d),d]}
+function ffWhy(a,b,c,d){return g=>noteFrom([
+  {v:[a+c,b+d],t:'You added the tops and bottoms. Multiply: top × top and bottom × bottom.'},
+  {v:[a*d,b*c],t:'That is cross multiplying. Multiply straight across: top × top, bottom × bottom.'},
+  {v:[a*c,b],t:`Multiply the bottoms too: ${b} × ${d}. The whole is cut into ${b*d} parts.`},
+  {v:[a*c,d],t:`Multiply the bottoms too: ${b} × ${d}. The whole is cut into ${b*d} parts.`},
+  {v:[a*c,b+d],t:`Multiply the bottoms, don’t add them: ${b} × ${d} = ${b*d}.`}],g)}
+function fracFrac(){const [a,b,c,d]=fracFracCore(),ans=[a*c,b*d];
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`ff${a}${b}${c}${d}`,ans,
+    html:`${frH(a,b)}<span class="op">×</span>${frH(c,d)}<span class="eq">=</span>`,text:`${a}/${b} x ${c}/${d}`,
+    fig:areaFig([a,b],[c,d],{label:`Area model: ${a}/${b} by ${c}/${d} of one whole square`}),show:`${frH(a,b)} × ${frH(c,d)} = ${frH(a*c,b*d)}${valH(...ans)!==frH(a*c,b*d)?' = '+valH(...ans):''}`,
+    why:ffWhy(a,b,c,d)})}
+const AREA_U=[['ft','square feet'],['m','square meters'],['yd','square yards']];
+function areaFrac(){const [a,b,c,d]=fracFracCore(),[u,su]=pick(AREA_U),nm=pick(NAMES),ans=[a*c,b*d];
+  const what=pick(['A rug','A garden bed','A poster','A tile','A sticker sheet']);
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`af${a}${b}${c}${d}`,ans,unit:su,
+    html:`<span class="ptxt">${what} is ${frH(a,b)} ${u} long and ${frH(c,d)} ${u} wide. What is its area?</span>`,text:`area ${a}/${b} by ${c}/${d}`,
+    fig:areaFig([a,b],[c,d],{u}),show:`${frH(a,b)} × ${frH(c,d)} = ${valH(...ans)} ${su}`,
+    why:g=>{const p=noteFrom([{v:[2*(a*d+c*b),b*d],t:'That is the perimeter (all the way around). Area means multiply length × width.'}],g);return p||ffWhy(a,b,c,d)(g)}})}
+function areaWholeFrac(){const W=ri(2,4),d=pick(D3),c=rnum(d),[u,su]=pick(AREA_U),ans=[W*c,d];
+  const what=pick(['A garden','A hallway rug','A mural','A banner']);
+  return mk({kind:'frac',std:'NC.5.NF.4',key:`aw${W}${c}${d}`,ans,unit:su,
+    html:`<span class="ptxt">${what} is ${W} ${u} long and ${frH(c,d)} ${u} wide. What is its area?</span>`,text:`area ${W} by ${c}/${d}`,
+    fig:areaFig([W,1],[c,d],{u}),show:`${W} × ${frH(c,d)} = ${frH(W*c,d)}${valH(...ans)!==frH(W*c,d)?' = '+valH(...ans):''} ${su}`,
+    why:g=>noteFrom([{v:[c,W*d],t:`You multiplied the bottom. Count the shaded parts: ${W} × ${c} parts of size 1/${d}.`},{v:[W+c,d],t:'You added. Area = length × width.'},{v:[2*W*d+2*c,d],t:'That is the perimeter. Area means multiply.'}],g)})}
+
+/* ----- mixed numbers (denominators 2,3,4) ----- */
+function mixedTimes(){for(let k=0;k<60;k++){const w=ri(1,2),b=pick(D3),a=rnum(b),P=[w*b+a,b];
+    let Q;const kind=Math.random()<.5?'frac':'whole';
+    if(kind==='whole')Q=[ri(2,4),1];else{const d=pick(D3);Q=[rnum(d),d]}
+    const ans=[P[0]*Q[0],P[1]*Q[1]];if(ans[0]/ans[1]>9)continue;
+    const QH=Q[1]===1?String(Q[0]):frH(Q[0],Q[1]),PH=`<span class="mx">${w}${frH(a,b)}</span>`;
+    const [q0,q1]=Q,QT=valT(q0,q1);
+    return mk({kind:'frac',std:'NC.5.NF.4',key:`mx${w}${a}${b}${q0}${q1}`,ans,
+      html:`${PH}<span class="op">×</span><span>${QH}</span><span class="eq">=</span>`,text:`${w} ${a}/${b} x ${QT}`,
+      fig:areaFig(P,Q,{pT:`${w} ${a}/${b}`,label:`Area model: ${w} and ${a}/${b} by ${QT}`}),
+      show:`${frH(P[0],P[1])} × ${QH} = ${frH(ans[0],ans[1])}${valH(...ans)!==frH(ans[0],ans[1])?' = '+valH(...ans):''}`,
+      why:g=>noteFrom([
+        {v:[w*b*q1+a*q0,b*q1],t:`You multiplied only the ${a}/${b}. Multiply BOTH parts of ${w} ${a}/${b} by ${QT}, then add. Or change ${w} ${a}/${b} to ${P[0]}/${b} first.`},
+        {v:[w*q0*b+a*q1,b*q1],t:`You multiplied only the ${w}. Multiply BOTH parts of ${w} ${a}/${b} by ${QT}, then add. Or change ${w} ${a}/${b} to ${P[0]}/${b} first.`},
+        {v:[a*q0,b*q1],t:`You left out the whole part, ${w}. Change ${w} ${a}/${b} to ${P[0]}/${b} first.`},
+        {v:[w*b+a+(Q[1]===1?Q[0]*b:0),b],t:'You added. Use multiplication: look at the area model.'}],g)})}}
+
+/* ----- scaling (NC.5.NF.4: compare the product to the number without multiplying) ----- */
+function scaling(){const N=pick([6,8,9,10,12,15,16,20,24]);const t=pick(['less','less','more','more','equal']);
+  let fn,fd;if(t==='equal'){fd=pick([2,3,4,5,6]);fn=fd}else if(t==='less'){fd=pick([2,3,4,5,6,8]);fn=ri(1,fd-1)}else{fd=pick([2,3,4,5]);fn=ri(fd+1,2*fd-1)}
+  const F=fn===fd?frH(fn,fd):valH(fn,fd);
+  const ch=[`greater than ${N}`,`less than ${N}`,`equal to ${N}`],right=t==='more'?0:t==='less'?1:2;
+  const note=t==='less'?`${valT(fn,fd)} is less than 1, so the product is less than ${N}.`:t==='more'?`${valT(fn,fd)} is more than 1, so the product is greater than ${N}.`:`${fn}/${fd} = 1, and 1 × ${N} = ${N}.`;
+  return mk({kind:'choice',std:'NC.5.NF.4',key:`sc${fn}${fd}${N}`,ans:right,choices:ch,
+    html:`<span class="ptxt">Don’t multiply. Is ${F} × ${N}<br>greater than, less than, or equal to ${N}?</span>`,text:`scale ${fn}/${fd} x ${N}`,
+    fig:lineFig(fn,fd),show:note,why:()=>`Compare ${valT(fn,fd)} to 1 on the number line. `+note})}
+
+/* ---------------- rooms ---------------- */
+const ROOM_TOPICS=['Volume: count the cubes','Volume: base × height, missing edge, two boxes','Fraction × whole number','Fraction × fraction and area','Mixed numbers, scaling and review'];
+const ROOM_STD=['NC.5.MD.4, NC.5.MD.5','NC.5.MD.5','NC.5.NF.4','NC.5.NF.4','NC.5.NF.4, NC.5.MD.5'];
+const BANK=[
+  [[volCount,5],[volBox,5]],
+  [[volBox,2],[volBase,3],[volMissing,3],[volComposite,4]],
+  [[wholeTimesFrac,4],[fracOfWhole,4],[wordWhole,4]],
+  [[fracFrac,5],[areaFrac,4],[areaWholeFrac,3]],
+  [[mixedTimes,4],[scaling,3],[wordWhole,2],[areaFrac,1],[volComposite,1],[volMissing,1]]];
+function gen(room){const B=BANK[room-1],tot=B.reduce((s,x)=>s+x[1],0);let r=Math.random()*tot;for(const [f,w] of B){r-=w;if(r<0)return f()}return B[0][0]()}
+return {gen,ROOM_TOPICS,ROOM_STD,BANK,valH,valT,frH,gcd,red,eqv,all:{volCount,volBox,volBase,volMissing,volComposite,wholeTimesFrac,fracOfWhole,wordWhole,fracFrac,areaFrac,areaWholeFrac,mixedTimes,scaling}};
+})();
+/*Q5-END*/
+
+</script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const M='−';
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const rf=(a,b)=>a+Math.random()*(b-a);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b]}return a};
+
+/* ================= saved progress (this device) ================= */
+let save={};
+try{save=JSON.parse(localStorage.getItem('squeaky-cheeks-5')||'{}')||{}}catch(e){save={}}
+save.beans=save.beans||0;save.owned=save.owned||{squeak:1};save.cleared=save.cleared||{};save.eq=save.eq||'squeak';
+function persist(){try{localStorage.setItem('squeaky-cheeks-5',JSON.stringify(save))}catch(e){}}
+const asked=+(/[?&]level=(\d)/.exec(location.search)||[])[1];
+if(asked>=1&&asked<=5){save.open=Math.max(save.open||0,asked);persist()}
+const roomOpen=n=>true;   /* 5th grade copy: teachers pick the topic, so every room is open */
+
+/* ================= audio ================= */
+let AC=null,master=null,muted=!!save.muted,noiseBuf=null;
+function ac(){
+  if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=.7;const comp=AC.createDynamicsCompressor();comp.threshold.value=-14;comp.ratio.value=6;master.connect(comp).connect(AC.destination);
+    const len=AC.sampleRate*2;noiseBuf=AC.createBuffer(1,len,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1}catch(e){AC=null}}
+  if(AC&&AC.state==='suspended')AC.resume();return AC;
+}
+let forceLive=false;
+const live=()=>forceLive||(AC&&!muted&&AC.state==='running');
+function env(g,t,a,peak,dur){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+dur)}
+function osc(type,f,t,dur,peak,opts){
+  opts=opts||{};const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+  if(opts.to)o.frequency.exponentialRampToValueAtTime(opts.to,t+dur);
+  let node=o;
+  if(opts.lp){const f2=AC.createBiquadFilter();f2.type='lowpass';f2.frequency.value=opts.lp;f2.Q.value=opts.q||1;o.connect(f2);node=f2}
+  if(opts.vib){const l=AC.createOscillator(),lg=AC.createGain();l.frequency.value=opts.vib;lg.gain.value=opts.vd||10;l.connect(lg).connect(o.frequency);l.start(t);l.stop(t+dur+.05)}
+  env(g,t,opts.a||.01,peak,dur);
+  if(opts.sput){const l=AC.createOscillator(),lg=AC.createGain(),mg=AC.createGain();l.type='square';l.frequency.value=opts.sput;lg.gain.value=.5;mg.gain.value=.5;l.connect(lg).connect(mg.gain);node.connect(mg);mg.connect(g);l.start(t);l.stop(t+dur+.05)}
+  else node.connect(g);
+  g.connect(master);o.start(t);o.stop(t+dur+.05);
+}
+function noise(t,dur,peak,type,freq,q,sweepTo){
+  const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type=type||'lowpass';f.frequency.setValueAtTime(freq||800,t);if(sweepTo)f.frequency.exponentialRampToValueAtTime(sweepTo,t+dur);f.Q.value=q||1;
+  const g=AC.createGain();env(g,t,.01,peak,dur);s.connect(f).connect(g).connect(master);s.start(t,Math.random());s.stop(t+dur+.05);
+}
+/* a toot: buzzing source, flapping gate, wet sputters, optional squeak or hiss */
+function fart(t,o){
+  const steps=Math.max(4,Math.round(o.dur/.035));
+  const s1=AC.createOscillator(),s2=AC.createOscillator();s1.type='sawtooth';s2.type='square';
+  for(let k=0;k<=steps;k++){const f=o.f0*Math.pow(o.f1/o.f0,k/steps)*rf(.9,1.1);s1.frequency.setValueAtTime(f,t+k*o.dur/steps);s2.frequency.setValueAtTime(f*.5,t+k*o.dur/steps)}
+  const g2=AC.createGain();g2.gain.value=.45;
+  const nz=AC.createBufferSource();nz.buffer=noiseBuf;const nb=AC.createBiquadFilter();nb.type='bandpass';nb.frequency.value=o.f0*3;nb.Q.value=1.2;const ng=AC.createGain();ng.gain.value=o.wet*.9;
+  const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=o.lp;lp.Q.value=5;
+  const gate=AC.createGain(),envg=AC.createGain();
+  let tt=t;gate.gain.setValueAtTime(0,t);
+  while(tt<t+o.dur){const per=1/(o.flutter*rf(.6,1.4));gate.gain.setValueAtTime(rf(.55,1),tt);gate.gain.linearRampToValueAtTime(rf(.02,.25),tt+per*rf(.5,.9));tt+=per}
+  gate.gain.setValueAtTime(0,t+o.dur+.01);
+  envg.gain.setValueAtTime(0,t);envg.gain.linearRampToValueAtTime(o.amp,t+.02);envg.gain.linearRampToValueAtTime(o.amp*rf(.8,1.15),t+o.dur*.6);envg.gain.linearRampToValueAtTime(0,t+o.dur+.01);
+  s1.connect(lp);s2.connect(g2).connect(lp);nz.connect(nb).connect(ng).connect(lp);lp.connect(gate).connect(envg).connect(master);
+  s1.start(t);s2.start(t);nz.start(t,Math.random());s1.stop(t+o.dur+.05);s2.stop(t+o.dur+.05);nz.stop(t+o.dur+.05);
+  const pops=Math.round(o.wet*7);
+  for(let i=0;i<pops;i++){const pt=t+o.dur*rf(.5,1.08);noise(pt,rf(.03,.07),o.amp*rf(.5,.9),'bandpass',rf(280,900),3);osc('sine',rf(70,150),pt,.05,o.amp*.4,{to:50})}
+  if(o.squeak)osc('triangle',rf(600,800),t+o.dur,.28,o.amp*.45,{to:rf(1000,1350),vib:35,vd:70});
+  if(o.hiss)noise(t+.1,o.dur*1.3,o.amp*.5,'highpass',3200,1,1600);
+}
+/* a voice: buzzy throat sound shaped by three vowel filters (formants) */
+function voice(t,o){
+  const src=AC.createOscillator();src.type='sawtooth';
+  src.frequency.setValueAtTime(o.f0[0][1],t);for(const [dt,f] of o.f0.slice(1))src.frequency.linearRampToValueAtTime(f,t+dt);
+  if(o.vib){const l=AC.createOscillator(),lg=AC.createGain();l.frequency.value=o.vib;lg.gain.value=o.vd||8;l.connect(lg).connect(src.frequency);l.start(t);l.stop(t+o.dur+.05)}
+  const mix=AC.createGain();src.connect(mix);
+  if(o.breath){const nz=AC.createBufferSource();nz.buffer=noiseBuf;const ng=AC.createGain();ng.gain.value=o.breath;nz.connect(ng).connect(mix);nz.start(t,Math.random());nz.stop(t+o.dur+.05)}
+  const out=AC.createGain();out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(o.amp*5,t+.03);out.gain.setValueAtTime(o.amp*5,t+Math.max(.04,o.dur-.08));out.gain.linearRampToValueAtTime(0,t+o.dur);
+  [[10,1],[12,.6],[14,.35]].forEach(([q,gv],i)=>{const bp=AC.createBiquadFilter();bp.type='bandpass';bp.Q.value=q;bp.frequency.setValueAtTime(o.fm[0][1][i],t);for(const [dt,F] of o.fm.slice(1))bp.frequency.linearRampToValueAtTime(F[i],t+dt);const g=AC.createGain();g.gain.value=gv;mix.connect(bp).connect(g).connect(out)});
+  out.connect(master);src.start(t);src.stop(t+o.dur+.05);
+}
+let voiceTimes=[];
+function voiceOk(){const now=performance.now();voiceTimes=voiceTimes.filter(x=>now-x<1400);if(voiceTimes.length>=3)return false;voiceTimes.push(now);return true}
+const VOX={
+  gross(p){const t=AC.currentTime+.02,f=p*.6;noise(t,.05,.25,'bandpass',1700,2);
+    voice(t+.04,{dur:.42,amp:.35,f0:[[0,f*1.25],[.42,f*.8]],fm:[[0,[450,1300,1650]],[.12,[520,880,2500]],[.42,[500,850,2500]]],breath:.15});noise(t+.45,.22,.14,'highpass',4500,1)},
+  eww(p){const t=AC.currentTime+.02,f=p*.62;voice(t,{dur:.62,amp:.32,f0:[[0,f*1.3],[.3,f*1.4],[.62,f]],fm:[[0,[300,2300,3000]],[.25,[320,1400,2500]],[.62,[320,800,2400]]],vib:6,vd:8})},
+  ugh(p){const t=AC.currentTime+.02,f=p*.55;voice(t,{dur:.3,amp:.28,f0:[[0,f*.95],[.3,f*.75]],fm:[[0,[650,1200,2600]]],breath:.35});noise(t+.28,.12,.1,'lowpass',900)},
+  retch(p){const t=AC.currentTime+.02,f=p*.5;
+    for(let i=0;i<2;i++){const tt=t+i*.42;voice(tt,{dur:.32,amp:.32,f0:[[0,f*.8],[.32,f*1.5]],fm:[[0,[600,1000,2500]],[.32,[700,1100,2400]]],breath:.7});fart(tt,{dur:.3,f0:f*.8,f1:f,flutter:30,wet:.5,amp:.14,lp:800})}
+    voice(t+.9,{dur:.6,amp:.38,f0:[[0,f*1.45],[.6,f*.9]],fm:[[0,[400,1700,2500]],[.08,[600,1800,2600]],[.6,[580,1750,2600]]],vib:12,vd:15,breath:.3})},
+  scream(p){const t=AC.currentTime+.02,f=p*2.2;voice(t,{dur:1,amp:.26,f0:[[0,f*.9],[.15,f*1.15],[.8,f*1.05],[1,f*.8]],fm:[[0,[850,1250,2900]]],vib:6.5,vd:f*.04,breath:.15})},
+  cough(p){const t=AC.currentTime+.02;for(let i=0;i<2;i++){const tt=t+i*.26;noise(tt,.13,.42,'bandpass',1100,.8);voice(tt,{dur:.11,amp:.3,f0:[[0,p*.55]],fm:[[0,[700,1200,2600]]],breath:.9})}},
+  cry(p){const t=AC.currentTime+.02,f=p;for(let i=0;i<3;i++){const tt=t+i*.78;noise(tt,.12,.07,'highpass',3000);
+    voice(tt+.13,{dur:.55,amp:.2,f0:[[0,f*.85],[.12,f*1.1],[.45,f*1.05],[.55,f*.8]],fm:[[0,[350,800,2600]],[.12,[1000,1600,3200]],[.55,[950,1500,3200]]],vib:8,vd:18})}},
+  sniff(){const t=AC.currentTime+.02;noise(t,.07,.12,'highpass',2500);noise(t+.15,.08,.14,'highpass',2500)},
+  /* Nov 11, 2026 (Mr. Allen: more silly noises): a quick "heh-heh-heh-heh" belly laugh that climbs, a pig snort, and an out-of-breath wheeze */
+  laugh(p){const t=AC.currentTime+.02,f=p*1.15,n=ri(5,8);
+    for(let i=0;i<n;i++){const tt=t+i*.115,up=1+i*.035,hi=i%2?1.12:1;
+      voice(tt,{dur:.075,amp:.26,f0:[[0,f*up*hi*1.08],[.075,f*up*hi*.9]],fm:[[0,[620,1750,2600]],[.075,[520,1900,2700]]],breath:.35})}
+    voice(t+n*.115+.03,{dur:.3,amp:.22,f0:[[0,f*1.5],[.3,f*.85]],fm:[[0,[750,1200,2600]],[.3,[450,1000,2500]]],vib:9,vd:14,breath:.3})},
+  snort(p){const t=AC.currentTime+.02;for(let i=0;i<2;i++){const tt=t+i*.17;noise(tt,.11,.3,'bandpass',420,6,250);fart(tt,{dur:.1,f0:95,f1:70,flutter:60,wet:.2,amp:.16,lp:600})}
+    voice(t+.36,{dur:.22,amp:.24,f0:[[0,p*1.3],[.22,p*1.7]],fm:[[0,[600,1700,2600]]],breath:.4})},
+  wheeze(p){const t=AC.currentTime+.02;noise(t,.5,.16,'bandpass',1500,3,2600);voice(t+.5,{dur:.14,amp:.2,f0:[[0,p*1.6],[.14,p*1.2]],fm:[[0,[600,1700,2600]]],breath:.6});noise(t+.7,.4,.14,'bandpass',1400,3,2400)}
+};
+function vox(kind,p){if(!live()||!voiceOk())return;VOX[kind](p)}
+const SND={
+  toot(k){if(!live())return;const t=AC.currentTime+.02;
+    const v=()=>rf(.9,1.1),seq=[];
+    if(k==='squeak'){seq.push({dur:.45*v(),f0:330*v(),f1:480*v(),flutter:55,wet:.2,amp:.34,lp:2200,squeak:1})}
+    else if(k==='trombone'){seq.push({dur:.22*v(),f0:150*v(),f1:130,flutter:32,wet:.25,amp:.42,lp:1300},{gap:.06},{dur:.95*v(),f0:140*v(),f1:82,flutter:26,wet:.6,amp:.52,lp:1100})}
+    else if(k==='linger'){seq.push({dur:1.7*v(),f0:92*v(),f1:68,flutter:10,wet:.15,amp:.26,lp:520,hiss:1})}
+    else if(k==='thunder'){seq.push({dur:.32,f0:78*v(),f1:68,flutter:24,wet:.5,amp:.5,lp:720},{gap:.1},{dur:.28,f0:74*v(),f1:64,flutter:22,wet:.5,amp:.5,lp:700},{gap:.08},{dur:1.7*v(),f0:70*v(),f1:42,flutter:19,wet:1,amp:.62,lp:650});noise(t,2.4,.12,'lowpass',260,1,80)}
+    else{seq.push({dur:.45,f0:82*v(),f1:72,flutter:26,wet:.4,amp:.5,lp:760},{gap:.12},{dur:.4,f0:76*v(),f1:66,flutter:23,wet:.5,amp:.55,lp:720},{gap:.1},{dur:2.5*v(),f0:64*v(),f1:36,flutter:17,wet:1.4,amp:.66,lp:620},{gap:.2},{dur:.35,f0:250,f1:430,flutter:52,wet:.4,amp:.36,lp:2100,squeak:1});noise(t,3.6,.14,'lowpass',240,1,70)}
+    let tt=t;for(const sg of seq){if(sg.gap){tt+=sg.gap*v();continue}fart(tt,sg);tt+=sg.dur}
+  },
+  pfft(){if(!live())return;fart(AC.currentTime+.01,{dur:.2,f0:220,f1:150,flutter:70,wet:.6,amp:.24,lp:1700})},
+  stutter(delay){if(!live())return;const t=AC.currentTime+(delay||0),n=ri(4,7);for(let i=0;i<n;i++)fart(t+i*.11,{dur:.07,f0:rf(170,260),f1:rf(130,190),flutter:64,wet:.5,amp:.2,lp:1500,squeak:i===n-1&&Math.random()<.6?1:0})},
+  babble(p){if(!live())return;const t=AC.currentTime;const n=ri(2,5);for(let i=0;i<n;i++)osc('square',p*rf(.85,1.25),t+i*.075,.06,.022,{lp:1400})},
+  eww(p){if(!live())return;const t=AC.currentTime;osc('square',p*1.6,t,.45,.06,{to:p*.8,lp:1300,vib:9,vd:p*.06});osc('square',p*1.62,t+.02,.42,.03,{to:p*.82,lp:900})},
+  giggle(p){if(!live())return;const t=AC.currentTime;for(let i=0;i<4;i++)osc('square',p*(1.2+i*.15),t+i*.09,.07,.03,{lp:1800})},
+  slam(){if(!live())return;const t=AC.currentTime;noise(t,.3,.5,'lowpass',380,1,90);osc('sine',90,t,.25,.4,{to:40});noise(t+.02,.12,.12,'bandpass',2000,3)},
+  creak(){if(!live())return;const t=AC.currentTime;osc('sawtooth',170,t,.5,.05,{to:240,lp:900,q:8,sput:35})},
+  hi(p){if(!live())return;const t=AC.currentTime;osc('square',p,t,.08,.03,{lp:1500});osc('square',p*1.33,t+.09,.12,.03,{lp:1500})},
+  bonk(){if(!live())return;const t=AC.currentTime;osc('sine',700,t,.18,.16,{to:180});noise(t,.05,.18,'bandpass',2500,2)},
+  boing(){if(!live())return;const t=AC.currentTime+.05;osc('triangle',180,t,.35,.07,{to:520,vib:18,vd:40})},
+  tinytoot(){if(!live())return;fart(AC.currentTime+.01,{dur:.16*rf(.8,1.2),f0:rf(260,340),f1:rf(380,480),flutter:60,wet:.3,amp:.2,lp:2200,squeak:Math.random()<.5?1:0})},
+  burp(p){if(!live()||!voiceOk())return;const t=AC.currentTime+.02,f=(p||250)*.32;voice(t,{dur:.55,amp:.34,f0:[[0,f*1.2],[.2,f],[.55,f*.8]],fm:[[0,[520,900,2400]],[.55,[650,1050,2400]]],vib:28,vd:f*.25,breath:.35});fart(t,{dur:.5,f0:f*1.1,f1:f*.8,flutter:38,wet:.2,amp:.12,lp:900})},
+  achoo(p){if(!live()||!voiceOk())return;const t=AC.currentTime+.02,f=(p||250)*.7;voice(t,{dur:.35,amp:.25,f0:[[0,f],[.35,f*1.35]],fm:[[0,[700,1200,2600]]],breath:.4});noise(t+.42,.22,.4,'highpass',2600,1,1500);voice(t+.42,{dur:.2,amp:.22,f0:[[0,f*1.4],[.2,f]],fm:[[0,[350,900,2400]]],breath:.8})},
+  fanfare(lv){if(!live())return;const t=AC.currentTime+.05,notes=lv>=3?[262,330,392,523,392,523]:lv===2?[262,330,392,523]:[330,392,523];   // a toot-trumpet "ta-da"
+    notes.forEach((n,i)=>fart(t+i*.16,{dur:i===notes.length-1?.5:.14,f0:n*.5,f1:n*.52,flutter:40,wet:.2,amp:.3,lp:2400,squeak:i===notes.length-1?1:0}));
+    notes.forEach((n,i)=>osc('square',n*2,t+i*.16,.12,.03,{lp:3000}))},
+  ding(){if(!live())return;const t=AC.currentTime;osc('triangle',880,t,.12,.06);osc('triangle',1320,t+.06,.14,.05)},
+  charge(){if(!live())return;const t=AC.currentTime;osc('triangle',300,t,.4,.08,{to:900,vib:20,vd:30})},
+  bean(){if(!live())return;const t=AC.currentTime;[784,988,1319].forEach((f,i)=>osc('triangle',f,t+i*.06,.12,.05))},
+  win(){if(!live())return;const t=AC.currentTime;[392,523,659,784,1047].forEach((f,i)=>osc('square',f,t+i*.12,.2,.06,{lp:2500}));osc('sawtooth',90,t+.7,1.1,.2,{lp:500,sput:20,vib:5,vd:10})}
+};
+function renderSound(){$('#bSound').textContent=muted?'Sound off':'Sound on';$('#bSound').setAttribute('aria-pressed',String(!muted))}
+$('#bSound').addEventListener('click',()=>{muted=!muted;save.muted=muted;persist();renderSound();ac();SND.ding()});
+renderSound();
+
+/* ================= rooms ================= */
+const W=320,H=200,TOPWALL=30,S=4;
+const SKIN=['#f7d1b5','#e8b48f','#c98d62','#a46a43','#7a4a2c','#5a3520'];
+const HAIR=['#2b1b12','#5a3a1e','#c9882f','#e9d27a','#1d1d1d','#8b2f2f','#d9d9d9','#4a2a5e'];
+const ROOMS=[
+  {name:'Dentist’s Waiting Room',floor:['#d7dccb','#cdd3c0'],wall:'#8fc1c4',trim:'#5d8f93',doors:[60,250],goal:8,start:6,cap:10,every:8.5,tol:1,babies:.2,
+   shirts:['#e86a6a','#6aa7e8','#e8c56a','#8fd18f','#c99ae8','#f0f0f0'],
+   lines:['Indeed.','Quite the wait.','Splendid floss.','Mm, yes.','Charming.','Who is next?','How droll.','Hm-hm.'],
+   props:[{r:[14,36,10,60],c:'#7d6a9e'},{r:[296,36,10,60],c:'#7d6a9e'},{r:[130,96,60,16],c:'#a0784f'},{r:[136,99,14,9],c:'#e9e2d0'},{r:[166,100,16,8],c:'#f2c94c'},{r:[22,150,10,10],c:'#3f8f4a',plant:1},{r:[290,150,10,10],c:'#3f8f4a',plant:1}],
+   wallArt:[{r:[118,6,30,16],c:'#fff7d6'},{r:[160,8,44,12],c:'#ffffff',txt:'BRUSH!'}],
+   spots:[[60,70],[250,70],[100,140],[220,140],[160,170]]},
+  {name:'School Cafeteria',floor:['#e9e2c9','#ded6b8'],wall:'#e8b05a',trim:'#b37e2f',doors:[40,160,280],goal:10,start:8,cap:12,every:8,tol:1.4,
+   shirts:['#2f7de1','#e14b4b','#38b26b','#f2c230','#8a5cd6','#ff8ab5','#222'],
+   lines:['Exquisite tacos.','Quite so.','Do pass the salt.','Delightful.','Hm-hm.','Indeed.','Marvelous.','I concur.'],
+   props:[{r:[40,66,100,14],c:'#c9c3b0'},{r:[180,66,100,14],c:'#c9c3b0'},{r:[40,126,100,14],c:'#c9c3b0'},{r:[180,126,100,14],c:'#c9c3b0'},{r:[60,69,8,8],c:'#7fb3d5'},{r:[210,69,8,8],c:'#e07b5f'},{r:[90,129,8,8],c:'#9ccc65'}],
+   wallArt:[{r:[20,6,60,16],c:'#fff',txt:'LUNCH'},{r:[200,6,50,16],c:'#6fb1e6'}],
+   spots:[[90,100],[230,100],[90,160],[230,160],[160,50]]},
+  {name:'Birthday Party',floor:['#f5c9d6','#efbccb'],wall:'#8ed1e8',trim:'#4f9bb5',doors:[60,250],goal:12,start:9,cap:13,every:7,tol:1.8,babies:.22,
+   shirts:['#ff5c8a','#ffd23f','#3bceac','#6a4c93','#1982c4','#ff924c'],
+   lines:['Lovely cake.','Splendid!','Cheers!','How festive.','♪','Delightful.','Charming.','Bravo.'],
+   props:[{r:[136,90,48,24],c:'#ffffff'},{r:[150,94,20,14],c:'#c97a4a'},{r:[156,90,2,4],c:'#ffd23f'},{r:[162,90,2,4],c:'#ffd23f'},{r:[26,40,6,8],c:'#ff5c8a',balloon:1},{r:[34,44,6,8],c:'#ffd23f',balloon:1},{r:[284,40,6,8],c:'#3bceac',balloon:1},{r:[292,46,6,8],c:'#1982c4',balloon:1}],
+   wallArt:[{r:[110,6,100,14],c:'#ffd23f',txt:'HAPPY BDAY'}],
+   spots:[[160,130],[80,80],[240,80],[80,160],[240,160]]},
+  {name:'Elevator Lobby',floor:['#c9ccd4','#bfc2cb'],wall:'#6f7887',trim:'#444b57',doors:[110,210],elevator:1,goal:12,start:10,cap:14,every:6.5,tol:2.2,
+   shirts:['#2d3142','#4f5d75','#bfc0c0','#ef8354','#3a6ea5','#7d1538'],
+   lines:['…','Hm.','Ninth floor, please.','Certainly.','Quite.','Busy day.','Indeed.','After you.'],
+   props:[{r:[20,40,12,12],c:'#3f8f4a',plant:1},{r:[288,40,12,12],c:'#3f8f4a',plant:1},{r:[140,150,40,12],c:'#8b6b4a'}],
+   wallArt:[{r:[150,4,20,10],c:'#ffb000',txt:'▲▼'},{r:[30,8,40,12],c:'#d9dde3'}],
+   spots:[[110,60],[210,60],[70,120],[250,120],[160,120]]},
+  {name:'Fancy Wedding Reception',floor:['#efe6d8','#e6dccb'],wall:'#d8c3e6',trim:'#8c6fa3',doors:[50,160,270],goal:0,start:12,cap:16,every:6,tol:2.4,babies:.15,arrivals:4,
+   shirts:['#1f1f1f','#ffffff','#7a5c9e','#c94f6d','#2a6f97','#e3c16f'],
+   lines:['Lovely.','Cheers, darling.','A waltz?','♪','Oh my.','Exquisite.','Charmed.','Splendid.'],
+   props:[{r:[50,70,26,20],c:'#ffffff',round:1},{r:[244,70,26,20],c:'#ffffff',round:1},{r:[50,140,26,20],c:'#ffffff',round:1},{r:[244,140,26,20],c:'#ffffff',round:1},{r:[150,96,20,26],c:'#fff8ee'},{r:[154,90,12,8],c:'#fff8ee'},{r:[157,86,6,5],c:'#f4b6c2'}],
+   wallArt:[{r:[120,4,80,18],c:'#f4b6c2',txt:'JUST MARRIED'}],
+   spots:[[100,80],[220,80],[100,150],[220,150],[160,170]]}
+];
+/* ================= fart types ================= */
+const FARTS=[
+  {k:'squeak',name:'The Squeaker',d:'Tiny and polite. Small cloud.',cost:0,gas:1,r:24,pow:1.5,linger:0,shake:0,col:'155,225,93'},
+  {k:'trombone',name:'The Trombone',d:'Loud and brassy. Wider blast.',cost:8,gas:1,r:34,pow:2.2,linger:0,shake:1,col:'160,215,80'},
+  {k:'linger',name:'The Lingerer',d:'Quiet but it hangs around and keeps working.',cost:14,gas:1,r:30,pow:1.6,linger:7,shake:0,col:'190,210,90'},
+  {k:'thunder',name:'Thunder Rumble',d:'Shakes the room. Huge cloud.',cost:24,gas:2,r:56,pow:3.2,linger:0,shake:4,col:'130,200,70'},
+  {k:'foghorn',name:'The Foghorn',d:'Legendary. Clears half the room.',cost:40,gas:3,r:84,pow:4,linger:3,shake:7,col:'120,190,60'}
+];
+const FART=Object.fromEntries(FARTS.map(f=>[f.k,f]));
+
+/* ================= game state ================= */
+let room=1,G=null;
+const cv=$('#room'),cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;
+function newGame(n){
+  room=n;const T=ROOMS[n-1];
+  G={T,n,npcs:[],clouds:[],texts:[],gasPips:0,gas:0,out:0,arrived:0,spawnT:3,shake:0,doors:T.doors.map(x=>({x,open:0,hold:0})),
+     player:{x:160,y:170,tx:160,ty:170,face:1,walk:0,blush:0,puff:0,laugh:0,wiggle:0,hop:0},won:false,right:0,wrong:0,beansHere:0,toots:0,parts:[],flash:0,banner:null,combo:{n:0,t:0,best:0},cam:null,flies:[],wilt:0,peekT:rf(6,10),bonkCD:0,
+     q:{queue:[],seen:0,p:null,stage:'main',busy:false,lastKey:''}};
+  for(let i=0;i<T.start;i++)G.npcs.push(makeNpc(rf(30,290),rf(50,180),false));
+  $('#roomName').innerHTML=`Room ${n}: <b>${T.name}</b>`;
+  $('#lvlTxt').textContent=`Room ${n} · ${Q5.ROOM_TOPICS[n-1]}`;
+  updGoal();renderMeter();renderShop();nextQ();
+}
+function makeNpc(x,y,entering){
+  const T=G.T,baby=!!T.babies&&Math.random()<T.babies;
+  return {baby,x,y,tx:x,ty:y,sp:baby?rf(8,12):rf(14,22),skin:pick(SKIN),hair:pick(HAIR),hs:ri(0,4),shirt:pick(T.shirts),pants:pick(['#3b3b58','#2d4a6b','#5a4632','#222','#6b2d4a']),
+    onesie:pick(['#a8d8f0','#f7c6d9','#fff3a8','#c8f0c0']),face:1,walk:Math.random()*6,state:entering?'enter':'wander',wait:rf(0,3),stink:0,acc:baby?'':pick(['monocle','tophat','bowtie','pearls','monocle','tophat','glasses','']),pitch:baby?rf(400,520):rf(170,330),talk:0,say:'',sayT:0,leaving:null,react:0,spot:null,laugh:0,point:0,faint:0,act:'',actT:0,nextAct:rf(1.5,6),bump:0,spin:0,pinch:0};
+}
+function updGoal(){
+  const T=G.T;
+  if(T.goal){$('#goalTxt').innerHTML=`Cleared out: <b>${G.out}</b> of ${T.goal}`;$('#goalFill').style.width=Math.min(100,G.out/T.goal*100)+'%'}
+  else{const left=G.npcs.filter(n=>n.state!=='gone').length,toCome=Math.max(0,T.arrivals-G.arrived);
+    $('#goalTxt').innerHTML=`Empty the room! <b>${left}</b> still here${toCome?`, ${toCome} more coming`:', doors locked behind them'}`;
+    const total=T.start+T.arrivals;$('#goalFill').style.width=Math.min(100,G.out/total*100)+'%'}
+}
+
+/* ================= NPC behavior ================= */
+function nearestDoor(x){let best=G.doors[0];for(const d of G.doors)if(Math.abs(d.x-x)<Math.abs(best.x-x))best=d;return best}
+function say(n,txt,dur){n.say=txt;n.sayT=dur||1.6}
+function floatText(x,y,txt,col){G.texts.push({x,y,txt,col:col||'#fff',t:1.2})}
+/* ===== SQ-UPGRADE-NOV12: particles, banners, combos, chain reactions, idle antics ===== */
+const CONF=['#ff5c8a','#ffd23f','#3bceac','#7cc4ff','#c99ae8','#9be15d','#ff924c'];
+const MAXP=RM?60:320;
+function part(o){if(G.parts.length<MAXP)G.parts.push(Object.assign({t:0,vx:0,vy:0,g:0,life:1,size:2},o))}
+function burst(x,y,n,col,spd,opt){opt=opt||{};if(RM)n=Math.ceil(n/3);for(let i=0;i<n;i++){const a=rf(0,Math.PI*2),sp=rf(.35,1)*spd;
+  part({kind:opt.kind||'puff',x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*.7-(opt.up||0),g:opt.g||0,life:rf(.55,1)*(opt.life||1),size:opt.size||rf(2,4),col:col||pick(CONF),txt:opt.txt?pick(opt.txt):''})}}
+function banner(txt,col,big){G.banner={txt,col:col||'#d6ff9e',t:0,life:big?1.9:1.3,big:!!big}}
+function confetti(n){if(RM)n=Math.ceil(n/3);for(let i=0;i<n;i++)part({kind:'confetti',x:rf(0,W),y:rf(-12,TOPWALL),vx:rf(-22,22),vy:rf(10,45),g:35,life:rf(1.6,2.6),size:2,col:pick(CONF)})}
+function comboHit(){const C=G.combo;if(C.t<=0)C.n=0;C.n++;C.t=Math.max(C.t,1.9);C.best=Math.max(C.best,C.n);
+  const ms={3:['STINKY COMBO!',1],5:['MEGA STINK x5!',2],8:['GAS-TASTROPHE!!',3],12:['LEGENDARY GAS!!!',3]}[C.n];
+  if(ms){banner(ms[0],pick(['#ffd23f','#ff7aa2','#7cc4ff']),true);SND.fanfare(ms[1]);confetti(18*ms[1]);
+    if(!RM){G.flash=Math.max(G.flash,.25);G.shake=Math.max(G.shake,2+ms[1])}}}
+function panicToot(n){if(!G||G.won||n.state==='gone')return;
+  const f={col:'175,215,95',linger:0,pow:.7,r:20};
+  G.clouds.push({x:n.x,y:n.y-2,r:4,R:20,t:0,life:1.3,f,hit:new Set()});
+  floatText(n.x,n.y-30,pick(['*frantic fanning*','Oh dear, it is spreading!','*fans wildly*']),'#ffe08a');   // a flustered guest fans the smell around (no gross noises)
+  burst(n.x,n.y-6,8,'rgb(175,215,95)',30,{kind:'puff',size:3});
+  let more=0;for(const o of G.npcs){if(o===n||o.state==='gone'||o.state==='flee'||o.state==='enter')continue;if(Math.hypot(o.x-n.x,o.y-n.y)<24){o.stink+=.75;react(o);more++}}
+  if(more)floatText(n.x,n.y-38,'CHAIN REACTION!','#ff7aa2');}
+function idleAct(n){
+  if(n.baby){n.act='crawl';n.actT=1.5;say(n,pick(['goo','ba!','*drool*','pbbbt!','hehe']),1.2);return}
+  const party=/Party|Wedding|Cafeteria/.test(G.T.name);
+  const k=pick(party?['wave','dance','dance','sip','ahem','yawn','phone']:['wave','sip','ahem','yawn','phone','phone','wave']);
+  n.act=k;n.actT={wave:1.4,dance:2.6,sip:1.2,ahem:1,yawn:1.4,phone:3}[k];
+  if(k==='wave')say(n,pick(['Good day!','Hello there.','Charmed.','Ah, hello.','Greetings!']),1.2);
+  else if(k==='sip'){say(n,pick(['*sip*','Mm, Earl Grey.','*dainty sip*']),1.3)}
+  else if(k==='ahem'){say(n,pick(['Ahem.','*polite cough*','Pardon me.']),1.1)}
+  else if(k==='yawn')say(n,'*stifled yawn*',1.3);
+  else if(k==='dance')say(n,pick(['♪','A waltz!','♪♪']),1.4);
+}
+function updFx(dt){
+  for(let i=G.parts.length-1;i>=0;i--){const q=G.parts[i];q.t+=dt;q.vy+=q.g*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.kind==='puff'){q.vx*=.95;q.vy*=.95}if(q.t>q.life)G.parts.splice(i,1)}
+  for(let i=G.flies.length-1;i>=0;i--){const fl=G.flies[i];fl.t+=dt;fl.a+=fl.sp*dt;if(fl.t>fl.life)G.flies.splice(i,1)}
+  if(G.banner){G.banner.t+=dt;if(G.banner.t>G.banner.life)G.banner=null}
+  G.flash=Math.max(0,G.flash-dt*1.6);G.wilt=Math.max(0,G.wilt-dt);G.bonkCD-=dt;
+  if(G.cam){G.cam.t-=dt;if(G.cam.t<=0||G.cam.n.state==='gone')G.cam=null}
+  const C=G.combo;if(C.t>0){C.t-=dt;if(C.t<=0&&C.n>0){if(C.n>=2)banner('COMBO x'+C.n+'!','#ffe08a',C.n>=4);C.n=0}}
+  const p=G.player;p.hop=Math.max(0,(p.hop||0)-dt);
+  for(const n of G.npcs){n.bump=Math.max(0,n.bump-dt);n.spin=Math.max(0,n.spin-dt);n.pinch=Math.max(0,n.pinch-dt)}
+  // doors bang open now and then: someone peeks in, sniffs, and leaves
+  if(!G.won&&$('#title').hidden&&$('#won').hidden){G.peekT-=dt;if(G.peekT<=0){G.peekT=rf(8,14);const d=pick(G.doors);d.open=1;d.hold=.5;SND.creak();
+    floatText(d.x,TOPWALL+6,pick(G.clouds.length?['Good heavens, no.','I shall return later.','Oh! Pardon me.']:['Hello?','Wrong room, pardon.','Excuse me.','Knock knock.']),'#fff6e8');setTimeout(()=>{if(G)SND.slam()},650)}}
+}
+let babbleCD=0;
+function updNpc(n,dt){
+  n.stink=Math.max(0,n.stink-dt*.07);
+  if(n.sayT>0)n.sayT-=dt;
+  if(n.react>0)n.react-=dt;
+  if(n.laugh>0)n.laugh-=dt;if(n.point>0)n.point-=dt;if(n.faint>0)n.faint-=dt;
+  if(n.act){n.actT-=dt;if(n.actT<=0)n.act=''}
+  if(n.state==='gone')return;
+  if(n.state==='enter'){n.ty=60;n.tx=n.x;if(moveTo(n,dt,1)){n.state='wander';n.wait=.3}return}
+  if(n.state==='flee'){
+    for(const o of G.npcs){if(o===n||o.state==='gone'||o.state==='enter'||o.bump>0)continue;           // BONK: runners crash into people
+      if(Math.abs(o.x-n.x)<7&&Math.abs(o.y-n.y)<5){o.bump=.9;o.spin=.6;n.bump=Math.max(n.bump,.3);
+        if(o.state!=='flee'){o.tx=o.x+(o.x>n.x?14:-14);o.ty=o.y+rf(-6,6);o.state='wander';o.wait=.4;o.act='';o.stink+=.25;say(o,pick(['I beg your pardon!','Mind the shoes!','Oof, really!','How rude!','My word!']),1.1)}
+        else say(o,'BONK!',.9);
+        burst((o.x+n.x)/2,o.y-26,5,'#ffe08a',25,{kind:'star',life:.8,size:2});if(G.bonkCD<=0){SND.bonk();G.bonkCD=.25}}}
+    const d=n.leaving;if(moveTo(n,dt,2.6)){d.open=1;d.hold=.35;n.state='gone';SND.slam();G.shake=Math.max(G.shake,3);floatText(d.x,TOPWALL+6,'SLAM!','#ffe08a');G.out++;updGoal();checkWin()}
+    return;
+  }
+  // stinky but not out: back away from clouds
+  for(const c of G.clouds){const dx=n.x-c.x,dy=n.y-c.y,dd=Math.hypot(dx,dy);if(dd<c.r*1.25&&dd>0.1){n.tx=n.x+dx/dd*30;n.ty=n.y+dy/dd*30;n.state='wander';n.wait=0}}
+  if(!n.act&&n.stink<.3&&n.state!=='tospot'){n.nextAct-=dt;if(n.nextAct<=0){n.nextAct=rf(3,8);idleAct(n)}}
+  if(n.state==='wander'){
+    if(moveTo(n,dt,n.stink>.3?1.4:1)){
+      n.wait-=dt;
+      if(n.wait<=0){
+        if(Math.random()<.6){const s=pick(G.T.spots);n.tx=s[0]+rf(-14,14);n.ty=s[1]+rf(-10,10);n.state='tospot'}
+        else{n.tx=rf(24,296);n.ty=rf(48,186)}
+        n.wait=rf(.6,2.6);
+      }
+    }
+  }else if(n.state==='tospot'){
+    if(moveTo(n,dt,1)){n.state='hang';n.wait=rf(3,6)}
+  }else if(n.state==='hang'){
+    n.wait-=dt;n.talk-=dt;
+    if(n.talk<=0){n.talk=rf(.9,2.6);if(Math.random()<.55){say(n,n.baby?pick(['goo','ba!','dada','*drool*','hehe']):pick(G.T.lines),1.3);if(babbleCD<=0&&Math.random()<.5){SND.babble(n.pitch*.85);babbleCD=rf(.8,1.6)}}}
+    if(n.wait<=0){n.state='wander';n.wait=0}
+  }
+  n.tx=Math.max(16,Math.min(304,n.tx));n.ty=Math.max(TOPWALL+16,Math.min(190,n.ty));
+}
+function moveTo(o,dt,mult){
+  const dx=o.tx-o.x,dy=o.ty-o.y,d=Math.hypot(dx,dy);
+  if(d<1.2){o.walk=0;return true}
+  const s=Math.min(d,(o.sp||40)*(mult||1)*dt);o.x+=dx/d*s;o.y+=dy/d*s;o.walk+=dt*10;if(Math.abs(dx)>.3)o.face=dx>0?1:-1;return false;
+}
+function spawn(){
+  const T=G.T,alive=G.npcs.filter(n=>n.state!=='gone').length;
+  if(alive>=T.cap)return;
+  if(T.arrivals!=null&&G.arrived>=T.arrivals)return;
+  const d=pick(G.doors);d.open=1;d.hold=.6;
+  const n=makeNpc(d.x,TOPWALL+10,true);G.npcs.push(n);G.arrived++;
+  SND.creak();setTimeout(()=>SND.hi(n.pitch),250);say(n,n.baby?pick(['goo!','ba!']):pick(['hi!','hey!','hello','sup','yo']),1.2);
+  updGoal();
+}
+function checkWin(){
+  if(G.won)return;const T=G.T;
+  const done=T.goal?G.out>=T.goal:(G.arrived>=T.arrivals&&G.npcs.every(n=>n.state==='gone'));
+  if(done){G.won=true;setTimeout(showWin,900)}
+}
+
+/* ================= toots ================= */
+function toot(){
+  if(!G||G.won)return;const f=FART[save.eq];
+  if(G.gas<f.gas){flashFb(`The ${f.name} needs ${f.gas} gas. Answer more problems.`,'bad');return}
+  ac();G.gas-=f.gas;G.toots++;
+  const p=G.player;p.puff=0;
+  G.clouds.push({x:p.x-p.face*3,y:p.y-2,r:6,R:f.r,t:0,life:f.linger?f.linger:1.6,f,hit:new Set()});
+  SND.toot(f.k);G.shake=Math.max(G.shake,f.shake);
+  floatText(p.x,p.y-26,pick(['PRRRT!','BRAAP!','FWEEE!','PFFFRT!','TOOT!','THBBBT!','BRRRMP!','FRRRP!','SQUEEEAK!','PBBBT!']),'#d6ff9e');
+  p.wiggle=1.1;                                                     // proud wiggle
+  if(Math.random()<.45)SND.stutter(.55);                           // rapid-fire finish
+  setTimeout(()=>{if(G&&!G.won){p.laugh=1.3;vox('laugh',260);floatText(p.x,p.y-34,pick(['hehehe','heh heh heh','tee hee','ha ha ha']),'#fff3a8')}},650);
+  // blast damage now (lingering ones also tick)
+  let hits=0;
+  for(const n of G.npcs){if(n.state==='gone'||n.state==='flee'||n.state==='enter')continue;
+    const d=Math.hypot(n.x-p.x,n.y-p.y);if(d<f.r){n.stink+=f.pow*(1-.3*d/f.r);hits++;react(n)}}
+  // (the old "N× COMBO STINK!" text is now the COMBO meter, top left)
+  const big=f.r/24,cl=G.clouds[G.clouds.length-1];
+  burst(p.x-p.face*4,p.y-6,Math.round(14*big),`rgb(${f.col})`,40*big,{kind:'puff',life:1.1,size:4});
+  burst(p.x-p.face*4,p.y-10,ri(5,8),'#d6ff9e',55,{kind:'letter',up:40,g:60,life:1.3,txt:['P','F','R','T','B','!','Z']});
+  burst(p.x-p.face*4,p.y-6,ri(2,4),'#8a5a2a',45,{kind:'bean',up:50,g:140,life:1.2});
+  p.hop=.45;p.x=Math.max(10,Math.min(310,p.x+p.face*6));p.tx=p.x;                       // the toot launches you forward
+  if(!RM)G.flash=Math.min(.5,.18+.08*big);
+  banner(pick(['BRAAAP!','BUTT TRUMPET!','AIR BISCUIT!','STINK BOMB!','TUSHIE TUBA!','BOOTY BURP!','SILENT BUT DEADLY!','THE BEANS HAVE SPOKEN!','PANTS ALARM!']),'#d6ff9e',f.k==='thunder'||f.k==='foghorn');
+  G.wilt=Math.max(G.wilt,3+big*2);
+  for(let i=0;i<3+Math.round(big);i++)G.flies.push({c:cl,a:rf(0,7),r:rf(6,14)*Math.min(2,big),sp:rf(4,8)*(Math.random()<.5?-1:1),t:0,life:rf(3,6)});
+  G.combo.t=Math.max(G.combo.t,2.6);SND.boing();
+  renderMeter();
+}
+function react(n){
+  if(n.state==='flee'||n.state==='gone')return;
+  if(n.stink>=G.T.tol){
+    n.state='flee';n.leaving=nearestDoor(n.x);n.tx=n.leaving.x;n.ty=TOPWALL+8;
+    let kind,line;
+    if(n.baby){kind='cry';line=pick(['WAAAH!','WAAAAH!','*sob*'])}
+    else{kind=pick(['ugh','sniff','ugh']);   // sophisticated guests: they leave with dignity (Nov 13, 2026)
+      line=pick(['Good heavens!','I say! How uncouth!','Oh, my word!','Most improper!','I must excuse myself.','Ghastly!','Is that… brie?','To the veranda!'])}
+    say(n,line,2.2);if(!n.baby&&Math.random()<.3){n.faint=.7;if(Math.random()<.5)say(n,'I feel faint…',2.2)}n.act='';
+    comboHit();G.cam={n,t:1.7,line};
+    if(!n.baby&&Math.random()<.32)setTimeout(()=>panicToot(n),ri(250,700));
+    setTimeout(()=>vox(kind,n.pitch),ri(0,350));
+  }else if(n.react<=0){n.react=1.2;
+    if(n.baby){if(Math.random()<.5){say(n,pick(['hehe!','again!','ooh!']),1.4);n.laugh=1.2}
+      else{say(n,pick(['?','uh-oh','*sniff*']),1.4);setTimeout(()=>vox('sniff'),ri(0,300))}}
+    else if(Math.random()<.4){n.laugh=1.2;n.face=G.player.x>n.x?1:-1;
+      say(n,pick(['*polite chuckle*','Oh my!','How… unexpected.','Was that the cello?','Hm-hm-hm.']),1.6);if(Math.random()<.5)setTimeout(()=>SND.giggle(n.pitch*.8),ri(0,300))}
+    else{n.pinch=1.8;n.act='';say(n,pick(['Hmm? What is that aroma?','*discreet sniff*','Is someone… cooking?','Curious.']),1.4);if(Math.random()<.5)setTimeout(()=>vox('sniff',n.pitch),ri(0,300))}}
+}
+function updClouds(dt){
+  for(let i=G.clouds.length-1;i>=0;i--){const c=G.clouds[i];c.t+=dt;c.r+=(c.R-c.r)*Math.min(1,dt*5);c.y-=dt*2;
+    if(c.f.linger){for(const n of G.npcs){if(n.state==='gone'||n.state==='flee'||n.state==='enter')continue;const d=Math.hypot(n.x-c.x,n.y-c.y);if(d<c.r){n.stink+=c.f.pow*.35*dt;if(n.stink>=G.T.tol||!c.hit.has(n)){c.hit.add(n);react(n)}}}}
+    if(c.t>c.life)G.clouds.splice(i,1)}
+}
+
+/* ================= pfft (wrong answer) ================= */
+function pfft(){
+  const p=G.player;p.blush=2;SND.pfft();floatText(p.x,p.y-24,'pfft','#ffb3c7');
+  let any=false;
+  for(const n of G.npcs){if(n.state==='gone'||n.state==='flee')continue;if(Math.hypot(n.x-p.x,n.y-p.y)<90){say(n,pick(['*titters*','Oh, dear.','Hm-hm.','How quaint.','*polite cough*']),1.3);n.laugh=1.2;n.face=p.x>n.x?1:-1;if(!any){setTimeout(()=>{SND.giggle(n.pitch*.8)},120);any=true}}}
+}
+
+/* ================= drawing ================= */
+function R(x,y,w,h,c){cx.fillStyle=c;cx.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h))}
+function drawRoom(){
+  const T=G.T;
+  for(let y=TOPWALL;y<H;y+=10)for(let x=0;x<W;x+=10)R(x,y,10,10,((x+y)/10)%2?T.floor[0]:T.floor[1]);
+  R(0,0,W,TOPWALL,T.wall);R(0,TOPWALL-3,W,3,T.trim);
+  for(const a of T.wallArt){R(a.r[0],a.r[1],a.r[2],a.r[3],a.c);if(a.txt){cx.fillStyle='#333';cx.font='5px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(a.txt,a.r[0]+a.r[2]/2,a.r[1]+a.r[3]/2+1)}}
+  for(const d of G.doors){
+    const x=d.x-9;
+    if(T.elevator){R(x-1,6,20,TOPWALL-6,'#2a2f38');const o=Math.round(d.open*8);R(x,7,9-o,TOPWALL-7,'#aab2bf');R(x+9+o,7,9-o,TOPWALL-7,'#aab2bf')}
+    else{R(x-1,5,20,TOPWALL-5,'#4a3424');if(d.open>.05){R(x,6,18,TOPWALL-6,'#1a1410');R(x,6,Math.round(18*(1-d.open)),TOPWALL-6,'#8a5a3a')}else{R(x,6,18,TOPWALL-6,'#8a5a3a');R(x+13,17,2,2,'#e8c56a')}}
+  }
+  for(const p of T.props){const [x,y,w,h]=p.r;
+    if(p.plant){R(x+2,y+6,w-4,h-4,'#9a5b3a');if(G.wilt>0){R(x,y+1,w,5,'#8a8a3a');R(x-2,y+3,3,2,'#7a7a30');R(x+w-1,y+3,3,2,'#7a7a30')}else{R(x,y-2,w,8,p.c);R(x+2,y-5,4,4,'#56b060');R(x+6,y-6,3,5,'#56b060')}}
+    else if(p.balloon){R(x+w/2,y+h,1,10,'#888');R(x,y,w,h,p.c);R(x+1,y+1,2,2,'rgba(255,255,255,.6)')}
+    else if(p.round){R(x+3,y,w-6,h,p.c);R(x,y+3,w,h-6,p.c);R(x+w/2-2,y+h/2-2,4,4,'#f4b6c2')}
+    else{R(x,y+2,w,h,'rgba(0,0,0,.12)');R(x,y,w,h,p.c)}
+  }
+}
+function drawBaby(o){
+  const x=Math.round(o.x),y=Math.round(o.y),f=o.face||1,step=o.walk?Math.floor(o.walk)%2:0;
+  const green=o.state==='flee'||o.stink>.25;
+  R(x-4,y,8,2,'rgba(0,0,0,.18)');
+  R(x-3,y-3,2,3-step,'#f3e6c8');R(x+1,y-3,2,2+step,'#f3e6c8');
+  R(x-3,y-8,6,5,o.onesie||'#a8d8f0');R(x-1,y-6,2,2,'#fff');
+  R(x-3,y-14,6,6,o.skin);R(x-2,y-15,4,1,o.skin);R(x+(f>0?0:-1),y-16,1,2,o.hair);
+  if(green)R(x-3,y-12,6,4,'rgba(120,200,60,.55)');
+  const ex=f>0?1:0;
+  if(o.state==='flee'){R(x-2+ex,y-12,1,1,'#222');R(x+ex,y-12,1,1,'#222');R(x-2+ex,y-11,1,2,'#7cc4ff');R(x+ex,y-11,1,2,'#7cc4ff');R(x-1+ex,y-10,2,2,'#7a2a2a')}
+  else{R(x-2+ex,y-12,1,1,'#222');R(x+ex,y-12,1,1,'#222');R(x-1+ex,y-10,2,1,'#ff9eb5')}
+}
+function drawPerson(o,isP){
+  if(o.baby)return drawBaby(o);
+  const lf=o.laugh>0,ph=lf?Math.floor(o.laugh*13)%2:0,wg=isP&&o.wiggle>0?(Math.floor(o.wiggle*16)%2?1:-1):0,fw=o.faint>0?Math.round(Math.sin(o.faint*26)*2):0;
+  const dn=o.act==='dance'?Math.floor(o.actT*6)%2:0,hp=isP&&o.hop>0?Math.round(Math.sin(o.hop/.45*Math.PI)*6):0;
+  const x=Math.round(o.x)+wg+fw,y=Math.round(o.y)-(lf?ph:0)-(wg?1:0)-dn-hp,f=o.spin>0?(Math.floor(o.spin*18)%2?1:-1):(o.face||1);
+  const pinch=!isP&&o.state!=='flee'&&(o.pinch>0||o.stink>.35);
+  const step=o.walk?Math.floor(o.walk)%2:0;
+  const green=!isP&&(o.state==='flee'||o.stink>.25);
+  R(x-5,y,10,2,'rgba(0,0,0,.18)');
+  R(x-3,y-4,2,4-(step?1:0),o.pants);R(x+1,y-4,2,4-(step?0:1),o.pants);
+  const shirt=isP?'#ffcf33':o.shirt;
+  R(x-4,y-11,8,7,shirt);
+  if(green&&o.state==='flee'){R(x+(f>0?1:-3),y-15,2,5,o.skin||'#f7d1b5')}
+  else if(lf&&!isP&&o.point>0){R(x+(f>0?-5:4),y-10,1,5,shirt);R(x+(f>0?4:-8),y-10,4,1,shirt);R(x+(f>0?8:-9),y-10,1,1,o.skin||'#f7d1b5')}   // pointing at you
+  else if(lf){R(x-6,y-13-ph,1,4,shirt);R(x+5,y-12-(1-ph),1,4,shirt)}                                                    // arms up, shaking
+  else if(o.act==='wave'){R(x-5,y-10,1,5,shirt);const wv=Math.floor(o.actT*8)%2;R(x+4,y-16,1,6,shirt);R(x+3+wv*2,y-18,2,2,o.skin||'#f7d1b5')}   // waving
+  else if(o.act==='dance'){R(x-6,y-14+(dn?2:0),1,5,shirt);R(x+5,y-14+(dn?0:2),1,5,shirt)}                                         // dancing
+  else if(pinch){R(x-5,y-10,1,5,shirt);R(x+(f>0?3:-4),y-14,1,4,shirt);R(x+(f>0?1:-2),y-15,2,1,o.skin||'#f7d1b5')}               // holding nose
+  else if(o.act==='phone'){R(x-5,y-10,1,5,shirt);R(x+(f>0?2:-4),y-12,2,2,shirt);R(x+(f>0?3:-5),y-15,2,3,'#222');R(x+(f>0?3:-5),y-15,2,1,'#7cc4ff')}
+  else{R(x-5,y-10,1,5,shirt);R(x+4,y-10,1,5,shirt)}
+  const sk=isP?'#f2c49b':o.skin;
+  R(x-4,y-19,8,8,sk);R(x-3,y-20,6,1,sk);
+  if(green)R(x-4,y-16,8,5,'rgba(120,200,60,.55)');
+  const hair=isP?'#6b3b1f':o.hair,hs=isP?0:o.hs;
+  if(hs===0){R(x-4,y-21,8,3,hair);R(x-4,y-19,1,3,hair)}
+  else if(hs===1){R(x-5,y-22,10,4,hair)}
+  else if(hs===2){R(x-4,y-21,8,2,hair);R(x+(f>0?-5:4),y-20,2,6,hair)}
+  else if(hs===3){R(x-3,y-21,6,1,hair)}
+  else{R(x-4,y-22,8,3,hair);R(x+(f>0?2:-6),y-20,4,1,hair)}
+  const ex=f>0?1:-1;
+  if(green&&o.state==='flee'){R(x-2+ex,y-17,1,1,'#222');R(x+1+ex,y-17,1,1,'#222');R(x-2+ex,y-13,4,1,'#222');R(x-1+ex,y-14,1,1,'#222');R(x+1+ex,y-14,1,1,'#222')}
+  else if(lf&&!green){R(x-3+ex,y-17,2,1,'#222');R(x+1+ex,y-17,2,1,'#222');R(x-2+ex,y-14,4,3,'#5a1420');R(x-2+ex,y-14,4,1,'#fff');   // squinty eyes, big open mouth
+    if(ph){R(x-4+ex,y-16,1,1,'#9be0ff');R(x+3+ex,y-16,1,1,'#9be0ff')}}                                                          // happy tears
+  else{R(x-2+ex,y-17,1,2,'#222');R(x+1+ex,y-17,1,2,'#222');
+    if(o.sayT>0&&!green)R(x-1+ex,y-13,2,1,'#7a2a2a');else R(x-1+ex,y-13,2,1,'#5a3a2a')}
+  if(!isP&&o.acc){const ac=o.acc;                                                                                            // urbane touches (Nov 13, 2026)
+    if(ac==='tophat'){R(x-4,y-22,8,1,'#1b1b1f');R(x-3,y-27,6,5,'#1b1b1f');R(x-3,y-24,6,1,'#8c1c2c')}
+    else if(ac==='monocle'){R(x+1+ex-1,y-18,3,3,'#e8c96a');R(x+1+ex,y-17,1,1,'#222');R(x+2+ex,y-15,1,4,'#e8c96a')}
+    else if(ac==='bowtie'){R(x-2,y-11,1,2,'#8c1c2c');R(x+1,y-11,1,2,'#8c1c2c');R(x-1,y-11,2,1,'#5a0f1a')}
+    else if(ac==='pearls'){for(let i=0;i<4;i++)R(x-3+i*2,y-11,1,1,'#fdf6e3')}
+    else if(ac==='glasses'){R(x-3+ex,y-18,2,2,'rgba(255,255,255,.35)');R(x+ex,y-18,2,2,'rgba(255,255,255,.35)');R(x-3+ex,y-18,5,1,'#222')}}
+  if(o.bump>0){const tt=performance.now()/120;for(let i=0;i<3;i++)R(x+Math.round(Math.cos(tt+i*2.1)*6),y-25+Math.round(Math.sin(tt+i*2.1)*2),1,1,'#ffe08a')}   // dizzy stars
+  if(pinch){const tt=performance.now()/90;for(let i=0;i<3;i++)R(x-3+i*3+Math.round(Math.sin(tt+i)),y-25-((Math.floor(tt)+i)%3),1,1,'#7fbf3f')}                   // stink squiggles
+  if(o.act==='yawn')R(x-1+ex,y-14,2,2,'#5a1420');
+  if(isP){const c=Math.min(3,1+Math.floor(o.puff*2.2));R(x-4,y-15,c,2,'#ff7aa2');R(x+4-c,y-15,c,2,'#ff7aa2');
+    if(o.blush>0){R(x-4,y-16,8,3,'rgba(255,90,140,.45)')}
+    cx.fillStyle='#fff';cx.font='4px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='alphabetic';cx.fillText('YOU',x,y-26);R(x-1,y-24,2,1,'#fff')}
+}
+function bubble(x,y,txt){
+  cx.font='4.5px "Press Start 2P",monospace';const w=Math.ceil(cx.measureText(txt).width)+6;
+  let bx=Math.round(Math.max(2,Math.min(W-w-2,x-w/2))),by=Math.round(y-42);
+  R(bx,by,w,9,'#fff');R(bx-1,by+1,1,7,'#fff');R(bx+w,by+1,1,7,'#fff');R(Math.round(x)-1,by+9,3,2,'#fff');
+  cx.fillStyle='#222';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(txt,bx+w/2,by+5);
+}
+function drawClouds(){
+  for(const c of G.clouds){
+    const a=Math.max(0,1-c.t/c.life);
+    for(let i=0;i<9;i++){const ang=i/9*Math.PI*2+c.t*.6,rr=c.r*.55;
+      const px=c.x+Math.cos(ang)*rr,py=c.y+Math.sin(ang)*rr*.6;
+      cx.fillStyle=`rgba(${c.f.col},${.32*a})`;cx.beginPath();cx.arc(Math.round(px),Math.round(py),Math.round(c.r*.5),0,7);cx.fill()}
+    cx.fillStyle=`rgba(${c.f.col},${.22*a})`;cx.beginPath();cx.arc(c.x,c.y,c.r*.7,0,7);cx.fill();
+    // stink lines
+    cx.fillStyle=`rgba(90,140,40,${.7*a})`;
+    for(let i=0;i<4;i++){const sx=c.x-12+i*8,sy=c.y-c.r*.4;for(let k=0;k<6;k++)R(sx+Math.round(Math.sin(c.t*6+k+i)*1.5),sy-k*2-((c.t*14)%4),1,1,cx.fillStyle)}
+  }
+}
+function draw(){
+  cx.setTransform(1,0,0,1,0,0);cx.clearRect(0,0,W*S,H*S);
+  const sx=G.shake>0?Math.round(rf(-G.shake,G.shake)):0,sy=G.shake>0?Math.round(rf(-G.shake,G.shake)):0;
+  cx.setTransform(S,0,0,S,sx*S,sy*S);
+  drawRoom();
+  const p=G.player;
+  if(Math.hypot(p.tx-p.x,p.ty-p.y)>2){R(Math.round(p.tx)-2,Math.round(p.ty),5,1,'rgba(255,255,255,.7)');R(Math.round(p.tx),Math.round(p.ty)-2,1,5,'rgba(255,255,255,.7)')}
+  const all=[...G.npcs.filter(n=>n.state!=='gone'),p].sort((a,b)=>a.y-b.y);
+  for(const o of all){cx.save();cx.translate(o.x,o.y);cx.scale(1.35,1.35);cx.translate(-o.x,-o.y);drawPerson(o,o===p);cx.restore()}   // bigger people
+  drawClouds();drawParts();
+  for(const n of G.npcs)if(n.state!=='gone'&&n.sayT>0&&n.say)bubble(n.x,n.baby?n.y+11:n.y,n.say);
+  for(const t of G.texts){cx.globalAlpha=Math.min(1,t.t*1.5);cx.font='6px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='alphabetic';cx.fillStyle='#000';cx.fillText(t.txt,Math.round(t.x)+.5,Math.round(t.y)+.5);cx.fillStyle=t.col;cx.fillText(t.txt,Math.round(t.x),Math.round(t.y));cx.globalAlpha=1}
+  drawOverlays();
+}
+function drawParts(){
+  for(const fl of G.flies){const c=fl.c,fx=c.x+Math.cos(fl.a)*fl.r,fy=c.y-8+Math.sin(fl.a*1.3)*fl.r*.5;R(fx,fy,1,1,'#222');if(Math.floor(fl.t*30)%2)R(fx-1,fy-1,1,1,'rgba(255,255,255,.8)');else R(fx+1,fy-1,1,1,'rgba(255,255,255,.8)')}
+  for(const q of G.parts){const a=Math.max(0,1-q.t/q.life);
+    if(q.kind==='puff'){cx.globalAlpha=.55*a;cx.fillStyle=q.col;cx.beginPath();cx.arc(q.x,q.y,q.size*(1+q.t*2),0,7);cx.fill();cx.globalAlpha=1}
+    else if(q.kind==='letter'){cx.globalAlpha=a;cx.font='8px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#1d1a2e';cx.fillText(q.txt,q.x+.7,q.y+.7);cx.fillStyle=q.col;cx.fillText(q.txt,q.x,q.y);cx.globalAlpha=1}
+    else if(q.kind==='bean'){R(q.x-1,q.y-1,3,2,'#7a4a22');R(q.x-1,q.y-1,1,1,'#c08048')}
+    else if(q.kind==='star'){cx.globalAlpha=a;R(q.x,q.y-1,1,3,q.col);R(q.x-1,q.y,3,1,q.col);cx.globalAlpha=1}
+    else{cx.globalAlpha=a;R(q.x,q.y,q.size,q.size,q.col);cx.globalAlpha=1}}
+}
+function drawOverlays(){
+  if(G.flash>0){cx.fillStyle=`rgba(170,230,90,${(G.flash*.6).toFixed(3)})`;cx.fillRect(-10,-10,W+20,H+20)}
+  const C=G.combo;
+  if(C.n>0&&C.t>0){R(4,TOPWALL+4,66,13,'rgba(29,26,46,.85)');cx.font='5px "Press Start 2P",monospace';cx.textAlign='left';cx.textBaseline='middle';cx.fillStyle='#ffe08a';cx.fillText('COMBO x'+C.n,8,TOPWALL+9);R(8,TOPWALL+13,Math.round(58*Math.min(1,C.t/2.6)),2,'#ff7aa2')}
+  if(G.cam){const n=G.cam.n,bw=78,bh=62,bx=W-bw-5,by=H-bh-5;                                    // CLOSE-UP face cam
+    R(bx-2,by-2,bw+4,bh+4,'#9be15d');R(bx,by,bw,bh,'#fff6e8');R(bx,by,bw,Math.round(bh*.55),G.T.wall);
+    cx.save();cx.beginPath();cx.rect(bx,by,bw,bh);cx.clip();cx.translate(bx+bw/2,by+bh/2+4);const z=n.baby?4.4:3.4;cx.scale(z,z);cx.translate(-n.x,-(n.y-(n.baby?11:15)));drawPerson(n,false);cx.restore();
+    R(bx,by+bh-12,bw,12,'#1d1a2e');cx.font='5px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='middle';cx.fillStyle='#ffe08a';cx.fillText(String(G.cam.line||'EWW!').slice(0,13),bx+bw/2,by+bh-6);
+    R(bx+2,by+2,36,7,'#ff7aa2');cx.font='4px "Press Start 2P",monospace';cx.textAlign='left';cx.fillStyle='#fff';cx.fillText('CLOSE-UP',bx+4,by+6)}
+  if(G.banner){const b=G.banner,k=Math.min(1,b.t/.15),a=Math.min(1,(b.life-b.t)/.3);
+    cx.save();cx.globalAlpha=Math.max(0,a);cx.translate(W/2,TOPWALL+30);cx.rotate(Math.sin(b.t*18)*.06);
+    const sc=(b.big?1.45:1.1)*(k<1?.6+k*.7:1);cx.scale(sc,sc);cx.font='8px "Press Start 2P",monospace';cx.textAlign='center';cx.textBaseline='middle';
+    cx.lineWidth=3;cx.lineJoin='round';cx.strokeStyle='#1d1a2e';cx.strokeText(b.txt,0,0);cx.fillStyle=b.col;cx.fillText(b.txt,0,0);cx.restore()}
+}
+let last=performance.now();
+function frame(t){
+  const dt=Math.min(.05,(t-last)/1000);last=t;
+  if(G){
+    babbleCD-=dt;
+    const p=G.player;p.sp=60;moveTo(p,dt,1);p.blush=Math.max(0,p.blush-dt);p.laugh=Math.max(0,(p.laugh||0)-dt);p.wiggle=Math.max(0,(p.wiggle||0)-dt);p.puff+=((G.gasPips/5+G.gas*.4)-p.puff)*dt*3;
+    for(const n of G.npcs)updNpc(n,dt);
+    updClouds(dt);updFx(dt);
+    for(const d of G.doors){if(d.hold>0)d.hold-=dt;else d.open=Math.max(0,d.open-dt*3)}
+    for(let i=G.texts.length-1;i>=0;i--){const tx=G.texts[i];tx.t-=dt;tx.y-=dt*14;if(tx.t<=0)G.texts.splice(i,1)}
+    G.shake=Math.max(0,G.shake-dt*14);
+    if(!G.won&&$('#title').hidden&&$('#won').hidden){G.spawnT-=dt;if(G.spawnT<=0){spawn();G.spawnT=G.T.every*rf(.8,1.2)}}
+    if(G.npcs.length>60)G.npcs=G.npcs.filter(n=>n.state!=='gone');
+    draw();
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ================= walking ================= */
+cv.addEventListener('pointerdown',e=>{
+  if(!G)return;e.preventDefault();ac();
+  const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  G.player.tx=Math.max(10,Math.min(310,x));G.player.ty=Math.max(TOPWALL+18,Math.min(192,y));
+  refocus();
+});
+
+/* ================= math (5th grade: questions come from Q5) ================= */
+const frH=Q5.frH;
+const gen=lv=>Q5.gen(lv);
+function fracBoxes(pre,label){return `<span class="fbox"><input class="box sm" id="${pre}n" type="text" inputmode="numeric" autocomplete="off" aria-label="${label} numerator" maxlength="3"><span class="bar"></span><input class="box sm" id="${pre}d" type="text" inputmode="numeric" autocomplete="off" aria-label="${label} denominator" maxlength="3"></span>`}
+function mixedBoxes(pre,label){return `<span class="mixed"><input class="box sm whole" id="${pre}w" type="text" inputmode="numeric" autocomplete="off" aria-label="${label}: whole number part, leave blank if none" maxlength="2">${fracBoxes(pre,label)}</span>`}
+function readInt(id){const el=$('#'+id);if(!el)return null;const v=(el.value||'').replace(/[−–]/g,'-').trim();if(!/^[+-]?\d+$/.test(v))return null;return parseInt(v,10)}
+function refocus(){if(!G)return;
+  if(G.q.p&&G.q.p.kind==='choice'&&G.q.stage!=='bonus'){const b=document.querySelector('#answer .ch:not(.no)');if(b)b.focus({preventScroll:true});return}
+  const sel=G.q.stage==='bonus'?'#bonusA input':'#answer input';const ins=[...document.querySelectorAll(sel)];
+  /* a fraction answer starts in the numerator box (the whole-number box is optional) */
+  const empty=ins.find(i=>!i.value&&i.id!=='aw')||ins.find(i=>!i.value)||ins[0];
+  if(empty)empty.focus({preventScroll:true})}
+function flashFb(t,cls){const f=$('#fb');f.className='fb '+(cls||'');f.innerHTML=t}
+function nextQ(){
+  const Q=G.q;let p=null;
+  if(Q.queue.length&&Q.queue[0].due<=Q.seen)p=Q.queue.shift().p;
+  if(!p){for(let k=0;k<20;k++){p=gen(G.n);if(p.key!==Q.lastKey)break}}
+  Q.lastKey=p.key;Q.seen++;Q.p=p;Q.stage='main';Q.busy=false;
+  if($('#fb').classList.contains('bad'))flashFb('','');   /* the last mistake note was read; start clean */
+  const txt=/ptxt/.test(p.html);
+  $('#prob').className='prob'+(txt?' small':'');
+  $('#prob').innerHTML=p.html+(txt?'':'<span class="eq">?</span>');$('#prob').dataset.seq=Q.seen;
+  $('#fig').innerHTML=p.fig||'';
+  $('#bonus').hidden=true;
+  const unit=p.unit?`<span class="unit">${p.unit}</span>`:'';
+  if(p.kind==='num'){$('#answer').innerHTML='<input class="box" id="a0" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Your answer" maxlength="5">'+unit;
+    $('#keys').innerHTML='<kbd>Enter</kbd> checks · <kbd>T</kbd> toots'}
+  else if(p.kind==='choice'){$('#answer').innerHTML='<div class="choices">'+p.choices.map((c,i)=>`<button type="button" class="ch" data-i="${i}"><kbd>${i+1}</kbd>${c}</button>`).join('')+'</div>';
+    $('#keys').innerHTML='Tap an answer or press <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> · <kbd>T</kbd> toots'}
+  else{$('#answer').innerHTML=mixedBoxes('a','Answer')+unit+'<div class="alab" style="flex-basis:100%">whole number (if any) · fraction</div>';
+    $('#keys').innerHTML='<kbd>/</kbd> moves to the next box · <kbd>Enter</kbd> checks · <kbd>T</kbd> toots'}
+  refocus();
+}
+/* the value in the mixed-number boxes: {v:[N,D], w, n, d}, or what is missing */
+function readMixed(pre){
+  const w=readInt(pre+'w'),n=readInt(pre+'n'),d=readInt(pre+'d');
+  if(w===null&&n===null&&d===null)return {empty:true};
+  if(n===null&&d===null)return {v:[w,1],w,n:null,d:null};
+  if(n===null)return {focus:pre+'n'};if(d===null)return {focus:pre+'d'};
+  if(d===0)return {zero:true};
+  return {v:[(w||0)*d+n,d],w,n,d};
+}
+function submit(choiceIdx){
+  if(!G||G.won||G.q.busy)return;const Q=G.q;
+  if(Q.stage==='bonus')return submitBonus();
+  const p=Q.p;let ok;
+  if(p.kind==='num'){const v=readInt('a0');if(v===null){refocus();return}ok=v===p.ans;Q.given=[v,1]}
+  else if(p.kind==='choice'){if(choiceIdx==null||choiceIdx>=p.choices.length)return;const b=document.querySelector(`#answer .ch[data-i="${choiceIdx}"]`);if(!b||b.classList.contains('no'))return;
+    ok=choiceIdx===p.ans;Q.given=choiceIdx;b.classList.add(ok?'yes':'no')}
+  else{const r=readMixed('a');if(r.empty){refocus();return}if(r.focus){$('#'+r.focus).focus();return}
+    if(r.zero){flashFb('A denominator can’t be 0.','bad');return}
+    ok=Q5.eqv(r.v,p.ans);Q.given=r}
+  if(ok)right();else wrong();
+}
+function addBeans(k){save.beans+=k;G.beansHere+=k;persist();renderShop()}
+function right(){
+  G.right++;addBeans(1);SND.ding();Cup.add(1);
+  G.gasPips++;if(G.gasPips>=5){G.gasPips=0;G.gas++;SND.charge();flashFb('Gas meter full! +1 toot. Walk to a crowd and press T.','ok');floatText(G.player.x,G.player.y-30,'+1 GAS','#d6ff9e')}
+  else flashFb(pick(['Right!','Yes!','Correct!','Nice!']),'ok');
+  renderMeter();
+  if(G.q.p.kind==='frac'&&offerBonus())return;
+  G.q.busy=true;setTimeout(()=>{if(G&&!G.won)nextQ()},RM?40:(G.q.p.kind==='choice'?700:260));
+}
+function wrong(){
+  G.wrong++;const Q=G.q,p=Q.p;pfft();
+  if(!p.retry){p.retry=true;Q.queue.push({p,due:Q.seen+3})}
+  let note='';try{note=p.kind==='choice'?p.why(Q.given):p.why(Q.given.v||Q.given)}catch(e){}
+  if(p.kind==='choice'){const b=document.querySelector(`#answer .ch[data-i="${p.ans}"]`);if(b)b.classList.add('yes')}
+  flashFb(`pfft. Not quite.${note?`<span class="note">${note}</span>`:''}${p.kind==='choice'?'':`<span class="ans">Answer: ${p.show}</span>`}`,'bad');
+  Q.busy=true;setTimeout(()=>{if(G&&!G.won)nextQ()},RM?900:(note?4200:2600));
+}
+/* bonus beans after a right fraction answer: whole number / mixed number / simplest form */
+function offerBonus(){
+  const Q=G.q,[N,D]=Q.p.ans,g=Q5.gcd(N,D),rn=N/g,rd=D/g,r=Q.given;
+  const hasFrac=r.n!==null&&r.n!==0;
+  let type=null;
+  if(rd===1){if(hasFrac)type='whole'}
+  else if(rn>rd){if(!r.w||r.n>=r.d||Q5.gcd(r.n,r.d)!==1)type='mixed'}
+  else if(hasFrac&&Q5.gcd(r.n,r.d)!==1)type='simplify';
+  if(!type)return false;
+  const notSimple=r.n!==null&&r.n%r.d!==0&&Q5.gcd(r.n%r.d,r.d)!==1;
+  Q.stage='bonus';Q.btype=type;Q.bans={rn,rd,w:Math.floor(rn/rd),fn:rn%rd,needSimp:notSimple};
+  $('#bonus').hidden=false;
+  if(type==='whole'){$('#bonusT').textContent='Bonus beans: it’s a whole number. Which one?';$('#bonusA').innerHTML='<input class="box" id="bw" type="text" inputmode="numeric" autocomplete="off" aria-label="Whole number" maxlength="3">'}
+  else if(type==='mixed'){$('#bonusT').textContent=Q.bans.needSimp?'Bonus beans: write it as a mixed number. Simplest form = double beans.':'Bonus beans: write it as a mixed number in simplest form.';
+    $('#bonusA').innerHTML=`<span class="mixed"><input class="box sm" id="bw" type="text" inputmode="numeric" autocomplete="off" aria-label="Whole number part" maxlength="2">${fracBoxes('b','Fraction part')}</span>`}
+  else{$('#bonusT').textContent='Bonus beans: simplify it.';$('#bonusA').innerHTML=fracBoxes('b','Simplified')}
+  $('#keys').innerHTML='<kbd>Enter</kbd> checks the bonus · <kbd>Esc</kbd> skips it';
+  refocus();return true;
+}
+function submitBonus(){
+  const Q=G.q,t=Q.btype,A=Q.bans;let earned=0,ok=false,show='';
+  if(t==='whole'){const w=readInt('bw');if(w===null)return skipBonus();ok=w===A.w;earned=ok?1:0;show=String(A.w)}
+  else if(t==='mixed'){const w=readInt('bw'),n=readInt('bn'),d=readInt('bd');
+    if(w===null&&n===null&&d===null)return skipBonus();
+    if(w===null){$('#bw').focus();return}if(n===null){$('#bn').focus();return}if(d===null){$('#bd').focus();return}
+    ok=d>0&&n>0&&n<d&&w===A.w&&n*A.rd===A.fn*d;if(ok)earned=(A.needSimp&&Q5.gcd(n,d)===1)?2:1;show=`${A.w} ${frH(A.fn,A.rd)}`}
+  else{const n=readInt('bn'),d=readInt('bd');if(n===null&&d===null)return skipBonus();if(n===null){$('#bn').focus();return}if(d===null){$('#bd').focus();return}
+    ok=n===A.rn&&d===A.rd;earned=ok?1:0;show=frH(A.rn,A.rd)}
+  Q.busy=true;
+  if(ok){addBeans(earned*2);SND.bean();flashFb(`Bonus! +${earned*2} beans`,'ok');setTimeout(()=>{if(G&&!G.won)nextQ()},RM?40:500)}
+  else{flashFb(`Bonus answer: ${show}`,'bad');setTimeout(()=>{if(G&&!G.won)nextQ()},RM?400:1400)}
+}
+function skipBonus(){G.q.busy=true;nextQ()}
+$('#answer').addEventListener('click',e=>{const b=e.target.closest('.ch');if(b)submit(+b.dataset.i)});
+
+/* ================= panel UI ================= */
+function renderMeter(){
+  $('#pips').innerHTML=[0,1,2,3,4].map(i=>`<i class="${i<G.gasPips?'on':''}"></i>`).join('');
+  $('#gasN').textContent=G.gas;
+  const f=FART[save.eq],b=$('#bToot');b.disabled=G.gas<f.gas||G.won;b.classList.toggle('ready',!b.disabled);
+  b.textContent=`TOOT! (T) · ${f.name}`;
+}
+function renderShop(){
+  $('#beans').textContent=`${save.beans} bean${save.beans===1?'':'s'}`;
+  $('#shop').innerHTML=FARTS.map(f=>{const own=!!save.owned[f.k],can=save.beans>=f.cost;
+    return `<button type="button" class="fart ${own?'':'locked'} ${!own&&!can?'cant':''}" data-f="${f.k}" aria-pressed="${save.eq===f.k}">
+      <span class="fn">${f.name}</span><span class="fd">${f.d}</span>
+      <span class="fc">${own?(save.eq===f.k?'EQUIPPED':'USE'):`${f.cost} BEANS`}<br>${f.gas} GAS</span></button>`}).join('');
+  if(G)renderMeter();
+}
+$('#shop').addEventListener('click',e=>{
+  const b=e.target.closest('.fart');if(!b)return;const f=FART[b.dataset.f];
+  if(!save.owned[f.k]){if(save.beans<f.cost){flashFb(`You need ${f.cost-save.beans} more beans for ${f.name}.`,'bad');refocus();return}
+    save.beans-=f.cost;save.owned[f.k]=1;SND.bean();flashFb(`Unlocked ${f.name}!`,'ok')}
+  save.eq=f.k;persist();renderShop();refocus();
+});
+$('#bToot').addEventListener('click',()=>{toot();refocus()});
+
+/* ================= keyboard ================= */
+document.addEventListener('keydown',e=>{
+  if(!G||!$('#title').hidden||!$('#won').hidden||!$('#homeroom').hidden)return;
+  const t=e.target;
+  if(e.key==='t'||e.key==='T'){e.preventDefault();if(!e.repeat)toot();return}
+  if(e.key==='Escape'&&G.q.stage==='bonus'){e.preventDefault();skipBonus();return}
+  if(G.q.p&&G.q.p.kind==='choice'&&G.q.stage!=='bonus'&&/^[1-9]$/.test(e.key)&&!(t&&t.tagName==='INPUT')){e.preventDefault();submit(+e.key-1);return}
+  if(e.key==='Enter'&&t&&t.tagName==='INPUT'){e.preventDefault();
+    if(t.id==='aw'&&!t.value){$('#an').focus();return}
+    if(t.id==='aw'&&($('#an').value||$('#ad').value)){$(!$('#an').value?'#an':'#ad').focus();if($('#an').value&&$('#ad').value)submit();return}
+    if(t.id==='an'&&!$('#ad').value){$('#ad').focus();return}
+    if(t.id==='bw'&&$('#bn')&&!$('#bn').value&&t.value){$('#bn').focus();return}
+    if(t.id==='bn'&&!$('#bd').value&&t.value){$('#bd').focus();return}
+    submit();return}
+  if((e.key==='/'||e.key===' ')&&t&&t.tagName==='INPUT'){e.preventDefault();const order=['aw','an','ad','bw','bn','bd'];const i=order.indexOf(t.id);for(let k=i+1;k<order.length;k++){const el=$('#'+order[k]);if(el){el.focus();break}}}
+});
+document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.classList.contains('box'))return;let v=t.value.replace(/[−–]/g,'-');v=v.replace(/\D/g,'');if(v!==t.value)t.value=v});
+
+/* ================= screens ================= */
+function renderRooms(){
+  $('#roomList').innerHTML=ROOMS.map((T,i)=>{const n=i+1,open=roomOpen(n);
+    return `<button type="button" class="rm" data-r="${n}" aria-pressed="${room===n}" ${open?'':'disabled'}>
+      <span class="lv">ROOM ${n}${n===5?' · FINAL':''}</span><b>${open?T.name:'Locked'}</b>
+      <span>${Q5.ROOM_TOPICS[i]}</span><span class="std">${Q5.ROOM_STD[i]}</span>
+      ${save.cleared[n]?'<span class="done">Cleared ✓</span>':''}</button>`}).join('');
+}
+$('#roomList').addEventListener('click',e=>{const b=e.target.closest('.rm');if(!b||b.disabled)return;room=+b.dataset.r;renderRooms()});
+function startRoom(n){ac();if(Cup.need()){Cup.ask(()=>startRoom(n));return}$('#title').hidden=true;$('#won').hidden=true;newGame(n)}
+$('#bStart').addEventListener('click',()=>startRoom(room));
+$('#bRooms').addEventListener('click',()=>{renderRooms();$('#title').hidden=false;$('#bStart').focus()});
+function showWin(){
+  const n=G.n,first=!save.cleared[n];save.cleared[n]=1;persist();SND.win();
+  $('#wonH').textContent=n===5?'You emptied the whole wedding!':`${G.T.name}: cleared!`;
+  $('#wonP').innerHTML=n===5?'Not one guest could stand it. The DJ left. The cake is all yours. You are the undisputed champion of <b>Squeaky Cheeks</b>.':
+    `${G.out} people ran for the doors. ${n<5?`Next up: <b>Room ${n+1}: ${ROOMS[n].name}</b> (${Q5.ROOM_TOPICS[n]}). The crowd there is tougher, so you may need a bigger toot from the toot menu.`:''}${Cup.on()&&Cup.home()?` <b>+10 points for ${Cup.home()}!</b>`:''}`;
+  const tot=G.right+G.wrong;
+  Cup.add(10);Cup.flush();
+  $('#wonStats').innerHTML=`<div><b>${G.right}/${tot}</b>problems right</div><div><b>${G.toots}</b>toots</div><div><b>${G.out}</b>people cleared</div><div><b>+${G.beansHere}</b>beans earned</div><div><b>x${G.combo.best}</b>best combo</div>`;
+  $('#bNextRoom').hidden=n>=5;$('#won').hidden=false;($('#bNextRoom').hidden?$('#bReplay'):$('#bNextRoom')).focus();
+}
+$('#bNextRoom').addEventListener('click',()=>{room=Math.min(5,G.n+1);startRoom(room)});
+$('#bReplay').addEventListener('click',()=>startRoom(G.n));
+$('#bWonRooms').addEventListener('click',()=>{$('#won').hidden=true;renderRooms();$('#title').hidden=false});
+
+/* ================= class cup ================= */
+/* CLASS CUP: class totals only. Runs only inside the teacher's Google Apps Script web app (google.script.run).
+   The student picks a homeroom (saved on this Chromebook). Right answers add points; points are sent in small batches
+   (every 20 s, at the end of a room, and when the tab is hidden). Nothing about the student is sent: only
+   {homeroom, points}. If the server can't be reached, points wait on this Chromebook and are sent later. */
+const Cup=(function(){
+  const GS=(()=>{try{return !!(window.google&&google.script&&google.script.run)}catch(e){return false}})();
+  let classes=['Ms. Tesnar','Ms. Covalt'],board=null,sending=false,boardMode=false,failed=0;
+  /* points not sent yet, per homeroom: {"Ms. Tesnar": 3} */
+  let pend={};try{pend=JSON.parse(localStorage.getItem('sc5-pending')||'{}')||{};if(typeof pend!=='object'||Array.isArray(pend)||'h' in pend)pend={}}catch(e){pend={}}
+  const savePend=()=>{try{localStorage.setItem('sc5-pending',JSON.stringify(pend))}catch(e){}};
+  const on=()=>GS;
+  const home=()=>save.home||'';
+  const need=()=>GS&&!classes.includes(home());
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const fmt=n=>Number(n||0).toLocaleString('en-US');
+  function run(fn,args,ok,bad){try{google.script.run.withSuccessHandler(ok).withFailureHandler(bad||(()=>{}))[fn](...args)}catch(e){bad&&bad(e)}}
+  function add(k){if(!GS||!home())return;pend[home()]=(pend[home()]||0)+k;savePend();render()}
+  function flush(){if(!GS||sending)return;const h=Object.keys(pend).find(k=>pend[k]>0);if(!h)return;const pts=Math.min(pend[h],60);sending=true;
+    run('addPoints',[h,pts],b=>{sending=false;failed=0;pend[h]-=pts;if(pend[h]<=0)delete pend[h];savePend();setBoard(b);if(Object.keys(pend).length)setTimeout(flush,1200)},
+      e=>{sending=false;failed++;
+        /* the teacher renamed or removed this homeroom: those points can't go anywhere */
+        if(/unknown homeroom/i.test(String(e&&e.message||e))){delete pend[h];savePend()}
+        render()})}
+  function refresh(){if(!GS)return;run('getBoard',[],setBoard,()=>{failed++;render()})}
+  function setBoard(b){if(!b||!b.classes)return;board=b;const names=b.classes.map(c=>c.name);if(names.length)classes=names;render()}
+  /* points shown include this Chromebook's points that are still waiting to be sent */
+  function rows(){const list=(board&&board.classes)||classes.map(n=>({name:n,points:0,students:0}));
+    return list.map(c=>({name:c.name,points:(+c.points||0)+(pend[c.name]||0),students:+c.students||0}))}
+  function perStudent(r){return r.every(c=>c.students>0)}
+  function render(){
+    const el=$('#cup');if(!GS){el.hidden=true;$('#titleCup').innerHTML='<p class="std">Practice copy. The Class Cup contest runs from the link your teacher posts in Google Classroom.</p>';return}
+    const r=rows(),a=r[0]||{points:0},b=r[1]||{points:0},tot=a.points+b.points,pct=tot?Math.round(a.points/tot*100):50;
+    el.hidden=false;
+    el.innerHTML=`<span class="ct">CLASS CUP</span><div class="tug"><div class="names"><span class="c0">${esc(a.name||'')} <b>${fmt(a.points)}</b></span><span class="c1"><b>${fmt(b.points)}</b> ${esc(b.name||'')}</span></div>
+      <div class="bar" role="img" aria-label="${esc(a.name)} ${a.points} points, ${esc(b.name)} ${b.points} points"><i style="width:${pct}%"></i></div></div>
+      <span class="me">${home()?'Playing for <b>'+esc(home())+'</b>':''}${failed>2?' · saving…':''}</span><button type="button" id="cupChange">${home()?'Change':'Pick homeroom'}</button>`;
+    $('#cupChange').onclick=()=>ask(()=>{$('#homeroom').hidden=true;refocus()});
+    $('#titleCup').innerHTML=`<div class="bigcup">${r.map((c,i)=>`<div><span class="c${i}">${esc(c.name)}</span><b class="c${i}">${fmt(c.points)}</b><em>points${perStudent(r)?` · ${(c.points/c.students).toFixed(1)} per student`:''}</em></div>`).join('')}</div>
+      <p class="std">${home()?`You play for <b>${esc(home())}</b>. Every right answer = 1 point. Clearing a room = 10 points.`:'Pick your homeroom when you start.'}</p>`;
+    if(boardMode){$('#boardCup').innerHTML=r.map((c,i)=>`<div><span class="c${i}">${esc(c.name)}</span><b class="c${i}">${fmt(c.points)}</b><em>points${perStudent(r)?` · ${(c.points/c.students).toFixed(1)} per student`:''}</em></div>`).join('');
+      $('#boardNote').textContent=(board&&board.contest?board.contest+' · ':'')+'Updates by itself every 15 seconds.'}
+  }
+  function ask(then){
+    $('#homeList').innerHTML=classes.map((c,i)=>`<button type="button" class="home c${i}" data-h="${esc(c)}">${esc(c)}<small>homeroom</small></button>`).join('');
+    $('#homeroom').hidden=false;$('#homeList button').focus();
+    $('#homeList').onclick=e=>{const b=e.target.closest('.home');if(!b)return;flush();save.home=b.dataset.h;persist();$('#homeroom').hidden=true;render();if(then)then()};
+  }
+  function start(){render();if(!GS)return;
+    refresh();setInterval(flush,20000);setInterval(()=>{if(!document.hidden)refresh()},boardMode?15000:45000);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
+    flush();
+    /* projector view: the web app link + ?board=1 */
+    try{google.script.url.getLocation(loc=>{if(loc&&loc.parameter&&loc.parameter.board){boardMode=true;document.body.classList.add('boardmode');$('#board').hidden=false;render();setInterval(refresh,15000)}})}catch(e){}
+  }
+  return {on,home,need,add,flush,ask,start,render};
+})();
+
+/* ================= boot ================= */
+room=asked>=1&&asked<=5?asked:1;if(!asked)for(let n=1;n<=5;n++)if(!save.cleared[n]){room=n;break}   /* start at the first room not cleared yet */
+renderRooms();newGame(room);Cup.start();
+if(/[?&]debug\b/.test(location.search)){window.__G=()=>G;window.__Q=()=>G&&G.q.p;window.__submit=i=>submit(i);window.__Cup=Cup;window.__T={pfft:()=>pfft(),react:n=>react(n),say:(n,t,d)=>say(n,t,d),VOX,SND};
+  window.__render=async(fn,arg)=>{const o=AC,om=master,on=noiseBuf,ol=window.__live;
+    const oac=new OfflineAudioContext(1,44100*5,44100);AC=oac;master=oac.createGain();master.gain.value=.7;master.connect(oac.destination);
+    const len=oac.sampleRate*2;noiseBuf=oac.createBuffer(1,len,oac.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+    forceLive=true;let err=null;try{fn==='toot'?SND.toot(arg):fn==='pfft'?SND.pfft():fn==='stutter'?SND.stutter(0):VOX[fn](arg||250)}catch(e){err=String(e)}forceLive=false;
+    const buf=await oac.startRendering();AC=o;master=om;noiseBuf=on;const c=buf.getChannelData(0);let pk=0,ss=0,last=0;for(let i=0;i<c.length;i++){const a=Math.abs(c[i]);if(a>pk)pk=a;ss+=c[i]*c[i];if(a>.01)last=i}
+    return {err,peak:+pk.toFixed(3),rms:+Math.sqrt(ss/c.length).toFixed(4),len:+(last/44100).toFixed(2)}};}
+(document.fonts&&document.fonts.load?document.fonts.load('8px "Press Start 2P"'):Promise.resolve()).catch(()=>{}).then(()=>{});
+requestAnimationFrame(frame);
+$('#bStart').focus();
+})();
+</script>
+</body>
+</html>
