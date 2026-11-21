@@ -73,7 +73,7 @@ https://alexistesnar-alt.github.io/5th-Grade-Math-and-Science/squeaky-cheeks-cla
 3. Fill it in:
    - **Description:** Class Cup
    - **Execute as:** **Me**. This is required, so students never see a permission screen.
-   - **Who has access:** **Anyone within Buncombe County Schools.** The wording shows your district's domain. This lets only signed-in BCS accounts open it.
+   - **Who has access:** **Anyone within Buncombe County Schools** (bcsemail.org). Students and teachers both use @bcsemail.org accounts, so this lets every student in. No one outside BCS can open it.
 4. Click **Deploy**. Copy the **Web app URL**. It ends in **/exec**. This is the game link.
 
 ## Part C — Test it before students do (2 minutes)
@@ -120,7 +120,7 @@ It shows only the two big class totals. It updates by itself every 15 seconds.
 
 | What happens | Why / what to do |
 |---|---|
-| Student sees **"You need access"** or **"Sorry, unable to open the file"** | The student account may be in a different Google domain than teachers (for example, a separate student domain). Ask BCS Technology which domain student accounts use. Or change **Who has access** to **Anyone with a Google account**. Students still have to be signed in, and no student data is collected either way. |
+| Student sees **"You need access"** or **"Sorry, unable to open the file"** | The Chromebook is signed in to a personal Google account. Have the student sign in with their @bcsemail.org account, or open the link in their school Chrome profile. |
 | The page is **blocked by the web filter** | Ask BCS Technology to allow Google Apps Script web apps: `script.google.com` and `*.googleusercontent.com`. Many BCS tools already use these. |
 | Points don't go up | Wait 20 seconds. The game says "saving…" if it can't reach Google; points wait on the Chromebook and send later. Check that you deployed with **Execute as: Me**. |
 | Changes don't show up | Apps Script runs the deployed version. Use **Manage deployments → Edit → New version**. |
