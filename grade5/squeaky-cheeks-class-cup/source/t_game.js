@@ -16,7 +16,7 @@ async function waitNext(pg,seq){await pg.waitForFunction(s=>{const b=document.qu
     await pg.goto(URL);await pg.click('#bStart');
     assert(await pg.isHidden('#homeroom'),'no homeroom prompt in practice mode');
     assert(await pg.isHidden('#cup'),'no cup in practice mode');
-    for(let room=1;room<=5;room++){
+    for(let room=1;room<=6;room++){
       await pg.evaluate(r=>{document.querySelector('#bRooms').click();document.querySelector(`.rm[data-r="${r}"]`).click();document.querySelector('#bStart').click()},room);
       const kinds=new Set();
       for(let k=0;k<12;k++){const seq=await pg.$eval('#prob',e=>e.dataset.seq);const p=await answer(pg,true);kinds.add(p.kind);

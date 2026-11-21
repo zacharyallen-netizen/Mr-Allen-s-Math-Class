@@ -1,5 +1,5 @@
 /*Q5-START*/
-/* 5th grade question bank: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems)
+/* 5th grade question bank: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.NF.7 (divide unit fractions)
    and NC.5.MD.4 / NC.5.MD.5 (volume of rectangular prisms). Every problem shows a model (NC: "models must always be used").
    Limits from the NCDPI unpacking: fraction x whole denominators 2,3,4,5,6,8,10,12; fraction x fraction (and area models)
    denominators 2,3,4; volume edges whole numbers; composite = two prisms, one-digit dimensions. */
@@ -228,16 +228,80 @@ function scaling(){const N=pick([6,8,9,10,12,15,16,20,24]);const t=pick(['less',
     html:`<span class="ptxt">Don’t multiply. Is ${F} × ${N}<br>greater than, less than, or equal to ${N}?</span>`,text:`scale ${fn}/${fd} x ${N}`,
     fig:lineFig(fn,fd),show:note,why:()=>`Compare ${valT(fn,fd)} to 1 on the number line. `+note})}
 
+
+/* ----- fraction division (NC.5.NF.7: unit fraction ÷ whole number, whole number ÷ unit fraction; models, no "flip" rule) ----- */
+/* 1/b ÷ n: one whole cut into b parts; the shaded 1/b is shared into n equal pieces; faint lines show the whole cut into b×n pieces */
+function shareFig(b,n){const W=300,H=96,x0=10,bw=W-20,y=26,h=34,k=b*n;let out='';
+  out+=txt(W/2,15,'1 whole',{fs:12,c:C.muted});
+  out+=`<rect x="${x0}" y="${y}" width="${bw}" height="${h}" fill="${C.empty}" stroke="${C.line}" stroke-width="1.5"/>`;
+  out+=`<rect x="${x0}" y="${y}" width="${(bw/b).toFixed(1)}" height="${h}" fill="#5ea83a"/>`;
+  out+=`<rect x="${x0}" y="${y}" width="${(bw/k).toFixed(1)}" height="${h}" fill="${C.shade2}"/>`;
+  for(let i=1;i<k;i++){const x=(x0+i*bw/k).toFixed(1),big=i%n===0;out+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+h}" stroke="${big?C.ink:C.grid}" stroke-width="${big?2:1}"${big?'':' stroke-dasharray="3 3"'}/>`}
+  out+=`<path d="M${x0} ${y+h+6} v5 h${(bw/b).toFixed(1)} v-5" fill="none" stroke="#a8e47a" stroke-width="2"/>`+txt((x0+bw/b/2).toFixed(1),y+h+26,`1/${b} shared by ${n}`,{fs:12,a:b>3?'start':'middle',c:'#a8e47a'});
+  return svg(W,H,out,`One whole cut into ${b} parts. One part is shared into ${n} equal pieces. One piece is pink.`);
+}
+/* N ÷ 1/b: N wholes, each cut into b parts */
+function wholesFig(N,b){const W=300,gap=6,cols=Math.min(N,4),rows=Math.ceil(N/cols),bw=(W-20-(cols-1)*gap)/cols,h=26,H=rows*(h+22)+6;let out='';
+  for(let i=0;i<N;i++){const c=i%cols,r=Math.floor(i/cols),x=10+c*(bw+gap),y=4+r*(h+22);
+    out+=txt((x+bw/2).toFixed(1),y+11,'1 whole',{fs:10,c:C.muted});
+    for(let k=0;k<b;k++)out+=`<rect x="${(x+k*bw/b).toFixed(1)}" y="${y+15}" width="${(bw/b).toFixed(1)}" height="${h}" fill="${(i+k)%2?C.shade:'#7cc54f'}" stroke="${C.line}" stroke-width="1.2"/>`}
+  return svg(W,H,out,`${N} wholes, each cut into ${b} equal parts`);
+}
+const DIVD=[2,3,4,5,6,8];
+function unitDivWhole(){for(let t=0;t<50;t++){const b=pick(DIVD),n=ri(2,6);if(b*n>30)continue;const ans=[1,b*n];
+  return mk({kind:'frac',std:'NC.5.NF.7',key:`ud${b}${n}`,ans,
+    html:`${frH(1,b)}<span class="op">÷</span><span>${n}</span><span class="eq">=</span>`,text:`1/${b} ÷ ${n}`,
+    fig:shareFig(b,n),show:`${frH(1,b)} ÷ ${n} = ${frH(1,b*n)}. The pink piece is 1 of ${b*n} equal pieces of the whole.`,
+    why:g=>noteFrom([{v:[n,b],t:`You multiplied. Sharing 1/${b} by ${n} makes a SMALLER piece. How many pink pieces fit in the whole?`},
+      {v:[b,n],t:`Sharing makes the piece smaller than 1/${b}. Look at the model: how many pink pieces fill the whole?`},
+      {v:[1,b+n],t:`Don’t add. Each of the ${b} parts is cut into ${n}, so the whole has ${b} × ${n} pieces.`},
+      {v:[b*n,1],t:`That counts the pieces. The answer is the size of ONE pink piece: 1 out of ${b*n}.`},
+      {v:[1,b],t:`That is the part before sharing. Share it by ${n}: each person gets a smaller piece.`}],g)})}}
+function wholeDivUnit(){const b=pick([2,3,4,5,6,8]),N=ri(2,b>4?4:6),ans=N*b;
+  return mk({kind:'num',std:'NC.5.NF.7',key:`wd${N}${b}`,ans,
+    html:`<span>${N}</span><span class="op">÷</span>${frH(1,b)}<span class="eq">=</span>`,text:`${N} ÷ 1/${b}`,
+    fig:wholesFig(N,b),show:`${N} ÷ ${frH(1,b)} = ${ans}. Each whole has ${b} parts, and ${N} × ${b} = ${ans}.`,
+    why:g=>noteFrom([{v:[N,b],t:`That made it smaller. Ask: how many 1/${b}s fit in ${N}? Count the parts in the model.`},
+      {v:N+b,t:`Don’t add. Each whole has ${b} parts. There are ${N} wholes.`},
+      {v:[1,N*b],t:`Ask: how many 1/${b}s fit in ${N}? The answer is a count of pieces, a whole number.`},
+      {v:N,t:`That is the number of wholes. Count the 1/${b} pieces in all of them.`},
+      {v:b,t:`That is the parts in just ONE whole. There are ${N} wholes.`}],g)})}
+const DSTORY_U=[
+  (b,n)=>[`${frH(1,b)} of a pizza is left. ${n} friends share it equally. What fraction of the whole pizza does each friend get?`,'of a pizza'],
+  (b,n)=>[`A ribbon is ${frH(1,b)} yard long. It is cut into ${n} equal pieces. How long is each piece?`,'yard'],
+  (b,n)=>[`${frH(1,b)} pound of trail mix is put into ${n} bags equally. How many pounds are in each bag?`,'pound'],
+  (b,n)=>[`${n} students share ${frH(1,b)} of a pan of brownies equally. What fraction of the pan does each student get?`,'of the pan']];
+const DSTORY_W=[
+  (N,b)=>[`You have ${N} cups of trail mix. Each bag holds ${frH(1,b)} cup. How many bags can you fill?`,'bags'],
+  (N,b)=>[`A rope is ${N} meters long. It is cut into pieces that are each ${frH(1,b)} meter long. How many pieces?`,'pieces'],
+  (N,b)=>[`${N} pizzas are cut into slices. Each slice is ${frH(1,b)} of a pizza. How many slices are there?`,'slices'],
+  (N,b)=>[`It takes ${frH(1,b)} hour to walk one lap. How many laps can you walk in ${N} hours?`,'laps']];
+function divWord(){
+  if(Math.random()<.5){const p=unitDivWhole(),b=p.ans[1]/(+p.text.split('÷ ')[1]),n=+p.text.split('÷ ')[1];const [q,u]=pick(DSTORY_U)(b,n);
+    p.html=`<span class="ptxt">${q}</span>`;p.unit=u;p.key='dw'+p.key+u;p.text='story '+p.text;return p}
+  const p=wholeDivUnit(),N=+p.text.split(' ')[0],b=+p.text.split('1/')[1];const [q,u]=pick(DSTORY_W)(N,b);
+  p.html=`<span class="ptxt">${q}</span>`;p.unit=u;p.key='dw'+p.key+u;p.text='story '+p.text;return p}
+/* which model / which equation: tap */
+function divWhich(){const b=pick([2,3,4,5,6]),n=ri(2,5);const unitFirst=Math.random()<.5;
+  const q=unitFirst?`${frH(1,b)} of a cake is shared equally by ${n} people. Which equation matches?`:`How many ${frH(1,b)}-cup scoops are in ${n} cups of rice? Which equation matches?`;
+  const right=unitFirst?`1/${b} ÷ ${n}`:`${n} ÷ 1/${b}`,wrongs=unitFirst?[`${n} ÷ 1/${b}`,`1/${b} × ${n}`]:[`1/${b} ÷ ${n}`,`${n} × 1/${b}`];
+  const ch=[right,...wrongs];const order=[0,1,2].sort(()=>Math.random()-.5);const choices=order.map(i=>ch[i]);
+  return mk({kind:'choice',std:'NC.5.NF.7',key:`dq${b}${n}${unitFirst}`,ans:order.indexOf(0),choices,
+    html:`<span class="ptxt">${q}</span>`,text:`which eq 1/${b} ${n} ${unitFirst}`,
+    fig:unitFirst?shareFig(b,n):wholesFig(n,b),show:`${right}`,
+    why:()=>unitFirst?`A fraction is being SHARED by ${n} people, so start with 1/${b} and divide by ${n}: ${right}.`:`We ask how many 1/${b}s fit in ${n}, so start with ${n} and divide by 1/${b}: ${right}.`})}
+
 /* ---------------- rooms ---------------- */
-const ROOM_TOPICS=['Volume: count the cubes','Volume: base × height, missing edge, two boxes','Fraction × whole number','Fraction × fraction and area','Mixed numbers, scaling and review'];
-const ROOM_STD=['NC.5.MD.4, NC.5.MD.5','NC.5.MD.5','NC.5.NF.4','NC.5.NF.4','NC.5.NF.4, NC.5.MD.5'];
+const ROOM_TOPICS=['Volume: count the cubes','Volume: base × height, missing edge, two boxes','Fraction × whole number','Fraction × fraction and area','Dividing with unit fractions','Mixed numbers, scaling and review'];
+const ROOM_STD=['NC.5.MD.4, NC.5.MD.5','NC.5.MD.5','NC.5.NF.4','NC.5.NF.4','NC.5.NF.7','NC.5.NF.4, NC.5.NF.7, NC.5.MD.5'];
 const BANK=[
   [[volCount,5],[volBox,5]],
   [[volBox,2],[volBase,3],[volMissing,3],[volComposite,4]],
   [[wholeTimesFrac,4],[fracOfWhole,4],[wordWhole,4]],
   [[fracFrac,5],[areaFrac,4],[areaWholeFrac,3]],
-  [[mixedTimes,4],[scaling,3],[wordWhole,2],[areaFrac,1],[volComposite,1],[volMissing,1]]];
+  [[unitDivWhole,4],[wholeDivUnit,4],[divWord,4],[divWhich,2]],
+  [[mixedTimes,4],[scaling,3],[wordWhole,1],[divWord,2],[unitDivWhole,1],[wholeDivUnit,1],[areaFrac,1],[volComposite,1],[volMissing,1]]];
 function gen(room){const B=BANK[room-1],tot=B.reduce((s,x)=>s+x[1],0);let r=Math.random()*tot;for(const [f,w] of B){r-=w;if(r<0)return f()}return B[0][0]()}
-return {gen,ROOM_TOPICS,ROOM_STD,BANK,valH,valT,frH,gcd,red,eqv,all:{volCount,volBox,volBase,volMissing,volComposite,wholeTimesFrac,fracOfWhole,wordWhole,fracFrac,areaFrac,areaWholeFrac,mixedTimes,scaling}};
+return {gen,ROOM_TOPICS,ROOM_STD,BANK,valH,valT,frH,gcd,red,eqv,all:{unitDivWhole,wholeDivUnit,divWord,divWhich,volCount,volBox,volBase,volMissing,volComposite,wholeTimesFrac,fracOfWhole,wordWhole,fracFrac,areaFrac,areaWholeFrac,mixedTimes,scaling}};
 })();
 /*Q5-END*/

@@ -16,12 +16,14 @@ Squeaky Cheeks is a silly (PG) arcade game: students answer math problems to fil
 | 2. School Cafeteria | Volume: base area × height, missing edge, figures made of two boxes | NC.5.MD.5 | Unit 1, Sections B–C |
 | 3. Birthday Party | Fraction × whole number, fraction of a whole number, one-step word problems | NC.5.NF.4 | Unit 2, Section B |
 | 4. Elevator Lobby | Fraction × fraction, area of rectangles with fraction side lengths | NC.5.NF.4 | Unit 2, Section C; Unit 3, Section A |
-| 5. Fancy Wedding Reception | Mixed numbers, "bigger or smaller?" scaling, mixed review | NC.5.NF.4 (+ MD.5 review) | Unit 3, Sections A and C |
+| 5. Pizza Parlor | Dividing with unit fractions: 1/2 ÷ 3 (sharing a fraction) and 3 ÷ 1/4 (how many fourths fit in 3), word problems, and "which equation matches?" | NC.5.NF.7 | Unit 3, Section B |
+| 6. Fancy Wedding Reception | Mixed numbers, "bigger or smaller?" scaling, mixed review | NC.5.NF.4, NC.5.NF.7 (+ MD.5 review) | Unit 3, Sections A–C |
 
 The problems follow the NCDPI 5th grade unpacking limits:
 - Fraction × whole number uses denominators 2, 3, 4, 5, 6, 8, 10 and 12.
 - Fraction × fraction and the area models use denominators 2, 3 and 4.
 - Volume uses whole-number edges only. Figures made of two boxes have one-digit edges.
+- Division is only a unit fraction ÷ a whole number, or a whole number ÷ a unit fraction (NC.5.NF.7). Every division problem shows a sharing or "how many fit?" model, and the feedback never uses the "flip and multiply" rule, which NC saves for 6th grade.
 
 **Every problem shows a model** (cube drawing, area model, bar model, tape diagram or number line), because NC asks that models always be used in 5th grade. A wrong answer tells the student what the mistake was ("You multiplied the top AND bottom by 3…") and shows the right answer. That problem comes back a few questions later.
 
@@ -100,7 +102,7 @@ It shows only the two big class totals. It updates by itself every 15 seconds.
 
 - **Fair for different class sizes:** in the **Totals** tab, type each homeroom's number of students in the **Students** column. The game then also shows **points per student**. Leave it blank to show only totals.
 - **Start a new contest** (a new week or unit): **Class Cup → Start a new contest**. Old scores are saved in **Past Contests**.
-- **Which room to assign:** students can pick any room. Point them to the room for your current lesson (Rooms 1–2 = volume, Rooms 3–5 = multiplying fractions).
+- **Which room to assign:** students can pick any room. Point them to the room for your current lesson (Rooms 1–2 = volume, Rooms 3–4 = multiplying fractions, Room 5 = dividing fractions, Room 6 = review).
 - **Points are cheat-resistant:** only right answers earn points, and a game can send at most 60 points at a time. Points are sent every 20 seconds and when a room is cleared. If the internet drops, points wait on the Chromebook and are sent later.
 - **The Daily tab** shows how many points each class earned each day. This is a quick way to see effort.
 

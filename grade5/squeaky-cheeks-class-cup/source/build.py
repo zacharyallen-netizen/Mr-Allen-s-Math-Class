@@ -22,7 +22,7 @@ rep('''<script src="../tracker-config.js"></script>
 rep('<a class="back" href="arcade.html">← The Arcade</a>', '')
 rep('/* Layout: pixel room (canvas, left) + "gas station" math panel (right); stacks on phones.',
 '''/* 5th grade CLASS CUP copy of Mr. Allen's Squeaky Cheeks (grade8/squeaky-cheeks.html, Nov 2026).
-   Topics: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.MD.4-5 (volume).
+   Topics: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.NF.7 (divide unit fractions), NC.5.MD.4-5 (volume).
    One self-contained file: no student names, no outside scripts. The class leaderboard works only when this file runs
    inside the teacher's Google Apps Script web app (google.script.run); anywhere else it is a practice copy.
    Layout: pixel room (canvas, left) + "gas station" math panel (right); stacks on phones.''')
@@ -154,6 +154,26 @@ rep("room=asked>=1&&asked<=5?asked:1;for(let n=5;n>=1;n--)if(!asked&&roomOpen(n)
     "room=asked>=1&&asked<=5?asked:1;if(!asked)for(let n=1;n<=5;n++)if(!save.cleared[n]){room=n;break}   /* start at the first room not cleared yet */")
 rep("renderRooms();newGame(room);", "renderRooms();newGame(room);Cup.start();")
 rep("if(/[?&]debug\\b/.test(location.search)){window.__G=()=>G;", "if(/[?&]debug\\b/.test(location.search)){window.__G=()=>G;window.__Q=()=>G&&G.q.p;window.__submit=i=>submit(i);window.__Cup=Cup;")
+
+
+# ---- 6 rooms: a new Room 5 (fraction division, NC.5.NF.7) goes before the Wedding, which becomes Room 6 ----
+rep("  {name:'Fancy Wedding Reception',", """  {name:'Pizza Parlor',floor:['#f3e2c4','#e9d4b0'],wall:'#d9534f',trim:'#8f2d2a',doors:[60,260],goal:12,start:10,cap:14,every:6.5,tol:2.2,babies:.12,
+   shirts:['#2f7de1','#f2c230','#38b26b','#ffffff','#8a5cd6','#ff924c'],
+   lines:['Divine crust.','I say!','Another slice?','Splendid.','Quite cheesy.','Indeed.','Mm, yes.','Bravo, chef.'],
+   props:[{r:[50,70,30,20],c:'#ffffff',round:1},{r:[240,70,30,20],c:'#ffffff',round:1},{r:[50,140,30,20],c:'#ffffff',round:1},{r:[240,140,30,20],c:'#ffffff',round:1},
+     {r:[58,73,14,12],c:'#f2c230',round:1},{r:[248,143,14,12],c:'#f2c230',round:1},{r:[140,100,40,14],c:'#8b5a2b'},{r:[22,40,10,10],c:'#3f8f4a',plant:1},{r:[288,40,10,10],c:'#3f8f4a',plant:1}],
+   wallArt:[{r:[110,4,100,16],c:'#fff3c4',txt:'PIZZA'},{r:[30,8,40,12],c:'#f2c230'}],
+   spots:[[100,80],[220,80],[100,150],[220,150],[160,120]]},
+  {name:'Fancy Wedding Reception',""")
+rep("if(asked>=1&&asked<=5){", "if(asked>=1&&asked<=6){")
+rep("ROOM ${n}${n===5?' · FINAL':''}", "ROOM ${n}${n===6?' · FINAL':''}")
+rep("$('#wonH').textContent=n===5?", "$('#wonH').textContent=n===6?")
+rep("$('#wonP').innerHTML=n===5?", "$('#wonP').innerHTML=n===6?")
+rep("${n<5?`Next up:", "${n<6?`Next up:")
+rep("$('#bNextRoom').hidden=n>=5;", "$('#bNextRoom').hidden=n>=6;")
+rep("room=Math.min(5,G.n+1)", "room=Math.min(6,G.n+1)")
+rep("room=asked>=1&&asked<=5?asked:1;if(!asked)for(let n=1;n<=5;n++)", "room=asked>=1&&asked<=6?asked:1;if(!asked)for(let n=1;n<=6;n++)")
+rep('Rooms 1–2: volume (NC.5.MD.4, NC.5.MD.5). Rooms 3–5: multiplying fractions and area (NC.5.NF.4).', 'Rooms 1–2: volume (NC.5.MD.4–5). Rooms 3–4: multiplying fractions and area (NC.5.NF.4). Room 5: dividing with unit fractions (NC.5.NF.7). Room 6: review.')
 
 # nothing from the 8th grade site may remain
 for bad in ['arcade-send', 'tracker-config', 'site-bar', 'ArcadeSend', 'genInt', 'genFrac']:
