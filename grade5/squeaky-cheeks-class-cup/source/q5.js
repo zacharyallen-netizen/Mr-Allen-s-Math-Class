@@ -1,5 +1,5 @@
 /*Q5-START*/
-/* 5th grade question bank: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.NF.7 (divide unit fractions)
+/* 5th grade question bank: NC.5.NF.4 (multiply fractions, area with fractional sides, scaling, word problems), NC.5.NF.7 + NC.6.NS.1 (divide fractions, flip and multiply)
    and NC.5.MD.4 / NC.5.MD.5 (volume of rectangular prisms). Every problem shows a model (NC: "models must always be used").
    Limits from the NCDPI unpacking: fraction x whole denominators 2,3,4,5,6,8,10,12; fraction x fraction (and area models)
    denominators 2,3,4; volume edges whole numbers; composite = two prisms, one-digit dimensions. */
@@ -229,79 +229,78 @@ function scaling(){const N=pick([6,8,9,10,12,15,16,20,24]);const t=pick(['less',
     fig:lineFig(fn,fd),show:note,why:()=>`Compare ${valT(fn,fd)} to 1 on the number line. `+note})}
 
 
-/* ----- fraction division (NC.5.NF.7: unit fraction ÷ whole number, whole number ÷ unit fraction; models, no "flip" rule) ----- */
-/* 1/b ÷ n: one whole cut into b parts; the shaded 1/b is shared into n equal pieces; faint lines show the whole cut into b×n pieces */
-function shareFig(b,n){const W=300,H=96,x0=10,bw=W-20,y=26,h=34,k=b*n;let out='';
-  out+=txt(W/2,15,'1 whole',{fs:12,c:C.muted});
-  out+=`<rect x="${x0}" y="${y}" width="${bw}" height="${h}" fill="${C.empty}" stroke="${C.line}" stroke-width="1.5"/>`;
-  out+=`<rect x="${x0}" y="${y}" width="${(bw/b).toFixed(1)}" height="${h}" fill="#5ea83a"/>`;
-  out+=`<rect x="${x0}" y="${y}" width="${(bw/k).toFixed(1)}" height="${h}" fill="${C.shade2}"/>`;
-  for(let i=1;i<k;i++){const x=(x0+i*bw/k).toFixed(1),big=i%n===0;out+=`<line x1="${x}" y1="${y}" x2="${x}" y2="${y+h}" stroke="${big?C.ink:C.grid}" stroke-width="${big?2:1}"${big?'':' stroke-dasharray="3 3"'}/>`}
-  out+=`<path d="M${x0} ${y+h+6} v5 h${(bw/b).toFixed(1)} v-5" fill="none" stroke="#a8e47a" stroke-width="2"/>`+txt((x0+bw/b/2).toFixed(1),y+h+26,`1/${b} shared by ${n}`,{fs:12,a:b>3?'start':'middle',c:'#a8e47a'});
-  return svg(W,H,out,`One whole cut into ${b} parts. One part is shared into ${n} equal pieces. One piece is pink.`);
-}
-/* N ÷ 1/b: N wholes, each cut into b parts */
-function wholesFig(N,b){const W=300,gap=6,cols=Math.min(N,4),rows=Math.ceil(N/cols),bw=(W-20-(cols-1)*gap)/cols,h=26,H=rows*(h+22)+6;let out='';
-  for(let i=0;i<N;i++){const c=i%cols,r=Math.floor(i/cols),x=10+c*(bw+gap),y=4+r*(h+22);
-    out+=txt((x+bw/2).toFixed(1),y+11,'1 whole',{fs:10,c:C.muted});
-    for(let k=0;k<b;k++)out+=`<rect x="${(x+k*bw/b).toFixed(1)}" y="${y+15}" width="${(bw/b).toFixed(1)}" height="${h}" fill="${(i+k)%2?C.shade:'#7cc54f'}" stroke="${C.line}" stroke-width="1.2"/>`}
-  return svg(W,H,out,`${N} wholes, each cut into ${b} equal parts`);
-}
-const DIVD=[2,3,4,5,6,8];
-function unitDivWhole(){for(let t=0;t<50;t++){const b=pick(DIVD),n=ri(2,6);if(b*n>30)continue;const ans=[1,b*n];
-  return mk({kind:'frac',std:'NC.5.NF.7',key:`ud${b}${n}`,ans,
-    html:`${frH(1,b)}<span class="op">÷</span><span>${n}</span><span class="eq">=</span>`,text:`1/${b} ÷ ${n}`,
-    fig:shareFig(b,n),show:`${frH(1,b)} ÷ ${n} = ${frH(1,b*n)}. The pink piece is 1 of ${b*n} equal pieces of the whole.`,
-    why:g=>noteFrom([{v:[n,b],t:`You multiplied. Sharing 1/${b} by ${n} makes a SMALLER piece. How many pink pieces fit in the whole?`},
-      {v:[b,n],t:`Sharing makes the piece smaller than 1/${b}. Look at the model: how many pink pieces fill the whole?`},
-      {v:[1,b+n],t:`Don’t add. Each of the ${b} parts is cut into ${n}, so the whole has ${b} × ${n} pieces.`},
-      {v:[b*n,1],t:`That counts the pieces. The answer is the size of ONE pink piece: 1 out of ${b*n}.`},
-      {v:[1,b],t:`That is the part before sharing. Share it by ${n}: each person gets a smaller piece.`}],g)})}}
-function wholeDivUnit(){const b=pick([2,3,4,5,6,8]),N=ri(2,b>4?4:6),ans=N*b;
-  return mk({kind:'num',std:'NC.5.NF.7',key:`wd${N}${b}`,ans,
-    html:`<span>${N}</span><span class="op">÷</span>${frH(1,b)}<span class="eq">=</span>`,text:`${N} ÷ 1/${b}`,
-    fig:wholesFig(N,b),show:`${N} ÷ ${frH(1,b)} = ${ans}. Each whole has ${b} parts, and ${N} × ${b} = ${ans}.`,
-    why:g=>noteFrom([{v:[N,b],t:`That made it smaller. Ask: how many 1/${b}s fit in ${N}? Count the parts in the model.`},
-      {v:N+b,t:`Don’t add. Each whole has ${b} parts. There are ${N} wholes.`},
-      {v:[1,N*b],t:`Ask: how many 1/${b}s fit in ${N}? The answer is a count of pieces, a whole number.`},
-      {v:N,t:`That is the number of wholes. Count the 1/${b} pieces in all of them.`},
-      {v:b,t:`That is the parts in just ONE whole. There are ${N} wholes.`}],g)})}
-const DSTORY_U=[
-  (b,n)=>[`${frH(1,b)} of a pizza is left. ${n} friends share it equally. What fraction of the whole pizza does each friend get?`,'of a pizza'],
-  (b,n)=>[`A ribbon is ${frH(1,b)} yard long. It is cut into ${n} equal pieces. How long is each piece?`,'yard'],
-  (b,n)=>[`${frH(1,b)} pound of trail mix is put into ${n} bags equally. How many pounds are in each bag?`,'pound'],
-  (b,n)=>[`${n} students share ${frH(1,b)} of a pan of brownies equally. What fraction of the pan does each student get?`,'of the pan']];
-const DSTORY_W=[
-  (N,b)=>[`You have ${N} cups of trail mix. Each bag holds ${frH(1,b)} cup. How many bags can you fill?`,'bags'],
-  (N,b)=>[`A rope is ${N} meters long. It is cut into pieces that are each ${frH(1,b)} meter long. How many pieces?`,'pieces'],
-  (N,b)=>[`${N} pizzas are cut into slices. Each slice is ${frH(1,b)} of a pizza. How many slices are there?`,'slices'],
-  (N,b)=>[`It takes ${frH(1,b)} hour to walk one lap. How many laps can you walk in ${N} hours?`,'laps']];
-function divWord(){
-  if(Math.random()<.5){const p=unitDivWhole(),b=p.ans[1]/(+p.text.split('÷ ')[1]),n=+p.text.split('÷ ')[1];const [q,u]=pick(DSTORY_U)(b,n);
-    p.html=`<span class="ptxt">${q}</span>`;p.unit=u;p.key='dw'+p.key+u;p.text='story '+p.text;return p}
-  const p=wholeDivUnit(),N=+p.text.split(' ')[0],b=+p.text.split('1/')[1];const [q,u]=pick(DSTORY_W)(N,b);
-  p.html=`<span class="ptxt">${q}</span>`;p.unit=u;p.key='dw'+p.key+u;p.text='story '+p.text;return p}
-/* which model / which equation: tap */
-function divWhich(){const b=pick([2,3,4,5,6]),n=ri(2,5);const unitFirst=Math.random()<.5;
-  const q=unitFirst?`${frH(1,b)} of a cake is shared equally by ${n} people. Which equation matches?`:`How many ${frH(1,b)}-cup scoops are in ${n} cups of rice? Which equation matches?`;
-  const right=unitFirst?`1/${b} ÷ ${n}`:`${n} ÷ 1/${b}`,wrongs=unitFirst?[`${n} ÷ 1/${b}`,`1/${b} × ${n}`]:[`1/${b} ÷ ${n}`,`${n} × 1/${b}`];
-  const ch=[right,...wrongs];const order=[0,1,2].sort(()=>Math.random()-.5);const choices=order.map(i=>ch[i]);
-  return mk({kind:'choice',std:'NC.5.NF.7',key:`dq${b}${n}${unitFirst}`,ans:order.indexOf(0),choices,
-    html:`<span class="ptxt">${q}</span>`,text:`which eq 1/${b} ${n} ${unitFirst}`,
-    fig:unitFirst?shareFig(b,n):wholesFig(n,b),show:`${right}`,
-    why:()=>unitFirst?`A fraction is being SHARED by ${n} people, so start with 1/${b} and divide by ${n}: ${right}.`:`We ask how many 1/${b}s fit in ${n}, so start with ${n} and divide by 1/${b}: ${right}.`})}
+/* ----- fraction division, taught the class way: FLIP THE SECOND FRACTION AND MULTIPLY (Ms. Tesnar, Nov 21, 2026).
+   Every kind: unit fraction ÷ whole, whole ÷ fraction, fraction ÷ fraction, mixed numbers. No pictures (her choice).
+   NC.5.NF.7 is unit fractions with whole numbers; fraction ÷ fraction and mixed numbers are NC.6.NS.1 (taught early here). */
+/* an operand: whole N, fraction a/b, or mixed w a/b -> {v:[n,d] improper, h: html as shown, t: text, kind} */
+const OPW=N=>({v:[N,1],h:`<span>${N}</span>`,t:String(N),kind:'whole',w:N});
+const OPF=(a,b)=>({v:[a,b],h:frH(a,b),t:a+'/'+b,kind:'frac'});
+const OPM=(w,a,b)=>({v:[w*b+a,b],h:`<span class="mx">${w}${frH(a,b)}</span>`,t:w+' '+a+'/'+b,kind:'mixed',w,a,b});
+const fH=v=>frH(v[0],v[1]);
+function kcfSteps(P,Q){const [pn,pd]=P.v,[qn,qd]=Q.v,raw=[pn*qd,pd*qn];const parts=[];
+  if(P.kind==='mixed')parts.push(`Change ${P.t} to ${fH(P.v)}.`);
+  if(P.kind==='whole')parts.push(`Write ${P.t} as ${fH(P.v)}.`);
+  if(Q.kind==='mixed')parts.push(`Change ${Q.t} to ${fH(Q.v)}.`);
+  if(Q.kind==='whole')parts.push(`Write ${Q.t} as ${fH(Q.v)}.`);
+  parts.push(`Flip the second fraction and multiply: ${fH(P.v)} × ${frH(qd,qn)} = ${fH(raw)}${valH(...raw)!==fH(raw)?' = '+valH(...raw):''}`);
+  return parts.join(' ')}
+function kcfWhy(P,Q){const [pn,pd]=P.v,[qn,qd]=Q.v;const list=[
+  {v:[pn*qn,pd*qd],t:`You multiplied without flipping. Flip the second fraction first: ${fH(Q.v)} becomes ${frH(qd,qn)}.`},
+  {v:[pd*qn,pn*qd],t:`You flipped the FIRST fraction. Keep the first one the same. Flip only the second one.`},
+  {v:[pd*qd,pn*qn],t:`You flipped both fractions. Keep the first one the same. Flip only the second one.`}];
+  if(P.kind==='mixed')list.push({v:[P.w*P.b*qn+P.a*qd,P.b*qn],t:`Change ${P.t} to an improper fraction (${fH(P.v)}) BEFORE you flip and multiply.`},
+                                {v:[P.a*qd,P.b*qn],t:`You left out the whole number ${P.w}. Change ${P.t} to ${fH(P.v)} first.`});
+  if(Q.kind==='mixed')list.push({v:[pn*Q.b,pd*Q.a],t:`You left out the whole number ${Q.w}. Change ${Q.t} to ${fH(Q.v)}, then flip it.`});
+  if(Q.kind==='whole')list.push({v:[pn*qn,pd],t:`Write ${Q.t} as ${Q.t}/1. Flip it to 1/${Q.t}, then multiply.`});
+  if(P.kind==='whole')list.push({v:[qn,qd*pn],t:`Keep ${P.t} first (${P.t}/1). Flip only the second fraction.`});
+  return g=>noteFrom(list,g)}
+function divMk(P,Q,std,key){const [pn,pd]=P.v,[qn,qd]=Q.v,ans=[pn*qd,pd*qn];
+  return mk({kind:'frac',std:std||'NC.6.NS.1',key:key||('d'+P.t+'/'+Q.t),ans,
+    html:`${P.h}<span class="op">÷</span>${Q.h}<span class="eq">=</span>`,text:`${P.t} ÷ ${Q.t}`,fig:'',
+    show:kcfSteps(P,Q),why:kcfWhy(P,Q)})}
+const DD=[2,3,4,5,6,8,10,12],DS=[2,3,4,5,6,8];
+function unitDivWhole(){const b=pick(DD),n=ri(2,9);return divMk(OPF(1,b),OPW(n),'NC.5.NF.7')}
+function wholeDivUnit(){const b=pick(DD),N=ri(2,9);return divMk(OPW(N),OPF(1,b),'NC.5.NF.7')}
+function fracDivWhole(){const b=pick(DS),a=rnum(b);return a===1?unitDivWhole():divMk(OPF(a,b),OPW(ri(2,6)))}
+function wholeDivFrac(){const b=pick(DS),a=rnum(b);return a===1?wholeDivUnit():divMk(OPW(ri(2,9)),OPF(a,b))}
+function fracDivFrac(){const b=pick(DS),d=pick(DS);const P=OPF(rnum(b),b),Q=OPF(rnum(d),d);return divMk(P,Q)}
+function mixedDivFrac(){const b=pick([2,3,4,5,6]),d=pick([2,3,4,5,6,8]);return divMk(OPM(ri(1,3),rnum(b),b),OPF(rnum(d),d))}
+function mixedDivWhole(){const b=pick([2,3,4,5,6]);return divMk(OPM(ri(1,4),rnum(b),b),OPW(ri(2,6)))}
+function fracDivMixed(){const b=pick([2,3,4,5,6,8]),d=pick([2,3,4,5]);
+  return Math.random()<.35?divMk(OPM(ri(1,3),rnum(b),b),OPM(ri(1,2),rnum(d),d)):divMk(OPF(rnum(b),b),OPM(ri(1,2),rnum(d),d))}
+/* story problems (no pictures): each one is a division, solved by flip and multiply */
+const DSTORY=[
+  ()=>{const b=pick([2,3,4,6,8]),n=ri(2,6);return [OPF(1,b),OPW(n),`${frH(1,b)} of a pizza is left. ${n} friends share it equally. What fraction of the whole pizza does each friend get?`,'of a pizza']},
+  ()=>{const b=pick([2,3,4,5,8]),N=ri(2,8);return [OPW(N),OPF(1,b),`You have ${N} cups of trail mix. Each bag holds ${frH(1,b)} cup. How many bags can you fill?`,'bags']},
+  ()=>{const b=pick([3,4,5,6,8]),a=rnum(b),N=a*ri(2,5);return [OPW(N),OPF(a,b),`A rope is ${N} feet long. Each jump rope needs ${frH(a,b)} foot. How many jump ropes can be cut?`,'jump ropes']},
+  ()=>{const d=pick([8,10,12]),b=pick([2,4]),a=rnum(b),c=1;return [OPF(a,b),OPF(c,d),`A ribbon is ${frH(a,b)} yard long. It is cut into pieces that are ${frH(c,d)} yard each. How many pieces?`,'pieces']},
+  ()=>{const b=pick([2,3,4]),a=rnum(b),n=ri(2,5);return [OPF(a,b),OPW(n),`${frH(a,b)} pound of clay is shared equally by ${n} students. How many pounds does each student get?`,'pound']},
+  ()=>{const b=pick([2,4]),w=ri(1,3),d=pick([4,8]);return [OPM(w,1,b),OPF(1,d),`A recipe uses ${frH(1,d)} cup of sugar per batch. You have <span class="mx">${w}${frH(1,b)}</span> cups. How many batches can you make?`,'batches']},
+  ()=>{const d=pick([2,3,4]),c=rnum(d),N=ri(3,9);return [OPW(N),OPF(c,d),`It takes ${frH(c,d)} hour to paint one sign. How many signs can be painted in ${N} hours?`,'signs']}];
+function divWord(){const [P,Q,q,u]=pick(DSTORY)();const p=divMk(P,Q,P.kind!=='frac'&&Q.kind!=='frac'?'NC.5.NF.7':(P.v[0]===1||Q.v[0]===1)&&(P.kind==='whole'||Q.kind==='whole')?'NC.5.NF.7':'NC.6.NS.1');
+  p.html=`<span class="ptxt">${q}<br><span class="std">Write the division, then flip the second fraction and multiply.</span></span>`;p.unit=u;p.key='w'+p.key+u;p.text='story '+p.text;return p}
+/* tap: which is the right first step? */
+function divStep(){const b=pick(DS),d=pick(DS),a=rnum(b),c=rnum(d);if(a===b-a&&c===d-c&&b===d)return divStep();
+  const P=OPF(a,b),Q=OPF(c,d);const right=`${a}/${b} × ${d}/${c}`,w1=`${b}/${a} × ${c}/${d}`,w2=`${a}/${b} × ${c}/${d}`,w3=`${b}/${a} × ${d}/${c}`;
+  const pool=[right,w1,w2,w3].filter((x,i,arr)=>arr.indexOf(x)===i);if(pool.length<3)return divStep();
+  const set=[pool[0],...pool.slice(1).sort(()=>Math.random()-.5).slice(0,2)];const order=[0,1,2].sort(()=>Math.random()-.5);const choices=order.map(i=>set[i]);
+  const notes={[w1]:'That flips the FIRST fraction. Keep the first one. Flip the second one.',[w2]:'That forgot to flip. Change ÷ to × AND flip the second fraction.',[w3]:'That flips both. Only flip the second fraction.'};
+  return mk({kind:'choice',std:'NC.6.NS.1',key:`ds${a}${b}${c}${d}`,ans:order.indexOf(0),choices,
+    html:`<span class="ptxt">Which is the right way to solve ${frH(a,b)} ÷ ${frH(c,d)}?</span>`,text:`step ${a}/${b} ÷ ${c}/${d}`,fig:'',
+    show:`Keep ${a}/${b}, change ÷ to ×, flip ${c}/${d} to ${d}/${c}: ${right}.`,
+    why:i=>(notes[choices[i]]||'')+` The right way: keep ${a}/${b}, change ÷ to ×, flip ${c}/${d} to ${d}/${c}.`})}
 
 /* ---------------- rooms ---------------- */
-const ROOM_TOPICS=['Volume: count the cubes','Volume: base × height, missing edge, two boxes','Fraction × whole number','Fraction × fraction and area','Dividing with unit fractions','Mixed numbers, scaling and review'];
-const ROOM_STD=['NC.5.MD.4, NC.5.MD.5','NC.5.MD.5','NC.5.NF.4','NC.5.NF.4','NC.5.NF.7','NC.5.NF.4, NC.5.NF.7, NC.5.MD.5'];
+const ROOM_TOPICS=['Volume: count the cubes','Volume: base × height, missing edge, two boxes','Fraction × whole number','Fraction × fraction and area','Dividing fractions: flip and multiply','Mixed numbers, dividing, scaling and review'];
+const ROOM_STD=['NC.5.MD.4, NC.5.MD.5','NC.5.MD.5','NC.5.NF.4','NC.5.NF.4','NC.5.NF.7 (+ NC.6.NS.1)','NC.5.NF.4, NC.5.NF.7, NC.5.MD.5'];
 const BANK=[
   [[volCount,5],[volBox,5]],
   [[volBox,2],[volBase,3],[volMissing,3],[volComposite,4]],
   [[wholeTimesFrac,4],[fracOfWhole,4],[wordWhole,4]],
   [[fracFrac,5],[areaFrac,4],[areaWholeFrac,3]],
-  [[unitDivWhole,4],[wholeDivUnit,4],[divWord,4],[divWhich,2]],
-  [[mixedTimes,4],[scaling,3],[wordWhole,1],[divWord,2],[unitDivWhole,1],[wholeDivUnit,1],[areaFrac,1],[volComposite,1],[volMissing,1]]];
+  [[unitDivWhole,2],[wholeDivUnit,2],[fracDivWhole,2],[wholeDivFrac,2],[fracDivFrac,4],[mixedDivFrac,2],[mixedDivWhole,1],[fracDivMixed,2],[divWord,4],[divStep,2]],
+  [[fracDivFrac,3],[mixedDivFrac,2],[fracDivMixed,1],[divWord,2],[wholeDivFrac,1],[mixedTimes,3],[scaling,2],[wordWhole,1],[areaFrac,1],[volComposite,1]]];
 function gen(room){const B=BANK[room-1],tot=B.reduce((s,x)=>s+x[1],0);let r=Math.random()*tot;for(const [f,w] of B){r-=w;if(r<0)return f()}return B[0][0]()}
-return {gen,ROOM_TOPICS,ROOM_STD,BANK,valH,valT,frH,gcd,red,eqv,all:{unitDivWhole,wholeDivUnit,divWord,divWhich,volCount,volBox,volBase,volMissing,volComposite,wholeTimesFrac,fracOfWhole,wordWhole,fracFrac,areaFrac,areaWholeFrac,mixedTimes,scaling}};
+return {gen,ROOM_TOPICS,ROOM_STD,BANK,valH,valT,frH,gcd,red,eqv,all:{unitDivWhole,wholeDivUnit,fracDivWhole,wholeDivFrac,fracDivFrac,mixedDivFrac,mixedDivWhole,fracDivMixed,divWord,divStep,volCount,volBox,volBase,volMissing,volComposite,wholeTimesFrac,fracOfWhole,wordWhole,fracFrac,areaFrac,areaWholeFrac,mixedTimes,scaling}};
 })();
 /*Q5-END*/

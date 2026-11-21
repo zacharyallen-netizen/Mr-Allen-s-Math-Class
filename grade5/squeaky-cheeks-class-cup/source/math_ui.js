@@ -2,7 +2,7 @@
 const frH=Q5.frH;
 const gen=lv=>Q5.gen(lv);
 function fracBoxes(pre,label){return `<span class="fbox"><input class="box sm" id="${pre}n" type="text" inputmode="numeric" autocomplete="off" aria-label="${label} numerator" maxlength="3"><span class="bar"></span><input class="box sm" id="${pre}d" type="text" inputmode="numeric" autocomplete="off" aria-label="${label} denominator" maxlength="3"></span>`}
-function mixedBoxes(pre,label){return `<span class="mixed"><input class="box sm whole" id="${pre}w" type="text" inputmode="numeric" autocomplete="off" aria-label="${label}: whole number part, leave blank if none" maxlength="2">${fracBoxes(pre,label)}</span>`}
+function mixedBoxes(pre,label){return `<span class="mixed"><input class="box sm whole" id="${pre}w" type="text" inputmode="numeric" autocomplete="off" aria-label="${label}: whole number part, leave blank if none" maxlength="3">${fracBoxes(pre,label)}</span>`}
 function readInt(id){const el=$('#'+id);if(!el)return null;const v=(el.value||'').replace(/[−–]/g,'-').trim();if(!/^[+-]?\d+$/.test(v))return null;return parseInt(v,10)}
 function refocus(){if(!G)return;
   if(G.q.p&&G.q.p.kind==='choice'&&G.q.stage!=='bonus'){const b=document.querySelector('#answer .ch:not(.no)');if(b)b.focus({preventScroll:true});return}
@@ -67,7 +67,8 @@ function wrong(){
   let note='';try{note=p.kind==='choice'?p.why(Q.given):p.why(Q.given.v||Q.given)}catch(e){}
   if(p.kind==='choice'){const b=document.querySelector(`#answer .ch[data-i="${p.ans}"]`);if(b)b.classList.add('yes')}
   flashFb(`pfft. Not quite.${note?`<span class="note">${note}</span>`:''}${p.kind==='choice'?'':`<span class="ans">Answer: ${p.show}</span>`}`,'bad');
-  Q.busy=true;setTimeout(()=>{if(G&&!G.won)nextQ()},RM?900:(note?4200:2600));
+  const long=(note+(p.show||'')).replace(/<[^>]+>/g,'').length;
+  Q.busy=true;setTimeout(()=>{if(G&&!G.won)nextQ()},RM?900:Math.min(7500,(note?4200:2600)+Math.max(0,long-90)*25));
 }
 /* bonus beans after a right fraction answer: whole number / mixed number / simplest form */
 function offerBonus(){

@@ -16,16 +16,16 @@ Squeaky Cheeks is a silly (PG) arcade game: students answer math problems to fil
 | 2. School Cafeteria | Volume: base area × height, missing edge, figures made of two boxes | NC.5.MD.5 | Unit 1, Sections B–C |
 | 3. Birthday Party | Fraction × whole number, fraction of a whole number, one-step word problems | NC.5.NF.4 | Unit 2, Section B |
 | 4. Elevator Lobby | Fraction × fraction, area of rectangles with fraction side lengths | NC.5.NF.4 | Unit 2, Section C; Unit 3, Section A |
-| 5. Pizza Parlor | Dividing with unit fractions: 1/2 ÷ 3 (sharing a fraction) and 3 ÷ 1/4 (how many fourths fit in 3), word problems, and "which equation matches?" | NC.5.NF.7 | Unit 3, Section B |
-| 6. Fancy Wedding Reception | Mixed numbers, "bigger or smaller?" scaling, mixed review | NC.5.NF.4, NC.5.NF.7 (+ MD.5 review) | Unit 3, Sections A–C |
+| 5. Pizza Parlor | Dividing fractions the class way, **flip the second fraction and multiply**: unit fraction ÷ whole number, whole number ÷ fraction, fraction ÷ fraction, mixed numbers, word problems, and "which is the right first step?" | NC.5.NF.7 (fraction ÷ fraction and mixed numbers go on into NC.6.NS.1) | Unit 3, Section B |
+| 6. Fancy Wedding Reception | Mixed numbers, dividing fractions, "bigger or smaller?" scaling, mixed review | NC.5.NF.4, NC.5.NF.7 (+ MD.5 review) | Unit 3, Sections A–C |
 
 The problems follow the NCDPI 5th grade unpacking limits:
 - Fraction × whole number uses denominators 2, 3, 4, 5, 6, 8, 10 and 12.
 - Fraction × fraction and the area models use denominators 2, 3 and 4.
 - Volume uses whole-number edges only. Figures made of two boxes have one-digit edges.
-- Division is only a unit fraction ÷ a whole number, or a whole number ÷ a unit fraction (NC.5.NF.7). Every division problem shows a sharing or "how many fit?" model, and the feedback never uses the "flip and multiply" rule, which NC saves for 6th grade.
+- Division is taught the way Ms. Tesnar teaches it: **flip the second fraction and multiply**. Division problems have no picture. A wrong answer names the mistake: forgot to flip, flipped the first fraction, flipped both, or didn't change a mixed number to an improper fraction first. Then it shows every step.
 
-**Every problem shows a model** (cube drawing, area model, bar model, tape diagram or number line), because NC asks that models always be used in 5th grade. A wrong answer tells the student what the mistake was ("You multiplied the top AND bottom by 3…") and shows the right answer. That problem comes back a few questions later.
+**Every problem except division shows a model** (cube drawing, area model, bar model, tape diagram or number line), because NC asks that models always be used in 5th grade. A wrong answer tells the student what the mistake was ("You multiplied the top AND bottom by 3…") and shows the right answer. That problem comes back a few questions later.
 
 **The Class Cup:**
 - Every right answer = **1 point** for the student's homeroom.
